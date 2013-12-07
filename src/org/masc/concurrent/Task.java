@@ -28,14 +28,19 @@ public abstract class Task<V> implements RunnableFuture<V> {
 			public V call() throws Exception {
 				Exception error = null;
 				V result = null;
-				
-				try {
-					result = perform();
+
+				if ( _callback != null )
+					_callback.onStart();
+
+				try {					
+					/** Perform actual task */
+					result = perform();					
 				} catch( Exception e ) {
 					error = e;
 				}
+				
 				if ( _callback != null )
-					_callback.onCompletion(result, error);
+					_callback.onCompletion(result, error);					
 				
 				if ( error != null )
 					throw error;

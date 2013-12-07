@@ -8,6 +8,11 @@ package org.masc.concurrent;
  * 
  * @author masc
  */
-public interface TaskCallback<V> {
-	void onCompletion(V result, Exception error);
+public abstract class TaskCallback<V> {
+	/** Called when the task actually starts, in the context of the task's thread */
+	public void onStart() {				
+	}
+	
+	/** Called on completion of the task, in the context of the task's thread */
+	public abstract void onCompletion(V result, Exception error);
 }
