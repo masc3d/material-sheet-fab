@@ -21,7 +21,6 @@ import java.util.EventObject;
 
 /**
  * Generic event listener
- *
  * @author masc
  */
 public interface EventListener <T extends EventObject> extends java.util.EventListener {
