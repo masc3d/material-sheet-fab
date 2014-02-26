@@ -17,30 +17,33 @@
 
 package org.masc.util;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.EventObject;
 
 /**
  * Multicast event dispatcher. Instance methods are not threadsafe.
+ *
  * @author masc
  */
-public class EventDispatcher <T extends EventObject> {
+public class EventDispatcher<T extends EventObject> {
     private final ArrayList<EventListener<T>> _listeners = new ArrayList<EventListener<T>>();
 
     public EventDispatcher() {
     }
 
-    public void add( EventListener<T> listener ) {
-        _listeners.add( listener );
+    public void add(EventListener<T> listener) {
+        _listeners.add(listener);
     }
 
-    public void remove( EventListener<T> listener ) {
-        _listeners.remove( listener );
+    public void remove(EventListener<T> listener) {
+        _listeners.remove(listener);
     }
 
-	public void fire( T event ) {
-        for ( EventListener<T> listener : _listeners ) {
-            listener.handle( event );
-        }
+    public void fire(T event) {
+        ArrayList<EventListener<T>> listeners = (ArrayList<EventListener<T>>)_listeners.clone();
+
+        for (EventListener<T> listener : listeners)
+            listener.handle(event);
     }
 }
