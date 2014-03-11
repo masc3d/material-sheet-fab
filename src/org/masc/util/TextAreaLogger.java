@@ -21,11 +21,10 @@ import javax.swing.JTextArea;
 import javax.swing.text.DefaultCaret;
 
 /**
- *
  * @author masc
  */
 public class TextAreaLogger {
-    private static String NEWLINE = System.getProperty( "line.separator" );
+    private static String NEWLINE = System.getProperty("line.separator");
     private JTextArea _textArea;
     /**
      * Maximum amount of log entries
@@ -35,33 +34,34 @@ public class TextAreaLogger {
      * Current amount of lines
      */
     private int _lines = 0;
-    
-    public TextAreaLogger( JTextArea textArea ) {
+
+    public TextAreaLogger(JTextArea textArea) {
         _textArea = textArea;
-        
+
         // Configure caret for text area to always scroll to bottom
-        DefaultCaret caret = (DefaultCaret)_textArea.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);        
+        DefaultCaret caret = (DefaultCaret) _textArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
 
     /**
      * log
+     *
      * @param msg message
      */
-    public void log( String msg ) {
+    public void log(String msg) {
         String text = _textArea.getText();
-        if ( _lines >= _maxLines ) {
-            int i = text.indexOf( NEWLINE );
-            if ( i >= 0 ) {
-                text = text.substring( i + NEWLINE.length() );
+        if (_lines >= _maxLines) {
+            int i = text.indexOf(NEWLINE);
+            if (i >= 0) {
+                text = text.substring(i + NEWLINE.length());
             }
         }
-        _textArea.setText( text + msg + NEWLINE );
+        _textArea.setText(text + msg + NEWLINE);
         _lines++;
     }
 
     public void clear() {
-        _textArea.setText( "" );
+        _textArea.setText("");
         _lines = 0;
     }
 

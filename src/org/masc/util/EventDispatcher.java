@@ -41,7 +41,7 @@ public class EventDispatcher<T extends EventObject> {
     }
 
     public void fire(T event) {
-        ArrayList<EventListener<T>> listeners = (ArrayList<EventListener<T>>)_listeners.clone();
+        ArrayList<EventListener<T>> listeners = (ArrayList<EventListener<T>>) _listeners.clone();
 
         for (EventListener<T> listener : listeners)
             listener.handle(event);

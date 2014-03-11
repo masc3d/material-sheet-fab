@@ -21,8 +21,9 @@ import java.util.EventObject;
 
 /**
  * Generic event listener
+ *
  * @author masc
  */
-public interface EventListener <T extends EventObject> extends java.util.EventListener {
-    public void handle( T event );
+public interface EventListener<T extends EventObject> extends java.util.EventListener {
+    public void handle(T event);
 }
