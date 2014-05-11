@@ -1,4 +1,4 @@
-package org.masc.util;
+package org.sx.util;
 
 public class Cast {
     /**

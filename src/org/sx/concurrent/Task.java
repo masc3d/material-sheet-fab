@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.masc.concurrent;
+package org.sx.concurrent;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

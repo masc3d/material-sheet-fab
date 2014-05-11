@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.masc.concurrent;
+package org.sx.concurrent;
 
 /**
  * Task callback interface

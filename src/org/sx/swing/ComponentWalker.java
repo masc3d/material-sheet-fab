@@ -1,4 +1,4 @@
-package org.masc.swing;
+package org.sx.swing;
 
 import java.awt.Component;
 import java.awt.Container;

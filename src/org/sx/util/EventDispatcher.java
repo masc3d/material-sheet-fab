@@ -15,9 +15,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.masc.util;
+package org.sx.util;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.EventObject;
 

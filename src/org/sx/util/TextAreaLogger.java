@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.masc.util;
+package org.sx.util;
 
 import javax.swing.JTextArea;
 import javax.swing.text.DefaultCaret;
