@@ -25,14 +25,13 @@ import javax.swing.text.DefaultCaret;
  */
 public class TextAreaLogger {
     private static String NEWLINE = System.getProperty("line.separator");
+    /** Buffer holding visible log content */
+    private String _buffer = "";
+    /** Text area this logger is attached to */
     private JTextArea _textArea;
-    /**
-     * Maximum amount of log entries
-     */
+    /** Maximum amount of log entries */
     private int _maxLines = 100;
-    /**
-     * Current amount of lines
-     */
+    /** Current amount of lines */
     private int _lines = 0;
 
     public TextAreaLogger(JTextArea textArea) {
@@ -48,24 +47,36 @@ public class TextAreaLogger {
      *
      * @param msg message
      */
-    public void log(String msg) {
-        String text = _textArea.getText();
+    public void log(String msg, boolean redraw) {
         if (_lines >= _maxLines) {
-            int i = text.indexOf(NEWLINE);
+            int i = _buffer.indexOf(NEWLINE);
             if (i >= 0) {
-                text = text.substring(i + NEWLINE.length());
+                _buffer = _buffer.substring(i + NEWLINE.length());
             }
         }
-        _textArea.setText(text + msg + NEWLINE);
+        _buffer = _buffer + msg + NEWLINE;
         _lines++;
+
+        if (redraw)
+            _textArea.setText(_buffer);
+    }
+
+    public void log(String msg) {
+        this.log(msg, true);
     }
 
     public void clear() {
-        _textArea.setText("");
+        _buffer = "";
         _lines = 0;
+        this.redraw();
+    }
+
+    public void redraw() {
+        _textArea.setText(_buffer);
     }
 
     public int getMaxLines() {
         return _maxLines;
     }
+    public void setMaxLines(int maxLines) { _maxLines = maxLines; }
 }
