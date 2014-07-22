@@ -1,0 +1,40 @@
+#
+class leo2::tomcat {
+  contain leo2::java
+
+  # masc20140721. setup tomcat
+  class { ::tomcat::params:
+    version => 7
+  }
+
+  class { ::tomcat:
+    require => Class['Tomcat::Params']
+  }
+
+  # masc20140722. amend tomcat default configuration
+  file_line { 'set_tomcat_home':
+    before => Service['tomcat7'],
+    require => Package['tomcat'],
+    path => '/etc/default/tomcat7',
+    match => ".*JAVA_HOME=.*",
+    line => sprintf("JAVA_HOME=\"%s\"", $::java::oracle_1_8_0::home)
+  }
+
+  package { 'tomcat7-admin':
+    require => Package['tomcat'],
+    ensure => 'installed'
+  }
+
+  # masc20140722. add tomcat user for manager gui
+  augeas { 'tomcat-users.xml':
+    before => Service['tomcat7'],
+    require => Package['tomcat'],
+    lens => 'Xml.lns',
+    incl => '/etc/tomcat7/tomcat-users.xml',
+    changes => [
+      "set tomcat-users/role/#attribute/rolename manager-gui",
+      "set tomcat-users/user/#attribute/username tomcat",
+      "set tomcat-users/user[#attribute/username='tomcat']/#attribute/password tomcat",
+      "set tomcat-users/user[#attribute/username='tomcat']/#attribute/roles manager-gui" ]
+  }
+}

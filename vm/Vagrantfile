@@ -15,15 +15,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # masc20140722. default vbox base box
   config.vm.box = "notgary/ubuntu-14-04-base"
 
-  # masc20140722. parallels base box
-  config.vm.provider "parallels" do |v, override|
-    override.vm.box = "parallels/ubuntu-14.04"
-  end
-
   # masc20140721. basic settings, like box url, hostname etc.
   # config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/debian-73-x64-virtualbox-puppet.box"
   #config.vm.box_url = "https://oss-binaries.phusionpassenger.com/vagrant/boxes/latest/ubuntu-14.04-amd64-vbox.box"
-  config.vm.hostname = "leo2-host-dev"
+  config.vm.hostname = "leo2-dev"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -71,12 +66,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # information on available options.
 
   # masc20140721. virtual box specific machine changes
-  config.vm.provider "virtualbox" do |vb|
+  config.vm.provider "virtualbox" do |v|
     # Don't boot with headless mode
-    vb.gui = true
- 
-    # Use VBoxManage to customize the VM. For example to change memory:
-    vb.customize ["modifyvm", :id, "--memory", "2048"]
+    v.name = "leo2-dev"
+    v.gui = true
+    v.memory = 2048
+    v.cpus = 1
+  end
+
+  # masc20140722. parallels base box
+  config.vm.provider "parallels" do |v, override|
+    override.vm.box = "parallels/ubuntu-14.04"
+    v.name = "leo2-dev"
+    v.memory = 2048
+    v.cpus = 1
   end
 
   # Enable provisioning with CFEngine. CFEngine Community packages are
@@ -108,7 +111,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # masc20140722. some boxes may not have puppet (correctly) installed.
   # bootstrap with apt update and puppet installation
   # this will not be needed with a proper box (final setup will probably use specifically created box)
-  config.vm.provision :shell, :inline => "sudo apt-get update && sudo apt-get install puppet -y"
+  # config.vm.provision :shell, :inline => "sudo apt-get update && sudo apt-get install puppet -y"
 
   # masc20140721. puppet provisioning setup
   config.vm.provision "puppet" do |puppet|
