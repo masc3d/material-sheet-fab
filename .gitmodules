@@ -1,0 +1,21 @@
+[submodule "vm/puppet/modules/mysql"]
+	path = vm/puppet/modules/mysql
+	url = https://github.com/puppetlabs/puppetlabs-mysql.git
+[submodule "vm/puppet/modules/stdlib"]
+	path = vm/puppet/modules/stdlib
+	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
+[submodule "vm/puppet/modules/apt"]
+	path = vm/puppet/modules/apt
+	url = https://github.com/puppetlabs/puppetlabs-apt.git
+[submodule "vm/puppet/modules/timezone"]
+	path = vm/puppet/modules/timezone
+	url = https://github.com/saz/puppet-timezone.git
+[submodule "vm/puppet/modules/java"]
+	path = vm/puppet/modules/java
+	url = https://github.com/Proteon/puppet-java.git
+[submodule "vm/puppet/modules/puppi"]
+	path = vm/puppet/modules/puppi
+	url = https://github.com/example42/puppi.git
+[submodule "vm/puppet/modules/tomcat"]
+	path = vm/puppet/modules/tomcat
+	url = https://github.com/example42/puppet-tomcat.git
