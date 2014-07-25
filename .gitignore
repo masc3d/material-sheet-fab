@@ -4,3 +4,5 @@ leo2-webservice/.gradle
 leo2-webservice/build
 leo2-common/build
 *.iws
+.gradle
+build

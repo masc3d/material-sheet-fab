@@ -24,10 +24,6 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
-  <component name="FrameworkDetectionExcludesConfiguration">
-    <file type="web" url="file://$PROJECT_DIR$/../leo2-common" />
-    <file type="web" url="file://$PROJECT_DIR$" />
-  </component>
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -35,8 +31,9 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/../leo2-common" />
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/leo2-common" />
+            <option value="$PROJECT_DIR$/leo2-webservice" />
           </set>
         </option>
       </GradleProjectSettings>
@@ -189,34 +186,35 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../leo2-common/leo2-common.iml" filepath="$PROJECT_DIR$/../leo2-common/leo2-common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/leo2-webservice.iml" filepath="$PROJECT_DIR$/leo2-webservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/leo2.iml" filepath="$PROJECT_DIR$/leo2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/leo2-common/leo2-common.iml" filepath="$PROJECT_DIR$/leo2-common/leo2-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/leo2-webservice/leo2-webservice.iml" filepath="$PROJECT_DIR$/leo2-webservice/leo2-webservice.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="leo2-webservice [debug]" type="Remote" factoryName="Remote">
-      <module name="leo2-webservice" />
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="10.0.10.10" />
-      <option name="PORT" value="8000" />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="8000" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="false" />
-      </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Debug" />
-      <method>
-        <option name="RunConfigurationTask" enabled="true" run_configuration_name="leo2-webservice [cargoRedeployRemote]" run_configuration_type="GradleRunConfiguration" />
-      </method>
+    <configuration default="false" name="leo2" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" />
+      <option name="MAIN_CLASS_NAME" value="org.leo2.Main" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="leo2" />
+      <envs />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
     </configuration>
-    <configuration default="false" name="leo2-webservice [cargoRedeployRemote]" type="GradleRunConfiguration" factoryName="Gradle">
+    <configuration default="false" name="leo2:leo2-webservice [cargoRedeployRemote]" type="GradleRunConfiguration" factoryName="Gradle">
       <ExternalSystemSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/leo2-webservice" />
         <option name="externalSystemIdString" value="GRADLE" />
         <option name="scriptParameters" value="" />
         <option name="taskDescriptions">
@@ -233,13 +231,26 @@
       <ConfigurationWrapper RunnerId="ExternalSystemTaskRunner" />
       <method />
     </configuration>
+    <configuration default="false" name="leo2:leo2-webservice [remote debug]" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="10.0.10.10" />
+      <option name="PORT" value="8000" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="8000" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="false" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
   </component>
   <component name="SvnBranchConfigurationManager">
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="" />
-    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="" vcs="Git" />
   </component>
   <component name="libraryTable">
     <library name="Gradle: aopalliance-repackaged-2.3.0-b05">

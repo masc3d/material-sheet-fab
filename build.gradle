@@ -3,13 +3,25 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 sourceCompatibility = 1.8
-version = '1.0'
+version = '0.1'
 
 repositories {
     mavenCentral()
 }
 
+idea {
+	project {
+	}
+}
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile 'javax.ws.rs:javax.ws.rs-api:2.0'
+
+    // leo2 dependencies
+    compile project(':leo2-common')
+}
+
+// test task
+task hello << {
+    println 'Hello'
 }
