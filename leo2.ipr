@@ -243,7 +243,9 @@
         <option name="LOCAL" value="false" />
       </RunnerSettings>
       <ConfigurationWrapper RunnerId="Debug" />
-      <method />
+      <method>
+        <option name="RunConfigurationTask" enabled="true" run_configuration_name="leo2:leo2-webservice [cargoRedeployRemote]" run_configuration_type="GradleRunConfiguration" />
+      </method>
     </configuration>
   </component>
   <component name="SvnBranchConfigurationManager">
