@@ -1,4 +1,7 @@
-package org.leo2.rest.v1;
+package org.leo2.rest.services.v1;
+
+import org.leo2.rest.v1.ITestService;
+import org.leo2.rest.v1.TestEntry;
 
 import javax.ws.rs.Path;
 import java.util.ArrayList;

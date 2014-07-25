@@ -1,5 +1,7 @@
 package org.leo2.rest.v1;
 
+import org.leo2.rest.v1.TestEntry;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
@@ -9,6 +11,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Path("/v1/test")
 public interface ITestService {
     /** Get all tours */
     @GET

@@ -9,11 +9,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class WebserviceResourceConfig extends ResourceConfig {
     public WebserviceResourceConfig()
     {
-        super(/*NonJaxbBeanResource.class,
-                CombinedAnnotationResource.class, */
-                Jackson1Feature.class);
+        super(Jackson1Feature.class);
 
-        packages("org.leo2.rest",
-                "org.leo2.rest.v1");
+        packages("org.leo2.rest.services");
     }
 }
