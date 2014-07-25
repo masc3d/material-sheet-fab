@@ -1,0 +1,74 @@
+// gradle dependencies/plugins
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.5'
+    }
+}
+
+// plugins
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'war'
+apply plugin: 'cargo'
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+
+    // webservice dependencies
+    compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.11'
+    //TODO: masc20140722. jackson 2.x not working yet, probably auto service discovery, has to be investigated
+    //compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.11'
+    compile 'org.glassfish.jersey.media:jersey-media-json-jackson1:2.11'
+
+    // leo2 dependencies
+    compile project(':leo2-common')
+}
+
+// war plugin configuration
+war {
+
+}
+
+// cargo plugin configuration
+cargo {
+    containerId = 'tomcat7x'
+    port = 8080
+
+    deployable {
+        context = '/leo2'
+    }
+
+    remote {
+        hostname = '10.0.10.10'
+        username = 'tomcat'
+        password = 'tomcat'
+    }
+}
+
+// task dependencies
+tasks.cargoDeployRemote.dependsOn(war)
+tasks.cargoRedeployRemote.dependsOn(war)
+tasks.war.
+
+// test task
+task hello << {
+    println 'Hello'
+}
+
+test hello2 {
+    outputs.upToDateWhen {
+
+    }
+}

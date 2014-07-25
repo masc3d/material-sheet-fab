@@ -1,2 +1,5 @@
-boxes/leo2-host-dev/.vagrant
 vm/.vagrant
+leo2-common/.gradle
+leo2-webservice/.gradle
+leo2-webservice/build
+leo2-common/build

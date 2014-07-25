@@ -1,5 +1,7 @@
 #
-class leo2::tomcat {
+class leo2::tomcat ( 
+  $debug = false 
+) {
   contain leo2::java
 
   # masc20140721. setup tomcat
@@ -18,6 +20,20 @@ class leo2::tomcat {
     path => '/etc/default/tomcat7',
     match => ".*JAVA_HOME=.*",
     line => sprintf("JAVA_HOME=\"%s\"", $::java::oracle_1_8_0::home)
+  }
+
+  # masc20140724. set java opts with optional debug support
+  $java_opts = '-Djava.awt.headless=true -Xmx128m -XX:+UseConcMarkSweepGC'
+  if $debug {
+    $java_debug_opts += ' -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n'
+  }
+
+  file_line { 'set_tomcat_java_opts':
+    before => Service['tomcat7'],
+    require => Package['tomcat'],
+    path => '/etc/default/tomcat7',
+    match => "^JAVA_OPTS=.*",
+    line => sprintf("JAVA_OPTS=\"%s\"", "${java_opts}${java_debug_opts}")
   }
 
   package { 'tomcat7-admin':
