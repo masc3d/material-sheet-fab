@@ -60,15 +60,8 @@ cargo {
 // task dependencies
 tasks.cargoDeployRemote.dependsOn(war)
 tasks.cargoRedeployRemote.dependsOn(war)
-tasks.war.
 
 // test task
 task hello << {
     println 'Hello'
-}
-
-test hello2 {
-    outputs.upToDateWhen {
-
-    }
 }
