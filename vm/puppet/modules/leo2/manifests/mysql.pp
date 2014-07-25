@@ -12,10 +12,10 @@ class leo2::mysql {
   }
 
   # masc20140721. mysql database setup
-  ::mysql::db { 'leo2':
+  ::mysql::db { 'dekuclient':
     user => 'leo2',
     password => 'leo2',
     host => '%',
-    sql => '/vagrant/mysql/leo2.sql'
+    sql => '/vagrant/mysql/dekuclient.sql'
   }
 }

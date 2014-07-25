@@ -49,7 +49,7 @@ class leo2::tomcat (
     incl => '/etc/tomcat7/tomcat-users.xml',
     changes => [
       "set tomcat-users/role/#attribute/rolename manager-gui",
-      "set tomcat-users/role/#attribute/rolename manager-script"
+      "set tomcat-users/role/#attribute/rolename manager-script",
       "set tomcat-users/user/#attribute/username tomcat",
       "set tomcat-users/user[#attribute/username='tomcat']/#attribute/password tomcat",
       "set tomcat-users/user[#attribute/username='tomcat']/#attribute/roles manager-gui,manager-script" ]
