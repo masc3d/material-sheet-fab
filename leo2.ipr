@@ -208,7 +208,13 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="leo2" />
       <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
@@ -231,7 +237,7 @@
       <ConfigurationWrapper RunnerId="ExternalSystemTaskRunner" />
       <method />
     </configuration>
-    <configuration default="false" name="leo2:leo2-webservice [remote debug]" type="Remote" factoryName="Remote">
+    <configuration default="false" name="leo2:leo2-webservice [debug remote]" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
       <option name="SHMEM_ADDRESS" value="javadebug" />
@@ -433,6 +439,15 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.media/jersey-media-json-jackson1/2.11/69672fdb2bc3525b01054af33c84d34a1a888775/jersey-media-json-jackson1-2.11-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: jersey-proxy-client-2.11">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.ext/jersey-proxy-client/2.11/d0cf56582f4789bbb66bde094b2c545f5aa90a4f/jersey-proxy-client-2.11.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.ext/jersey-proxy-client/2.11/ea8ce08b7a92011a647e9b32d435fc454d6e6284/jersey-proxy-client-2.11-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: jersey-server-2.11">

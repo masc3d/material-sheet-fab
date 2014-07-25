@@ -17,6 +17,23 @@
     <orderEntry type="module" module-name="leo2-common" exported="" />
     <orderEntry type="library" scope="TEST" name="Gradle: junit-4.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: hamcrest-core-1.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jersey-proxy-client-2.11" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jersey-common-2.11" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.ws.rs-api-2.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.annotation-api-1.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jersey-guava-2.11" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: hk2-api-2.3.0-b05" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.inject-2.3.0-b05" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: hk2-locator-2.3.0-b05" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: osgi-resource-locator-1.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: hk2-utils-2.3.0-b05" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: aopalliance-repackaged-2.3.0-b05" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javassist-3.18.1-GA" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.inject-1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jersey-client-2.11" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jackson-jaxrs-1.9.11" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jackson-core-asl-1.9.11" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jackson-mapper-asl-1.9.11" level="project" />
   </component>
 </module>
 

@@ -7,10 +7,18 @@ import java.util.Date;
  */
 public class TestEntry {
     public String name;
-    public Date date;
+    public Date updated;
+
+    public TestEntry() {
+    }
 
     public TestEntry(String name) {
         this.name = name;
-        this.date = new Date();
+        this.updated = new Date();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Entry name [%s] updated [%s]", this.name, this.updated.toString());
     }
 }
