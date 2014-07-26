@@ -1,5 +1,6 @@
 #
-class leo2::mysql {
+class leo2::mysql (
+    $dev = false ) {
   # masc20140721. mysql server setup
   class { ::mysql::server:
     root_password => 'root',
@@ -11,7 +12,20 @@ class leo2::mysql {
     restart => true
   }
 
-  # masc20140721. mysql database setup
+  mysql_user { 'root@%':
+    ensure => 'present',
+    password_hash => mysql_password('root')
+  }
+
+  mysql_grant { 'root@%/*.*':
+    ensure     => 'present',
+    options    => ['GRANT'],
+    privileges => ['ALL'],
+    table      => '*.*',
+    user       => 'root@%'
+  }
+
+# masc20140721. mysql database setup
   ::mysql::db { 'dekuclient':
     user => 'leo2',
     password => 'leo2',

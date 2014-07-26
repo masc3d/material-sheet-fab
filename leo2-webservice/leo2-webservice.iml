@@ -39,6 +39,10 @@
     <orderEntry type="library" exported="" name="Gradle: javax.inject-1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: junit-4.11" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: hamcrest-core-1.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jooq-3.4.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jooq-meta-3.4.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jooq-codegen-3.4.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: mysql-connector-java-5.1.31" level="project" />
   </component>
 </module>
 

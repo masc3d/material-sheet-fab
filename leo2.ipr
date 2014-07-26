@@ -459,6 +459,33 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.core/jersey-server/2.11/4d5455cdcdc77db2c46b24dd13347bd5e12e5bcb/jersey-server-2.11-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: jooq-3.4.1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jooq/jooq/3.4.1/6b5dc144d7fdb414fc22d14dd172d6db268efbb5/jooq-3.4.1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jooq/jooq/3.4.1/986c65f740d318b471886617e76d3e3244056a5e/jooq-3.4.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: jooq-codegen-3.4.1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jooq/jooq-codegen/3.4.1/504f43a912620a762ae4e16193d6a6273ec7f6a4/jooq-codegen-3.4.1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jooq/jooq-codegen/3.4.1/1f7bb272732c1d9c74c22b80612db9ea73482950/jooq-codegen-3.4.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: jooq-meta-3.4.1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jooq/jooq-meta/3.4.1/a732b791287e2c8e8049c4246b605161e9700762/jooq-meta-3.4.1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jooq/jooq-meta/3.4.1/8f6e34313d2e3c53ea203b8a985f66ea63ee4a29/jooq-meta-3.4.1-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: junit-4.11">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.11/4e031bb61df09069aeb2bffb4019e7a5034a4ee0/junit-4.11.jar!/" />
@@ -467,6 +494,13 @@
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.11/28e0ad201304e4a4abf999ca0570b7cffc352c3c/junit-4.11-sources.jar!/" />
       </SOURCES>
+    </library>
+    <library name="Gradle: mysql-connector-java-5.1.31">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/5.1.31/95baa522c5ae4dbff61e8ebd1b2578665d6853a0/mysql-connector-java-5.1.31.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
     </library>
     <library name="Gradle: osgi-resource-locator-1.0.1">
       <CLASSES>
