@@ -1,19 +1,32 @@
 # LEO2 #
 
-## Installation ##
+## Setup ##
 
+### Development environment & repository ###
 
-* Tets
-* leo2 components
+#### Required software ####
+* [Sourcetree](https://www.atlassian.com/software/sourcetree)
+* [Idea Intellij](http://www.jetbrains.com/idea/download) (community edition)
 
-### Setup ###
+#### Get up and running ####
+* Clone GIT repository using URL ssh://git@bitbucket.org/masc3d/leo2
+* Open project directory with IntelliJ
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+### VM ###
+Contains development host resources, mysql and application server
+
+### Required ###
+* [Virtual Box](https://www.virtualbox.org)
+* [Vagrant](http://www.vagrantup.com)
+
+### Get up and running ###
+* Go to <project directory>/vm
+* Run command 
+```
+#!bash
+vagrant up
+
+```
 
 ### Contribution guidelines ###
 
