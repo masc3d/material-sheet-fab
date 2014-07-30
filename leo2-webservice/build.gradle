@@ -56,6 +56,8 @@ dependencies {
     compile 'org.jooq:jooq-meta:3.4.1'
     compile 'org.jooq:jooq-codegen:3.4.1'
 
+    compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.11'
+
     // leo2 webservice dependencies
     compile project(':leo2-common')
 }

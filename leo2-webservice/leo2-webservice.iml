@@ -43,6 +43,10 @@
     <orderEntry type="library" exported="" name="Gradle: jooq-meta-3.4.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: jooq-codegen-3.4.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: mysql-connector-java-5.1.31" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jersey-container-grizzly2-http-2.11" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: grizzly-http-server-2.3.16" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: grizzly-http-2.3.16" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: grizzly-framework-2.3.16" level="project" />
   </component>
 </module>
 
