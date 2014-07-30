@@ -15,7 +15,7 @@
 ### VM ###
 Contains development host resources, eg. MYSQL and application server
 
-#### Required ####
+#### Required software ####
 * [Virtual Box](https://www.virtualbox.org)
 * [Vagrant](http://www.vagrantup.com)
 
