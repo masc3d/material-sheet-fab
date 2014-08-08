@@ -2,3 +2,4 @@ bin
 .gradle
 workspace.xml
 build
+sx-common.iml
