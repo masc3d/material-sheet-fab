@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.EventObject;
 
 /**
- * Multicast event dispatcher. Instance methods are not threadsafe.
+ * Multicast event dispatcher. Instance methods are thread-safe.
  *
  * @author masc
  */
@@ -32,17 +32,24 @@ public class EventDispatcher<T extends EventObject> {
     }
 
     public void add(EventListener<T> listener) {
-        _listeners.add(listener);
+        synchronized(_listeners) {
+            _listeners.add(listener);
+        }
     }
 
     public void remove(EventListener<T> listener) {
-        _listeners.remove(listener);
+        synchronized(_listeners) {
+            _listeners.remove(listener);
+        }
     }
 
     public void fire(T event) {
-        ArrayList<EventListener<T>> listeners = (ArrayList<EventListener<T>>) _listeners.clone();
+        ArrayList<EventListener<T>> listeners;
+        synchronized(_listeners) {
+            listeners = new ArrayList<EventListener<T>>(_listeners);
+        }
 
-        for (EventListener<T> listener : listeners)
+        for (EventListener<T> listener : _listeners)
             listener.handle(event);
     }
 }
