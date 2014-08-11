@@ -22,7 +22,7 @@ import java.util.EventObject;
 
 /**
  * Multicast event dispatcher. Instance methods are not threadsafe.
- *
+ * meh
  * @author masc
  */
 public class EventDispatcher<T extends EventObject> {
