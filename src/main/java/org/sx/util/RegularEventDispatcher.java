@@ -21,28 +21,28 @@ import java.util.ArrayList;
 import java.util.EventObject;
 
 /**
- * Multicast event dispatcher. Instance methods are not threadsafe.
- * meh
+ * Multicast event dispatcher without thread-safety.
+ * Instance methods are NOT thread-safe for performance reasons.
+ * Consumers need to ensure thread safety if needed
+ *
  * @author masc
  */
-public class EventDispatcher<T extends EventObject> {
+public class RegularEventDispatcher<T extends EventObject> extends EventDispatcher<T> {
     private final ArrayList<EventListener<T>> _listeners = new ArrayList<EventListener<T>>();
 
-    public EventDispatcher() {
-    }
-
+    @Override
     public void add(EventListener<T> listener) {
         _listeners.add(listener);
     }
 
+    @Override
     public void remove(EventListener<T> listener) {
         _listeners.remove(listener);
     }
 
+    @Override
     public void fire(T event) {
-        ArrayList<EventListener<T>> listeners = (ArrayList<EventListener<T>>) _listeners.clone();
-
-        for (EventListener<T> listener : listeners)
+        for (EventListener<T> listener : _listeners)
             listener.handle(event);
     }
 }
