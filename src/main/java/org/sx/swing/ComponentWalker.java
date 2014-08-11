@@ -5,7 +5,6 @@ import java.awt.Container;
 
 /**
  * Walks swing components recursively
- * Test comment
  */
 public class ComponentWalker {
     /**
