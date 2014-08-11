@@ -1,55 +1,35 @@
-/*
- *  Copyright (C) 2010 masc
- * 
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- * 
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- * 
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.sx.util;
 
 import java.util.ArrayList;
 import java.util.EventObject;
 
 /**
- * Multicast event dispatcher. Instance methods are thread-safe.
+ * Multicast event dispatcher abstract and factory.
  *
- * @author masc
+ * This class is supposed to be used by observable classes, which can in turn expose instance(s) via EventDelegate interface for consumer to add listeners.
+ * Created by masc on 11.08.14.
  */
-public class EventDispatcher<T extends EventObject> {
-    private final ArrayList<EventListener<T>> _listeners = new ArrayList<EventListener<T>>();
-
-    public EventDispatcher() {
+public abstract class EventDispatcher<T extends EventObject> implements EventDelegate<T> {
+    public EventDispatcher(){
     }
 
-    public void add(EventListener<T> listener) {
-        synchronized(_listeners) {
-            _listeners.add(listener);
-        }
+    public abstract void add(EventListener<T> listener);
+    public abstract void remove(EventListener<T> listener);
+    public abstract void fire(T event);
+
+    /**
+     * Factory method to create a regular (thread-unsafe) event dispatcher
+     * @param <V> Type of event to dispatch
+     * @return Event dispatcher
+     */
+    public static <V extends EventObject> EventDispatcher<V> create() {
+        return new RegularEventDispatcher<V>();
     }
 
-    public void remove(EventListener<T> listener) {
-        synchronized(_listeners) {
-            _listeners.remove(listener);
-        }
-    }
-
-    public void fire(T event) {
-        ArrayList<EventListener<T>> listeners;
-        synchronized(_listeners) {
-            listeners = new ArrayList<EventListener<T>>(_listeners);
-        }
-
-        for (EventListener<T> listener : _listeners)
-            listener.handle(event);
-    }
+    /**
+     * Factory method to create a thread-safe event dispatcher
+     * @param <V> Type of event to dispatch
+     * @return Event dispatcher
+     */
+    public static <V extends EventObject> EventDispatcher<V> createThreadSafe() { return new ThreadSafeEventDispatcher<V>(); }
 }
