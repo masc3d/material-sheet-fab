@@ -9,20 +9,24 @@ import java.util.EventObject;
  * This class is supposed to be used by observable classes, which can in turn expose instance(s) via EventDelegate interface for consumer to add listeners.
  * Created by masc on 11.08.14.
  */
-public abstract class EventDispatcher<T extends EventObject> implements EventDelegate<T> {
+public abstract class EventDispatcher<T extends EventListener> implements EventDelegate<T> {
+    public interface Runnable<T> {
+        public void run(T listener);
+    }
+
     public EventDispatcher(){
     }
 
-    public abstract void add(EventListener<T> listener);
-    public abstract void remove(EventListener<T> listener);
-    public abstract void fire(T event);
+    public abstract void add(T listener);
+    public abstract void remove(T listener);
+    public abstract void emit(Runnable<T> r);
 
     /**
      * Factory method to create a regular (thread-unsafe) event dispatcher
      * @param <V> Type of event to dispatch
      * @return Event dispatcher
      */
-    public static <V extends EventObject> EventDispatcher<V> create() {
+    public static <V extends EventListener> EventDispatcher<V> create() {
         return new RegularEventDispatcher<V>();
     }
 
@@ -31,5 +35,5 @@ public abstract class EventDispatcher<T extends EventObject> implements EventDel
      * @param <V> Type of event to dispatch
      * @return Event dispatcher
      */
-    public static <V extends EventObject> EventDispatcher<V> createThreadSafe() { return new ThreadSafeEventDispatcher<V>(); }
+    public static <V extends EventListener> EventDispatcher<V> createThreadSafe() { return new ThreadSafeEventDispatcher<V>(); }
 }

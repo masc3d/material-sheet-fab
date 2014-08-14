@@ -8,30 +8,30 @@ import java.util.EventObject;
  *
  * @author masc
  */
-public class ThreadSafeEventDispatcher<T extends EventObject> extends EventDispatcher<T> {
-    private final ArrayList<EventListener<T>> _listeners = new ArrayList<EventListener<T>>();
+public class ThreadSafeEventDispatcher<T extends EventListener> extends EventDispatcher<T> {
+    private final ArrayList<T> _listeners = new ArrayList<T>();
 
     @Override
-    public void add(EventListener<T> listener) {
+    public void add(T listener) {
         synchronized (_listeners) {
             _listeners.add(listener);
         }
     }
 
     @Override
-    public void remove(EventListener<T> listener) {
+    public void remove(T listener) {
         synchronized (_listeners) {
             _listeners.remove(listener);
         }
     }
 
     @Override
-    public void fire(T event) {
-        ArrayList<EventListener<T>> listeners;
+    public void emit(Runnable<T> r) {
+        ArrayList<T> listeners;
         synchronized (_listeners) {
-            listeners = new ArrayList<EventListener<T>>(_listeners);
+            listeners = new ArrayList<T>(_listeners);
         }
-        for (EventListener<T> listener : listeners)
-            listener.handle(event);
+        for (T listener : listeners)
+            r.run(listener);
     }
 }
