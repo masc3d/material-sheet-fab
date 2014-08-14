@@ -27,22 +27,22 @@ import java.util.EventObject;
  *
  * @author masc
  */
-public class RegularEventDispatcher<T extends EventObject> extends EventDispatcher<T> {
-    private final ArrayList<EventListener<T>> _listeners = new ArrayList<EventListener<T>>();
+public class RegularEventDispatcher<T extends EventListener> extends EventDispatcher<T> {
+    private final ArrayList<T> _listeners = new ArrayList<T>();
 
     @Override
-    public void add(EventListener<T> listener) {
+    public void add(T listener) {
         _listeners.add(listener);
     }
 
     @Override
-    public void remove(EventListener<T> listener) {
+    public void remove(T listener) {
         _listeners.remove(listener);
     }
 
     @Override
-    public void fire(T event) {
-        for (EventListener<T> listener : _listeners)
-            listener.handle(event);
+    public void emit(Runnable<T> r) {
+        for (T listener : _listeners)
+            r.run(listener);
     }
 }
