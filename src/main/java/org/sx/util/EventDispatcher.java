@@ -1,8 +1,5 @@
 package org.sx.util;
 
-import java.util.ArrayList;
-import java.util.EventObject;
-
 /**
  * Multicast event dispatcher abstract and factory.
  *
