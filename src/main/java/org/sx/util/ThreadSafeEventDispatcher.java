@@ -1,7 +1,6 @@
 package org.sx.util;
 
 import java.util.ArrayList;
-import java.util.EventObject;
 
 /**
  * Threadsafe multicast event dispatcher.

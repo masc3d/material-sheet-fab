@@ -17,8 +17,6 @@
 
 package org.sx.util;
 
-import java.util.EventObject;
-
 /**
  * Generic event listener
  *
