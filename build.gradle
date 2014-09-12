@@ -15,14 +15,7 @@ idea {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
 
-    compile 'org.glassfish.jersey.core:jersey-client:2.11'
-    compile 'org.glassfish.jersey.ext:jersey-proxy-client:2.11'
-    compile 'org.codehaus.jackson:jackson-jaxrs:1.9.11'
-
-    // leo2 dependencies
-    compile project(':leo2-common')
 }
 
 // test task

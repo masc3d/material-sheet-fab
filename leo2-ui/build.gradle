@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+version = '0.1'
+mainClassName = "org.leo2.Main"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+
+    compile 'org.glassfish.jersey.core:jersey-client:2.11'
+    compile 'org.glassfish.jersey.ext:jersey-proxy-client:2.11'
+    compile 'org.codehaus.jackson:jackson-jaxrs:1.9.11'
+
+    // leo2 dependencies
+    compile project(':leo2-common')
+}
+
+// test task
+task hello << {
+    println 'Hello'
+}
+
+// Add resources (like .fxml files) from souce path.
+// Non-standard, but nicer to keep .fxml files together with classes
+sourceSets.main.resources.srcDir 'src/main/java'

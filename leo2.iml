@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="leo2" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$" external.system.id="GRADLE" external.system.module.group="" external.system.module.version="0.1" relativePaths="true" type="JAVA_MODULE" version="4">
+<module external.linked.project.id="leo2" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$" external.system.id="GRADLE" external.system.module.group="" external.system.module.version="0.1" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/build/classes/main" />
     <output-test url="file://$MODULE_DIR$/build/classes/test" />
@@ -14,26 +14,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="leo2-common" exported="" />
-    <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.core:jersey-client:2.11" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.ext:jersey-proxy-client:2.11" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.codehaus.jackson:jackson-jaxrs:1.9.11" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.core:jersey-common:2.11" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: javax.ws.rs:javax.ws.rs-api:2.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.glassfish.hk2:hk2-api:2.3.0-b05" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.glassfish.hk2.external:javax.inject:2.3.0-b05" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.glassfish.hk2:hk2-locator:2.3.0-b05" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.codehaus.jackson:jackson-core-asl:1.9.11" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.codehaus.jackson:jackson-mapper-asl:1.9.11" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: javax.annotation:javax.annotation-api:1.2" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.bundles.repackaged:jersey-guava:2.11" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.glassfish.hk2:osgi-resource-locator:1.0.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.glassfish.hk2:hk2-utils:2.3.0-b05" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.3.0-b05" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.javassist:javassist:3.18.1-GA" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: javax.inject:javax.inject:1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
   </component>
 </module>
 

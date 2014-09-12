@@ -33,6 +33,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/leo2-common" />
+            <option value="$PROJECT_DIR$/leo2-ui" />
             <option value="$PROJECT_DIR$/leo2-webservice" />
           </set>
         </option>
@@ -188,6 +189,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/leo2.iml" filepath="$PROJECT_DIR$/leo2.iml" />
       <module fileurl="file://$PROJECT_DIR$/leo2-common/leo2-common.iml" filepath="$PROJECT_DIR$/leo2-common/leo2-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/leo2-ui/leo2-ui.iml" filepath="$PROJECT_DIR$/leo2-ui/leo2-ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/leo2-webservice/leo2-webservice.iml" filepath="$PROJECT_DIR$/leo2-webservice/leo2-webservice.iml" />
     </modules>
   </component>
@@ -206,7 +208,7 @@
       <option name="ENABLE_SWING_INSPECTOR" value="false" />
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="leo2" />
+      <module name="leo2-ui" />
       <envs />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="" />
