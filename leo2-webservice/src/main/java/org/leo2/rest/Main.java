@@ -13,6 +13,8 @@ public class Main {
     private static final URI BASE_URI = URI.create("http://localhost:8080/leo2/");
 
     public static void main(String[] args) throws IOException {
+        Persistence.instance().initialize();
+
         final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, new WebserviceResourceConfig());
 
         System.out.println("Enter to stop webservice");

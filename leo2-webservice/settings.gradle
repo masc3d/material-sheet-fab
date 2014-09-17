@@ -1,7 +1,0 @@
-rootProject.name = 'leo2-webservice'
-
-// project dependencies
-include 'leo2-common'
-
-// masc20140723. amend project paths to our layout, which is monolithic for now (no szbmodules/trees)
-project(':leo2-common').projectDir = new File(settingsDir, '../leo2-common')

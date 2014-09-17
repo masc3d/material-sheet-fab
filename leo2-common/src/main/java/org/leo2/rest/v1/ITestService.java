@@ -1,6 +1,6 @@
 package org.leo2.rest.v1;
 
-import org.leo2.rest.v1.TestEntry;
+import org.leo2.rest.v1.entities.TestEntry;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

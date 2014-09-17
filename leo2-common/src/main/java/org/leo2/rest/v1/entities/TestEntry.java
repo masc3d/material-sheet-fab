@@ -1,9 +1,9 @@
-package org.leo2.rest.v1;
+package org.leo2.rest.v1.entities;
 
 import java.util.Date;
 
 /**
- * Created by n3 on 23.07.14.
+ * Created by masc on 23.07.14.
  */
 public class TestEntry {
     public String name;

@@ -1,6 +1,6 @@
 package org.leo2.rest;
 
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 import org.junit.*;
 
@@ -9,6 +9,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 /**
+ * Webservice test base class
+ *
  * Created by masc on 25.07.14.
  */
 public abstract class WebserviceTest {

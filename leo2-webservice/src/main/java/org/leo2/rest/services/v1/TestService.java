@@ -1,15 +1,20 @@
 package org.leo2.rest.services.v1;
 
 import org.leo2.rest.v1.ITestService;
-import org.leo2.rest.v1.TestEntry;
+import org.leo2.rest.v1.entities.TestEntry;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 
 /**
  * Created by masc on 23.07.14.
  */
 @Path("/v1/test")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class TestService implements ITestService {
     @Override
     public TestEntry[] get() {

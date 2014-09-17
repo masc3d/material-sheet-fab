@@ -2,10 +2,9 @@ package org.leo2.rest.v1;
 
 import org.junit.*;
 import org.leo2.rest.WebserviceTest;
+import org.leo2.rest.v1.entities.TestEntry;
 
-import static org.junit.Assert.*;
-
-public class ITestServiceTest extends WebserviceTest {
+public class TestServiceTest extends WebserviceTest {
     @Test
     public void testGet() throws Exception {
 

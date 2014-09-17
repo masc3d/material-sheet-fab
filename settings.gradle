@@ -3,5 +3,5 @@ rootProject.name = 'leo2'
 // project dependencies
 include ':leo2-common'
 include ':leo2-webservice'
-include 'leo2-ui'
+include ':leo2-ui'
 

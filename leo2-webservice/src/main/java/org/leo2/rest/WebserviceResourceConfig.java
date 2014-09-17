@@ -1,6 +1,6 @@
 package org.leo2.rest;
 
-import org.glassfish.jersey.jackson1.Jackson1Feature;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 /**
@@ -9,7 +9,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class WebserviceResourceConfig extends ResourceConfig {
     public WebserviceResourceConfig()
     {
-        super(Jackson1Feature.class);
+        super(JacksonFeature.class);
 
         packages("org.leo2.rest.services");
     }
