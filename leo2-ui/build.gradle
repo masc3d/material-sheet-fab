@@ -5,7 +5,7 @@ apply plugin: 'eclipse'
 
 sourceCompatibility = 1.8
 version = '0.1'
-mainClassName = "org.leo2.Main"
+mainClassName = "org.deku.leo2.Main"
 
 repositories {
     mavenCentral()

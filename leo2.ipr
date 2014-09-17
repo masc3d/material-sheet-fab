@@ -338,7 +338,7 @@
   <component name="ProjectRunConfigurationManager">
     <configuration default="false" name="leo2-webservice" type="Application" factoryName="Application" singleton="true">
       <extension name="coverage" enabled="false" merge="false" runner="idea" />
-      <option name="MAIN_CLASS_NAME" value="org.leo2.rest.Main" />
+      <option name="MAIN_CLASS_NAME" value="org.deku.leo2.rest.Main" />
       <option name="VM_PARAMETERS" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
