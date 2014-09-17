@@ -9,3 +9,4 @@ build
 leo2-webservice/src/main/java/org/leo2/jooq/dekuclient
 /bin/
 leo2-webservice/bin
+out
