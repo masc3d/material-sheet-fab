@@ -41,7 +41,10 @@ public class RegularEventDispatcher<T extends EventListener> extends EventDispat
 
     @Override
     public void emit(Runnable<T> r) {
-        for (T listener : _listeners)
+        // Also non-threadsafe dispatcher needs a copy of listeners,
+        // as consumers may modify the collection by adding/removing listeners
+        ArrayList<T> listeners = new ArrayList<T>(_listeners);
+        for (T listener : listeners)
             r.run(listener);
     }
 }
