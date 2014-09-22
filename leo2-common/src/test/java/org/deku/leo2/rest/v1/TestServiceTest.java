@@ -1,8 +1,9 @@
 package org.deku.leo2.rest.v1;
 
-import org.junit.*;
 import org.deku.leo2.rest.WebserviceTest;
 import org.deku.leo2.rest.v1.entities.TestEntry;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class TestServiceTest extends WebserviceTest {
     @Test

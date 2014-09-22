@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane stylesheets="@../css/leo2.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.MainController">
+    <children>
+        <GridPane prefHeight="722.0" prefWidth="1071.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="164.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="64.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints vgrow="NEVER" />
+            </rowConstraints>
+            <children>
+                <AnchorPane styleClass="top-pane">
+                    <children>
+                        <Pane styleClass="logo" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="10.0" />
+                    </children>
+                </AnchorPane>
+                <HBox styleClass="top-pane" GridPane.columnIndex="1">
+                    <children>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label fx:id="mTitle" layoutX="14.0" layoutY="6.0" text="Title" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="6.0">
+                                    <font>
+                                        <Font name="Futura Condensed Medium" size="32.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                            <children>
+                                <ProgressIndicator layoutX="140.0" layoutY="9.0" prefHeight="44.0" prefWidth="47.0" visible="false" AnchorPane.bottomAnchor="16.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="16.0" />
+                            </children>
+                        </AnchorPane>
+                    </children>
+                </HBox>
+                <VBox styleClass="pane" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                    <children>
+                        <fx:include fx:id="mSidebar" source="components/Sidebar.fxml" />
+                    </children>
+                    <GridPane.margin>
+                        <Insets />
+                    </GridPane.margin>
+                </VBox>
+                <AnchorPane id="content" fx:id="mContentPaneContainer" minHeight="0.0" minWidth="0.0" styleClass="content-pane" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS" />
+                <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" styleClass="bottom-pane" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+            </children>
+        </GridPane>
+    </children>
+</AnchorPane>

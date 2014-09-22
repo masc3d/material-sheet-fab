@@ -1,0 +1,33 @@
+.pane {
+    -fx-padding: 10;
+}
+
+.content-pane {
+    -fx-padding: 10 10 10 0;
+}
+
+.logo {
+    -fx-background-image: url('../images/logo.png');
+    -fx-background-position: center center;
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+}
+
+.top-pane {
+    -fx-background-color: linear-gradient(to bottom, darkgray, whitesmoke);
+    -fx-border-color: #f8ae18 transparent darkgray transparent;
+    -fx-border-width: 3 0 1 0;
+}
+
+.bottom-pane {
+    -fx-background-color: linear-gradient(to top, darkgray, whitesmoke);
+    -fx-border-color: darkgray;
+    -fx-border-width: 1 0 0 0;
+}
+
+.home {
+    -fx-background-image: url('../images/logo-gray.png');
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: contain;
+}

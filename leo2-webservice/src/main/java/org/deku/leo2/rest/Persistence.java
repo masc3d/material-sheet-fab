@@ -1,10 +1,5 @@
 package org.deku.leo2.rest;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Logger;
-
 import org.jinq.jpa.JPAQueryLogger;
 import org.jinq.jpa.JinqJPAStreamProvider;
 import org.jinq.orm.stream.JinqStream;
@@ -12,6 +7,10 @@ import org.jinq.orm.stream.JinqStream;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Created by masc on 28.08.14.

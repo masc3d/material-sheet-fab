@@ -1,9 +1,9 @@
 package org.deku.leo2.rest.v1;
 
-import org.junit.Ignore;
-import org.junit.Test;
 import org.deku.leo2.rest.WebserviceTest;
 import org.deku.leo2.rest.v1.entities.Depot;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Created by masc on 17.09.14.

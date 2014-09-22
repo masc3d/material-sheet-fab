@@ -18,7 +18,7 @@ public class MenuButton extends Button {
 
     public MenuButton() {
         super();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MenuButton.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../../../../../../resources/fx/controls/MenuButton.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {

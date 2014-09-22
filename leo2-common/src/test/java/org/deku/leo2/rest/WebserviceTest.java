@@ -2,7 +2,8 @@ package org.deku.leo2.rest;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;

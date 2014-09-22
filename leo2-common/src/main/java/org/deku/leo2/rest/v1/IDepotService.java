@@ -2,10 +2,7 @@ package org.deku.leo2.rest.v1;
 
 import org.deku.leo2.rest.v1.entities.Depot;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -18,4 +15,8 @@ public interface IDepotService {
     @GET
     @Path("/")
     Depot[] get();
+
+    @GET
+    @Path("/find")
+    Depot[] find(@QueryParam("q") String query);
 }
