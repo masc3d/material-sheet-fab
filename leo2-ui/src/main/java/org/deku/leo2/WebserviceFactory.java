@@ -1,9 +1,5 @@
 package org.deku.leo2;
 
-/**
- * Created by masc on 27.08.14.
- */
-
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.deku.leo2.rest.v1.IDepotService;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
@@ -13,6 +9,11 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import java.util.logging.Logger;
 
+/**
+ * Webservice factory
+ *
+ * Created by masc on 27.08.14.
+ */
 public class WebserviceFactory {
     private static Logger mLog = Logger.getLogger(WebserviceFactory.class.getName());
     private static Client mClient;

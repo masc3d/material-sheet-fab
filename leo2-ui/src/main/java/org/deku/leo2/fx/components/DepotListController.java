@@ -12,6 +12,7 @@ import org.deku.leo2.WebserviceFactory;
 import org.deku.leo2.rest.v1.entities.Depot;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -33,7 +34,7 @@ public class DepotListController implements Initializable {
     @FXML
     TableColumn<Depot, String> mDepotTableCountryColumn;
     @FXML
-    TableColumn<Depot, String> mDepotTablePostalcodeColumn;
+    TableColumn<Depot, String> mDepotTableZipCodeColumn;
     @FXML
     TableColumn<Depot, String> mDepotTableCityColumn;
     @FXML
@@ -50,11 +51,11 @@ public class DepotListController implements Initializable {
         mDepotTableCompany1Column.setCellValueFactory(new PropertyValueFactory<Depot, String>("firma1"));
         mDepotTableCompany2Column.setCellValueFactory(new PropertyValueFactory<Depot, String>("firma2"));
         mDepotTableCountryColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("lkz"));
-        mDepotTablePostalcodeColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("plz"));
+        mDepotTableZipCodeColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("plz"));
         mDepotTableCityColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("ort"));
         mDepotTableStreetColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("strasse"));
 
-        List<Depot> depots = Arrays.asList(WebserviceFactory.depotService().get());
+        List<Depot> depots = new ArrayList<Depot>();  //Arrays.asList(WebserviceFactory.depotService().get());
 
         ObservableList<Depot> oDepots = FXCollections.observableArrayList(depots);
         mDepotTableView.setItems(oDepots);

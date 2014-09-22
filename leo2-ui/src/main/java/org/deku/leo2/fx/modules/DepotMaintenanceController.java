@@ -1,4 +1,4 @@
-package org.deku.leo2.fx;
+package org.deku.leo2.fx.modules;
 
 import javafx.fxml.Initializable;
 

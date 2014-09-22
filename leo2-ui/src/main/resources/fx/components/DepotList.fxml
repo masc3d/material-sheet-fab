@@ -23,7 +23,7 @@
                 <TableColumn fx:id="mDepotTableCompany1Column" prefWidth="162.0" text="Firma1" />
             <TableColumn fx:id="mDepotTableCompany2Column" minWidth="0.0" prefWidth="146.0" text="Firma2" />
             <TableColumn fx:id="mDepotTableCountryColumn" minWidth="4.0" prefWidth="56.0" text="LKZ" />
-            <TableColumn fx:id="mDepotTablePostalcodeColumn" prefWidth="68.0" text="PLZ" />
+            <TableColumn fx:id="mDepotTableZipCodeColumn" prefWidth="68.0" text="PLZ" />
             <TableColumn fx:id="mDepotTableCityColumn" prefWidth="172.0" text="Ort" />
             <TableColumn fx:id="mDepotTableStreetColumn" prefWidth="242.0" text="Strasse" />
             </columns>

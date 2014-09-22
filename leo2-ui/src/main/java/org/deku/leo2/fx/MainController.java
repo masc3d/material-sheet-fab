@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
-import org.deku.leo2.Global;
+import org.deku.leo2.Main;
 import org.deku.leo2.fx.components.SidebarController;
 
 import java.net.URL;
@@ -32,16 +32,36 @@ public class MainController implements Initializable, SidebarController.Listener
     private Pane mHomePane;
     private Pane mDepotMaintenancePane;
 
+    public enum ModuleType {
+        Home,
+        DepotMaintenance
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mSidebarController.setListener(this);
+        this.showModule(ModuleType.Home, false);
     }
 
-    Pane mContentPane;
     /** Tracks current content pane transition */
     Transition mContentPaneTransition;
+    Pane mContentPane;
 
-    public void setContentPane(Pane pane) {
+    private Pane getDepotMaintenancePane() {
+        if (mDepotMaintenancePane == null) {
+            mDepotMaintenancePane = Main.instance().loadFxPane("/fx/modules/DepotMaintenance.fxml").getRoot();
+        }
+        return mDepotMaintenancePane;
+    }
+
+    private Pane getHomePane() {
+        if (mHomePane == null) {
+            mHomePane = Main.instance().loadFxPane("/fx/modules/Home.fxml").getRoot();
+        }
+        return mHomePane;
+    }
+
+    private void setContentPane(Pane pane, boolean animated) {
         double duration = 500;
 
         if (pane == mContentPane)
@@ -49,20 +69,27 @@ public class MainController implements Initializable, SidebarController.Listener
 
         Pane oldPane = mContentPane;
         mContentPane = pane;
-
         ArrayList<Animation> animations = new ArrayList<>();
-        if (oldPane!= null) {
-            FadeTransition ftOut = new FadeTransition(Duration.millis(duration), oldPane);
-            ftOut.setFromValue(1.0);
-            ftOut.setToValue(0.0);
-            ftOut.setOnFinished(e -> {
-                if (oldPane != mContentPane)
-                    mContentPaneContainer.getChildren().remove(oldPane);
-            });
-            animations.add(ftOut);
+
+        if (animated) {
+            if (oldPane != null) {
+                // Fade out old pane if there is one
+                FadeTransition ftOut = new FadeTransition(Duration.millis(duration), oldPane);
+                ftOut.setFromValue(1.0);
+                ftOut.setToValue(0.0);
+                ftOut.setOnFinished(e -> {
+                    if (oldPane != mContentPane)
+                        mContentPaneContainer.getChildren().remove(oldPane);
+                });
+                animations.add(ftOut);
+
+                pane.setOpacity(0.0);
+            }
+        } else {
+            mContentPaneContainer.getChildren().clear();
         }
 
-        pane.setOpacity(0.0);
+        // Add new pane to container
         if (!mContentPaneContainer.getChildren().contains(pane))
             mContentPaneContainer.getChildren().add(pane);
         mContentPaneContainer.setTopAnchor(pane, 0.0);
@@ -70,29 +97,32 @@ public class MainController implements Initializable, SidebarController.Listener
         mContentPaneContainer.setRightAnchor(pane, 0.0);
         mContentPaneContainer.setLeftAnchor(pane, 0.0);
 
-        FadeTransition ftIn = new FadeTransition(Duration.millis(duration), pane);
-        ftIn.setFromValue(0.0);
-        ftIn.setToValue(1.0);
-        ftIn.setOnFinished(e -> {
-            mContentPaneTransition = null;
-        });
-        animations.add(ftIn);
+        if (animated) {
+            // Fade in new pane
+            FadeTransition ftIn = new FadeTransition(Duration.millis(duration), pane);
+            ftIn.setFromValue(0.0);
+            ftIn.setToValue(1.0);
+            ftIn.setOnFinished(e -> {
+                mContentPaneTransition = null;
+            });
+            animations.add(ftIn);
 
-        EventHandler<ActionEvent> evt = e -> {
-            mContentPaneTransition = new ParallelTransition(animations.toArray(new Animation[0]));
-            mContentPaneTransition.play();
-        };
+            EventHandler<ActionEvent> evt = e -> {
+                mContentPaneTransition = new ParallelTransition(animations.toArray(new Animation[0]));
+                mContentPaneTransition.play();
+            };
 
-        if (mContentPaneTransition != null)
-            mContentPaneTransition.setOnFinished(evt);
-        else
-            evt.handle(null);
+            if (mContentPaneTransition != null)
+                mContentPaneTransition.setOnFinished(evt);
+            else
+                evt.handle(null);
+        }
     }
 
     /** Tracks current title transition */
     Transition mTitleTransition;
 
-    public void setTitle(String title) {
+    private void setTitle(String title) {
         double duration = 175;
 
         FadeTransition ftOut = new FadeTransition(Duration.millis(duration), mTitle);
@@ -122,31 +152,36 @@ public class MainController implements Initializable, SidebarController.Listener
             evt.handle(null);
     }
 
-    @Override
-    public void OnSidebarItemSelected(SidebarController.ItemType itemType) {
-        switch(itemType) {
+    public void showModule(ModuleType moduleType, boolean animated) {
+        switch (moduleType) {
             case Home:
                 this.setTitle("Leo 2");
-                this.setContentPane(this.getHomePane());
+                this.setContentPane(this.getHomePane(), true);
+                break;
+            case DepotMaintenance:
+                this.setTitle("Depots");
+                this.setContentPane(this.getDepotMaintenancePane(), true);
+        }
+    }
+
+    public void showDepotMaintenanceModule() {
+        this.setTitle("Depots");
+        this.setContentPane(this.getDepotMaintenancePane(), true);
+    }
+
+    @Override
+    public void OnSidebarItemSelected(SidebarController.ItemType itemType) {
+        ModuleType md;
+        switch(itemType) {
+            case Home:
+                md = ModuleType.Home;
                 break;
             case Depots:
-                this.setTitle("Depots");
-                this.setContentPane(this.getDepotMaintenancePane());
+                md = ModuleType.DepotMaintenance;
                 break;
+            default:
+                throw new RuntimeException("Unknown sidebar item");
         }
-    }
-
-    private Pane getDepotMaintenancePane() {
-        if (mDepotMaintenancePane == null) {
-            mDepotMaintenancePane = Global.instance().loadFxPane("/fx/content/DepotMaintenance.fxml").getRoot();
-        }
-        return mDepotMaintenancePane;
-    }
-
-    private Pane getHomePane() {
-        if (mHomePane == null) {
-            mHomePane = Global.instance().loadFxPane("/fx/content/Home.fxml").getRoot();
-        }
-        return mHomePane;
+        this.showModule(md, true);
     }
 }
