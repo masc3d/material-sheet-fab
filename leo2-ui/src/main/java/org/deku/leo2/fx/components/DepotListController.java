@@ -17,6 +17,7 @@ import org.deku.leo2.rest.v1.entities.Depot;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.EventListener;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,23 +27,32 @@ import java.util.concurrent.Executors;
  */
 public class DepotListController extends Controller implements Initializable {
     @FXML
-    TextField mSearchText;
+    private TextField mSearchText;
     @FXML
-    TableView<Depot> mDepotTableView;
+    private TableView<Depot> mDepotTableView;
     @FXML
-    TableColumn<Depot, String> mDepotTableMatchcodeColumn;
+    private TableColumn<Depot, String> mDepotTableMatchcodeColumn;
     @FXML
-    TableColumn<Depot, String> mDepotTableCompany1Column;
+    private TableColumn<Depot, String> mDepotTableCompany1Column;
     @FXML
-    TableColumn<Depot, String> mDepotTableCompany2Column;
+    private TableColumn<Depot, String> mDepotTableCompany2Column;
     @FXML
-    TableColumn<Depot, String> mDepotTableCountryColumn;
+    private TableColumn<Depot, String> mDepotTableCountryColumn;
     @FXML
-    TableColumn<Depot, String> mDepotTableZipCodeColumn;
+    private TableColumn<Depot, String> mDepotTableZipCodeColumn;
     @FXML
-    TableColumn<Depot, String> mDepotTableCityColumn;
+    private TableColumn<Depot, String> mDepotTableCityColumn;
     @FXML
-    TableColumn<Depot, String> mDepotTableStreetColumn;
+    private TableColumn<Depot, String> mDepotTableStreetColumn;
+
+    private ExecutorService mQueryTaskExecutor = Executors.newFixedThreadPool(3);
+    private Task<ObservableList<Depot>> mQueryTask;
+
+    private Listener mListener;
+
+    public interface Listener extends EventListener {
+        void onDepotListItemSelected(Depot depot);
+    }
 
     /**
      * Query task
@@ -74,8 +84,14 @@ public class DepotListController extends Controller implements Initializable {
         }
     }
 
-    ExecutorService mQueryTaskExecutor = Executors.newFixedThreadPool(3);
-    Task<ObservableList<Depot>> mQueryTask;
+    public Listener getListener() {
+        return mListener;
+    }
+
+    public void setListener(Listener listener) {
+        mListener = listener;
+    }
+
 
     public void onSearchTextChanged(String text) {
         this.startQuery();
@@ -97,6 +113,11 @@ public class DepotListController extends Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         mSearchText.textProperty().addListener((obj, oldValue, newValue) -> {
             onSearchTextChanged(newValue);
+        });
+
+        mDepotTableView.getSelectionModel().selectedItemProperty().addListener((obj, oldValue, newValue) -> {
+            if (mListener != null)
+                mListener.onDepotListItemSelected(newValue);
         });
 
         // Bind depotlist columns

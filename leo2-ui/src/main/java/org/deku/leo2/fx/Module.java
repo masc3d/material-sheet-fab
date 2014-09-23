@@ -1,6 +1,7 @@
 package org.deku.leo2.fx;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import org.deku.leo2.Main;
 
@@ -11,10 +12,10 @@ import org.deku.leo2.Main;
  */
 public class Module <T> implements Disposable {
     T mController;
-    Pane mPane;
+    Node mNode;
 
     public Module(Pane pane, T controller) {
-        mPane = pane;
+        mNode = pane;
         mController = controller;
     }
 
@@ -28,8 +29,8 @@ public class Module <T> implements Disposable {
         return mController;
     }
 
-    public Pane getPane() {
-        return mPane;
+    public Node getNode() {
+        return mNode;
     }
 
     @Override

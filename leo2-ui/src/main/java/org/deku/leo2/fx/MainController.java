@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
@@ -56,7 +57,7 @@ public class MainController extends Controller implements Initializable, Sidebar
 
     /** Tracks current content pane transition */
     Transition mContentPaneTransition;
-    Pane mContentPane;
+    Node mContentNode;
 
     private Module<DepotMaintenanceController> getDepotMaintenanceModule() {
         if (mDepotMaintenancePane == null) {
@@ -80,42 +81,42 @@ public class MainController extends Controller implements Initializable, Sidebar
     private void setModule(Module<?> module, boolean animated) {
         double duration = 500;
 
-        Pane pane = module.getPane();
+        Node node = module.getNode();
 
-        Pane oldPane = mContentPane;
-        mContentPane = pane;
+        Node oldNode = mContentNode;
+        mContentNode = node;
 
         ArrayList<Animation> animations = new ArrayList<>();
 
         if (animated) {
-            if (oldPane != null) {
+            if (oldNode != null) {
                 // Fade out old pane if there is one
-                FadeTransition ftOut = new FadeTransition(Duration.millis(duration), oldPane);
+                FadeTransition ftOut = new FadeTransition(Duration.millis(duration), oldNode);
                 ftOut.setFromValue(1.0);
                 ftOut.setToValue(0.0);
                 ftOut.setOnFinished(e -> {
-                    if (oldPane != mContentPane)
-                        mContentPaneContainer.getChildren().remove(oldPane);
+                    if (oldNode != mContentNode)
+                        mContentPaneContainer.getChildren().remove(oldNode);
                 });
                 animations.add(ftOut);
 
-                pane.setOpacity(0.0);
+                node.setOpacity(0.0);
             }
         } else {
             mContentPaneContainer.getChildren().clear();
         }
 
         // Add new pane to container
-        if (!mContentPaneContainer.getChildren().contains(pane))
-            mContentPaneContainer.getChildren().add(pane);
-        mContentPaneContainer.setTopAnchor(pane, 0.0);
-        mContentPaneContainer.setBottomAnchor(pane, 0.0);
-        mContentPaneContainer.setRightAnchor(pane, 0.0);
-        mContentPaneContainer.setLeftAnchor(pane, 0.0);
+        if (!mContentPaneContainer.getChildren().contains(node))
+            mContentPaneContainer.getChildren().add(node);
+        mContentPaneContainer.setTopAnchor(node, 0.0);
+        mContentPaneContainer.setBottomAnchor(node, 0.0);
+        mContentPaneContainer.setRightAnchor(node, 0.0);
+        mContentPaneContainer.setLeftAnchor(node, 0.0);
 
         if (animated) {
             // Fade in new pane
-            FadeTransition ftIn = new FadeTransition(Duration.millis(duration), pane);
+            FadeTransition ftIn = new FadeTransition(Duration.millis(duration), node);
             ftIn.setFromValue(0.0);
             ftIn.setToValue(1.0);
             ftIn.setOnFinished(e -> {

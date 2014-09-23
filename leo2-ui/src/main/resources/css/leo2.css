@@ -1,16 +1,27 @@
+/** leo2 styles */
+
+/** generic containers */
 .pane {
     -fx-padding: 10;
 }
 
-.content-pane {
-    -fx-padding: 10 10 10 0;
+.error {
+    -fx-border-color: red;
+    -fx-border-width: 2;
+    -fx-border-radius: 4;
+    -fx-background-color: mistyrose;
 }
 
+/** main view styles */
 .logo {
     -fx-background-image: url('../images/logo.png');
     -fx-background-position: center center;
     -fx-background-size: contain;
     -fx-background-repeat: no-repeat;
+}
+
+.content-pane {
+    -fx-padding: 10 10 10 0;
 }
 
 .top-pane {
@@ -25,6 +36,7 @@
     -fx-border-width: 1 0 0 0;
 }
 
+/** home view styles */
 .home {
     -fx-background-image: url('../images/logo-gray.png');
     -fx-background-position: center center;
@@ -32,9 +44,44 @@
     -fx-background-size: contain;
 }
 
-.error {
-    -fx-border-color: red;
-    -fx-border-width: 2;
-    -fx-border-radius: 4;
-    -fx-background-color: mistyrose;
+/** FormFX styles */
+.form-label {
+    -fx-pref-width: 150;
+    -fx-alignment: center-right;
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-text-fill: darkgray;
+    -fx-padding: 5 10 5 10;
+}
+
+.form-editor {
+    -fx-font-size: 12;
+}
+
+.form-title {
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}
+
+.form-tooltip {
+    -fx-font-size: 11;
+    -fx-text-fill: gray;
+}
+
+.form-constraint .label {
+    -fx-font-size: 13;
+    -fx-text-fill: red;
+}
+
+.form-constraint ImageView {
+/*    -fx-image: url("");*/
+}
+
+.form-content-box {
+    -fx-padding: 5 5 5 5;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 20%, rgba(225,225,225,1), white);
+    -fx-background-radius : 2, 2, 2, 2;
+    -fx-border-color: darkgray;
+    -fx-border-radius: 5;
 }
