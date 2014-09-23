@@ -78,6 +78,13 @@ public class DepotListController extends Controller implements Initializable {
     Task<ObservableList<Depot>> mQueryTask;
 
     public void onSearchTextChanged(String text) {
+        this.startQuery();
+    }
+
+    /**
+     * Start remote depotlist query
+     */
+    private void startQuery() {
         if (mQueryTask != null) {
             mQueryTask.cancel(true);
         }
@@ -92,7 +99,7 @@ public class DepotListController extends Controller implements Initializable {
             onSearchTextChanged(newValue);
         });
 
-        // Bind pojo properties
+        // Bind depotlist columns
         mDepotTableMatchcodeColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("depotMatchcode"));
         mDepotTableCompany1Column.setCellValueFactory(new PropertyValueFactory<Depot, String>("firma1"));
         mDepotTableCompany2Column.setCellValueFactory(new PropertyValueFactory<Depot, String>("firma2"));
@@ -101,7 +108,7 @@ public class DepotListController extends Controller implements Initializable {
         mDepotTableCityColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("ort"));
         mDepotTableStreetColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("strasse"));
 
-        this.onSearchTextChanged("");
+        this.startQuery();
     }
 
     @Override
