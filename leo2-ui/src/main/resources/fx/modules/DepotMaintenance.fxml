@@ -4,41 +4,48 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.*?>
-<AnchorPane prefHeight="827.0" prefWidth="1371.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <VBox prefHeight="200.0" prefWidth="458.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <children>
-            <SplitPane dividerPositions="0.6703577512776832" prefHeight="400.0" VBox.vgrow="ALWAYS">
-               <items>
-                  <AnchorPane>
-                     <children>
-                      <TitledPane collapsible="false" minWidth="200.0" prefHeight="716.0" prefWidth="882.0" text="%global.search" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <content>
-                              <fx:include source="../components/DepotList.fxml" />
-                           </content>
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
-                      </TitledPane>
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane>
-                     <children>
-                      <TitledPane collapsible="false" minWidth="200.0" text="%global.details" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <content>
-                              <fx:include source="../components/DepotDetails.fxml" />
-                           </content>
-                      </TitledPane>
-                     </children>
-                  </AnchorPane>
-               </items>
-            </SplitPane>
-          <TitledPane expanded="false" text="%depot.contracts" VBox.vgrow="NEVER">
-               <content>
-                  <AnchorPane maxHeight="-Infinity" prefHeight="300.0" />
-               </content>
-            </TitledPane>
-         </children>
-      </VBox>
-   </children>
+<AnchorPane prefHeight="827.0" prefWidth="1371.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.deku.leo2.fx.modules.DepotMaintenanceController">
+    <children>
+        <VBox prefHeight="200.0" prefWidth="458.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <SplitPane dividerPositions="0.6703577512776832" prefHeight="400.0" VBox.vgrow="ALWAYS">
+                    <items>
+                        <AnchorPane>
+                            <children>
+                                <TitledPane collapsible="false" minWidth="200.0" prefHeight="716.0" prefWidth="882.0"
+                                            text="%global.search" AnchorPane.bottomAnchor="0.0"
+                                            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                            AnchorPane.topAnchor="0.0">
+                                    <content>
+                                        <fx:include fx:id="mDepotList" source="../components/DepotList.fxml"/>
+                                    </content>
+                                    <opaqueInsets>
+                                        <Insets/>
+                                    </opaqueInsets>
+                                </TitledPane>
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane>
+                            <children>
+                                <TitledPane collapsible="false" minWidth="200.0" text="%global.details"
+                                            AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <content>
+                                        <fx:include fx:id="mDepotDetails" source="../components/DepotDetails.fxml"/>
+                                    </content>
+                                </TitledPane>
+                            </children>
+                        </AnchorPane>
+                    </items>
+                </SplitPane>
+                <TitledPane expanded="false" text="%depot.contracts" VBox.vgrow="NEVER">
+                    <content>
+                        <AnchorPane maxHeight="-Infinity" prefHeight="300.0"/>
+                    </content>
+                </TitledPane>
+            </children>
+        </VBox>
+    </children>
 </AnchorPane>

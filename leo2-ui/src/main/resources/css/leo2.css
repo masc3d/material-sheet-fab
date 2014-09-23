@@ -31,3 +31,10 @@
     -fx-background-repeat: no-repeat;
     -fx-background-size: contain;
 }
+
+.error {
+    -fx-border-color: red;
+    -fx-border-width: 2;
+    -fx-border-radius: 4;
+    -fx-background-color: mistyrose;
+}

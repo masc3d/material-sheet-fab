@@ -1,12 +1,5 @@
 package org.deku.leo2;
 
-import javafx.fxml.FXMLLoader;
-
-import java.io.IOException;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
 /**
  * Leo2 global resources
  *
@@ -25,7 +18,5 @@ public class Global {
     }
 
     private Global() {
-
     }
-
 }

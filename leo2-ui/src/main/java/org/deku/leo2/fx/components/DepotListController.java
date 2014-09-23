@@ -1,26 +1,30 @@
 package org.deku.leo2.fx.components;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.deku.leo2.Main;
 import org.deku.leo2.WebserviceFactory;
+import org.deku.leo2.fx.Controller;
 import org.deku.leo2.rest.v1.entities.Depot;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by masc on 22.09.14.
  */
-public class DepotListController implements Initializable {
+public class DepotListController extends Controller implements Initializable {
     @FXML
     TextField mSearchText;
     @FXML
@@ -40,9 +44,51 @@ public class DepotListController implements Initializable {
     @FXML
     TableColumn<Depot, String> mDepotTableStreetColumn;
 
+    /**
+     * Query task
+     */
+    private class QueryTask extends Task<ObservableList<Depot>> {
+        @Override
+        protected ObservableList<Depot> call() throws Exception {
+            Platform.runLater(() -> Main.instance().getMainController().requestProgressIndicator());
+
+            try {
+                // Invoke depot webservice and deliver as observable depot list
+                return FXCollections.observableArrayList(
+                        Arrays.asList(
+                                WebserviceFactory.depotService().find(mSearchText.getText())));
+            } finally {
+                Platform.runLater(() -> Main.instance().getMainController().releaseProgressIndicator());
+            }
+        }
+
+        @Override
+        protected void succeeded() {
+            mDepotTableView.setItems(this.getValue());
+            mSearchText.getStyleClass().remove("error");
+        }
+
+        @Override
+        protected void failed() {
+            mDepotTableView.getStyleClass().add("error");
+        }
+    }
+
+    ExecutorService mQueryTaskExecutor = Executors.newFixedThreadPool(3);
+    Task<ObservableList<Depot>> mQueryTask;
+
+    public void onSearchTextChanged(String text) {
+        if (mQueryTask != null) {
+            mQueryTask.cancel(true);
+        }
+
+        mQueryTask = new QueryTask();
+        mQueryTaskExecutor.execute(mQueryTask);
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        mSearchText.textProperty().addListener( (obj, oldValue, newValue) -> {
+        mSearchText.textProperty().addListener((obj, oldValue, newValue) -> {
             onSearchTextChanged(newValue);
         });
 
@@ -55,13 +101,17 @@ public class DepotListController implements Initializable {
         mDepotTableCityColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("ort"));
         mDepotTableStreetColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("strasse"));
 
-        List<Depot> depots = new ArrayList<Depot>();  //Arrays.asList(WebserviceFactory.depotService().get());
-
-        ObservableList<Depot> oDepots = FXCollections.observableArrayList(depots);
-        mDepotTableView.setItems(oDepots);
+        this.onSearchTextChanged("");
     }
 
-    public void onSearchTextChanged(String text) {
+    @Override
+    public void onActivation() {
+        mSearchText.requestFocus();
+    }
 
+    @Override
+    public void dispose() {
+        super.dispose();
+        mQueryTaskExecutor.shutdown();
     }
 }

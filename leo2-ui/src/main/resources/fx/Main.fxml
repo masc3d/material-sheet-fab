@@ -36,7 +36,7 @@
                         </AnchorPane>
                         <AnchorPane prefHeight="200.0" prefWidth="200.0">
                             <children>
-                                <ProgressIndicator layoutX="140.0" layoutY="9.0" prefHeight="44.0" prefWidth="47.0" visible="false" AnchorPane.bottomAnchor="16.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="16.0" />
+                                <ProgressIndicator fx:id="mProgressIndicator" layoutX="140.0" layoutY="9.0" prefHeight="44.0" prefWidth="47.0" visible="false" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="12.0" />
                             </children>
                         </AnchorPane>
                     </children>

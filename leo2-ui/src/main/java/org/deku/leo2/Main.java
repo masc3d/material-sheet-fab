@@ -1,9 +1,7 @@
 package org.deku.leo2;
 
-import com.sun.deploy.uitoolkit.impl.fx.FXPreloader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -117,6 +115,12 @@ public class Main extends Application {
         primaryStage.setTitle("leo2");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        mMainController.dispose();
+        super.stop();
     }
 
     public static void main(String[] args) {

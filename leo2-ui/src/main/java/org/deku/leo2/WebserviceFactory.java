@@ -2,6 +2,7 @@ package org.deku.leo2;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.deku.leo2.rest.v1.IDepotService;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 
 import javax.ws.rs.client.Client;
@@ -26,10 +27,14 @@ public class WebserviceFactory {
         if (mClient == null) {
             mClient = ClientBuilder.newClient();
             mClient.register(JacksonJsonProvider.class);
+            mClient.property(ClientProperties.CONNECT_TIMEOUT, 2000);
+            mClient.property(ClientProperties.READ_TIMEOUT, 2000);
         }
         // Setup base web target with api key
         if (mWebTarget == null) {
             mWebTarget = mClient.target("http://10.0.10.10:8080/leo2");
+
+            //mWebTarget = mClient.target("http://localhost:8080/leo2");
         }
 
         T instance = WebResourceFactory.newResource(c, mWebTarget);
