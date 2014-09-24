@@ -411,11 +411,11 @@ public class Depot {
 
     @Basic
     @javax.persistence.Column(name = "RName1", nullable = true, insertable = true, updatable = true, length = 50)
-    public String getrName1() {
+    public String getRName1() {
         return rName1;
     }
 
-    public void setrName1(String rName1) {
+    public void setRName1(String rName1) {
         this.rName1 = rName1;
     }
 
@@ -423,11 +423,11 @@ public class Depot {
 
     @Basic
     @javax.persistence.Column(name = "RName2", nullable = true, insertable = true, updatable = true, length = 50)
-    public String getrName2() {
+    public String getRName2() {
         return rName2;
     }
 
-    public void setrName2(String rName2) {
+    public void setRName2(String rName2) {
         this.rName2 = rName2;
     }
 
@@ -459,11 +459,11 @@ public class Depot {
 
     @Basic
     @javax.persistence.Column(name = "ROrt", nullable = true, insertable = true, updatable = true, length = 50)
-    public String getrOrt() {
+    public String getROrt() {
         return rOrt;
     }
 
-    public void setrOrt(String rOrt) {
+    public void setROrt(String rOrt) {
         this.rOrt = rOrt;
     }
 
@@ -471,11 +471,11 @@ public class Depot {
 
     @Basic
     @javax.persistence.Column(name = "RStrasse", nullable = true, insertable = true, updatable = true, length = 50)
-    public String getrStrasse() {
+    public String getRStrasse() {
         return rStrasse;
     }
 
-    public void setrStrasse(String rStrasse) {
+    public void setRStrasse(String rStrasse) {
         this.rStrasse = rStrasse;
     }
 
@@ -483,11 +483,11 @@ public class Depot {
 
     @Basic
     @javax.persistence.Column(name = "RStrNr", nullable = true, insertable = true, updatable = true, length = 10)
-    public String getrStrNr() {
+    public String getRStrNr() {
         return rStrNr;
     }
 
-    public void setrStrNr(String rStrNr) {
+    public void setRStrNr(String rStrNr) {
         this.rStrNr = rStrNr;
     }
 
@@ -1047,11 +1047,11 @@ public class Depot {
 
     @Basic
     @javax.persistence.Column(name = "eMail_pas", nullable = true, insertable = true, updatable = true, length = 100)
-    public String geteMailPas() {
+    public String getEMailPas() {
         return eMailPas;
     }
 
-    public void seteMailPas(String eMailPas) {
+    public void setEMailPas(String eMailPas) {
         this.eMailPas = eMailPas;
     }
 

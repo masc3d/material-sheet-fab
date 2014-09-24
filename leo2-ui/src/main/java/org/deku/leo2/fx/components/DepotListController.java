@@ -80,7 +80,7 @@ public class DepotListController extends Controller implements Initializable {
 
         @Override
         protected void failed() {
-            mDepotTableView.getStyleClass().add("error");
+            mSearchText.getStyleClass().add("error");
         }
     }
 

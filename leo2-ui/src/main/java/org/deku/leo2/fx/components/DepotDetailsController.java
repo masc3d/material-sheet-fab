@@ -45,7 +45,11 @@ public class DepotDetailsController implements Initializable {
 
     public void setDepot(Depot depot) {
         mDepot = depot;
-        this.updateTab();
+        try {
+            this.updateTab();
+        } catch(Exception e) {
+            // TODO: eliminate exceptions from FXForms
+        }
     }
 
     private void updateTab() {
