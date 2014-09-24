@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+
 <VBox prefHeight="602.0" prefWidth="959.0" spacing="10.0" styleClass="pane" stylesheets="@../../css/leo2.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.components.DepotListController">
     <children>
         <HBox alignment="CENTER_LEFT" spacing="8.0">
@@ -19,13 +23,13 @@
         </HBox>
         <TableView fx:id="mDepotTableView" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="mDepotTableMatchcodeColumn" prefWidth="77.0" text="Depot" />
-                <TableColumn fx:id="mDepotTableCompany1Column" prefWidth="162.0" text="Firma1" />
-            <TableColumn fx:id="mDepotTableCompany2Column" minWidth="0.0" prefWidth="146.0" text="Firma2" />
-            <TableColumn fx:id="mDepotTableCountryColumn" minWidth="4.0" prefWidth="56.0" text="LKZ" />
-            <TableColumn fx:id="mDepotTableZipCodeColumn" prefWidth="68.0" text="PLZ" />
-            <TableColumn fx:id="mDepotTableCityColumn" prefWidth="172.0" text="Ort" />
-            <TableColumn fx:id="mDepotTableStreetColumn" prefWidth="242.0" text="Strasse" />
+                <TableColumn fx:id="mDepotTableMatchcodeColumn" prefWidth="77.0" text="%depot.id" />
+                <TableColumn fx:id="mDepotTableCompany1Column" prefWidth="162.0" text="%depot.company1" />
+            <TableColumn fx:id="mDepotTableCompany2Column" minWidth="0.0" prefWidth="146.0" text="%depot.company2" />
+            <TableColumn fx:id="mDepotTableCountryColumn" minWidth="4.0" prefWidth="56.0" text="%depot.country" />
+            <TableColumn fx:id="mDepotTableZipCodeColumn" prefWidth="68.0" text="%depot.zip" />
+            <TableColumn fx:id="mDepotTableCityColumn" prefWidth="172.0" text="%depot.city" />
+            <TableColumn fx:id="mDepotTableStreetColumn" prefWidth="242.0" text="%depot.street" />
             </columns>
         </TableView>
     </children>
