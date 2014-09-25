@@ -40,10 +40,7 @@
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0-M3" />
             <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.31" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:0.9" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:0.9" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:0.9" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.12" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.12" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-server:2.12" />
@@ -53,6 +50,9 @@
             <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http:2.3.16" />
             <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-framework:2.3.16" />
             <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.0rc1" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.0rc1" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.0rc1" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -99,10 +99,7 @@
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0-M3" />
             <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.31" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:0.9" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:0.9" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:0.9" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.12" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.12" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-server:2.12" />
@@ -112,6 +109,9 @@
             <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http:2.3.16" />
             <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-framework:2.3.16" />
             <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.0rc1" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.0rc1" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.0rc1" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -422,6 +422,7 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fxform2" vcs="Git" />
   </component>
   <component name="dataSourceStorageLocal">
     <data-source name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
@@ -495,6 +496,15 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.3.2/626373b1276a1bdffb5563156858620b935837bb/jackson-module-jaxb-annotations-2.3.2-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: com.fasterxml:classmate:1.0.0">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml/classmate/1.0.0/434efef28c81162b17c540e634cffa3bd9b09b4c/classmate-1.0.0.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml/classmate/1.0.0/da0cec0cf5fa28fba22e44700d72259e0225f2e4/classmate-1.0.0-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: javax.annotation:javax.annotation-api:1.2">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.annotation/javax.annotation-api/1.2/479c1e06db31c432330183f5cae684163f186146/javax.annotation-api-1.2.jar!/" />
@@ -502,6 +512,15 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.annotation/javax.annotation-api/1.2/ad18a02db08eaee697f812e333f692fc51129e4a/javax.annotation-api-1.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: javax.el:el-api:2.2.1-b04">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.el/el-api/2.2.1-b04/907e6b1a1c2c18661eea4aa5c11db175455d36e9/el-api-2.2.1-b04.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.el/el-api/2.2.1-b04/c2c3a12ebd115d31e66a7b7b9c54095ba6b29573/el-api-2.2.1-b04-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: javax.inject:javax.inject:1">
@@ -520,15 +539,6 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.servlet/javax.servlet-api/3.1.0/ab3976d4574c48d22dc1abf6a9e8bd0fdf928223/javax.servlet-api-3.1.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Gradle: javax.validation:validation-api:1.0.0.GA">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.validation/validation-api/1.0.0.GA/b6bd7f9d78f6fdaa3c37dae18a4bd298915f328e/validation-api-1.0.0.GA.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.validation/validation-api/1.0.0.GA/7a561191db2203550fbfa40d534d4997624cd369/validation-api-1.0.0.GA-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: javax.validation:validation-api:1.1.0.Final">
@@ -763,6 +773,15 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.media/jersey-media-json-jackson/2.12/550a72a783ea5ddbc0a8470e47a1bb17bd98d2ff/jersey-media-json-jackson-2.12-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: org.glassfish.web:el-impl:2.2.1-b05">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.web/el-impl/2.2.1-b05/e7257f648b1ec91b87db8893f7740e116b05d777/el-impl-2.2.1-b05.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.web/el-impl/2.2.1-b05/1fc2352a0f57a07de072531aa05f48f865546ce9/el-impl-2.2.1-b05-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: org.hamcrest:hamcrest-core:1.3">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/42a25dc3219429f0e5d060061f71acb49bf010a0/hamcrest-core-1.3.jar!/" />
@@ -770,6 +789,15 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/1dc37250fbc78e23a65a67fbbaf71d2e9cbc3c0b/hamcrest-core-1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.hibernate:hibernate-validator:5.1.2.Final">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hibernate/hibernate-validator/5.1.2.Final/8aecb33d3587f32c877827c2bdddae0d227a40ed/hibernate-validator-5.1.2.Final.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hibernate/hibernate-validator/5.1.2.Final/6aa107955693b90338b475fe6b46218813d465b/hibernate-validator-5.1.2.Final-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.javassist:javassist:3.18.1-GA">
@@ -781,31 +809,40 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.javassist/javassist/3.18.1-GA/d8d089f3a8845cce22d3006e02ab1403dd73b5b6/javassist-3.18.1-GA-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:analysis:0.9">
+    <library name="Gradle: org.jboss.logging:jboss-logging:3.1.3.GA">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/0.9/2861f1a7bd4ea35133c7d1c26864456b0d586aa/analysis-0.9.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.logging/jboss-logging/3.1.3.GA/64499e907f19e5e1b3fdc02f81440c1832fe3545/jboss-logging-3.1.3.GA.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/0.9/d10b440e40f3f6be970ac822e48b296cdee31d86/analysis-0.9-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.logging/jboss-logging/3.1.3.GA/4d2c4df2c1a1b2d2f9201f6d580d7d19ccf8cbdf/jboss-logging-3.1.3.GA-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:api:0.9">
+    <library name="Gradle: org.jinq:analysis:1.0rc1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/0.9/2ad3c9bab2cb7e789464936181c30631127e5caf/api-0.9.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.0rc1/aae5c8cb92244f7187dcbcd18af8b0d3d2d6f4ad/analysis-1.0rc1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/0.9/8c1a4ad7bc80944974629da323d31938f1a927ad/api-0.9-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.0rc1/c3d4a32b309847a5d88bcec3329bcf3207d772bf/analysis-1.0rc1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:jinq-jpa:0.9">
+    <library name="Gradle: org.jinq:api:1.0rc1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/0.9/dd441f8cc0024513d88bce2dd7afac1efbb277cd/jinq-jpa-0.9.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.0rc1/3bad2675325a66450b28a2eee397d0fd40e692a3/api-1.0rc1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/0.9/62a8b0987654d979cbbc97222f1c8b7be442163f/jinq-jpa-0.9-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.0rc1/8c71504e272a632176923affef58ef2154be5d52/api-1.0rc1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.jinq:jinq-jpa:1.0rc1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.0rc1/80859787cefea4d7ed877eaad11bc0f458fd5831/jinq-jpa-1.0rc1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.0rc1/385d3b53ad6d911a045e446bed919a152a854280/jinq-jpa-1.0rc1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.ow2.asm:asm-all:5.0.1">
