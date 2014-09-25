@@ -36,6 +36,7 @@ public class Main extends Application {
      * Intializes language related resources
      */
     private void initializeLanguage() {
+        Locale.setDefault(Locale.GERMAN);
         Locale locale = Locale.getDefault();
         try {
             mLanguageResourceBundle = this.getLanguageResourceBundle(locale);
