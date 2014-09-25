@@ -46,10 +46,7 @@
     <orderEntry type="library" exported="" name="Gradle: mysql:mysql-connector-java:5.1.31" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.eclipse.persistence:javax.persistence:2.1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.jinq:jinq-jpa:0.9" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.ow2.asm:asm-all:5.0.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.jinq:api:0.9" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.jinq:analysis:0.9" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.12" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.12" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.core:jersey-common:2.12" level="project" />
@@ -80,6 +77,9 @@
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.3.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12-beta-1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jinq:jinq-jpa:1.0rc1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jinq:api:1.0rc1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jinq:analysis:1.0rc1" level="project" />
   </component>
 </module>
 

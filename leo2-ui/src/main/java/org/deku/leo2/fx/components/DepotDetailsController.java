@@ -12,6 +12,7 @@ import javafx.scene.layout.Pane;
 import org.deku.leo2.fx.FormSkin;
 import org.deku.leo2.rest.v1.entities.Depot;
 
+import javax.validation.Validation;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -45,11 +46,7 @@ public class DepotDetailsController implements Initializable {
 
     public void setDepot(Depot depot) {
         mDepot = depot;
-        try {
-            this.updateTab();
-        } catch(Exception e) {
-            // TODO: eliminate exceptions from FXForms
-        }
+        this.updateTab();
     }
 
     private void updateTab() {
@@ -80,6 +77,7 @@ public class DepotDetailsController implements Initializable {
             this.updateTab();
         });
         mFxFormMain = new FXForm();
+
         mFxFormMain.setSkin(new FormSkin(mFxFormMain));
         mFxFormMain.addFilters(new IncludeFilter("depotNr", "depotMatchcode", "firma1", "firma2", "lkz", "ort", "strasse", "telefon1", "telefon2", "mobil", "telefax", "nottelefon1", "nottelefon2", "email",
                 "anprechpartner1", "anprechpartner2", "webemail", "webadresse", "region", "coloader", "webshopInit"));
