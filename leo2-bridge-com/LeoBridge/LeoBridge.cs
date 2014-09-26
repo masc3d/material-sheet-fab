@@ -37,6 +37,7 @@ namespace LeoBridge
     public class LeoBridge : ILeoBridge
     {
         System.Windows.Forms.Form _dispatchWindow;
+        ChannelFactory<IMessageService> _messageServiceChannelFactory;
 
         /// <summary>
         /// Message event
@@ -53,7 +54,15 @@ namespace LeoBridge
             _dispatchWindow.FormBorderStyle = FormBorderStyle.None;
             _dispatchWindow.DesktopBounds = new System.Drawing.Rectangle(0, 0, 0, 0);            
             _dispatchWindow.Show();
-            _dispatchWindow.Hide();            
+            _dispatchWindow.Hide();
+ 
+            // Create client message service channel factory
+            WebHttpBinding myBinding = new WebHttpBinding();
+            myBinding.OpenTimeout = TimeSpan.FromMilliseconds(250);
+            myBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(250);            
+            EndpointAddress myEndpoint = new EndpointAddress("http://localhost:37420");            
+            _messageServiceChannelFactory = new ChannelFactory<IMessageService>(myBinding, myEndpoint);
+            _messageServiceChannelFactory.Endpoint.EndpointBehaviors.Add(new WebHttpBehavior());
         }
 
         /// <summary>
@@ -94,6 +103,15 @@ namespace LeoBridge
                 if (d != null)
                     d(message);
             });
+        }
+
+        public void Send(string message)
+        {
+            using (IClientChannel channel = (IClientChannel)_messageServiceChannelFactory.CreateChannel())
+            {
+                IMessageService s = (IMessageService)channel;
+                s.SendMessage(message);
+            }
         }
     }
 }

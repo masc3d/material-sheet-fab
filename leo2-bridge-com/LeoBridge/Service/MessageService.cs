@@ -22,9 +22,10 @@ namespace LeoBridge
     /// </summary>
     class MessageService : IMessageService
     {
-        public void Send(string message)
+        public bool SendMessage(string message)
         {
             ((IMessageServiceListener)OperationContext.Current.Host).OnMessageReceived(message);
+            return true;
         }
     }
 }

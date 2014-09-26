@@ -1,5 +1,5 @@
 Dim oLeoBridge
-Set oLeoBridge = WScript.CreateObject("LeoBridge.Messaging", "LeoBridge_")
+Set oLeoBridge = WScript.CreateObject("LeoBridge.LeoBridge", "LeoBridge_")
 
 oLeoBridge.TestEvent "Test"
 

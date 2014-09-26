@@ -12,7 +12,18 @@ namespace LeoBridge
     public interface ILeoBridge : IDisposable
     {
         void TestEvent(String testMessage);
+        /// <summary>
+        /// Start listener
+        /// </summary>
         void Start();
+        /// <summary>
+        /// Stop listener
+        /// </summary>
         void Stop();
+        /// <summary>
+        /// Send message
+        /// </summary>
+        /// <param name="message"></param>
+        void Send(String message);
     }
 }

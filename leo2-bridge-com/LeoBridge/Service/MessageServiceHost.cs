@@ -30,7 +30,7 @@ namespace LeoBridge.Service
         public event OnMessageDelegate OnMessage;
 
         public MessageServiceHost()
-            : base(typeof(MessageService), new Uri("http://localhost:8080/"))
+            : base(typeof(MessageService), new Uri("http://localhost:37421/"))
         {
             // Configure endpoints. JSON requires HTTP binding and behaviour
             ServiceEndpoint ep = this.AddServiceEndpoint(typeof(IMessageService), new WebHttpBinding(), "");
