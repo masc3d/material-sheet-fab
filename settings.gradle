@@ -4,4 +4,5 @@ rootProject.name = 'leo2'
 include ':leo2-common'
 include ':leo2-webservice'
 include ':leo2-ui'
+include ':sx-common'
 

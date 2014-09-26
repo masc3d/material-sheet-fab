@@ -37,7 +37,6 @@
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.3.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.3.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.3.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12-beta-1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.controlsfx:controlsfx:8.0.6_20" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.hibernate:hibernate-validator:5.1.2.Final" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javax.validation:validation-api:1.1.0.Final" level="project" />
@@ -46,6 +45,8 @@
     <orderEntry type="library" exported="" name="Gradle: javax.el:el-api:2.2.1-b04" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.web:el-impl:2.2.1-b05" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.dooapp.fxform2:core:8.0.6" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12-beta-2" level="project" />
+    <orderEntry type="module" module-name="sx-common" exported="" />
   </component>
 </module>
 

@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.fx.MainController;
 
 import java.io.IOException;
@@ -116,6 +117,8 @@ public class Main extends Application {
         primaryStage.setTitle("leo2");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        LeoBridge.instance().start();
     }
 
     @Override

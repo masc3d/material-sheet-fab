@@ -37,18 +37,18 @@
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.3.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.3.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.3.2" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.12" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.12" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.12" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-server:2.12" />
+            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http-server:2.3.16" />
+            <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
+            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http:2.3.16" />
+            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-framework:2.3.16" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0-M3" />
             <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.31" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.12" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.12" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-server:2.12" />
-            <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.12" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http-server:2.3.16" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http:2.3.16" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-framework:2.3.16" />
             <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
             <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.0rc1" />
             <element id="library" level="project" name="Gradle: org.jinq:api:1.0rc1" />
@@ -96,18 +96,18 @@
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.3.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.3.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.3.2" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.12" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.12" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.12" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-server:2.12" />
+            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http-server:2.3.16" />
+            <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
+            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http:2.3.16" />
+            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-framework:2.3.16" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0-M3" />
             <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.31" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.12" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.12" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-server:2.12" />
-            <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.12" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http-server:2.3.16" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http:2.3.16" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-framework:2.3.16" />
             <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
             <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.0rc1" />
             <element id="library" level="project" name="Gradle: org.jinq:api:1.0rc1" />
@@ -179,6 +179,7 @@
             <option value="$PROJECT_DIR$/leo2-common" />
             <option value="$PROJECT_DIR$/leo2-ui" />
             <option value="$PROJECT_DIR$/leo2-webservice" />
+            <option value="$PROJECT_DIR$/sx-common" />
           </set>
         </option>
       </GradleProjectSettings>
@@ -345,6 +346,7 @@
       <module fileurl="file://$PROJECT_DIR$/leo2-common/leo2-common.iml" filepath="$PROJECT_DIR$/leo2-common/leo2-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/leo2-ui/leo2-ui.iml" filepath="$PROJECT_DIR$/leo2-ui/leo2-ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/leo2-webservice/leo2-webservice.iml" filepath="$PROJECT_DIR$/leo2-webservice/leo2-webservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sx-common/sx-common.iml" filepath="$PROJECT_DIR$/sx-common/sx-common.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
@@ -422,7 +424,7 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/fxform2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/sx-common" vcs="Git" />
   </component>
   <component name="dataSourceStorageLocal">
     <data-source name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
@@ -559,13 +561,22 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.ws.rs/javax.ws.rs-api/2.0.1/a20db7429fd8dfff74335ec867472b71c345049b/javax.ws.rs-api-2.0.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: junit:junit:4.12-beta-1">
+    <library name="Gradle: junit:junit:4.11">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12-beta-1/f516376d8dbcaf37ab11975cd7807e5e1782a847/junit-4.12-beta-1.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.11/4e031bb61df09069aeb2bffb4019e7a5034a4ee0/junit-4.11.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12-beta-1/6b1bbf7aedba23e3e43cb7afe0e9842c364065bd/junit-4.12-beta-1-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.11/28e0ad201304e4a4abf999ca0570b7cffc352c3c/junit-4.11-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: junit:junit:4.12-beta-2">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12-beta-2/eb899c93c162058b6ae990e7e279507803edd1fb/junit-4.12-beta-2.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12-beta-2/962bd452e8f8fdf9896a1f9f36e292f260fd3890/junit-4.12-beta-2-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: mysql:mysql-connector-java:5.1.31">

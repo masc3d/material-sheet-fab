@@ -37,6 +37,7 @@ dependencies {
     compile 'com.dooapp.fxform2:core:8.+'
     compile 'org.controlsfx:controlsfx:8.+'
 
+    compile project(':sx-common')
     compile project(':leo2-common')
 }
 

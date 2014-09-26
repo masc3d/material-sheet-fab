@@ -49,7 +49,15 @@
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.3.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.3.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.3.2" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12-beta-1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.12" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.12" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.12" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.core:jersey-server:2.12" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.glassfish.grizzly:grizzly-http-server:2.3.16" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.validation:validation-api:1.1.0.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.glassfish.grizzly:grizzly-http:2.3.16" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.glassfish.grizzly:grizzly-framework:2.3.16" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12-beta-2" level="project" />
   </component>
 </module>
 

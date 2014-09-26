@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import org.deku.leo2.Main;
+import org.sx.Disposable;
 
 /**
  * User interface module
