@@ -42,7 +42,7 @@ public class LeoBridge implements Disposable, MessageService.Listener {
         }
     }
 
-    private static final URI HOST_URI = URI.create("http://0.0.0.0:37420/");
+    private static final URI HOST_URI = URI.create("http://localhost:37420/");
     private static final URI CLIENT_URI = URI.create("http://localhost:37421/");
     private HttpServer mHttpServer;
     private IMessageService mMessageServiceClient;
