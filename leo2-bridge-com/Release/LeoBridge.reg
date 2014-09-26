@@ -15,13 +15,13 @@ REGEDIT4
 "Class"="LeoBridge.LeoBridge"
 "Assembly"="LeoBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6f575f4f343de6ad"
 "RuntimeVersion"="v4.0.30319"
-"CodeBase"="file:///C:/Users/n3/Projects/LeoBridge/Release/LeoBridge.dll"
+"CodeBase"="file:///C:/Users/n3/Projects/leo2/leo2-bridge-com/Release/LeoBridge.dll"
 
 [HKEY_CLASSES_ROOT\CLSID\{EF6CD085-7175-4975-B1BB-2E7DE0A3774D}\InprocServer32\1.0.0.0]
 "Class"="LeoBridge.LeoBridge"
 "Assembly"="LeoBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6f575f4f343de6ad"
 "RuntimeVersion"="v4.0.30319"
-"CodeBase"="file:///C:/Users/n3/Projects/LeoBridge/Release/LeoBridge.dll"
+"CodeBase"="file:///C:/Users/n3/Projects/leo2/leo2-bridge-com/Release/LeoBridge.dll"
 
 [HKEY_CLASSES_ROOT\CLSID\{EF6CD085-7175-4975-B1BB-2E7DE0A3774D}\ProgId]
 @="LeoBridge.LeoBridge"

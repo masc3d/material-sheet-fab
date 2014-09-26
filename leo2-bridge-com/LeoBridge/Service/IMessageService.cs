@@ -12,7 +12,7 @@ namespace LeoBridge
     interface IMessageService
     {
         [OperationContract]
-        [WebGet(ResponseFormat=WebMessageFormat.Json, UriTemplate="/send?m={message}")]        
-        void Send(String message);
+        [WebGet(RequestFormat=WebMessageFormat.Json, ResponseFormat=WebMessageFormat.Json, UriTemplate="/send?m={message}")]        
+        bool SendMessage(String message);
     }
 }

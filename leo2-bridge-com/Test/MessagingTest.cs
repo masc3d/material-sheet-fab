@@ -9,13 +9,22 @@ namespace LeoBridgeTest
     public class MessagingTest
     {
         [TestMethod]
-        public void TestMessaging()
+        public void TestService()
         {
             using (LeoBridge.LeoBridge m = new LeoBridge.LeoBridge())
             {
                 m.Start();
                 System.Windows.Forms.MessageBox.Show("Running");
             }            
+        }
+
+        [TestMethod]
+        public void TestSend()
+        {
+            using (LeoBridge.LeoBridge m = new LeoBridge.LeoBridge())
+            {
+                m.Send("Test");
+            }
         }
     }
 }
