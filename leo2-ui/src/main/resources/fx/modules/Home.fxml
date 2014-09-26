@@ -8,7 +8,7 @@
       <Glow level="0.45" />
    </effect>
    <children>
-      <Pane opacity="0.14" prefHeight="200.0" prefWidth="200.0" styleClass="home" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="80.0">
+      <Pane opacity="0.14" prefHeight="200.0" prefWidth="200.0" styleClass="leo2-home-pane" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="80.0">
          <effect>
             <Glow level="0.5">
                <input>

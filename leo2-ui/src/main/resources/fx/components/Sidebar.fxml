@@ -10,11 +10,11 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="192.0" prefWidth="197.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.components.SidebarController">
+<VBox prefHeight="192.0" prefWidth="197.0" stylesheets="@../../css/leo2.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.components.SidebarController">
    <children>
       <TitledPane text="%menu.title">
           <content>
-              <VBox alignment="TOP_CENTER" spacing="10.0" styleClass="pane" GridPane.vgrow="ALWAYS">
+              <VBox alignment="TOP_CENTER" spacing="10.0" styleClass="leo2-pane" GridPane.vgrow="ALWAYS">
                   <children>
                       <Button alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeButton" text="%menu.home" VBox.vgrow="ALWAYS">
                      <graphic>
