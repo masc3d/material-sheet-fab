@@ -11,49 +11,10 @@ using System.Windows.Forms;
 
 namespace LeoBridge
 {
-    public static class ControlExtensions
-    {
-        /// <summary>
-        /// Generic extension method to support threadsafe windows forms access
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="control"></param>
-        /// <param name="action"></param>
-        public static void Invoke<T>(this T control, Action<T> action) where T : Control
-        {
-            if (control.InvokeRequired)
-            {
-                control.Invoke(new Action<T, Action<T>>(Invoke), new object[] { control, action });
-            }
-            else
-            {
-                action(control);
-            }
-        }
-
-        /// <summary>
-        /// Generic extension method to support threadsafe windows forms access
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="control"></param>
-        /// <param name="action"></param>
-        public static void BeginInvoke<T>(this T control, Action<T> action) where T : Control
-        {
-            if (control.InvokeRequired)
-            {
-                control.BeginInvoke(new Action<T, Action<T>>(BeginInvoke), new object[] { control, action });
-            }
-            else
-            {
-                action(control);
-            }
-        }
-    }
-
     public delegate void OnMessageDelegate(String message);
 
     /// <summary>
-    /// Interface for MessageService events
+    /// Interface for LEO bridge (COM) events
     /// </summary>
     /// <author>masc</author>
     [Guid("709C2294-A2E0-4CD0-9969-6F2CC1B71625")]
@@ -66,7 +27,7 @@ namespace LeoBridge
     }
 
     /// <summary>
-    /// Message service provider
+    /// LEO bridge main (COM) component
     /// </summary>
     /// <author>masc</author>
     [Guid("EF6CD085-7175-4975-B1BB-2E7DE0A3774D")]
@@ -84,6 +45,7 @@ namespace LeoBridge
 
         public LeoBridge()
         {
+            // Create hidden dispatcher window for routing threaded ws callbacks back to COM/UI thread
             _dispatchWindow = new Form();
             _dispatchWindow.Name = "LeoBridge.Dispatch";
             _dispatchWindow.AutoScaleMode = AutoScaleMode.None;

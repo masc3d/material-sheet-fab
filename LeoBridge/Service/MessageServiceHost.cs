@@ -32,11 +32,11 @@ namespace LeoBridge.Service
         public MessageServiceHost()
             : base(typeof(MessageService), new Uri("http://localhost:8080/"))
         {
-            // Configure endpoints
+            // Configure endpoints. JSON requires HTTP binding and behaviour
             ServiceEndpoint ep = this.AddServiceEndpoint(typeof(IMessageService), new WebHttpBinding(), "");
             ep.EndpointBehaviors.Add(new WebHttpBehavior());
 
-            // Enable metadata publishing.
+            // Enable metadata publishing
             ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
             smb.HttpGetEnabled = true;
             smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
