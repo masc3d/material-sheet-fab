@@ -1,29 +1,29 @@
 REGEDIT4
 
-[HKEY_CLASSES_ROOT\LeoBridge.MessageService]
-@="LeoBridge.MessageService"
+[HKEY_CLASSES_ROOT\LeoBridge.LeoBridge]
+@="LeoBridge.LeoBridge"
 
-[HKEY_CLASSES_ROOT\LeoBridge.MessageService\CLSID]
+[HKEY_CLASSES_ROOT\LeoBridge.LeoBridge\CLSID]
 @="{EF6CD085-7175-4975-B1BB-2E7DE0A3774D}"
 
 [HKEY_CLASSES_ROOT\CLSID\{EF6CD085-7175-4975-B1BB-2E7DE0A3774D}]
-@="LeoBridge.MessageService"
+@="LeoBridge.LeoBridge"
 
 [HKEY_CLASSES_ROOT\CLSID\{EF6CD085-7175-4975-B1BB-2E7DE0A3774D}\InprocServer32]
 @="mscoree.dll"
 "ThreadingModel"="Both"
-"Class"="LeoBridge.MessageService"
+"Class"="LeoBridge.LeoBridge"
 "Assembly"="LeoBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6f575f4f343de6ad"
 "RuntimeVersion"="v4.0.30319"
 "CodeBase"="file:///C:/Users/n3/Projects/LeoBridge/Release/LeoBridge.dll"
 
 [HKEY_CLASSES_ROOT\CLSID\{EF6CD085-7175-4975-B1BB-2E7DE0A3774D}\InprocServer32\1.0.0.0]
-"Class"="LeoBridge.MessageService"
+"Class"="LeoBridge.LeoBridge"
 "Assembly"="LeoBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6f575f4f343de6ad"
 "RuntimeVersion"="v4.0.30319"
 "CodeBase"="file:///C:/Users/n3/Projects/LeoBridge/Release/LeoBridge.dll"
 
 [HKEY_CLASSES_ROOT\CLSID\{EF6CD085-7175-4975-B1BB-2E7DE0A3774D}\ProgId]
-@="LeoBridge.MessageService"
+@="LeoBridge.LeoBridge"
 
 [HKEY_CLASSES_ROOT\CLSID\{EF6CD085-7175-4975-B1BB-2E7DE0A3774D}\Implemented Categories\{62C8FE65-4EBB-45E7-B440-6E39B2CDBF29}]
