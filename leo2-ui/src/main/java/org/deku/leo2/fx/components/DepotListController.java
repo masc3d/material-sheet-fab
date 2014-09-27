@@ -75,12 +75,12 @@ public class DepotListController extends Controller implements Initializable {
         @Override
         protected void succeeded() {
             mDepotTableView.setItems(this.getValue());
-            mSearchText.getStyleClass().remove("error");
+            mSearchText.getStyleClass().remove("leo2-error");
         }
 
         @Override
         protected void failed() {
-            mSearchText.getStyleClass().add("error");
+            mSearchText.getStyleClass().add("leo2-error");
         }
     }
 

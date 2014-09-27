@@ -3,8 +3,8 @@ package org.deku.leo2.fx.modules;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
-import org.deku.leo2.fx.Controller;
+import org.deku.leo2.Main;
+import org.deku.leo2.fx.ModuleController;
 import org.deku.leo2.fx.components.DepotDetailsController;
 import org.deku.leo2.fx.components.DepotListController;
 import org.deku.leo2.rest.v1.entities.Depot;
@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 /**
  * Created by masc on 22.09.14.
  */
-public class DepotMaintenanceController extends Controller implements Initializable, DepotListController.Listener {
+public class DepotMaintenanceController extends ModuleController implements Initializable, DepotListController.Listener {
     @FXML
     private Node mDepotList;
     @FXML
@@ -44,5 +44,10 @@ public class DepotMaintenanceController extends Controller implements Initializa
     @Override
     public void onDepotListItemSelected(Depot depot) {
         mDepotDetailsController.setDepot(depot);
+    }
+
+    @Override
+    public String getTitle() {
+        return Main.instance().getLocalizedString("menu.depots");
     }
 }

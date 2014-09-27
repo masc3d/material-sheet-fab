@@ -12,13 +12,16 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import org.deku.leo2.fx.components.SidebarController;
+import org.deku.leo2.fx.modules.DebugController;
 import org.deku.leo2.fx.modules.DepotMaintenanceController;
+import org.deku.leo2.fx.modules.HomeController;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
+ * Main userinterface controller
  * Created by masc on 21.09.14.
  */
 public class MainController extends Controller implements Initializable, SidebarController.Listener {
@@ -33,58 +36,63 @@ public class MainController extends Controller implements Initializable, Sidebar
     @FXML
     private ProgressIndicator mProgressIndicator;
 
-    private Module<Object> mHomePane;
-    private Module<DepotMaintenanceController> mDepotMaintenancePane;
+    private HomeController mHomeController;
+    private DepotMaintenanceController mDepotMaintenanceController;
+    private DebugController mDebugController;
 
-    /**
-     * Currently active module
-     */
-    private ModuleType mCurrentModule = ModuleType.None;
-
+    /** Currently active module */
+    private ModuleController mCurrentModuleController;
+    /** Progress indicator request count */
     private Integer mProgressIndicatorActivationCount = 0;
-
-    public enum ModuleType {
-        None,
-        Home,
-        DepotMaintenance
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mSidebarController.setListener(this);
-        this.showModule(ModuleType.Home, false);
+        this.setModule(this.getHomeModule(), false);
     }
 
     /** Tracks current content pane transition */
     Transition mContentPaneTransition;
-    Node mContentNode;
 
-    private Module<DepotMaintenanceController> getDepotMaintenanceModule() {
-        if (mDepotMaintenancePane == null) {
-            mDepotMaintenancePane = Module.fromFxml("/fx/modules/DepotMaintenance.fxml", DepotMaintenanceController.class);
+    private DepotMaintenanceController getDepotMaintenanceModule() {
+        if (mDepotMaintenanceController == null) {
+            mDepotMaintenanceController = ModuleController.fromFxml("/fx/modules/DepotMaintenance.fxml");
         }
-        return mDepotMaintenancePane;
+        return mDepotMaintenanceController;
     }
 
-    private Module<Object> getHomeModule() {
-        if (mHomePane == null) {
-            mHomePane = Module.fromFxml("/fx/modules/Home.fxml", Object.class);
+    private HomeController getHomeModule() {
+        if (mHomeController == null) {
+            mHomeController = ModuleController.fromFxml("/fx/modules/Home.fxml");
         }
-        return mHomePane;
+        return mHomeController;
+    }
+
+    private DebugController getDebugPane() {
+        if (mDebugController == null) {
+            mDebugController= ModuleController.fromFxml("/fx/modules/Debug.fxml");
+        }
+        return mDebugController;
     }
 
     /**
      * Sets and shows a content pane
-     * @param module
+     * @param moduleController
      * @param animated
      */
-    private void setModule(Module<?> module, boolean animated) {
+    private void setModule(ModuleController moduleController, boolean animated) {
         double duration = 500;
 
-        Node node = module.getNode();
+        if (mCurrentModuleController == moduleController)
+            return;
 
-        Node oldNode = mContentNode;
-        mContentNode = node;
+        ModuleController oldModule = mCurrentModuleController;
+        mCurrentModuleController = moduleController;
+
+        Node node = moduleController.getNode();
+        Node oldNode = (oldModule!= null) ? oldModule.getNode() : null;
+
+        this.setTitle(moduleController.getTitle());
 
         ArrayList<Animation> animations = new ArrayList<>();
 
@@ -95,7 +103,7 @@ public class MainController extends Controller implements Initializable, Sidebar
                 ftOut.setFromValue(1.0);
                 ftOut.setToValue(0.0);
                 ftOut.setOnFinished(e -> {
-                    if (oldNode != mContentNode)
+                    if (oldNode != mCurrentModuleController.getNode())
                         mContentPaneContainer.getChildren().remove(oldNode);
                 });
                 animations.add(ftOut);
@@ -135,10 +143,7 @@ public class MainController extends Controller implements Initializable, Sidebar
                 evt.handle(null);
         }
 
-        if (module.getController() instanceof Controller) {
-            Controller c = (Controller)module.getController();
-            c.activate();
-        }
+        moduleController.activate();
     }
 
     /** Tracks current title transition */
@@ -179,28 +184,6 @@ public class MainController extends Controller implements Initializable, Sidebar
     }
 
     /**
-     * Show user interface module
-     * @param moduleType UI module type
-     * @param animated Animated or not
-     */
-    public void showModule(ModuleType moduleType, boolean animated) {
-        if (mCurrentModule == moduleType)
-            return;
-
-        switch (moduleType) {
-            case Home:
-                this.setTitle("Leo 2");
-                this.setModule(this.getHomeModule(), true);
-                break;
-            case DepotMaintenance:
-                this.setTitle("Depots");
-                this.setModule(this.getDepotMaintenanceModule(), true);
-        }
-
-        mCurrentModule = moduleType;
-    }
-
-    /**
      * Request progress indication
      * Each call to request requires release to be called for the indicator to disappear as soon as all consumers released it
      */
@@ -221,27 +204,32 @@ public class MainController extends Controller implements Initializable, Sidebar
 
     @Override
     public void OnSidebarItemSelected(SidebarController.ItemType itemType) {
-        ModuleType md;
+        ModuleController m;
         switch(itemType) {
             case Home:
-                md = ModuleType.Home;
+                m = this.getHomeModule();
                 break;
             case Depots:
-                md = ModuleType.DepotMaintenance;
+                m = this.getDepotMaintenanceModule();
+                break;
+            case Debug:
+                m = this.getDebugPane();
                 break;
             default:
-                throw new RuntimeException("Unknown sidebar item");
+                throw new RuntimeException(String.format("Unknown sidebar item [%s]", itemType));
         }
-        this.showModule(md, true);
+        this.setModule(m, true);
     }
 
     @Override
     public void dispose() {
         super.dispose();
 
-        if (mHomePane != null)
-            mHomePane.dispose();
-        if (mDepotMaintenancePane != null)
-            mDepotMaintenancePane.dispose();
+        if (mHomeController != null)
+            mHomeController.dispose();
+        if (mDepotMaintenanceController != null)
+            mDepotMaintenanceController.dispose();
+        if (mDebugController != null)
+            mDebugController.dispose();
     }
 }

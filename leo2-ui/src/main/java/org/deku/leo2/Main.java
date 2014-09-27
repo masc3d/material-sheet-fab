@@ -11,7 +11,6 @@ import org.deku.leo2.fx.MainController;
 import org.sx.util.UTF8ResourceBundleControl;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -22,8 +21,8 @@ import java.util.ResourceBundle;
 public class Main extends Application {
     private static Main mInstance;
 
-    private Locale mLanguageLocale;
-    private ResourceBundle mLanguageResourceBundle;
+    private Locale mLocale;
+    private ResourceBundle mLocalizedResourceBundle;
 
     private Pane mMainPane;
     private MainController mMainController;
@@ -48,13 +47,13 @@ public class Main extends Application {
         Locale.setDefault(Locale.GERMAN);
         Locale locale = Locale.getDefault();
         try {
-            mLanguageResourceBundle = this.getLanguageResourceBundle(locale);
+            mLocalizedResourceBundle = this.getLanguageResourceBundle(locale);
         } catch(MissingResourceException e) {
             // Reverting to default language (eg. english)
             locale = Locale.ENGLISH;
-            mLanguageResourceBundle = this.getLanguageResourceBundle(locale);
+            mLocalizedResourceBundle = this.getLanguageResourceBundle(locale);
         }
-        mLanguageLocale = locale;
+        mLocale = locale;
     }
 
     /**
@@ -68,28 +67,36 @@ public class Main extends Application {
     }
 
     /**
-     * Application locale
-     * @return Locale
-     */
-    public Locale getLanguageLocale() {
-        if (mLanguageLocale == null) {
-            this.initializeLanguage();
-        }
-
-        return mLanguageLocale;
-    }
-
-    /**
      * Application langauge resource bundle
      * @return ResourceBundle
      */
-    public ResourceBundle getLanguageResourceBundle() {
-        if (mLanguageResourceBundle == null) {
+    private ResourceBundle getLocalizedResourceBundle() {
+        if (mLocalizedResourceBundle == null) {
             this.initializeLanguage();
         }
-        return mLanguageResourceBundle;
+        return mLocalizedResourceBundle;
     }
 
+    /**
+     * Application locale
+     * @return Locale
+     */
+    public Locale getLocale() {
+        if (mLocale == null) {
+            this.initializeLanguage();
+        }
+
+        return mLocale;
+    }
+
+    /**
+     * Get string from localized resource bundle
+     * @param key
+     * @return
+     */
+    public String getLocalizedString(String key) {
+        return this.getLocalizedResourceBundle().getString(key);
+    }
 
     /**
      * Main user interface pane
@@ -120,7 +127,7 @@ public class Main extends Application {
      */
     public FXMLLoader loadFxPane(String resourcePath) {
         FXMLLoader fxml = new FXMLLoader(getClass().getResource(resourcePath));
-        fxml.setResources(this.getLanguageResourceBundle());
+        fxml.setResources(this.getLocalizedResourceBundle());
         try {
             fxml.load();
             return fxml;

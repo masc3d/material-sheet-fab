@@ -36,10 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A skin where elements are inlined (label, editor). The tooltip is displayed under the editor.
- * User: Antoine Mischler <antoine@dooapp.com>
- * Date: 24/08/11
- * Time: 11:03
+ * Modified skin based on FormFX inline skin
  */
 public class FormSkin extends FXFormSkin {
 

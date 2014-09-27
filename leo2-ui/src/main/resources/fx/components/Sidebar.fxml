@@ -10,33 +10,54 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="192.0" prefWidth="197.0" stylesheets="@../../css/leo2.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.components.SidebarController">
+<VBox maxHeight="1.7976931348623157E308" stylesheets="@../../css/leo2.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.components.SidebarController">
    <children>
-      <TitledPane text="%menu.title">
-          <content>
-              <VBox alignment="TOP_CENTER" spacing="10.0" styleClass="leo2-pane" GridPane.vgrow="ALWAYS">
-                  <children>
-                      <Button alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeButton" text="%menu.home" VBox.vgrow="ALWAYS">
-                     <graphic>
-                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                           <viewport>
-                              <Rectangle2D minX="11.0" width="11.0" />
-                           </viewport>
-                           <image>
-                              <Image url="@../../images/home-32px.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
-                      <Button alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDepotButton" text="%menu.depots">
-                     <graphic>
-                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../images/depot-32px.png" />
-                           </image></ImageView>
-                     </graphic></Button>
-                  </children>
-              </VBox>
-          </content>
-      </TitledPane>
+      <Accordion fx:id="mMenuAccordion" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+        <panes>
+          <TitledPane fx:id="mMenuPane" text="%menu.title">
+               <content>
+                    <VBox alignment="TOP_CENTER" spacing="10.0" styleClass="leo2-pane">
+                        <children>
+                            <Button alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeButton" text="%menu.home" VBox.vgrow="ALWAYS">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <viewport>
+                                    <Rectangle2D minX="11.0" width="11.0" />
+                                 </viewport>
+                                 <image>
+                                    <Image url="@../../images/home-32px.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                            <Button alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDepotButton" text="%menu.depots">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../images/depot-32px.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDebugButton" text="Debug">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../images/debug-32px.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        </children>
+                    </VBox>
+               </content>
+          </TitledPane>
+          <TitledPane expanded="false" text="More">
+               <content>
+                  <VBox />
+               </content>
+          </TitledPane>
+        </panes>
+      </Accordion>
    </children>
 </VBox>

@@ -46,14 +46,11 @@
                         </AnchorPane>
                     </children>
                 </HBox>
-                <VBox styleClass="leo2-pane" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
-                    <children>
+            <BorderPane styleClass="leo2-pane" GridPane.rowIndex="1" VBox.vgrow="ALWAYS">
+               <center>
                         <fx:include fx:id="mSidebar" source="components/Sidebar.fxml" />
-                    </children>
-                    <GridPane.margin>
-                        <Insets />
-                    </GridPane.margin>
-                </VBox>
+               </center>
+            </BorderPane>
                 <AnchorPane id="content" fx:id="mContentPaneContainer" minHeight="0.0" minWidth="0.0" styleClass="leo2-content-pane" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS" />
                 <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" styleClass="leo2-bottom-pane" GridPane.columnSpan="2" GridPane.rowIndex="2" />
             </children>
