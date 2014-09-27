@@ -24,7 +24,7 @@ namespace LeoBridge
     public interface ILeoBridgeEvents
     {
         [DispId(1)]
-        void OnMessage(String message);        
+        void OnMessage(String message);
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ namespace LeoBridge
     /// <author>masc</author>
     [Guid("EF6CD085-7175-4975-B1BB-2E7DE0A3774D")]
     [ComVisible(true)]
-    [ClassInterface(ClassInterfaceType.None)]    
+    [ClassInterface(ClassInterfaceType.None)]
     [ComSourceInterfaces(typeof(ILeoBridgeEvents))]
     public class LeoBridge : ILeoBridge
     {
@@ -53,15 +53,15 @@ namespace LeoBridge
             _dispatchWindow.AutoScaleMode = AutoScaleMode.None;
             _dispatchWindow.WindowState = FormWindowState.Minimized;
             _dispatchWindow.FormBorderStyle = FormBorderStyle.None;
-            _dispatchWindow.DesktopBounds = new System.Drawing.Rectangle(0, 0, 0, 0);            
+            _dispatchWindow.DesktopBounds = new System.Drawing.Rectangle(0, 0, 0, 0);
             _dispatchWindow.Show();
             _dispatchWindow.Hide();
- 
+
             // Create client message service channel factory
             WebHttpBinding myBinding = new WebHttpBinding();
             myBinding.OpenTimeout = TimeSpan.FromMilliseconds(250);
-            myBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(250);            
-            EndpointAddress myEndpoint = new EndpointAddress("http://localhost:37420");            
+            myBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(250);
+            EndpointAddress myEndpoint = new EndpointAddress("http://localhost:37420");
             _messageServiceChannelFactory = new ChannelFactory<IMessageService>(myBinding, myEndpoint);
             _messageServiceChannelFactory.Endpoint.EndpointBehaviors.Add(new WebHttpBehavior());
         }
@@ -81,9 +81,9 @@ namespace LeoBridge
         /// Start services
         /// </summary>
         public void Start()
-        {           
+        {
             MessageServiceHost.Instance.OnMessage += MessageServiceHost_OnMessage;
-            MessageServiceHost.Instance.Open();            
+            MessageServiceHost.Instance.Open();
         }
 
         public void Stop()
@@ -99,10 +99,14 @@ namespace LeoBridge
 
         void MessageServiceHost_OnMessage(string message)
         {
-            _dispatchWindow.Invoke(f => {
-                OnMessageDelegate d = this.OnMessage;
-                if (d != null)
-                    d(message);
+            ThreadPool.QueueUserWorkItem(s =>
+            {
+                _dispatchWindow.Invoke(f =>
+                {
+                    OnMessageDelegate d = this.OnMessage;
+                    if (d != null)
+                        d(message);
+                });
             });
         }
 
