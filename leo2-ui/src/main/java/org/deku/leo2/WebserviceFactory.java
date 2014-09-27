@@ -23,17 +23,16 @@ public class WebserviceFactory {
     /** Convenience method to get service instance
      * @param c service interface class*/
     public static <T> T getService(Class<T> c) {
-        // Setup mClient
+        // Setup client
         if (mClient == null) {
             mClient = ClientBuilder.newClient();
             mClient.register(JacksonJsonProvider.class);
             mClient.property(ClientProperties.CONNECT_TIMEOUT, 2000);
             mClient.property(ClientProperties.READ_TIMEOUT, 2000);
         }
-        // Setup base web target with api key
+
         if (mWebTarget == null) {
             mWebTarget = mClient.target("http://10.0.10.10:8080/leo2");
-
             //mWebTarget = mClient.target("http://localhost:8080/leo2");
         }
 
