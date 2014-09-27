@@ -4,12 +4,25 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<BorderPane prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.modules.DebugController">
+<BorderPane prefHeight="396.0" prefWidth="459.0" stylesheets="@../../css/leo2.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.modules.DebugController">
    <center>
-      <FlowPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <FlowPane hgap="20.0" prefHeight="200.0" prefWidth="200.0" rowValignment="TOP" vgap="20.0" BorderPane.alignment="CENTER_LEFT">
          <children>
             <TitledPane text="LeoBridge">
+               <content>
+                  <BorderPane styleClass="leo2-pane">
+                     <center>
+                        <HBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <TextField fx:id="mLeoBridgeMessageTextField" prefHeight="26.0" prefWidth="140.0" HBox.hgrow="ALWAYS" />
+                              <Button mnemonicParsing="false" onAction="#onLeoBridgeSend" prefHeight="26.0" prefWidth="49.0" text="Send" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </HBox>
+                     </center>
+                  </BorderPane>
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" text="untitled">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
               </content>

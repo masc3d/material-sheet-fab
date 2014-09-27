@@ -1,6 +1,7 @@
 package org.deku.leo2.fx;
 
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -11,6 +12,8 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
+import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.fx.components.SidebarController;
 import org.deku.leo2.fx.modules.DebugController;
 import org.deku.leo2.fx.modules.DepotMaintenanceController;
@@ -24,7 +27,7 @@ import java.util.ResourceBundle;
  * Main userinterface controller
  * Created by masc on 21.09.14.
  */
-public class MainController extends Controller implements Initializable, SidebarController.Listener {
+public class MainController extends Controller implements Initializable, SidebarController.Listener, LeoBridge.Listener {
     @FXML
     private Label mTitle;
     @FXML
@@ -40,18 +43,26 @@ public class MainController extends Controller implements Initializable, Sidebar
     private DepotMaintenanceController mDepotMaintenanceController;
     private DebugController mDebugController;
 
-    /** Currently active module */
+    /**
+     * Currently active module
+     */
     private ModuleController mCurrentModuleController;
-    /** Progress indicator request count */
+    /**
+     * Progress indicator request count
+     */
     private Integer mProgressIndicatorActivationCount = 0;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mSidebarController.setListener(this);
+        LeoBridge.instance().getListenerEventDelegate().add(this);
+
         this.setModule(this.getHomeModule(), false);
     }
 
-    /** Tracks current content pane transition */
+    /**
+     * Tracks current content pane transition
+     */
     Transition mContentPaneTransition;
 
     private DepotMaintenanceController getDepotMaintenanceModule() {
@@ -70,13 +81,14 @@ public class MainController extends Controller implements Initializable, Sidebar
 
     private DebugController getDebugPane() {
         if (mDebugController == null) {
-            mDebugController= ModuleController.fromFxml("/fx/modules/Debug.fxml");
+            mDebugController = ModuleController.fromFxml("/fx/modules/Debug.fxml");
         }
         return mDebugController;
     }
 
     /**
      * Sets and shows a content pane
+     *
      * @param moduleController
      * @param animated
      */
@@ -90,7 +102,7 @@ public class MainController extends Controller implements Initializable, Sidebar
         mCurrentModuleController = moduleController;
 
         Node node = moduleController.getRootNode();
-        Node oldNode = (oldModule!= null) ? oldModule.getRootNode() : null;
+        Node oldNode = (oldModule != null) ? oldModule.getRootNode() : null;
 
         this.setTitle(moduleController.getTitle());
 
@@ -146,11 +158,14 @@ public class MainController extends Controller implements Initializable, Sidebar
         moduleController.activate();
     }
 
-    /** Tracks current title transition */
+    /**
+     * Tracks current title transition
+     */
     Transition mTitleTransition;
 
     /**
      * Set title
+     *
      * @param title
      */
     private void setTitle(String title) {
@@ -205,7 +220,7 @@ public class MainController extends Controller implements Initializable, Sidebar
     @Override
     public void OnSidebarItemSelected(SidebarController.ItemType itemType) {
         ModuleController m;
-        switch(itemType) {
+        switch (itemType) {
             case Home:
                 m = this.getHomeModule();
                 break;
@@ -231,5 +246,14 @@ public class MainController extends Controller implements Initializable, Sidebar
             mDepotMaintenanceController.dispose();
         if (mDebugController != null)
             mDebugController.dispose();
+    }
+
+    @Override
+    public void onLeoBridgeMessageReceived(String message) {
+        Platform.runLater(() ->
+                Notifications.create()
+                        .title("Leo2")
+                        .text(String.format("Received message [%s]", message))
+                        .showInformation());
     }
 }
