@@ -11,12 +11,11 @@ import java.util.ResourceBundle;
  */
 public class DebugController extends ModuleController implements Initializable {
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
+    public String getTitle() {
+        return "Debug";
     }
 
     @Override
-    public String getTitle() {
-        return "Debug";
+    public void initialize(URL location, ResourceBundle resources) {
     }
 }

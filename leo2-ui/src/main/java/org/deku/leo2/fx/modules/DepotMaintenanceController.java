@@ -26,6 +26,11 @@ public class DepotMaintenanceController extends ModuleController implements Init
     private DepotDetailsController mDepotDetailsController;
 
     @Override
+    public String getTitle() {
+        return Main.instance().getLocalizedString("menu.depots");
+    }
+
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
         mDepotListController.setListener(this);
     }
@@ -36,18 +41,13 @@ public class DepotMaintenanceController extends ModuleController implements Init
     }
 
     @Override
-    public void dispose() {
-        super.dispose();
-        mDepotListController.dispose();
-    }
-
-    @Override
     public void onDepotListItemSelected(Depot depot) {
         mDepotDetailsController.setDepot(depot);
     }
 
     @Override
-    public String getTitle() {
-        return Main.instance().getLocalizedString("menu.depots");
+    public void dispose() {
+        super.dispose();
+        mDepotListController.dispose();
     }
 }

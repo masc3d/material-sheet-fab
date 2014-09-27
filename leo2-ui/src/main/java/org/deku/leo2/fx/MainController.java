@@ -89,8 +89,8 @@ public class MainController extends Controller implements Initializable, Sidebar
         ModuleController oldModule = mCurrentModuleController;
         mCurrentModuleController = moduleController;
 
-        Node node = moduleController.getNode();
-        Node oldNode = (oldModule!= null) ? oldModule.getNode() : null;
+        Node node = moduleController.getRootNode();
+        Node oldNode = (oldModule!= null) ? oldModule.getRootNode() : null;
 
         this.setTitle(moduleController.getTitle());
 
@@ -103,7 +103,7 @@ public class MainController extends Controller implements Initializable, Sidebar
                 ftOut.setFromValue(1.0);
                 ftOut.setToValue(0.0);
                 ftOut.setOnFinished(e -> {
-                    if (oldNode != mCurrentModuleController.getNode())
+                    if (oldNode != mCurrentModuleController.getRootNode())
                         mContentPaneContainer.getChildren().remove(oldNode);
                 });
                 animations.add(ftOut);
