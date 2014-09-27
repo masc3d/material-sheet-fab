@@ -8,6 +8,7 @@ using System.ServiceModel;
 using System.ServiceModel.Description;
 using LeoBridge.Service;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace LeoBridge
 {
@@ -105,7 +106,7 @@ namespace LeoBridge
             });
         }
 
-        public void Send(string message)
+        public void SendMessage(string message)
         {
             using (IClientChannel channel = (IClientChannel)_messageServiceChannelFactory.CreateChannel())
             {

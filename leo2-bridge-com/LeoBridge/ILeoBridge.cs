@@ -24,6 +24,6 @@ namespace LeoBridge
         /// Send message
         /// </summary>
         /// <param name="message"></param>
-        void Send(String message);
+        void SendMessage(String message);
     }
 }

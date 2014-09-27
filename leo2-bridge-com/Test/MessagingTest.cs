@@ -23,7 +23,7 @@ namespace LeoBridgeTest
         {
             using (LeoBridge.LeoBridge m = new LeoBridge.LeoBridge())
             {
-                m.Send("Test");
+                m.SendMessage("Test");
             }
         }
     }
