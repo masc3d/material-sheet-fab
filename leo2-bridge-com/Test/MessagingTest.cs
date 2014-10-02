@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using LeoBridge;
 
-namespace LeoBridgeTest
+namespace LeoBridge.Test
 {
     [TestClass]
     public class MessagingTest
@@ -11,7 +11,7 @@ namespace LeoBridgeTest
         [TestMethod]
         public void TestService()
         {
-            using (LeoBridge.LeoBridge m = new LeoBridge.LeoBridge())
+            using (LeoBridge m = new LeoBridge())
             {
                 m.Start();
                 System.Windows.Forms.MessageBox.Show("Running");
@@ -21,7 +21,7 @@ namespace LeoBridgeTest
         [TestMethod]
         public void TestSend()
         {
-            using (LeoBridge.LeoBridge m = new LeoBridge.LeoBridge())
+            using (LeoBridge m = new LeoBridge())
             {
                 m.SendMessage("Test");
             }
