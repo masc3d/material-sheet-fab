@@ -69,10 +69,7 @@ public class LeoBridge implements Disposable, MessageService.Listener {
         c.register(JacksonJsonProvider.class);
         c.property(ClientProperties.CONNECT_TIMEOUT, 500);
 
-        // Setup base web target with api key
-        WebTarget w = c.target(CLIENT_URI);
-
-        mMessageServiceClient = WebResourceFactory.newResource(IMessageService.class, w);
+        mMessageServiceClient = WebResourceFactory.newResource(IMessageService.class, c.target(CLIENT_URI));
     }
 
     public void start() throws IOException {
