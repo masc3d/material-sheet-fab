@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ServiceModel;
 
-using LeoBridge.Service;
 
 namespace LeoBridge
 {
@@ -14,7 +8,7 @@ namespace LeoBridge
     /// </summary>
     public interface IMessageServiceListener
     {
-       void OnMessageReceived(String message);
+       void OnMessageReceived(IMessage message);
     }
 
     /// <summary>
@@ -22,10 +16,9 @@ namespace LeoBridge
     /// </summary>
     class MessageService : IMessageService
     {
-        public bool SendMessage(string message)
+        public void SendMessage(Message message)
         {
-            ((IMessageServiceListener)OperationContext.Current.Host).OnMessageReceived(message);
-            return true;
+            ((IMessageServiceListener)OperationContext.Current.Host).OnMessageReceived(message);            
         }
     }
 }

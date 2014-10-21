@@ -4,8 +4,8 @@ Set oLeoBridge = WScript.CreateObject("LeoBridge.LeoBridge", "LeoBridge_")
 oLeoBridge.Start
 MsgBox("LeoBridge service running")
 
-Function LeoBridge_OnMessage(sMessage)
-	MsgBox("Event message [" + sMessage) + "]"
+Function LeoBridge_OnMessage(oMessage)
+	MsgBox("Event message [" + oMessage.ToString()) + "]"	
 End Function
 
 

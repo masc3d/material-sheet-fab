@@ -21,9 +21,11 @@ namespace LeoBridge.Test
         [TestMethod]
         public void TestSend()
         {
-            using (LeoBridge m = new LeoBridge())
+            using (LeoBridge lb = new LeoBridge())
             {
-                m.SendMessage("Test");
+                Message msg = new Message();
+                msg.Add("", "Test");
+                lb.SendMessage(msg);
             }
         }
     }

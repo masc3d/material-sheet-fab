@@ -30,9 +30,9 @@ namespace LeoBridge.TestWindow
             }
         }
 
-        static void _leoBridge_OnMessage(string message)
+        static void _leoBridge_OnMessage(IMessage message)
         {
-            _formMain.uxMessage.Text = message;
+            _formMain.uxMessage.Text = message.ToString();
             SetForegroundWindow(_formMain.Handle.ToInt32());
             //_formMain.Activate();
             //_formMain.BringToFront();

@@ -1,11 +1,22 @@
 Dim oLeoBridge
 Set oLeoBridge = WScript.CreateObject("LeoBridge.LeoBridge", "LeoBridge_")
 
-oLeoBridge.SendMessage "Success"
+Dim oMessage
+Set oMessage = WScript.CreateObject("LeoBridge.Message")
+
+oMessage.Add "Text", "yo"
+oMessage.Add "Date", Now()
+oMessage.Add "Int", 34
+oMessage.Add "Float", 32.4
+
+MsgBox("going to send")
+oLeoBridge.SendMessage(oMessage)
+
+oLeoBridge.SendValue "Success"
 MsgBox("sent1")
-oLeoBridge.SendMessage "Success2"
+oLeoBridge.SendValue "Success2"
 MsgBox("sent2")
-oLeoBridge.SendMessage "Success3"
+oLeoBridge.SendValue "Success3"
 MsgBox("sent3")
 
 

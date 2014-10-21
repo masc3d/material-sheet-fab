@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Description;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LeoBridge.Service
 {
@@ -43,7 +39,7 @@ namespace LeoBridge.Service
             this.Description.Behaviors.Add(smb);            
         }
 
-        void IMessageServiceListener.OnMessageReceived(string message)
+        void IMessageServiceListener.OnMessageReceived(IMessage message)
         {
             OnMessageDelegate d = this.OnMessage;
             if (d != null)

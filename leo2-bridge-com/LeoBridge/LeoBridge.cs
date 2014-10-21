@@ -1,30 +1,117 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using LeoBridge.Service;
 using System.Windows.Forms;
 using System.Threading;
+using System.Runtime.Serialization;
 
 namespace LeoBridge
 {
-    public delegate void OnMessageDelegate(String message);
+    public delegate void OnMessageDelegate(IMessage message);
 
     /// <summary>
-    /// Interface for LEO bridge (COM) events
+    /// LeoBridge message
     /// </summary>
-    /// <author>masc</author>
-    [Guid("709C2294-A2E0-4CD0-9969-6F2CC1B71625")]
+    [Guid("4EA174D1-6115-4002-AC5D-A02CBC49B1FE")]
     [ComVisible(true)]
-    [InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
-    public interface ILeoBridgeEvents
+    [ClassInterface(ClassInterfaceType.None)]
+    [Serializable]
+    public class Message : IMessage, ISerializable
     {
-        [DispId(1)]
-        void OnMessage(String message);
+        private static string DEFAULT_KEY = "_";
+
+        /// <summary>
+        /// Message attributes
+        /// </summary>
+        public Dictionary<string, object> Attributes { get; private set; }
+
+        public Message() 
+        {
+            this.Attributes = new Dictionary<string, object>();
+        }
+
+        public Message(object value)
+            : this()
+        {
+            this.Attributes.Add(DEFAULT_KEY, value);
+        }
+
+        public Message(Dictionary<String, Object> attributes)
+        {
+            this.Attributes = attributes;     
+        }
+
+        public object GetValue()
+        {            
+            return this.Attributes[DEFAULT_KEY];
+        }
+
+        public object Get(string key)
+        {
+            return this.Attributes[key];            
+        }
+
+        public void Add(string key, object value)
+        {
+            this.Attributes.Add(key, value);            
+        }
+
+        #region WCF data contract de/serialization
+        /// <summary>
+        /// c'tor for data contract/WCF deserialization
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        protected Message(SerializationInfo info, StreamingContext context)
+            : this()
+        {
+            foreach (var entry in info)
+            {
+                if (entry.Value is string)
+                {
+                    DateTime dt;
+                    if (DateTime.TryParse((String)entry.Value, out dt))
+                    {
+                        this.Attributes.Add(entry.Name, dt);
+                        continue;
+                    }
+                }
+
+                this.Attributes.Add(entry.Name, entry.Value);
+            }
+        }
+
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            foreach (String key in this.Attributes.Keys)
+            {
+                object value = this.Attributes[key];
+                if (value is DateTime)
+                {                    
+                    info.AddValue(key.ToString(), ((DateTime)value).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"));
+                }
+                else
+                {
+                    info.AddValue(key.ToString(), this.Attributes[key]);
+                }
+            }            
+        }
+        #endregion
+
+        public override string ToString()
+        {
+            string s = "";
+            foreach (KeyValuePair<string, object> kvp in this.Attributes)
+            {
+                if (s.Length > 0)
+                    s += ", ";
+                s += string.Format("{0}:{1}", kvp.Key, kvp.Value);
+            }
+            return s;
+        }
     }
 
     /// <summary>
@@ -61,20 +148,9 @@ namespace LeoBridge
             WebHttpBinding myBinding = new WebHttpBinding();
             myBinding.OpenTimeout = TimeSpan.FromMilliseconds(250);
             myBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(250);
-            EndpointAddress myEndpoint = new EndpointAddress("http://localhost:37420");
+            EndpointAddress myEndpoint = new EndpointAddress("http://localhost:37420");            
             _messageServiceChannelFactory = new ChannelFactory<IMessageService>(myBinding, myEndpoint);
             _messageServiceChannelFactory.Endpoint.EndpointBehaviors.Add(new WebHttpBehavior());
-        }
-
-        /// <summary>
-        /// Event test method
-        /// </summary>
-        /// <remarks>May be removed at some point</remarks>
-        /// <param name="testMessage"></param>
-        public void TestEvent(String testMessage)
-        {
-            if (OnMessage != null)
-                OnMessage(testMessage);
         }
 
         /// <summary>
@@ -97,7 +173,7 @@ namespace LeoBridge
             this.Stop();
         }
 
-        void MessageServiceHost_OnMessage(string message)
+        void MessageServiceHost_OnMessage(IMessage message)
         {
             ThreadPool.QueueUserWorkItem(s =>
             {
@@ -110,12 +186,25 @@ namespace LeoBridge
             });
         }
 
-        public void SendMessage(string message)
+        /// <summary>
+        /// Send a single value to remote
+        /// </summary>
+        /// <param name="value"></param>
+        public void SendValue(object value)
         {
+            this.SendMessage(new Message(value)); ;
+        }
+
+        /// <summary>
+        /// Send message to remote
+        /// </summary>
+        /// <param name="message"></param>
+        public void SendMessage(IMessage message)
+        {            
             using (IClientChannel channel = (IClientChannel)_messageServiceChannelFactory.CreateChannel())
             {
                 IMessageService s = (IMessageService)channel;
-                s.SendMessage(message);
+                s.SendMessage((Message)message);
             }
         }
     }
