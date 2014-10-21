@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import org.controlsfx.control.Notifications;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.fx.MainController;
 import org.sx.util.UTF8ResourceBundleControl;
@@ -21,6 +22,7 @@ import java.util.ResourceBundle;
 public class Main extends Application {
     private static Main mInstance;
 
+    private Stage mPrimaryStage;
     private Locale mLocale;
     private ResourceBundle mLocalizedResourceBundle;
 
@@ -164,6 +166,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         mInstance = this;
+        mPrimaryStage = primaryStage;
 
         // Load embedded fonts
         this.loadFont("/fonts/Futura-CondensedExtraBold.ttf");
@@ -186,5 +189,28 @@ public class Main extends Application {
         super.stop();
     }
 
+    /**
+     * Makes primary stage the current desktop foreground window
+     */
+    public void toForeground() {
+        // toFront doesn't suffice
+        mPrimaryStage.setAlwaysOnTop(true);
+        mPrimaryStage.setAlwaysOnTop(false);
+        mPrimaryStage.requestFocus();
+    }
+
+    public void showError(String message) {
+        Notifications.create()
+                .title("Leo2")
+                .text(message)
+                .showError();
+    }
+
+    public void showMessage(String message) {
+        Notifications.create()
+                .title("Leo2")
+                .text(message)
+                .showInformation();
+    }
 }
 

@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import org.deku.leo2.Main;
 import org.deku.leo2.Settings;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.bridge.Message;
@@ -57,5 +58,10 @@ public class DebugController extends ModuleController implements Initializable {
         } catch(Exception e) {
             mLog.severe(e.getMessage());
         }
+    }
+
+    public void onDepotSelect() {
+        Main.instance().getMainController().showModule(Main.instance().getMainController().getDepotMaintenanceModule());
+        Main.instance().getMainController().getDepotMaintenanceModule().selectDepot(800);
     }
 }

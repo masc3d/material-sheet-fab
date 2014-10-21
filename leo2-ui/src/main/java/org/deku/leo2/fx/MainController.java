@@ -12,7 +12,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
-import org.controlsfx.control.Notifications;
+import org.deku.leo2.Main;
 import org.deku.leo2.Settings;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.bridge.Message;
@@ -59,7 +59,7 @@ public class MainController extends Controller implements Initializable, Sidebar
         mSidebarController.setListener(this);
         LeoBridge.instance().getListenerEventDelegate().add(this);
 
-        this.setModule(this.getHomeModule(), false);
+        this.showModule(this.getHomeModule(), false);
     }
 
     /**
@@ -67,21 +67,21 @@ public class MainController extends Controller implements Initializable, Sidebar
      */
     Transition mContentPaneTransition;
 
-    private DepotMaintenanceController getDepotMaintenanceModule() {
+    public DepotMaintenanceController getDepotMaintenanceModule() {
         if (mDepotMaintenanceController == null) {
             mDepotMaintenanceController = ModuleController.fromFxml("/fx/modules/DepotMaintenance.fxml");
         }
         return mDepotMaintenanceController;
     }
 
-    private HomeController getHomeModule() {
+    public HomeController getHomeModule() {
         if (mHomeController == null) {
             mHomeController = ModuleController.fromFxml("/fx/modules/Home.fxml");
         }
         return mHomeController;
     }
 
-    private DebugController getDebugPane() {
+    public DebugController getDebugPane() {
         if (mDebugController == null) {
             mDebugController = ModuleController.fromFxml("/fx/modules/Debug.fxml");
         }
@@ -94,7 +94,7 @@ public class MainController extends Controller implements Initializable, Sidebar
      * @param moduleController
      * @param animated
      */
-    private void setModule(ModuleController moduleController, boolean animated) {
+    private void showModule(ModuleController moduleController, boolean animated) {
         double duration = 500;
 
         if (mCurrentModuleController == moduleController)
@@ -160,6 +160,10 @@ public class MainController extends Controller implements Initializable, Sidebar
         }
 
         moduleController.activate();
+    }
+
+    public void showModule(ModuleController moduleController) {
+        this.showModule(moduleController, Settings.instance().isAnimationsEnabled());
     }
 
     /**
@@ -241,7 +245,8 @@ public class MainController extends Controller implements Initializable, Sidebar
             default:
                 throw new RuntimeException(String.format("Unknown sidebar item [%s]", itemType));
         }
-        this.setModule(m, Settings.instance().isAnimationsEnabled());
+
+        this.showModule(m);
     }
 
     @Override
@@ -259,9 +264,15 @@ public class MainController extends Controller implements Initializable, Sidebar
     @Override
     public void onLeoBridgeMessageReceived(Message message) {
         Platform.runLater(() ->
-                Notifications.create()
-                        .title("Leo2")
-                        .text(String.format("Received message [%s]", message))
-                        .showInformation());
+        {
+            Main.instance().toForeground();
+            if (message.get("view").equals("depot")) {
+                Integer id = (Integer) message.get("id");
+                this.showModule(this.getDepotMaintenanceModule());
+                this.getDepotMaintenanceModule().selectDepot(id);
+            } else {
+                Main.instance().showMessage(String.format("Received message [%s]", message));
+            }
+        });
     }
 }

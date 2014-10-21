@@ -10,7 +10,10 @@ import org.sx.Disposable;
  */
 public abstract class Controller implements Activatable, Disposable {
     public final void activate() {
-        Platform.runLater(() -> this.onActivation());
+        // Run later, as requesting focus within initial activation (directly after loading from fxml) won't work (bug in javafx8)
+        Platform.runLater(() ->
+                this.onActivation()
+        );
     }
 
     /**

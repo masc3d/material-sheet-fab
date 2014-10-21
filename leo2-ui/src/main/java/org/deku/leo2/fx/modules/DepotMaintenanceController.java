@@ -45,6 +45,10 @@ public class DepotMaintenanceController extends ModuleController implements Init
         mDepotDetailsController.setDepot(depot);
     }
 
+    public void selectDepot(Integer id) {
+        mDepotListController.requestDepotSelection(id);
+    }
+
     @Override
     public void dispose() {
         super.dispose();

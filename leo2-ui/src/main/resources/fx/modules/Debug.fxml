@@ -32,6 +32,15 @@
                   </VBox>
               </content>
             </TitledPane>
+            <TitledPane animated="false" text="Depot">
+              <content>
+                  <VBox>
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#onDepotSelect" text="Select" />
+                     </children>
+                  </VBox>
+              </content>
+            </TitledPane>
          </children>
       </FlowPane>
    </center>

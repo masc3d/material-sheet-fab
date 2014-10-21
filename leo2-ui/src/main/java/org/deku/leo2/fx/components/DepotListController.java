@@ -1,17 +1,26 @@
 package org.deku.leo2.fx.components;
 
+import com.sun.javafx.collections.ImmutableObservableList;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
+import org.controlsfx.control.Notifications;
 import org.deku.leo2.Main;
 import org.deku.leo2.WebserviceFactory;
+import org.deku.leo2.bridge.LeoBridge;
+import org.deku.leo2.bridge.MessageFactory;
 import org.deku.leo2.fx.Controller;
 import org.deku.leo2.rest.v1.entities.Depot;
 
@@ -31,23 +40,25 @@ public class DepotListController extends Controller implements Initializable {
     @FXML
     private TableView<Depot> mDepotTableView;
     @FXML
-    private TableColumn<Depot, String> mDepotTableMatchcodeColumn;
+    private TableColumn mDepotTableMatchcodeColumn;
     @FXML
-    private TableColumn<Depot, String> mDepotTableCompany1Column;
+    private TableColumn mDepotTableCompany1Column;
     @FXML
-    private TableColumn<Depot, String> mDepotTableCompany2Column;
+    private TableColumn mDepotTableCompany2Column;
     @FXML
-    private TableColumn<Depot, String> mDepotTableCountryColumn;
+    private TableColumn mDepotTableCountryColumn;
     @FXML
-    private TableColumn<Depot, String> mDepotTableZipCodeColumn;
+    private TableColumn mDepotTableZipCodeColumn;
     @FXML
-    private TableColumn<Depot, String> mDepotTableCityColumn;
+    private TableColumn mDepotTableCityColumn;
     @FXML
-    private TableColumn<Depot, String> mDepotTableStreetColumn;
+    private TableColumn mDepotTableStreetColumn;
+
+    private ObservableList<Depot> mDepots = new ImmutableObservableList<Depot>();
 
     private ExecutorService mQueryTaskExecutor = Executors.newFixedThreadPool(3);
     private Task<ObservableList<Depot>> mQueryTask;
-
+    private Integer mRequestedDepotId = null;
     private Listener mListener;
 
     public interface Listener extends EventListener {
@@ -74,7 +85,10 @@ public class DepotListController extends Controller implements Initializable {
 
         @Override
         protected void succeeded() {
-            mDepotTableView.setItems(this.getValue());
+            mDepots = this.getValue();
+            mDepotTableView.setItems(mDepots);
+            if (mRequestedDepotId != null)
+                selectDepot(mRequestedDepotId);
             mSearchText.getStyleClass().remove("leo2-error");
         }
 
@@ -83,7 +97,7 @@ public class DepotListController extends Controller implements Initializable {
             mSearchText.getStyleClass().add("leo2-error");
         }
     }
-
+    
     public Listener getListener() {
         return mListener;
     }
@@ -91,7 +105,6 @@ public class DepotListController extends Controller implements Initializable {
     public void setListener(Listener listener) {
         mListener = listener;
     }
-
 
     public void onSearchTextChanged(String text) {
         this.startQuery();
@@ -129,12 +142,65 @@ public class DepotListController extends Controller implements Initializable {
         mDepotTableCityColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("ort"));
         mDepotTableStreetColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("strasse"));
 
+        // Cell factory for cell specific behaviour handling
+        Callback<TableColumn, TableCell> cellFactory =
+                new Callback<TableColumn, TableCell>() {
+                    public TableCell call(TableColumn p) {
+                        TableCell tc = new TextFieldTableCell<>();
+                        tc.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent event) {
+                                if (event.getClickCount() > 1) {
+                                    TableCell cell = (TableCell) event.getSource();
+                                    Depot depot = (Depot) cell.getTableRow().getItem();
+                                    try {
+                                        LeoBridge.instance().sendMessage(MessageFactory.createViewDepotMessage(depot));
+                                    } catch (Exception e) {
+                                        Main.instance().showError("Could not send message to leo1");
+                                    }
+                                }
+                            }
+                        });
+                        return tc;
+                    }
+                };
+
+        mDepotTableMatchcodeColumn.setCellFactory(cellFactory);
+        mDepotTableCompany1Column.setCellFactory(cellFactory);
+        mDepotTableCompany2Column.setCellFactory(cellFactory);
+        mDepotTableCountryColumn.setCellFactory(cellFactory);
+        mDepotTableZipCodeColumn.setCellFactory(cellFactory);
+        mDepotTableCityColumn.setCellFactory(cellFactory);
+        mDepotTableStreetColumn.setCellFactory(cellFactory);
+
         this.startQuery();
+    }
+
+    private void selectDepot(Integer id) {
+        for (int i = 0; i < mDepots.size(); i++) {
+            Depot d = mDepots.get(i);
+            if (d.getDepotNr().equals(id)) {
+                mDepotTableView.getSelectionModel().select(d);
+                mDepotTableView.scrollTo(d);
+                mDepotTableView.requestFocus();
+            }
+        }
+        mRequestedDepotId = null;
+    }
+
+    public void requestDepotSelection(Integer id) {
+        mRequestedDepotId = id;
+        if (mSearchText.getText().length() == 0 && mDepots.size() > 0) {
+            this.selectDepot(id);
+        } else {
+            this.startQuery();
+        }
     }
 
     @Override
     public void onActivation() {
-        mSearchText.requestFocus();
+        if (!mDepotTableView.isFocused())
+            mSearchText.requestFocus();
     }
 
     @Override
