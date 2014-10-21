@@ -195,8 +195,9 @@ public class Main extends Application {
     public void toForeground() {
         // toFront doesn't suffice
         mPrimaryStage.setAlwaysOnTop(true);
-        mPrimaryStage.setAlwaysOnTop(false);
+        mPrimaryStage.toFront();
         mPrimaryStage.requestFocus();
+        mPrimaryStage.setAlwaysOnTop(false);
     }
 
     public void showError(String message) {

@@ -266,7 +266,6 @@ public class MainController extends Controller implements Initializable, Sidebar
     public void onLeoBridgeMessageReceived(Message message) {
         Platform.runLater(() ->
         {
-            Main.instance().toForeground();
             if (message.get("view").equals("depot")) {
                 Integer id = (Integer) message.get("id");
                 this.showModule(this.getDepotMaintenanceModule());
@@ -274,6 +273,7 @@ public class MainController extends Controller implements Initializable, Sidebar
             } else {
                 Main.instance().showMessage(String.format("Received message [%s]", message));
             }
+            Main.instance().toForeground();
         });
     }
 }
