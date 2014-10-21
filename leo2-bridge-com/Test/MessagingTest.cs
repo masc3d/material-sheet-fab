@@ -24,7 +24,7 @@ namespace LeoBridge.Test
             using (LeoBridge lb = new LeoBridge())
             {
                 Message msg = new Message();
-                msg.Add("", "Test");
+                msg.Put("", "Test");
                 lb.SendMessage(msg);
             }
         }

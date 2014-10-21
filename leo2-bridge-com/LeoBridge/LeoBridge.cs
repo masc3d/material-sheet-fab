@@ -44,17 +44,17 @@ namespace LeoBridge
             this.Attributes = attributes;     
         }
 
+        public object Get(string key)
+        {
+            return this.Attributes[key];
+        }
+
         public object GetValue()
-        {            
+        {
             return this.Attributes[DEFAULT_KEY];
         }
 
-        public object Get(string key)
-        {
-            return this.Attributes[key];            
-        }
-
-        public void Add(string key, object value)
+        public void Put(string key, object value)
         {
             this.Attributes.Add(key, value);            
         }

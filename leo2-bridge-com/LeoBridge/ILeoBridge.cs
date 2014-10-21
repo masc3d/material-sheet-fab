@@ -67,7 +67,7 @@ namespace LeoBridge
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        void Add(string key, object value);
+        void Put(string key, object value);
         string ToString();
     }
 }
