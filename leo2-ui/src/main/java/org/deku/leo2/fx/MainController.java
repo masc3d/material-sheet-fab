@@ -13,6 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
+import org.deku.leo2.Settings;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.fx.components.SidebarController;
 import org.deku.leo2.fx.modules.DebugController;
@@ -104,7 +105,7 @@ public class MainController extends Controller implements Initializable, Sidebar
         Node node = moduleController.getRootNode();
         Node oldNode = (oldModule != null) ? oldModule.getRootNode() : null;
 
-        this.setTitle(moduleController.getTitle());
+        this.setTitle(moduleController.getTitle(), animated);
 
         ArrayList<Animation> animations = new ArrayList<>();
 
@@ -153,6 +154,8 @@ public class MainController extends Controller implements Initializable, Sidebar
                 mContentPaneTransition.setOnFinished(evt);
             else
                 evt.handle(null);
+        } else {
+            node.setOpacity(1.0);
         }
 
         moduleController.activate();
@@ -168,34 +171,38 @@ public class MainController extends Controller implements Initializable, Sidebar
      *
      * @param title
      */
-    private void setTitle(String title) {
-        double duration = 175;
+    private void setTitle(String title, boolean animated) {
+        if (animated) {
+            double duration = 175;
 
-        FadeTransition ftOut = new FadeTransition(Duration.millis(duration), mTitle);
-        ftOut.setFromValue(1.0);
-        ftOut.setToValue(0.0);
+            FadeTransition ftOut = new FadeTransition(Duration.millis(duration), mTitle);
+            ftOut.setFromValue(1.0);
+            ftOut.setToValue(0.0);
 
-        ftOut.setOnFinished(e -> {
+            ftOut.setOnFinished(e -> {
+                mTitle.setText(title);
+            });
+
+            FadeTransition ftIn = new FadeTransition(Duration.millis(duration), mTitle);
+            ftIn.setFromValue(0.0);
+            ftIn.setToValue(1.0);
+            ftIn.setOnFinished(e -> {
+                mTitleTransition = null;
+            });
+
+            // Create chained sequential transition
+            EventHandler<ActionEvent> evt = e -> {
+                mTitleTransition = new SequentialTransition(ftOut, ftIn);
+                mTitleTransition.play();
+            };
+
+            if (mTitleTransition != null)
+                mTitleTransition.setOnFinished(evt);
+            else
+                evt.handle(null);
+        } else {
             mTitle.setText(title);
-        });
-
-        FadeTransition ftIn = new FadeTransition(Duration.millis(duration), mTitle);
-        ftIn.setFromValue(0.0);
-        ftIn.setToValue(1.0);
-        ftIn.setOnFinished(e -> {
-            mTitleTransition = null;
-        });
-
-        // Create chained sequential transition
-        EventHandler<ActionEvent> evt = e -> {
-            mTitleTransition = new SequentialTransition(ftOut, ftIn);
-            mTitleTransition.play();
-        };
-
-        if (mTitleTransition != null)
-            mTitleTransition.setOnFinished(evt);
-        else
-            evt.handle(null);
+        }
     }
 
     /**
@@ -233,7 +240,7 @@ public class MainController extends Controller implements Initializable, Sidebar
             default:
                 throw new RuntimeException(String.format("Unknown sidebar item [%s]", itemType));
         }
-        this.setModule(m, true);
+        this.setModule(m, Settings.instance().isAnimationsEnabled());
     }
 
     @Override

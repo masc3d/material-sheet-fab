@@ -24,7 +24,7 @@
 }
 
 .leo2-logo {
-    -fx-background-image: url('../images/logo.png');
+    -fx-background-image: url('../images/DEKU.logo.256px.png');
     -fx-background-position: center center;
     -fx-background-size: contain;
     -fx-background-repeat: no-repeat;
@@ -43,7 +43,7 @@
 
 /** home view styles */
 .leo2-home-pane {
-    -fx-background-image: url('../images/logo-gray.png');
+    -fx-background-image: url('../images/DEKU.logo.backdrop.1178px.png');
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-size: contain;
