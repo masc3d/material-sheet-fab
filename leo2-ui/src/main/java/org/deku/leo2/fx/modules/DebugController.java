@@ -1,16 +1,16 @@
 package org.deku.leo2.fx.modules;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import org.deku.leo2.Settings;
 import org.deku.leo2.bridge.LeoBridge;
+import org.deku.leo2.bridge.Message;
 import org.deku.leo2.fx.ModuleController;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -40,7 +40,20 @@ public class DebugController extends ModuleController implements Initializable {
 
     public void onLeoBridgeSend() {
         try {
-            LeoBridge.instance().sendMessage(mLeoBridgeMessageTextField.getText());
+            LeoBridge.instance().sendMessage(new Message(mLeoBridgeMessageTextField.getText()));
+        } catch(Exception e) {
+            mLog.severe(e.getMessage());
+        }
+    }
+
+    public void onLeoBridgeSendComplexMessage() {
+        Message msg = new Message();
+        msg.put("text", "hey");
+        msg.put("int", 123);
+        msg.put("float", 34.5);
+        msg.put("date", new Date());
+        try {
+            LeoBridge.instance().sendMessage(msg);
         } catch(Exception e) {
             mLog.severe(e.getMessage());
         }

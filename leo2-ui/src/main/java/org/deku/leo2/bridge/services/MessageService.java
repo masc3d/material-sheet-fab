@@ -1,12 +1,17 @@
 package org.deku.leo2.bridge.services;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.deku.leo2.bridge.IMessageService;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.bridge.MediaType;
+import org.deku.leo2.bridge.Message;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import java.util.Date;
+import java.util.Dictionary;
+import java.util.HashMap;
 
 /**
  * Created by masc on 17.09.14.
@@ -16,13 +21,13 @@ import javax.ws.rs.Produces;
 @Consumes(MediaType.APPLICATION_JSON_UTF8)
 public class MessageService implements IMessageService {
     public interface Listener {
-        void onLeoBridgeServiceMessageReceived(String message);
+        void onLeoBridgeServiceMessageReceived(Message message);
     }
 
     @Override
-    public boolean send(String message) {
+    public void send(Message message) {
+        Date test = new Date();
         Listener l = (Listener) LeoBridge.instance();
         l.onLeoBridgeServiceMessageReceived(message);
-        return true;
     }
 }

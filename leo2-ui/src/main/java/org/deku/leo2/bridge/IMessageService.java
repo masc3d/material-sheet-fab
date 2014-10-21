@@ -1,6 +1,10 @@
 package org.deku.leo2.bridge;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import javax.ws.rs.*;
+import java.util.Dictionary;
+import java.util.HashMap;
 
 /**
  * LeoBridge service interface
@@ -11,7 +15,7 @@ import javax.ws.rs.*;
 @Consumes(MediaType.APPLICATION_JSON_UTF8)
 @Path("/")
 public interface IMessageService {
-    @GET
+    @POST
     @Path("/send")
-    boolean send(@QueryParam("m") String message);
+    void send(Message message);
 }

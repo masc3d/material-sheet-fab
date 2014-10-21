@@ -15,6 +15,7 @@ import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
 import org.deku.leo2.Settings;
 import org.deku.leo2.bridge.LeoBridge;
+import org.deku.leo2.bridge.Message;
 import org.deku.leo2.fx.components.SidebarController;
 import org.deku.leo2.fx.modules.DebugController;
 import org.deku.leo2.fx.modules.DepotMaintenanceController;
@@ -256,7 +257,7 @@ public class MainController extends Controller implements Initializable, Sidebar
     }
 
     @Override
-    public void onLeoBridgeMessageReceived(String message) {
+    public void onLeoBridgeMessageReceived(Message message) {
         Platform.runLater(() ->
                 Notifications.create()
                         .title("Leo2")
