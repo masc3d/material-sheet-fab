@@ -1,8 +1,12 @@
 package org.deku.leo2.fx.modules;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import org.deku.leo2.Settings;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.fx.ModuleController;
 
@@ -18,6 +22,8 @@ public class DebugController extends ModuleController implements Initializable {
 
     @FXML
     private TextField mLeoBridgeMessageTextField;
+    @FXML
+    private CheckBox mUiAnimationsEnabled;
 
     @Override
     public String getTitle() {
@@ -26,6 +32,10 @@ public class DebugController extends ModuleController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        mUiAnimationsEnabled.setSelected(Settings.instance().isAnimationsEnabled());
+        mUiAnimationsEnabled.selectedProperty().addListener((o, ov, nv) -> {
+            Settings.instance().setAnimationsEnabled(nv);
+        });
     }
 
     public void onLeoBridgeSend() {
