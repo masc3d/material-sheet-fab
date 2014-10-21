@@ -160,6 +160,7 @@ public class MainController extends Controller implements Initializable, Sidebar
         }
 
         moduleController.activate();
+        mSidebarController.highlightByController(moduleController);
     }
 
     public void showModule(ModuleController moduleController) {

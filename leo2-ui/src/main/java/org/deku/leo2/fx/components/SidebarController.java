@@ -3,10 +3,17 @@ package org.deku.leo2.fx.components;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
+import org.deku.leo2.fx.ModuleController;
+import org.deku.leo2.fx.modules.DebugController;
+import org.deku.leo2.fx.modules.DepotMaintenanceController;
+import org.deku.leo2.fx.modules.HomeController;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -17,6 +24,14 @@ public class SidebarController implements Initializable {
     Accordion mMenuAccordion;
     @FXML
     TitledPane mMenuPane;
+    @FXML
+    Button mHomeButton;
+    @FXML
+    Button mDepotsButton;
+    @FXML
+    Button mDebugButton;
+
+    List<Button> mButtons = new ArrayList<Button>();
 
     public enum ItemType {
         Home,
@@ -49,8 +64,29 @@ public class SidebarController implements Initializable {
             mListener.OnSidebarItemSelected(ItemType.Debug);
     }
 
+    public void highlightByController(ModuleController module) {
+        for (Button b : mButtons)
+            b.getStyleClass().remove("leo2-sidebar-selection");
+
+        Button selection = null;
+        if (module instanceof HomeController) {
+            selection = mHomeButton;
+        } else if (module instanceof DepotMaintenanceController) {
+            selection = mDepotsButton;
+        } else if (module instanceof DebugController) {
+            selection = mDebugButton;
+        }
+
+        if (selection != null)
+            selection.getStyleClass().add("leo2-sidebar-selection");
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mMenuAccordion.setExpandedPane(mMenuPane);
+
+        mButtons.add(mHomeButton);
+        mButtons.add(mDepotsButton);
+        mButtons.add(mDebugButton);
     }
 }

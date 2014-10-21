@@ -193,6 +193,7 @@ public class DepotListController extends Controller implements Initializable {
         if (mSearchText.getText().length() == 0 && mDepots.size() > 0) {
             this.selectDepot(id);
         } else {
+            mSearchText.setText("");
             this.startQuery();
         }
     }

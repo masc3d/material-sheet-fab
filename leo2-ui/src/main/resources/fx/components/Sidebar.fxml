@@ -18,7 +18,7 @@
                <content>
                     <VBox alignment="TOP_CENTER" spacing="10.0" styleClass="leo2-pane">
                         <children>
-                            <Button alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeButton" text="%menu.home" VBox.vgrow="ALWAYS">
+                            <Button fx:id="mHomeButton" alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeButton" text="%menu.home" VBox.vgrow="ALWAYS">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <viewport>
@@ -30,7 +30,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                            <Button alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDepotButton" text="%menu.depots">
+                            <Button fx:id="mDepotsButton" alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDepotButton" text="%menu.depots">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -39,7 +39,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDebugButton" text="Debug">
+                        <Button fx:id="mDebugButton" alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDebugButton" text="Debug">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
