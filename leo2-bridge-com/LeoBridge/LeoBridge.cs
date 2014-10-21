@@ -46,12 +46,14 @@ namespace LeoBridge
 
         public object Get(string key)
         {
-            return this.Attributes[key];
+            object value = null;
+            this.Attributes.TryGetValue(key, out value);
+            return value;
         }
 
         public object GetValue()
         {
-            return this.Attributes[DEFAULT_KEY];
+            return this.Get(DEFAULT_KEY);
         }
 
         public void Put(string key, object value)
