@@ -25,7 +25,7 @@
             <children>
                 <AnchorPane styleClass="leo2-top-pane">
                     <children>
-                        <Pane styleClass="leo2-logo" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="10.0" />
+                        <Pane styleClass="leo2-logo" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="10.0" />
                     </children>
                 </AnchorPane>
                 <HBox styleClass="leo2-top-pane" GridPane.columnIndex="1">
