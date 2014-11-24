@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
 /**
  * Resource bundle control for supporting utf-8
  */
-public class UTF8ResourceBundleControl extends ResourceBundle.Control {
+public class Utf8ResourceBundleControl extends ResourceBundle.Control {
     public ResourceBundle newBundle
             (String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
             throws IllegalAccessException, InstantiationException, IOException {
