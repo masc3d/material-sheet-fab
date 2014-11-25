@@ -27,11 +27,22 @@ import java.util.ArrayList;
  * @author masc
  */
 public class RegularEventDispatcher<T extends EventListener> extends EventDispatcher<T> {
-    private final ArrayList<T> _listeners = new ArrayList<T>();
+    protected final ArrayList<T> _listeners = new ArrayList<T>();
 
     @Override
     public void add(T listener) {
         _listeners.add(listener);
+    }
+
+    @Override
+    public void add(Object listener) {
+        if (listener != null) {
+            try {
+                this.add((T)listener);
+            } catch(ClassCastException e) {
+                // Ignore cast exceptions
+            }
+        }
     }
 
     @Override
