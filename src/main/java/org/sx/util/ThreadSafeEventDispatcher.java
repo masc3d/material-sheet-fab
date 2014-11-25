@@ -7,20 +7,18 @@ import java.util.ArrayList;
  *
  * @author masc
  */
-public class ThreadSafeEventDispatcher<T extends EventListener> extends EventDispatcher<T> {
-    private final ArrayList<T> _listeners = new ArrayList<T>();
-
+public class ThreadSafeEventDispatcher<T extends EventListener> extends RegularEventDispatcher<T> {
     @Override
     public void add(T listener) {
         synchronized (_listeners) {
-            _listeners.add(listener);
+            super.add(listener);
         }
     }
 
     @Override
     public void remove(T listener) {
         synchronized (_listeners) {
-            _listeners.remove(listener);
+            super.remove(listener);
         }
     }
 

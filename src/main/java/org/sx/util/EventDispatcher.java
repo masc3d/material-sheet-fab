@@ -14,7 +14,17 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
     public EventDispatcher(){
     }
 
+    /**
+     * Add listener
+     * @param listener
+     */
     public abstract void add(T listener);
+    /**
+     * Add listener safely
+     * If instance does not implement the interface this method does nothing
+     * @param listener Listener to add
+     */
+    public abstract void add(Object listener);
     public abstract void remove(T listener);
     public abstract void emit(Runnable<T> r);
 
