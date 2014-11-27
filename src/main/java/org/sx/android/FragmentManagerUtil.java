@@ -1,6 +1,8 @@
 package org.sx.android;
 
 import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
+import org.sx.util.Cast;
 
 import java.io.PrintWriter;
 
@@ -9,9 +11,19 @@ import java.io.PrintWriter;
  */
 public class FragmentManagerUtil {
 
-    /** Dump fragment manager state to System.out */
-    public static void dump(Activity a) {
-        a.getFragmentManager().dump("", null,
-                new PrintWriter(System.out, true), null);
+    /**
+     * Dump fragment manager state to System.out
+     * @param activity Activity
+     */
+    public static void dump(Activity activity) {
+        FragmentActivity fragmentActivity = Cast.as(FragmentActivity.class, activity);
+
+        if (fragmentActivity != null) {
+            fragmentActivity.getSupportFragmentManager().dump("", null,
+                    new PrintWriter(System.out, true), null);
+        } else {
+            activity.getFragmentManager().dump("", null,
+                    new PrintWriter(System.out, true), null);
+        }
     }
 }
