@@ -34,6 +34,7 @@ public abstract class Task<V> implements RunnableFuture<V> {
                     error = e;
                 }
 
+                onCompletion(result, error);
                 if (_callback != null)
                     _callback.onCompletion(result, error);
 
@@ -51,33 +52,30 @@ public abstract class Task<V> implements RunnableFuture<V> {
 
     protected abstract V perform() throws Exception;
 
-    @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
+    protected abstract void onCompletion(V result, Exception error);
+
+    public final boolean cancel(boolean mayInterruptIfRunning) {
         return _futureTask.cancel(mayInterruptIfRunning);
     }
 
-    @Override
-    public boolean isCancelled() {
+    public final boolean isCancelled() {
         return _futureTask.isCancelled();
     }
 
-    @Override
-    public boolean isDone() {
+    public final boolean isDone() {
         return _futureTask.isDone();
     }
 
-    @Override
-    public V get() throws InterruptedException, ExecutionException {
+    public final V get() throws InterruptedException, ExecutionException {
         return _futureTask.get();
     }
 
-    @Override
-    public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public final V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         return _futureTask.get(timeout, unit);
     }
 
     @Override
-    public void run() {
+    public final void run() {
         _futureTask.run();
     }
 }
