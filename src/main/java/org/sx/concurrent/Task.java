@@ -34,9 +34,11 @@ public abstract class Task<V> implements RunnableFuture<V> {
                     error = e;
                 }
 
-                onCompletion(result, error);
-                if (_callback != null)
-                    _callback.onCompletion(result, error);
+                if (!_futureTask.isCancelled()) {
+                    onCompletion(result, error);
+                    if (_callback != null)
+                        _callback.onCompletion(result, error);
+                }
 
                 if (error != null)
                     throw error;
