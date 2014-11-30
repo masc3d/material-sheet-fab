@@ -1,4 +1,4 @@
-package org.sx.swing;
+package sx.swing;
 
 public class SwingUtilities {
     /**

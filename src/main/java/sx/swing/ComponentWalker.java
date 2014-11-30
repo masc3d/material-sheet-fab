@@ -1,4 +1,4 @@
-package org.sx.swing;
+package sx.swing;
 
 import java.awt.*;
 

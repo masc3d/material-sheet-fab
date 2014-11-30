@@ -1,4 +1,4 @@
-package org.sx;
+package sx;
 
 /**
  * Created by masc on 23.09.14.

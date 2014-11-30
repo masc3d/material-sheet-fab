@@ -1,4 +1,4 @@
-package org.sx.util;
+package sx.util;
 
 /**
  * Created by masc on 15.08.14.

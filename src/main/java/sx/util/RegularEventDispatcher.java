@@ -15,9 +15,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sx.util;
+package sx.util;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Multicast event dispatcher without thread-safety.
@@ -27,35 +32,33 @@ import java.util.ArrayList;
  * @author masc
  */
 public class RegularEventDispatcher<T extends EventListener> extends EventDispatcher<T> {
-    protected final ArrayList<T> _listeners = new ArrayList<T>();
+    /**
+     * Weak references of listeners
+     */
+    private final ArrayList<WeakReference<T>> _listeners = new ArrayList<WeakReference<T>>();
 
     @Override
     public void add(T listener) {
-        _listeners.add(listener);
+        _listeners.add(new WeakReference<T>(listener));
     }
 
     @Override
-    public void add(Object listener) {
-        if (listener != null) {
-            try {
-                this.add((T)listener);
-            } catch(ClassCastException e) {
-                // Ignore cast exceptions
+    public void remove(final T listener) {
+        _listeners.removeAll(Collections2.filter(_listeners, new Predicate<WeakReference<T>>() {
+            @Override
+            public boolean apply(WeakReference<T> input) {
+                return input.get() == listener;
             }
-        }
+        }));
     }
 
     @Override
-    public void remove(T listener) {
-        _listeners.remove(listener);
+    protected void remove(List<WeakReference<T>> listeners) {
+        _listeners.removeAll(listeners);
     }
 
     @Override
-    public void emit(Runnable<T> r) {
-        // Also non-threadsafe dispatcher needs a copy of listeners,
-        // as consumers may modify the collection by adding/removing listeners
-        ArrayList<T> listeners = new ArrayList<T>(_listeners);
-        for (T listener : listeners)
-            r.run(listener);
+    protected List<WeakReference<T>> getListeners() {
+        return new ArrayList<WeakReference<T>>(_listeners);
     }
 }
