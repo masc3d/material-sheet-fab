@@ -1,4 +1,4 @@
-package org.sx.util;
+package sx.util;
 
 /**
  * Multicast event delegate interface

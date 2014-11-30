@@ -1,4 +1,4 @@
-package org.sx.util;
+package sx.util;
 
 import java.io.IOException;
 import java.io.InputStream;
