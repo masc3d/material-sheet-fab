@@ -1,8 +1,8 @@
-package org.sx.android;
+package sx.android.ui;
 
 import android.app.Activity;
 import android.support.v4.app.FragmentActivity;
-import org.sx.util.Cast;
+import sx.util.Cast;
 
 import java.io.PrintWriter;
 
