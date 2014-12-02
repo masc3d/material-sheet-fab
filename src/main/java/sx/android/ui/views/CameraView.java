@@ -14,6 +14,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder mHolder;
     private Camera mCamera;
 
+    boolean mHasSurface = false;
+
     public CameraView(Context context, Camera camera) {
         super(context);
         mCamera = camera;
@@ -88,6 +90,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         mCamera.setParameters(parameters);
 
         mCamera.startPreview();
+
+        mHasSurface = true;
     }
 
     @Override
@@ -99,5 +103,9 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
+    }
+
+    public boolean hasSurface() {
+        return mHasSurface;
     }
 }
