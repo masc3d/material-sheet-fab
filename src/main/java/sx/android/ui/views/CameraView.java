@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Camera view
  */
-public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
+public class CameraView extends SurfaceView implements SurfaceHolder.Callback, Camera.AutoFocusCallback {
     private SurfaceHolder mHolder;
     private Camera mCamera;
 
@@ -88,7 +88,6 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         parameters.setRotation(degrees);
 
         mCamera.setParameters(parameters);
-
         mCamera.startPreview();
 
         mHasSurface = true;
@@ -107,5 +106,10 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
     public boolean hasSurface() {
         return mHasSurface;
+    }
+
+    @Override
+    public void onAutoFocus(boolean success, Camera camera) {
+
     }
 }

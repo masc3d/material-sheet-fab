@@ -1,7 +1,6 @@
 package sx.android;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 /**
  * Created by masc on 02.12.14.
