@@ -3,6 +3,7 @@ package sx.android.ui.views;
 import android.content.Context;
 import android.hardware.Camera;
 import android.view.*;
+import com.google.common.base.Function;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,13 +13,14 @@ import java.util.List;
  */
 public class CameraView extends SurfaceView implements SurfaceHolder.Callback, Camera.AutoFocusCallback {
     private SurfaceHolder mHolder;
+    private Function<Void, Camera> mCameraProvider;
     private Camera mCamera;
 
     boolean mHasSurface = false;
 
-    public CameraView(Context context, Camera camera) {
+    public CameraView(Context context, Function<Void, Camera> cameraProvider) {
         super(context);
-        mCamera = camera;
+        mCameraProvider = cameraProvider;
 
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
@@ -60,6 +62,10 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        // Get new instance from camera provider
+        // TODO async call, this may take longer when the hardware camera was released meanwhile (when application caches hardware camera instance)
+        mCamera = mCameraProvider.apply(null);
+
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
             mCamera.setPreviewDisplay(holder);
@@ -95,8 +101,12 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        // empty. Take care of releasing the Camera preview in your activity.
-        mCamera.stopPreview();
+        try {
+            // Camera may have already been stopped and released by application/activity logic when app goes to background
+            mCamera.stopPreview();
+        } catch(Exception e) {
+            // Ignore stopPreview failing
+        }
     }
 
     @Override
