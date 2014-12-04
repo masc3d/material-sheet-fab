@@ -2,6 +2,7 @@ package sx.android.ui.views;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.*;
 import com.google.common.base.Function;
 
@@ -60,15 +61,17 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
         return optimalSize;
     }
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
+    /**
+     * Has to be called when parent view is resumed, as android may close camera
+     */
+    public void update() {
         // Get new instance from camera provider
         // TODO async call, this may take longer when the hardware camera was released meanwhile (when application caches hardware camera instance)
         mCamera = mCameraProvider.apply(null);
 
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
-            mCamera.setPreviewDisplay(holder);
+            mCamera.setPreviewDisplay(this.getHolder());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -100,6 +103,13 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
     }
 
     @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        Log.d(CameraView.class.getName(), "CameraView surfaceCreated");
+
+        this.update();
+    }
+
+    @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         try {
             // Camera may have already been stopped and released by application/activity logic when app goes to background
@@ -111,7 +121,13 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Log.d(CameraView.class.getName(), "CameraView surfaceChanged");
+    }
 
+    @Override
+    protected void onAttachedToWindow() {
+        Log.d(CameraView.class.getName(), "CameraView::onAttachedToWindow");
+        super.onAttachedToWindow();
     }
 
     public boolean hasSurface() {
