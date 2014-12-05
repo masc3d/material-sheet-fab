@@ -25,13 +25,21 @@ import javax.swing.text.DefaultCaret;
  */
 public class TextAreaLogger {
     private static String NEWLINE = System.getProperty("line.separator");
-    /** Buffer holding visible log content */
+    /**
+     * Buffer holding visible log content
+     */
     private String _buffer = "";
-    /** Text area this logger is attached to */
+    /**
+     * Text area this logger is attached to
+     */
     private JTextArea _textArea;
-    /** Maximum amount of log entries */
+    /**
+     * Maximum amount of log entries
+     */
     private int _maxLines = 100;
-    /** Current amount of lines */
+    /**
+     * Current amount of lines
+     */
     private int _lines = 0;
 
     public TextAreaLogger(JTextArea textArea) {
@@ -78,5 +86,8 @@ public class TextAreaLogger {
     public int getMaxLines() {
         return _maxLines;
     }
-    public void setMaxLines(int maxLines) { _maxLines = maxLines; }
+
+    public void setMaxLines(int maxLines) {
+        _maxLines = maxLines;
+    }
 }
