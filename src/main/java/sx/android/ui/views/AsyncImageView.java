@@ -28,6 +28,7 @@ public class AsyncImageView extends ImageView {
 
     /**
      * Asyncronously loads image
+     *
      * @param loader Loader function to use
      */
     public void load(final Function<Void, Bitmap> loader) {

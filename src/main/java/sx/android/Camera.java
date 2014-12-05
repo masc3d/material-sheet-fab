@@ -9,6 +9,7 @@ public class Camera {
 
     /**
      * Singleton instance accessor
+     *
      * @return
      */
     public static Camera getInstance() {
@@ -24,6 +25,7 @@ public class Camera {
 
     /**
      * Hardware camera instance
+     *
      * @return
      */
     public android.hardware.Camera getHardwareCamera() {
@@ -41,7 +43,7 @@ public class Camera {
         if (mHardwareCamera != null) {
             try {
                 mHardwareCamera.stopPreview();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 // Ignore stopPreview failing
             }
             mHardwareCamera.release();

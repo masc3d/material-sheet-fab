@@ -13,14 +13,15 @@ public class FragmentEventDispatcher<T extends EventListener> extends RegularEve
 
     /**
      * Create event dispatcher from fragment.
-     * @param c Listener class
+     *
+     * @param c        Listener class
      * @param fragment Fragment
      */
     public FragmentEventDispatcher(Class<T> c, android.support.v4.app.Fragment fragment) {
         mSupportFragment = fragment;
         if (c.isInstance(fragment.getParentFragment()))
-            this.add((T)fragment.getParentFragment());
+            this.add((T) fragment.getParentFragment());
         else if (c.isInstance(fragment.getActivity()))
-            this.add((T)fragment.getActivity());
+            this.add((T) fragment.getActivity());
     }
 }

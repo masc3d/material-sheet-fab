@@ -123,6 +123,7 @@ public class CameraFragment extends Fragment {
 
     /**
      * Set controls base color
+     *
      * @param color
      */
     public void setControlsBaseColor(int color) {

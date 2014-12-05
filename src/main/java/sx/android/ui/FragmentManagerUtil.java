@@ -13,6 +13,7 @@ public class FragmentManagerUtil {
 
     /**
      * Dump fragment manager state to System.out
+     *
      * @param activity Activity
      */
     public static void dump(Activity activity) {

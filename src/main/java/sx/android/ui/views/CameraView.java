@@ -31,7 +31,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
 
     private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
-        double targetRatio=(double)h / w;
+        double targetRatio = (double) h / w;
 
         if (sizes == null) return null;
 
@@ -78,14 +78,22 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
 
         // set preview size and make any resize, rotate or
         // reformatting changes here
-        Display display = ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         int rotation = display.getRotation();
         int degrees = 0;
         switch (rotation) {
-            case Surface.ROTATION_0: degrees = 90; break;
-            case Surface.ROTATION_90: degrees = 0; break;
-            case Surface.ROTATION_180: degrees = 270; break;
-            case Surface.ROTATION_270: degrees = 180; break;
+            case Surface.ROTATION_0:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 270;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 180;
+                break;
         }
         mCamera.setDisplayOrientation(degrees);
 
@@ -114,7 +122,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
         try {
             // Camera may have already been stopped and released by application/activity logic when app goes to background
             mCamera.stopPreview();
-        } catch(Exception e) {
+        } catch (Exception e) {
             // Ignore stopPreview failing
         }
     }
