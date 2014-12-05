@@ -18,8 +18,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import org.sx.android.R;
 import sx.android.Camera;
+import sx.android.R;
 import sx.android.ui.FragmentEventDispatcher;
 import sx.android.ui.views.AsyncImageView;
 import sx.android.ui.views.CameraView;
@@ -131,7 +131,7 @@ public class CameraFragment extends Fragment {
         // Darkened controls color
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
-        hsv[2] *= 0.8f;
+        hsv[2] *= 0.5f;
         mControlsColorDarkened = Color.HSVToColor(hsv);
     }
 

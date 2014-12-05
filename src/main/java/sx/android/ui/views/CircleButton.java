@@ -9,7 +9,7 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.ImageView;
-import org.sx.android.R;
+import sx.android.R;
 
 /**
  * Circle button
