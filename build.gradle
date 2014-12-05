@@ -15,9 +15,8 @@ repositories {
 android {
     compileSdkVersion 16
     buildToolsVersion "20.0.0"
-
     defaultConfig {
-        applicationId "org.sx.android"
+        applicationId 'sx.android'
         minSdkVersion 16
         targetSdkVersion 16
         versionCode 1
@@ -29,12 +28,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile project (':sx-common');
+    compile project(':sx-common')
     compile 'com.android.support:support-v4:+'
-
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
