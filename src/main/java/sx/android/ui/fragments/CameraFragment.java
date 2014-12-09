@@ -49,7 +49,6 @@ public class CameraFragment extends Fragment {
      * Event dispatcher
      */
     FragmentEventDispatcher<Listener> mEventDispatcher;
-    Function<Context, View> mOverlayViewFactory;
     int mControlsColor;
     int mControlsColorDarkened;
 
@@ -113,15 +112,6 @@ public class CameraFragment extends Fragment {
     }
 
     /**
-     * Set overlay view to display
-     *
-     * @param vf
-     */
-    public void setOverlayViewFactory(Function<Context, View> vf) {
-        mOverlayViewFactory = vf;
-    }
-
-    /**
      * Set controls base color
      *
      * @param color
@@ -140,9 +130,6 @@ public class CameraFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Retaining this instance in order to preserve the overlayViewFactory stored as a reference within this instance
-        this.setRetainInstance(true);
-
         mEventDispatcher = new FragmentEventDispatcher(Listener.class, this);
     }
 
@@ -150,10 +137,6 @@ public class CameraFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(CameraFragment.class.getName(), "CameraFragment::onCreateView");
         final View rootView = inflater.inflate(R.layout.fragment_camera, container, false);
-
-        mOverlayViewContainer = (ViewGroup) rootView.findViewById(R.id.overlayViewContainer);
-        if (mOverlayViewFactory != null)
-            mOverlayViewContainer.addView(mOverlayViewFactory.apply(this.getActivity()));
 
         mPictureImageView = (AsyncImageView) rootView.findViewById(R.id.pictureImageView);
         if (mPicture != null) {
