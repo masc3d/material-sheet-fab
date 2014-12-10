@@ -120,11 +120,13 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         try {
-            // Camera may have already been stopped and released by application/activity logic when app goes to background
-            mCamera.stopPreview();
+            if (mCamera != null)
+                // Camera may have already been stopped and released by application/activity logic when app goes to background
+                mCamera.stopPreview();
         } catch (Exception e) {
             // Ignore stopPreview failing
         }
+        mCamera = null;
     }
 
     @Override

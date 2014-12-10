@@ -73,6 +73,7 @@ public class CameraFragment extends Fragment {
     // Async tasks
     AsyncTask<Void, Void, Void> mCameraInitializeTask;
     AsyncTask<Void, Void, Void> mCameraStartPreviewTask;
+    AsyncTask<Void, Void, Void> mCameraTakePictureTask;
 
     /**
      * Shows camera preview and controls
@@ -195,7 +196,6 @@ public class CameraFragment extends Fragment {
         mCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO there may be a re-entry issue here, seen very sporadic failures of takePicture.
                 mCameraButton.setInnerColor(mControlsColorDarkened);
                 mCameraButton.setEnabled(false);
                 mEventDispatcher.emit(new EventDispatcher.Runnable<Listener>() {
@@ -205,7 +205,8 @@ public class CameraFragment extends Fragment {
                     }
                 });
 
-                new AsyncTask<Void, Void, Void>() {
+                waitForAsyncTasksToFinish();
+                mCameraTakePictureTask = new AsyncTask<Void, Void, Void>() {
                     @Override
                     protected Void doInBackground(Void... params) {
                         android.hardware.Camera camera = Camera.getInstance().getHardwareCamera();
@@ -297,6 +298,37 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        super.onDetach();
+        this.getActivity().getActionBar().show();
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(CameraFragment.class.getName(), "CameraFragment::onResume");
+        if (mCameraView != null && mCameraView.hasSurface()) {
+            Log.d(CameraFragment.class.getName(), "CameraFragment::onResume::hasSurface");
+            mCameraView.update();
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroyView() {
+        // masc20141210. Important to wait for all camera tasks to finish before views are destroyed.
+        this.waitForAsyncTasksToFinish();
+
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    /**
+     * Waits for all asynchronous (usually camera related) async task to finish up
+     */
+    private void waitForAsyncTasksToFinish() {
         // Wait for async tasks to finish up
         if (mCameraInitializeTask != null) {
             try {
@@ -313,28 +345,13 @@ public class CameraFragment extends Fragment {
             }
         }
 
-        super.onDetach();
-        this.getActivity().getActionBar().show();
-    }
-
-    @Override
-    public void onResume() {
-        Log.d(CameraFragment.class.getName(), "CameraFragment::onResume");
-        if (mCameraView != null && mCameraView.hasSurface()) {
-            Log.d(CameraFragment.class.getName(), "CameraFragment::onResume::hasSurface");
-            mCameraView.update();
+        if (mCameraTakePictureTask != null) {
+            try {
+                mCameraTakePictureTask.get();
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDetach();
     }
 }
 
