@@ -65,6 +65,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback, C
      * Has to be called when parent view is resumed, as android may close camera
      */
     public void update() {
+        Log.d(CameraView.class.getName(), "CameraView updating");
+
         // Get new instance from camera provider
         // TODO async call, this may take longer when the hardware camera was released meanwhile (when application caches hardware camera instance)
         mCamera = mCameraProvider.apply(null);

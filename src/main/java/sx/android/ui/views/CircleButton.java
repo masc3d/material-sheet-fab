@@ -140,13 +140,26 @@ public class CircleButton extends ImageView {
         this.setScaleType(ScaleType.CENTER_INSIDE);
         setClickable(true);
 
-        // Convert DIP
+        // Convert DIP of default values
         mPressedRingWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_PRESSED_RING_WIDTH_DIP, getResources()
                 .getDisplayMetrics());
         mOuterRingWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_OUTER_RING_WIDTH_DIP, getResources()
                 .getDisplayMetrics());
         mOuterRingMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_OUTER_RING_MARGIN_DIP, getResources()
                 .getDisplayMetrics());
+
+        // Read attributes, override defaults
+        int color = Color.BLACK;
+        int outerColor = color;
+        if (attrs != null) {
+            final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircleButton);
+            color = a.getColor(R.styleable.CircleButton_cb_color, color);
+            outerColor = a.getColor(R.styleable.CircleButton_cb_outerColor, outerColor);
+            mPressedRingWidth = (int) a.getDimension(R.styleable.CircleButton_cb_pressedRingWidth, mPressedRingWidth);
+            mOuterRingWidth = (int) a.getDimension(R.styleable.CircleButton_cb_outerRingWidth, mOuterRingWidth);
+            mOuterRingMargin = (int) a.getDimension(R.styleable.CircleButton_cb_outerRingMargin, mOuterRingMargin);
+            a.recycle();
+        }
 
         mCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mCirclePaint.setStyle(Paint.Style.FILL);
@@ -159,15 +172,8 @@ public class CircleButton extends ImageView {
         mOuterCirclePaint.setStyle(Paint.Style.STROKE);
         mOuterCirclePaint.setStrokeWidth(mOuterRingWidth);
 
-        int color = Color.BLACK;
-        if (attrs != null) {
-            final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircleButton);
-            color = a.getColor(R.styleable.CircleButton_cb_color, color);
-            mPressedRingWidth = (int) a.getDimension(R.styleable.CircleButton_cb_pressedRingWidth, mPressedRingWidth);
-            a.recycle();
-        }
-
         setColor(color);
+        setOuterColor(outerColor);
 
         final int pressedAnimationTime = getResources().getInteger(ANIMATION_TIME_ID);
         mPressedAnimator = ObjectAnimator.ofFloat(this, "animationProgress", 0f, 0f);

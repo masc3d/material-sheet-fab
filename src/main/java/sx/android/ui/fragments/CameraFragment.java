@@ -30,6 +30,7 @@ import sx.util.EventListener;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by masc on 26.11.14.
@@ -53,6 +54,7 @@ public class CameraFragment extends Fragment {
     int mControlsColorDarkened;
 
     // Views
+    View mRootView;
     CameraView mCameraView;
     ViewGroup mOverlayViewContainer;
     ViewSwitcher mMainViewSwitcher;
@@ -136,14 +138,13 @@ public class CameraFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(CameraFragment.class.getName(), "CameraFragment::onCreateView");
-        final View rootView = inflater.inflate(R.layout.fragment_camera, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_camera, container, false);
 
-        mPictureImageView = (AsyncImageView) rootView.findViewById(R.id.pictureImageView);
+        mPictureImageView = (AsyncImageView) mRootView.findViewById(R.id.pictureImageView);
         if (mPicture != null) {
             mPictureImageView.setImageBitmap(mPicture);
         }
-        mOkButton = (CircleButton) rootView.findViewById(R.id.okButton);
+        mOkButton = (CircleButton) mRootView.findViewById(R.id.okButton);
         mOkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,7 +157,7 @@ public class CameraFragment extends Fragment {
                 showCamera();
             }
         });
-        mCancelButton = (CircleButton) rootView.findViewById(R.id.cancelButton);
+        mCancelButton = (CircleButton) mRootView.findViewById(R.id.cancelButton);
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -170,7 +171,7 @@ public class CameraFragment extends Fragment {
             }
         });
 
-        mZoomSeekBar = (SeekBar) rootView.findViewById(R.id.zoomSeekBar);
+        mZoomSeekBar = (SeekBar) mRootView.findViewById(R.id.zoomSeekBar);
         mZoomSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -191,52 +192,58 @@ public class CameraFragment extends Fragment {
             }
         });
 
-        mCameraButton = (CircleButton) rootView.findViewById(R.id.snapshotButton);
+        mCameraButton = (CircleButton) mRootView.findViewById(R.id.snapshotButton);
         mCameraButton.setColor(mControlsColor);
         mCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCameraButton.setInnerColor(mControlsColorDarkened);
-                mCameraButton.setEnabled(false);
-                mEventDispatcher.emit(new EventDispatcher.Runnable<Listener>() {
-                    @Override
-                    public void run(Listener listener) {
-                        listener.onCameraFragmentShutter();
-                    }
-                });
-
                 waitForAsyncTasksToFinish();
-                mCameraTakePictureTask = new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        android.hardware.Camera camera = Camera.getInstance().getHardwareCamera();
-                        camera.takePicture(
-                                new android.hardware.Camera.ShutterCallback() {
-                                    @Override
-                                    public void onShutter() {
-                                    }
-                                },
-                                null,
-                                // JPG picture callback
-                                new android.hardware.Camera.PictureCallback() {
-                                    @Override
-                                    public void onPictureTaken(final byte[] data, android.hardware.Camera camera) {
-                                        mImageData = data;
-                                        showConfirmation();
-                                    }
-                                });
-                        return null;
-                    }
-                }.execute(null, null);
+                if (mCameraView != null && mCameraView.hasSurface()) {
+                    mCameraButton.setInnerColor(mControlsColorDarkened);
+                    mCameraButton.setEnabled(false);
+                    mEventDispatcher.emit(new EventDispatcher.Runnable<Listener>() {
+                        @Override
+                        public void run(Listener listener) {
+                            listener.onCameraFragmentShutter();
+                        }
+                    });
+
+                    mCameraTakePictureTask = new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            android.hardware.Camera camera = Camera.getInstance().getHardwareCamera();
+                            camera.takePicture(
+                                    new android.hardware.Camera.ShutterCallback() {
+                                        @Override
+                                        public void onShutter() {
+                                        }
+                                    },
+                                    null,
+                                    // JPG picture callback
+                                    new android.hardware.Camera.PictureCallback() {
+                                        @Override
+                                        public void onPictureTaken(final byte[] data, android.hardware.Camera camera) {
+                                            mImageData = data;
+                                            showConfirmation();
+                                        }
+                                    });
+                            return null;
+                        }
+                    }.execute(null, null);
+                }
             }
         });
 
-        mMainViewSwitcher = (ViewSwitcher) rootView.findViewById(R.id.cameraMainViewSwitcher);
+        mMainViewSwitcher = (ViewSwitcher) mRootView.findViewById(R.id.cameraMainViewSwitcher);
         mMainViewSwitcher.setDisplayedChild((mPicture == null) ? 0 : 1);
 
         // Asynchronous camera initialization
         final Activity activity = this.getActivity();
+
         // Camera related configuration, deferred as it blocks too long
+
+        // Semaphore for intialize post execution (within UI thread) required to sync with async takepicture task
+        // which has to wait until the initialization is complete entirely (onPostExecute)
         mCameraInitializeTask = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -264,7 +271,6 @@ public class CameraFragment extends Fragment {
                 android.hardware.Camera.Size resolution = resolutions.get(0);
                 parameters.setPictureSize(resolution.width, resolution.height);
                 camera.setParameters(parameters);
-
                 return null;
             }
 
@@ -279,7 +285,7 @@ public class CameraFragment extends Fragment {
                         return Camera.getInstance().getHardwareCamera();
                     }
                 });
-                ViewGroup cameraViewContainer = (ViewGroup) rootView.findViewById(R.id.cameraViewContainer);
+                ViewGroup cameraViewContainer = (ViewGroup) mRootView.findViewById(R.id.cameraViewContainer);
                 cameraViewContainer.addView(mCameraView);
 
                 mZoomSeekBar.setMax(mCameraMaxZoom);
@@ -287,7 +293,7 @@ public class CameraFragment extends Fragment {
         };
         mCameraInitializeTask.execute(null, null);
 
-        return rootView;
+        return mRootView;
     }
 
     @Override
@@ -304,9 +310,7 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.d(CameraFragment.class.getName(), "CameraFragment::onResume");
         if (mCameraView != null && mCameraView.hasSurface()) {
-            Log.d(CameraFragment.class.getName(), "CameraFragment::onResume::hasSurface");
             mCameraView.update();
         }
         super.onResume();

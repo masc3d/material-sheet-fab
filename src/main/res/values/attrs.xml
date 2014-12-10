@@ -2,6 +2,9 @@
 <resources>
     <declare-styleable name="CircleButton">
         <attr name="cb_color" format="color" />
+        <attr name="cb_outerColor" format="color" />
         <attr name="cb_pressedRingWidth" format="dimension" />
+        <attr name="cb_outerRingWidth" format="dimension" />
+        <attr name="cb_outerRingMargin" format="dimension" />
     </declare-styleable>
 </resources>
