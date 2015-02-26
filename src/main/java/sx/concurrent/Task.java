@@ -34,11 +34,9 @@ public abstract class Task<V> implements RunnableFuture<V> {
                     error = e;
                 }
 
-                if (!_futureTask.isCancelled()) {
-                    onCompletion(result, error);
-                    if (_callback != null)
-                        _callback.onCompletion(result, error);
-                }
+                onCompletion(result, _futureTask.isCancelled(), error);
+                if (_callback != null)
+                    _callback.onCompletion(result, _futureTask.isCancelled(), error);
 
                 if (error != null)
                     throw error;
@@ -54,7 +52,7 @@ public abstract class Task<V> implements RunnableFuture<V> {
 
     protected abstract V perform() throws Exception;
 
-    protected abstract void onCompletion(V result, Exception error);
+    protected abstract void onCompletion(V result, boolean cancelled, Exception error);
 
     public final boolean cancel(boolean mayInterruptIfRunning) {
         return _futureTask.cancel(mayInterruptIfRunning);
