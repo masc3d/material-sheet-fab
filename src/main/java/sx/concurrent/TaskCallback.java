@@ -18,5 +18,5 @@ public abstract class TaskCallback<V> {
     /**
      * Called on completion of the task, in the context of the task's thread
      */
-    public abstract void onCompletion(V result, Exception error);
+    public abstract void onCompletion(V result, boolean cancelled, Exception error);
 }
