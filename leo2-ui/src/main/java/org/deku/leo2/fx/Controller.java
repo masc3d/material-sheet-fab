@@ -1,7 +1,7 @@
 package org.deku.leo2.fx;
 
 import javafx.application.Platform;
-import org.sx.Disposable;
+import sx.Disposable;
 
 /**
  * Base class for controllers, supporting activation and disposal

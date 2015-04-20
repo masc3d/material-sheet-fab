@@ -1,17 +1,23 @@
 buildscript {
     repositories {
+        flatDir dirs: '/Users/n3/Java/proguard5.0/lib'
         jcenter();
     }
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:+'
+        classpath ':proguard'
+        classpath 'edu.sc.seis.gradle:launch4j:+'
     }
+}
+
+plugins {
+    id "edu.sc.seis.macAppBundle" version "2.1.0"
+    id "com.github.johnrengelman.shadow" version "1.2.1"
 }
 
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'idea'
-apply plugin: 'eclipse'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'launch4j'
 
 sourceCompatibility = 1.8
 version = '0.1'
@@ -33,18 +39,74 @@ dependencies {
     compile 'org.glassfish.jersey.ext:jersey-proxy-client:2.+'
     compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'
 
+    // Webservice host libraries (leobridge)
+    compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.+'
+    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'
+    compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.+'
+
     // JavaFX libs
     compile 'com.dooapp.fxform2:core:8.+'
     compile 'org.controlsfx:controlsfx:8.+'
 
     compile project(':sx-common')
+
     compile project(':leo2-common')
+    compile project(':leo2-messaging')
 }
 
-// test task
-task hello << {
-    println 'Hello'
+task proguard(type: proguard.gradle.ProGuardTask) {
+    dependsOn(shadowJar)
+    outputs.upToDateWhen { false }
+
+    injars tasks.shadowJar.archivePath
+    outjars new File(tasks.shadowJar.archivePath.getParent().toString(),
+            String.format("%s-%s-proguard.jar", project.name, project.version).toString())
+
+    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+
+    // Write out an obfuscation mapping file, for de-obfuscating any stack traces
+    // later on, or for incremental obfuscation of extensions.
+    printmapping 'proguard.map'
+
+    // Allow methods with the same signature, except for the return type,
+    // to get the same obfuscation name.
+    overloadaggressively
+
+    // Put all obfuscated classes into the nameless root package.
+    repackageclasses ''
+
+    // Allow classes and class members to be made public.
+    // allowaccessmodification
+
+    dontwarn
+    dontobfuscate
+    dontoptimize
+
+    keep 'class org.deku.leo2.** { *; }'
+    keep 'class com.dooapp.fxform.** { *; }'
 }
+
+macAppBundle {
+    mainClassName = "org.deku.leo2.Main"
+    //icon = "myIcon.icns"
+    bundleJRE = true
+    //javaProperties.put("apple.laf.useScreenMenuBar", "true")
+    //backgroundImage = "doc/macbackground.png"
+}
+
+//generateXmlConfig.enabled = false
+
+launch4j {
+    jar = tasks.shadowJar.archivePath
+    launch4jCmd = new File(projectDir, "libs/launch4j/launch4j").toString()
+    mainClassName = "org.deku.leo2.Main"
+    icon = new File(projectDir, "images/DEKU.icon.ico").toString()
+    println System.properties.get("java.home")
+    bundledJrePath = "jre6"
+}
+tasks.createExe.dependsOn(shadowJar)
+
+// println shadowJar.properties.sort{it}.collect{it}.join('\n')
 
 // Add resources (like .fxml files) from souce path.
 // Non-standard, but nicer to keep .fxml files together with classes

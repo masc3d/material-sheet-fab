@@ -2,7 +2,11 @@ rootProject.name = 'leo2'
 
 // project dependencies
 include ':leo2-common'
-include ':leo2-webservice'
+include ':leo2-central'
+include ':leo2-messaging'
+include ':leo2-node'
 include ':leo2-ui'
 include ':sx-common'
+include ':sx-junit'
+include ':sx-jms'
 

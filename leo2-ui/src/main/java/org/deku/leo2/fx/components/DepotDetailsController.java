@@ -1,18 +1,14 @@
 package org.deku.leo2.fx.components;
 
 import com.dooapp.fxform.FXForm;
-import com.dooapp.fxform.filter.ExcludeFilter;
 import com.dooapp.fxform.filter.IncludeFilter;
-import com.dooapp.fxform.view.FXFormSkinFactory;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
 import org.deku.leo2.fx.FormSkin;
-import org.deku.leo2.rest.v1.entities.Depot;
+import org.deku.leo2.entities.v1.Depot;
 
-import javax.validation.Validation;
 import java.net.URL;
 import java.util.ResourceBundle;
 

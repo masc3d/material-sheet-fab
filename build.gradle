@@ -2,21 +2,3 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 version = '0.1'
-
-repositories {
-    mavenCentral()
-}
-
-idea {
-	project {
-	}
-}
-
-dependencies {
-
-}
-
-// test task
-task hello << {
-    println 'Hello, task'
-}

@@ -1,6 +1,6 @@
 package org.deku.leo2.bridge;
 
-import org.deku.leo2.rest.v1.entities.Depot;
+import org.deku.leo2.entities.v1.Depot;
 
 /**
  * Factory for leobridge messages

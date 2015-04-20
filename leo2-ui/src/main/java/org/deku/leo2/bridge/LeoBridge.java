@@ -11,11 +11,11 @@ import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.sx.Disposable;
-import org.sx.util.EventDelegate;
-import org.sx.util.EventDispatcher;
-import org.sx.util.ThreadSafeEventDispatcher;
-import org.sx.util.EventListener;
+import sx.Disposable;
+import sx.util.EventDelegate;
+import sx.util.EventDispatcher;
+import sx.util.ThreadSafeEventDispatcher;
+import sx.util.EventListener;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -69,16 +69,7 @@ public class LeoBridge implements Disposable, MessageService.Listener {
     }
 
     private LeoBridge() {
-        mHttpServer = GrizzlyHttpServerFactory.createHttpServer(HOST_URI, new WebserviceResourceConfig());
-        // Setup mClient
-        Client c = ClientBuilder.newClient();
-        c.register(JacksonJsonProvider.class);
-        c.property(ClientProperties.CONNECT_TIMEOUT, 500);
 
-        // Client debug logging
-        // c.register(new LoggingFilter(Logger.getLogger(LeoBridge.class.getName()), true));
-
-        mMessageServiceClient = WebResourceFactory.newResource(IMessageService.class, c.target(CLIENT_URI));
     }
 
     /**
@@ -86,6 +77,18 @@ public class LeoBridge implements Disposable, MessageService.Listener {
      * @throws IOException
      */
     public void start() throws IOException {
+        if (mHttpServer == null) {
+            mHttpServer = GrizzlyHttpServerFactory.createHttpServer(HOST_URI, new WebserviceResourceConfig());
+            // Setup mClient
+            Client c = ClientBuilder.newClient();
+            c.register(JacksonJsonProvider.class);
+            c.property(ClientProperties.CONNECT_TIMEOUT, 500);
+
+            // Client debug logging
+            // c.register(new LoggingFilter(Logger.getLogger(LeoBridge.class.getName()), true));
+
+            mMessageServiceClient = WebResourceFactory.newResource(IMessageService.class, c.target(CLIENT_URI));
+        }
         mHttpServer.start();
     }
 
@@ -93,7 +96,8 @@ public class LeoBridge implements Disposable, MessageService.Listener {
      * Stop leo bridge
      */
     public void stop() {
-        mHttpServer.shutdownNow();
+        if (mHttpServer != null)
+            mHttpServer.shutdownNow();
     }
 
     public void sendMessage(Message message) {

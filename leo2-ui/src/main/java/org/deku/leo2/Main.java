@@ -9,18 +9,22 @@ import javafx.stage.Stage;
 import org.controlsfx.control.Notifications;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.fx.MainController;
-import org.sx.util.UTF8ResourceBundleControl;
+import sx.util.Utf8ResourceBundleControl;
 
 import java.io.IOException;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Main application entry point
  */
 public class Main extends Application {
     private static Main mInstance;
+    private static Logger mLogger = Logger.getLogger(Main.class.getName());
 
     private Stage mPrimaryStage;
     private Locale mLocale;
@@ -39,7 +43,7 @@ public class Main extends Application {
      * @return
      */
     private ResourceBundle getLanguageResourceBundle(Locale locale) {
-        return ResourceBundle.getBundle("i18n.leo2", locale, new UTF8ResourceBundleControl());
+        return ResourceBundle.getBundle("i18n.leo2", locale, new Utf8ResourceBundleControl());
     }
 
     /**
@@ -154,6 +158,7 @@ public class Main extends Application {
      */
 
     public static void main(String[] args) {
+        System.out.println("start");
         launch(args);
     }
 
@@ -174,18 +179,30 @@ public class Main extends Application {
         this.loadFont("/fonts/Futura-Medium.ttf");
         this.loadFont("/fonts/Futura-MediumItalic.ttf");
 
+        System.out.println("meh1");
+
         // Main scene
         Scene scene = new Scene(this.getMainPane(), 1600, 800);
         primaryStage.setTitle("leo2");
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        LeoBridge.instance().start();
+        System.out.println("meh2");
+
+        Executors.newSingleThreadExecutor().submit( () ->
+        {
+            try {
+                LeoBridge.instance().start();
+            } catch (IOException e) {
+                mLogger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        });
     }
 
     @Override
     public void stop() throws Exception {
         mMainController.dispose();
+        LeoBridge.instance().stop();
         super.stop();
     }
 

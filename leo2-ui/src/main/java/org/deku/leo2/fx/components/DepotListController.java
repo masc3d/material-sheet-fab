@@ -16,13 +16,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
-import org.controlsfx.control.Notifications;
 import org.deku.leo2.Main;
 import org.deku.leo2.WebserviceFactory;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.bridge.MessageFactory;
 import org.deku.leo2.fx.Controller;
-import org.deku.leo2.rest.v1.entities.Depot;
+import org.deku.leo2.entities.v1.Depot;
 
 import java.net.URL;
 import java.util.Arrays;
