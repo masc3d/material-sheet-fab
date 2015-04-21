@@ -1,6 +1,6 @@
 package org.deku.leo2.central.rest.services.v1;
 
-import org.deku.leo2.central.rest.Persistence;
+import org.deku.leo2.central.Persistence;
 import org.deku.leo2.entities.v1.Depot;
 
 import javax.ws.rs.Consumes;

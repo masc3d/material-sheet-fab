@@ -60,16 +60,19 @@ dependencies {
     // persistence framework(s)
     // eclipselink
     compile 'org.eclipse.persistence:eclipselink:2.+'
+    // deltaspike data
+//    compile 'org.apache.deltaspike.modules:deltaspike-data-module-api:+'
+//    compile 'org.apache.deltaspike.modules:deltaspike-data-module-impl:+'
 
 //    // jooq
 //    compile 'org.jooq:jooq:3.4.1'
 //    compile 'org.jooq:jooq-meta:3.4.1'
 //    compile 'org.jooq:jooq-codegen:3.4.1'
 
+    compile 'org.jinq:jinq-jpa:+'
+
     // jdbc connector(s)
     compile 'mysql:mysql-connector-java:5.+'
-
-    compile 'org.jinq:jinq-jpa:+'
 
     testCompile group: 'junit', name: 'junit', version: '4.+'
     // Webservice client libraries for test cases

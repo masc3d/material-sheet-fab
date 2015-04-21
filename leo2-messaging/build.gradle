@@ -9,7 +9,6 @@ repositories {
 
 dependencies {
     compile project(':sx-common')
-    compile project(':sx-jms')
 
     // ActiveMQ
     compile 'org.apache.activemq:activemq-broker:5.+'

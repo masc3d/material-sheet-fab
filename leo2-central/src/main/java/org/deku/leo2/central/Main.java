@@ -1,5 +1,6 @@
-package org.deku.leo2.central.rest;
+package org.deku.leo2.central;
 
+import org.deku.leo2.central.rest.WebserviceResourceConfig;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 

@@ -1,4 +1,6 @@
-package org.deku.leo2.central.rest;
+package org.deku.leo2.central;
+
+import org.deku.leo2.central.Persistence;
 
 import javax.servlet.ServletContextEvent;
 
