@@ -10,7 +10,6 @@ import javax.ws.rs.core.MediaType;
  * Created by masc on 23.07.14.
  */
 @Path("v1/test")
-@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface TestService {
     /** Get all tours */

@@ -23,6 +23,10 @@ dependencies {
     testCompile 'org.glassfish.jersey.ext:jersey-proxy-client:2.+'
     testCompile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'
 
+    // jackson JSON serializer
+    testCompile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+'
+    testCompile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+'
+
     // Webservice server libraries for test cases
     testCompile 'org.glassfish.jersey.containers:jersey-container-servlet:2.+'
     testCompile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'

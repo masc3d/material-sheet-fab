@@ -3,7 +3,6 @@ package org.deku.leo2.central.rest.services.v1;
 import org.deku.leo2.central.Persistence;
 import org.deku.leo2.entities.v1.Depot;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -15,7 +14,6 @@ import java.util.logging.Logger;
  */
 @Path("v1/depot")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class DepotService implements org.deku.leo2.rest.services.v1.DepotService {
     Logger mLog = Logger.getLogger(DepotService.class.getName());
 

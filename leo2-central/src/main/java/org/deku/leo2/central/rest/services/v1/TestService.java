@@ -2,7 +2,6 @@ package org.deku.leo2.central.rest.services.v1;
 
 import org.deku.leo2.entities.v1.TestEntry;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
  */
 @Path("v1/test")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class TestService implements org.deku.leo2.rest.services.v1.TestService {
     @Override
     public TestEntry[] get() {

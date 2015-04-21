@@ -1,7 +1,7 @@
 package org.deku.leo2.central.rest.v1;
 
 import org.deku.leo2.central.rest.WebserviceTest;
-import org.deku.leo2.rest.entities.v1.LocalDateParam;
+import org.deku.leo2.rest.adapters.LocalDateParam;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
 import org.deku.leo2.rest.services.v1.RoutingService;

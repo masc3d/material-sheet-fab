@@ -1,8 +1,12 @@
 package org.deku.leo2.rest.entities.v1;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
+ * Routing service find via response
  * Created by masc on 21.04.15.
  */
+@XmlRootElement()
 public class RoutingVia {
     private String[] mSectors;
     private String mLabelContent;
