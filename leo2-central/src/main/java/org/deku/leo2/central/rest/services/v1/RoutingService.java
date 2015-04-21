@@ -3,6 +3,7 @@ package org.deku.leo2.central.rest.services.v1;
 import org.deku.leo2.rest.entities.v1.HolidayType;
 import org.deku.leo2.rest.entities.v1.LocalDateParam;
 import org.deku.leo2.rest.entities.v1.Routing;
+import org.deku.leo2.rest.entities.v1.RoutingVia;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
@@ -30,7 +31,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
     }
 
     @Override
-    public String[] findVia(LocalDateParam date, String sourceSector, String destinationSector) {
-        return new String[0];
+    public RoutingVia findVia(LocalDateParam date, String sourceSector, String destinationSector) {
+        return new RoutingVia(new String[] { "S", "X" });
     }
 }

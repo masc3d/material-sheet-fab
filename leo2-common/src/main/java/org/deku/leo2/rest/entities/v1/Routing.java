@@ -6,12 +6,12 @@ import java.time.LocalTime;
  * Created by masc on 20.04.15.
  */
 public class Routing {
-    String mSector;
-    String mZone;
-    LocalTime mEarliestDelivery;
-    Integer mRouting;
-    HolidayType mHoliday;
-    Boolean mIsland;
+    private String mSector;
+    private String mZone;
+    private LocalTime mEarliestDelivery;
+    private Integer mRouting;
+    private HolidayType mHoliday;
+    private Boolean mIsland;
 
     public Routing() {
     }

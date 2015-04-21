@@ -2,6 +2,7 @@ package org.deku.leo2.rest.services.v1;
 
 import org.deku.leo2.rest.entities.v1.LocalDateParam;
 import org.deku.leo2.rest.entities.v1.Routing;
+import org.deku.leo2.rest.entities.v1.RoutingVia;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -23,7 +24,7 @@ public interface RoutingService {
 
     @GET
     @Path("/find/via")
-    String[] findVia(@QueryParam("date") LocalDateParam date,
+    RoutingVia findVia(@QueryParam("date") LocalDateParam date,
                     @QueryParam("source_sector") String sourceSector,
                     @QueryParam("destination_sector") String destinationSector);
 }
