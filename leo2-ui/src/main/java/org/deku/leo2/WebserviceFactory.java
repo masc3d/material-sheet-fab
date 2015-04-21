@@ -1,7 +1,7 @@
 package org.deku.leo2;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import org.deku.leo2.rest.v1.DepotService;
+import org.deku.leo2.rest.services.v1.DepotService;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 

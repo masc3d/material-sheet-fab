@@ -3,26 +3,21 @@ package org.deku.leo2.bridge;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.deku.leo2.bridge.services.MessageService;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.NetworkListener;
-import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import sx.Disposable;
 import sx.util.EventDelegate;
 import sx.util.EventDispatcher;
-import sx.util.ThreadSafeEventDispatcher;
 import sx.util.EventListener;
+import sx.util.ThreadSafeEventDispatcher;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import java.io.IOException;
 import java.net.URI;
-import java.util.logging.Logger;
 
 /**
  * Created by masc on 26.09.14.

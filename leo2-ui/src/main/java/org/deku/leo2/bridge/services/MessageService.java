@@ -1,6 +1,5 @@
 package org.deku.leo2.bridge.services;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.deku.leo2.bridge.IMessageService;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.bridge.MediaType;
@@ -10,8 +9,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.util.Date;
-import java.util.Dictionary;
-import java.util.HashMap;
 
 /**
  * Created by masc on 17.09.14.

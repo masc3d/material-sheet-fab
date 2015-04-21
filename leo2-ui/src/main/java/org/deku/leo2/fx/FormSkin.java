@@ -17,16 +17,13 @@ import com.dooapp.fxform.model.Element;
 import com.dooapp.fxform.view.FXFormNode;
 import com.dooapp.fxform.view.FXFormSkin;
 import com.dooapp.fxform.view.NodeCreationException;
-import com.dooapp.fxform.view.NodeType;
 import com.dooapp.fxform.view.control.AutoHidableLabel;
-import com.dooapp.fxform.view.control.ConstraintLabel;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.GridPaneBuilder;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 

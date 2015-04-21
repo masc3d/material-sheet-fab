@@ -11,10 +11,10 @@ import java.util.ArrayList;
 /**
  * Created by masc on 23.07.14.
  */
-@Path("/v1/test")
+@Path("v1/test")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class TestService implements org.deku.leo2.rest.v1.TestService {
+public class TestService implements org.deku.leo2.rest.services.v1.TestService {
     @Override
     public TestEntry[] get() {
         ArrayList<TestEntry> entries = new ArrayList<>();

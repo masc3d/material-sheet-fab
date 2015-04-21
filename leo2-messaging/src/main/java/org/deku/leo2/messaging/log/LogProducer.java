@@ -1,12 +1,10 @@
 package org.deku.leo2.messaging.log;
 
-import org.deku.leo2.messaging.Context;
+import sx.jms.Producer;
 
 import javax.jms.*;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-
-import sx.jms.Producer;
 
 /**
  * Leo2 log message producer

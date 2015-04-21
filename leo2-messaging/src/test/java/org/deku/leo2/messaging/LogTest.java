@@ -1,8 +1,6 @@
 package org.deku.leo2.messaging;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.transport.failover.FailoverTransport;
-import org.apache.activemq.transport.failover.FailoverTransportFactory;
 import org.deku.leo2.messaging.log.LogListener;
 import org.deku.leo2.messaging.log.LogProducer;
 import org.junit.After;
@@ -10,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.jms.JMSException;
-import java.io.IOException;
 
 /**
  * Created by masc on 16.04.15.

@@ -2,8 +2,10 @@ package sx.jms;
 
 import sx.Disposable;
 
-import javax.jms.*;
-import java.util.function.Supplier;
+import javax.jms.ConnectionFactory;
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import javax.jms.MessageListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

@@ -1,4 +1,4 @@
-package org.deku.leo2.central.rest;
+package org.deku.leo2.rest;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;

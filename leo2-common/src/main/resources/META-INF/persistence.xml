@@ -8,8 +8,6 @@
             <property name="javax.persistence.jdbc.user" value="leo2"/>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.password" value="leo2"/>
-            <property name="eclipselink.jdbc.url" value="jdbc:mysql://10.0.10.10:3306/dekuclient" />
-            <property name="eclipselink.jdbc.driver" value="com.mysql.jdbc.Driver" />
         </properties>
     </persistence-unit>
 </persistence>

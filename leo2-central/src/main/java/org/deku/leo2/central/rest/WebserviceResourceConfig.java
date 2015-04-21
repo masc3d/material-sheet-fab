@@ -1,7 +1,8 @@
 package org.deku.leo2.central.rest;
 
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+
+import java.util.Set;
 
 /**
  * Created by masc on 23.07.14.
@@ -9,8 +10,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class WebserviceResourceConfig extends ResourceConfig {
     public WebserviceResourceConfig()
     {
-        super(JacksonFeature.class);
+        packages("org.deku.leo2.central.rest");
 
-        packages("org.deku.leo2.rest.services");
+        Set<Class<?>> classes = this.getClasses();
+        System.out.println(classes);
     }
 }

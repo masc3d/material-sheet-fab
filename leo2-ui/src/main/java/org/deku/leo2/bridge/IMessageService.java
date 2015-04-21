@@ -1,10 +1,9 @@
 package org.deku.leo2.bridge;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import javax.ws.rs.*;
-import java.util.Dictionary;
-import java.util.HashMap;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 /**
  * LeoBridge service interface

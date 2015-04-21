@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 @Path("v1/depot")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class DepotService implements org.deku.leo2.rest.v1.DepotService {
+public class DepotService implements org.deku.leo2.rest.services.v1.DepotService {
     Logger mLog = Logger.getLogger(DepotService.class.getName());
 
     @Override

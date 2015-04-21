@@ -4,10 +4,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import org.deku.leo2.Main;
+import org.deku.leo2.entities.v1.Depot;
 import org.deku.leo2.fx.ModuleController;
 import org.deku.leo2.fx.components.DepotDetailsController;
 import org.deku.leo2.fx.components.DepotListController;
-import org.deku.leo2.entities.v1.Depot;
 
 import java.net.URL;
 import java.util.ResourceBundle;

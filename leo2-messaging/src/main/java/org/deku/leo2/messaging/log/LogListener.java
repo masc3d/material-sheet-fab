@@ -1,6 +1,5 @@
 package org.deku.leo2.messaging.log;
 
-import org.deku.leo2.messaging.Context;
 import sx.jms.SimpleListener;
 
 import javax.jms.*;

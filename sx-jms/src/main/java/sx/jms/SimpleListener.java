@@ -1,7 +1,5 @@
 package sx.jms;
 
-import com.google.common.collect.Iterables;
-
 import javax.jms.*;
 import java.util.List;
 import java.util.logging.Level;

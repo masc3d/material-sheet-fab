@@ -4,7 +4,6 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.network.NetworkConnector;
 import sx.Disposable;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
