@@ -511,7 +511,6 @@
       <module fileurl="file://$PROJECT_DIR$/leo2-node/leo2-node.iml" filepath="$PROJECT_DIR$/leo2-node/leo2-node.iml" />
       <module fileurl="file://$PROJECT_DIR$/leo2-ui/leo2-ui.iml" filepath="$PROJECT_DIR$/leo2-ui/leo2-ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/sx-common/sx-common.iml" filepath="$PROJECT_DIR$/sx-common/sx-common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sx-common/sx-common.iml" filepath="$PROJECT_DIR$/sx-common/sx-common.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
