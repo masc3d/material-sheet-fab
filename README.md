@@ -6,7 +6,7 @@
 
 #### Required software ####
 * [Sourcetree](https://www.atlassian.com/software/sourcetree)
-* [Idea Intellij Ultimate](http://confluence.jetbrains.com/display/IDEADEV/IDEA+14+EAP) (v14 EAP, ultimate edition)
+* [Idea Intellij Ultimate](https://www.jetbrains.com/idea/) (v14, ultimate edition)
 
 #### Get up and running ####
 * Clone GIT repository using URL [ssh://git@bitbucket.org/masc3d/leo2](ssh://git@bitbucket.org/masc3d/leo2])
