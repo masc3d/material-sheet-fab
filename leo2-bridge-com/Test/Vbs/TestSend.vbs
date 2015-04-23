@@ -1,5 +1,5 @@
 Dim oLeoBridge
-Set oLeoBridge = WScript.CreateObject("LeoBridge.LeoBridge", "LeoBridge_")
+Set oLeoBridge = WScript.CreateObject("LeoBridge.MessageQueue", "LeoBridge_")
 
 Dim oMessage
 Set oMessage = WScript.CreateObject("LeoBridge.Message")

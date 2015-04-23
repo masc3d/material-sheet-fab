@@ -1,5 +1,5 @@
 Dim oLeoBridge
-Set oLeoBridge = WScript.CreateObject("LeoBridge.LeoBridge", "LeoBridge_")
+Set oLeoBridge = WScript.CreateObject("LeoBridge.MessageQueue", "LeoBridge_")
 
 oLeoBridge.Start
 MsgBox("LeoBridge service running")

@@ -10,121 +10,57 @@ using System.Runtime.Serialization;
 
 namespace LeoBridge
 {
-    public delegate void OnMessageDelegate(IMessage message);
+    /// <summary>
+    /// Message service provider interface
+    /// </summary>
+    /// <author>masc</author>
+    [ComVisible(true)]
+    public interface IMessageQueue : IDisposable
+    {
+        /// <summary>
+        /// Start listener
+        /// </summary>
+        void Start();
+        /// <summary>
+        /// Stop listener
+        /// </summary>
+        void Stop();
+        ///// <summary>
+        ///// Send message
+        ///// </summary>
+        ///// <param name="message"></param>
+        void SendMessage(Message message);
+        /// <summary>
+        /// Send single value message
+        /// </summary>
+        /// <param name="message"></param>
+        void SendValue(Object message);
+
+        void TestVersion();
+    }
 
     /// <summary>
-    /// LeoBridge message
+    /// Interface for LEO bridge (COM) events
     /// </summary>
-    [Guid("4EA174D1-6115-4002-AC5D-A02CBC49B1FE")]
+    /// <author>masc</author>
     [ComVisible(true)]
-    [ClassInterface(ClassInterfaceType.None)]
-    [Serializable]
-    public class Message : IMessage, ISerializable
+    [InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
+    public interface IMessageQueueEvents
     {
-        private static string DEFAULT_KEY = "_";
-
-        /// <summary>
-        /// Message attributes
-        /// </summary>
-        public Dictionary<string, object> Attributes { get; private set; }
-
-        public Message() 
-        {
-            this.Attributes = new Dictionary<string, object>();
-        }
-
-        public Message(object value)
-            : this()
-        {
-            this.Attributes.Add(DEFAULT_KEY, value);
-        }
-
-        public Message(Dictionary<String, Object> attributes)
-        {
-            this.Attributes = attributes;     
-        }
-
-        public object Get(string key)
-        {
-            object value = null;
-            this.Attributes.TryGetValue(key, out value);
-            return value;
-        }
-
-        public object GetValue()
-        {
-            return this.Get(DEFAULT_KEY);
-        }
-
-        public void Put(string key, object value)
-        {
-            this.Attributes.Add(key, value);            
-        }
-
-        #region WCF data contract de/serialization
-        /// <summary>
-        /// c'tor for data contract/WCF deserialization
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        protected Message(SerializationInfo info, StreamingContext context)
-            : this()
-        {
-            foreach (var entry in info)
-            {
-                if (entry.Value is string)
-                {
-                    DateTime dt;
-                    if (DateTime.TryParse((String)entry.Value, out dt))
-                    {
-                        this.Attributes.Add(entry.Name, dt);
-                        continue;
-                    }
-                }
-
-                this.Attributes.Add(entry.Name, entry.Value);
-            }
-        }
-
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            foreach (String key in this.Attributes.Keys)
-            {
-                object value = this.Attributes[key];
-                if (value is DateTime)
-                {                    
-                    info.AddValue(key.ToString(), ((DateTime)value).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"));
-                }
-                else
-                {
-                    info.AddValue(key.ToString(), this.Attributes[key]);
-                }
-            }            
-        }
-        #endregion
-
-        public override string ToString()
-        {
-            string s = "";
-            foreach (KeyValuePair<string, object> kvp in this.Attributes)
-            {
-                if (s.Length > 0)
-                    s += ", ";
-                s += string.Format("{0}:{1}", kvp.Key, kvp.Value);
-            }
-            return s;
-        }
+        [DispId(1)]
+        void OnMessage(Message message);
     }
+
+    public delegate void OnMessageDelegate(Message message);
 
     /// <summary>
     /// LEO bridge main (COM) component
     /// </summary>
     /// <author>masc</author>
-    [Guid("EF6CD085-7175-4975-B1BB-2E7DE0A3774D")]
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.None)]
-    [ComSourceInterfaces(typeof(ILeoBridgeEvents))]
-    public class LeoBridge : ILeoBridge
+    [ComSourceInterfaces(typeof(IMessageQueueEvents))]
+    public class MessageQueue : IMessageQueue
     {
         System.Windows.Forms.Form _dispatchWindow;
         ChannelFactory<IMessageService> _messageServiceChannelFactory;
@@ -134,7 +70,7 @@ namespace LeoBridge
         /// </summary>
         public event OnMessageDelegate OnMessage;
 
-        public LeoBridge()
+        public MessageQueue()
         {
             // Create hidden dispatcher window for routing threaded ws callbacks back to COM/UI thread
             _dispatchWindow = new Form();
@@ -175,7 +111,7 @@ namespace LeoBridge
             this.Stop();
         }
 
-        void MessageServiceHost_OnMessage(IMessage message)
+        void MessageServiceHost_OnMessage(Message message)
         {
             ThreadPool.QueueUserWorkItem(s =>
             {
@@ -201,13 +137,19 @@ namespace LeoBridge
         /// Send message to remote
         /// </summary>
         /// <param name="message"></param>
-        public void SendMessage(IMessage message)
+        public void SendMessage(Message message)
         {            
             using (IClientChannel channel = (IClientChannel)_messageServiceChannelFactory.CreateChannel())
             {
                 IMessageService s = (IMessageService)channel;
                 s.SendMessage((Message)message);
             }
+        }
+
+
+        public void TestVersion()
+        {
+            System.Windows.Forms.MessageBox.Show("YEAH");
         }
     }
 }

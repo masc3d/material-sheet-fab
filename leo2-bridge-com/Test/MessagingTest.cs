@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using LeoBridge;
+using LeoBridge.Service;
 
 namespace LeoBridge.Test
 {
@@ -11,20 +12,26 @@ namespace LeoBridge.Test
         [TestMethod]
         public void TestService()
         {
-            using (LeoBridge m = new LeoBridge())
+            using (MessageQueue m = new MessageQueue())
             {
                 m.Start();
+                m.OnMessage += m_OnMessage;
                 System.Windows.Forms.MessageBox.Show("Running");
             }            
+        }
+
+        void m_OnMessage(Message message)
+        {
+            System.Windows.Forms.MessageBox.Show(message.ToString());
         }
 
         [TestMethod]
         public void TestSend()
         {
-            using (LeoBridge lb = new LeoBridge())
+            using (MessageQueue lb = new MessageQueue())
             {
                 Message msg = new Message();
-                msg.Put("", "Test");
+                msg.Put("_", "Test");
                 lb.SendMessage(msg);
             }
         }

@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using LeoBridge;
+using LeoBridge.Service;
 using System.Runtime.InteropServices;
 
 namespace LeoBridge.TestWindow
 {
     class Program
     {
-        static LeoBridge _leoBridge;
+        static MessageQueue _leoBridge;
         static FormMain _formMain;
 
         [DllImport("User32.dll")]
@@ -20,7 +21,7 @@ namespace LeoBridge.TestWindow
 
         static void Main(string[] args)
         {
-            using(_leoBridge = new LeoBridge())
+            using(_leoBridge = new MessageQueue())
             {
                 _leoBridge.OnMessage += _leoBridge_OnMessage;                    
                 _leoBridge.Start();
@@ -30,7 +31,7 @@ namespace LeoBridge.TestWindow
             }
         }
 
-        static void _leoBridge_OnMessage(IMessage message)
+        static void _leoBridge_OnMessage(Message message)
         {
             _formMain.uxMessage.Text = message.ToString();
             SetForegroundWindow(_formMain.Handle.ToInt32());

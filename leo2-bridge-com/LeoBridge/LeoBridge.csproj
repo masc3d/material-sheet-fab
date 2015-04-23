@@ -58,9 +58,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Apache.NMS.ActiveMQ">
+      <HintPath>Libs\Apache.NMS.ActiveMQ.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Windows.Forms" />
@@ -69,13 +73,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageQueue.cs" />
+    <Compile Include="ServiceClientFactory.cs" />
     <Compile Include="ControlExtensions.cs" />
-    <Compile Include="Service\MessageServiceHost.cs" />
-    <Compile Include="Service\MessageService.cs" />
-    <Compile Include="Service\IMessageService.cs" />
-    <Compile Include="ILeoBridge.cs" />
-    <Compile Include="LeoBridge.cs" />
+    <Compile Include="Service\RoutingService.cs" />
+    <Compile Include="MessageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceClientProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LeoBridge.snk" />
