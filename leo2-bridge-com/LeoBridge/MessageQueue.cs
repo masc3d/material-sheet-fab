@@ -7,6 +7,7 @@ using LeoBridge.Service;
 using System.Windows.Forms;
 using System.Threading;
 using System.Runtime.Serialization;
+using System.ComponentModel;
 
 namespace LeoBridge
 {
@@ -35,8 +36,6 @@ namespace LeoBridge
         /// </summary>
         /// <param name="message"></param>
         void SendValue(Object message);
-
-        void TestVersion();
     }
 
     /// <summary>
@@ -144,12 +143,6 @@ namespace LeoBridge
                 IMessageService s = (IMessageService)channel;
                 s.SendMessage((Message)message);
             }
-        }
-
-
-        public void TestVersion()
-        {
-            System.Windows.Forms.MessageBox.Show("YEAH");
         }
     }
 }
