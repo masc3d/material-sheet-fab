@@ -19,7 +19,7 @@ public interface RoutingService {
 
     @GET
     @Path("/find")
-    Routing[] find(@QueryParam("date") LocalDateParam date,
+    Routing find(@QueryParam("date") LocalDateParam date,
                  @QueryParam("country") String country,
                  @QueryParam("zip") String zip,
                  @QueryParam("product") String product);

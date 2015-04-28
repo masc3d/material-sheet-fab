@@ -30,8 +30,8 @@ public class RoutingServiceTest extends WebserviceTest {
         }
 
         {
-            Routing[] routings = this.getService(RoutingService.class).find(new LocalDateParam(LocalDate.now()), "country", "zip", "product");
-            System.out.println(routings.toString());
+            Routing routing = this.getService(RoutingService.class).find(new LocalDateParam(LocalDate.now()), "country", "zip", "product");
+            System.out.println(routing.toString());
         }
     }
 }

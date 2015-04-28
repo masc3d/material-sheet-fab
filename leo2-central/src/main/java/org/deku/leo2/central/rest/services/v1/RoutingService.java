@@ -18,14 +18,11 @@ import java.util.ArrayList;
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingService {
     @Override
-    public Routing[] find(LocalDateParam date, String country, String zip, String product) {
+    public Routing find(LocalDateParam date, String country, String zip, String product) {
         // Dummy implementation
-        ArrayList<Routing> result = new ArrayList<>();
-
         Routing r = new Routing("sector1", "zone1", LocalTime.now(), 12, HolidayType.RegionalBankHoliday, false);
-        result.add(r);
 
-        return result.toArray(new Routing[0]);
+        return r;
     }
 
     @Override
