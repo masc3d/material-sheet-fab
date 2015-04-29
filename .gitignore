@@ -12,3 +12,4 @@ leo2-webservice/bin
 out
 leo2-messaging/activemq-data
 leo2-bridge-com/packages/
+leo2-bridge-com/Release*

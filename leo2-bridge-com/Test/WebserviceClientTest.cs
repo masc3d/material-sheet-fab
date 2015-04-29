@@ -13,7 +13,7 @@ namespace LeoBridgeTest
         public WebserviceClientTest()
         {
             this.ClientFactory= new ServiceClientFactory();
-            this.ClientFactory.BaseUri = "http://192.168.0.215:8080/leo2";
+            this.ClientFactory.BaseUri = "http://localhost:8080/leo2";
         }
 
         protected ServiceClientFactory ClientFactory

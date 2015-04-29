@@ -28,9 +28,7 @@ namespace LeoBridgeTest
         [TestMethod]
         public void TestFindVia()
         {
-            ServiceClientFactory cf = new ServiceClientFactory();
-            cf.BaseUri = "http://192.168.0.215:8080/leo2";
-
+           
             // Test repeated invocations
             for (int i = 0; i < 5; i++)
             {

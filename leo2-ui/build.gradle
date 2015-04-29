@@ -1,16 +1,16 @@
 buildscript {
-    repositories {
-        flatDir dirs: '/Users/n3/Java/proguard5.0/lib'
-        jcenter();
-    }
+//    repositories {
+//        flatDir dirs: '/Users/n3/Java/proguard5.0/lib'
+//        jcenter();
+//    }
     dependencies {
-        classpath ':proguard'
+//        classpath ':proguard'
         classpath 'edu.sc.seis.gradle:launch4j:+'
     }
 }
 
 plugins {
-    id "edu.sc.seis.macAppBundle" version "2.1.0"
+//    id "edu.sc.seis.macAppBundle" version "2.1.0"
     id "com.github.johnrengelman.shadow" version "1.2.1"
 }
 
@@ -58,45 +58,45 @@ dependencies {
     compile project(':leo2-messaging')
 }
 
-task proguard(type: proguard.gradle.ProGuardTask) {
-    dependsOn(shadowJar)
-    outputs.upToDateWhen { false }
+//task proguard(type: proguard.gradle.ProGuardTask) {
+//    dependsOn(shadowJar)
+//    outputs.upToDateWhen { false }
+//
+//    injars tasks.shadowJar.archivePath
+//    outjars new File(tasks.shadowJar.archivePath.getParent().toString(),
+//            String.format("%s-%s-proguard.jar", project.name, project.version).toString())
+//
+//    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+//
+//    // Write out an obfuscation mapping file, for de-obfuscating any stack traces
+//    // later on, or for incremental obfuscation of extensions.
+//    printmapping 'proguard.map'
+//
+//    // Allow methods with the same signature, except for the return type,
+//    // to get the same obfuscation name.
+//    overloadaggressively
+//
+//    // Put all obfuscated classes into the nameless root package.
+//    repackageclasses ''
+//
+//    // Allow classes and class members to be made public.
+//    // allowaccessmodification
+//
+//    dontwarn
+//    dontobfuscate
+//    dontoptimize
+//
+//    keep 'class org.deku.leo2.** { *; }'
+//    keep 'class com.dooapp.fxform.** { *; }'
+//}
 
-    injars tasks.shadowJar.archivePath
-    outjars new File(tasks.shadowJar.archivePath.getParent().toString(),
-            String.format("%s-%s-proguard.jar", project.name, project.version).toString())
-
-    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
-
-    // Write out an obfuscation mapping file, for de-obfuscating any stack traces
-    // later on, or for incremental obfuscation of extensions.
-    printmapping 'proguard.map'
-
-    // Allow methods with the same signature, except for the return type,
-    // to get the same obfuscation name.
-    overloadaggressively
-
-    // Put all obfuscated classes into the nameless root package.
-    repackageclasses ''
-
-    // Allow classes and class members to be made public.
-    // allowaccessmodification
-
-    dontwarn
-    dontobfuscate
-    dontoptimize
-
-    keep 'class org.deku.leo2.** { *; }'
-    keep 'class com.dooapp.fxform.** { *; }'
-}
-
-macAppBundle {
-    mainClassName = "org.deku.leo2.Main"
-    //icon = "myIcon.icns"
-    bundleJRE = true
-    //javaProperties.put("apple.laf.useScreenMenuBar", "true")
-    //backgroundImage = "doc/macbackground.png"
-}
+//macAppBundle {
+//    mainClassName = "org.deku.leo2.Main"
+//    //icon = "myIcon.icns"
+//    bundleJRE = true
+//    //javaProperties.put("apple.laf.useScreenMenuBar", "true")
+//    //backgroundImage = "doc/macbackground.png"
+//}
 
 //generateXmlConfig.enabled = false
 
