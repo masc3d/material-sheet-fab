@@ -6,6 +6,7 @@ import org.glassfish.jersey.client.proxy.WebResourceFactory;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -24,8 +25,6 @@ public class WebserviceTest {
 
     @Before
     public void setup() {
-        Persistence.instance().initialize();
-
         mServer = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, new WebserviceResourceConfig());
 
         // Setup client
