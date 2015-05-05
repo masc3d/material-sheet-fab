@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.1">
-    <persistence-unit name="leo2">
-        <class>org.deku.leo2.entities.v1.Depot</class>
-        <properties>
-            <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://10.0.10.10:3306/dekuclient?zeroDateTimeBehavior=convertToNull"/>
-            <property name="javax.persistence.jdbc.user" value="leo2"/>
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.password" value="leo2"/>
-        </properties>
+    <persistence-unit name="leo2-for-modelgen">
+        <class>org.deku.leo2.central.entities.v1.Depot</class>
+        <!--<properties>-->
+            <!--<property name="javax.persistence.jdbc.url"-->
+                      <!--value="jdbc:mysql://10.0.10.10:3306/dekuclient?zeroDateTimeBehavior=convertToNull&amp;connectTimeout=1000"/>-->
+            <!--<property name="javax.persistence.jdbc.user" value="leo2"/>-->
+            <!--<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>-->
+            <!--<property name="javax.persistence.jdbc.password" value="leo2"/>-->
+            <!--<property name="eclipselink.allow-zero-id" value="true" />-->
+        <!--</properties>-->
     </persistence-unit>
 </persistence>

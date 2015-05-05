@@ -2,7 +2,6 @@ package org.deku.leo2.central.rest;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.Provider;
-import javax.xml.ws.Response;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

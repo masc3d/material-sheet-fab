@@ -1,7 +1,7 @@
 package org.deku.leo2.rest.v1;
 
-import org.deku.leo2.entities.v1.TestEntry;
 import org.deku.leo2.rest.WebserviceTest;
+import org.deku.leo2.rest.entities.v1.TestEntry;
 import org.deku.leo2.rest.services.v1.TestService;
 import org.junit.Ignore;
 import org.junit.Test;

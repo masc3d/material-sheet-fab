@@ -61,5 +61,6 @@
     <orderEntry type="library" scope="TEST" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.5.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3" level="project" />
+    <orderEntry type="module" module-name="leo2-central" exported="" />
   </component>
 </module>
