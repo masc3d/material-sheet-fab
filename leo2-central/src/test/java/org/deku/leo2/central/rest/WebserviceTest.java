@@ -1,12 +1,10 @@
 package org.deku.leo2.central.rest;
 
-import org.deku.leo2.central.Persistence;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;

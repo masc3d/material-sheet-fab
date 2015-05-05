@@ -1,9 +1,7 @@
 package org.deku.leo2.central.rest;
 
-import org.deku.leo2.central.Persistence;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Set;
 import java.util.logging.Logger;
@@ -12,6 +10,8 @@ import java.util.logging.Logger;
  * Created by masc on 23.07.14.
  */
 public class WebserviceResourceConfig extends ResourceConfig {
+    private Logger mLog = Logger.getLogger(WebserviceResourceConfig.class.getName());
+
     private static boolean mLogRequestsEnabled = false;
     private static boolean mLogEntitiesEnabled = false;
 
@@ -27,16 +27,9 @@ public class WebserviceResourceConfig extends ResourceConfig {
         // Packages containing web serivces
         packages("org.deku.leo2.central.rest");
 
-        // Spring application context
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.register(Persistence.class);
-        context.refresh();
-
-        // Let spring/jersey bridge know the context
-        this.property("contextConfig", context);
-
+        // TRACE: Log clases of this web resource
         Set<Class<?>> classes = this.getClasses();
-        System.out.println(classes);
+        mLog.info("Web resource classes: " + classes.toString());
     }
 
     public static boolean isLogRequestsEnabled() {
