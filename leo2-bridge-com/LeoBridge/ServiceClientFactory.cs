@@ -28,7 +28,8 @@ namespace LeoBridge
         private ChannelFactory<T> CreateChannelFactory<T>()
         {
             ChannelFactory<T> factory = new ChannelFactory<T>(_httpBinding, this.EndpointAdress);
-            factory.Endpoint.EndpointBehaviors.Add(new WebHttpBehavior());
+            //factory.Endpoint.EndpointBehaviors.Add(new WebHttpBehavior());
+            factory.Endpoint.Behaviors.Add(new WebHttpBehavior());
             return factory;
         }
 

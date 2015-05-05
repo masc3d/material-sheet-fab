@@ -190,7 +190,7 @@ namespace LeoBridge
         {
             // Configure endpoints. JSON requires HTTP binding and behaviour
             ServiceEndpoint ep = this.AddServiceEndpoint(typeof(IMessageService), new WebHttpBinding(), "");
-            ep.EndpointBehaviors.Add(new WebHttpBehavior());
+            //ep.EndpointBehaviors.Add(new WebHttpBehavior());
 
             // Enable metadata publishing
             ServiceMetadataBehavior smb = new ServiceMetadataBehavior();

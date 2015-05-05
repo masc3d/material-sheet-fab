@@ -87,7 +87,7 @@ namespace LeoBridge
             myBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(250);
             EndpointAddress myEndpoint = new EndpointAddress("http://localhost:37420");            
             _messageServiceChannelFactory = new ChannelFactory<IMessageService>(myBinding, myEndpoint);
-            _messageServiceChannelFactory.Endpoint.EndpointBehaviors.Add(new WebHttpBehavior());
+            //_messageServiceChannelFactory.Endpoint.EndpointBehaviors.Add(new WebHttpBehavior());
         }
 
         /// <summary>
