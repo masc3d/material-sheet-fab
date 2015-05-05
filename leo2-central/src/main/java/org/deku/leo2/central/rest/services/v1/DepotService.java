@@ -1,13 +1,12 @@
 package org.deku.leo2.central.rest.services.v1;
 
+import org.deku.leo2.central.PersistenceContextAccessor;
 import org.deku.leo2.central.entities.v1.Depot;
 import org.deku.leo2.central.entities.v1.DepotRepository;
 import org.deku.leo2.central.entities.v1.QDepot;
-import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -17,14 +16,13 @@ import java.util.stream.StreamSupport;
 /**
  * Created by masc on 17.09.14.
  */
-@Component
 @Path("v1/depot")
 @Produces(MediaType.APPLICATION_JSON)
 public class DepotService implements org.deku.leo2.rest.services.v1.DepotService {
     Logger mLog = Logger.getLogger(DepotService.class.getName());
 
-    @PersistenceContext
-    EntityManager mEntityManager;
+    @Inject
+    PersistenceContextAccessor mPersistenceContext;
 
     @Inject
     DepotRepository mDepotRepository;
@@ -47,6 +45,7 @@ public class DepotService implements org.deku.leo2.rest.services.v1.DepotService
         return rDepot;
     }
 
+    @Transactional
     @Override
     public org.deku.leo2.rest.entities.v1.Depot[] get() {
         Iterable<Depot> depots = mDepotRepository.findAll();
@@ -60,19 +59,21 @@ public class DepotService implements org.deku.leo2.rest.services.v1.DepotService
         QDepot q = null;
     }
 
+    @Transactional
     @Override
     public org.deku.leo2.rest.entities.v1.Depot[] find(String query) {
         query = query.trim();
 
         // QueryDSL
+        QDepot depot = QDepot.depot;
         Iterable<Depot> depots = mDepotRepository.findAll(
-                QDepot.depot.depotMatchcode.contains(query)
-                        .or(QDepot.depot.firma1.contains(query))
-                        .or(QDepot.depot.firma2.contains(query))
-                .or(QDepot.depot.plz.startsWith(query))
-                .or(QDepot.depot.lkz.startsWith(query))
-                .or(QDepot.depot.ort.contains(query))
-                .or(QDepot.depot.strasse.contains(query)), QDepot.depot.depotMatchcode.asc());
+                depot.depotMatchcode.contains(query)
+                        .or(depot.firma1.contains(query))
+                        .or(depot.firma2.contains(query))
+                        .or(depot.plz.startsWith(query))
+                        .or(depot.lkz.startsWith(query))
+                        .or(depot.ort.contains(query))
+                        .or(depot.strasse.contains(query)), depot.depotMatchcode.asc());
 
         // JPQL
 //        String expStartsWith = query + "%";

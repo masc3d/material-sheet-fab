@@ -11,9 +11,9 @@ buildscript {
     }
 }
 
-//plugins {
-//    id "com.ewerk.gradle.plugins.querydsl" version "1.0.4"
-//}
+plugins {
+    id "com.github.johnrengelman.shadow" version "1.2.1"
+}
 
 apply plugin: 'java'
 apply plugin: 'war'
@@ -25,7 +25,7 @@ apply plugin: 'eclipse'
 
 sourceCompatibility = 1.8
 version = '0.1'
-mainClassName = "org.deku.leo2.rest.Main"
+mainClassName = "org.deku.leo2.central.Main"
 
 repositories {
     mavenCentral()
@@ -55,6 +55,7 @@ dependencies {
 
     // leo2 webservice dependencies
     compile project(':leo2-common')
+    compile project(':sx-common')
 
     // persistence framework(s)
     // eclipselink
@@ -64,9 +65,6 @@ dependencies {
     // QueryDSL
     compile 'com.mysema.querydsl:querydsl-jpa:3.+'
     compile 'com.mysema.querydsl:querydsl-apt:3.+:jpa' // QueryDSL codegen/annotation processor
-    // Required for QueryDSL codegen (only when implementing Spring's QueryDslJpaRepository)
-    compile 'org.hibernate:hibernate-core:+'
-    compile 'jaxen:jaxen:+'
 
     // Spring
     compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
@@ -91,6 +89,7 @@ dependencies {
     testCompile 'org.glassfish.jersey.core:jersey-client:2.+'
     testCompile 'org.glassfish.jersey.ext:jersey-proxy-client:2.+'
     testCompile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'
+
     testCompile project(':sx-common')
 }
 
