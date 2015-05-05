@@ -1,4 +1,4 @@
-package org.deku.leo2.entities.v1;
+package org.deku.leo2.rest.entities.v1;
 
 import java.util.Date;
 

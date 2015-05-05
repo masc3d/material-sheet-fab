@@ -8,11 +8,9 @@ import javax.servlet.ServletContextEvent;
 public class ServletContextListener implements javax.servlet.ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        Persistence.instance().initialize();
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        Persistence.instance().dispose();
     }
 }

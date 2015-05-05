@@ -1,6 +1,6 @@
 package org.deku.leo2.central.rest.services.v1;
 
-import org.deku.leo2.entities.v1.TestEntry;
+import org.deku.leo2.rest.entities.v1.TestEntry;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;

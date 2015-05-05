@@ -3,98 +3,152 @@ package org.deku.leo2.central;
 import org.jinq.jpa.JPAQueryLogger;
 import org.jinq.jpa.JinqJPAStreamProvider;
 import org.jinq.orm.stream.JinqStream;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 /**
  * Created by masc on 28.08.14.
  */
+@Named
+@Configuration
+@EnableJpaRepositories
+@EnableTransactionManagement
 public class Persistence {
-    private static Persistence mInstance;
+    private static AtomicReference<Persistence> mInstance = new AtomicReference<>();
 
     private Logger mLog = Logger.getLogger(Persistence.class.getName());
+
     private EntityManagerFactory mEntityManagerFactory;
-    private EntityManager mEntityManager;
     private JinqJPAStreamProvider mJinqStreamProvider;
 
     private boolean mShowSql = false;
     private boolean mShowJinqQueries = false;
 
-    public interface TransactionBlock {
-        void perform(EntityManager em);
+    /**
+     * c'tor
+     */
+    public Persistence() {
+        // Normally the c'tor would be private, but spring configuration requires a publicly visible one
+        // thus reverting to this "helper" singleton implementation
+        Persistence previous = mInstance.getAndSet(this);
+        if(previous != null)
+            throw new IllegalStateException("Singleton not allowed to instantiate twice");
     }
 
-    private Persistence() {
-    }
-
+    /**
+     * Singleton accessor
+     * @return
+     */
     public static Persistence instance() {
-        if (mInstance == null) {
-            synchronized (Persistence.class) {
-                mInstance = new Persistence();
-            }
-        }
-        return mInstance;
+        return mInstance.get();
     }
 
-    private EntityManagerFactory createLocalEntityManagerFactory() {
-        Properties props = new Properties();
-//
-//        File dbPath = new File(Config.getLocalHomeDirectory(), "db/movista");
-//        props.setProperty("javax.persistence.jdbc.url", "jdbc:h2:file:" + dbPath.toString());
-//        props.setProperty("javax.persistence.jdbc.driver", "org.h2.Driver");
-//
-//        props.setProperty("javax.persistence.schema-generation.database.action", "create");
-//        props.setProperty("javax.persistence.schema-generation.create-database-schemas", "true");
-//
-//        props.setProperty("eclipselink.target-database", "org.eclipse.persistence.platform.database.H2Platform");
-//        props.setProperty("eclipselink.jdbc.batch-writing", "JDBC");
-//
-//        if (mShowSql) {
-//            // Show SQL
-//            props.setProperty("eclipselink.logging.level.sql", "FINE");
-//            props.setProperty("eclipselink.logging.parameters", "true");
-//        }
+    //region Spring entity manager factory using persistence.xml
+    //    @Bean
+//    public EntityManagerFactory entityManagerFactory() {
+//    Properties props = new Properties();
+//      if (mShowSql) {
+//          // Show SQL
+//          props.setProperty("eclipselink.logging.level.sql", "FINE");
+//          props.setProperty("eclipselink.logging.parameters", "true");
+//      }
 
-        return javax.persistence.Persistence.createEntityManagerFactory("leo2", props);
+//      return javax.persistence.Persistence.createEntityManagerFactory("leo2");
+//    }
+    //endregion
+
+    //region Spring inline persistence/unit configuration
+    @Autowired
+    private DataSource mDataSource;
+
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(emf);
+        transactionManager.setDataSource(mDataSource);
+
+        return transactionManager;
     }
 
-    public void initialize() {
-        if (mEntityManagerFactory != null)
-            throw new RuntimeException("Persistence singleton already initialized");
+    @Bean
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/dekuclient");
+        dataSource.setUsername("leo2");
+        dataSource.setPassword("leo2");
 
-        mEntityManagerFactory = this.createLocalEntityManagerFactory();
-        mEntityManager = mEntityManagerFactory.createEntityManager();
+        Properties dataSourceProperties = new Properties();
+        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
+        dataSourceProperties.setProperty("connectTimeout", "1000");
+        dataSource.setConnectionProperties(dataSourceProperties);
 
-        mJinqStreamProvider = new JinqJPAStreamProvider(mEntityManagerFactory);
+        return dataSource;
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(mDataSource);
+        em.setPackagesToScan(new String[]{
+                "org.deku.leo2.central.entities"
+        });
+
+        JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
+        em.setJpaVendorAdapter(vendorAdapter);
+
+        Properties eclipseLinkProperties = new Properties();
+        eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true");
+        eclipseLinkProperties.setProperty("eclipselink.weaving", "false");
+        em.setJpaProperties(eclipseLinkProperties);
+
+        //mJinqStreamProvider = this.createJinqStreamProvider(em.getNativeEntityManagerFactory());
+
+        return em;
+    }
+    //endregion
+
+    //region JINQ helpers
+    /**
+     * Create JINQ stream provider
+     * @param emf
+     * @return
+     */
+    private JinqJPAStreamProvider createJinqStreamProvider(EntityManagerFactory emf) {
+        JinqJPAStreamProvider jinqStreamProvider = new JinqJPAStreamProvider(emf);
         if (mShowJinqQueries) {
-            mJinqStreamProvider.setHint("queryLogger", new JPAQueryLogger() {
+            jinqStreamProvider.setHint("queryLogger", new JPAQueryLogger() {
                 @Override
                 public void logQuery(String query, Map<Integer, Object> positionParameters, Map<String, Object> namedParameters) {
                     mLog.info(query);
                 }
             });
         }
-        //mJinqStreamProvider.setHint("exceptionOnTranslationFail", true);
-    }
-
-    /**
-     * Persistence entitiy manager
-     *
-     * @return
-     */
-    public EntityManager getEntityManager() {
-        return mEntityManager;
+        return jinqStreamProvider;
     }
 
     /**
      * The JINQ stream provider
-     *
      * @return
      */
     public JinqJPAStreamProvider getJinqStreamProvider() {
@@ -103,17 +157,16 @@ public class Persistence {
 
     /**
      * JINQ query interface for querying performing a query on instances with specific type
-     *
      * @param type Type of instance
      * @param <T>  Type of instance
      * @return
      */
-    public <T> JinqStream<T> query(Class<T> type) {
-        return this.query(type, false, false);
+    public <T> JinqStream<T> query(EntityManager em, Class<T> type) {
+        return this.query(em, type, false, false);
     }
 
-    public <T> JinqStream<T> query(Class<T> type, boolean exceptionOnTranslationFail, boolean queryLogger) {
-        JinqStream<T> jstream = mJinqStreamProvider.streamAll(mEntityManager, type);
+    public <T> JinqStream<T> query(EntityManager em, Class<T> type, boolean exceptionOnTranslationFail, boolean queryLogger) {
+        JinqStream<T> jstream = mJinqStreamProvider.streamAll(em, type);
 
         if (exceptionOnTranslationFail)
             jstream.setHint("exceptionOnTranslationFail", true);
@@ -128,19 +181,24 @@ public class Persistence {
         }
         return jstream;
     }
+    //endregion
+
+    //region JPA helpers
+    public interface TransactionBlock {
+        void perform(EntityManager em);
+    }
 
     /**
      * Returns a persistent instance of a specific class.
-     *
      * @param type       Type of instance
      * @param primaryKey Primary key value
      * @param <T>        Type of instance
      * @return Persistent instance of class or null on error
      */
-    public <T> T persistentInstance(Class<T> type, Object primaryKey) {
+    public <T> T persistentInstance(EntityManager em, Class<T> type, Object primaryKey) {
         T t = null;
         try {
-            t = this.getEntityManager().find(type, primaryKey);
+            t = em.find(type, primaryKey);
             if (t == null) {
                 t = type.newInstance();
 
@@ -152,7 +210,7 @@ public class Persistence {
                     }
                 }
 
-                this.getEntityManager().persist(t);
+                em.persist(t);
             }
         } catch (Exception e) {
             mLog.severe(e.toString());
@@ -160,20 +218,22 @@ public class Persistence {
         return t;
     }
 
-    /** Transaction block wrapper
+    /**
+     * Transaction block wrapper
      * @param b
      */
-    public void transaction(TransactionBlock b) {
-        EntityTransaction et = this.getEntityManager().getTransaction();
+    public void transaction(EntityManager em, TransactionBlock b) {
+        EntityTransaction et = em.getTransaction();
         try {
             et.begin();
-            b.perform(this.getEntityManager());
+            b.perform(em);
             et.commit();
         } finally {
             if (et.isActive())
                 et.rollback();
         }
     }
+    //endregion
 
 //    @Aspect
 //    public class DAOInterceptor {
@@ -192,8 +252,6 @@ public class Persistence {
 //    }
 
     public void dispose() {
-        if (mEntityManager != null)
-            mEntityManager.close();
         if (mEntityManagerFactory != null)
             mEntityManagerFactory.close();
     }

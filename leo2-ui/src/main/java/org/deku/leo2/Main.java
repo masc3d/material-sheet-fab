@@ -158,7 +158,6 @@ public class Main extends Application {
      */
 
     public static void main(String[] args) {
-        System.out.println("start");
         launch(args);
     }
 
@@ -179,15 +178,11 @@ public class Main extends Application {
         this.loadFont("/fonts/Futura-Medium.ttf");
         this.loadFont("/fonts/Futura-MediumItalic.ttf");
 
-        System.out.println("meh1");
-
         // Main scene
         Scene scene = new Scene(this.getMainPane(), 1600, 800);
         primaryStage.setTitle("leo2");
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        System.out.println("meh2");
 
         Executors.newSingleThreadExecutor().submit( () ->
         {

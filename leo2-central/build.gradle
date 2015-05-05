@@ -8,32 +8,20 @@ buildscript {
     dependencies {
         // cargo gradle plugin for remote delpoyment
         classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.+'
-
-//        // jooq codegen gradle plugin
-//        classpath 'com.github.ben-manes:gradle-jooq-plugin:0.6'
-//        // override jooq dependencies of gradle-jooq-plugin with desired version
-//        classpath('org.jooq:jooq-codegen:3.4.1') {
-//            force: true
-//        }
-//        classpath('org.jooq:jooq-meta:3.4.1') {
-//            force: true
-//        }
-//
-//        // mysql jdbc connector
-//        classpath 'mysql:mysql-connector-java:5.1.31'
     }
 }
 
+//plugins {
+//    id "com.ewerk.gradle.plugins.querydsl" version "1.0.4"
+//}
+
 apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'cargo'
+apply plugin: 'application'
 // IDEs
 apply plugin: 'idea'
 apply plugin: 'eclipse'
-// Webservice
-apply plugin: 'war'
-apply plugin: 'cargo'
-
-apply plugin: 'application'
-//apply plugin: 'jooq'
 
 sourceCompatibility = 1.8
 version = '0.1'
@@ -44,6 +32,9 @@ repositories {
 }
 
 dependencies {
+    // slf4j logging (eg. spring logs)
+    compile 'org.slf4j:slf4j-jdk14:+'
+
     // Webservice
     // For various javax interfaces (eg. ServletContextListener)
     compile 'javax.servlet:javax.servlet-api:3.+'
@@ -54,7 +45,13 @@ dependencies {
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+'
     compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+'
     // jersey webservice container for local running/debugging
-    compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.+'
+    // masc20150504. jersey-container-grizzly2-http is usually enough for running standalone
+    // as long as all configuration is provided via WebserviceResourceConfig.
+    // Still this would portentially allow us to run the entire servlet standalone
+    // (also pulling in jersey-container-grizzly2-http)
+    compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.+'
+    // jersey spring extension
+    compile 'org.glassfish.jersey.ext:jersey-spring3:2.+'
 
     // leo2 webservice dependencies
     compile project(':leo2-common')
@@ -62,14 +59,27 @@ dependencies {
     // persistence framework(s)
     // eclipselink
     compile 'org.eclipse.persistence:eclipselink:2.+'
+    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:2.+' // Eclipselink codegen/annotation processor
+
+    // QueryDSL
+    compile 'com.mysema.querydsl:querydsl-jpa:3.+'
+    compile 'com.mysema.querydsl:querydsl-apt:3.+:jpa' // QueryDSL codegen/annotation processor
+    // Required for QueryDSL codegen (only when implementing Spring's QueryDslJpaRepository)
+    compile 'org.hibernate:hibernate-core:+'
+    compile 'jaxen:jaxen:+'
+
+    // Spring
+    compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
+    compile 'org.springframework:spring-orm:4.+'
+    compile 'org.springframework:spring-context:4.+'
+    compile 'org.springframework:spring-web:4.+'
+
+    // JSR-330
+    compile 'javax.inject:javax.inject:1'
+
     // deltaspike data
 //    compile 'org.apache.deltaspike.modules:deltaspike-data-module-api:+'
 //    compile 'org.apache.deltaspike.modules:deltaspike-data-module-impl:+'
-
-//    // jooq
-//    compile 'org.jooq:jooq:3.4.1'
-//    compile 'org.jooq:jooq-meta:3.4.1'
-//    compile 'org.jooq:jooq-codegen:3.4.1'
 
     compile 'org.jinq:jinq-jpa:+'
 
@@ -110,38 +120,36 @@ cargo {
     }
 }
 
-
-//jooq {
-//    jdbc {
-//        url 'jdbc:mysql://10.0.10.10:3306'
-//        driver 'com.mysql.jdbc.Driver'
-//        user 'root'
-//        password 'root'
-//    }
-//    generator {
-//        database {
-//            name 'org.jooq.util.mysql.MySQLDatabase'
-//            inputSchema 'dekuclient'
-//
-//            includes 'tbldepotliste'
-//            //excludes '.*'
-//
-//            // masc20140916. (almost) all tables
-//            //includes '.*'
-//            //excludes 'tbl_auftrag_info'
-//        }
-//
-//        target {
-//            packageName 'org.deku.leo2.persistence.jooq.dekuclient'
-//            directory new File(project.projectDir, 'src/main/java').toString()
-//        }
-//    }
-//}
-
 // task dependencies
 tasks.cargoDeployRemote.dependsOn(war)
 tasks.cargoRedeployRemote.dependsOn(war)
 
-//tasks.generateJooq.outputs.upToDateWhen { false }
+// Required for eclipse modelgen to find xml resources (eg. persistence.xml)
+sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+compileJava.dependsOn(processResources)
+
+// Location for generated sources
+def generatedSources = "$projectDir/generated"
+def generatedOutputDir = file("$generatedSources")
+
+compileJava {
+    doFirst {
+        generatedOutputDir.exists() || generatedOutputDir.mkdirs()
+        // Tell javac about the generated sources location
+        options.compilerArgs = [
+                '-s', "${generatedSources}"
+        ]
+    }
+}
+
+// Add generated sources to a separate sourceset, so IDEs can see them
+// (Adding sources to main/java instead will cause subsequent builds to fail)
+sourceSets {
+    generated {
+        java {
+            srcDirs += generatedOutputDir
+        }
+    }
+}
 
 
