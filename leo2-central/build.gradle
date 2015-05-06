@@ -1,5 +1,7 @@
 // Gradle dependencies/plugins
 buildscript {
+    def v_jooq = "3.5.+"
+
     repositories {
         jcenter()
         mavenCentral()
@@ -8,6 +10,20 @@ buildscript {
     dependencies {
         // cargo gradle plugin for remote delpoyment
         classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.+'
+
+        // jooq codegen gradle plugin
+        classpath 'com.github.ben-manes:gradle-jooq-plugin:+' +
+                ''
+        // override jooq dependencies of gradle-jooq-plugin with desired version
+        classpath("org.jooq:jooq-codegen:$v_jooq") {
+            force: true
+        }
+        classpath("org.jooq:jooq-meta:$v_jooq") {
+            force: true
+        }
+
+        // mysql jdbc connector
+        classpath 'mysql:mysql-connector-java:5.+'
     }
 }
 
@@ -19,9 +35,18 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'cargo'
 apply plugin: 'application'
+apply plugin: 'jooq'
 // IDEs
 apply plugin: 'idea'
 apply plugin: 'eclipse'
+
+def v_jooq = "3.5.+"
+def v_jersey = "2.+"
+def v_jackson = "2.+"
+def v_hk2 = "2.+"
+def v_eclipselink = "2.+"
+def v_spring = "4.+"
+def v_querydsl = "3.+"
 
 sourceCompatibility = 1.8
 version = '0.1'
@@ -32,6 +57,10 @@ repositories {
 }
 
 dependencies {
+    // leo2 webservice dependencies
+    compile project(':leo2-common')
+    compile project(':sx-common')
+
     // slf4j logging (eg. spring logs)
     compile 'org.slf4j:slf4j-jdk14:+'
 
@@ -39,38 +68,49 @@ dependencies {
     // For various javax interfaces (eg. ServletContextListener)
     compile 'javax.servlet:javax.servlet-api:3.+'
     // jersey
-    compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.+'
-    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'
-    // jackson JSON serializer
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+'
-    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+'
+    compile "org.glassfish.jersey.containers:jersey-container-servlet:$v_jersey"
+    compile "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey"
+    // jersey spring extension
+    compile "org.glassfish.jersey.ext:jersey-spring3:$v_jersey"
+    // TODO: obsolete as soon as jetty works with tomcat deployment
     // jersey webservice container for local running/debugging
     // masc20150504. jersey-container-grizzly2-http is usually enough for running standalone
     // as long as all configuration is provided via WebserviceResourceConfig.
     // Still this would portentially allow us to run the entire servlet standalone
     // (also pulling in jersey-container-grizzly2-http)
-    compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.+'
-    // jersey spring extension
-    compile 'org.glassfish.jersey.ext:jersey-spring3:2.+'
+    compile "org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:$v_jersey"
 
-    // leo2 webservice dependencies
-    compile project(':leo2-common')
-    compile project(':sx-common')
+    // TODO: jetty breaks tomcat deployment :/
+    //compile "org.eclipse.jetty.aggregate:jetty-all:9.+"
+
+    // jackson JSON serializer
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
+
+    // TODO: update to resolution strategy
+    compile "org.glassfish.hk2:hk2:$v_hk2"
+    compile "org.glassfish.hk2:spring-bridge:$v_hk2"
 
     // persistence framework(s)
     // eclipselink
-    compile 'org.eclipse.persistence:eclipselink:2.+'
-    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:2.+' // Eclipselink codegen/annotation processor
+    compile "org.eclipse.persistence:eclipselink:$v_eclipselink"
+    compile "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$v_eclipselink"
+    // Eclipselink codegen/annotation processor
 
     // QueryDSL
-    compile 'com.mysema.querydsl:querydsl-jpa:3.+'
-    compile 'com.mysema.querydsl:querydsl-apt:3.+:jpa' // QueryDSL codegen/annotation processor
+    compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
+    compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
+
+    // Jooq
+    compile "org.jooq:jooq:$v_jooq"
+    //compile "org.jooq:jooq-meta:$v_jooq"
+    //compile "org.jooq:jooq-codegen:$v_jooq"
 
     // Spring
     compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
-    compile 'org.springframework:spring-orm:4.+'
-    compile 'org.springframework:spring-context:4.+'
-    compile 'org.springframework:spring-web:4.+'
+    compile "org.springframework:spring-orm:$v_spring"
+    compile "org.springframework:spring-context:$v_spring"
+    compile "org.springframework:spring-web:$v_spring"
 
     // JSR-330
     compile 'javax.inject:javax.inject:1'
@@ -84,11 +124,15 @@ dependencies {
     // jdbc connector(s)
     compile 'mysql:mysql-connector-java:5.+'
 
+    // json doc
+    compile 'com.wordnik:swagger-jersey2-jaxrs:+'
+
+    // Test dependencies
     testCompile group: 'junit', name: 'junit', version: '4.+'
     // Webservice client libraries for test cases
-    testCompile 'org.glassfish.jersey.core:jersey-client:2.+'
-    testCompile 'org.glassfish.jersey.ext:jersey-proxy-client:2.+'
-    testCompile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'
+    testCompile "org.glassfish.jersey.core:jersey-client:$v_jersey"
+    testCompile "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey"
+    testCompile "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey"
 
     testCompile project(':sx-common')
 }
@@ -128,15 +172,18 @@ sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
 // Location for generated sources
-def generatedSources = "$projectDir/generated"
-def generatedOutputDir = file("$generatedSources")
+// Directory for apt must be dedicated (no other generators may write here)
+// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+def srcdir_apt = file("$projectDir/src/generated/apt")
+def srcdir_jooq = file("$projectDir/src/generated/jooq")
 
 compileJava {
     doFirst {
-        generatedOutputDir.exists() || generatedOutputDir.mkdirs()
+        // Source dir must exist
+        srcdir_apt.exists() || srcdir_apt.mkdirs()
         // Tell javac about the generated sources location
         options.compilerArgs = [
-                '-s', "${generatedSources}"
+                '-s', srcdir_apt.toString()
         ]
     }
 }
@@ -146,9 +193,35 @@ compileJava {
 sourceSets {
     generated {
         java {
-            srcDirs += generatedOutputDir
+            srcDirs += srcdir_apt
         }
     }
 }
 
+jooq {
+    jdbc {
+        url 'jdbc:mysql://10.0.10.10:3306'
+        driver 'com.mysql.jdbc.Driver'
+        user 'root'
+        password 'root'
+    }
+    generator {
+        database {
+            name 'org.jooq.util.mysql.MySQLDatabase'
+            inputSchema 'dekuclient'
 
+            includes 'tbldepotliste'
+            //excludes '.*'
+
+            // masc20140916. (almost) all tables
+            //includes '.*'
+            //excludes 'tbl_auftrag_info'
+        }
+
+        target {
+            packageName 'org.deku.leo2.central.entities.v1.jooq'
+            directory srcdir_jooq.toString()
+        }
+    }
+}
+//tasks.generateJooq.outputs.upToDateWhen { false }
