@@ -1,20 +1,18 @@
 package org.deku.leo2.central;
 
-import org.deku.leo2.central.rest.WebserviceResourceConfig;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.WebAppContext;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import sx.Disposable;
-
-import java.io.IOException;
-import java.net.URI;
 
 /**
  * Created by masc on 30.07.14.
  */
-public class Main implements Disposable {
+public class Main implements Disposable, ApplicationContextAware {
     private volatile static Main mInstance = null;
 
     public static Main instance() {
@@ -29,9 +27,9 @@ public class Main implements Disposable {
     /**
      * Spring application context
      */
-    ApplicationContext mContext;
+    ConfigurableApplicationContext mContext;
 
-    public ApplicationContext getContext() {
+    public ConfigurableApplicationContext getContext() {
         return mContext;
     }
 
@@ -40,21 +38,31 @@ public class Main implements Disposable {
         mContext = new AnnotationConfigApplicationContext(Main.class.getPackage().getName());
     }
 
-    public static void main(String[] args) throws IOException {
-        //final URI BASE_URI = URI.create("http://localhost:8080/leo2/");
-        final URI BASE_URI = URI.create("http://0.0.0.0:8080/leo2/");
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        mContext = (ConfigurableApplicationContext)applicationContext;
+    }
 
-        ResourceConfig config = new WebserviceResourceConfig();
-        // Let spring/jersey bridge know the context
-        config.property("contextConfig", instance().getContext());
+    public static class JettyMain {
+        /**
+         * Standalone jetty
+         * @param args
+         * @throws Exception
+         */
+        public static void main(String[] args) throws Exception {
+            Server server = new Server(8080);
+            WebAppContext context = new WebAppContext();
+            context.setContextPath("/leo2");
+            context.setDefaultsDescriptor("src/main/webapp/WEB-INF/web.xml");
+            context.setResourceBase("src/main/webapp/");
+            server.setHandler(context);
+            server.start();
 
-        // TODO: verify why partial webservice paths may return empty result instead of 404
-        final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, config);
+            System.out.println("Enter to stop webservice");
+            System.in.read();
 
-        System.out.println("Enter to stop webservice");
-        System.in.read();
-
-        server.shutdownNow();
+            server.stop();
+        }
     }
 
     @Override

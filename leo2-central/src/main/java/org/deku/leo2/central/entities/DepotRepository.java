@@ -1,4 +1,4 @@
-package org.deku.leo2.central.entities.v1;
+package org.deku.leo2.central.entities;
 
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;

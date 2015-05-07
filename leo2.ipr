@@ -158,32 +158,20 @@
             <element id="library" level="project" name="Gradle: javax.annotation:javax.annotation-api:1.2" />
             <element id="library" level="project" name="Gradle: org.glassfish.hk2:osgi-resource-locator:1.0.1" />
             <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
-            <element id="library" level="project" name="Gradle: org.javassist:javassist:3.18.1-GA" />
             <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http-server:2.3.16" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http:2.3.16" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-framework:2.3.16" />
-            <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.media:jersey-media-json-jackson:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.17" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-common:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-server:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.ext:jersey-entity-filtering:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b10" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-client:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish:javax.json:1.0.4" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.bundles.repackaged:jersey-guava:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b10" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.media:jersey-media-jaxb:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b10" />
             <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.35" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.5.0" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.3" />
             <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7" />
@@ -193,29 +181,19 @@
             <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:2.6.0" />
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-orm:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-context:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.3" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.core:2.6.0" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa:2.6.0" />
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-commons:1.10.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
             <element id="library" level="project" name="Gradle: org.slf4j:jcl-over-slf4j:1.7.10" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.3" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.3" />
             <element id="library" level="project" name="Gradle: com.google.guava:guava:18.0" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.asm:2.6.0" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.antlr:2.6.0" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:2.6.0" />
             <element id="library" level="project" name="Gradle: aopalliance:aopalliance:1.0" />
             <element id="library" level="project" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" />
             <element id="library" level="project" name="Gradle: com.mysema.commons:mysema-commons-lang:0.2.4" />
             <element id="library" level="project" name="Gradle: com.infradna.tool:bridge-method-annotation:1.13" />
-            <element id="library" level="project" name="Gradle: com.mysema.codegen:codegen:0.6.6" />
-            <element id="library" level="project" name="Gradle: org.eclipse.jdt.core.compiler:ecj:4.3.1" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-jdbc:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-expression:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-beans:4.1.6.RELEASE" />
@@ -223,20 +201,7 @@
             <element id="library" level="project" name="Gradle: org.springframework:spring-tx:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-aop:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.ext:jersey-spring3:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:spring-bridge:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:config-types:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:core:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-config:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-runlevel:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:class-model:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.jvnet:tiger-types:1.4" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:bean-validator:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:asm-all-repackaged:2.4.0-b10" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http-servlet:2.3.16" />
             <element id="library" level="project" name="Gradle: org.slf4j:slf4j-jdk14:1.7.12" />
             <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.12" />
             <element id="archive" name="leo2-sx-common-1.0.jar">
@@ -246,6 +211,53 @@
             <element id="library" level="project" name="Gradle: javax.jms:jms-api:1.1-rev-1" />
             <element id="library" level="project" name="Gradle: junit:junit:4.12" />
             <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-jersey2-jaxrs:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.media:jersey-media-multipart:2.1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: org.reflections:reflections:0.9.9" />
+            <element id="library" level="project" name="Gradle: org.jvnet.mimepull:mimepull:1.8" />
+            <element id="library" level="project" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4" />
+            <element id="library" level="project" name="Gradle: org.apache.commons:commons-lang3:3.2.1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-models:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: com.google.code.findbugs:annotations:2.0.1" />
+            <element id="library" level="project" name="Gradle: joda-time:joda-time:2.2" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-annotations:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.ext:jersey-spring3:2.17" />
+            <element id="library" level="project" name="Gradle: org.jvnet:tiger-types:1.4" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:spring-bridge:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:config-types:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-core:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-config:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-runlevel:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:class-model:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:bean-validator:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:asm-all-repackaged:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.mysema.codegen:codegen:0.6.6" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jdt.core.compiler:ecj:4.3.1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.core:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.asm:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.antlr:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:2.6.0" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.5.3" />
+            <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
+            <element id="library" level="project" name="Gradle: org.jooq:jooq:3.6.1" />
+            <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.aggregate:jetty-all:9.3.0.M2" />
+            <element id="library" level="project" name="Gradle: javax.websocket:javax.websocket-api:1.0" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -280,32 +292,20 @@
             <element id="library" level="project" name="Gradle: javax.annotation:javax.annotation-api:1.2" />
             <element id="library" level="project" name="Gradle: org.glassfish.hk2:osgi-resource-locator:1.0.1" />
             <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
-            <element id="library" level="project" name="Gradle: org.javassist:javassist:3.18.1-GA" />
             <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http-server:2.3.16" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http:2.3.16" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-framework:2.3.16" />
-            <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.media:jersey-media-json-jackson:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.17" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-common:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-server:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.ext:jersey-entity-filtering:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b10" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-client:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish:javax.json:1.0.4" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.bundles.repackaged:jersey-guava:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b10" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.media:jersey-media-jaxb:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b10" />
             <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.35" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.5.0" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.3" />
             <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7" />
@@ -315,29 +315,19 @@
             <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:2.6.0" />
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-orm:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-context:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.3" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.core:2.6.0" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa:2.6.0" />
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-commons:1.10.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
             <element id="library" level="project" name="Gradle: org.slf4j:jcl-over-slf4j:1.7.10" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.3" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.3" />
             <element id="library" level="project" name="Gradle: com.google.guava:guava:18.0" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.asm:2.6.0" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.antlr:2.6.0" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:2.6.0" />
             <element id="library" level="project" name="Gradle: aopalliance:aopalliance:1.0" />
             <element id="library" level="project" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" />
             <element id="library" level="project" name="Gradle: com.mysema.commons:mysema-commons-lang:0.2.4" />
             <element id="library" level="project" name="Gradle: com.infradna.tool:bridge-method-annotation:1.13" />
-            <element id="library" level="project" name="Gradle: com.mysema.codegen:codegen:0.6.6" />
-            <element id="library" level="project" name="Gradle: org.eclipse.jdt.core.compiler:ecj:4.3.1" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-jdbc:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-expression:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-beans:4.1.6.RELEASE" />
@@ -345,20 +335,7 @@
             <element id="library" level="project" name="Gradle: org.springframework:spring-tx:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-aop:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.ext:jersey-spring3:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:spring-bridge:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:config-types:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:core:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-config:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-runlevel:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:class-model:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.jvnet:tiger-types:1.4" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:bean-validator:2.4.0-b10" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:asm-all-repackaged:2.4.0-b10" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.grizzly:grizzly-http-servlet:2.3.16" />
             <element id="library" level="project" name="Gradle: org.slf4j:slf4j-jdk14:1.7.12" />
             <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.12" />
             <element id="archive" name="leo2-sx-common-1.0.jar">
@@ -368,6 +345,53 @@
             <element id="library" level="project" name="Gradle: javax.jms:jms-api:1.1-rev-1" />
             <element id="library" level="project" name="Gradle: junit:junit:4.12" />
             <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-jersey2-jaxrs:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.media:jersey-media-multipart:2.1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: org.reflections:reflections:0.9.9" />
+            <element id="library" level="project" name="Gradle: org.jvnet.mimepull:mimepull:1.8" />
+            <element id="library" level="project" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4" />
+            <element id="library" level="project" name="Gradle: org.apache.commons:commons-lang3:3.2.1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-models:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: com.google.code.findbugs:annotations:2.0.1" />
+            <element id="library" level="project" name="Gradle: joda-time:joda-time:2.2" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-annotations:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: org.glassfish.jersey.ext:jersey-spring3:2.17" />
+            <element id="library" level="project" name="Gradle: org.jvnet:tiger-types:1.4" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:spring-bridge:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:config-types:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-core:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-config:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-runlevel:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:class-model:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:bean-validator:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:asm-all-repackaged:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b19" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.mysema.codegen:codegen:0.6.6" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jdt.core.compiler:ecj:4.3.1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.core:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.asm:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.antlr:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:2.6.0" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.5.3" />
+            <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
+            <element id="library" level="project" name="Gradle: org.jooq:jooq:3.6.1" />
+            <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.aggregate:jetty-all:9.3.0.M2" />
+            <element id="library" level="project" name="Gradle: javax.websocket:javax.websocket-api:1.0" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -393,7 +417,7 @@
     </annotationProcessing>
   </component>
   <component name="CopyrightManager" default="" />
-  <component name="DataSourceManagerImpl" format="xml" hash="2555397891">
+  <component name="DataSourceManagerImpl" format="xml" hash="2785131892">
     <data-source source="LOCAL" name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
@@ -633,10 +657,10 @@
   <component name="ProjectRunConfigurationManager">
     <configuration default="false" name="leo2-central-webservice" type="Application" factoryName="Application" singleton="true">
       <extension name="coverage" enabled="false" merge="false" runner="idea" />
-      <option name="MAIN_CLASS_NAME" value="org.deku.leo2.central.Main" />
+      <option name="MAIN_CLASS_NAME" value="org.deku.leo2.central.Main$JettyMain" />
       <option name="VM_PARAMETERS" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/leo2-central" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
       <option name="ENABLE_SWING_INSPECTOR" value="false" />
@@ -711,17 +735,8 @@
     <mapping directory="$PROJECT_DIR$/sx-common" vcs="Git" />
   </component>
   <component name="dataSourceStorageLocal">
-    <data-source name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
-      <secret-storage>master_key</secret-storage>
-      <user-name>leo2</user-name>
-      <schema-pattern>dekuclient.*</schema-pattern>
-      <default-schemas>dekuclient.*</default-schemas>
-    </data-source>
-    <data-source name="leo2/EclipseLink" uuid="971c03ec-9845-41b5-b96d-63b3112acbb9">
-      <user-name>leo2</user-name>
-      <schema-pattern>dekuclient.*</schema-pattern>
-      <default-schemas>dekuclient.*</default-schemas>
-    </data-source>
+    <data-source name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc" />
+    <data-source name="leo2/EclipseLink" uuid="971c03ec-9845-41b5-b96d-63b3112acbb9" />
   </component>
   <component name="libraryTable">
     <library name="Gradle: aopalliance:aopalliance:1.0">
@@ -751,6 +766,15 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.5.0/88b177349b719fe0636b50889687b9ed036bfd89/jackson-annotations-2.5.0-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.5.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.5.3/ade455ede4797ed450ca6a56e589a81278fc8f45/jackson-annotations-2.5.3.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.5.3/cc69565d3e73cb656abda60cdf1288f15c5623af/jackson-annotations-2.5.3-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: com.fasterxml.jackson.core:jackson-core:2.5.3">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.5.3/a8b8a6dfc8a17890e4c7ff8aed810763d265b68b/jackson-core-2.5.3.jar!/" />
@@ -767,6 +791,33 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.5.3/f547023ac7ea86457b61505e03ff320811529805/jackson-databind-2.5.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.4.2/2f2d96f68b2d3475452d95dde7a3fbee225f6ae/jackson-dataformat-xml-2.4.2.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.4.2/2fc8ea7c67b7f0ea920ddecb320fc5f6a1ef4e4f/jackson-dataformat-xml-2.4.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.4.2/7136d542ef2d5b9ace4bb9eb4bd43f8d410a55da/jackson-dataformat-yaml-2.4.2.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/2.4.2/2b3ca5fdfed3869695f73263f77797bba99a6a9d/jackson-dataformat-yaml-2.4.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.datatype/jackson-datatype-joda/2.4.2/d826d1db3f9f2277576c524a71d03d1f1cbe462b/jackson-datatype-joda-2.4.2.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.datatype/jackson-datatype-joda/2.4.2/b06e486a7093fdf4a855555b4003b055308326d2/jackson-datatype-joda-2.4.2-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.3">
@@ -813,6 +864,13 @@
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml/classmate/1.0.0/da0cec0cf5fa28fba22e44700d72259e0225f2e4/classmate-1.0.0-sources.jar!/" />
       </SOURCES>
+    </library>
+    <library name="Gradle: com.google.code.findbugs:annotations:2.0.1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/annotations/2.0.1/9ef6656259841cebfb9fb0697bb122ada4485498/annotations-2.0.1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
     </library>
     <library name="Gradle: com.google.code.findbugs:jsr305:1.3.9">
       <CLASSES>
@@ -900,6 +958,51 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.thoughtworks.xstream/xstream/1.4.8/f94a2c20633765ae495647bfeee63560bd20f700/xstream-1.4.8-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.wordnik:swagger-annotations:1.5.3-M1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wordnik/swagger-annotations/1.5.3-M1/af8399fdbf8283a9f2b26808f5fa963b98d21f09/swagger-annotations-1.5.3-M1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wordnik/swagger-annotations/1.5.3-M1/73707f4ae221822dae2c75f524ba59dc5fc40ab2/swagger-annotations-1.5.3-M1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.wordnik:swagger-core:1.5.3-M1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wordnik/swagger-core/1.5.3-M1/4a552d53faafccc1a87c2d0c31dbe09455027b3d/swagger-core-1.5.3-M1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wordnik/swagger-core/1.5.3-M1/500c7ecb5db913d1286bace250b30ba26cb5b5e/swagger-core-1.5.3-M1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wordnik/swagger-jaxrs/1.5.3-M1/e67c29efc1532d9133d1b55e951d25f5172db2dd/swagger-jaxrs-1.5.3-M1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wordnik/swagger-jaxrs/1.5.3-M1/ccf37c3701e5d098c8eb67011901d47b7f4ec3e6/swagger-jaxrs-1.5.3-M1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.wordnik:swagger-jersey2-jaxrs:1.5.3-M1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wordnik/swagger-jersey2-jaxrs/1.5.3-M1/1e65999b0e31999ce43d7652f4889361f377aac/swagger-jersey2-jaxrs-1.5.3-M1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wordnik/swagger-jersey2-jaxrs/1.5.3-M1/10d88abcf2f8681a3a636cb0dc1cea44ecb0de15/swagger-jersey2-jaxrs-1.5.3-M1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.wordnik:swagger-models:1.5.3-M1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wordnik/swagger-models/1.5.3-M1/39d56e97d6a0569c9704cec813eaef81d8d6b2c0/swagger-models-1.5.3-M1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.wordnik/swagger-models/1.5.3-M1/65fae2420ebbc0846cfa5d07ae6950ae40b7703c/swagger-models-1.5.3-M1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: commons-codec:commons-codec:1.9">
@@ -992,6 +1095,15 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.validation/validation-api/1.1.0.Final/7d49b53caed9bd81d172807c3e096d24f3c57090/validation-api-1.1.0.Final-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: javax.websocket:javax.websocket-api:1.0">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.websocket/javax.websocket-api/1.0/fc843b649d4a1dcb0497669d262befa3918c7ba8/javax.websocket-api-1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.websocket/javax.websocket-api/1.0/107b0fdc7ca320b54dc1393e01585be5883ff348/javax.websocket-api-1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: javax.ws.rs:javax.ws.rs-api:2.0.1">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.ws.rs/javax.ws.rs-api/2.0.1/104e9c2b5583cfcfeac0402316221648d6d8ea6b/javax.ws.rs-api-2.0.1.jar!/" />
@@ -999,6 +1111,15 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.ws.rs/javax.ws.rs-api/2.0.1/a20db7429fd8dfff74335ec867472b71c345049b/javax.ws.rs-api-2.0.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: joda-time:joda-time:2.2">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.2/a5f29a7acaddea3f4af307e8cf2d0cc82645fd7d/joda-time-2.2.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/joda-time/joda-time/2.2/ad622e3cfe39319ea53b183aa5615f96ff346584/joda-time-2.2-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: junit:junit:4.12">
@@ -1098,6 +1219,15 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.activemq/activemq-stomp/5.11.1/de3cc6f7814b1148e9ee645e335408b3879ac715/activemq-stomp-5.11.1-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: org.apache.commons:commons-lang3:3.2.1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.2.1/66f13681add50ca9e4546ffabafaaac7645db3cf/commons-lang3-3.2.1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.2.1/77e5da73ecc389bda26f9953fd91e9b53b571a6f/commons-lang3-3.2.1-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.geronimo.specs/geronimo-j2ee-management_1.1_spec/1.0.1/5372615b0c04c1913c95c34a0414cef720ca2855/geronimo-j2ee-management_1.1_spec-1.0.1.jar!/" />
@@ -1150,6 +1280,15 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.aspectj/aspectjrt/1.8.5/7500c952e086db06028c248cf0de0a0f5fe55275/aspectjrt-1.8.5-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.woodstox/stax2-api/3.1.4/ac19014b1e6a7c08aad07fe114af792676b685b7/stax2-api-3.1.4.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.woodstox/stax2-api/3.1.4/b40604d61c01cc081a4a7bdfc562aa9847ee8857/stax2-api-3.1.4-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: org.controlsfx:controlsfx:8.20.8">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.controlsfx/controlsfx/8.20.8/62647327dc0c0853596738caea794f132912f747/controlsfx-8.20.8.jar!/" />
@@ -1184,6 +1323,15 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.aggregate/jetty-all/8.1.16.v20140903/a4a2d63a2b2591eb4f29fc70554084612ff16987/jetty-all-8.1.16.v20140903-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.eclipse.jetty.aggregate:jetty-all:9.3.0.M2">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.aggregate/jetty-all/9.3.0.M2/243d09390ea9087c4cc76c6d7f6cba20b339b946/jetty-all-9.3.0.M2.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.aggregate/jetty-all/9.3.0.M2/96d2cdd912881677d7b2a289a3913fb042bfecb/jetty-all-9.3.0.M2-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016">
@@ -1330,15 +1478,6 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.grizzly/grizzly-http-server/2.3.16/56b6c5b45c4ec3878a1a4c55a21451ec5020f88e/grizzly-http-server-2.3.16-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.grizzly:grizzly-http-servlet:2.3.16">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.grizzly/grizzly-http-servlet/2.3.16/1c2e9606bd47adcf639d726c059dc0c67d5ffcc/grizzly-http-servlet-2.3.16.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.grizzly/grizzly-http-servlet/2.3.16/856d75c56c48dc0cb543250118de0424b2dc1a4/grizzly-http-servlet-2.3.16-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Gradle: org.glassfish.grizzly:grizzly-http:2.3.16">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.grizzly/grizzly-http/2.3.16/4b154e1e047c6e4df2907d5cbd6a5742f65a6414/grizzly-http-2.3.16.jar!/" />
@@ -1357,22 +1496,31 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b10/bcd34755bb9412aff24875b4f9a6ced8a1d3c731/aopalliance-repackaged-2.4.0-b10-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2.external:asm-all-repackaged:2.4.0-b10">
+    <library name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b19">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/asm-all-repackaged/2.4.0-b10/228262d9bc7293935323e0caddbf296424360e9f/asm-all-repackaged-2.4.0-b10.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b19/2ed29a538fc661a553b76bbf70eaa0045452c86e/aopalliance-repackaged-2.4.0-b19.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/asm-all-repackaged/2.4.0-b10/bbb7d589cd1c140e71ee02488c201972c4c38604/asm-all-repackaged-2.4.0-b10-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b19/7954792fee67ca1f4b8249e244a0c79847975163/aopalliance-repackaged-2.4.0-b19-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2.external:bean-validator:2.4.0-b10">
+    <library name="Gradle: org.glassfish.hk2.external:asm-all-repackaged:2.4.0-b19">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/bean-validator/2.4.0-b10/84a3d7e17611f6884e90132a03dd7c11e3945f7/bean-validator-2.4.0-b10.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/asm-all-repackaged/2.4.0-b19/dbd28a1644d8a2e43c8e7170d361bf7666a12014/asm-all-repackaged-2.4.0-b19.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/bean-validator/2.4.0-b10/56c5a7cb9eb59c734b78e7a0a30f1a34a993547c/bean-validator-2.4.0-b10-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/asm-all-repackaged/2.4.0-b19/8105f83cb305bc2b2ed531b0c770332ba5cc4151/asm-all-repackaged-2.4.0-b19-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.glassfish.hk2.external:bean-validator:2.4.0-b19">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/bean-validator/2.4.0-b19/36f3b228adf0ef93051bfbcc0a3677196cd14b19/bean-validator-2.4.0-b19.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/bean-validator/2.4.0-b19/acaaaf302645b9a1a1a6d7c404a7c87c94d722f5/bean-validator-2.4.0-b19-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b10">
@@ -1384,31 +1532,31 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b10/13f423f6ab9fe49e7259e624d2c074dbea4ee2c9/javax.inject-2.4.0-b10-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:class-model:2.4.0-b10">
+    <library name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b19">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/class-model/2.4.0-b10/6c7f4aa016f1e97b2eb15f780d3edd9a9b07e0f3/class-model-2.4.0-b10.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b19/c01697c8b243d18965b98fb52d241732ce5039bd/javax.inject-2.4.0-b19.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/class-model/2.4.0-b10/d41c379772f702af437849d324a7fb5bc89701fa/class-model-2.4.0-b10-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b19/6138064172e71d36fe6f3858541a3ee889c6f834/javax.inject-2.4.0-b19-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:config-types:2.4.0-b10">
+    <library name="Gradle: org.glassfish.hk2:class-model:2.4.0-b19">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/config-types/2.4.0-b10/fff76571af142d67a310add37dad88d51ae2d3b6/config-types-2.4.0-b10.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/class-model/2.4.0-b19/67b679cc22573f2ebf08c1ce522e3259b680f101/class-model-2.4.0-b19.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/config-types/2.4.0-b10/2033511579fe20c41de2e7bf1ea48d22c5fae00f/config-types-2.4.0-b10-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/class-model/2.4.0-b19/d810f64e600e28f02decccda15230d2e2950e754/class-model-2.4.0-b19-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:core:2.4.0-b10">
+    <library name="Gradle: org.glassfish.hk2:config-types:2.4.0-b19">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/core/2.4.0-b10/a52fe05b2039a80f3429b5a06f0f7af3ec88ef89/core-2.4.0-b10.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/config-types/2.4.0-b19/4edd53ae29156588493231c2ed57cd95d34681c5/config-types-2.4.0-b19.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/core/2.4.0-b10/a4aff697c9cb6af5a2d23ed3dac143abcdf9d823/core-2.4.0-b10-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/config-types/2.4.0-b19/299168aa6e5193b3e289db2ac29661885d827333/config-types-2.4.0-b19-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b10">
@@ -1420,13 +1568,31 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b10/e542a62178b10242d66a786ed1c4dbdc2a2341cc/hk2-api-2.4.0-b10-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:hk2-config:2.4.0-b10">
+    <library name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b19">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-config/2.4.0-b10/837b576077f2d2edd7dc38636e847a835329f394/hk2-config-2.4.0-b10.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b19/dd9406fa2036172f918f70453d466011d6c86d95/hk2-api-2.4.0-b19.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-config/2.4.0-b10/afa2d5f9d624dc79959fbbc00e24df3014d86d41/hk2-config-2.4.0-b10-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b19/3d7fd0cc8613830bc2f5541ed2ca31aae96699ac/hk2-api-2.4.0-b19-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.glassfish.hk2:hk2-config:2.4.0-b19">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-config/2.4.0-b19/f245471716ce11de7ea621c6a8fe947f635f66dc/hk2-config-2.4.0-b19.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-config/2.4.0-b19/c623d704eecaa5f68e6a12a3ad19405e4a6673a5/hk2-config-2.4.0-b19-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.glassfish.hk2:hk2-core:2.4.0-b19">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-core/2.4.0-b19/64f9b541a14f61bd7d80320e80de64c25dba4b04/hk2-core-2.4.0-b19.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-core/2.4.0-b19/e246c870f0795580d116861ddcb6d6766929ab3d/hk2-core-2.4.0-b19-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b10">
@@ -1438,13 +1604,22 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b10/e69bf310b4f662dbdb9541d533b62189dbc8ee51/hk2-locator-2.4.0-b10-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:hk2-runlevel:2.4.0-b10">
+    <library name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b19">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-runlevel/2.4.0-b10/92f899f5300b2dfb9fcad1c87850d3fde2b9d73c/hk2-runlevel-2.4.0-b10.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b19/bccba3bbdbced37133868e2dff5bc666c6663ff8/hk2-locator-2.4.0-b19.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-runlevel/2.4.0-b10/e2affb2e87dfafa83281cb3c8281005c17f6f6ea/hk2-runlevel-2.4.0-b10-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b19/ad9ba00827e1fc7458e8d4724067635240038e0a/hk2-locator-2.4.0-b19-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.glassfish.hk2:hk2-runlevel:2.4.0-b19">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-runlevel/2.4.0-b19/9495be4d12c332577197f02e14521cce0bca772b/hk2-runlevel-2.4.0-b19.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-runlevel/2.4.0-b19/b3e425699f935e14fe2d2aa18a96e87c4ba8a16f/hk2-runlevel-2.4.0-b19-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b10">
@@ -1456,13 +1631,22 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b10/ca0cb80b0d734e1dee09bcaefbce9476a10c79bc/hk2-utils-2.4.0-b10-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:hk2:2.4.0-b10">
+    <library name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b19">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2/2.4.0-b10/e0a83d8e517225c2341a9053e8ffdd3da5fc8d64/hk2-2.4.0-b10.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b19/9243c568da99ae6fe0887667f3a60ca88fa03e73/hk2-utils-2.4.0-b19.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2/2.4.0-b10/b203881895fd4d47d248b2896d1f2b385f678728/hk2-2.4.0-b10-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b19/b11a476af20c238a1c684d97d84e3886613c82f8/hk2-utils-2.4.0-b19-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.glassfish.hk2:hk2:2.4.0-b19">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2/2.4.0-b19/64bb964d6150348049bec66fe986655c774475c7/hk2-2.4.0-b19.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2/2.4.0-b19/45d7894a35360f94191cba70b6bae8452be8e2e4/hk2-2.4.0-b19-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.glassfish.hk2:osgi-resource-locator:1.0.1">
@@ -1474,13 +1658,13 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/osgi-resource-locator/1.0.1/b5685f8eaa7d83351b185a82a92abcd1b8b87fc8/osgi-resource-locator-1.0.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:spring-bridge:2.4.0-b10">
+    <library name="Gradle: org.glassfish.hk2:spring-bridge:2.4.0-b19">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/spring-bridge/2.4.0-b10/80dda3e0b3ef5e7148fede3338d5914786e2da39/spring-bridge-2.4.0-b10.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/spring-bridge/2.4.0-b19/caae6a7488ff77c21207191e9289815404d005c2/spring-bridge-2.4.0-b19.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/spring-bridge/2.4.0-b10/f7d7895c579d8df6d576e91f10058b71734afac7/spring-bridge-2.4.0-b10-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/spring-bridge/2.4.0-b19/6a833311cf72d467d6757056e100bf994a8d7711/spring-bridge-2.4.0-b19-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.glassfish.jersey.bundles.repackaged:jersey-guava:2.17">
@@ -1499,15 +1683,6 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.containers/jersey-container-grizzly2-http/2.17/ddbbb81d15185f4966999af6314f21f7b36fcd54/jersey-container-grizzly2-http-2.17-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.17">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.containers/jersey-container-grizzly2-servlet/2.17/198f8776bf668a5cc5cf0cc8eec4664f5498b52d/jersey-container-grizzly2-servlet-2.17.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.containers/jersey-container-grizzly2-servlet/2.17/5450bc368ee86f495e90221b2993a388db35706f/jersey-container-grizzly2-servlet-2.17-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.17">
@@ -1600,6 +1775,15 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.media/jersey-media-json-jackson/2.17/d84924a29b18e2e4619478152948fdccf5cdbdb/jersey-media-json-jackson-2.17-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: org.glassfish.jersey.media:jersey-media-multipart:2.1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.media/jersey-media-multipart/2.1/b644da29cd7d03ae716920e6478e5783bfc3f1f9/jersey-media-multipart-2.1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.jersey.media/jersey-media-multipart/2.1/94ac34ece78494ce88cfa03207ad3f9e614e17e/jersey-media-multipart-2.1-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: org.glassfish.web:el-impl:2.2.1-b05">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.web/el-impl/2.2.1-b05/e7257f648b1ec91b87db8893f7740e116b05d777/el-impl-2.2.1-b05.jar!/" />
@@ -1645,6 +1829,15 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.javassist/javassist/3.18.1-GA/d8d089f3a8845cce22d3006e02ab1403dd73b5b6/javassist-3.18.1-GA-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: org.javassist:javassist:3.19.0-GA">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.javassist/javassist/3.19.0-GA/50120f69224dd8684b445a6f3a5b08fe9b5c60f6/javassist-3.19.0-GA.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.javassist/javassist/3.19.0-GA/37e6508aeea3eef21df5b7ee3ea3c708618c1b7b/javassist-3.19.0-GA-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: org.jboss.logging:jboss-logging:3.2.1.Final">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.logging/jboss-logging/3.2.1.Final/fedf11b3d4665a434b554a5891fe7f208f029f45/jboss-logging-3.2.1.Final.jar!/" />
@@ -1681,6 +1874,24 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7/2fc7ac6453ecde2a1589bc7c3cd0f864b71e22db/jinq-jpa-1.7-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: org.jooq:jooq:3.6.1">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jooq/jooq/3.6.1/6f2cbb12c9c92837f0b13dc8bcd776209053972f/jooq-3.6.1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jooq/jooq/3.6.1/f74c4bee13423edbe6195977d79e42fb25ec26d0/jooq-3.6.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.jvnet.mimepull:mimepull:1.8">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jvnet.mimepull/mimepull/1.8/e0b2ed6e9ccaafe3e96294a181c09e3aae18aa90/mimepull-1.8.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jvnet.mimepull/mimepull/1.8/cae16f7cf52f11f72894493f23c108839247c950/mimepull-1.8-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: org.jvnet:tiger-types:1.4">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jvnet/tiger-types/1.4/9f75db7dea926f497e76eae2cea36eca74ea508/tiger-types-1.4.jar!/" />
@@ -1697,6 +1908,15 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-all/5.0.1/78ebb2694324283f3120aa3ed52465b22fab8a4a/asm-all-5.0.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.reflections:reflections:0.9.9">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.reflections/reflections/0.9.9/296d8adb2f22a38025f44b45cac89835ff0bbaf/reflections-0.9.9.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.reflections/reflections/0.9.9/6876c8eae96dc59b457b0f7499636efa52026064/reflections-0.9.9-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.slf4j:jcl-over-slf4j:1.7.10">

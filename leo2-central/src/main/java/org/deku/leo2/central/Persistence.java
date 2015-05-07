@@ -1,9 +1,9 @@
 package org.deku.leo2.central;
 
+import com.mysql.jdbc.AbandonedConnectionCleanupThread;
 import org.jinq.jpa.JPAQueryLogger;
 import org.jinq.jpa.JinqJPAStreamProvider;
 import org.jinq.orm.stream.JinqStream;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -15,21 +15,27 @@ import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.inject.Named;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Created by masc on 28.08.14.
  */
-@Named
 @Configuration
 @EnableJpaRepositories
 @EnableTransactionManagement
@@ -78,7 +84,7 @@ public class Persistence {
     //endregion
 
     //region Spring inline persistence/unit configuration
-    @Autowired
+    @Inject
     private DataSource mDataSource;
 
     @Bean
@@ -250,6 +256,37 @@ public class Persistence {
 //            return retVal;
 //        }
 //    }
+
+    @PostConstruct
+    public void initIt() throws Exception {
+    }
+
+    @PreDestroy
+    public void cleanUp() throws Exception {
+        mLog.info("Cleaning up persistence context");
+
+        // Close all JDBC drivers
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        Driver d = null;
+        while (drivers.hasMoreElements()) {
+            try {
+                d = drivers.nextElement();
+                DriverManager.deregisterDriver(d);
+                mLog.info(String.format("Driver %s deregistered", d));
+            }
+            catch (SQLException ex) {
+                mLog.log(Level.SEVERE, String.format("Error deregistering driver %s", d), ex);
+            }
+        }
+
+        // Close mysql connection cleanup thread
+        try {
+            AbandonedConnectionCleanupThread.shutdown();
+        }
+        catch (InterruptedException e) {
+            mLog.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
 
     public void dispose() {
         if (mEntityManagerFactory != null)

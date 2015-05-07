@@ -1,8 +1,8 @@
 package org.deku.leo2.central.rest;
 
-import org.glassfish.grizzly.http.server.HttpServer;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.junit.After;
 import org.junit.Before;
 
@@ -15,27 +15,31 @@ import java.net.URI;
  * Created by masc on 20.04.15.
  */
 public class WebserviceTest {
-    HttpServer mServer;
+    Server mServer;
     private Client client;
     private WebTarget target;
 
     private static final URI BASE_URI = URI.create("http://localhost:8080/leo2/");
 
     @Before
-    public void setup() {
-        mServer = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, new WebserviceResourceConfig());
+    public void setup() throws Exception {
+        mServer = new Server(8080);
+        WebAppContext context = new WebAppContext();
+        context.setContextPath("/leo2");
+        context.setDefaultsDescriptor("src/main/webapp/WEB-INF/web.xml");
+        context.setResourceBase("src/main/webapp/");
+        mServer.setHandler(context);
+        mServer.start();
 
-        // Setup client
+        // Setup jaxrs client & target
         this.client = ClientBuilder.newClient();
         client.register(ObjectMapperProvider.class);
-
-        // Setup target
         this.target = client.target(BASE_URI);
     }
 
     @After
-    public void tearDown() {
-        mServer.shutdownNow();
+    public void tearDown() throws Exception {
+        mServer.stop();
     }
 
 

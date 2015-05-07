@@ -1,6 +1,14 @@
 // Gradle dependencies/plugins
 buildscript {
-    def v_jooq = "3.5.+"
+    ext {
+        v_jooq = "3.+"
+        v_jersey = "2.+"
+        v_jackson = "2.+"
+        v_hk2 = "2.+"
+        v_eclipselink = "2.+"
+        v_spring = "4.+"
+        v_querydsl = "3.+"
+    }
 
     repositories {
         jcenter()
@@ -40,14 +48,6 @@ apply plugin: 'jooq'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-def v_jooq = "3.5.+"
-def v_jersey = "2.+"
-def v_jackson = "2.+"
-def v_hk2 = "2.+"
-def v_eclipselink = "2.+"
-def v_spring = "4.+"
-def v_querydsl = "3.+"
-
 sourceCompatibility = 1.8
 version = '0.1'
 mainClassName = "org.deku.leo2.central.Main"
@@ -72,24 +72,12 @@ dependencies {
     compile "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey"
     // jersey spring extension
     compile "org.glassfish.jersey.ext:jersey-spring3:$v_jersey"
-    // TODO: obsolete as soon as jetty works with tomcat deployment
-    // jersey webservice container for local running/debugging
-    // masc20150504. jersey-container-grizzly2-http is usually enough for running standalone
-    // as long as all configuration is provided via WebserviceResourceConfig.
-    // Still this would portentially allow us to run the entire servlet standalone
-    // (also pulling in jersey-container-grizzly2-http)
-    compile "org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:$v_jersey"
 
-    // TODO: jetty breaks tomcat deployment :/
-    //compile "org.eclipse.jetty.aggregate:jetty-all:9.+"
+    compile "org.eclipse.jetty.aggregate:jetty-all:9.+"
 
     // jackson JSON serializer
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson"
     compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
-
-    // TODO: update to resolution strategy
-    compile "org.glassfish.hk2:hk2:$v_hk2"
-    compile "org.glassfish.hk2:spring-bridge:$v_hk2"
 
     // persistence framework(s)
     // eclipselink
@@ -103,14 +91,9 @@ dependencies {
 
     // Jooq
     compile "org.jooq:jooq:$v_jooq"
-    //compile "org.jooq:jooq-meta:$v_jooq"
-    //compile "org.jooq:jooq-codegen:$v_jooq"
 
     // Spring
     compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
-    compile "org.springframework:spring-orm:$v_spring"
-    compile "org.springframework:spring-context:$v_spring"
-    compile "org.springframework:spring-web:$v_spring"
 
     // JSR-330
     compile 'javax.inject:javax.inject:1'
@@ -145,6 +128,10 @@ run {
 
 // war plugin configuration
 war {
+    // Jetty breaks tomcat deployment.
+    // Seems to attempt to start some kind of component within jetty and fails with LifecycleException
+    rootSpec.exclude("**/jetty*.jar")
+    rootSpec.exclude("**/javax.servlet-api*.jar")
 }
 
 // cargo plugin configuration
@@ -219,9 +206,64 @@ jooq {
         }
 
         target {
-            packageName 'org.deku.leo2.central.entities.v1.jooq'
+            packageName 'org.deku.leo2.central.entities.jooq'
             directory srcdir_jooq.toString()
         }
     }
 }
 //tasks.generateJooq.outputs.upToDateWhen { false }
+
+configurations.all {
+    resolutionStrategy {
+        // fail eagerly on version conflict (includes transitive dependencies)
+        // e.g. multiple different versions of the same dependency (group and name are equal)
+        failOnVersionConflict()
+
+        force "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
+        force "com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:$v_jackson"
+        force "com.fasterxml.jackson.core:jackson-annotations:$v_jackson"
+        force "com.fasterxml.jackson.core:jackson-core:$v_jackson"
+        force "com.fasterxml.jackson.core:jackson-databind:$v_jackson"
+        force "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$v_jackson"
+        force "com.google.guava:guava:18.0"
+        force "org.javassist:javassist:3.+"
+        force "org.glassfish.hk2:hk2:$v_hk2"
+        force "org.glassfish.hk2:hk2-api:$v_hk2"
+        force "org.glassfish.hk2:hk2-locator:$v_hk2"
+        force "org.glassfish.hk2:spring-bridge:$v_hk2"
+        force "org.glassfish.hk2.external:javax.inject:$v_hk2"
+        force "org.glassfish.jersey.containers:jersey-container-servlet-core:$v_jersey"
+        force "org.glassfish.jersey.core:jersey-server:$v_jersey"
+        force "org.springframework:spring-web:$v_spring"
+        force "org.springframework:spring-core:$v_spring"
+        force "org.springframework:spring-context:$v_spring"
+        force "org.springframework:spring-orm:$v_spring"
+        force "org.springframework:spring-beans:$v_spring"
+        force "org.springframework:spring-tx:$v_spring"
+        force "org.springframework:spring-aop:$v_spring"
+        force "javax.servlet:javax.servlet-api:3.1.0"
+        force "org.slf4j:slf4j-api:1.+"
+
+        force "org.jooq:jooq-meta:$v_jooq"
+        force "org.jooq:jooq-codegen:$v_jooq"
+        force "org.apache.ant:ant:1.+"
+        force "org.apache.ant:ant-launcher:1.+"
+        force "xml-apis:xml-apis:1.+"
+    }
+}
+
+// masc20150507. task prototypes
+////copying all dependencies attached to 'compile' into a specific folder
+//task copyAllDependencies(type: Copy) {
+//    //referring to the 'compile' configuration
+//    from configurations.compile
+//    into 'allLibs'
+//}
+//
+//configurations.all.each {
+//    println "compile: $it"
+//}
+//
+//sourceSets.main.compileClasspath.each {
+//    println "ss: $it"
+//}
