@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
  * Created by masc on 30.04.15.
  */
 @Repository
-public interface DepotRepository extends CrudRepository<Depot, Integer>, QueryDslPredicateExecutor {
+public interface DepotRepository extends CrudRepository<Depot, Integer>, QueryDslPredicateExecutor, DepotRepositoryCustom {
 }
+

@@ -4,10 +4,17 @@ import com.mysql.jdbc.AbandonedConnectionCleanupThread;
 import org.jinq.jpa.JPAQueryLogger;
 import org.jinq.jpa.JinqJPAStreamProvider;
 import org.jinq.orm.stream.JinqStream;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DataSourceConnectionProvider;
+import org.jooq.impl.DefaultDSLContext;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.AbstractDataSource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -21,7 +28,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -84,10 +90,18 @@ public class Persistence {
     //endregion
 
     //region Spring inline persistence/unit configuration
+
     @Inject
-    private DataSource mDataSource;
+    private AbstractDataSource mDataSource;
+
+    @Inject
+    private TransactionAwareDataSourceProxy mJooqTransactionAwareDataSource;
+
+    @Inject
+    private DataSourceConnectionProvider mJooqConnectionProvider;
 
     @Bean
+    @Qualifier("jpa")
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
@@ -97,7 +111,7 @@ public class Persistence {
     }
 
     @Bean
-    public DataSource dataSource() {
+    public AbstractDataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/dekuclient");
@@ -131,6 +145,29 @@ public class Persistence {
         //mJinqStreamProvider = this.createJinqStreamProvider(em.getNativeEntityManagerFactory());
 
         return em;
+    }
+    //endregion
+
+    //region JOOQ
+    @Bean
+    public TransactionAwareDataSourceProxy jooqTransactionAwareDataSourceProxy() {
+        return new TransactionAwareDataSourceProxy(mDataSource);
+    }
+
+    @Bean
+    @Qualifier("jooq")
+    public DataSourceTransactionManager jooqTransactionManager() {
+        return new DataSourceTransactionManager(mDataSource);
+    }
+
+    @Bean
+    public DataSourceConnectionProvider jooqConnectionProvider() {
+        return new DataSourceConnectionProvider(mJooqTransactionAwareDataSource);
+    }
+
+    @Bean
+    public DefaultDSLContext dslContext() {
+        return new DefaultDSLContext(mJooqConnectionProvider, SQLDialect.MYSQL);
     }
     //endregion
 

@@ -62,7 +62,9 @@ dependencies {
     compile project(':sx-common')
 
     // slf4j logging (eg. spring logs)
-    compile 'org.slf4j:slf4j-jdk14:+'
+    compile "org.slf4j:slf4j-jdk14:+"
+    // log4j logging (required by eclipse codegen)
+    compile "log4j:log4j:+"
 
     // Webservice
     // For various javax interfaces (eg. ServletContextListener)
@@ -82,8 +84,11 @@ dependencies {
     // persistence framework(s)
     // eclipselink
     compile "org.eclipse.persistence:eclipselink:$v_eclipselink"
-    compile "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$v_eclipselink"
     // Eclipselink codegen/annotation processor
+    compile "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$v_eclipselink"
+    // Need for codegen under specific circumstances (implementing some spring repository types)
+    providedCompile "org.hibernate:hibernate-core:+"
+    providedCompile "jaxen:jaxen:+"
 
     // QueryDSL
     compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
@@ -249,6 +254,9 @@ configurations.all {
         force "org.apache.ant:ant:1.+"
         force "org.apache.ant:ant-launcher:1.+"
         force "xml-apis:xml-apis:1.+"
+
+        force "org.jboss.logging:jboss-logging:3.+"
+        force "org.jboss.logging:jboss-logging-annotations:1.+"
     }
 }
 
