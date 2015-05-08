@@ -20,8 +20,8 @@ buildscript {
         classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.+'
 
         // jooq codegen gradle plugin
-        classpath 'com.github.ben-manes:gradle-jooq-plugin:+' +
-                ''
+        classpath 'com.github.ben-manes:gradle-jooq-plugin:+'
+
         // override jooq dependencies of gradle-jooq-plugin with desired version
         classpath("org.jooq:jooq-codegen:$v_jooq") {
             force: true

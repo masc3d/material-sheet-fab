@@ -51,10 +51,11 @@ public class Main implements Disposable, ApplicationContextAware {
          */
         public static void main(String[] args) throws Exception {
             Server server = new Server(8080);
+
             WebAppContext context = new WebAppContext();
             context.setContextPath("/leo2");
-            context.setDefaultsDescriptor("src/main/webapp/WEB-INF/web.xml");
-            context.setResourceBase("src/main/webapp/");
+            context.setResourceBase("src/main/webapp");
+            context.setWelcomeFiles(new String[] { "index.html"} );
             server.setHandler(context);
             server.start();
 

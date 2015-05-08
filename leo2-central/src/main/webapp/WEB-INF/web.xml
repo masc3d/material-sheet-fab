@@ -2,6 +2,7 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
     id="WebApp_ID" version="3.0">
+
     <display-name>leo2</display-name>
 
     <welcome-file-list>
@@ -30,7 +31,7 @@
 
     <!-- Leo2 servlet -->
     <servlet>
-        <description>leo2-node</description>
+        <description>leo2 webservice servlet</description>
         <servlet-name>leo2</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
@@ -42,9 +43,55 @@
 
     <servlet-mapping>
         <servlet-name>leo2</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
+    <!-- Swagger servlet -->
+    <!-- need to have a separate servlet for swagger here, as we use interfaces for our webservice -->
+    <!-- and swagger requires its annotations to be in the same place with jaxrs annotations -->
+    <!-- scanning interfaces within the leo2 servlet will cause breakage -->
+    <servlet>
+        <servlet-name>jersey</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>
+                com.wordnik.swagger.jaxrs.listing,
+                <!-- Scanning the interface path -->
+                org.deku.leo2.rest
+            </param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>jersey</servlet-name>
+        <url-pattern>/api/doc/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Swagger setup -->
+    <servlet>
+        <servlet-name>swagger-jersey2-config</servlet-name>
+        <servlet-class>com.wordnik.swagger.jersey.config.JerseyJaxrsConfig</servlet-class>
+        <init-param>
+            <param-name>api.version</param-name>
+            <param-value>1.0.0</param-value>
+        </init-param>
+        <init-param>
+            <param-name>swagger.api.basepath</param-name>
+            <param-value>http://localhost:8080/leo2/api</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <!-- Swagger bootstrap -->
+    <servlet>
+        <servlet-name>swagger-bootstrap</servlet-name>
+        <servlet-class>org.deku.leo2.central.rest.SwaggerBootstrapServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <!-- Custom servlet context listener -->
     <listener>
         <listener-class>
             org.deku.leo2.central.ServletContextListener

@@ -1,5 +1,6 @@
 package org.deku.leo2.rest.services.v1;
 
+import com.wordnik.swagger.annotations.*;
 import org.deku.leo2.rest.adapters.LocalDateParam;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
@@ -15,18 +16,36 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("v1/routing")
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = "Routing operations")
 public interface RoutingService {
 
     @GET
     @Path("/find")
-    Routing find(@QueryParam("date") LocalDateParam date,
-                 @QueryParam("country") String country,
-                 @QueryParam("zip") String zip,
-                 @QueryParam("product") String product);
+    @ApiOperation(value = "Determine routing")
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message = "No depots found")
+    })
+    Routing find(@QueryParam("date")
+                 @ApiParam(value = "Date")
+                 LocalDateParam date,
+                 @QueryParam("country")
+                 @ApiParam(value = "Country ")
+                 String country,
+                 @QueryParam("zip")
+                 @ApiParam(value = "Zip code") String zip,
+                 @QueryParam("product")
+                 @ApiParam(value = "Product") String product);
 
     @GET
     @Path("/find/via")
-    RoutingVia findVia(@QueryParam("date") LocalDateParam date,
-                    @QueryParam("source_sector") String sourceSector,
-                    @QueryParam("destination_sector") String destinationSector);
+    @ApiOperation(value = "Determine routing via sector")
+    RoutingVia findVia(@QueryParam("date")
+                       @ApiParam(value = "Date")
+                       LocalDateParam date,
+                       @QueryParam("source_sector")
+                       @ApiParam(value = "Source Sector")
+                       String sourceSector,
+                       @QueryParam("destination_sector")
+                       @ApiParam(value = "Destination sector")
+                       String destinationSector);
 }

@@ -16,6 +16,9 @@ dependencies {
     // Persistence
     compile 'org.eclipse.persistence:javax.persistence:2.+'
 
+    // json doc
+    compile 'com.wordnik:swagger-jersey2-jaxrs:+'
+
     testCompile group: 'junit', name: 'junit', version: '4.+'
 
     // Webservice client libraries for test cases

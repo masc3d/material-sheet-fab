@@ -4,11 +4,13 @@ import com.google.common.collect.Lists;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.List;
 
 /**
  * Created by masc on 07.05.15.
  */
+@Named
 public class DepotRepositoryImpl implements DepotRepositoryCustom {
     @Inject
     DepotRepository mDepotRepository;

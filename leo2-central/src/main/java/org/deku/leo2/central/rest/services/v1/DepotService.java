@@ -2,6 +2,8 @@ package org.deku.leo2.central.rest.services.v1;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.deku.leo2.central.entities.Depot;
 import org.deku.leo2.central.entities.DepotJooqRepository;
 import org.deku.leo2.central.entities.DepotRepository;
@@ -21,7 +23,6 @@ import java.util.logging.Logger;
  */
 @Component
 @Path("v1/depot")
-@Api(value="Depot operations")
 @Produces(MediaType.APPLICATION_JSON)
 public class DepotService implements org.deku.leo2.rest.services.v1.DepotService {
     Logger mLog = Logger.getLogger(DepotService.class.getName());
@@ -68,9 +69,6 @@ public class DepotService implements org.deku.leo2.rest.services.v1.DepotService
         return rDepot;
     }
 
-    @ApiOperation(value = "Get all depots",
-            notes = "Some notes",
-            response = org.deku.leo2.rest.entities.v1.Depot.class)
     @Override
     public org.deku.leo2.rest.entities.v1.Depot[] get() {
         // JPA/QueryDSL

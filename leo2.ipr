@@ -174,11 +174,8 @@
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.3" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.5.3" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:1.7" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3" />
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
@@ -258,6 +255,9 @@
             <element id="library" level="project" name="Gradle: org.eclipse.jetty.aggregate:jetty-all:9.3.0.M2" />
             <element id="library" level="project" name="Gradle: javax.websocket:javax.websocket-api:1.0" />
             <element id="library" level="project" name="Gradle: log4j:log4j:1.2.17" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.1" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.1" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.1" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -308,11 +308,8 @@
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.3" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.5.3" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:1.7" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3" />
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
@@ -392,6 +389,9 @@
             <element id="library" level="project" name="Gradle: org.eclipse.jetty.aggregate:jetty-all:9.3.0.M2" />
             <element id="library" level="project" name="Gradle: javax.websocket:javax.websocket-api:1.0" />
             <element id="library" level="project" name="Gradle: log4j:log4j:1.2.17" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.1" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.1" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.1" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -678,7 +678,7 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method>
         <option name="Make" enabled="false" />
-        <option name="Gradle.BeforeRunTask" enabled="true" tasks="assemble" externalProjectPath="$PROJECT_DIR$/leo2-central" vmOptions="" scriptParameters="" />
+        <option name="Gradle.BeforeRunTask" enabled="true" tasks="classes" externalProjectPath="$PROJECT_DIR$/leo2-central" vmOptions="" scriptParameters="" />
       </method>
     </configuration>
     <configuration default="false" name="leo2:leo2-ui [run]" type="GradleRunConfiguration" factoryName="Gradle" singleton="true">
@@ -732,6 +732,7 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/swagger-ui" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/sx-common" vcs="Git" />
   </component>
   <component name="dataSourceStorageLocal">
@@ -1953,31 +1954,31 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss/jandex/1.1.0.Final/cd042b769b296fd1bc20ca5120824caa42b6c9ed/jandex-1.1.0.Final-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:analysis:1.7">
+    <library name="Gradle: org.jinq:analysis:1.7.1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.7/ddf4b587d83860d48b16de99249c8be1e83410b9/analysis-1.7.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.7.1/dfee5827b4e86b4aa501d15b68f1bb6b2cb18462/analysis-1.7.1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.7/8871aea132bd28e7b5f9f7c5d4690eaaca7a9c05/analysis-1.7-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.7.1/a7af2dbf3ece17d7066d7687a141f1e87c09dc4c/analysis-1.7.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:api:1.7">
+    <library name="Gradle: org.jinq:api:1.7.1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.7/73363ee06632bec73f0273df22b6c98d1c345a26/api-1.7.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.7.1/a7889935f489bdcc7b1f8325962a76d5ea87e35c/api-1.7.1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.7/84890a789f345bdde8b9f8b775d312fbc6087dc3/api-1.7-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.7.1/5e0af9e5c6ff6b07b33020277f747e38af77504b/api-1.7.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:jinq-jpa:1.7">
+    <library name="Gradle: org.jinq:jinq-jpa:1.7.1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7/5d4ab6839c120f87a6fcd03d29fa94661c5bda4a/jinq-jpa-1.7.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7.1/c569b9afc309ec18a3aec2f935931d0b3c14a35a/jinq-jpa-1.7.1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7/2fc7ac6453ecde2a1589bc7c3cd0f864b71e22db/jinq-jpa-1.7-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7.1/cded5f696f552b828bd6482b796397bf724ac6c6/jinq-jpa-1.7.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.jooq:jooq:3.6.1">

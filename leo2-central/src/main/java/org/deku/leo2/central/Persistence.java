@@ -7,6 +7,8 @@ import org.jinq.orm.stream.JinqStream;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultDSLContext;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +47,7 @@ import java.util.logging.Logger;
 @Configuration
 @EnableJpaRepositories
 @EnableTransactionManagement
-public class Persistence {
+public class Persistence implements DisposableBean {
     private static AtomicReference<Persistence> mInstance = new AtomicReference<>();
 
     private Logger mLog = Logger.getLogger(Persistence.class.getName());
@@ -128,6 +130,9 @@ public class Persistence {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        // TODO. more robust behaviour when database is down.
+        // eg. webservice fails when database is unreachable (on startup eg.)
+        // more tests required referring to db outages during runtime
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(mDataSource);
         em.setPackagesToScan(new String[]{
@@ -278,28 +283,8 @@ public class Persistence {
     }
     //endregion
 
-//    @Aspect
-//    public class DAOInterceptor {
-//        private Logger log = Logger.getLogger(DAOInterceptor.class.getName());
-//
-//        @Around("execution(* com.webforefront.jpa.service..*.*(..))")
-//        public Object logQueryTimes(ProceedingJoinPoint pjp) throws Throwable {
-//            StopWatch stopWatch = new StopWatch();
-//            stopWatch.start();
-//            Object retVal = pjp.proceed();
-//            stopWatch.stop();
-//            String str = pjp.getTarget().toString();
-//            log.info(str.substring(str.lastIndexOf(".")+1, str.lastIndexOf("@")) + " - " + pjp.getSignature().getName() + ": " + stopWatch.getTime() + "ms");
-//            return retVal;
-//        }
-//    }
-
-    @PostConstruct
-    public void initIt() throws Exception {
-    }
-
-    @PreDestroy
-    public void cleanUp() throws Exception {
+    @Override
+    public void destroy() throws Exception {
         mLog.info("Cleaning up persistence context");
 
         // Close all JDBC drivers
@@ -329,4 +314,20 @@ public class Persistence {
         if (mEntityManagerFactory != null)
             mEntityManagerFactory.close();
     }
+
+//    @Aspect
+//    public class DAOInterceptor {
+//        private Logger log = Logger.getLogger(DAOInterceptor.class.getName());
+//
+//        @Around("execution(* com.webforefront.jpa.service..*.*(..))")
+//        public Object logQueryTimes(ProceedingJoinPoint pjp) throws Throwable {
+//            StopWatch stopWatch = new StopWatch();
+//            stopWatch.start();
+//            Object retVal = pjp.proceed();
+//            stopWatch.stop();
+//            String str = pjp.getTarget().toString();
+//            log.info(str.substring(str.lastIndexOf(".")+1, str.lastIndexOf("@")) + " - " + pjp.getSignature().getName() + ": " + stopWatch.getTime() + "ms");
+//            return retVal;
+//        }
+//    }
 }
