@@ -211,7 +211,7 @@ jooq {
         }
 
         target {
-            packageName 'org.deku.leo2.central.entities.jooq'
+            packageName 'org.deku.leo2.central.data.entities.jooq'
             directory srcdir_jooq.toString()
         }
     }

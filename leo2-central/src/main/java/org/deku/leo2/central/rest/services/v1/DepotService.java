@@ -1,14 +1,10 @@
 package org.deku.leo2.central.rest.services.v1;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
-import org.deku.leo2.central.entities.Depot;
-import org.deku.leo2.central.entities.DepotJooqRepository;
-import org.deku.leo2.central.entities.DepotRepository;
-import org.deku.leo2.central.entities.QDepot;
-import org.deku.leo2.central.entities.jooq.tables.records.TbldepotlisteRecord;
+import org.deku.leo2.central.data.entities.Depot;
+import org.deku.leo2.central.data.entities.QDepot;
+import org.deku.leo2.central.data.entities.jooq.tables.records.TbldepotlisteRecord;
+import org.deku.leo2.central.data.repositories.DepotJooqRepository;
+import org.deku.leo2.central.data.repositories.DepotRepository;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;

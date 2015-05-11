@@ -187,11 +187,6 @@
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.bundles.repackaged:jersey-guava:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-client:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.media:jersey-media-jaxb:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b20" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.media:jersey-media-json-jackson:2.17" />
@@ -249,15 +244,20 @@
             <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.1" />
             <element id="library" level="project" name="Gradle: org.jinq:api:1.7.1" />
             <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.1" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:spring-bridge:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:config-types:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-core:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-config:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-runlevel:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:class-model:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:bean-validator:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:asm-all-repackaged:2.4.0-b20" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2/2.4.0-b20/1eb738f8a0c19ac886aef6daaf30d55e1a6e8869/hk2-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/spring-bridge/2.4.0-b20/12c9815946f9284be0e9f0c8d2b24fb8677118e3/spring-bridge-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b20/1e501b9d423a5d8d360fe6cf628b89cb690016d5/javax.inject-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b20/1999c5eb92287a01a8aaaa029e8ad9ca10737387/hk2-api-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b20/e65b8a982336f38546019ecc767ccc7a4890b3a5/hk2-locator-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b20/f0460e0c9c8b86e07c26f69aea456df5405c30e6/hk2-utils-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/config-types/2.4.0-b20/aaf5c6d1052bb0981806c3cdb0214465f520bebb/config-types-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-core/2.4.0-b20/10a805665b38b5cc79b0c908caa0e7c964e0d785/hk2-core-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-config/2.4.0-b20/e5fab4ad8cfeb43cb248cfbe1f9d9807963bf9ac/hk2-config-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-runlevel/2.4.0-b20/44431d8a6aa840c0116692441a4119d24555998b/hk2-runlevel-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/class-model/2.4.0-b20/225d2e39680b8e987d4f124fbaff7bd875935d5d/class-model-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b20/1aadb8798b254a0e03ade480cf518d4afa6a491c/aopalliance-repackaged-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/bean-validator/2.4.0-b20/190b05ce60019d783f21e94c355bfd920b0caee4/bean-validator-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/asm-all-repackaged/2.4.0-b20/9624a009b99584f8980ff939310c3c015879b444/asm-all-repackaged-2.4.0-b20.jar" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -321,11 +321,6 @@
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.bundles.repackaged:jersey-guava:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.core:jersey-client:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.media:jersey-media-jaxb:2.17" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b20" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.17" />
             <element id="library" level="project" name="Gradle: org.glassfish.jersey.media:jersey-media-json-jackson:2.17" />
@@ -383,15 +378,20 @@
             <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.1" />
             <element id="library" level="project" name="Gradle: org.jinq:api:1.7.1" />
             <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.1" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:spring-bridge:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:config-types:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-core:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-config:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:hk2-runlevel:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2:class-model:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:bean-validator:2.4.0-b20" />
-            <element id="library" level="project" name="Gradle: org.glassfish.hk2.external:asm-all-repackaged:2.4.0-b20" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2/2.4.0-b20/1eb738f8a0c19ac886aef6daaf30d55e1a6e8869/hk2-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/spring-bridge/2.4.0-b20/12c9815946f9284be0e9f0c8d2b24fb8677118e3/spring-bridge-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b20/1e501b9d423a5d8d360fe6cf628b89cb690016d5/javax.inject-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b20/1999c5eb92287a01a8aaaa029e8ad9ca10737387/hk2-api-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b20/e65b8a982336f38546019ecc767ccc7a4890b3a5/hk2-locator-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b20/f0460e0c9c8b86e07c26f69aea456df5405c30e6/hk2-utils-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/config-types/2.4.0-b20/aaf5c6d1052bb0981806c3cdb0214465f520bebb/config-types-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-core/2.4.0-b20/10a805665b38b5cc79b0c908caa0e7c964e0d785/hk2-core-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-config/2.4.0-b20/e5fab4ad8cfeb43cb248cfbe1f9d9807963bf9ac/hk2-config-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-runlevel/2.4.0-b20/44431d8a6aa840c0116692441a4119d24555998b/hk2-runlevel-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/class-model/2.4.0-b20/225d2e39680b8e987d4f124fbaff7bd875935d5d/class-model-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b20/1aadb8798b254a0e03ade480cf518d4afa6a491c/aopalliance-repackaged-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/bean-validator/2.4.0-b20/190b05ce60019d783f21e94c355bfd920b0caee4/bean-validator-2.4.0-b20.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/asm-all-repackaged/2.4.0-b20/9624a009b99584f8980ff939310c3c015879b444/asm-all-repackaged-2.4.0-b20.jar" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -417,7 +417,7 @@
     </annotationProcessing>
   </component>
   <component name="CopyrightManager" default="" />
-  <component name="DataSourceManagerImpl" format="xml" hash="2785131892">
+  <component name="DataSourceManagerImpl" format="xml" hash="3511815777">
     <data-source source="LOCAL" name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
@@ -432,11 +432,11 @@
       </driver-properties>
       <libraries />
     </data-source>
-    <data-source source="LOCAL" name="leo2/EclipseLink" uuid="971c03ec-9845-41b5-b96d-63b3112acbb9">
+    <data-source source="LOCAL" name="MySQL - leo2factory@10.0.10.10" uuid="0632c00f-6119-4e31-8923-64144380f3bb">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://10.0.10.10:3306/dekuclient</jdbc-url>
+      <jdbc-url>jdbc:mysql://10.0.10.10:3306/leo2factory</jdbc-url>
       <driver-properties>
         <property name="zeroDateTimeBehavior" value="convertToNull" />
         <property name="tinyInt1isBit" value="false" />
@@ -444,11 +444,7 @@
         <property name="characterSetResults" value="utf8" />
         <property name="yearIsDateType" value="false" />
       </driver-properties>
-      <libraries>
-        <library>
-          <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/5.1.35/b6ac941b7288376a7e8bc6490264bbd4427fb94e/mysql-connector-java-5.1.35.jar!/</url>
-        </library>
-      </libraries>
+      <libraries />
     </data-source>
   </component>
   <component name="DatabaseColorSettings">
@@ -735,8 +731,15 @@
     <mapping directory="$PROJECT_DIR$/sx-common" vcs="Git" />
   </component>
   <component name="dataSourceStorageLocal">
-    <data-source name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc" />
-    <data-source name="leo2/EclipseLink" uuid="971c03ec-9845-41b5-b96d-63b3112acbb9" />
+    <data-source name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
+      <user-name>leo2</user-name>
+    </data-source>
+    <data-source name="MySQL - leo2factory@10.0.10.10" uuid="0632c00f-6119-4e31-8923-64144380f3bb">
+      <secret-storage>master_key</secret-storage>
+      <user-name>leo2</user-name>
+      <schema-pattern>leo2factory.*</schema-pattern>
+      <default-schemas>leo2factory.*</default-schemas>
+    </data-source>
   </component>
   <component name="libraryTable">
     <library name="Gradle: antlr:antlr:2.7.7">

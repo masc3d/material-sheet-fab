@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.SplitPane?><?import javafx.scene.control.TitledPane?><?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.*?>
 <AnchorPane prefHeight="827.0" prefWidth="1371.0" stylesheets="@../../css/leo2.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.modules.DepotMaintenanceController">
     <children>
         <VBox prefHeight="200.0" prefWidth="458.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

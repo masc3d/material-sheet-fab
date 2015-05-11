@@ -1,6 +1,8 @@
-package org.deku.leo2.central.entities;
+package org.deku.leo2.central.data.repositories;
 
 import com.google.common.collect.Lists;
+import org.deku.leo2.central.data.entities.Depot;
+import org.deku.leo2.central.data.entities.QDepot;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;

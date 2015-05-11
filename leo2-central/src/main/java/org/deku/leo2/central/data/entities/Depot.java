@@ -1,4 +1,4 @@
-package org.deku.leo2.central.entities;
+package org.deku.leo2.central.data.entities;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;

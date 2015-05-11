@@ -1,5 +1,6 @@
-package org.deku.leo2.central.entities;
+package org.deku.leo2.central.data.repositories;
 
+import org.deku.leo2.central.data.entities.Depot;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

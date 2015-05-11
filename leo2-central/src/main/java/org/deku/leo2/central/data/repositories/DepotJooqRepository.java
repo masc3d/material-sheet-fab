@@ -1,7 +1,7 @@
-package org.deku.leo2.central.entities;
+package org.deku.leo2.central.data.repositories;
 
-import org.deku.leo2.central.entities.jooq.Tables;
-import org.deku.leo2.central.entities.jooq.tables.records.TbldepotlisteRecord;
+import org.deku.leo2.central.data.entities.jooq.Tables;
+import org.deku.leo2.central.data.entities.jooq.tables.records.TbldepotlisteRecord;
 import org.jooq.DSLContext;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -8,7 +8,6 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +23,6 @@ import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -94,7 +91,13 @@ public class Persistence implements DisposableBean {
     //region Spring inline persistence/unit configuration
 
     @Inject
-    private AbstractDataSource mDataSource;
+    @Qualifier("dekuclient")
+    private AbstractDataSource mDataSourceDekuclient;
+
+
+    @Inject
+    @Qualifier("leo2factory")
+    private AbstractDataSource mDataSourceLeo2factory;
 
     @Inject
     private TransactionAwareDataSourceProxy mJooqTransactionAwareDataSource;
@@ -107,16 +110,35 @@ public class Persistence implements DisposableBean {
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
-        transactionManager.setDataSource(mDataSource);
+        transactionManager.setDataSource(mDataSourceLeo2factory);
 
         return transactionManager;
     }
 
     @Bean
-    public AbstractDataSource dataSource() {
+    @Qualifier("dekuclient")
+    public AbstractDataSource dataSourceDekuclient() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/dekuclient");
+        dataSource.setUsername("leo2");
+        dataSource.setPassword("leo2");
+
+        Properties dataSourceProperties = new Properties();
+        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
+        dataSourceProperties.setProperty("connectTimeout", "1000");
+        dataSource.setConnectionProperties(dataSourceProperties);
+
+        return dataSource;
+    }
+
+
+    @Bean
+    @Qualifier("leo2factory")
+    public AbstractDataSource dataSourceLeo2factory() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/leo2factory");
         dataSource.setUsername("leo2");
         dataSource.setPassword("leo2");
 
@@ -134,9 +156,9 @@ public class Persistence implements DisposableBean {
         // eg. webservice fails when database is unreachable (on startup eg.)
         // more tests required referring to db outages during runtime
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(mDataSource);
+        em.setDataSource(mDataSourceLeo2factory);
         em.setPackagesToScan(new String[]{
-                "org.deku.leo2.central.entities"
+                "org.deku.leo2.central.data.entities"
         });
 
         JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
@@ -156,13 +178,13 @@ public class Persistence implements DisposableBean {
     //region JOOQ
     @Bean
     public TransactionAwareDataSourceProxy jooqTransactionAwareDataSourceProxy() {
-        return new TransactionAwareDataSourceProxy(mDataSource);
+        return new TransactionAwareDataSourceProxy(mDataSourceDekuclient);
     }
 
     @Bean
     @Qualifier("jooq")
     public DataSourceTransactionManager jooqTransactionManager() {
-        return new DataSourceTransactionManager(mDataSource);
+        return new DataSourceTransactionManager(mDataSourceDekuclient);
     }
 
     @Bean

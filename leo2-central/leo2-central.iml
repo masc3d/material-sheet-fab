@@ -7,7 +7,7 @@
         <setting name="provider-name" value="EclipseLink" />
         <datasource-mapping>
           <factory-entry name="entityManagerFactory" />
-          <factory-entry name="leo2-for-modelgen" />
+          <factory-entry name="leo2-for-modelgen" value="0632c00f-6119-4e31-8923-64144380f3bb" />
         </datasource-mapping>
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml" />
       </configuration>
@@ -28,12 +28,12 @@
           <root url="file://$MODULE_DIR$/src/main/webapp" relative="/" />
         </webroots>
         <sourceRoots>
-          <root url="file://$MODULE_DIR$/src/main/resources" />
-          <root url="file://$MODULE_DIR$/src/generated/resources" />
+          <root url="file://$MODULE_DIR$/src/generated/java" />
           <root url="file://$MODULE_DIR$/src/generated/apt" />
           <root url="file://$MODULE_DIR$/src/generated/jooq" />
+          <root url="file://$MODULE_DIR$/src/generated/resources" />
           <root url="file://$MODULE_DIR$/src/main/java" />
-          <root url="file://$MODULE_DIR$/src/generated/java" />
+          <root url="file://$MODULE_DIR$/src/main/resources" />
         </sourceRoots>
       </configuration>
     </facet>
