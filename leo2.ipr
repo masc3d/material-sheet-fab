@@ -417,26 +417,12 @@
     </annotationProcessing>
   </component>
   <component name="CopyrightManager" default="" />
-  <component name="DataSourceManagerImpl" format="xml" hash="3511815777">
+  <component name="DataSourceManagerImpl" format="xml" hash="388637605">
     <data-source source="LOCAL" name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://10.0.10.10:3306/dekuclient</jdbc-url>
-      <driver-properties>
-        <property name="zeroDateTimeBehavior" value="convertToNull" />
-        <property name="tinyInt1isBit" value="false" />
-        <property name="characterEncoding" value="utf8" />
-        <property name="characterSetResults" value="utf8" />
-        <property name="yearIsDateType" value="false" />
-      </driver-properties>
-      <libraries />
-    </data-source>
-    <data-source source="LOCAL" name="MySQL - leo2factory@10.0.10.10" uuid="0632c00f-6119-4e31-8923-64144380f3bb">
-      <driver-ref>mysql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://10.0.10.10:3306/leo2factory</jdbc-url>
       <driver-properties>
         <property name="zeroDateTimeBehavior" value="convertToNull" />
         <property name="tinyInt1isBit" value="false" />
@@ -722,6 +708,7 @@
   </component>
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/sql/tbldepotliste.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/vm/mysql/dekuclient.sql" dialect="MySQL" />
   </component>
   <component name="SvnBranchConfigurationManager">
     <option name="mySupportsUserInfoFilter" value="true" />
@@ -733,12 +720,6 @@
   <component name="dataSourceStorageLocal">
     <data-source name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
       <user-name>leo2</user-name>
-    </data-source>
-    <data-source name="MySQL - leo2factory@10.0.10.10" uuid="0632c00f-6119-4e31-8923-64144380f3bb">
-      <secret-storage>master_key</secret-storage>
-      <user-name>leo2</user-name>
-      <schema-pattern>leo2factory.*</schema-pattern>
-      <default-schemas>leo2factory.*</default-schemas>
     </data-source>
   </component>
   <component name="libraryTable">

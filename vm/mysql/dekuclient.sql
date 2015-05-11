@@ -12530,3 +12530,137 @@ SET character_set_client = @saved_cs_client;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2014-07-25 16:26:56
+
+--
+-- Table structure for table `country`
+--
+
+DROP TABLE IF EXISTS `country`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `country` (
+  `LKZ` char(2) NOT NULL DEFAULT '',
+  `LNAME` varchar(50) NOT NULL DEFAULT '',
+  `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `RoutingTyp` int(10) unsigned NOT NULL DEFAULT '0',
+  `MinLen` int(11) DEFAULT NULL,
+ `MaxLen` int(11) DEFAULT NULL,
+  `ZipFormat` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`LKZ`),
+  UNIQUE KEY `LNAME` (`LNAME`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `holidayctrl`
+--
+
+DROP TABLE IF EXISTS `holidayctrl`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `holidayctrl` (
+  `Holiday` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `CtrlPos` int(11) NOT NULL DEFAULT '0',
+  `Country` char(2) NOT NULL DEFAULT '',
+  `Description` varchar(45) DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`Holiday`,`Country`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `route`
+--
+
+DROP TABLE IF EXISTS `route`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `route` (
+  `product` varchar(5) NOT NULL,
+  `lkz` varchar(5) NOT NULL,
+  `zip` varchar(5) NOT NULL,
+  `validfrom` datetime NOT NULL,
+ `validto` datetime DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `station` int(11) DEFAULT NULL,
+  `sector` varchar(5) DEFAULT NULL,
+  `area` varchar(5) DEFAULT NULL,
+  `etod` time DEFAULT NULL,
+  `ltop` time DEFAULT NULL,
+  `transittime` int(11) DEFAULT NULL,
+  `ltodsa` time DEFAULT NULL,
+  `ltodholiday` time DEFAULT NULL,
+  `island` int(11) DEFAULT NULL,
+  `etod2` time DEFAULT NULL,
+  `ltop2` time DEFAULT NULL,
+  `holidayctrl` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`product`,`lkz`,`zip`,`validfrom`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sector`
+--
+
+DROP TABLE IF EXISTS `sector`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sector` (
+  `product` varchar(5) NOT NULL,
+  `sectorfrom` varchar(5) NOT NULL,
+  `sectorto` varchar(5) NOT NULL,
+  `validfrom` datetime NOT NULL,
+  `validto` datetime DEFAULT NULL,
+  `via` varchar(45) DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`product`,`sectorfrom`,`sectorto`,`validfrom`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `station`
+--
+
+DROP TABLE IF EXISTS `station`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `station` (
+  `StationID` int(11) NOT NULL DEFAULT '0',
+  `Adress1` varchar(50) DEFAULT NULL,
+  `Adress2` varchar(50) DEFAULT NULL,
+  `Country` varchar(2) DEFAULT NULL,
+  `ZIP` varchar(8) DEFAULT NULL,
+  `City` varchar(50) DEFAULT NULL,
+  `Street` varchar(50) DEFAULT NULL,
+  `HouseNr` varchar(10) DEFAULT NULL,
+  `Phone1` varchar(50) DEFAULT NULL,
+  `Phone2` varchar(50) DEFAULT NULL,
+  `Telefax` varchar(50) DEFAULT NULL,
+  `Mobile` varchar(50) DEFAULT NULL,
+  `ServicePhone1` varchar(50) DEFAULT NULL,
+  `ServicePhone2` varchar(50) DEFAULT NULL,
+  `ContactPerson1` varchar(50) DEFAULT NULL,
+  `ContactPerson2` varchar(50) DEFAULT NULL,
+  `Email` varchar(100) DEFAULT NULL,
+  `Webadress` varchar(255) DEFAULT NULL,
+  `StationNr` int(11) DEFAULT NULL,
+  `Strang` int(11) DEFAULT NULL,
+  `poslong` double DEFAULT NULL,
+  `poslat` double DEFAULT NULL,
+  `Sector` varchar(5) DEFAULT NULL,
+  `UStId` varchar(50) DEFAULT NULL,
+  `BillingAdress1` varchar(50) DEFAULT NULL,
+  `BillingAdress2` varchar(50) DEFAULT NULL,
+  `BillingCountry` varchar(50) DEFAULT NULL,
+  `BillingZip` varchar(8) DEFAULT NULL,
+  `BillingCity` varchar(50) DEFAULT NULL,
+  `BillingStreet` varchar(50) DEFAULT NULL,
+  `BillingHouseNr` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`StationID`),
+  UNIQUE KEY `DepotTree` (`StationID`),
+  UNIQUE KEY `DepotMatchcode` (`StationID`),
+  UNIQUE KEY `LKZ` (`Country`,`ZIP`,`City`,`StationID`),
+  KEY `Strang` (`Strang`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+

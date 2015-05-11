@@ -138,7 +138,7 @@ public class Persistence implements DisposableBean {
     public AbstractDataSource dataSourceLeo2factory() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/leo2factory");
+        dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/dekuclient");
         dataSource.setUsername("leo2");
         dataSource.setPassword("leo2");
 

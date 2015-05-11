@@ -22,7 +22,7 @@ public class SwaggerBootstrapServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
-        mLog.info("Bootstrapping swagger!");
+        mLog.info("Bootstrapping swagger");
 
         Info info = new Info()
                 .title("LEO2 webservice")
