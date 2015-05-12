@@ -35,18 +35,18 @@ dependencies {
     compile 'org.hibernate:hibernate-validator:5.+'
 
     // JAX-RS client
-    compile 'org.glassfish.jersey.core:jersey-client:2.+'
-    compile 'org.glassfish.jersey.ext:jersey-proxy-client:2.+'
-    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'
+    compile "org.glassfish.jersey.core:jersey-client:$v_jersey"
+    compile "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey"
+    compile "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey"
 
     // jackson JSON serializer
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+'
-    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+'
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
 
     // Webservice host libraries (leobridge)
-    compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.+'
-    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'
-    compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.+'
+    compile "org.glassfish.jersey.containers:jersey-container-servlet:$v_jersey"
+    compile "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey"
+    compile "org.glassfish.jersey.containers:jersey-container-grizzly2-http:$v_jersey"
 
     // JavaFX libs
     compile 'com.dooapp.fxform2:core:8.+'

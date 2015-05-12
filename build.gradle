@@ -1,5 +1,93 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
-apply plugin: 'java'
 
 version = '0.1'
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'project-report'
+
+    // Reporting setup
+    tasks.compileJava.dependsOn(tasks.dependencyReport)
+    tasks.compileJava.dependsOn(tasks.htmlDependencyReport)
+
+    projectReportDirName = '../../reports'
+
+    buildscript {
+        repositories {
+            jcenter()
+            mavenCentral()
+        }
+
+        ext {
+            v_jooq = "3.+"
+            v_jersey = "2.+"
+            v_jackson = "2.+"
+            v_hk2 = "2.+"
+            v_eclipselink = "2.+"
+            v_spring = "4.+"
+            v_querydsl = "3.+"
+            v_junit = "4.+"
+            v_guava = "18.0"
+            v_activemq = "5.+"
+            v_javax_servlet = "3.1.0"
+        }
+    }
+
+    // Dependency resolution
+    configurations.all {
+        resolutionStrategy {
+            // fail eagerly on version conflict (includes transitive dependencies)
+            // e.g. multiple different versions of the same dependency (group and name are equal)
+            failOnVersionConflict()
+
+            // Force overrides for newer versions of (transitive) dependencies for all projects consistently
+            force "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
+            force "com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:$v_jackson"
+            force "com.fasterxml.jackson.core:jackson-annotations:$v_jackson"
+            force "com.fasterxml.jackson.core:jackson-core:$v_jackson"
+            force "com.fasterxml.jackson.core:jackson-databind:$v_jackson"
+            force "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$v_jackson"
+
+            force "org.glassfish.hk2:hk2:$v_hk2"
+            force "org.glassfish.hk2:hk2-api:$v_hk2"
+            force "org.glassfish.hk2:hk2-locator:$v_hk2"
+            force "org.glassfish.hk2:spring-bridge:$v_hk2"
+            force "org.glassfish.hk2.external:javax.inject:$v_hk2"
+
+            force "org.glassfish.jersey.containers:jersey-container-servlet-core:$v_jersey"
+            force "org.glassfish.jersey.core:jersey-server:$v_jersey"
+
+            force "org.springframework:spring-web:$v_spring"
+            force "org.springframework:spring-core:$v_spring"
+            force "org.springframework:spring-context:$v_spring"
+            force "org.springframework:spring-orm:$v_spring"
+            force "org.springframework:spring-beans:$v_spring"
+            force "org.springframework:spring-tx:$v_spring"
+            force "org.springframework:spring-aop:$v_spring"
+
+            force "javax.servlet:javax.servlet-api:$v_javax_servlet"
+
+            force "org.jooq:jooq-meta:$v_jooq"
+            force "org.jooq:jooq-codegen:$v_jooq"
+
+            force "com.google.guava:guava:$v_guava"
+            force "org.javassist:javassist:3.+"
+            force "org.apache.httpcomponents:httpclient:4.+"
+            force "com.thoughtworks.xstream:xstream:1.+"
+            force "org.fusesource.hawtdispatch:hawtdispatch-transport:1.+"
+            force "org.fusesource.hawtbuf:hawtbuf:1.+"
+
+            force "org.apache.ant:ant:1.+"
+            force "org.apache.ant:ant-launcher:1.+"
+
+            force "xml-apis:xml-apis:1.+"
+
+            force "org.slf4j:slf4j-api:1.+"
+            force "org.jboss.logging:jboss-logging:3.+"
+            force "org.jboss.logging:jboss-logging-annotations:1.+"
+        }
+    }
+}
