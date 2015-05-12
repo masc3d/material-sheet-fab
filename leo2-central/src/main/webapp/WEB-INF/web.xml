@@ -25,44 +25,49 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>org.deku.leo2.central</param-value>
     </context-param>
+
+    <!-- Resteasy configuration -->
+    <context-param>
+        <param-name>resteasy.resources</param-name>
+        <param-value>com.wordnik.swagger.jaxrs.listing.ApiListingResource</param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.providers</param-name>
+        <param-value>org.deku.leo2.central.rest.ObjectMapperProvider</param-value>
+    </context-param>
+
+    <!--. Listeners -->
     <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.jboss.resteasy.plugins.spring.SpringContextLoaderListener</listener-class>
+    </listener>
+    <!-- Custom servlet context listener -->
+    <listener>
+        <listener-class>
+            org.deku.leo2.central.ServletContextListener
+        </listener-class>
     </listener>
 
     <!-- Leo2 servlet -->
+    <context-param>
+        <param-name>resteasy.servlet.mapping.prefix</param-name>
+        <param-value>/rs/api</param-value>
+    </context-param>
     <servlet>
         <description>leo2 webservice servlet</description>
         <servlet-name>leo2</servlet-name>
-        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>org.deku.leo2.central.rest.WebserviceResourceConfig</param-value>
+            <param-value>org.deku.leo2.central.rest.WebserviceApplication</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>leo2</servlet-name>
         <url-pattern>/rs/api/*</url-pattern>
-    </servlet-mapping>
-
-    <!-- swagger servlet -->
-    <!-- need to have a separate servlet for swagger here, as we use interfaces for our webservice -->
-    <!-- and swagger requires its annotations to be in the same place with jaxrs annotations -->
-    <!-- scanning interfaces within the leo2 servlet will cause breakage -->
-    <servlet>
-        <servlet-name>swagger-jersey2</servlet-name>
-        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-        <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
-            <param-value>org.deku.leo2.central.rest.SwaggerWebserviceResourceConfig</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>swagger-jersey2</servlet-name>
-        <url-pattern>/rs/swagger/*</url-pattern>
     </servlet-mapping>
 
     <!-- swagger bootstrap -->
@@ -71,11 +76,4 @@
         <servlet-class>org.deku.leo2.central.rest.SwaggerBootstrapServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
-
-    <!-- Custom servlet context listener -->
-    <listener>
-        <listener-class>
-            org.deku.leo2.central.ServletContextListener
-        </listener-class>
-    </listener>
 </web-app>

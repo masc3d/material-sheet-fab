@@ -1,15 +1,21 @@
 package org.deku.leo2.central.rest;
 
+import com.wordnik.swagger.config.Scanner;
 import com.wordnik.swagger.config.ScannerFactory;
+import com.wordnik.swagger.jaxrs.config.AbstractScanner;
 import com.wordnik.swagger.jaxrs.config.DefaultJaxrsScanner;
+import com.wordnik.swagger.jaxrs.config.ReflectiveJaxrsScanner;
 import com.wordnik.swagger.models.Contact;
 import com.wordnik.swagger.models.Info;
 import com.wordnik.swagger.models.Swagger;
+import javassist.bytecode.ClassFile;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -45,7 +51,9 @@ public class SwaggerBootstrapServlet extends HttpServlet {
 
 
         // Setting the scanner during bootstrap, no need for configuration servlet
-        ScannerFactory.setScanner(new DefaultJaxrsScanner());
+        ReflectiveJaxrsScanner scanner = new ReflectiveJaxrsScanner();
+        scanner.setResourcePackage("org.deku.leo2.rest.services.v1");
+        ScannerFactory.setScanner(scanner);
 
         context.setAttribute("swagger", swagger);
     }

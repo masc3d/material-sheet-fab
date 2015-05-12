@@ -6,6 +6,7 @@ import org.deku.leo2.central.data.entities.jooq.tables.records.TbldepotlisteReco
 import org.deku.leo2.central.data.repositories.DepotJooqRepository;
 import org.deku.leo2.central.data.repositories.DepotRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.ws.rs.Path;
@@ -65,6 +66,7 @@ public class DepotService implements org.deku.leo2.rest.services.v1.DepotService
         return rDepot;
     }
 
+    @Transactional("jooq")
     @Override
     public org.deku.leo2.rest.entities.v1.Depot[] get() {
         // JPA/QueryDSL
@@ -85,6 +87,7 @@ public class DepotService implements org.deku.leo2.rest.services.v1.DepotService
         QDepot q = null;
     }
 
+    @Transactional("jpa")
     @Override
     public org.deku.leo2.rest.entities.v1.Depot[] find(String query) {
         List<Depot> depots = mDepotRepository.findWithQuery(query);

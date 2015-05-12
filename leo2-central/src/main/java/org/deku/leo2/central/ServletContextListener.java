@@ -5,6 +5,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import javax.inject.Named;
 import javax.servlet.ServletContextEvent;
 import java.util.logging.Logger;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  * Created by masc on 17.09.14.
@@ -18,6 +19,9 @@ public class ServletContextListener implements javax.servlet.ServletContextListe
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         mLog.info("Leo2 servlet context initalizer");
+
+        // Log4j logging
+        BasicConfigurator.configure();
     }
 
     @Override

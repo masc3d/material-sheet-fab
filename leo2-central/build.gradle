@@ -49,12 +49,11 @@ dependencies {
 
     // webservice
     // for various javax interfaces (eg. ServletContextListener)
-    compile 'javax.servlet:javax.servlet-api:3.+'
-    // jersey
-    compile "org.glassfish.jersey.containers:jersey-container-servlet:$v_jersey"
-    compile "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey"
-    // jersey spring extension
-    compile "org.glassfish.jersey.ext:jersey-spring3:$v_jersey"
+    compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
+    // jaxrs/resteasy
+    compile "org.jboss.resteasy:resteasy-jaxrs:$v_resteasy"
+    compile "org.jboss.resteasy:resteasy-spring:$v_resteasy"
+    compile "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy"
 
     compile "org.eclipse.jetty.aggregate:jetty-all:9.+"
 
@@ -68,8 +67,12 @@ dependencies {
     // eclipselink codegen/annotation processor
     compile "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$v_eclipselink"
     // needed for eclipselink codegen under specific circumstances (eg querydsl related spring repository interfaces)
-    providedCompile "org.hibernate:hibernate-core:+"
-    providedCompile "jaxen:jaxen:+"
+    providedCompile("org.hibernate:hibernate-core:+") {
+        transitive = false
+    }
+    providedCompile("jaxen:jaxen:+") {
+        transitive = false
+    }
 
     // queryDSL
     compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
@@ -80,6 +83,7 @@ dependencies {
 
     // spring
     compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
+    compile "org.springframework:spring-web:$v_spring"
 
     // JSR-330
     compile 'javax.inject:javax.inject:1'
@@ -94,10 +98,13 @@ dependencies {
     compile 'mysql:mysql-connector-java:5.+'
 
     // json doc
-    compile 'com.wordnik:swagger-jersey2-jaxrs:+'
+    compile 'com.wordnik:swagger-jaxrs:+'
+    compile 'org.javassist:javassist:3.+'
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: '4.+'
+
+    // TODO: replace with resteasy client
     // webservice client libraries for test cases
     testCompile "org.glassfish.jersey.core:jersey-client:$v_jersey"
     testCompile "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey"

@@ -19,15 +19,15 @@ public class WebserviceTest {
     private Client client;
     private WebTarget target;
 
-    private static final URI BASE_URI = URI.create("http://localhost:8080/leo2/");
+    private static final URI BASE_URI = URI.create("http://localhost:8080/leo2/rs/api/");
 
     @Before
     public void setup() throws Exception {
         mServer = new Server(8080);
         WebAppContext context = new WebAppContext();
         context.setContextPath("/leo2");
-        context.setDefaultsDescriptor("src/main/webapp/WEB-INF/web.xml");
-        context.setResourceBase("src/main/webapp/");
+        context.setResourceBase("src/main/webapp");
+        context.setWelcomeFiles(new String[]{"index.html"});
         mServer.setHandler(context);
         mServer.start();
 

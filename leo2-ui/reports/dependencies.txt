@@ -90,7 +90,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.glassfish.jersey.core:jersey-common:2.17 (*)
 |    +--- org.glassfish.jersey.core:jersey-server:2.17 (*)
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
-+--- com.dooapp.fxform2:core:8.+ -> 8.0.8
++--- com.dooapp.fxform2:core:8.+ -> 8.0.9
 |    \--- javax.validation:validation-api:1.1.0.Final
 +--- org.controlsfx:controlsfx:8.+ -> 8.20.8
 |    \--- org.controlsfx:openjfx-dialogs:1.0.2
@@ -235,7 +235,7 @@ default - Configuration for default artifacts.
 |    +--- org.glassfish.jersey.core:jersey-common:2.17 (*)
 |    +--- org.glassfish.jersey.core:jersey-server:2.17 (*)
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
-+--- com.dooapp.fxform2:core:8.+ -> 8.0.8
++--- com.dooapp.fxform2:core:8.+ -> 8.0.9
 |    \--- javax.validation:validation-api:1.1.0.Final
 +--- org.controlsfx:controlsfx:8.+ -> 8.20.8
 |    \--- org.controlsfx:openjfx-dialogs:1.0.2
@@ -383,7 +383,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.glassfish.jersey.core:jersey-common:2.17 (*)
 |    +--- org.glassfish.jersey.core:jersey-server:2.17 (*)
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
-+--- com.dooapp.fxform2:core:8.+ -> 8.0.8
++--- com.dooapp.fxform2:core:8.+ -> 8.0.9
 |    \--- javax.validation:validation-api:1.1.0.Final
 +--- org.controlsfx:controlsfx:8.+ -> 8.20.8
 |    \--- org.controlsfx:openjfx-dialogs:1.0.2
@@ -531,7 +531,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.glassfish.jersey.core:jersey-common:2.17 (*)
 |    +--- org.glassfish.jersey.core:jersey-server:2.17 (*)
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
-+--- com.dooapp.fxform2:core:8.+ -> 8.0.8
++--- com.dooapp.fxform2:core:8.+ -> 8.0.9
 |    \--- javax.validation:validation-api:1.1.0.Final
 +--- org.controlsfx:controlsfx:8.+ -> 8.20.8
 |    \--- org.controlsfx:openjfx-dialogs:1.0.2
@@ -677,7 +677,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.glassfish.jersey.core:jersey-common:2.17 (*)
 |    +--- org.glassfish.jersey.core:jersey-server:2.17 (*)
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
-+--- com.dooapp.fxform2:core:8.+ -> 8.0.8
++--- com.dooapp.fxform2:core:8.+ -> 8.0.9
 |    \--- javax.validation:validation-api:1.1.0.Final
 +--- org.controlsfx:controlsfx:8.+ -> 8.20.8
 |    \--- org.controlsfx:openjfx-dialogs:1.0.2
