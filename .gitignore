@@ -15,3 +15,8 @@ leo2-bridge-com/packages/
 leo2-bridge-com/Release*
 leo2-central/generated
 leo2-central/src/generated
+leo2-central/reports/dependencies
+leo2-common/reports/dependencies
+leo2-messaging/reports/dependencies
+leo2-node/reports/dependencies
+leo2-ui/reports/dependencies
