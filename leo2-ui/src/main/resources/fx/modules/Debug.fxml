@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
 <BorderPane prefHeight="396.0" prefWidth="459.0" stylesheets="@../../css/leo2.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.modules.DebugController">
    <center>
       <FlowPane hgap="20.0" prefHeight="200.0" prefWidth="200.0" rowValignment="TOP" vgap="20.0" BorderPane.alignment="CENTER_LEFT">

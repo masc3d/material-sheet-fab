@@ -1,9 +1,5 @@
 package org.deku.leo2.central.rest;
 
-import com.wordnik.swagger.jaxrs.listing.ApiListingResource;
-import org.deku.leo2.central.rest.services.v1.DepotService;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;

@@ -1,11 +1,11 @@
 package org.deku.leo2.central;
 
+import org.apache.log4j.BasicConfigurator;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.inject.Named;
 import javax.servlet.ServletContextEvent;
 import java.util.logging.Logger;
-import org.apache.log4j.BasicConfigurator;
 
 /**
  * Created by masc on 17.09.14.

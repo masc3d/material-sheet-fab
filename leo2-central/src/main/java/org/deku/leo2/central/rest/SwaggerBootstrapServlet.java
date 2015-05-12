@@ -1,21 +1,15 @@
 package org.deku.leo2.central.rest;
 
-import com.wordnik.swagger.config.Scanner;
 import com.wordnik.swagger.config.ScannerFactory;
-import com.wordnik.swagger.jaxrs.config.AbstractScanner;
-import com.wordnik.swagger.jaxrs.config.DefaultJaxrsScanner;
 import com.wordnik.swagger.jaxrs.config.ReflectiveJaxrsScanner;
 import com.wordnik.swagger.models.Contact;
 import com.wordnik.swagger.models.Info;
 import com.wordnik.swagger.models.Swagger;
-import javassist.bytecode.ClassFile;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 
 /**
