@@ -20,8 +20,8 @@ public class ServletContextListener implements javax.servlet.ServletContextListe
     public void contextInitialized(ServletContextEvent sce) {
         mLog.info("Leo2 servlet context initalizer");
 
-        // Log4j logging
-        BasicConfigurator.configure();
+        // Log4j logging (to make resteasy log entries visible, needs refinement)
+        // BasicConfigurator.configure();
     }
 
     @Override

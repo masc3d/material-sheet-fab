@@ -7,7 +7,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 import sx.Disposable;
+
+import java.net.URL;
 
 /**
  * Created by masc on 30.07.14.
@@ -43,27 +46,34 @@ public class Main implements Disposable, ApplicationContextAware {
         mContext = (ConfigurableApplicationContext)applicationContext;
     }
 
-    public static class JettyMain {
-        /**
-         * Standalone jetty
-         * @param args
-         * @throws Exception
-         */
-        public static void main(String[] args) throws Exception {
-            Server server = new Server(8080);
+    /**
+     * Standalone jetty
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        Server server = new Server(8080);
 
-            WebAppContext context = new WebAppContext();
-            context.setContextPath("/leo2");
-            context.setResourceBase("src/main/webapp");
-            context.setWelcomeFiles(new String[] { "index.html"} );
-            server.setHandler(context);
-            server.start();
+        WebAppContext context = new WebAppContext();
+        context.setContextPath("/leo2");
 
-            System.out.println("Enter to stop webservice");
-            System.in.read();
+        // This setup relies on the copyWebapp gradle task which copies the webapp directory into the classpath root
+        String r = Main.class.getResource("/webapp").toString();
+        System.out.println(r);
+        String d = Main.class.getResource("/webapp/WEB-INF/web.xml").toString();
+        System.out.println(d);
 
-            server.stop();
-        }
+        context.setDescriptor(d);
+        context.setResourceBase(r);
+
+        context.setWelcomeFiles(new String[]{"index.html"});
+        server.setHandler(context);
+        server.start();
+
+        System.out.println("Enter to stop webservice");
+        System.in.read();
+
+        server.stop();
     }
 
     @Override

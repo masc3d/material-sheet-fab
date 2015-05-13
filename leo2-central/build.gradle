@@ -47,6 +47,9 @@ dependencies {
     // log4j logging (required by eclipse codegen)
     compile "log4j:log4j:+"
 
+    // jetty
+    compile "org.eclipse.jetty.aggregate:jetty-all:$v_jetty"
+
     // webservice
     // for various javax interfaces (eg. ServletContextListener)
     compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
@@ -54,8 +57,6 @@ dependencies {
     compile "org.jboss.resteasy:resteasy-jaxrs:$v_resteasy"
     compile "org.jboss.resteasy:resteasy-spring:$v_resteasy"
     compile "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy"
-
-    compile "org.eclipse.jetty.aggregate:jetty-all:9.+"
 
     // jackson JSON serializer
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson"
@@ -65,14 +66,15 @@ dependencies {
     // eclipselink
     compile "org.eclipse.persistence:eclipselink:$v_eclipselink"
     // eclipselink codegen/annotation processor
-    compile "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$v_eclipselink"
-    // needed for eclipselink codegen under specific circumstances (eg querydsl related spring repository interfaces)
-    providedCompile("org.hibernate:hibernate-core:+") {
-        transitive = false
-    }
-    providedCompile("jaxen:jaxen:+") {
-        transitive = false
-    }
+    // NOTE: disabled as we don't need/use criteria API just yet (using QueryDSL)
+//    compile "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$v_eclipselink"
+//    // needed for eclipselink codegen under specific circumstances (eg querydsl related spring repository interfaces)
+//    providedCompile("org.hibernate:hibernate-core:+") {
+//        transitive = false
+//    }
+//    providedCompile("jaxen:jaxen:+") {
+//        transitive = false
+//    }
 
     // queryDSL
     compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
@@ -121,9 +123,11 @@ run {
 
 // war plugin configuration
 war {
-    // Jetty breaks tomcat deployment.
-    // Seems to attempt to start some kind of component within jetty and fails with LifecycleException
+    // Some specific jetty components (and transitive deps) break tomcat deployment.
+    // tomcat will fail with LifecycleException
+    // In the long run we will probably need separate configurations/dependency sets for war/jar
     rootSpec.exclude("**/jetty*.jar")
+    rootSpec.exclude("**/javax-websocket*.jar")
     rootSpec.exclude("**/javax.servlet-api*.jar")
 }
 
@@ -208,6 +212,13 @@ jooq {
     }
 }
 tasks.generateJooq.outputs.upToDateWhen { false }
+
+task copyWebapp(type: Copy) {
+    from 'src/main/webapp'
+    into 'build/classes/main/webapp'
+}
+
+compileJava.dependsOn(copyWebapp)
 
 // masc20150507. task prototypes
 ////copying all dependencies attached to 'compile' into a specific folder
