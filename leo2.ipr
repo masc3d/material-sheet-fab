@@ -43,7 +43,6 @@
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.1" />
             <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.35" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
             <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
@@ -74,8 +73,6 @@
             <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
             <element id="library" level="project" name="Gradle: org.slf4j:jcl-over-slf4j:1.7.10" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
@@ -106,6 +103,51 @@
             <element id="library" level="project" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" />
             <element id="library" level="project" name="Gradle: com.sun.istack:istack-commons-runtime:2.16" />
             <element id="library" level="project" name="Gradle: javax.xml.bind:jsr173_api:1.0" />
+            <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
+            <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.12" />
+            <element id="library" level="project" name="Gradle: javax.websocket:javax.websocket-api:1.0" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.2" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-client:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-deploy:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-jmx:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-plus:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-annotations:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-util:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-jaspi:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-jndi:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-rewrite:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-servlets:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-quickstart:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-server:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-client:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.orbit:javax.mail.glassfish:1.4.1.v201005082020" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.2" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.2" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-http:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-io:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-webapp:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-xml:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: javax.annotation:javax.annotation-api:1.2" />
+            <element id="library" level="project" name="Gradle: org.ow2.asm:asm:5.0.1" />
+            <element id="library" level="project" name="Gradle: org.ow2.asm:asm-commons:5.0.1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-security:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.orbit:javax.security.auth.message:1.0.0.v201108011116" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-server:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-continuation:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: javax.transaction:javax.transaction-api:1.2" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:javax-websocket-client-impl:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-server:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-common:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.orbit:javax.activation:1.1.0.v201105071233" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-servlet:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.ow2.asm:asm-tree:5.0.1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-hpack:9.3.0.RC0" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -155,7 +197,6 @@
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.1" />
             <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.35" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
             <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
@@ -186,8 +227,6 @@
             <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
             <element id="library" level="project" name="Gradle: org.slf4j:jcl-over-slf4j:1.7.10" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
@@ -218,6 +257,51 @@
             <element id="library" level="project" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" />
             <element id="library" level="project" name="Gradle: com.sun.istack:istack-commons-runtime:2.16" />
             <element id="library" level="project" name="Gradle: javax.xml.bind:jsr173_api:1.0" />
+            <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
+            <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.12" />
+            <element id="library" level="project" name="Gradle: javax.websocket:javax.websocket-api:1.0" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.2" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-client:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-deploy:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-jmx:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-plus:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-annotations:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-util:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-jaspi:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-jndi:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-rewrite:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-servlets:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-quickstart:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-server:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-client:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.orbit:javax.mail.glassfish:1.4.1.v201005082020" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.2" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.2" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-http:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-io:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-webapp:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-xml:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: javax.annotation:javax.annotation-api:1.2" />
+            <element id="library" level="project" name="Gradle: org.ow2.asm:asm:5.0.1" />
+            <element id="library" level="project" name="Gradle: org.ow2.asm:asm-commons:5.0.1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-security:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.orbit:javax.security.auth.message:1.0.0.v201108011116" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-server:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-continuation:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: javax.transaction:javax.transaction-api:1.2" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:javax-websocket-client-impl:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-server:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-common:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.orbit:javax.activation:1.1.0.v201105071233" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-servlet:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: org.ow2.asm:asm-tree:5.0.1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-hpack:9.3.0.RC0" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -486,7 +570,7 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method>
         <option name="Make" enabled="false" />
-        <option name="Gradle.BeforeRunTask" enabled="true" tasks="classes" externalProjectPath="$PROJECT_DIR$/leo2-central" vmOptions="" scriptParameters="" />
+        <option name="Gradle.BeforeRunTask" enabled="true" tasks="compileJava" externalProjectPath="$PROJECT_DIR$/leo2-central" vmOptions="" scriptParameters="" />
       </method>
     </configuration>
     <configuration default="false" name="leo2:leo2-ui [run]" type="GradleRunConfiguration" factoryName="Gradle" singleton="true">
@@ -1635,49 +1719,49 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.grizzly/grizzly-http/2.3.16/af2dab550f5ae43928b62d969fb22feb807113d0/grizzly-http-2.3.16-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b20">
+    <library name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b21">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b20/1aadb8798b254a0e03ade480cf518d4afa6a491c/aopalliance-repackaged-2.4.0-b20.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b21/3cf31a8d2b27029a8f6a8b0b443dcc3f908019f2/aopalliance-repackaged-2.4.0-b21.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b20/658f39eed90928a04403c20c2252c1ccff2a85ed/aopalliance-repackaged-2.4.0-b20-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b21/be4ca5058553c4b2756828b5e583e44708d75f5d/aopalliance-repackaged-2.4.0-b21-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b20">
+    <library name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b21">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b20/1e501b9d423a5d8d360fe6cf628b89cb690016d5/javax.inject-2.4.0-b20.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b21/51a7e40423630aecbcbc36156b36794f94f200a4/javax.inject-2.4.0-b21.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b20/3895a87e8b98257672c3337dbb93e9bec8b2d450/javax.inject-2.4.0-b20-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b21/d36840b8acc2725525e5911636abbac81ca2dce7/javax.inject-2.4.0-b21-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b20">
+    <library name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b21">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b20/1999c5eb92287a01a8aaaa029e8ad9ca10737387/hk2-api-2.4.0-b20.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b21/2772b36ad5b6de2494638b9884c0ede8108f3256/hk2-api-2.4.0-b21.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b20/3ec1d4815059936d3b6bfc9716eeb1ee5dae2c85/hk2-api-2.4.0-b20-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b21/56ceb501432f39e67a5b5fcdbf9fa2248dfc5dd3/hk2-api-2.4.0-b21-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b20">
+    <library name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b21">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b20/e65b8a982336f38546019ecc767ccc7a4890b3a5/hk2-locator-2.4.0-b20.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b21/89182b5d16e14e32e4b4b4803125077160585bf9/hk2-locator-2.4.0-b21.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b20/ef5982cce3177ae932f91e8231074f866c14e34d/hk2-locator-2.4.0-b20-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b21/aee87c97da4f9d83728c0cc56d4a41adf395154b/hk2-locator-2.4.0-b21-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b20">
+    <library name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b21">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b20/f0460e0c9c8b86e07c26f69aea456df5405c30e6/hk2-utils-2.4.0-b20.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b21/4d1fec231e880fd9612ff806194314a6338037e4/hk2-utils-2.4.0-b21.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b20/7162ecda2ca158385473a2207bc5dde622f6c694/hk2-utils-2.4.0-b20-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b21/e6204be7f026ce9805274ae928f4a1d9e1aff0d8/hk2-utils-2.4.0-b21-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.glassfish.hk2:osgi-resource-locator:1.0.1">
@@ -1905,31 +1989,31 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.spec.javax.annotation/jboss-annotations-api_1.1_spec/1.0.1.Final/aed48c8b8ca5820d0c2d0d8a00f4322379b37746/jboss-annotations-api_1.1_spec-1.0.1.Final-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:analysis:1.7.1">
+    <library name="Gradle: org.jinq:analysis:1.7.2">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.7.1/dfee5827b4e86b4aa501d15b68f1bb6b2cb18462/analysis-1.7.1.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.7.2/c9b858065b4baa5e1d9f56534f4a9aba80a15917/analysis-1.7.2.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.7.1/a7af2dbf3ece17d7066d7687a141f1e87c09dc4c/analysis-1.7.1-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.7.2/a794b14428c7a5ef2c8f5b7ad0bf229c3dab0fb2/analysis-1.7.2-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:api:1.7.1">
+    <library name="Gradle: org.jinq:api:1.7.2">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.7.1/a7889935f489bdcc7b1f8325962a76d5ea87e35c/api-1.7.1.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.7.2/f275e412d856f71056ddc21ec9f0569e4602429b/api-1.7.2.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.7.1/5e0af9e5c6ff6b07b33020277f747e38af77504b/api-1.7.1-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.7.2/527a6e77ddfe1b2c054062918c6ccec96927bc0a/api-1.7.2-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:jinq-jpa:1.7.1">
+    <library name="Gradle: org.jinq:jinq-jpa:1.7.2">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7.1/c569b9afc309ec18a3aec2f935931d0b3c14a35a/jinq-jpa-1.7.1.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7.2/be9749c5b41f51b31344659191fa39e32db97817/jinq-jpa-1.7.2.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7.1/cded5f696f552b828bd6482b796397bf724ac6c6/jinq-jpa-1.7.1-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7.2/b81f2976f1e00da2029bfa990f13706d4c5f5ec1/jinq-jpa-1.7.2-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.jooq:jooq:3.6.1">
