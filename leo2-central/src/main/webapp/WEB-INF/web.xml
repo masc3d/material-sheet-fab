@@ -37,6 +37,7 @@
         while it has to be listed here when running with jetty embedded in shadowJar -->
         <param-value>
             org.deku.leo2.central.rest.ObjectMapperProvider,
+            org.deku.leo2.central.rest.ExceptionMapper,
             org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider
         </param-value>
     </context-param>
