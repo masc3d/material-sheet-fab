@@ -14,15 +14,20 @@ import java.util.logging.Logger;
  */
 @Provider
 public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exception> {
-    static class ExceptionResponse {
-        private WebApplicationException mException;
+    /**
+     * Represents webservice result on exception
+     */
+    static class ExceptionResult {
+        private int mStatus;
+        private Exception mException;
 
-        public ExceptionResponse(WebApplicationException e) {
+        public ExceptionResult(int status, Exception e) {
             mException = e;
+            mStatus = status;
         }
 
         public Integer getStatus() {
-            return mException.getResponse().getStatus();
+            return mStatus;
         }
 
         public String getMessage() {
@@ -40,14 +45,18 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
     public javax.ws.rs.core.Response toResponse(Exception e) {
         mLogger.log(Level.SEVERE, e.getMessage(), e);
         WebApplicationException we = Cast.as(WebApplicationException.class, e);
+
+        ExceptionResult result;
         if (we != null) {
-            return Response
-                    .status(we.getResponse().getStatus())
-                    .entity(new ExceptionResponse(we))
-                    .type(MediaType.APPLICATION_JSON_TYPE)
-                    .build();
+            result = new ExceptionResult(we.getResponse().getStatus(), we);
         } else {
-            return null;
+            result = new ExceptionResult(Response.Status.NOT_FOUND.getStatusCode(), e);
         }
+
+        return Response
+                .status(result.getStatus())
+                .entity(result)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build();
     }
 }
