@@ -112,6 +112,8 @@ dependencies {
     testCompile "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey"
     testCompile "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey"
 
+    testCompile "org.springframework:spring-test:$v_spring"
+
     testCompile project(':sx-common')
 }
 
