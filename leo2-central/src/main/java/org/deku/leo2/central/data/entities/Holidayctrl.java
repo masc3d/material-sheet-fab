@@ -8,6 +8,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @IdClass(HolidayctrlPK.class)
+@Table(name = "holidayctrl")
 public class Holidayctrl {
     private Timestamp holiday;
     private Integer ctrlPos;

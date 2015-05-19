@@ -1,15 +1,13 @@
 package org.deku.leo2.central.data.entities;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
  * Created by JT on 11.05.15.
  */
 @Entity
+@Table(name = "country")
 public class Country {
     private String lkz;
     private String lname;

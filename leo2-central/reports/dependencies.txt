@@ -141,23 +141,23 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    \--- javax.activation:activation:1.1
 +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.11.Final
-|    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.3
-|    |    \--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.5.3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
+|    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
 |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.5.3
 |         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3
-|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3
-|              +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|              \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
+|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
+|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
+|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
+|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3 -> 2.6.0-rc1
+|              +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|              \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.5.3 (*)
 +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
@@ -229,25 +229,25 @@ compile - Compile classpath for source set 'main'.
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2
-|    |    \--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
+|    |    \--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.5.3 (*)
-|    |    +--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.2 -> 2.5.3 (*)
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.6.0-rc1 (*)
+|    |    +--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.2 -> 2.6.0-rc1 (*)
 |    |    \--- org.codehaus.woodstox:stax2-api:3.1.4
 |    +--- com.wordnik:swagger-core:1.5.3-M1
 |    |    +--- org.apache.commons:commons-lang3:3.2.1
 |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.12
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.3
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.6.0-rc1
 |    |    +--- com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.5.3
-|    |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
-|    |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.5.3 (*)
+|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.6.0-rc1
+|    |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
+|    |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.6.0-rc1 (*)
 |    |    |    \--- joda-time:joda-time:2.2
 |    |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 (*)
 |    |    +--- com.wordnik:swagger-models:1.5.3-M1
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.3
+|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.6.0-rc1
 |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.12
 |    |    |    \--- com.wordnik:swagger-annotations:1.5.3-M1
 |    |    \--- javax.validation:validation-api:1.1.0.Final
@@ -388,23 +388,23 @@ default - Configuration for default artifacts.
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    \--- javax.activation:activation:1.1
 +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.11.Final
-|    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.3
-|    |    \--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.5.3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
+|    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
 |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.5.3
 |         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3
-|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3
-|              +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|              \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
+|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
+|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
+|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
+|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3 -> 2.6.0-rc1
+|              +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|              \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.5.3 (*)
 +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
@@ -476,25 +476,25 @@ default - Configuration for default artifacts.
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2
-|    |    \--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
+|    |    \--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.5.3 (*)
-|    |    +--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.2 -> 2.5.3 (*)
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.6.0-rc1 (*)
+|    |    +--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.2 -> 2.6.0-rc1 (*)
 |    |    \--- org.codehaus.woodstox:stax2-api:3.1.4
 |    +--- com.wordnik:swagger-core:1.5.3-M1
 |    |    +--- org.apache.commons:commons-lang3:3.2.1
 |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.12
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.3
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.6.0-rc1
 |    |    +--- com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.5.3
-|    |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
-|    |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.5.3 (*)
+|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.6.0-rc1
+|    |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
+|    |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.6.0-rc1 (*)
 |    |    |    \--- joda-time:joda-time:2.2
 |    |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 (*)
 |    |    +--- com.wordnik:swagger-models:1.5.3-M1
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.3
+|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.6.0-rc1
 |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.12
 |    |    |    \--- com.wordnik:swagger-annotations:1.5.3-M1
 |    |    \--- javax.validation:validation-api:1.1.0.Final
@@ -647,23 +647,23 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    \--- javax.activation:activation:1.1
 +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.11.Final
-|    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.3
-|    |    \--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.5.3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
+|    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
 |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.5.3
 |         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3
-|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3
-|              +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|              \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
+|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
+|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
+|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
+|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3 -> 2.6.0-rc1
+|              +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|              \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.5.3 (*)
 +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
@@ -735,25 +735,25 @@ runtime - Runtime classpath for source set 'main'.
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2
-|    |    \--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
+|    |    \--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.5.3 (*)
-|    |    +--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.2 -> 2.5.3 (*)
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.6.0-rc1 (*)
+|    |    +--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.2 -> 2.6.0-rc1 (*)
 |    |    \--- org.codehaus.woodstox:stax2-api:3.1.4
 |    +--- com.wordnik:swagger-core:1.5.3-M1
 |    |    +--- org.apache.commons:commons-lang3:3.2.1
 |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.12
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.3
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.6.0-rc1
 |    |    +--- com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.5.3
-|    |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
-|    |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.5.3 (*)
+|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.6.0-rc1
+|    |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
+|    |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.6.0-rc1 (*)
 |    |    |    \--- joda-time:joda-time:2.2
 |    |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 (*)
 |    |    +--- com.wordnik:swagger-models:1.5.3-M1
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.3
+|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.6.0-rc1
 |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.12
 |    |    |    \--- com.wordnik:swagger-annotations:1.5.3-M1
 |    |    \--- javax.validation:validation-api:1.1.0.Final
@@ -897,23 +897,23 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    \--- javax.activation:activation:1.1
 +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.11.Final
-|    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.3
-|    |    \--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.5.3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
+|    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
 |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.5.3
 |         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3
-|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3
-|              +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|              \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
+|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
+|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
+|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
+|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3 -> 2.6.0-rc1
+|              +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|              \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.5.3 (*)
 +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
@@ -985,25 +985,25 @@ testCompile - Compile classpath for source set 'test'.
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2
-|    |    \--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
+|    |    \--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.5.3 (*)
-|    |    +--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.2 -> 2.5.3 (*)
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.6.0-rc1 (*)
+|    |    +--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.2 -> 2.6.0-rc1 (*)
 |    |    \--- org.codehaus.woodstox:stax2-api:3.1.4
 |    +--- com.wordnik:swagger-core:1.5.3-M1
 |    |    +--- org.apache.commons:commons-lang3:3.2.1
 |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.12
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.3
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.6.0-rc1
 |    |    +--- com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.5.3
-|    |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
-|    |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.5.3 (*)
+|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.6.0-rc1
+|    |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
+|    |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.6.0-rc1 (*)
 |    |    |    \--- joda-time:joda-time:2.2
 |    |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 (*)
 |    |    +--- com.wordnik:swagger-models:1.5.3-M1
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.3
+|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.6.0-rc1
 |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.12
 |    |    |    \--- com.wordnik:swagger-annotations:1.5.3-M1
 |    |    \--- javax.validation:validation-api:1.1.0.Final
@@ -1021,22 +1021,22 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- javax.ws.rs:javax.ws.rs-api:2.0.1
 |    |    +--- javax.annotation:javax.annotation-api:1.2
 |    |    +--- org.glassfish.jersey.bundles.repackaged:jersey-guava:2.17
-|    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b10 -> 2.4.0-b21
+|    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b10 -> 2.4.0-b22
 |    |    |    +--- javax.inject:javax.inject:1
-|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b21
+|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b22
 |    |    |    |    \--- javax.inject:javax.inject:1
-|    |    |    \--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b21
-|    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b10 -> 2.4.0-b21
-|    |    +--- org.glassfish.hk2:hk2-locator:2.4.0-b10 -> 2.4.0-b21
-|    |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b21
-|    |    |    +--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b21
-|    |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b21 (*)
-|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b21 (*)
+|    |    |    \--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b22
+|    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b10 -> 2.4.0-b22
+|    |    +--- org.glassfish.hk2:hk2-locator:2.4.0-b10 -> 2.4.0-b22
+|    |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b22
+|    |    |    +--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b22
+|    |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b22 (*)
+|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b22 (*)
 |    |    |    \--- org.javassist:javassist:3.18.1-GA -> 3.19.0-GA
 |    |    \--- org.glassfish.hk2:osgi-resource-locator:1.0.1
-|    +--- org.glassfish.hk2:hk2-api:2.4.0-b10 -> 2.4.0-b21 (*)
-|    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b10 -> 2.4.0-b21
-|    \--- org.glassfish.hk2:hk2-locator:2.4.0-b10 -> 2.4.0-b21 (*)
+|    +--- org.glassfish.hk2:hk2-api:2.4.0-b10 -> 2.4.0-b22 (*)
+|    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b10 -> 2.4.0-b22
+|    \--- org.glassfish.hk2:hk2-locator:2.4.0-b10 -> 2.4.0-b22 (*)
 +--- org.glassfish.jersey.ext:jersey-proxy-client:2.+ -> 2.17
 |    +--- org.glassfish.jersey.core:jersey-common:2.17 (*)
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
@@ -1046,7 +1046,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.3.2 -> 2.5.3 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.3.2 -> 2.5.3 (*)
-|    \--- com.fasterxml.jackson.core:jackson-annotations:2.3.2 -> 2.5.3
+|    \--- com.fasterxml.jackson.core:jackson-annotations:2.3.2 -> 2.6.0-rc1
 \--- org.springframework:spring-test:4.+ -> 4.1.6.RELEASE
      \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 
@@ -1179,23 +1179,23 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    \--- javax.activation:activation:1.1
 +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.11.Final
-|    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.3
-|    |    \--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.5.3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
+|    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
 |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.5.3
 |         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3
-|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3
-|              +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|              \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.5.3
-|    +--- com.fasterxml.jackson.core:jackson-core:2.5.3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 (*)
+|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
+|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
+|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
+|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3 -> 2.6.0-rc1
+|              +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|              \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc1
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.5.3 (*)
 +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
@@ -1267,25 +1267,25 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2
-|    |    \--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
+|    |    \--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.5.3
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.5.3 (*)
-|    |    +--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.2 -> 2.5.3 (*)
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.6.0-rc1 (*)
+|    |    +--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.4.2 -> 2.6.0-rc1 (*)
 |    |    \--- org.codehaus.woodstox:stax2-api:3.1.4
 |    +--- com.wordnik:swagger-core:1.5.3-M1
 |    |    +--- org.apache.commons:commons-lang3:3.2.1
 |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.12
-|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.3
+|    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.6.0-rc1
 |    |    +--- com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.5.3
-|    |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.5.3
-|    |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.5.3 (*)
+|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.0 -> 2.6.0-rc1
+|    |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.2 -> 2.6.0-rc1
+|    |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.2 -> 2.6.0-rc1 (*)
 |    |    |    \--- joda-time:joda-time:2.2
 |    |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 (*)
 |    |    +--- com.wordnik:swagger-models:1.5.3-M1
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.3
+|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.6.0-rc1
 |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.12
 |    |    |    \--- com.wordnik:swagger-annotations:1.5.3-M1
 |    |    \--- javax.validation:validation-api:1.1.0.Final
@@ -1303,22 +1303,22 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- javax.ws.rs:javax.ws.rs-api:2.0.1
 |    |    +--- javax.annotation:javax.annotation-api:1.2
 |    |    +--- org.glassfish.jersey.bundles.repackaged:jersey-guava:2.17
-|    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b10 -> 2.4.0-b21
+|    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b10 -> 2.4.0-b22
 |    |    |    +--- javax.inject:javax.inject:1
-|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b21
+|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b22
 |    |    |    |    \--- javax.inject:javax.inject:1
-|    |    |    \--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b21
-|    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b10 -> 2.4.0-b21
-|    |    +--- org.glassfish.hk2:hk2-locator:2.4.0-b10 -> 2.4.0-b21
-|    |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b21
-|    |    |    +--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b21
-|    |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b21 (*)
-|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b21 (*)
+|    |    |    \--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b22
+|    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b10 -> 2.4.0-b22
+|    |    +--- org.glassfish.hk2:hk2-locator:2.4.0-b10 -> 2.4.0-b22
+|    |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b22
+|    |    |    +--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b22
+|    |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b22 (*)
+|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b22 (*)
 |    |    |    \--- org.javassist:javassist:3.18.1-GA -> 3.19.0-GA
 |    |    \--- org.glassfish.hk2:osgi-resource-locator:1.0.1
-|    +--- org.glassfish.hk2:hk2-api:2.4.0-b10 -> 2.4.0-b21 (*)
-|    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b10 -> 2.4.0-b21
-|    \--- org.glassfish.hk2:hk2-locator:2.4.0-b10 -> 2.4.0-b21 (*)
+|    +--- org.glassfish.hk2:hk2-api:2.4.0-b10 -> 2.4.0-b22 (*)
+|    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b10 -> 2.4.0-b22
+|    \--- org.glassfish.hk2:hk2-locator:2.4.0-b10 -> 2.4.0-b22 (*)
 +--- org.glassfish.jersey.ext:jersey-proxy-client:2.+ -> 2.17
 |    +--- org.glassfish.jersey.core:jersey-common:2.17 (*)
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
@@ -1328,7 +1328,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.3.2 -> 2.5.3 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.3.2 -> 2.5.3 (*)
-|    \--- com.fasterxml.jackson.core:jackson-annotations:2.3.2 -> 2.5.3
+|    \--- com.fasterxml.jackson.core:jackson-annotations:2.3.2 -> 2.6.0-rc1
 \--- org.springframework:spring-test:4.+ -> 4.1.6.RELEASE
      \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 

@@ -32,6 +32,11 @@ public class HolidayctrlPK implements Serializable {
         this.country = country;
     }
 
+    public HolidayctrlPK(Timestamp holiday, String country) {
+        this.holiday = holiday;
+        this.country = country;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
