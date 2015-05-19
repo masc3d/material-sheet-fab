@@ -7,10 +7,7 @@ import com.mysema.query.types.path.EntityPathBase;
 import org.deku.leo2.central.PersistenceContext;
 import org.deku.leo2.central.data.entities.*;
 import org.deku.leo2.central.data.entities.jooq.Tables;
-import org.deku.leo2.central.data.entities.jooq.tables.records.CountryRecord;
-import org.deku.leo2.central.data.entities.jooq.tables.records.HolidayctrlRecord;
-import org.deku.leo2.central.data.entities.jooq.tables.records.RouteRecord;
-import org.deku.leo2.central.data.entities.jooq.tables.records.TbldepotlisteRecord;
+import org.deku.leo2.central.data.entities.jooq.tables.records.*;
 import org.deku.leo2.central.data.repositories.*;
 import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
 import org.jooq.Record;
@@ -101,6 +98,15 @@ public class DatabaseSync {
                 org.deku.leo2.central.data.entities.jooq.tables.Route.ROUTE.TIMESTAMP,
                 (s) -> convert(s),
                 alwaysDelete);
+
+        this.updateEntities(
+                mSectorRepository,
+                QSector.sector,
+                QSector.sector.timestamp,
+                Tables.SECTOR,
+                org.deku.leo2.central.data.entities.jooq.tables.Sector.SECTOR.TIMESTAMP,
+                (s) -> convert(s),
+                alwaysDelete);
     }
 
     /**
@@ -154,6 +160,24 @@ public class DatabaseSync {
         d.setDescription(cr.getDescription());
         d.setHoliday(cr.getHoliday());
         d.setTimestamp(cr.getTimestamp());
+
+        return d;
+    }
+
+    /**
+     * Convert mysql sector record to jpa entity
+     * @param cr
+     * @return
+     */
+    private static Sector convert(SectorRecord cr) {
+        Sector d = new Sector();
+
+        d.setProduct(cr.getProduct());
+        d.setSectorfrom(cr.getSectorfrom());
+        d.setSectorto(cr.getSectorto());
+        d.setTimestamp(cr.getTimestamp());
+        d.setValidfrom(cr.getValidfrom());
+        d.setValidto(cr.getValidto());
 
         return d;
     }

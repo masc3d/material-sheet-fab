@@ -32,6 +32,10 @@ public class HolidayctrlPK implements Serializable {
         this.country = country;
     }
 
+    public HolidayctrlPK() {
+
+    }
+
     public HolidayctrlPK(Timestamp holiday, String country) {
         this.holiday = holiday;
         this.country = country;

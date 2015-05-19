@@ -20,5 +20,9 @@ public class DatabaseSyncTest extends DataTest {
         Stopwatch sw = Stopwatch.createStarted();
         mDatabaseSync.sync();
         mLog.info(String.format("Took %s", sw.toString()));
+
+        sw = Stopwatch.createStarted();
+        mDatabaseSync.sync();
+        mLog.info(String.format("Took %s", sw.toString()));
     }
 }
