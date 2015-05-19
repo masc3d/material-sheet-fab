@@ -2,7 +2,8 @@ package org.deku.leo2.central.rest;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.glassfish.jersey.client.proxy.WebResourceFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.After;
 import org.junit.Before;
 
@@ -44,6 +45,6 @@ public class WebserviceTest {
 
 
     public <T> T getService(Class<T> c) {
-        return (T) WebResourceFactory.newResource(c, this.target);
+        return (T) ((ResteasyWebTarget)target).proxy(c);
     }
 }

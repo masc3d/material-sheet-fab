@@ -1,5 +1,6 @@
-package org.deku.leo2.central.data.repositories;
+package org.deku.leo2.central.data.repositories.jooq;
 
+import org.deku.leo2.central.PersistenceContext;
 import org.deku.leo2.central.data.entities.jooq.Tables;
 import org.deku.leo2.central.data.entities.jooq.tables.records.TbldepotlisteRecord;
 import org.jooq.DSLContext;
@@ -17,7 +18,7 @@ public class DepotJooqRepository {
     @Inject
     DSLContext mDSLContext;
 
-    @Transactional("jooq")
+    @Transactional(PersistenceContext.DB_CENTRAL)
     public List<TbldepotlisteRecord> findAll() {
         return mDSLContext.select()
                 .from(Tables.TBLDEPOTLISTE)

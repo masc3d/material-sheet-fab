@@ -1,8 +1,8 @@
-package org.deku.leo2.central.data.repositories;
+package org.deku.leo2.central.data.repositories.custom;
 
 import com.google.common.collect.Lists;
-import org.deku.leo2.central.data.entities.Depot;
-import org.deku.leo2.central.data.entities.QDepot;
+import org.deku.leo2.central.data.entities.QStation;
+import org.deku.leo2.central.data.entities.Station;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
@@ -12,31 +12,28 @@ import java.util.List;
 /**
  * Created by masc on 07.05.15.
  */
-@Named
-public class DepotRepositoryImpl implements DepotRepositoryCustom {
+public class StationRepositoryImpl implements StationRepositoryCustom {
     @Inject
-    DepotRepository mDepotRepository;
+    org.deku.leo2.central.data.repositories.StationRepository mDepotRepository;
 
-    @Transactional("jpa")
-    public List<Depot> findAll() {
+    public List<Station> findAll() {
         return Lists.newArrayList(mDepotRepository.findAll());
     }
 
-    @Transactional("jpa")
     @Override
-    public List<Depot> findWithQuery(String query) {
+    public List<Station> findWithQuery(String query) {
         query = query.trim();
 
         // QueryDSL
-        QDepot depot = QDepot.depot;
-        Iterable<Depot> depots = mDepotRepository.findAll(
-                depot.depotMatchcode.contains(query)
-                        .or(depot.firma1.contains(query))
-                        .or(depot.firma2.contains(query))
-                        .or(depot.plz.startsWith(query))
-                        .or(depot.lkz.startsWith(query))
-                        .or(depot.ort.contains(query))
-                        .or(depot.strasse.contains(query)), depot.depotMatchcode.asc());
+        QStation station = QStation.station;
+        Iterable<Station> depots = mDepotRepository.findAll(
+                station.stationNr.stringValue().contains(query)
+                        .or(station.adress1.contains(query))
+                        .or(station.adress2.contains(query))
+                        .or(station.zip.startsWith(query))
+                        .or(station.country.startsWith(query))
+                        .or(station.city.contains(query))
+                        .or(station.street.contains(query)), station.stationNr.asc());
 
         // JPQL
 //        String expStartsWith = query + "%";

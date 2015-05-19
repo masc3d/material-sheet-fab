@@ -77,7 +77,7 @@ public class PersistenceUtil {
 
     //region JPA helpers
     public interface TransactionBlock {
-        void perform(EntityManager em);
+        void perform();
     }
 
     /**
@@ -114,11 +114,11 @@ public class PersistenceUtil {
      * Transaction block wrapper
      * @param b
      */
-    public void transaction(EntityManager em, TransactionBlock b) {
+    public static void transaction(EntityManager em, TransactionBlock b) {
         EntityTransaction et = em.getTransaction();
         try {
             et.begin();
-            b.perform(em);
+            b.perform();
             et.commit();
         } finally {
             if (et.isActive())

@@ -35,6 +35,7 @@ subprojects {
             v_guava = "18.0"
             v_activemq = "5.+"
             v_javax_servlet = "3.1.0"
+            v_h2 = "1.+"
         }
     }
 

@@ -79,6 +79,7 @@ dependencies {
     // queryDSL
     compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
     compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
+    compile "com.mysema.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
 
     // jooq
     compile "org.jooq:jooq:$v_jooq"
@@ -86,6 +87,7 @@ dependencies {
     // spring
     compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
     compile "org.springframework:spring-web:$v_spring"
+    compile "org.springframework:spring-aspects:$v_spring"
 
     // JSR-330
     compile 'javax.inject:javax.inject:1'
@@ -96,22 +98,23 @@ dependencies {
 
     compile 'org.jinq:jinq-jpa:+'
 
-    // jdbc connector(s)
+    // databases
     compile 'mysql:mysql-connector-java:5.+'
+    compile "com.h2database:h2:$v_h2"
 
     // json doc
     compile 'com.wordnik:swagger-jaxrs:+'
     compile 'org.javassist:javassist:3.+'
 
+    // TODO: For testing aspectj proxies with spring
+//    compile "org.aspectj:aspectjtools:+"
+//    compile "org.aspectj:aspectjweaver:+"
+
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: '4.+'
 
-    // TODO: replace with resteasy client
     // webservice client libraries for test cases
-    testCompile "org.glassfish.jersey.core:jersey-client:$v_jersey"
-    testCompile "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey"
-    testCompile "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey"
-
+    testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
     testCompile "org.springframework:spring-test:$v_spring"
 
     testCompile project(':sx-common')
@@ -134,8 +137,6 @@ war {
 }
 
 // cargo plugin configuration
-// TODO: cargeRedployRemote may result in usable application, eg swagger.json url delivering
-// 404 NOT FOUND. investigate why.
 cargo {
     containerId = 'tomcat7x'
     port = 8080
@@ -175,7 +176,8 @@ compileJava {
         ]
     }
 }
-tasks.compileJava.dependsOn(generateJooq)
+// Generate jooq for each compilation run
+// tasks.compileJava.dependsOn(generateJooq)
 
 // Add generated sources to a separate sourceset, so IDEs can see them
 // (Adding sources to main/java instead will cause subsequent builds to fail)
@@ -199,7 +201,7 @@ jooq {
             name 'org.jooq.util.mysql.MySQLDatabase'
             inputSchema 'dekuclient'
 
-            includes 'tbldepotliste'
+            includes 'tbldepotliste|country|holidayctrl|route|sector|station'
             //excludes '.*'
 
             // masc20140916. (almost) all tables

@@ -1,19 +1,15 @@
 package org.deku.leo2.central.rest.services.v1;
 
-import com.google.common.primitives.Booleans;
 import com.google.common.primitives.Ints;
 import com.mysema.query.types.expr.BooleanExpression;
-import jdk.nashorn.internal.objects.annotations.Where;
 import org.deku.leo2.central.data.entities.*;
 import org.deku.leo2.central.data.repositories.CountryRepository;
-import org.deku.leo2.central.data.repositories.DepotRepository;
-import org.deku.leo2.central.data.repositories.HolidayctrlRepostitory;
+import org.deku.leo2.central.data.repositories.HolidayctrlRepository;
 import org.deku.leo2.central.data.repositories.RouteRepository;
 import org.deku.leo2.rest.adapters.LocalDateParam;
 import org.deku.leo2.rest.entities.v1.HolidayType;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
-import org.jooq.Case;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -21,9 +17,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.sql.Timestamp;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Created by masc on 20.04.15.
@@ -36,13 +29,10 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
     CountryRepository mCountryRepository;
 
     @Inject
-    DepotRepository mDepotRepository;
-
-    @Inject
     RouteRepository mRouteRepository;
 
     @Inject
-    HolidayctrlRepostitory mHolidayctrlRepostitory;
+    HolidayctrlRepository mHolidayctrlRepostitory;
 
     @Override
     public Routing find(LocalDateParam validForm, String country, String zip, String product) {

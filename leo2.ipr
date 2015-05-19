@@ -34,11 +34,8 @@
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-spring:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.3" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.3" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" />
             <element id="library" level="project" name="Gradle: org.jooq:jooq:3.6.1" />
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
@@ -53,16 +50,10 @@
             <element id="library" level="project" name="Gradle: commons-io:commons-io:2.1" />
             <element id="library" level="project" name="Gradle: net.jcip:jcip-annotations:1.0" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.5.3" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.5.3" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
             <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
             <element id="library" level="project" name="Gradle: org.glassfish:javax.json:1.0.4" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.3" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.3" />
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-commons:1.10.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-orm:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-context:4.1.6.RELEASE" />
@@ -148,6 +139,20 @@
             <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-servlet:9.3.0.RC0" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-tree:5.0.1" />
             <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-hpack:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: com.h2database:h2:1.4.187" />
+            <element id="library" level="project" name="Gradle: org.aspectj:aspectjweaver:1.8.5" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-aspects:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-collections:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -188,11 +193,8 @@
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-spring:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.3" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.3" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" />
             <element id="library" level="project" name="Gradle: org.jooq:jooq:3.6.1" />
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
@@ -207,16 +209,10 @@
             <element id="library" level="project" name="Gradle: commons-io:commons-io:2.1" />
             <element id="library" level="project" name="Gradle: net.jcip:jcip-annotations:1.0" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.5.3" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.5.3" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.5.3" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
             <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
             <element id="library" level="project" name="Gradle: org.glassfish:javax.json:1.0.4" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.3" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.3" />
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-commons:1.10.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-orm:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-context:4.1.6.RELEASE" />
@@ -302,6 +298,20 @@
             <element id="library" level="project" name="Gradle: org.eclipse.jetty:jetty-servlet:9.3.0.RC0" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-tree:5.0.1" />
             <element id="library" level="project" name="Gradle: org.eclipse.jetty.http2:http2-hpack:9.3.0.RC0" />
+            <element id="library" level="project" name="Gradle: com.h2database:h2:1.4.187" />
+            <element id="library" level="project" name="Gradle: org.aspectj:aspectjweaver:1.8.5" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-aspects:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-collections:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -327,7 +337,7 @@
     </annotationProcessing>
   </component>
   <component name="CopyrightManager" default="" />
-  <component name="DataSourceManagerImpl" format="xml" hash="388637605">
+  <component name="DataSourceManagerImpl" format="xml" hash="3233516734">
     <data-source source="LOCAL" name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
@@ -341,6 +351,17 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
       <libraries />
+    </data-source>
+    <data-source source="LOCAL" name="H2 - leo2" uuid="1de09889-d65d-4040-a468-aae8aac0749f">
+      <driver-ref>h2.embedded</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:file:$USER_HOME$/.leo2/db/leo2</jdbc-url>
+      <libraries>
+        <library>
+          <url>file://$USER_HOME$/Java/h2/bin/h2-1.4.181.jar</url>
+        </library>
+      </libraries>
     </data-source>
   </component>
   <component name="DatabaseColorSettings">
@@ -631,6 +652,7 @@
     <data-source name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
       <user-name>leo2</user-name>
     </data-source>
+    <data-source name="H2 - leo2" uuid="1de09889-d65d-4040-a468-aae8aac0749f" />
   </component>
   <component name="libraryTable">
     <library name="Gradle: aopalliance:aopalliance:1.0">
@@ -651,31 +673,31 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.dooapp.fxform2/core/8.0.9/14e26ffb231cde5bff8f820dd9eebab544df8666/core-8.0.9-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.5.3">
+    <library name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.5.3/ade455ede4797ed450ca6a56e589a81278fc8f45/jackson-annotations-2.5.3.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.6.0-rc1/e5f725720a9a42188d8d6bb659684df2a92f9fb5/jackson-annotations-2.6.0-rc1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.5.3/cc69565d3e73cb656abda60cdf1288f15c5623af/jackson-annotations-2.5.3-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.6.0-rc1/6a89e11dcc0dcd748706ea6963edcc021783c436/jackson-annotations-2.6.0-rc1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: com.fasterxml.jackson.core:jackson-core:2.5.3">
+    <library name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.5.3/a8b8a6dfc8a17890e4c7ff8aed810763d265b68b/jackson-core-2.5.3.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.6.0-rc1/6e29e44f37e7cc2e14b7de4c715208d9dc8791eb/jackson-core-2.6.0-rc1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.5.3/8bfff00c810764fd4e0fc78959b45f8734dd0c3e/jackson-core-2.5.3-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.6.0-rc1/a3a5665bbd0ae77e838ecce399b338a9d2824217/jackson-core-2.6.0-rc1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.5.3">
+    <library name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.5.3/c37875ff66127d93e5f672708cb2dcc14c8232ab/jackson-databind-2.5.3.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.6.0-rc1/31c8f012de757a5b17dcbf85c4c30752e6fcee03/jackson-databind-2.6.0-rc1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.5.3/f547023ac7ea86457b61505e03ff320811529805/jackson-databind-2.5.3-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.6.0-rc1/32cfca9935b2a2deaac4a7b54f3c201abe1264f2/jackson-databind-2.6.0-rc1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2">
@@ -705,13 +727,13 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.datatype/jackson-datatype-joda/2.4.2/b06e486a7093fdf4a855555b4003b055308326d2/jackson-datatype-joda-2.4.2-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.3">
+    <library name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0-rc1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.5.3/5af5eed714d62303796210919e8a1dee3ea83d8c/jackson-datatype-jsr310-2.5.3.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.6.0-rc1/e9d9f2a5802429103e6881a8c08c0be6ab67732d/jackson-datatype-jsr310-2.6.0-rc1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.5.3/dfc97a5f5ec322b5bedbdc66cfa1b24453f46379/jackson-datatype-jsr310-2.5.3-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.6.0-rc1/5432cd115232e9e17e38551a91a844a10e23f433/jackson-datatype-jsr310-2.6.0-rc1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3">
@@ -732,13 +754,13 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.5.3/694045ee2cc180041499e08b266b43578b707421/jackson-jaxrs-json-provider-2.5.3-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3">
+    <library name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.5.3/211d962203090af363b74b0aaa5f5a1e2ca9dbb6/jackson-module-jaxb-annotations-2.5.3.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.6.0-rc1/cd4accc5e76c46a941e8edbc3d6006416b55fa61/jackson-module-jaxb-annotations-2.6.0-rc1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.5.3/9c1ddb10f13b3ef388d9e04b21173eba9b645da4/jackson-module-jaxb-annotations-2.5.3-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.6.0-rc1/d72ab83a55d75e0957fe7d2c30c88c6203d82f8c/jackson-module-jaxb-annotations-2.6.0-rc1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: com.fasterxml:classmate:1.0.0">
@@ -773,6 +795,15 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/18.0/ad97fe8faaf01a3d3faacecd58e8fa6e78a973ca/guava-18.0-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: com.h2database:h2:1.4.187">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.h2database/h2/1.4.187/f6b109788d196430458309ea28ce9a77830b3ed8/h2-1.4.187.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.h2database/h2/1.4.187/114e3a6308979495549185e88abfab964381df07/h2-1.4.187-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: com.infradna.tool:bridge-method-annotation:1.13">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.infradna.tool/bridge-method-annotation/1.13/18cdce50cde6f54ee5390d0907384f72183ff0fe/bridge-method-annotation-1.13.jar!/" />
@@ -800,6 +831,15 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mysema.commons/mysema-commons-lang/0.2.4/a2e4c718987af95c88ebfd37c18f2aad55712fdc/mysema-commons-lang-0.2.4-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mysema.querydsl/querydsl-apt/3.6.3/7454429ad27e24eaf3f9a2908aab47bd8913f72b/querydsl-apt-3.6.3.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mysema.querydsl/querydsl-apt/3.6.3/5c4ece85d4ac893980ae8051c8f80af5270d1660/querydsl-apt-3.6.3-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa">
       <CLASSES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mysema.querydsl/querydsl-apt/3.6.3/f88692f4272d70d91ab4aab50983e61715ebfa11/querydsl-apt-3.6.3-jpa.jar!/" />
@@ -816,6 +856,15 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mysema.querydsl/querydsl-codegen/3.6.3/c677d5d6864c1a996757245b1178c8e8c5d3ed7e/querydsl-codegen-3.6.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.mysema.querydsl:querydsl-collections:3.6.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mysema.querydsl/querydsl-collections/3.6.3/a7562f98050c598110e1d0a0248445808a067ec5/querydsl-collections-3.6.3.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.mysema.querydsl/querydsl-collections/3.6.3/d70f4286b0f9cf38df8b05140648708dcf2f3694/querydsl-collections-3.6.3-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: com.mysema.querydsl:querydsl-core:3.6.3">
@@ -1260,6 +1309,15 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.aspectj/aspectjrt/1.8.5/7500c952e086db06028c248cf0de0a0f5fe55275/aspectjrt-1.8.5-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.aspectj:aspectjweaver:1.8.5">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.aspectj/aspectjweaver/1.8.5/6004670a8cbcbe794d73ad00106779561ad1b180/aspectjweaver-1.8.5.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.aspectj/aspectjweaver/1.8.5/f7a7b1dfc6a9f208f271252ca9592c252de36238/aspectjweaver-1.8.5-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.codehaus.jettison:jettison:1.3.2">
@@ -1721,49 +1779,49 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.grizzly/grizzly-http/2.3.16/af2dab550f5ae43928b62d969fb22feb807113d0/grizzly-http-2.3.16-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b21">
+    <library name="Gradle: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b22">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b21/3cf31a8d2b27029a8f6a8b0b443dcc3f908019f2/aopalliance-repackaged-2.4.0-b21.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b22/1794b7bd12b9fd1ac3b62f8e3402e513aef92b7d/aopalliance-repackaged-2.4.0-b22.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b21/be4ca5058553c4b2756828b5e583e44708d75f5d/aopalliance-repackaged-2.4.0-b21-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/aopalliance-repackaged/2.4.0-b22/d1daba8dfe61da6327115f8afdd766ddf3a71769/aopalliance-repackaged-2.4.0-b22-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b21">
+    <library name="Gradle: org.glassfish.hk2.external:javax.inject:2.4.0-b22">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b21/51a7e40423630aecbcbc36156b36794f94f200a4/javax.inject-2.4.0-b21.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b22/3bc6aa3a8fffde34cc9e7d6bc1e0e9443a1b6e0e/javax.inject-2.4.0-b22.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b21/d36840b8acc2725525e5911636abbac81ca2dce7/javax.inject-2.4.0-b21-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2.external/javax.inject/2.4.0-b22/6a2c415dd33428c858110a2aded913c83ed20254/javax.inject-2.4.0-b22-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b21">
+    <library name="Gradle: org.glassfish.hk2:hk2-api:2.4.0-b22">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b21/2772b36ad5b6de2494638b9884c0ede8108f3256/hk2-api-2.4.0-b21.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b22/732437aaf793337932b9c8150868356190820a47/hk2-api-2.4.0-b22.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b21/56ceb501432f39e67a5b5fcdbf9fa2248dfc5dd3/hk2-api-2.4.0-b21-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-api/2.4.0-b22/8798126a2c41be771bb0906782069a2905e06b83/hk2-api-2.4.0-b22-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b21">
+    <library name="Gradle: org.glassfish.hk2:hk2-locator:2.4.0-b22">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b21/89182b5d16e14e32e4b4b4803125077160585bf9/hk2-locator-2.4.0-b21.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b22/77e1f0893fbea2c756b8f3a8542b154498479c11/hk2-locator-2.4.0-b22.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b21/aee87c97da4f9d83728c0cc56d4a41adf395154b/hk2-locator-2.4.0-b21-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-locator/2.4.0-b22/9d96d282b396994e0e2e323bac50548fd703e994/hk2-locator-2.4.0-b22-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b21">
+    <library name="Gradle: org.glassfish.hk2:hk2-utils:2.4.0-b22">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b21/4d1fec231e880fd9612ff806194314a6338037e4/hk2-utils-2.4.0-b21.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b22/961fe615455ff73483df367d445367b8a0f8ef8e/hk2-utils-2.4.0-b22.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b21/e6204be7f026ce9805274ae928f4a1d9e1aff0d8/hk2-utils-2.4.0-b21-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.glassfish.hk2/hk2-utils/2.4.0-b22/18c8d87ffc7940cf6b82f0db21b97b7e5ae2d0b8/hk2-utils-2.4.0-b22-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.glassfish.hk2:osgi-resource-locator:1.0.1">
@@ -1935,6 +1993,15 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.resteasy/jaxrs-api/3.0.11.Final/a1cc6b5284293b77a2f0d0ea41832a8964ddfcc8/jaxrs-api-3.0.11.Final-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.jboss.resteasy:resteasy-client:3.0.11.Final">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.resteasy/resteasy-client/3.0.11.Final/6f34f38fcd208ccb4fb594b7d6c4fdd88039cc72/resteasy-client-3.0.11.Final.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.resteasy/resteasy-client/3.0.11.Final/3c2564e18d0d09eafe6cee6211b932125f11d95/resteasy-client-3.0.11.Final-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final">
@@ -2124,6 +2191,15 @@
       <JAVADOC />
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-aop/4.1.6.RELEASE/b27f6ddfa82527ab2be92b11d3e1c50b6e7993e9/spring-aop-4.1.6.RELEASE-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.springframework:spring-aspects:4.1.6.RELEASE">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-aspects/4.1.6.RELEASE/4667823d6133f9543f12e58ddb6747ee4e4d42a5/spring-aspects-4.1.6.RELEASE.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-aspects/4.1.6.RELEASE/e6ea24553dde466f4f62139ec2bc1c90711100b2/spring-aspects-4.1.6.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.springframework:spring-beans:4.1.6.RELEASE">

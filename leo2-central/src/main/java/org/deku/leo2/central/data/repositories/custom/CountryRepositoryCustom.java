@@ -1,4 +1,4 @@
-package org.deku.leo2.central.data.repositories;
+package org.deku.leo2.central.data.repositories.custom;
 
 import org.deku.leo2.central.data.entities.Country;
 

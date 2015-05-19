@@ -6,25 +6,34 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.io.ClassPathResource;
 import sx.Disposable;
+import sx.LazyInstance;
 
-import java.net.URL;
+import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by masc on 30.07.14.
  */
 public class Main implements Disposable, ApplicationContextAware {
-    private volatile static Main mInstance = null;
+    private static LazyInstance<AtomicReference<Main>> mInstance
+            = new LazyInstance<>(() -> new AtomicReference(new Main()));
 
+    private LazyInstance<File> mLocalHomeDirectory;
+
+    /**
+     * Singleton instance
+     * @return
+     */
     public static Main instance() {
-        if (mInstance == null) {
-            synchronized (Main.class) {
-                mInstance = new Main();
-            }
-        }
-        return mInstance;
+        return mInstance.get().get();
+    }
+
+    private Main() {
+        // Spring application context
+        // mContext = new AnnotationConfigApplicationContext(Main.class.getPackage().getName());
+
+        mLocalHomeDirectory = new LazyInstance<>( () ->  new File(System.getProperty("user.home"), ".leo2"));
     }
 
     /**
@@ -36,14 +45,13 @@ public class Main implements Disposable, ApplicationContextAware {
         return mContext;
     }
 
-    private Main() {
-        // Spring application context
-        mContext = new AnnotationConfigApplicationContext(Main.class.getPackage().getName());
-    }
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         mContext = (ConfigurableApplicationContext)applicationContext;
+    }
+
+    public File getLocalHomeDirectory() {
+        return mLocalHomeDirectory.get();
     }
 
     /**

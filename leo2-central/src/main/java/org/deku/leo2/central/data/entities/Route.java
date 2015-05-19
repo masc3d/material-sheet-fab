@@ -8,8 +8,8 @@ import java.sql.Timestamp;
  * Created by JT on 11.05.15.
  */
 @Entity
-@Table(name = "route")
 @IdClass(RoutePK.class)
+@Table(name = "route", indexes = @Index(columnList = "timestamp"))
 public class Route {
     private String product;
     private String lkz;

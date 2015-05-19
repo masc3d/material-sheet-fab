@@ -1,10 +1,13 @@
 package org.deku.leo2.central;
 
-import org.apache.log4j.BasicConfigurator;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.deku.leo2.central.data.DatabaseSync;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.inject.Named;
 import javax.servlet.ServletContextEvent;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 /**
@@ -12,8 +15,6 @@ import java.util.logging.Logger;
  */
 @Named
 public class ServletContextListener implements javax.servlet.ServletContextListener {
-    ConfigurableApplicationContext mContext;
-
     Logger mLog = Logger.getLogger(ServletContextListener.class.getName());
 
     @Override
@@ -22,6 +23,15 @@ public class ServletContextListener implements javax.servlet.ServletContextListe
 
         // Log4j logging (to make resteasy log entries visible, needs refinement)
         // BasicConfigurator.configure();
+        ApplicationContext ac = WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
+
+        // Trigger database sync
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
+            DatabaseSync sync = ac.getBean(DatabaseSync.class);
+            sync.sync();
+        });
+        exec.shutdown();
     }
 
     @Override

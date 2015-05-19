@@ -6,6 +6,7 @@ import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -23,167 +24,204 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
+import java.io.File;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Created by masc on 28.08.14.
  */
-@Configuration
-@EnableJpaRepositories
-@EnableTransactionManagement
-public class PersistenceContext implements DisposableBean {
+public class PersistenceContext {
     private Logger mLog = Logger.getLogger(PersistenceContext.class.getName());
 
-    private boolean mShowSql = false;
+    public static final String DB_EMBEDDED = "db_embedded";
+    public static final String DB_CENTRAL = "db_central";
 
-    //region Spring inline persistence/unit configuration
+    /**
+     * Central database persistence context
+     */
+    @Configuration
+    //@EnableTransactionManagement(proxyTargetClass = true)
+    public static class Central implements DisposableBean {
+        private Logger mLog = Logger.getLogger(PersistenceContext.Central.class.getName());
 
-    @Inject
-    @Qualifier("dekuclient")
-    private AbstractDataSource mDataSourceDekuclient;
+        @Inject
+        @Qualifier(DB_CENTRAL)
+        private AbstractDataSource mDataSource;
 
-    @Inject
-    @Qualifier("leo2factory")
-    private AbstractDataSource mDataSourceLeo2factory;
+        @Bean
+        @Lazy
+        @Qualifier(DB_CENTRAL)
+        public AbstractDataSource dataSourceCentral() {
+            DriverManagerDataSource dataSource = new DriverManagerDataSource();
+            dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+            dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/dekuclient");
+            dataSource.setUsername("leo2");
+            dataSource.setPassword("leo2");
 
-    @Bean
-    @Lazy
-    @Qualifier("dekuclient")
-    public AbstractDataSource dataSourceDekuclient() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/dekuclient");
-        dataSource.setUsername("leo2");
-        dataSource.setPassword("leo2");
+            Properties dataSourceProperties = new Properties();
+            dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
+            dataSourceProperties.setProperty("connectTimeout", "1000");
+            dataSource.setConnectionProperties(dataSourceProperties);
 
-        Properties dataSourceProperties = new Properties();
-        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
-        dataSourceProperties.setProperty("connectTimeout", "1000");
-        dataSource.setConnectionProperties(dataSourceProperties);
-
-        return dataSource;
-    }
-
-    @Bean
-    @Lazy
-    @Qualifier("leo2factory")
-    public AbstractDataSource dataSourceLeo2factory() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/dekuclient");
-        dataSource.setUsername("leo2");
-        dataSource.setPassword("leo2");
-
-        Properties dataSourceProperties = new Properties();
-        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
-        dataSourceProperties.setProperty("connectTimeout", "1000");
-        dataSource.setConnectionProperties(dataSourceProperties);
-
-        return dataSource;
-    }
-
-    //region JPA
-    @Bean
-    @Qualifier("jpa")
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(emf);
-        transactionManager.setDataSource(mDataSourceLeo2factory);
-
-        return transactionManager;
-    }
-
-    @Lazy
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        // TODO. more robust behaviour when database is down.
-        // eg. webservice fails when database is unreachable (on startup eg.)
-        // more tests required referring to db outages during runtime
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(mDataSourceLeo2factory);
-        em.setPackagesToScan(new String[]{
-                "org.deku.leo2.central.data.entities"
-        });
-
-        JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
-
-        Properties eclipseLinkProperties = new Properties();
-        eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true");
-        eclipseLinkProperties.setProperty("eclipselink.weaving", "false");
-        if (mShowSql) {
-          // Show SQL
-          eclipseLinkProperties.setProperty("eclipselink.logging.level.sql", "FINE");
-          eclipseLinkProperties.setProperty("eclipselink.logging.parameters", "true");
+            return dataSource;
         }
 
-        em.setJpaProperties(eclipseLinkProperties);
+        @Inject
+        private TransactionAwareDataSourceProxy mJooqTransactionAwareDataSource;
 
-        return em;
-    }
-    //endregion
+        @Inject
+        private DataSourceConnectionProvider mJooqConnectionProvider;
 
-    //region JOOQ
-    @Inject
-    private TransactionAwareDataSourceProxy mJooqTransactionAwareDataSource;
+        @Bean
+        public TransactionAwareDataSourceProxy jooqTransactionAwareDataSourceProxy() {
+            return new TransactionAwareDataSourceProxy(mDataSource);
+        }
 
-    @Inject
-    private DataSourceConnectionProvider mJooqConnectionProvider;
+        @Bean
+        @Qualifier(DB_CENTRAL)
+        public DataSourceTransactionManager jooqTransactionManager() {
+            return new DataSourceTransactionManager(mDataSource);
+        }
 
-    @Bean
-    public TransactionAwareDataSourceProxy jooqTransactionAwareDataSourceProxy() {
-        return new TransactionAwareDataSourceProxy(mDataSourceDekuclient);
-    }
+        @Bean
+        public DataSourceConnectionProvider jooqConnectionProvider() {
+            return new DataSourceConnectionProvider(mJooqTransactionAwareDataSource);
+        }
 
-    @Bean
-    @Qualifier("jooq")
-    public DataSourceTransactionManager jooqTransactionManager() {
-        return new DataSourceTransactionManager(mDataSourceDekuclient);
-    }
+        @Bean
+        public DefaultDSLContext dslContext() {
+            return new DefaultDSLContext(mJooqConnectionProvider, SQLDialect.MYSQL);
+        }
 
-    @Bean
-    public DataSourceConnectionProvider jooqConnectionProvider() {
-        return new DataSourceConnectionProvider(mJooqTransactionAwareDataSource);
-    }
+        @Override
+        public void destroy() throws Exception {
+            mLog.info("Cleaning up persistence context");
 
-    @Bean
-    public DefaultDSLContext dslContext() {
-        return new DefaultDSLContext(mJooqConnectionProvider, SQLDialect.MYSQL);
-    }
-    //endregion
+            // Close all JDBC drivers
+            Enumeration<Driver> drivers = DriverManager.getDrivers();
+            Driver d = null;
+            while (drivers.hasMoreElements()) {
+                try {
+                    d = drivers.nextElement();
+                    DriverManager.deregisterDriver(d);
+                    mLog.info(String.format("Driver %s deregistered", d));
+                }
+                catch (SQLException ex) {
+                    mLog.log(Level.SEVERE, String.format("Error deregistering driver %s", d), ex);
+                }
+            }
 
-    @Override
-    public void destroy() throws Exception {
-        mLog.info("Cleaning up persistence context");
-
-        // Close all JDBC drivers
-        Enumeration<Driver> drivers = DriverManager.getDrivers();
-        Driver d = null;
-        while (drivers.hasMoreElements()) {
+            // Close mysql connection cleanup thread
             try {
-                d = drivers.nextElement();
-                DriverManager.deregisterDriver(d);
-                mLog.info(String.format("Driver %s deregistered", d));
+                AbandonedConnectionCleanupThread.shutdown();
             }
-            catch (SQLException ex) {
-                mLog.log(Level.SEVERE, String.format("Error deregistering driver %s", d), ex);
+            catch (InterruptedException e) {
+                mLog.log(Level.SEVERE, e.getMessage(), e);
             }
+        }
+    }
+
+    /**
+     * Embedded database persistence context
+     */
+    @Configuration
+    @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = false)
+    @EnableJpaRepositories(considerNestedRepositories = true)
+    public static class Embedded implements DisposableBean /*, TransactionManagementConfigurer*/ {
+        private Logger mLog = Logger.getLogger(PersistenceContext.Embedded.class.getName());
+
+        private boolean mShowSql = false;
+
+        @Inject
+        @Qualifier(DB_EMBEDDED)
+        private AbstractDataSource mDataSource;
+
+        @Bean
+        @Lazy
+        @Qualifier(DB_EMBEDDED)
+        public AbstractDataSource dataSource() {
+            DriverManagerDataSource dataSource = new DriverManagerDataSource();
+
+            File dbPath = new File(Main.instance().getLocalHomeDirectory(), "db/leo2");
+
+            dataSource.setDriverClassName("org.h2.Driver");
+            dataSource.setUrl("jdbc:h2:file:" + dbPath.toString());
+
+            Properties dataSourceProperties = new Properties();
+            dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
+            dataSourceProperties.setProperty("connectTimeout", "1000");
+            dataSource.setConnectionProperties(dataSourceProperties);
+
+            return dataSource;
         }
 
-        // Close mysql connection cleanup thread
-        try {
-            AbandonedConnectionCleanupThread.shutdown();
+        //region JPA
+        @Bean
+        @Qualifier(DB_EMBEDDED)
+        public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+            JpaTransactionManager transactionManager = new JpaTransactionManager();
+            transactionManager.setEntityManagerFactory(emf);
+            transactionManager.setDataSource(dataSource());
+
+            return transactionManager;
         }
-        catch (InterruptedException e) {
-            mLog.log(Level.SEVERE, e.getMessage(), e);
+
+        @Lazy
+        @Bean
+        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+            // TODO. more robust behaviour when database is down.
+            // eg. webservice fails when database is unreachable (on startup eg.)
+            // more tests required referring to db outages during runtime
+            LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+            em.setDataSource(dataSource());
+            em.setPackagesToScan(new String[]{
+                    "org.deku.leo2.central.data.entities"
+            });
+
+            JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
+            em.setJpaVendorAdapter(vendorAdapter);
+
+            Properties eclipseLinkProperties = new Properties();
+            eclipseLinkProperties.setProperty("javax.persistence.schema-generation.database.action", "create");
+            eclipseLinkProperties.setProperty("javax.persistence.schema-generation.create-database-schemas", "true");
+            eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true");
+            eclipseLinkProperties.setProperty("eclipselink.weaving", "false");
+            eclipseLinkProperties.setProperty("eclipselink.target-database", "org.eclipse.persistence.platform.database.H2Platform");
+            eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc");
+
+
+            if (mShowSql) {
+                // Show SQL
+                eclipseLinkProperties.setProperty("eclipselink.logging.level.sql", "FINE");
+                eclipseLinkProperties.setProperty("eclipselink.logging.parameters", "true");
+            }
+
+            em.setJpaProperties(eclipseLinkProperties);
+
+            return em;
         }
+        //endregion
+
+        @Override
+        public void destroy() throws Exception {
+
+        }
+
+//        @Override
+//        public PlatformTransactionManager annotationDrivenTransactionManager() {
+//            return transactionManger(entityManagerFactory().getObject());
+//        }
+
+//        @Override
+//        public PlatformTransactionManager annotationDrivenTransactionManager() {
+//            return null;
+//        }
     }
 
 //    @Aspect

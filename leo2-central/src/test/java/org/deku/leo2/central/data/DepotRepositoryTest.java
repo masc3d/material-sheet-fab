@@ -1,7 +1,7 @@
 package org.deku.leo2.central.data;
 
-import org.deku.leo2.central.data.entities.Depot;
-import org.deku.leo2.central.data.repositories.DepotRepository;
+import org.deku.leo2.central.data.entities.Station;
+import org.deku.leo2.central.data.repositories.StationRepository;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -11,11 +11,11 @@ import javax.inject.Inject;
  */
 public class DepotRepositoryTest extends DataTest {
     @Inject
-    DepotRepository mDepotRepository;
+    StationRepository mStationRepository;
 
     @Test
     public void test() {
-        for (Depot d : mDepotRepository.findAll()) {
+        for (Station d : mStationRepository.findAll()) {
             System.out.println(d);
         }
     }

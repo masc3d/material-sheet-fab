@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="dataSourceStorage">
   <data-source name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
-    <database-info product="MySQL" version="5.5.43-0ubuntu0.14.04.1" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
+    <database-info product="MySQL" version="5.5.43-0ubuntu0.14.04.1" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.31 ( Revision: alexander.soklakov@oracle.com-20140520065950-groqzzbvxprqdmnz )">
       <extra-name-characters>#@</extra-name-characters>
       <identifier-quote-string>`</identifier-quote-string>
     </database-info>
     <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact"/>
     <schema name="" catalog="dekuclient"/>
     <schema name="" catalog="information_schema"/>
-    <schema name="" catalog="leo2factory"/>
     <table name="adminbenutzer" schema="" catalog="dekuclient" type="TABLE">
       <column name="BenutzerID" sqlType="INT UNSIGNED" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
       <column name="sName" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
@@ -1489,6 +1488,17 @@
       <column name="StartUntGleich" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
       <primary-key name="PRIMARY" columns="id"/>
     </table>
+    <table name="country" schema="" catalog="dekuclient" type="TABLE">
+      <column name="LKZ" sqlType="CHAR" precision="2" scale="0" nullable="false" jdbcType="1" def="Jyc="/>
+      <column name="LNAME" sqlType="VARCHAR" precision="50" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
+      <column name="Timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="false" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
+      <column name="RoutingTyp" sqlType="INT UNSIGNED" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
+      <column name="MinLen" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="MaxLen" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="ZipFormat" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="LKZ"/>
+      <index name="LNAME" unique="true" columns="LNAME"/>
+    </table>
     <table name="erkontrolle" schema="" catalog="dekuclient" type="TABLE">
       <column name="ID" sqlType="DOUBLE" precision="22" scale="0" nullable="false" jdbcType="8" def="MA=="/>
       <column name="tTimestamp" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
@@ -1497,6 +1507,14 @@
       <column name="Auftragnehmer" sqlType="VARCHAR" precision="20" scale="0" nullable="true" jdbcType="12"/>
       <column name="ReNr" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="ID"/>
+    </table>
+    <table name="holidayctrl" schema="" catalog="dekuclient" type="TABLE">
+      <column name="Holiday" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93" def="JzAwMDAtMDAtMDAgMDA6MDA6MDAn"/>
+      <column name="CtrlPos" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
+      <column name="Country" sqlType="CHAR" precision="2" scale="0" nullable="false" jdbcType="1" def="Jyc="/>
+      <column name="Description" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="false" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
+      <primary-key name="PRIMARY" columns="Holiday,Country"/>
     </table>
     <table name="hubdepotliste" schema="" catalog="dekuclient" type="TABLE">
       <column name="DepotNr" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
@@ -3460,6 +3478,28 @@
       <index name="mtime" unique="false" columns="mtime"/>
       <index name="tdiff" unique="false" columns="tdiff"/>
     </table>
+    <table name="route" schema="" catalog="dekuclient" type="TABLE">
+      <column name="product" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
+      <column name="lkz" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
+      <column name="zip" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
+      <column name="validfrom" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="validto" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="false" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
+      <column name="station" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="sector" sqlType="VARCHAR" precision="5" scale="0" nullable="true" jdbcType="12"/>
+      <column name="area" sqlType="VARCHAR" precision="5" scale="0" nullable="true" jdbcType="12"/>
+      <column name="etod" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
+      <column name="ltop" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
+      <column name="transittime" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="ltodsa" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
+      <column name="ltodholiday" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
+      <column name="island" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="etod2" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
+      <column name="ltop2" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
+      <column name="holidayctrl" sqlType="VARCHAR" precision="20" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="product,lkz,zip,validfrom"/>
+      <index name="idx_route_timestamp" unique="false" columns="timestamp"/>
+    </table>
     <table name="scaerror" schema="" catalog="dekuclient" type="TABLE">
       <column name="id" sqlType="INT UNSIGNED" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <column name="errorNr" sqlType="INT UNSIGNED" precision="10" scale="0" nullable="true" jdbcType="4"/>
@@ -3775,6 +3815,16 @@
       <column name="txt" sqlType="TEXT" precision="65535" scale="0" nullable="true" jdbcType="-1"/>
       <primary-key name="PRIMARY" columns="ID"/>
     </table>
+    <table name="sector" schema="" catalog="dekuclient" type="TABLE">
+      <column name="product" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
+      <column name="sectorfrom" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
+      <column name="sectorto" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
+      <column name="validfrom" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
+      <column name="validto" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="via" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
+      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="false" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
+      <primary-key name="PRIMARY" columns="product,sectorfrom,sectorto,validfrom"/>
+    </table>
     <table name="sso_check" schema="" catalog="dekuclient" type="TABLE">
       <column name="id" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <column name="CollieBelegNr" sqlType="VARCHAR" precision="15" scale="0" nullable="true" jdbcType="12"/>
@@ -3857,6 +3907,44 @@
       <column name="gedruckt" sqlType="DOUBLE" precision="22" scale="0" nullable="true" jdbcType="8"/>
       <primary-key name="PRIMARY" columns="ID"/>
       <index name="sacknummer" unique="false" columns="sacknummer"/>
+    </table>
+    <table name="station" schema="" catalog="dekuclient" type="TABLE">
+      <column name="StationID" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
+      <column name="Adress1" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="Adress2" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="Country" sqlType="VARCHAR" precision="2" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ZIP" sqlType="VARCHAR" precision="8" scale="0" nullable="true" jdbcType="12"/>
+      <column name="City" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="Street" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="HouseNr" sqlType="VARCHAR" precision="10" scale="0" nullable="true" jdbcType="12"/>
+      <column name="Phone1" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="Phone2" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="Telefax" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="Mobile" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ServicePhone1" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ServicePhone2" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ContactPerson1" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ContactPerson2" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="Email" sqlType="VARCHAR" precision="100" scale="0" nullable="true" jdbcType="12"/>
+      <column name="Webadress" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="StationNr" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="Strang" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="poslong" sqlType="DOUBLE" precision="22" scale="0" nullable="true" jdbcType="8"/>
+      <column name="poslat" sqlType="DOUBLE" precision="22" scale="0" nullable="true" jdbcType="8"/>
+      <column name="Sector" sqlType="VARCHAR" precision="5" scale="0" nullable="true" jdbcType="12"/>
+      <column name="UStId" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BillingAdress1" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BillingAdress2" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BillingCountry" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BillingZip" sqlType="VARCHAR" precision="8" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BillingCity" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BillingStreet" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BillingHouseNr" sqlType="VARCHAR" precision="10" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="StationID"/>
+      <index name="DepotMatchcode" unique="true" columns="StationID"/>
+      <index name="DepotTree" unique="true" columns="StationID"/>
+      <index name="LKZ" unique="true" columns="Country,ZIP,City,StationID"/>
+      <index name="Strang" unique="false" columns="Strang"/>
     </table>
     <table name="tbl_auftrag_info" schema="" catalog="dekuclient" type="TABLE">
       <column name="id" sqlType="DOUBLE" precision="22" scale="0" nullable="false" jdbcType="8" autoIncrement="true"/>
@@ -9684,93 +9772,411 @@
       <column name="CHARACTER_SET_CLIENT" sqlType="VARCHAR" precision="32" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
       <column name="COLLATION_CONNECTION" sqlType="VARCHAR" precision="32" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
     </table>
-    <table name="country" schema="" catalog="leo2factory" type="TABLE">
-      <column name="LKZ" sqlType="CHAR" precision="2" scale="0" nullable="false" jdbcType="1" def="Jyc="/>
-      <column name="LNAME" sqlType="VARCHAR" precision="50" scale="0" nullable="false" jdbcType="12" def="Jyc="/>
-      <column name="Timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="false" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
-      <column name="RoutingTyp" sqlType="INT UNSIGNED" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
-      <column name="MinLen" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
-      <column name="MaxLen" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
-      <column name="ZipFormat" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
-      <primary-key name="PRIMARY" columns="LKZ"/>
-      <index name="LNAME" unique="true" columns="LNAME"/>
+  </data-source>
+  <data-source name="H2 - leo2" uuid="1de09889-d65d-4040-a468-aae8aac0749f">
+    <database-info product="H2" version="1.4.181 (2014-08-06)" jdbc-version="4.0" driver-name="H2 JDBC Driver" driver-version="1.4.181 (2014-08-06)">
+      <identifier-quote-string>&quot;</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="upper" quoted-identifiers="exact"/>
+    <schema name="INFORMATION_SCHEMA" catalog="LEO2"/>
+    <schema name="PUBLIC" catalog="LEO2"/>
+    <table name="CATALOGS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="CATALOG_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
     </table>
-    <table name="holidayctrl" schema="" catalog="leo2factory" type="TABLE">
-      <column name="Holiday" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93" def="JzAwMDAtMDAtMDAgMDA6MDA6MDAn"/>
-      <column name="CtrlPos" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
-      <column name="Country" sqlType="CHAR" precision="2" scale="0" nullable="false" jdbcType="1" def="Jyc="/>
-      <column name="Description" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
-      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="false" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
-      <primary-key name="PRIMARY" columns="Holiday,Country"/>
+    <table name="COLLATIONS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="KEY" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
     </table>
-    <table name="route" schema="" catalog="leo2factory" type="TABLE">
-      <column name="product" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
-      <column name="lkz" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
-      <column name="zip" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
-      <column name="validfrom" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
-      <column name="validto" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
-      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="false" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
-      <column name="station" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
-      <column name="sector" sqlType="VARCHAR" precision="5" scale="0" nullable="true" jdbcType="12"/>
-      <column name="area" sqlType="VARCHAR" precision="5" scale="0" nullable="true" jdbcType="12"/>
-      <column name="etod" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
-      <column name="ltop" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
-      <column name="transittime" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
-      <column name="ltodsa" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
-      <column name="ltodholiday" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
-      <column name="island" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
-      <column name="etod2" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
-      <column name="ltop2" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
-      <column name="holidayctrl" sqlType="VARCHAR" precision="20" scale="0" nullable="true" jdbcType="12"/>
-      <primary-key name="PRIMARY" columns="product,lkz,zip,validfrom"/>
+    <table name="COLUMNS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="TABLE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="COLUMN_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ORDINAL_POSITION" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="COLUMN_DEFAULT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="IS_NULLABLE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DATA_TYPE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="CHARACTER_MAXIMUM_LENGTH" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="CHARACTER_OCTET_LENGTH" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="NUMERIC_PRECISION" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="NUMERIC_PRECISION_RADIX" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="NUMERIC_SCALE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="CHARACTER_SET_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="COLLATION_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TYPE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="NULLABLE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="IS_COMPUTED" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="SELECTIVITY" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="CHECK_CONSTRAINT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SEQUENCE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SOURCE_DATA_TYPE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
     </table>
-    <table name="sector" schema="" catalog="leo2factory" type="TABLE">
-      <column name="product" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
-      <column name="sectorfrom" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
-      <column name="sectorto" sqlType="VARCHAR" precision="5" scale="0" nullable="false" jdbcType="12"/>
-      <column name="validfrom" sqlType="DATETIME" precision="19" scale="0" nullable="false" jdbcType="93"/>
-      <column name="validto" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
-      <column name="via" sqlType="VARCHAR" precision="45" scale="0" nullable="true" jdbcType="12"/>
-      <column name="timestamp" sqlType="TIMESTAMP" precision="19" scale="0" nullable="false" jdbcType="93" def="Q1VSUkVOVF9USU1FU1RBTVA=" version="true"/>
-      <primary-key name="PRIMARY" columns="product,sectorfrom,sectorto,validfrom"/>
+    <table name="COLUMN_PRIVILEGES" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="GRANTOR" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="GRANTEE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="COLUMN_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PRIVILEGE_TYPE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="IS_GRANTABLE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
     </table>
-    <table name="station" schema="" catalog="leo2factory" type="TABLE">
-      <column name="StationID" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" def="MA=="/>
-      <column name="Adress1" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="Adress2" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="Country" sqlType="VARCHAR" precision="2" scale="0" nullable="true" jdbcType="12"/>
-      <column name="ZIP" sqlType="VARCHAR" precision="8" scale="0" nullable="true" jdbcType="12"/>
-      <column name="City" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="Street" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="HouseNr" sqlType="VARCHAR" precision="10" scale="0" nullable="true" jdbcType="12"/>
-      <column name="Phone1" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="Phone2" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="Telefax" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="Mobile" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="ServicePhone1" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="ServicePhone2" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="ContactPerson1" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="ContactPerson2" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="Email" sqlType="VARCHAR" precision="100" scale="0" nullable="true" jdbcType="12"/>
-      <column name="Webadress" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="StationNr" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
-      <column name="Strang" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
-      <column name="poslong" sqlType="DOUBLE" precision="22" scale="0" nullable="true" jdbcType="8"/>
-      <column name="poslat" sqlType="DOUBLE" precision="22" scale="0" nullable="true" jdbcType="8"/>
-      <column name="Sector" sqlType="VARCHAR" precision="5" scale="0" nullable="true" jdbcType="12"/>
-      <column name="UStId" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="BillingAdress1" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="BillingAdress2" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="BillingCountry" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="BillingZip" sqlType="VARCHAR" precision="8" scale="0" nullable="true" jdbcType="12"/>
-      <column name="BillingCity" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="BillingStreet" sqlType="VARCHAR" precision="50" scale="0" nullable="true" jdbcType="12"/>
-      <column name="BillingHouseNr" sqlType="VARCHAR" precision="10" scale="0" nullable="true" jdbcType="12"/>
-      <primary-key name="PRIMARY" columns="StationID"/>
-      <index name="DepotMatchcode" unique="true" columns="StationID"/>
-      <index name="DepotTree" unique="true" columns="StationID"/>
-      <index name="LKZ" unique="true" columns="Country,ZIP,City,StationID"/>
-      <index name="Strang" unique="false" columns="Strang"/>
+    <table name="CONSTANTS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="CONSTANT_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CONSTANT_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CONSTANT_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DATA_TYPE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SQL" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+    </table>
+    <table name="CONSTRAINTS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="CONSTRAINT_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CONSTRAINT_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CONSTRAINT_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CONSTRAINT_TYPE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="UNIQUE_INDEX_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CHECK_EXPRESSION" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="COLUMN_LIST" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SQL" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+    </table>
+    <table name="CROSS_REFERENCES" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="PKTABLE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PKTABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PKTABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PKCOLUMN_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="FKTABLE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="FKTABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="FKTABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="FKCOLUMN_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ORDINAL_POSITION" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="UPDATE_RULE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="DELETE_RULE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="FK_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PK_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DEFERRABILITY" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+    </table>
+    <table name="DOMAINS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="DOMAIN_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DOMAIN_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DOMAIN_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="COLUMN_DEFAULT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="IS_NULLABLE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DATA_TYPE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="PRECISION" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="SCALE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="TYPE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SELECTIVITY" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="CHECK_CONSTRAINT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SQL" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+    </table>
+    <table name="FUNCTION_ALIASES" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="ALIAS_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ALIAS_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ALIAS_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="JAVA_CLASS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="JAVA_METHOD" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DATA_TYPE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="TYPE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="COLUMN_COUNT" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="RETURNS_RESULT" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="SOURCE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="FUNCTION_COLUMNS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="ALIAS_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ALIAS_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ALIAS_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="JAVA_CLASS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="JAVA_METHOD" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="COLUMN_COUNT" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="POS" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="COLUMN_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DATA_TYPE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="TYPE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PRECISION" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="SCALE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="RADIX" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="NULLABLE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="COLUMN_TYPE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="COLUMN_DEFAULT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="HELP" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="SECTION" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TOPIC" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SYNTAX" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TEXT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="INDEXES" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="TABLE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="NON_UNIQUE" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="INDEX_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ORDINAL_POSITION" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="COLUMN_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CARDINALITY" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="PRIMARY_KEY" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="INDEX_TYPE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="IS_GENERATED" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="INDEX_TYPE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="ASC_OR_DESC" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PAGES" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="FILTER_CONDITION" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SQL" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="SORT_TYPE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="CONSTRAINT_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="INDEX_CLASS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="IN_DOUBT" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="TRANSACTION" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="STATE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="LOCKS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="TABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SESSION_ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="LOCK_TYPE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="QUERY_STATISTICS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="SQL_STATEMENT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="EXECUTION_COUNT" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="MIN_EXECUTION_TIME" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="MAX_EXECUTION_TIME" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="CUMULATIVE_EXECUTION_TIME" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="AVERAGE_EXECUTION_TIME" sqlType="DOUBLE" precision="17" scale="0" nullable="true" jdbcType="8"/>
+      <column name="STD_DEV_EXECUTION_TIME" sqlType="DOUBLE" precision="17" scale="0" nullable="true" jdbcType="8"/>
+      <column name="MIN_ROW_COUNT" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="MAX_ROW_COUNT" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="CUMULATIVE_ROW_COUNT" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="AVERAGE_ROW_COUNT" sqlType="DOUBLE" precision="17" scale="0" nullable="true" jdbcType="8"/>
+      <column name="STD_DEV_ROW_COUNT" sqlType="DOUBLE" precision="17" scale="0" nullable="true" jdbcType="8"/>
+    </table>
+    <table name="RIGHTS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="GRANTEE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="GRANTEETYPE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="GRANTEDROLE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="RIGHTS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+    </table>
+    <table name="ROLES" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+    </table>
+    <table name="SCHEMATA" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="CATALOG_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SCHEMA_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SCHEMA_OWNER" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DEFAULT_CHARACTER_SET_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DEFAULT_COLLATION_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="IS_DEFAULT" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+    </table>
+    <table name="SEQUENCES" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="SEQUENCE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SEQUENCE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SEQUENCE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CURRENT_VALUE" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="INCREMENT" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="IS_GENERATED" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CACHE" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="MIN_VALUE" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="MAX_VALUE" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="IS_CYCLE" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+    </table>
+    <table name="SESSIONS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="USER_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SESSION_START" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="STATEMENT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="STATEMENT_START" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CONTAINS_UNCOMMITTED" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="SESSION_STATE" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="KEY" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SQL" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="SETTINGS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="VALUE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="TABLES" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="TABLE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_TYPE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="STORAGE_TYPE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SQL" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="LAST_MODIFICATION" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="TYPE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_CLASS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ROW_COUNT_ESTIMATE" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+    </table>
+    <table name="TABLE_PRIVILEGES" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="GRANTOR" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="GRANTEE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PRIVILEGE_TYPE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="IS_GRANTABLE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="TABLE_TYPES" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="TYPE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+    </table>
+    <table name="TRIGGERS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="TRIGGER_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TRIGGER_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TRIGGER_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TRIGGER_TYPE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BEFORE" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="JAVA_CLASS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="QUEUE_SIZE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="NO_WAIT" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SQL" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+    </table>
+    <table name="TYPE_INFO" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="TYPE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DATA_TYPE" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="PRECISION" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="PREFIX" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SUFFIX" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PARAMS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="AUTO_INCREMENT" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="MINIMUM_SCALE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="MAXIMUM_SCALE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="RADIX" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="POS" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="CASE_SENSITIVE" sqlType="BOOLEAN" precision="1" scale="0" nullable="true" jdbcType="16"/>
+      <column name="NULLABLE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+      <column name="SEARCHABLE" sqlType="SMALLINT" precision="5" scale="0" nullable="true" jdbcType="5"/>
+    </table>
+    <table name="USERS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ADMIN" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+    </table>
+    <table name="VIEWS" schema="INFORMATION_SCHEMA" catalog="LEO2" type="SYSTEM TABLE">
+      <column name="TABLE_CATALOG" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_SCHEMA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TABLE_NAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="VIEW_DEFINITION" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CHECK_OPTION" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="IS_UPDATABLE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="STATUS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="REMARKS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ID" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+    </table>
+    <table name="COUNTRY" schema="PUBLIC" catalog="LEO2" type="TABLE">
+      <column name="LKZ" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="LNAME" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="MAXLEN" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="MINLEN" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="ROUTINGTYP" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="TIMESTAMP" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <column name="ZIPFORMAT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="CONSTRAINT_6" columns="LKZ"/>
+    </table>
+    <table name="HOLIDAYCTRL" schema="PUBLIC" catalog="LEO2" type="TABLE">
+      <column name="COUNTRY" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="HOLIDAY" sqlType="TIMESTAMP" precision="23" scale="10" nullable="false" jdbcType="93"/>
+      <column name="CTRLPOS" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="DESCRIPTION" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TIMESTAMP" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <primary-key name="CONSTRAINT_67" columns="COUNTRY,HOLIDAY"/>
+    </table>
+    <table name="ROUTE" schema="PUBLIC" catalog="LEO2" type="TABLE">
+      <column name="ZIP" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="PRODUCT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="LKZ" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="VALIDFROM" sqlType="TIMESTAMP" precision="23" scale="10" nullable="false" jdbcType="93"/>
+      <column name="AREA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ETOD" sqlType="TIME" precision="6" scale="0" nullable="true" jdbcType="92"/>
+      <column name="ETOD2" sqlType="TIME" precision="6" scale="0" nullable="true" jdbcType="92"/>
+      <column name="HOLIDAYCTRL" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ISLAND" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="LTODHOLIDAY" sqlType="TIME" precision="6" scale="0" nullable="true" jdbcType="92"/>
+      <column name="LTODSA" sqlType="TIME" precision="6" scale="0" nullable="true" jdbcType="92"/>
+      <column name="LTOP" sqlType="TIME" precision="6" scale="0" nullable="true" jdbcType="92"/>
+      <column name="LTOP2" sqlType="TIME" precision="6" scale="0" nullable="true" jdbcType="92"/>
+      <column name="SECTOR" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="STATION" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="TIMESTAMP" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <column name="TRANSITTIME" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="VALIDTO" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <primary-key name="CONSTRAINT_4" columns="ZIP,PRODUCT,LKZ,VALIDFROM"/>
+      <index name="INDEX_ROUTE_TIMESTAMP" unique="false" columns="TIMESTAMP"/>
+    </table>
+    <table name="SECTOR" schema="PUBLIC" catalog="LEO2" type="TABLE">
+      <column name="PRODUCT" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="SECTORTO" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="SECTORFROM" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="false" jdbcType="12"/>
+      <column name="VALIDFROM" sqlType="TIMESTAMP" precision="23" scale="10" nullable="false" jdbcType="93"/>
+      <column name="TIMESTAMP" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <column name="VALIDTO" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <column name="VIA" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="CONSTRAINT_9" columns="PRODUCT,SECTORTO,SECTORFROM,VALIDFROM"/>
+    </table>
+    <table name="STATION" schema="PUBLIC" catalog="LEO2" type="TABLE">
+      <column name="STATIONID" sqlType="INTEGER" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="ADRESS1" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ADRESS2" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BILLINGADRESS1" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BILLINGADRESS2" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BILLINGCITY" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BILLINGCOUNTRY" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BILLINGHOUSENR" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BILLINGSTREET" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="BILLINGZIP" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CITY" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CONTACTPERSON1" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="CONTACTPERSON2" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="COUNTRY" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="EMAIL" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="HOUSENR" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="MOBILE" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PHONE1" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="PHONE2" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="POSLAT" sqlType="DOUBLE" precision="17" scale="0" nullable="true" jdbcType="8"/>
+      <column name="POSLONG" sqlType="DOUBLE" precision="17" scale="0" nullable="true" jdbcType="8"/>
+      <column name="SECTOR" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SERVICEPHONE1" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="SERVICEPHONE2" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="STATIONNR" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="STRANG" sqlType="INTEGER" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="STREET" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="TELEFAX" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="USTID" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="WEBADRESS" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <column name="ZIP" sqlType="VARCHAR" precision="2147483647" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="CONSTRAINT_B" columns="STATIONID"/>
     </table>
   </data-source>
 </component>

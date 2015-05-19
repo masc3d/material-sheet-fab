@@ -8,6 +8,6 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by JT on 15.05.15.
  */
-public interface HolidayctrlRepostitory extends CrudRepository<Holidayctrl, HolidayctrlPK>, QueryDslPredicateExecutor
+public interface HolidayctrlRepository extends CrudRepository<Holidayctrl, HolidayctrlPK>, QueryDslPredicateExecutor
 {
 }

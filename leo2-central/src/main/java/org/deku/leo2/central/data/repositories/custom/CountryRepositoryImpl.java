@@ -1,4 +1,4 @@
-package org.deku.leo2.central.data.repositories;
+package org.deku.leo2.central.data.repositories.custom;
 
 import com.google.common.collect.Lists;
 import org.deku.leo2.central.data.entities.Country;
@@ -6,7 +6,6 @@ import org.deku.leo2.central.data.entities.QCountry;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -15,7 +14,7 @@ import java.util.List;
 public class CountryRepositoryImpl implements CountryRepositoryCustom {
 
     @Inject
-    CountryRepository mCountryRepository;
+    org.deku.leo2.central.data.repositories.CountryRepository mCountryRepository;
 
     @Transactional("jpa")
     public List<Country> findAll() {

@@ -1,19 +1,17 @@
-package org.deku.leo2.central.data.repositories;
+package org.deku.leo2.central.data.repositories.custom;
 
 import org.deku.leo2.central.data.entities.QRoute;
 import org.deku.leo2.central.data.entities.Route;
 import org.deku.leo2.central.data.entities.RoutePK;
+import org.deku.leo2.central.data.repositories.RouteRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Created by JT on 13.05.15.
  */
-@Named
-public class RouteRepositoryImpl implements RouteRepositoryCostum{
-
+public class RouteRepositoryImpl implements RouteRepositoryCustom {
     @Inject
     RouteRepository mRouteRepository;
 
