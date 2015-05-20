@@ -21,7 +21,7 @@ import org.deku.leo2.WebserviceFactory;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.bridge.MessageFactory;
 import org.deku.leo2.fx.Controller;
-import org.deku.leo2.rest.entities.v1.Depot;
+import org.deku.leo2.rest.entities.internal.v1.Depot;
 
 import java.net.URL;
 import java.util.Arrays;

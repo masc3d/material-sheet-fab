@@ -1,4 +1,4 @@
-package org.deku.leo2.rest.entities.v1;
+package org.deku.leo2.rest.entities.internal.v1;
 
 /**
  * Created by masc on 04.05.15.

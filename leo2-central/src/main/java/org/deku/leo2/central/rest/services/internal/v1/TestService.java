@@ -1,6 +1,6 @@
-package org.deku.leo2.central.rest.services.v1;
+package org.deku.leo2.central.rest.services.internal.v1;
 
-import org.deku.leo2.rest.entities.v1.TestEntry;
+import org.deku.leo2.rest.entities.internal.v1.TestEntry;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 /**
  * Created by masc on 23.07.14.
  */
-@Path("v1/test")
+@Path("internal/v1/test")
 @Produces(MediaType.APPLICATION_JSON)
-public class TestService implements org.deku.leo2.rest.services.v1.TestService {
+public class TestService implements org.deku.leo2.rest.services.internal.v1.TestService {
     @Override
     public TestEntry[] get() {
         ArrayList<TestEntry> entries = new ArrayList<>();

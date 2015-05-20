@@ -1,6 +1,6 @@
-package org.deku.leo2.rest.services.v1;
+package org.deku.leo2.rest.services.internal.v1;
 
-import org.deku.leo2.rest.entities.v1.TestEntry;
+import org.deku.leo2.rest.entities.internal.v1.TestEntry;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType;
  * Test service
  * Created by masc on 23.07.14.
  */
-@Path("v1/test")
+@Path("internal/v1/test")
 @Consumes(MediaType.APPLICATION_JSON)
 public interface TestService {
     /** Get all tours */

@@ -146,19 +146,19 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
 |    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
-|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.5.3
-|         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3
-|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
-|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
-|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
-|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
-|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3 -> 2.6.0-rc1
+|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1
+|         |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
+|         +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
+|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1
 |              +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |              \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
-+--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.5.3 (*)
++--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc1 (*)
 +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
 |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
@@ -263,7 +263,7 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- com.google.guava:guava:15.0 -> 18.0
 |    |    +--- org.javassist:javassist:3.18.2-GA -> 3.19.0-GA
 |    |    \--- com.google.code.findbugs:annotations:2.0.1
-|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.5.3 (*)
+|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
 \--- org.javassist:javassist:3.+ -> 3.19.0-GA
 
 default - Configuration for default artifacts.
@@ -400,19 +400,19 @@ default - Configuration for default artifacts.
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
 |    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
-|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.5.3
-|         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3
-|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
-|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
-|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
-|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
-|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3 -> 2.6.0-rc1
+|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1
+|         |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
+|         +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
+|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1
 |              +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |              \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
-+--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.5.3 (*)
++--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc1 (*)
 +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
 |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
@@ -517,7 +517,7 @@ default - Configuration for default artifacts.
 |    |    +--- com.google.guava:guava:15.0 -> 18.0
 |    |    +--- org.javassist:javassist:3.18.2-GA -> 3.19.0-GA
 |    |    \--- com.google.code.findbugs:annotations:2.0.1
-|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.5.3 (*)
+|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
 \--- org.javassist:javassist:3.+ -> 3.19.0-GA
 
 generatedCompile - Compile classpath for source set 'generated'.
@@ -666,19 +666,19 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
 |    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
-|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.5.3
-|         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3
-|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
-|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
-|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
-|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
-|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3 -> 2.6.0-rc1
+|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1
+|         |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
+|         +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
+|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1
 |              +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |              \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
-+--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.5.3 (*)
++--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc1 (*)
 +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
 |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
@@ -783,7 +783,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- com.google.guava:guava:15.0 -> 18.0
 |    |    +--- org.javassist:javassist:3.18.2-GA -> 3.19.0-GA
 |    |    \--- com.google.code.findbugs:annotations:2.0.1
-|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.5.3 (*)
+|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
 \--- org.javassist:javassist:3.+ -> 3.19.0-GA
 
 shadow
@@ -923,19 +923,19 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
 |    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
-|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.5.3
-|         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3
-|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
-|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
-|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
-|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
-|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3 -> 2.6.0-rc1
+|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1
+|         |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
+|         +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
+|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1
 |              +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |              \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
-+--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.5.3 (*)
++--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc1 (*)
 +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
 |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
@@ -1040,7 +1040,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- com.google.guava:guava:15.0 -> 18.0
 |    |    +--- org.javassist:javassist:3.18.2-GA -> 3.19.0-GA
 |    |    \--- com.google.code.findbugs:annotations:2.0.1
-|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.5.3 (*)
+|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
 +--- org.javassist:javassist:3.+ -> 3.19.0-GA
 +--- junit:junit:4.+ -> 4.12 (*)
 +--- org.jboss.resteasy:resteasy-client:3.+ -> 3.0.11.Final
@@ -1182,19 +1182,19 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
 |    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
-|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.5.3
-|         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3
-|         |    +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
-|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
-|         +--- com.fasterxml.jackson.core:jackson-core:2.5.3 -> 2.6.0-rc1
-|         +--- com.fasterxml.jackson.core:jackson-databind:2.5.3 -> 2.6.0-rc1 (*)
-|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.3 -> 2.6.0-rc1
+|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1
+|         |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|         |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
+|         +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
+|         \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1
 |              +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |              \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
-+--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.5.3 (*)
++--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc1 (*)
 +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
 |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
@@ -1299,7 +1299,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- com.google.guava:guava:15.0 -> 18.0
 |    |    +--- org.javassist:javassist:3.18.2-GA -> 3.19.0-GA
 |    |    \--- com.google.code.findbugs:annotations:2.0.1
-|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.5.3 (*)
+|    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
 +--- org.javassist:javassist:3.+ -> 3.19.0-GA
 +--- junit:junit:4.+ -> 4.12 (*)
 +--- org.jboss.resteasy:resteasy-client:3.+ -> 3.0.11.Final

@@ -28,10 +28,6 @@
 
     <!-- Resteasy configuration -->
     <context-param>
-        <param-name>resteasy.resources</param-name>
-        <param-value>com.wordnik.swagger.jaxrs.listing.ApiListingResource</param-value>
-    </context-param>
-    <context-param>
         <param-name>resteasy.providers</param-name>
         <!-- TODO. figure out why ResteasyJackson2Provider gets loaded automatically when running from IDE,
         while it has to be listed here when running with jetty embedded in shadowJar -->
@@ -57,14 +53,14 @@
     </listener>
 
     <!-- Leo2 servlet -->
-    <context-param>
-        <param-name>resteasy.servlet.mapping.prefix</param-name>
-        <param-value>/rs/api</param-value>
-    </context-param>
     <servlet>
         <description>leo2 webservice servlet</description>
         <servlet-name>leo2</servlet-name>
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+        <init-param>
+            <param-name>resteasy.servlet.mapping.prefix</param-name>
+            <param-value>/rs/api</param-value>
+        </init-param>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
             <param-value>org.deku.leo2.central.rest.WebserviceApplication</param-value>

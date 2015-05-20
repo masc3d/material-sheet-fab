@@ -47,7 +47,7 @@ public class SwaggerBootstrapServlet extends HttpServlet {
         // Setting the scanner during bootstrap, no need for configuration servlet
         ReflectiveJaxrsScanner scanner = new ReflectiveJaxrsScanner();
         // Confusing method name, this can actually be a list of packages (comma separated)
-        scanner.setResourcePackage("org.deku.leo2.rest.services.v1");
+        scanner.setResourcePackage("org.deku.leo2.rest.services.v1,org.deku.leo2.rest.services.internal.v1");
         ScannerFactory.setScanner(scanner);
 
         context.setAttribute("swagger", swagger);

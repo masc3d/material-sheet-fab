@@ -1,9 +1,10 @@
-package org.deku.leo2.central.rest.services.v1;
+package org.deku.leo2.central.rest.services.internal.v1;
 
 import org.deku.leo2.central.data.entities.Station;
 import org.deku.leo2.central.data.entities.jooq.tables.records.TbldepotlisteRecord;
 import org.deku.leo2.central.data.repositories.StationRepository;
 import org.deku.leo2.central.data.repositories.jooq.DepotJooqRepository;
+import org.deku.leo2.rest.entities.internal.v1.Depot;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -17,9 +18,9 @@ import java.util.logging.Logger;
  * Created by masc on 17.09.14.
  */
 @Component
-@Path("v1/depot")
+@Path("internal/v1/depot")
 @Produces(MediaType.APPLICATION_JSON)
-public class DepotService implements org.deku.leo2.rest.services.v1.DepotService {
+public class DepotService implements org.deku.leo2.rest.services.internal.v1.DepotService {
     Logger mLog = Logger.getLogger(DepotService.class.getName());
 
     @Inject
@@ -33,8 +34,8 @@ public class DepotService implements org.deku.leo2.rest.services.v1.DepotService
      * @param d
      * @return
      */
-    static org.deku.leo2.rest.entities.v1.Depot convert(Station d) {
-        org.deku.leo2.rest.entities.v1.Depot rDepot = new org.deku.leo2.rest.entities.v1.Depot();
+    static Depot convert(Station d) {
+        Depot rDepot = new Depot();
 //        rDepot.setDepotMatchcode(d.getDepotMatchcode());
 //        rDepot.setDepotNr(d.getStationNr());
 //        rDepot.setFirma1(d.getFirma1());
@@ -51,8 +52,8 @@ public class DepotService implements org.deku.leo2.rest.services.v1.DepotService
      * @param d
      * @return
      */
-    static org.deku.leo2.rest.entities.v1.Depot convert(TbldepotlisteRecord d) {
-        org.deku.leo2.rest.entities.v1.Depot rDepot = new org.deku.leo2.rest.entities.v1.Depot();
+    static Depot convert(TbldepotlisteRecord d) {
+        Depot rDepot = new Depot();
         rDepot.setDepotMatchcode(d.getDepotmatchcode());
         rDepot.setDepotNr(d.getDepotnr());
         rDepot.setFirma1(d.getFirma1());
@@ -65,26 +66,26 @@ public class DepotService implements org.deku.leo2.rest.services.v1.DepotService
     }
 
     @Override
-    public org.deku.leo2.rest.entities.v1.Depot[] get() {
+    public Depot[] get() {
         // JPA/QueryDSL
 //        Iterable<Depot> depots = mStationRepository.findAll();
 //
 //        return StreamSupport.stream(depots.spliterator(), false)
 //                .map(d -> convert(d))
-//                .toArray(size -> new org.deku.leo2.rest.entities.v1.Depot[size]);
+//                .toArray(size -> new org.deku.leo2.rest.entities.internal.v1.Depot[size]);
 
         // JOOQ
         List<TbldepotlisteRecord> depots = mDepotJooqRepository.findAll();
 
         return depots.stream().map(d -> convert(d))
-                .toArray(size -> new org.deku.leo2.rest.entities.v1.Depot[size]);
+                .toArray(size -> new Depot[size]);
     }
 
     @Override
-    public org.deku.leo2.rest.entities.v1.Depot[] find(String query) {
+    public Depot[] find(String query) {
         List<Station> depots = mStationRepository.findWithQuery(query);
 
         return depots.stream().map(d -> convert(d))
-                .toArray(size -> new org.deku.leo2.rest.entities.v1.Depot[size]);
+                .toArray(size -> new Depot[size]);
     }
 }
