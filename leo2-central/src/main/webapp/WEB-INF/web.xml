@@ -71,11 +71,4 @@
         <servlet-name>leo2</servlet-name>
         <url-pattern>/rs/api/*</url-pattern>
     </servlet-mapping>
-
-    <!-- swagger bootstrap -->
-    <servlet>
-        <servlet-name>swagger-bootstrap</servlet-name>
-        <servlet-class>org.deku.leo2.central.rest.SwaggerBootstrapServlet</servlet-class>
-        <load-on-startup>2</load-on-startup>
-    </servlet>
 </web-app>

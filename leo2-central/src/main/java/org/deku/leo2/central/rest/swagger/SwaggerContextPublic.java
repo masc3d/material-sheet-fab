@@ -1,37 +1,37 @@
-package org.deku.leo2.central.rest;
+package org.deku.leo2.central.rest.swagger;
 
-import com.wordnik.swagger.config.ScannerFactory;
+import com.wordnik.swagger.config.Scanner;
 import com.wordnik.swagger.jaxrs.config.ReflectiveJaxrsScanner;
 import com.wordnik.swagger.models.Contact;
 import com.wordnik.swagger.models.Info;
 import com.wordnik.swagger.models.Swagger;
+import sx.LazyInstance;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Created by masc on 11.05.15.
+ * Public API documentation context/configuration
+ * Created by masc on 20.05.15.
  */
-public class SwaggerBootstrapServlet extends HttpServlet {
-    Logger mLog = Logger.getLogger(SwaggerBootstrapServlet.class.getName());
+public class SwaggerContextPublic implements SwaggerContext {
+    private static final LazyInstance<AtomicReference<SwaggerContext>> mInstance = new LazyInstance<>(
+            () -> new AtomicReference<>(
+                    new SwaggerContextPublic()));
 
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
+    Swagger mSwagger;
+    Scanner mScanner;
 
-        mLog.info("Bootstrapping swagger");
+    public static SwaggerContext instance() {
+        return mInstance.get().get();
+    }
 
+    public SwaggerContextPublic() {
         Info info = new Info()
-                .title("LEO2 webservice")
+                .title("LEO2 public webservice")
                 .description("LEO2 public webservice API")
                 .version("1.0.0")
                 .contact(new Contact()
                         .email("masc@disappear.de"));
-
-        ServletContext context = config.getServletContext();
 
         Swagger swagger = new Swagger().info(info);
         swagger.basePath("/leo2/rs/api");
@@ -47,9 +47,19 @@ public class SwaggerBootstrapServlet extends HttpServlet {
         // Setting the scanner during bootstrap, no need for configuration servlet
         ReflectiveJaxrsScanner scanner = new ReflectiveJaxrsScanner();
         // Confusing method name, this can actually be a list of packages (comma separated)
-        scanner.setResourcePackage("org.deku.leo2.rest.services.v1,org.deku.leo2.rest.services.internal.v1");
-        ScannerFactory.setScanner(scanner);
+        scanner.setResourcePackage("org.deku.leo2.rest.services.v1");
 
-        context.setAttribute("swagger", swagger);
+        mSwagger = swagger;
+        mScanner = scanner;
+    }
+
+    @Override
+    public Swagger getSwagger() {
+        return mSwagger;
+    }
+
+    @Override
+    public Scanner getScanner() {
+        return mScanner;
     }
 }
