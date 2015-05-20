@@ -146,17 +146,30 @@ public class PersistenceContext {
         @Lazy
         @Qualifier(DB_EMBEDDED)
         public AbstractDataSource dataSource() {
+            final boolean IN_MEMORY = false;
+
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
             File dbPath = new File(Main.instance().getLocalHomeDirectory(), "db/leo2");
 
             dataSource.setDriverClassName("org.h2.Driver");
-            dataSource.setUrl("jdbc:h2:file:" + dbPath.toString());
+            if (!IN_MEMORY) {
+                dataSource.setUrl("jdbc:h2:file:" + dbPath.toString());
+            } else {
+                dataSource.setUrl("jdbc:h2:mem:db1");
+            }
 
             Properties dataSourceProperties = new Properties();
             dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
             dataSourceProperties.setProperty("connectTimeout", "1000");
+            // For in memory db
+            if (IN_MEMORY) {
+            dataSourceProperties.setProperty("INIT", "CREATE SCHEMA IF NOT EXISTS leo2");
+            dataSourceProperties.setProperty("DB_CLOSE_DELAY", "-1");
+            }
+
             dataSource.setConnectionProperties(dataSourceProperties);
+
 
             return dataSource;
         }

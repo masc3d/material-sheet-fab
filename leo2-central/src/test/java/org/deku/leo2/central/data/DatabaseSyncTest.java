@@ -18,11 +18,10 @@ public class DatabaseSyncTest extends DataTest {
     @Test
     public void test() {
         Stopwatch sw = Stopwatch.createStarted();
-        mDatabaseSync.sync();
-        mLog.info(String.format("Took %s", sw.toString()));
-
-        sw = Stopwatch.createStarted();
-        mDatabaseSync.sync();
-        mLog.info(String.format("Took %s", sw.toString()));
+        try {
+            mDatabaseSync.sync(true);
+        } finally {
+            mLog.info(String.format("Took %s", sw.toString()));
+        }
     }
 }

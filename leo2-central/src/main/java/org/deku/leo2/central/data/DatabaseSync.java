@@ -15,6 +15,7 @@ import org.jooq.Result;
 import org.jooq.TableField;
 import org.jooq.impl.TableImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -24,6 +25,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import java.sql.Timestamp;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -61,7 +63,12 @@ public class DatabaseSync {
 
     @Transactional(value = PersistenceContext.DB_EMBEDDED)
     public void sync() {
-        boolean alwaysDelete = false;
+        this.sync(false);
+    }
+
+    @Transactional(value = PersistenceContext.DB_EMBEDDED)
+    public void sync(boolean reload) {
+        boolean alwaysDelete = reload;
 
         this.updateEntities(
                 mStationRepository,
@@ -225,7 +232,7 @@ public class DatabaseSync {
      * @param <TCentralRecord>
      */
     private <TEntity, TCentralRecord extends Record> void updateEntities (
-            CrudRepository<TEntity, ?> destRepository,
+            JpaRepository<TEntity, ?> destRepository,
             EntityPathBase<TEntity> destQdslEntityPath,
             DateTimePath<Timestamp> destQdslTimestampPath,
             TableImpl<TCentralRecord> sourceTable,
@@ -242,39 +249,42 @@ public class DatabaseSync {
             return null;
         };
 
-        if (deleteBeforeUpdate) {
-//        this.deleteRoutes();
-//        mLog.info(String.format("Deleted %s", sw.toString()));
-            mTransaction.execute((ts) -> {
-                destRepository.deleteAll();
-                return null;
-            });
-            log.apply("Deleted");
+        mEntityManager.setFlushMode(FlushModeType.COMMIT);
+
+        if (deleteBeforeUpdate || destQdslEntityPath == null ||destQdslTimestampPath == null ) {
+            log.apply("Deleting");
+            destRepository.deleteAllInBatch();
+            mEntityManager.flush();
+            mEntityManager.clear();
         }
 
         // Get latest timestamp
         Timestamp timestamp = null;
         if (destQdslEntityPath != null && destQdslTimestampPath != null) {
+            log.apply("Timestamp check");
             timestamp = query.from(destQdslEntityPath).singleResult(destQdslTimestampPath.max());
-            log.apply("H2 check");
         }
 
         // Get newer records from central
+        log.apply("Fetching");
         Result<TCentralRecord> source = mGenericJooqRepository.findNewerThan(timestamp, sourceTable, sourceTableField);
-
         log.apply(String.format("Fetched %d", source.size()));
-        // Save to embedded
-        //destRepository.save((Iterable<TEntity>) source.stream().map(d -> conversionFunction.apply(d))::iterator);
 
-        // It's faster to flush and clear in between
-        int i = 0;
-        for (TEntity r : (Iterable<TEntity>)source.stream().map(d -> conversionFunction.apply(d))::iterator) {
-            destRepository.save(r);
-            if (i++ % 50 == 0) {
-                mEntityManager.flush();
-                mEntityManager.clear();
+        // Save to embedded
+        //TODO: saving/transaction commit gets very slow when deleting and inserting within the same transaction
+        //destRepository.save((Iterable<TEntity>) source.stream().map(d -> conversionFunction.apply(d))::iterator);
+        // It's also faster to flush and clear in between
+        log.apply("Inserting");
+        mTransaction.execute((ts) -> {
+            int i = 0;
+            for (TEntity r : (Iterable<TEntity>)source.stream().map(d -> conversionFunction.apply(d))::iterator) {
+                destRepository.save(r);
+                if (i++ % 100 == 0) {
+                    mEntityManager.flush();
+                    mEntityManager.clear();
+                }
             }
-        }
-        log.apply("Synced");
+            return null;
+        });
     }
 }
