@@ -63,7 +63,6 @@
     <orderEntry type="library" exported="" name="Gradle: org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.jboss.resteasy:resteasy-spring:3.0.11.Final" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.3" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.jooq:jooq:3.6.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" level="project" />
@@ -82,7 +81,6 @@
     <orderEntry type="library" exported="" name="Gradle: commons-io:commons-io:2.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: net.jcip:jcip-annotations:1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.3" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javax.validation:validation-api:1.1.0.Final" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish:javax.json:1.0.4" level="project" />
@@ -189,5 +187,7 @@
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.jboss.resteasy:resteasy-client:3.0.11.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" level="project" />
   </component>
 </module>
