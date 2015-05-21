@@ -4,19 +4,17 @@ import com.google.common.base.Stopwatch;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.path.DateTimePath;
 import com.mysema.query.types.path.EntityPathBase;
-import org.deku.leo2.central.PersistenceContext;
-import org.deku.leo2.central.data.entities.*;
 import org.deku.leo2.central.data.entities.jooq.Tables;
 import org.deku.leo2.central.data.entities.jooq.tables.records.*;
-import org.deku.leo2.central.data.repositories.*;
 import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
+import org.deku.leo2.node.data.entities.*;
+import org.deku.leo2.node.data.repositories.*;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.TableField;
 import org.jooq.impl.TableImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,17 +54,17 @@ public class DatabaseSync {
     SectorRepository mSectorRepository;
 
     @Inject
-    public DatabaseSync(@Qualifier(PersistenceContext.DB_EMBEDDED) PlatformTransactionManager tx) {
+    public DatabaseSync(@Qualifier(org.deku.leo2.node.PersistenceContext.DB_EMBEDDED) PlatformTransactionManager tx) {
         mTransaction = new TransactionTemplate(tx);
         mTransaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
     }
 
-    @Transactional(value = PersistenceContext.DB_EMBEDDED)
+    @Transactional(value = org.deku.leo2.node.PersistenceContext.DB_EMBEDDED)
     public void sync() {
         this.sync(false);
     }
 
-    @Transactional(value = PersistenceContext.DB_EMBEDDED)
+    @Transactional(value = org.deku.leo2.node.PersistenceContext.DB_EMBEDDED)
     public void sync(boolean reload) {
         boolean alwaysDelete = reload;
 
@@ -252,10 +250,13 @@ public class DatabaseSync {
         mEntityManager.setFlushMode(FlushModeType.COMMIT);
 
         if (deleteBeforeUpdate || destQdslEntityPath == null ||destQdslTimestampPath == null ) {
-            log.apply("Deleting");
-            destRepository.deleteAllInBatch();
-            mEntityManager.flush();
-            mEntityManager.clear();
+            mTransaction.execute((ts) -> {
+                log.apply("Deleting");
+                destRepository.deleteAllInBatch();
+                mEntityManager.flush();
+                mEntityManager.clear();
+                return null;
+            });
         }
 
         // Get latest timestamp

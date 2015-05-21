@@ -44,8 +44,96 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903
-|    |    \--- org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016
+|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-client:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-http:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0
+|    |    |         \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-deploy:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty:jetty-xml:9.3.0.RC0
+|    |    |    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty:jetty-servlet:9.3.0.RC0
+|    |    |    |         \--- org.eclipse.jetty:jetty-security:9.3.0.RC0
+|    |    |    |              \--- org.eclipse.jetty:jetty-server:9.3.0.RC0
+|    |    |    |                   +--- javax.servlet:javax.servlet-api:3.1.0
+|    |    |    |                   +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    |                   \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-xml:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-jmx:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-jndi:9.3.0.RC0
+|    |    |         \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    +--- javax.annotation:javax.annotation-api:1.2
+|    |    |    +--- org.ow2.asm:asm:5.0.1
+|    |    |    \--- org.ow2.asm:asm-commons:5.0.1
+|    |    |         \--- org.ow2.asm:asm-tree:5.0.1
+|    |    |              \--- org.ow2.asm:asm:5.0.1
+|    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-jaspi:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-security:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty.orbit:javax.security.auth.message:1.0.0.v201108011116
+|    |    +--- org.eclipse.jetty:jetty-jndi:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-rewrite:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-server:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-client:9.3.0.RC0 (*)
+|    |    |    \--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty:jetty-servlets:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-continuation:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-quickstart:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-jmx:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0 (*)
+|    |    |    \--- javax.transaction:javax.transaction-api:1.2
+|    |    +--- org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0
+|    |    |    \--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty.websocket:javax-websocket-client-impl:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0
+|    |    |    |    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    |    +--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    |    |    \--- org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0
+|    |    |    |    |         +--- org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0
+|    |    |    |    |         +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    |         \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    |    \--- javax.websocket:javax.websocket-api:1.0
+|    |    |    +--- org.eclipse.jetty.websocket:websocket-server:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty:jetty-servlet:9.3.0.RC0 (*)
+|    |    |    |    \--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    \--- javax.websocket:javax.websocket-api:1.0
+|    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty.http2:http2-server:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.http2:http2-common:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty.http2:http2-hpack:9.3.0.RC0
+|    |    |    |         +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |         +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    |         \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-server:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty.http2:http2-client:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.http2:http2-common:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0 (*)
+|    |    +--- javax.websocket:javax.websocket-api:1.0
+|    |    +--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty.orbit:javax.mail.glassfish:1.4.1.v201005082020
+|    |    |    \--- org.eclipse.jetty.orbit:javax.activation:1.1.0.v201105071233
+|    |    \--- org.slf4j:slf4j-api:1.6.6 -> 1.7.12
 |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    +--- commons-logging:commons-logging:1.2
@@ -96,8 +184,96 @@ default - Configuration for default artifacts.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903
-|    |    \--- org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016
+|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-client:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-http:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0
+|    |    |         \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-deploy:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty:jetty-xml:9.3.0.RC0
+|    |    |    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty:jetty-servlet:9.3.0.RC0
+|    |    |    |         \--- org.eclipse.jetty:jetty-security:9.3.0.RC0
+|    |    |    |              \--- org.eclipse.jetty:jetty-server:9.3.0.RC0
+|    |    |    |                   +--- javax.servlet:javax.servlet-api:3.1.0
+|    |    |    |                   +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    |                   \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-xml:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-jmx:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-jndi:9.3.0.RC0
+|    |    |         \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    +--- javax.annotation:javax.annotation-api:1.2
+|    |    |    +--- org.ow2.asm:asm:5.0.1
+|    |    |    \--- org.ow2.asm:asm-commons:5.0.1
+|    |    |         \--- org.ow2.asm:asm-tree:5.0.1
+|    |    |              \--- org.ow2.asm:asm:5.0.1
+|    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-jaspi:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-security:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty.orbit:javax.security.auth.message:1.0.0.v201108011116
+|    |    +--- org.eclipse.jetty:jetty-jndi:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-rewrite:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-server:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-client:9.3.0.RC0 (*)
+|    |    |    \--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty:jetty-servlets:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-continuation:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-quickstart:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-jmx:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0 (*)
+|    |    |    \--- javax.transaction:javax.transaction-api:1.2
+|    |    +--- org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0
+|    |    |    \--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty.websocket:javax-websocket-client-impl:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0
+|    |    |    |    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    |    +--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    |    |    \--- org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0
+|    |    |    |    |         +--- org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0
+|    |    |    |    |         +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    |         \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    |    \--- javax.websocket:javax.websocket-api:1.0
+|    |    |    +--- org.eclipse.jetty.websocket:websocket-server:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty:jetty-servlet:9.3.0.RC0 (*)
+|    |    |    |    \--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    \--- javax.websocket:javax.websocket-api:1.0
+|    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty.http2:http2-server:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.http2:http2-common:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty.http2:http2-hpack:9.3.0.RC0
+|    |    |    |         +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |         +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    |         \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-server:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty.http2:http2-client:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.http2:http2-common:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0 (*)
+|    |    +--- javax.websocket:javax.websocket-api:1.0
+|    |    +--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty.orbit:javax.mail.glassfish:1.4.1.v201005082020
+|    |    |    \--- org.eclipse.jetty.orbit:javax.activation:1.1.0.v201105071233
+|    |    \--- org.slf4j:slf4j-api:1.6.6 -> 1.7.12
 |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    +--- commons-logging:commons-logging:1.2
@@ -148,8 +324,96 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903
-|    |    \--- org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016
+|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-client:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-http:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0
+|    |    |         \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-deploy:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty:jetty-xml:9.3.0.RC0
+|    |    |    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty:jetty-servlet:9.3.0.RC0
+|    |    |    |         \--- org.eclipse.jetty:jetty-security:9.3.0.RC0
+|    |    |    |              \--- org.eclipse.jetty:jetty-server:9.3.0.RC0
+|    |    |    |                   +--- javax.servlet:javax.servlet-api:3.1.0
+|    |    |    |                   +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    |                   \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-xml:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-jmx:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-jndi:9.3.0.RC0
+|    |    |         \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    +--- javax.annotation:javax.annotation-api:1.2
+|    |    |    +--- org.ow2.asm:asm:5.0.1
+|    |    |    \--- org.ow2.asm:asm-commons:5.0.1
+|    |    |         \--- org.ow2.asm:asm-tree:5.0.1
+|    |    |              \--- org.ow2.asm:asm:5.0.1
+|    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-jaspi:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-security:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty.orbit:javax.security.auth.message:1.0.0.v201108011116
+|    |    +--- org.eclipse.jetty:jetty-jndi:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-rewrite:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-server:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-client:9.3.0.RC0 (*)
+|    |    |    \--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty:jetty-servlets:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-continuation:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-quickstart:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-jmx:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0 (*)
+|    |    |    \--- javax.transaction:javax.transaction-api:1.2
+|    |    +--- org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0
+|    |    |    \--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty.websocket:javax-websocket-client-impl:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0
+|    |    |    |    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    |    +--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    |    |    \--- org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0
+|    |    |    |    |         +--- org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0
+|    |    |    |    |         +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    |         \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    |    \--- javax.websocket:javax.websocket-api:1.0
+|    |    |    +--- org.eclipse.jetty.websocket:websocket-server:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty:jetty-servlet:9.3.0.RC0 (*)
+|    |    |    |    \--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    \--- javax.websocket:javax.websocket-api:1.0
+|    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty.http2:http2-server:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.http2:http2-common:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty.http2:http2-hpack:9.3.0.RC0
+|    |    |    |         +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |         +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    |         \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-server:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty.http2:http2-client:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.http2:http2-common:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0 (*)
+|    |    +--- javax.websocket:javax.websocket-api:1.0
+|    |    +--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty.orbit:javax.mail.glassfish:1.4.1.v201005082020
+|    |    |    \--- org.eclipse.jetty.orbit:javax.activation:1.1.0.v201105071233
+|    |    \--- org.slf4j:slf4j-api:1.6.6 -> 1.7.12
 |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    +--- commons-logging:commons-logging:1.2
@@ -200,8 +464,96 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903
-|    |    \--- org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016
+|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-client:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-http:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0
+|    |    |         \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-deploy:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty:jetty-xml:9.3.0.RC0
+|    |    |    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty:jetty-servlet:9.3.0.RC0
+|    |    |    |         \--- org.eclipse.jetty:jetty-security:9.3.0.RC0
+|    |    |    |              \--- org.eclipse.jetty:jetty-server:9.3.0.RC0
+|    |    |    |                   +--- javax.servlet:javax.servlet-api:3.1.0
+|    |    |    |                   +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    |                   \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-xml:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-jmx:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-jndi:9.3.0.RC0
+|    |    |         \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    +--- javax.annotation:javax.annotation-api:1.2
+|    |    |    +--- org.ow2.asm:asm:5.0.1
+|    |    |    \--- org.ow2.asm:asm-commons:5.0.1
+|    |    |         \--- org.ow2.asm:asm-tree:5.0.1
+|    |    |              \--- org.ow2.asm:asm:5.0.1
+|    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-jaspi:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-security:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty.orbit:javax.security.auth.message:1.0.0.v201108011116
+|    |    +--- org.eclipse.jetty:jetty-jndi:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-rewrite:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-server:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-client:9.3.0.RC0 (*)
+|    |    |    \--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty:jetty-servlets:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-continuation:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-quickstart:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-jmx:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0 (*)
+|    |    |    \--- javax.transaction:javax.transaction-api:1.2
+|    |    +--- org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0
+|    |    |    \--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty.websocket:javax-websocket-client-impl:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0
+|    |    |    |    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    |    +--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    |    |    \--- org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0
+|    |    |    |    |         +--- org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0
+|    |    |    |    |         +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    |         \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    |    \--- javax.websocket:javax.websocket-api:1.0
+|    |    |    +--- org.eclipse.jetty.websocket:websocket-server:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty:jetty-servlet:9.3.0.RC0 (*)
+|    |    |    |    \--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    \--- javax.websocket:javax.websocket-api:1.0
+|    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty.http2:http2-server:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.http2:http2-common:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty.http2:http2-hpack:9.3.0.RC0
+|    |    |    |         +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |         +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    |         \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-server:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty.http2:http2-client:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.http2:http2-common:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0 (*)
+|    |    +--- javax.websocket:javax.websocket-api:1.0
+|    |    +--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty.orbit:javax.mail.glassfish:1.4.1.v201005082020
+|    |    |    \--- org.eclipse.jetty.orbit:javax.activation:1.1.0.v201105071233
+|    |    \--- org.slf4j:slf4j-api:1.6.6 -> 1.7.12
 |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    +--- commons-logging:commons-logging:1.2
@@ -253,8 +605,96 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903
-|    |    \--- org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016
+|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-client:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-http:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0
+|    |    |         \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-deploy:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty:jetty-xml:9.3.0.RC0
+|    |    |    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty:jetty-servlet:9.3.0.RC0
+|    |    |    |         \--- org.eclipse.jetty:jetty-security:9.3.0.RC0
+|    |    |    |              \--- org.eclipse.jetty:jetty-server:9.3.0.RC0
+|    |    |    |                   +--- javax.servlet:javax.servlet-api:3.1.0
+|    |    |    |                   +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    |                   \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-xml:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-jmx:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-jndi:9.3.0.RC0
+|    |    |         \--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    +--- javax.annotation:javax.annotation-api:1.2
+|    |    |    +--- org.ow2.asm:asm:5.0.1
+|    |    |    \--- org.ow2.asm:asm-commons:5.0.1
+|    |    |         \--- org.ow2.asm:asm-tree:5.0.1
+|    |    |              \--- org.ow2.asm:asm:5.0.1
+|    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    +--- org.eclipse.jetty:jetty-jaspi:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-security:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty.orbit:javax.security.auth.message:1.0.0.v201108011116
+|    |    +--- org.eclipse.jetty:jetty-jndi:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-rewrite:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-server:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-client:9.3.0.RC0 (*)
+|    |    |    \--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty:jetty-servlets:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-continuation:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-quickstart:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-webapp:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-jmx:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-plus:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0 (*)
+|    |    |    \--- javax.transaction:javax.transaction-api:1.2
+|    |    +--- org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0
+|    |    |    \--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty:jetty-annotations:9.3.0.RC0 (*)
+|    |    |    +--- org.eclipse.jetty.websocket:javax-websocket-client-impl:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0
+|    |    |    |    |    +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    |    +--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    |    |    \--- org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0
+|    |    |    |    |         +--- org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0
+|    |    |    |    |         +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |    |         \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    |    \--- javax.websocket:javax.websocket-api:1.0
+|    |    |    +--- org.eclipse.jetty.websocket:websocket-server:9.3.0.RC0
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0 (*)
+|    |    |    |    +--- org.eclipse.jetty:jetty-servlet:9.3.0.RC0 (*)
+|    |    |    |    \--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    \--- javax.websocket:javax.websocket-api:1.0
+|    |    +--- org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0
+|    |    |    \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty.http2:http2-server:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.http2:http2-common:9.3.0.RC0
+|    |    |    |    \--- org.eclipse.jetty.http2:http2-hpack:9.3.0.RC0
+|    |    |    |         +--- org.eclipse.jetty:jetty-util:9.3.0.RC0
+|    |    |    |         +--- org.eclipse.jetty:jetty-http:9.3.0.RC0 (*)
+|    |    |    |         \--- org.eclipse.jetty:jetty-io:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-server:9.3.0.RC0 (*)
+|    |    +--- org.eclipse.jetty.http2:http2-client:9.3.0.RC0
+|    |    |    +--- org.eclipse.jetty.http2:http2-common:9.3.0.RC0 (*)
+|    |    |    \--- org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0 (*)
+|    |    +--- javax.websocket:javax.websocket-api:1.0
+|    |    +--- javax.servlet:javax.servlet-api:3.1.0
+|    |    +--- org.eclipse.jetty.orbit:javax.mail.glassfish:1.4.1.v201005082020
+|    |    |    \--- org.eclipse.jetty.orbit:javax.activation:1.1.0.v201105071233
+|    |    \--- org.slf4j:slf4j-api:1.6.6 -> 1.7.12
 |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    +--- commons-logging:commons-logging:1.2

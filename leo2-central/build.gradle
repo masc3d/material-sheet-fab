@@ -40,6 +40,8 @@ repositories {
 dependencies {
     // leo2 webservice dependencies
     compile project(':leo2-common')
+    compile project(':leo2-messaging')
+    compile project(':leo2-node')
     compile project(':sx-common')
 
     // slf4j logging (eg. spring logs)
@@ -163,31 +165,10 @@ compileJava.dependsOn(processResources)
 // Location for generated sources
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
-def srcdir_apt = file("$projectDir/src/generated/apt")
 def srcdir_jooq = file("$projectDir/src/generated/jooq")
 
-compileJava {
-    doFirst {
-        // Source dir must exist
-        srcdir_apt.exists() || srcdir_apt.mkdirs()
-        // Tell javac about the generated sources location
-        options.compilerArgs = [
-                '-s', srcdir_apt.toString()
-        ]
-    }
-}
 // Generate jooq for each compilation run
 // tasks.compileJava.dependsOn(generateJooq)
-
-// Add generated sources to a separate sourceset, so IDEs can see them
-// (Adding sources to main/java instead will cause subsequent builds to fail)
-sourceSets {
-    generated {
-        java {
-            srcDirs += srcdir_apt
-        }
-    }
-}
 
 jooq {
     jdbc {

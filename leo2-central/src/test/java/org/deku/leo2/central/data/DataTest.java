@@ -17,7 +17,6 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         PersistenceContext.Central.class,
-        PersistenceContext.Embedded.class,
         DataTest.TestConfiguration.class}, loader = AnnotationConfigContextLoader.class)
 public class DataTest implements ApplicationContextAware {
     @Configuration

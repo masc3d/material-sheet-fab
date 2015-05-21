@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id=":leo2-node" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="leo2" external.system.module.version="1.0" type="JAVA_MODULE" version="4">
+<module external.linked.project.id=":leo2-node" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="leo2" external.system.module.version="0.1" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="web" name="Web Gradle : leo2-node-0.1.war">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/src/main/webapp/WEB-INF/web.xml" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/src/main/webapp" relative="/" />
+        </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/src/main/java" />
+          <root url="file://$MODULE_DIR$/src/main/resources" />
+          <root url="file://$MODULE_DIR$/src/generated/java" />
+          <root url="file://$MODULE_DIR$/src/generated/apt" />
+          <root url="file://$MODULE_DIR$/src/generated/resources" />
+        </sourceRoots>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/build/classes/main" />
     <output-test url="file://$MODULE_DIR$/build/classes/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/generated/apt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/generated/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/generated/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
@@ -19,5 +41,132 @@
     <orderEntry type="module" module-name="leo2-messaging" exported="" />
     <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.slf4j:slf4j-jdk14:1.7.12" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: log4j:log4j:1.2.17" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jboss.resteasy:resteasy-spring:3.0.11.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0-rc1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.mysema.querydsl:querydsl-collections:3.6.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-aspects:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.inject:javax.inject:1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jinq:jinq-jpa:1.7.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.h2database:h2:1.4.187" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.javassist:javassist:3.19.0-GA" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.persistence:javax.persistence:2.1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.wordnik:swagger-annotations:1.5.3-M1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.httpcomponents:httpclient:4.4.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.guava:guava:18.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.slf4j:slf4j-api:1.7.12" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-client:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-deploy:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-jmx:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-plus:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-annotations:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-util:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-jaspi:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-jndi:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-rewrite:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-servlets:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-quickstart:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.websocket:websocket-servlet:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.websocket:websocket-client:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-alpn-client:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.http2:http2-server:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.http2:http2-client:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.websocket:javax.websocket-api:1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.orbit:javax.mail.glassfish:1.4.1.v201005082020" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jboss.resteasy:jaxrs-api:3.0.11.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.activation:activation:1.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-io:commons-io:2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: net.jcip:jcip-annotations:1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.validation:validation-api:1.1.0.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.glassfish:javax.json:1.0.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework.data:spring-data-commons:1.10.0.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-orm:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-context:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-aop:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-tx:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-beans:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-core:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.aspectj:aspectjrt:1.8.5" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.slf4j:jcl-over-slf4j:1.7.10" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.aspectj:aspectjweaver:1.8.5" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.ow2.asm:asm-all:5.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jinq:api:1.7.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jinq:analysis:1.7.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.ws.rs:jsr311-api:1.1.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.reflections:reflections:0.9.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.httpcomponents:httpcore:4.4.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-codec:commons-codec:1.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-http:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-io:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-webapp:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-xml:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.annotation:javax.annotation-api:1.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.ow2.asm:asm:5.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.ow2.asm:asm-commons:5.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-security:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.orbit:javax.security.auth.message:1.0.0.v201108011116" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-server:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-continuation:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.transaction:javax.transaction-api:1.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.websocket:websocket-api:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.websocket:javax-websocket-client-impl:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.websocket:websocket-server:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.websocket:websocket-common:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.http2:http2-common:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.orbit:javax.activation:1.1.0.v201105071233" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.jettison:jettison:1.3.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.mysema.commons:mysema-commons-lang:0.2.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.infradna.tool:bridge-method-annotation:1.13" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.mysema.codegen:codegen:0.6.6" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-jdbc:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-expression:4.1.6.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: aopalliance:aopalliance:1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.commons:commons-lang3:3.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.wordnik:swagger-models:1.5.3-M1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.google.code.findbugs:annotations:2.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty:jetty-servlet:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.ow2.asm:asm-tree:5.0.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.http2:http2-hpack:9.3.0.RC0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.sun.xml.bind:jaxb-impl:2.2.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jdt.core.compiler:ecj:4.3.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: joda-time:joda-time:2.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.sun.xml.bind:jaxb-core:2.2.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.sun.xml.fastinfoset:FastInfoset:1.2.12" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.sun.istack:istack-commons-runtime:2.16" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.xml.bind:jsr173_api:1.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jboss.resteasy:resteasy-client:3.0.11.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.springframework:spring-test:4.1.6.RELEASE" level="project" />
   </component>
 </module>

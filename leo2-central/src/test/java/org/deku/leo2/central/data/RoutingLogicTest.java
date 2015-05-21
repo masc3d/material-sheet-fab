@@ -1,8 +1,6 @@
 package org.deku.leo2.central.data;
 
-import org.deku.leo2.central.rest.services.v1.RoutingService;
-import org.deku.leo2.rest.entities.v1.Routing;
-import org.junit.Assert;
+import org.deku.leo2.node.rest.services.v1.RoutingService;
 import org.junit.Test;
 
 import javax.inject.Inject;

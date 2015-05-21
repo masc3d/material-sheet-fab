@@ -7,7 +7,6 @@
         <setting name="provider-name" value="EclipseLink" />
         <datasource-mapping>
           <factory-entry name="entityManagerFactory" />
-          <factory-entry name="leo2-for-modelgen" />
         </datasource-mapping>
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/build/classes/main/META-INF/persistence.xml" />
       </configuration>
@@ -29,11 +28,8 @@
         </webroots>
         <sourceRoots>
           <root url="file://$MODULE_DIR$/src/main/resources" />
-          <root url="file://$MODULE_DIR$/src/generated/resources" />
-          <root url="file://$MODULE_DIR$/src/generated/apt" />
           <root url="file://$MODULE_DIR$/src/generated/jooq" />
           <root url="file://$MODULE_DIR$/src/main/java" />
-          <root url="file://$MODULE_DIR$/src/generated/java" />
         </sourceRoots>
       </configuration>
     </facet>
@@ -43,12 +39,9 @@
     <output-test url="file://$MODULE_DIR$/build/classes/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src/generated/apt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/generated/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/generated/jooq" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/generated/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
@@ -189,5 +182,7 @@
     <orderEntry type="library" scope="TEST" name="Gradle: org.jboss.resteasy:resteasy-client:3.0.11.Final" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" level="project" />
+    <orderEntry type="module" module-name="leo2-messaging" exported="" />
+    <orderEntry type="module" module-name="leo2-node" exported="" />
   </component>
 </module>

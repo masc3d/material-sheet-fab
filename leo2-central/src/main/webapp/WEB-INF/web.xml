@@ -32,8 +32,8 @@
         <!-- TODO. figure out why ResteasyJackson2Provider gets loaded automatically when running from IDE,
         while it has to be listed here when running with jetty embedded in shadowJar -->
         <param-value>
-            org.deku.leo2.central.rest.ObjectMapperProvider,
-            org.deku.leo2.central.rest.ExceptionMapper,
+            org.deku.leo2.node.rest.ObjectMapperProvider,
+            org.deku.leo2.node.rest.ExceptionMapper,
             org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider
         </param-value>
     </context-param>
@@ -63,7 +63,7 @@
         </init-param>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>org.deku.leo2.central.rest.WebserviceApplication</param-value>
+            <param-value>org.deku.leo2.node.rest.WebserviceApplication</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

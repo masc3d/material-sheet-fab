@@ -1,8 +1,8 @@
 package org.deku.leo2.central.rest;
 
+import org.deku.leo2.node.rest.ObjectMapperProvider;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.After;
 import org.junit.Before;

@@ -63,6 +63,8 @@ subprojects {
             force "org.glassfish.jersey.containers:jersey-container-servlet-core:$v_jersey"
             force "org.glassfish.jersey.core:jersey-server:$v_jersey"
 
+            force "org.eclipse.jetty.aggregate:jetty-all:$v_jetty"
+
             force "org.springframework:spring-web:$v_spring"
             force "org.springframework:spring-core:$v_spring"
             force "org.springframework:spring-context:$v_spring"

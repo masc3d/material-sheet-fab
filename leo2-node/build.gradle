@@ -1,17 +1,197 @@
-apply plugin: 'java'
+// Gradle dependencies/plugins
+buildscript {
+    dependencies {
+        // cargo gradle plugin for remote delpoyment
+        classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.+'
+    }
+}
+
+plugins {
+    id "com.github.johnrengelman.shadow" version "1.2.1"
+}
+
+apply plugin: 'war'
+apply plugin: 'cargo'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
-version = '1.0'
+version = '0.1'
+mainClassName = "org.deku.leo2.node.Main"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile project(':sx-common')
-
+    // leo2 webservice dependencies
     compile project(':leo2-common')
     compile project(':leo2-messaging')
+    compile project(':sx-common')
 
-    testCompile group: 'junit', name: 'junit', version: v_junit
+    // slf4j logging (eg. spring logs)
+    compile "org.slf4j:slf4j-jdk14:+"
+    // log4j logging (required by eclipse codegen)
+    compile "log4j:log4j:+"
+
+    // jetty
+    compile "org.eclipse.jetty.aggregate:jetty-all:$v_jetty"
+
+    // webservice
+    // for various javax interfaces (eg. ServletContextListener)
+    compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
+    // jaxrs/resteasy
+    compile "org.jboss.resteasy:resteasy-jaxrs:$v_resteasy"
+    compile "org.jboss.resteasy:resteasy-spring:$v_resteasy"
+    compile "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy"
+
+    // jackson JSON serializer
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
+
+    // persistence framework(s)
+    // eclipselink
+    compile "org.eclipse.persistence:eclipselink:$v_eclipselink"
+    // eclipselink codegen/annotation processor
+    // NOTE: disabled as we don't need/use criteria API just yet (using QueryDSL)
+//    compile "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$v_eclipselink"
+//    // needed for eclipselink codegen under specific circumstances (eg querydsl related spring repository interfaces)
+//    providedCompile("org.hibernate:hibernate-core:+") {
+//        transitive = false
+//    }
+//    providedCompile("jaxen:jaxen:+") {
+//        transitive = false
+//    }
+
+    // queryDSL
+    compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
+    compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
+    compile "com.mysema.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
+
+    // spring
+    compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
+    compile "org.springframework:spring-web:$v_spring"
+    compile "org.springframework:spring-aspects:$v_spring"
+
+    // JSR-330
+    compile 'javax.inject:javax.inject:1'
+
+    // deltaspike data
+//    compile 'org.apache.deltaspike.modules:deltaspike-data-module-api:+'
+//    compile 'org.apache.deltaspike.modules:deltaspike-data-module-impl:+'
+
+    compile 'org.jinq:jinq-jpa:+'
+
+    // databases
+    compile "com.h2database:h2:$v_h2"
+
+    // json doc
+    compile 'com.wordnik:swagger-jaxrs:+'
+    compile 'org.javassist:javassist:3.+'
+
+    // TODO: For testing aspectj proxies with spring
+//    compile "org.aspectj:aspectjtools:+"
+//    compile "org.aspectj:aspectjweaver:+"
+
+    // test dependencies
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+
+    // webservice client libraries for test cases
+    testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
+    testCompile "org.springframework:spring-test:$v_spring"
+
+    testCompile project(':sx-common')
 }
+
+run {
+    errorOutput = System.err
+    standardOutput = System.out
+    standardInput = System.in
+}
+
+// war plugin configuration
+war {
+    // Some specific jetty components (and transitive deps) break tomcat deployment.
+    // tomcat will fail with LifecycleException
+    // In the long run we will probably need separate configurations/dependency sets for war/jar
+    rootSpec.exclude("**/jetty*.jar")
+    rootSpec.exclude("**/javax-websocket*.jar")
+    rootSpec.exclude("**/javax.servlet-api*.jar")
+}
+
+// cargo plugin configuration
+cargo {
+    containerId = 'tomcat7x'
+    port = 8080
+
+    deployable {
+        context = '/leo2'
+    }
+
+    remote {
+        hostname = '10.0.10.10'
+        username = 'tomcat'
+        password = 'tomcat'
+    }
+}
+
+// cargo task dependencies
+tasks.cargoDeployRemote.dependsOn(war)
+tasks.cargoRedeployRemote.dependsOn(war)
+
+// Required for eclipse modelgen to find xml resources (eg. persistence.xml)
+sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+compileJava.dependsOn(processResources)
+
+// Location for generated sources
+// Directory for apt must be dedicated (no other generators may write here)
+// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+def srcdir_apt = file("$projectDir/src/generated/apt")
+
+compileJava {
+    doFirst {
+        // Source dir must exist
+        srcdir_apt.exists() || srcdir_apt.mkdirs()
+        // Tell javac about the generated sources location
+        options.compilerArgs = [
+                '-s', srcdir_apt.toString()
+        ]
+    }
+}
+
+// Add generated sources to a separate sourceset, so IDEs can see them
+// (Adding sources to main/java instead will cause subsequent builds to fail)
+sourceSets {
+    generated {
+        java {
+            srcDirs += srcdir_apt
+        }
+    }
+}
+
+task copyWebapp(type: Copy) {
+    from 'src/main/webapp'
+    into 'build/classes/main/webapp'
+}
+
+compileJava.dependsOn(copyWebapp)
+
+// masc20150507. task prototypes
+////copying all dependencies attached to 'compile' into a specific folder
+//task copyAllDependencies(type: Copy) {
+//    //referring to the 'compile' configuration
+//    from configurations.compile
+//    into 'allLibs'
+//}
+//
+//configurations.all.each {
+//    println "compile: $it"
+//}
+//
+//sourceSets.main.compileClasspath.each {
+//    println "ss: $it"
+//}
+
+//configurations.compile.allDependencies.each {
+//    println "$it.group:$it.name:$it.version"
+//
+//}
