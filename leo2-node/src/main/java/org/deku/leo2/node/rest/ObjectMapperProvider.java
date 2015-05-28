@@ -24,12 +24,12 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
         // Don't epxlicitly serialize nulls with json (breaks swagger-ui too when having all those nulls in swagger.json)
         mMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         // Write date/times in JSON notation instead of (numeric) timestamps or arrays
-        mMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        //mMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         // Read/Write enums using index
         mMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
         mMapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
         // Enable support for java.time (java 8)
-        mMapper.registerModule(new JSR310Module());
+        //mMapper.registerModule(new JSR310Module());
     }
     @Override
     public ObjectMapper getContext(Class<?> type) {

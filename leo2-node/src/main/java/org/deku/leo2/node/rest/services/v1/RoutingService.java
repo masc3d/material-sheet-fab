@@ -10,13 +10,19 @@ import org.deku.leo2.rest.adapters.LocalDateParam;
 import org.deku.leo2.rest.entities.v1.HolidayType;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
+import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.tools.JavaCompiler;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  * Created by masc on 20.04.15.
@@ -40,8 +46,8 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         Routing rWSRouting = new Routing();
 
 //        Iterable<Country> countries = mCountryRepository.findWithQuery(country);
-
 //        Country rcountry=mCountryRepository.find(country);
+
         Country rcountry = mCountryRepository.findOne(country);
 
         if (rcountry.equals(null)) {
@@ -190,22 +196,9 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             //return r;
         }
 
+        java.sql.Timestamp sqlvalidForm = Timestamp.valueOf(validForm.toString() + " 00:00:00");
 
-        java.sql.Timestamp sqlTime = Timestamp.valueOf(validForm.toString() + " 00:00:00");
 
-
-//        RoutePK epk = new RoutePK();
-        //epk.setZip(zipConform);
-        //epk.setLkz(country);
-        //epk.setProduct(product);
-        //Timestamp.valueOf(validForm);
-        //"2013-11-01 00:00:00");
-//        epk.setValidfrom(sqlTime);
-//        epk.setValidfrom( );
-//        Iterable<Route> lRoute = mRouteRepository.findAll(epk );
-//        Route rRoute = lRoute.iterator().next();
-//        Route rRoute = mRouteRepository.findOne(epk);
-//        Route rRoute= mRouteRepository.findActualRoute(epk) ;
 
         QRoute qRoute = QRoute.route;
         BooleanExpression rWhere = null;
@@ -215,30 +208,24 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
                 rWhere =
                         qRoute.lkz.eq(country)
                                 .and(qRoute.zip.eq(zipQuery))
-                                .and(qRoute.validfrom.goe(sqlTime)) ;
+                                .and(qRoute.validfrom.goe(sqlvalidForm));
                 //... sortierung, validto
                 break;
             case 1:
                 rWhere =
                         qRoute.lkz.eq(country)
                                 .and(qRoute.zip.eq(zipQuery))
-                                .and(qRoute.validfrom.goe(sqlTime));
+                                .and(qRoute.validfrom.goe(sqlvalidForm));
                 break;
             case 2:
                 rWhere =
                         qRoute.lkz.eq(country)
                                 .and(qRoute.zip.eq(zipQuery))
-                                .and(qRoute.validfrom.goe(sqlTime));
+                                .and(qRoute.validfrom.goe(sqlvalidForm));
                 break;
         }
         Iterable<Route> rRouten = mRouteRepository.findAll(rWhere);
 
-
-//        rRouten = mRouteRepository.findAll(
-//                qRoute.lkz.eq(country)
-//                        .and(qRoute.zip.eq(zipConform))
-//                        .and(qRoute.validfrom.goe(sqlTime))
-//        );
         if (!rRouten.iterator().hasNext()) {
             //  keine Route
             throw new IllegalArgumentException("keine Route");
@@ -246,28 +233,51 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         }
         Route routeFound = rRouten.iterator().next();
 
-//        HolidayctrlPK hd = new HolidayctrlPK();
-//        hd.setCountry(country);
-//        hd.setHoliday(sqlTime);
-
-        Holidayctrl rholidayctrl = mHolidayctrlRepostitory.findOne(new HolidayctrlPK(sqlTime,country));
-
 //** Feitertage
+        Holidayctrl rholidayctrl = mHolidayctrlRepostitory.findOne(new HolidayctrlPK(sqlvalidForm, country));
 
-        HolidayType holidayType = null;
+        HolidayType holidayType = HolidayType.Regular;
 
-        if (rholidayctrl.getCtrlPos() == -1)
-            holidayType = HolidayType.BankHoliday;
-//        else if (rholidayctrl.getCtrlPos() > 0 && ) {
-//
-//        }
+//        ZonedDateTime dtsqlvalidForm=ZonedDateTime.parse(validForm.toString() ,DateTimeFormatter.BASIC_ISO_DATE);
+        LocalDate dtsqlvalidForm;
+        dtsqlvalidForm = LocalDate.parse(validForm.toString());
+        DayOfWeek day = dtsqlvalidForm.getDayOfWeek();
 
 
-        rWSRouting.setSector(rholidayctrl.getCtrlPos().toString());
+
+//        if (day== DateTimeConstants.SUNDAY)
+//            holidayType = HolidayType.Sunday;
+//        if (day== DateTimeConstants.SATURDAY)
+//            holidayType = HolidayType.Saturday;
+
+        if (rholidayctrl != null) {
+            if (rholidayctrl.getCtrlPos() == -1)
+                holidayType = HolidayType.BankHoliday;
+            else if (rholidayctrl.getCtrlPos() > 0) {
+                if (routeFound.getHolidayctrl().substring(rholidayctrl.getCtrlPos(), rholidayctrl.getCtrlPos()) == "J")
+                    holidayType = HolidayType.RegionalBankHoliday;
+            }
+        }
+
+
+        rWSRouting.setSector(routeFound.getSector());
         rWSRouting.setHoliday(holidayType);
         rWSRouting.setRouting(routeFound.getStation());
         rWSRouting.setZone(routeFound.getArea());
         rWSRouting.setIsland(routeFound.getIsland() != 0);
+        rWSRouting.setEarliestTimeOfDelivery(LocalTime.parse(routeFound.getEtod().toString()));
+
+        //Routing r = mRoutingService.find(new LocalDateParam(java.time.LocalDate.parse("2013-11-02")), "AT", "1010", "A");
+
+
+//        rWSRouting.setNextDelieveryDay(new LocalDateParam (java.time.LocalDate.parse("2013-11-02")));
+
+        rWSRouting.setNextDelieveryDay(LocalDate.parse("2013-11-02"));
+//        rWSRouting.setNextDelieveryDay(java.time.LocalDate.of(2015,5,11 ));
+        //        rWSRouting.setNextDelieveryDay(java.time.LocalDate LocalDateof(2015, 5, 11));
+
+
+                //new LocalDate(java.time.LocalDate.parse("2015-05-22") ) );
 
 //        Routing r = new Routing("sector1", "zone1", LocalTime.now(), 12, HolidayType.RegionalBankHoliday, false);
 

@@ -151,8 +151,6 @@
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" />
             <element id="archive" name="leo2-leo2-messaging-1.0.jar">
               <element id="module-output" name="leo2-messaging" />
               <element id="dir-copy" path="$PROJECT_DIR$/leo2-messaging/build/resources/main" />
@@ -182,6 +180,8 @@
               <element id="module-output" name="leo2-node" />
               <element id="dir-copy" path="$PROJECT_DIR$/leo2-node/build/classes/main" />
             </element>
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.6.0-rc1/ec720d3a7bd13313c72b1d8d10f3f81cccd4b769/jackson-jaxrs-json-provider-2.6.0-rc1.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.6.0-rc1/4517d5921138298bea766f8f1af8784faf9a98fc/jackson-jaxrs-base-2.6.0-rc1.jar" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -339,8 +339,6 @@
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" />
             <element id="archive" name="leo2-leo2-messaging-1.0.jar">
               <element id="module-output" name="leo2-messaging" />
               <element id="dir-copy" path="$PROJECT_DIR$/leo2-messaging/build/resources/main" />
@@ -370,6 +368,8 @@
               <element id="module-output" name="leo2-node" />
               <element id="dir-copy" path="$PROJECT_DIR$/leo2-node/build/classes/main" />
             </element>
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.6.0-rc1/ec720d3a7bd13313c72b1d8d10f3f81cccd4b769/jackson-jaxrs-json-provider-2.6.0-rc1.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.6.0-rc1/4517d5921138298bea766f8f1af8784faf9a98fc/jackson-jaxrs-base-2.6.0-rc1.jar" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -482,7 +482,6 @@
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-spring:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.3" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" />
@@ -504,7 +503,6 @@
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
             <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
@@ -552,6 +550,8 @@
             <element id="library" level="project" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" />
             <element id="library" level="project" name="Gradle: com.sun.istack:istack-commons-runtime:2.16" />
             <element id="library" level="project" name="Gradle: javax.xml.bind:jsr173_api:1.0" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.6.0-rc1/ec720d3a7bd13313c72b1d8d10f3f81cccd4b769/jackson-jaxrs-json-provider-2.6.0-rc1.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.6.0-rc1/4517d5921138298bea766f8f1af8784faf9a98fc/jackson-jaxrs-base-2.6.0-rc1.jar" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -664,7 +664,6 @@
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-spring:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.3" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.3:jpa" />
@@ -686,7 +685,6 @@
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" />
             <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
             <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
@@ -734,6 +732,8 @@
             <element id="library" level="project" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" />
             <element id="library" level="project" name="Gradle: com.sun.istack:istack-commons-runtime:2.16" />
             <element id="library" level="project" name="Gradle: javax.xml.bind:jsr173_api:1.0" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.6.0-rc1/ec720d3a7bd13313c72b1d8d10f3f81cccd4b769/jackson-jaxrs-json-provider-2.6.0-rc1.jar" />
+            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.6.0-rc1/4517d5921138298bea766f8f1af8784faf9a98fc/jackson-jaxrs-base-2.6.0-rc1.jar" />
           </element>
         </element>
         <element id="directory" name="META-INF">
