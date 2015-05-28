@@ -2,6 +2,7 @@ package org.deku.leo2.node.rest;
 
 import sx.util.Cast;
 
+import javax.inject.Named;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
 /**
  * Created by masc on 21.04.15.
  */
+@Named
 @Provider
 public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exception> {
     /**

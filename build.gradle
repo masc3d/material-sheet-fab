@@ -24,13 +24,16 @@ subprojects {
         ext {
             v_jooq = "3.+"
             v_jersey = "2.+"
-            v_resteasy = "3.+"
+            // Resteasy > 3.0.9 breaks integration with spring-boot.
+            // it actually still works fine when spring is initialized via resteasy's SpringContextLoaderListener
+            v_resteasy = "3.0.9.+"
             v_jackson = "2.+"
             v_hk2 = "2.+"
             v_eclipselink = "2.+"
             v_spring = "4.+"
+            v_springboot = "1.+"
             v_querydsl = "3.+"
-            v_jetty = "9.+"
+            v_jetty = "9.2.+"
             v_junit = "4.+"
             v_guava = "18.0"
             v_activemq = "5.+"
@@ -59,11 +62,15 @@ subprojects {
             force "org.glassfish.hk2:hk2-locator:$v_hk2"
             force "org.glassfish.hk2:spring-bridge:$v_hk2"
             force "org.glassfish.hk2.external:javax.inject:$v_hk2"
+            force "org.glassfish:javax.el:3.+"
 
             force "org.glassfish.jersey.containers:jersey-container-servlet-core:$v_jersey"
             force "org.glassfish.jersey.core:jersey-server:$v_jersey"
 
             force "org.eclipse.jetty.aggregate:jetty-all:$v_jetty"
+            force "org.eclipse.jetty.websocket:javax-websocket-server-impl:$v_jetty"
+            force "org.eclipse.jetty.websocket:websocket-server:$v_jetty"
+            force "org.eclipse.jetty:jetty-webapp:$v_jetty"
 
             force "org.springframework:spring-web:$v_spring"
             force "org.springframework:spring-core:$v_spring"
@@ -78,6 +85,7 @@ subprojects {
             force "org.jooq:jooq-meta:$v_jooq"
             force "org.jooq:jooq-codegen:$v_jooq"
 
+            force "commons-logging:commons-logging:1.+"
             force "com.google.guava:guava:$v_guava"
             force "org.javassist:javassist:3.+"
             force "org.apache.httpcomponents:httpclient:4.+"
@@ -90,7 +98,11 @@ subprojects {
 
             force "xml-apis:xml-apis:1.+"
 
-            force "org.slf4j:slf4j-api:1.+"
+            force "org.slf4j:slf4j-api:1.7.+"
+            force "org.slf4j:log4j-over-slf4j:1.7.+"
+            force "org.slf4j:jcl-over-slf4j:1.7.+"
+            force "org.slf4j:jul-to-slf4j:1.7.+"
+
             force "org.jboss.logging:jboss-logging:3.+"
             force "org.jboss.logging:jboss-logging-annotations:1.+"
         }

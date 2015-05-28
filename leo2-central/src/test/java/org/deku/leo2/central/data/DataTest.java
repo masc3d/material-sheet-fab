@@ -1,6 +1,7 @@
 package org.deku.leo2.central.data;
 
 import org.deku.leo2.central.PersistenceContext;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -14,6 +15,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 /**
  * Created by masc on 15.05.15.
  */
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         PersistenceContext.Central.class,

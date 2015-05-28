@@ -18,12 +18,10 @@ dependencies {
         exclude group: 'org.springframework'
         exclude group: 'org.apache.activemq', module: 'activemq-spring'
     }
+
     // Http support
     compile 'org.apache.httpcomponents:httpclient:4.+'
     compile 'com.thoughtworks.xstream:xstream:1.+'
-
-    // Logging
-    compile 'org.slf4j:slf4j-jdk14:+'
 
     testCompile group: 'junit', name: 'junit', version: v_junit
 }

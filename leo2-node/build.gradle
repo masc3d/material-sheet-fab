@@ -1,6 +1,9 @@
 // Gradle dependencies/plugins
 buildscript {
     dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$v_springboot")
+        classpath("io.spring.gradle:dependency-management-plugin:0.5.1.RELEASE")
+
         // cargo gradle plugin for remote delpoyment
         classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.+'
     }
@@ -13,10 +16,12 @@ plugins {
 apply plugin: 'war'
 apply plugin: 'cargo'
 apply plugin: 'application'
+apply plugin: 'spring-boot'
+apply plugin: 'io.spring.dependency-management'
 
 sourceCompatibility = 1.8
 version = '0.1'
-mainClassName = "org.deku.leo2.node.Main"
+mainClassName = "org.deku.leo2.node.MainSpringBoot"
 
 repositories {
     mavenCentral()
@@ -29,9 +34,12 @@ dependencies {
     compile project(':sx-common')
 
     // slf4j logging (eg. spring logs)
-    compile "org.slf4j:slf4j-jdk14:+"
+    // compile "org.slf4j:slf4j-jdk14:+"
     // log4j logging (required by eclipse codegen)
     compile "log4j:log4j:+"
+    compile "ch.qos.logback:logback-classic:1.+"
+    compile "org.slf4j:jul-to-slf4j:1.+"
+    compile "org.slf4j:log4j-over-slf4j:1.+"
 
     // jetty
     compile "org.eclipse.jetty.aggregate:jetty-all:$v_jetty"
@@ -71,6 +79,11 @@ dependencies {
     compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
     compile "org.springframework:spring-web:$v_spring"
     compile "org.springframework:spring-aspects:$v_spring"
+    // spring boot
+
+    compile("org.springframework.boot:spring-boot-starter-web:$v_springboot")
+    compile("org.springframework.boot:spring-boot-starter-jetty:$v_springboot")
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$v_springboot")
 
     // JSR-330
     compile 'javax.inject:javax.inject:1'

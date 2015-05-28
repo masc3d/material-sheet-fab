@@ -1,23 +1,41 @@
 package org.deku.leo2.central;
 
+import org.apache.activemq.transport.http.HttpTunnelServlet;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import sx.Disposable;
 import sx.LazyInstance;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
+ * leo2-central main class.
+ *
+ * Derives from node's main class.
+ * Requires @Configuration to pull in spring components configured via base class.
+ *
  * Created by masc on 30.07.14.
  */
-public class Main implements Disposable, ApplicationContextAware {
-    private static LazyInstance<AtomicReference<Main>> mInstance
-            = new LazyInstance<>(() -> new AtomicReference(new Main()));
+@Configuration("central.Main")
+public class Main extends org.deku.leo2.node.Main {
+    private static AtomicReference<LazyInstance<Main>> mInstance
+            = new AtomicReference<>(new LazyInstance(() -> new Main()));
 
     private LazyInstance<File> mLocalHomeDirectory;
 
@@ -29,29 +47,7 @@ public class Main implements Disposable, ApplicationContextAware {
         return mInstance.get().get();
     }
 
-    private Main() {
-        // Spring application context
-        // mContext = new AnnotationConfigApplicationContext(Main.class.getPackage().getName());
-
-        mLocalHomeDirectory = new LazyInstance<>( () ->  new File(System.getProperty("user.home"), ".leo2"));
-    }
-
-    /**
-     * Spring application context
-     */
-    ConfigurableApplicationContext mContext;
-
-    public ConfigurableApplicationContext getContext() {
-        return mContext;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        mContext = (ConfigurableApplicationContext)applicationContext;
-    }
-
-    public File getLocalHomeDirectory() {
-        return mLocalHomeDirectory.get();
+    public Main() {
     }
 
     /**
@@ -60,31 +56,11 @@ public class Main implements Disposable, ApplicationContextAware {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Server server = new Server(8080);
-
-        WebAppContext context = new WebAppContext();
-        context.setContextPath("/leo2");
-
-        // This setup relies on the copyWebapp gradle task which copies the webapp directory into the classpath root
-        String r = Main.class.getResource("/webapp").toString();
-        System.out.println(r);
-        String d = Main.class.getResource("/webapp/WEB-INF/web.xml").toString();
-        System.out.println(d);
-
-        context.setDescriptor(d);
-        context.setResourceBase(r);
-
-        context.setWelcomeFiles(new String[]{"index.html"});
-        server.setHandler(context);
-        server.start();
-
-        System.out.println("Enter to stop webservice");
-        System.in.read();
-
-        server.stop();
+        org.deku.leo2.node.Main.run(args);
     }
 
     @Override
     public void dispose() {
+        super.dispose();
     }
 }

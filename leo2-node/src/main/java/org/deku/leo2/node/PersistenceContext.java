@@ -67,12 +67,11 @@ public class PersistenceContext {
             dataSourceProperties.setProperty("connectTimeout", "1000");
             // For in memory db
             if (IN_MEMORY) {
-            dataSourceProperties.setProperty("INIT", "CREATE SCHEMA IF NOT EXISTS leo2");
-            dataSourceProperties.setProperty("DB_CLOSE_DELAY", "-1");
+                dataSourceProperties.setProperty("INIT", "CREATE SCHEMA IF NOT EXISTS leo2");
+                dataSourceProperties.setProperty("DB_CLOSE_DELAY", "-1");
             }
 
             dataSource.setConnectionProperties(dataSourceProperties);
-
 
             return dataSource;
         }

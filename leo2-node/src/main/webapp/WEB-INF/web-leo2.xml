@@ -23,7 +23,7 @@
     </context-param>
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>org.deku.leo2.central</param-value>
+        <param-value>org.deku.leo2.node</param-value>
     </context-param>
 
     <!-- Resteasy configuration -->
@@ -48,7 +48,7 @@
     <!-- Custom servlet context listener -->
     <listener>
         <listener-class>
-            org.deku.leo2.central.ServletContextListener
+            org.deku.leo2.node.web.ServletContextListener
         </listener-class>
     </listener>
 

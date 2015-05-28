@@ -29,6 +29,7 @@ apply plugin: 'cargo'
 apply plugin: 'application'
 apply plugin: 'jooq'
 
+
 sourceCompatibility = 1.8
 version = '0.1'
 mainClassName = "org.deku.leo2.central.Main"
@@ -45,9 +46,12 @@ dependencies {
     compile project(':sx-common')
 
     // slf4j logging (eg. spring logs)
-    compile "org.slf4j:slf4j-jdk14:+"
+    //compile "org.slf4j:slf4j-jdk14:+"
     // log4j logging (required by eclipse codegen)
     compile "log4j:log4j:+"
+    compile "ch.qos.logback:logback-classic:1.+"
+    compile "org.slf4j:jul-to-slf4j:1.+"
+    compile "org.slf4j:log4j-over-slf4j:1.+"
 
     // jetty
     compile "org.eclipse.jetty.aggregate:jetty-all:$v_jetty"

@@ -24,13 +24,7 @@ public class WebserviceTest {
 
     @Before
     public void setup() throws Exception {
-        mServer = new Server(8080);
-        WebAppContext context = new WebAppContext();
-        context.setContextPath("/leo2");
-        context.setResourceBase("src/main/webapp");
-        context.setWelcomeFiles(new String[]{"index.html"});
-        mServer.setHandler(context);
-        mServer.start();
+        org.deku.leo2.central.Main.main(null);
 
         // Setup jaxrs client & target
         this.client = ClientBuilder.newClient();

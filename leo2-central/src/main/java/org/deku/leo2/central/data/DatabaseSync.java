@@ -7,6 +7,7 @@ import com.mysema.query.types.path.EntityPathBase;
 import org.deku.leo2.central.data.entities.jooq.Tables;
 import org.deku.leo2.central.data.entities.jooq.tables.records.*;
 import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
+import org.deku.leo2.node.PersistenceContext;
 import org.deku.leo2.node.data.entities.*;
 import org.deku.leo2.node.data.repositories.*;
 import org.jooq.Record;
@@ -54,17 +55,17 @@ public class DatabaseSync {
     SectorRepository mSectorRepository;
 
     @Inject
-    public DatabaseSync(@Qualifier(org.deku.leo2.node.PersistenceContext.DB_EMBEDDED) PlatformTransactionManager tx) {
+    public DatabaseSync(@Qualifier(PersistenceContext.DB_EMBEDDED) PlatformTransactionManager tx) {
         mTransaction = new TransactionTemplate(tx);
         mTransaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
     }
 
-    @Transactional(value = org.deku.leo2.node.PersistenceContext.DB_EMBEDDED)
+    @Transactional(value = PersistenceContext.DB_EMBEDDED)
     public void sync() {
         this.sync(false);
     }
 
-    @Transactional(value = org.deku.leo2.node.PersistenceContext.DB_EMBEDDED)
+    @Transactional(value = PersistenceContext.DB_EMBEDDED)
     public void sync(boolean reload) {
         boolean alwaysDelete = reload;
 
