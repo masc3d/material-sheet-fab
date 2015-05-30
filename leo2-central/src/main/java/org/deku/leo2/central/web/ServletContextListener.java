@@ -23,10 +23,6 @@ public class ServletContextListener implements javax.servlet.ServletContextListe
     public void contextInitialized(ServletContextEvent sce) {
         mLog.info("Leo2 central servlet context initalizer");
 
-        // Log4j logging (to make resteasy log entries visible, needs refinement)
-        BasicConfigurator.configure();
-        org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
-
         ApplicationContext ac = WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
 
         // Trigger database sync

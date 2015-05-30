@@ -44,7 +44,7 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.2.11.M0
+|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.2.11.v20150529
 |    |    +--- javax.websocket:javax.websocket-api:1.0
 |    |    \--- javax.servlet:javax.servlet-api:3.1.0
 |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
@@ -95,7 +95,7 @@ default - Configuration for default artifacts.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.2.11.M0
+|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.2.11.v20150529
 |    |    +--- javax.websocket:javax.websocket-api:1.0
 |    |    \--- javax.servlet:javax.servlet-api:3.1.0
 |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
@@ -146,7 +146,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.2.11.M0
+|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.2.11.v20150529
 |    |    +--- javax.websocket:javax.websocket-api:1.0
 |    |    \--- javax.servlet:javax.servlet-api:3.1.0
 |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
@@ -197,7 +197,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.2.11.M0
+|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.2.11.v20150529
 |    |    +--- javax.websocket:javax.websocket-api:1.0
 |    |    \--- javax.servlet:javax.servlet-api:3.1.0
 |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
@@ -249,7 +249,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.2.11.M0
+|    +--- org.eclipse.jetty.aggregate:jetty-all:8.1.16.v20140903 -> 9.2.11.v20150529
 |    |    +--- javax.websocket:javax.websocket-api:1.0
 |    |    \--- javax.servlet:javax.servlet-api:3.1.0
 |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1

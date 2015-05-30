@@ -32,23 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * Created by masc on 30.07.14.
  */
-public class Main extends org.deku.leo2.node.Main {
-    private static AtomicReference<LazyInstance<Main>> mInstance
-            = new AtomicReference<>(new LazyInstance(() -> new Main()));
-
-    private LazyInstance<File> mLocalHomeDirectory;
-
-    /**
-     * Singleton instance
-     * @return
-     */
-    public static Main instance() {
-        return mInstance.get().get();
-    }
-
-    public Main() {
-    }
-
+public class Main {
     /**
      * Standalone jetty
      * @param args

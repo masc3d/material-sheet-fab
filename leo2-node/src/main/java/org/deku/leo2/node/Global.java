@@ -64,6 +64,8 @@ public class Global implements Disposable, ApplicationContextAware {
      * Intialize logging
      */
     public void initializeLogging() {
+        // Disable JOOQ logo
+        System.setProperty("org.jooq.no-logo", "true");
         // SLF4J
         Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);

@@ -73,6 +73,8 @@ public class DatabaseSync {
 
     @Transactional(value = PersistenceContext.DB_EMBEDDED)
     public void sync(boolean reload) {
+        Stopwatch sw = Stopwatch.createStarted();
+
         boolean alwaysDelete = reload;
 
         this.updateEntities(
@@ -119,6 +121,8 @@ public class DatabaseSync {
                 org.deku.leo2.central.data.entities.jooq.tables.Sector.SECTOR.TIMESTAMP,
                 (s) -> convert(s),
                 alwaysDelete);
+
+        mLog.info("Database sync took " + sw.toString());
     }
 
     /**

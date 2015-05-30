@@ -45,76 +45,14 @@ dependencies {
     compile project(':leo2-node')
     compile project(':sx-common')
 
-    // slf4j logging (eg. spring logs)
-    //compile "org.slf4j:slf4j-jdk14:+"
-    // log4j logging (required by eclipse codegen)
-    compile "log4j:log4j:+"
-    compile "ch.qos.logback:logback-classic:1.+"
-    compile "org.slf4j:jul-to-slf4j:1.+"
-    compile "org.slf4j:log4j-over-slf4j:1.+"
-
-    // jetty
-    compile "org.eclipse.jetty.aggregate:jetty-all:$v_jetty"
-
-    // webservice
-    // for various javax interfaces (eg. ServletContextListener)
-    compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
-    // jaxrs/resteasy
-    compile "org.jboss.resteasy:resteasy-jaxrs:$v_resteasy"
-    compile "org.jboss.resteasy:resteasy-spring:$v_resteasy"
-    compile "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy"
-
-    // jackson JSON serializer
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson"
-    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
-
-    // persistence framework(s)
-    // eclipselink
-    compile "org.eclipse.persistence:eclipselink:$v_eclipselink"
-    // eclipselink codegen/annotation processor
-    // NOTE: disabled as we don't need/use criteria API just yet (using QueryDSL)
-//    compile "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$v_eclipselink"
-//    // needed for eclipselink codegen under specific circumstances (eg querydsl related spring repository interfaces)
-//    providedCompile("org.hibernate:hibernate-core:+") {
-//        transitive = false
-//    }
-//    providedCompile("jaxen:jaxen:+") {
-//        transitive = false
-//    }
-
-    // queryDSL
-    compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
-    compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
-    compile "com.mysema.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
-
     // jooq
     compile "org.jooq:jooq:$v_jooq"
 
-    // spring
-    compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
-    compile "org.springframework:spring-web:$v_spring"
-    compile "org.springframework:spring-aspects:$v_spring"
-
     // JSR-330
-    compile 'javax.inject:javax.inject:1'
-
-    // deltaspike data
-//    compile 'org.apache.deltaspike.modules:deltaspike-data-module-api:+'
-//    compile 'org.apache.deltaspike.modules:deltaspike-data-module-impl:+'
-
-    compile 'org.jinq:jinq-jpa:+'
+    // compile 'javax.inject:javax.inject:1'
 
     // databases
     compile 'mysql:mysql-connector-java:5.+'
-    compile "com.h2database:h2:$v_h2"
-
-    // json doc
-    compile 'com.wordnik:swagger-jaxrs:+'
-    compile 'org.javassist:javassist:3.+'
-
-    // TODO: For testing aspectj proxies with spring
-//    compile "org.aspectj:aspectjtools:+"
-//    compile "org.aspectj:aspectjweaver:+"
 
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$v_springboot")
 
