@@ -16,6 +16,7 @@ dependencies {
 
     // swagger for json doc
     compile 'com.wordnik:swagger-annotations:+'
+    compile "com.fasterxml.jackson.core:jackson-databind:$v_jackson"
 
     testCompile group: 'junit', name: 'junit', version: v_junit
 

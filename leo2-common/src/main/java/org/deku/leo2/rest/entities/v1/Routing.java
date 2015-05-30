@@ -1,33 +1,30 @@
 package org.deku.leo2.rest.entities.v1;
 
-import org.deku.leo2.rest.adapters.LocalDateParam;
-import org.deku.leo2.rest.adapters.LocalTimeAdapter;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+import org.deku.leo2.rest.entities.ShortDate;
+import org.deku.leo2.rest.entities.ShortTime;
 
 /**
  * Routing service find response
  * Created by masc on 20.04.15.
  */
-@XmlRootElement()
 public class Routing {
-    private String mSector;
-    private String mZone;
-    private LocalTime mEarliestTimeOfDelivery;
-    private LocalTime mEarliestTimeOfDelivery2;
-    private Integer mRouting;
-    private HolidayType mHoliday;
-    private Boolean mIsland;
-    private LocalDate mNextDelieveryDay;
-    private LocalDateParam mPreviousDeliveryDay;
+    private String mSector = "";
+    private String mZone = "";
+    private ShortTime mEarliestTimeOfDelivery = new ShortTime();
+    private ShortTime mEarliestTimeOfDelivery2 = new ShortTime();
+    private Integer mRouting = 0;
+    private HolidayType mHoliday = HolidayType.Regular;
+    private Boolean mIsland = false;
+    private ShortDate mNextDelieveryDay = new ShortDate();
+    private ShortDate mPreviousDeliveryDay = new ShortDate();
 
     public Routing() {
     }
 
-    public Routing(String sector, String zone, LocalTime earliestTimeOfDelivery, Integer routing, HolidayType holiday, Boolean island, LocalDate NextDelieveryDay, LocalDateParam mPreviousDeliveryDay) {
+    public Routing(String sector, String zone, ShortTime earliestTimeOfDelivery, Integer routing, HolidayType holiday, Boolean island, ShortDate NextDelieveryDay, ShortDate mPreviousDeliveryDay) {
         mSector = sector;
         mZone = zone;
         mEarliestTimeOfDelivery = earliestTimeOfDelivery;
@@ -52,23 +49,23 @@ public class Routing {
         mZone = zone;
     }
 
-    @XmlJavaTypeAdapter(type = LocalTime.class, value = LocalTimeAdapter.class)
-    public LocalTime getEarliestTimeOfDelivery() {
+    @ApiModelProperty(dataType = "string", example = "10:00")
+    public ShortTime getEarliestTimeOfDelivery() {
         return mEarliestTimeOfDelivery;
     }
 
-    public void setEarliestTimeOfDelivery(LocalTime earliestTimeOfDelivery) {
+    public void setEarliestTimeOfDelivery(ShortTime earliestTimeOfDelivery) {
         mEarliestTimeOfDelivery = earliestTimeOfDelivery;
     }
 
-    public LocalTime getEarliestTimeOfDelivery2() {
+    @ApiModelProperty(dataType = "string", example = "10:00")
+    public ShortTime getEarliestTimeOfDelivery2() {
         return mEarliestTimeOfDelivery2;
     }
 
-    public void setEarliestTimeOfDelivery2(LocalTime earliestTimeOfDelivery2) {
+    public void setEarliestTimeOfDelivery2(ShortTime earliestTimeOfDelivery2) {
         mEarliestTimeOfDelivery2 = earliestTimeOfDelivery2;
     }
-
 
     public Integer getRouting() {
         return mRouting;
@@ -94,21 +91,21 @@ public class Routing {
         mIsland = island;
     }
 
-    public LocalDate getNextDelieveryDay() {
+    @ApiModelProperty(dataType = "date", example = "2015-01-01")
+    public ShortDate getNextDelieveryDay() {
         return mNextDelieveryDay;
     }
 
-    public void setNextDelieveryDay(LocalDate NextDelieveryDay) {
+    public void setNextDelieveryDay(ShortDate NextDelieveryDay) {
         mNextDelieveryDay = NextDelieveryDay;
     }
 
-    public LocalDateParam getPreviousDeliveryDay() {
+    @ApiModelProperty(dataType = "date", example = "2015-01-01")
+    public ShortDate getPreviousDeliveryDay() {
         return mPreviousDeliveryDay;
     }
 
-    public void setPreviousDeliveryDay(LocalDateParam PreviousDeliveryDay) {
+    public void setPreviousDeliveryDay(ShortDate PreviousDeliveryDay) {
         mPreviousDeliveryDay= PreviousDeliveryDay;
     }
-
-
 }

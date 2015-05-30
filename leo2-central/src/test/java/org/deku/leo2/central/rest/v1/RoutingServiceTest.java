@@ -1,7 +1,7 @@
 package org.deku.leo2.central.rest.v1;
 
 import org.deku.leo2.central.rest.WebserviceTest;
-import org.deku.leo2.rest.adapters.LocalDateParam;
+import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
 import org.deku.leo2.rest.services.v1.RoutingService;
@@ -24,12 +24,12 @@ public class RoutingServiceTest extends WebserviceTest {
     @Test
     public void testEntryPoints() {
         {
-            RoutingVia r = this.getService(RoutingService.class).findVia(new LocalDateParam(LocalDate.now()), "source", "destination");
+            RoutingVia r = this.getService(RoutingService.class).findVia(new ShortDate(LocalDate.now()), "source", "destination");
             System.out.println(r.getLabelContent());
         }
 
         {
-            Routing routing = this.getService(RoutingService.class).find(new LocalDateParam(LocalDate.now()), "country", "zip", "product");
+            Routing routing = this.getService(RoutingService.class).find(new ShortDate(LocalDate.now()), "country", "zip", "product");
             System.out.println(routing.toString());
         }
     }

@@ -6,30 +6,27 @@ import org.deku.leo2.node.data.entities.*;
 import org.deku.leo2.node.data.repositories.CountryRepository;
 import org.deku.leo2.node.data.repositories.HolidayctrlRepository;
 import org.deku.leo2.node.data.repositories.RouteRepository;
-import org.deku.leo2.rest.adapters.LocalDateParam;
+import org.deku.leo2.rest.entities.ShortDate;
+import org.deku.leo2.rest.entities.ShortTime;
 import org.deku.leo2.rest.entities.v1.HolidayType;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
-import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.tools.JavaCompiler;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 /**
  * Created by masc on 20.04.15.
  */
 @Component
 @Path("v1/routing")
-@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Produces(MediaType.APPLICATION_JSON)
 public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingService {
     @Inject
     CountryRepository mCountryRepository;
@@ -41,7 +38,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
     HolidayctrlRepository mHolidayctrlRepostitory;
 
     @Override
-    public Routing find(LocalDateParam validForm, String country, String zip, String product) {
+    public Routing find(ShortDate validForm, String country, String zip, String product) {
 
         Routing rWSRouting = new Routing();
 
@@ -243,8 +240,6 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         dtsqlvalidForm = LocalDate.parse(validForm.toString());
         DayOfWeek day = dtsqlvalidForm.getDayOfWeek();
 
-
-
 //        if (day== DateTimeConstants.SUNDAY)
 //            holidayType = HolidayType.Sunday;
 //        if (day== DateTimeConstants.SATURDAY)
@@ -265,14 +260,14 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         rWSRouting.setRouting(routeFound.getStation());
         rWSRouting.setZone(routeFound.getArea());
         rWSRouting.setIsland(routeFound.getIsland() != 0);
-        rWSRouting.setEarliestTimeOfDelivery(LocalTime.parse(routeFound.getEtod().toString()));
+        rWSRouting.setEarliestTimeOfDelivery(new ShortTime(routeFound.getEtod().toString()));
 
         //Routing r = mRoutingService.find(new LocalDateParam(java.time.LocalDate.parse("2013-11-02")), "AT", "1010", "A");
 
 
 //        rWSRouting.setNextDelieveryDay(new LocalDateParam (java.time.LocalDate.parse("2013-11-02")));
 
-        rWSRouting.setNextDelieveryDay(LocalDate.parse("2013-11-02"));
+        rWSRouting.setNextDelieveryDay(new ShortDate(LocalDate.parse("2013-11-02")));
 //        rWSRouting.setNextDelieveryDay(java.time.LocalDate.of(2015,5,11 ));
         //        rWSRouting.setNextDelieveryDay(java.time.LocalDate LocalDateof(2015, 5, 11));
 
@@ -285,7 +280,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
     }
 
     @Override
-    public RoutingVia findVia(LocalDateParam date, String sourceSector, String destinationSector) {
+    public RoutingVia findVia(ShortDate date, String sourceSector, String destinationSector) {
         return new RoutingVia(new String[]{"S", "X"});
     }
 }

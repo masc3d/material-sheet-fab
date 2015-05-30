@@ -2,7 +2,7 @@ package org.deku.leo2.central.data;
 
 import org.deku.leo2.node.rest.services.v1.RoutingService;
 import org.deku.leo2.rest.adapters.LocalDateAdapter;
-import org.deku.leo2.rest.adapters.LocalDateParam;
+import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public class RoutingLogicTest extends DataTest {
 
         //Routing r = mRoutingService.find(new LocalDateParam(LocalDate.of(2013, 11, 2)),"AT","1010","A");
 
-        Routing r = mRoutingService.find(new LocalDateParam(LocalDate.parse("2013-11-02")), "AT", "1010", "A");
+        Routing r = mRoutingService.find(new ShortDate(LocalDate.parse("2013-11-02")), "AT", "1010", "A");
        // Assert.assertFalse(r.getIsland());
 
        // http://localhost:8080/leo2/rs/api/v1/routing/find?date=2013-11-02&country=AT&zip=1010&product=A

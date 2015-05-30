@@ -1,7 +1,7 @@
 package org.deku.leo2.rest.services.v1;
 
 import com.wordnik.swagger.annotations.*;
-import org.deku.leo2.rest.adapters.LocalDateParam;
+import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
 
@@ -27,7 +27,7 @@ public interface RoutingService {
     })
     Routing find(@QueryParam("date")
                  @ApiParam(value = "Date")
-                 LocalDateParam date,
+                 ShortDate date,
                  @QueryParam("country")
                  @ApiParam(value = "Country ")
                  String country,
@@ -41,7 +41,7 @@ public interface RoutingService {
     @ApiOperation(value = "Determine routing via sector")
     RoutingVia findVia(@QueryParam("date")
                        @ApiParam(value = "Date")
-                       LocalDateParam date,
+                       ShortDate date,
                        @QueryParam("source_sector")
                        @ApiParam(value = "Source Sector")
                        String sourceSector,
