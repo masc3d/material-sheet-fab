@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * LocalDate wrapper for rest operations, serializing date in short iso format (eg. "2015-01-01")
@@ -29,6 +30,6 @@ public class ShortDate {
 
     @Override
     public String toString() {
-        return mLocalDate.toString();
+        return mLocalDate.format(DateTimeFormatter.ISO_DATE);
     }
 }

@@ -22,6 +22,10 @@ public interface RoutingService {
     @GET
     @Path("/find")
     @ApiOperation(value = "Determine routing")
+    // TODO: not working atm due to bug: https://github.com/swagger-api/swagger-core/issues/905
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "date", value = "Date", required = true, paramType = "query", dataType = "string")
+    )
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "No depots found")
     })
