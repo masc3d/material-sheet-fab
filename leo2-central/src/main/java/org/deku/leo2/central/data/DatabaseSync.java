@@ -78,47 +78,47 @@ public class DatabaseSync {
         boolean alwaysDelete = reload;
 
         this.updateEntities(
+                Tables.TBLDEPOTLISTE,
+                null,
                 mStationRepository,
                 QStation.station,
                 null,
-                Tables.TBLDEPOTLISTE,
-                null,
                 (s) -> convert(s),
                 alwaysDelete);
 
         this.updateEntities(
+                Tables.COUNTRY,
+                org.deku.leo2.central.data.entities.jooq.tables.Country.COUNTRY.TIMESTAMP,
                 mCountryRepository,
                 QCountry.country,
                 QCountry.country.timestamp,
-                Tables.COUNTRY,
-                org.deku.leo2.central.data.entities.jooq.tables.Country.COUNTRY.TIMESTAMP,
                 (s) -> convert(s),
                 alwaysDelete);
 
         this.updateEntities(
+                Tables.HOLIDAYCTRL,
+                org.deku.leo2.central.data.entities.jooq.tables.Holidayctrl.HOLIDAYCTRL.TIMESTAMP,
                 mHolidayCtrlRepository,
                 QHolidayctrl.holidayctrl,
                 QHolidayctrl.holidayctrl.timestamp,
-                Tables.HOLIDAYCTRL,
-                org.deku.leo2.central.data.entities.jooq.tables.Holidayctrl.HOLIDAYCTRL.TIMESTAMP,
                 (s) -> convert(s),
                 alwaysDelete);
 
         this.updateEntities(
+                Tables.ROUTE,
+                org.deku.leo2.central.data.entities.jooq.tables.Route.ROUTE.TIMESTAMP,
                 mRouteRepository,
                 QRoute.route,
                 QRoute.route.timestamp,
-                Tables.ROUTE,
-                org.deku.leo2.central.data.entities.jooq.tables.Route.ROUTE.TIMESTAMP,
                 (s) -> convert(s),
                 alwaysDelete);
 
         this.updateEntities(
+                Tables.SECTOR,
+                org.deku.leo2.central.data.entities.jooq.tables.Sector.SECTOR.TIMESTAMP,
                 mSectorRepository,
                 QSector.sector,
                 QSector.sector.timestamp,
-                Tables.SECTOR,
-                org.deku.leo2.central.data.entities.jooq.tables.Sector.SECTOR.TIMESTAMP,
                 (s) -> convert(s),
                 alwaysDelete);
 
@@ -236,21 +236,21 @@ public class DatabaseSync {
     /**
      * Generic updater for entites from jooq to jpa
      *
-     * @param destRepository
-     * @param destQdslEntityPath
-     * @param destQdslTimestampPath
-     * @param sourceTable
-     * @param sourceTableField
-     * @param conversionFunction
-     * @param <TEntity>
-     * @param <TCentralRecord>
+     * @param sourceTable JOOQ source table
+     * @param sourceTableField JOOQ source timestamp field
+     * @param destRepository Destination JPA repository
+     * @param destQdslEntityPath Destination QueryDSL entity table path
+     * @param destQdslTimestampPath Destination QueryDSL timestamp field path
+     * @param conversionFunction Conversion function JOOQ record -> JPA entity
+     * @param <TEntity> Type of destiantion JPA entity
+     * @param <TCentralRecord> Type of source JOOQ record
      */
-    private <TEntity, TCentralRecord extends Record> void updateEntities(
+    private <TCentralRecord extends Record, TEntity> void updateEntities(
+            TableImpl<TCentralRecord> sourceTable,
+            TableField<TCentralRecord, Timestamp> sourceTableField,
             JpaRepository<TEntity, ?> destRepository,
             EntityPathBase<TEntity> destQdslEntityPath,
             DateTimePath<Timestamp> destQdslTimestampPath,
-            TableImpl<TCentralRecord> sourceTable,
-            TableField<TCentralRecord, Timestamp> sourceTableField,
             Function<TCentralRecord, TEntity> conversionFunction,
             boolean deleteBeforeUpdate) {
 
