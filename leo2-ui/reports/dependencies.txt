@@ -102,7 +102,8 @@ compile - Compile classpath for source set 'main'.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
-|    \--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc1 (*)
 \--- project :leo2-messaging
      +--- project :sx-common (*)
      +--- org.apache.activemq:activemq-broker:5.+ -> 5.11.1
@@ -246,7 +247,8 @@ default - Configuration for default artifacts.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
-|    \--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc1 (*)
 \--- project :leo2-messaging
      +--- project :sx-common (*)
      +--- org.apache.activemq:activemq-broker:5.+ -> 5.11.1
@@ -393,7 +395,8 @@ runtime - Runtime classpath for source set 'main'.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
-|    \--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc1 (*)
 \--- project :leo2-messaging
      +--- project :sx-common (*)
      +--- org.apache.activemq:activemq-broker:5.+ -> 5.11.1
@@ -540,7 +543,8 @@ testCompile - Compile classpath for source set 'test'.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
-|    \--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc1 (*)
 +--- project :leo2-messaging
 |    +--- project :sx-common (*)
 |    +--- org.apache.activemq:activemq-broker:5.+ -> 5.11.1
@@ -685,7 +689,8 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
-|    \--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc1 (*)
 +--- project :leo2-messaging
 |    +--- project :sx-common (*)
 |    +--- org.apache.activemq:activemq-broker:5.+ -> 5.11.1

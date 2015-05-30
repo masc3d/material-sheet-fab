@@ -6,14 +6,12 @@ import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.inject.Inject;
 import java.sql.Driver;
@@ -37,7 +35,7 @@ public class PersistenceContext {
      */
     @Configuration
     @Import(org.deku.leo2.node.PersistenceContext.Embedded.class)
-    //@EnableTransactionManagement(proxyTargetClass = true)
+    @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
     public static class Central implements DisposableBean {
         private Logger mLog = Logger.getLogger(PersistenceContext.Central.class.getName());
 

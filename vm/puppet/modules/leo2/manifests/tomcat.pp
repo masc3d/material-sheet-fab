@@ -23,7 +23,7 @@ class leo2::tomcat (
   }
 
   # masc20140724. set java opts with optional debug support
-  $java_opts = '-Djava.awt.headless=true -Xmx128m -XX:+UseConcMarkSweepGC'
+  $java_opts = '-Djava.awt.headless=true -Xmx1024m -XX:+UseConcMarkSweepGC'
   if $debug {
     $java_debug_opts += ' -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n'
   }

@@ -10,6 +10,7 @@ import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
 import org.deku.leo2.node.PersistenceContext;
 import org.deku.leo2.node.data.entities.*;
 import org.deku.leo2.node.data.repositories.*;
+import org.jooq.Cursor;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.TableField;
@@ -28,6 +29,7 @@ import javax.persistence.FlushModeType;
 import java.sql.Timestamp;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by masc on 15.05.15.
@@ -40,6 +42,7 @@ public class DatabaseSync {
     EntityManager mEntityManager;
 
     TransactionTemplate mTransaction;
+    TransactionTemplate mTransactionJooq;
 
     @Inject
     GenericJooqRepository mGenericJooqRepository;
@@ -55,9 +58,12 @@ public class DatabaseSync {
     SectorRepository mSectorRepository;
 
     @Inject
-    public DatabaseSync(@Qualifier(PersistenceContext.DB_EMBEDDED) PlatformTransactionManager tx) {
+    public DatabaseSync(@Qualifier(PersistenceContext.DB_EMBEDDED) PlatformTransactionManager tx,
+                        @Qualifier(org.deku.leo2.central.PersistenceContext.DB_CENTRAL) PlatformTransactionManager txJooq) {
         mTransaction = new TransactionTemplate(tx);
         mTransaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+
+        mTransactionJooq = new TransactionTemplate(txJooq);
     }
 
     @Transactional(value = PersistenceContext.DB_EMBEDDED)
@@ -117,6 +123,7 @@ public class DatabaseSync {
 
     /**
      * Convert tbldepotliste mysql record to jpa entity
+     *
      * @param depotlisteRecord
      * @return
      */
@@ -136,6 +143,7 @@ public class DatabaseSync {
 
     /**
      * Convert mysql country record to jpa entity
+     *
      * @param cr
      * @return
      */
@@ -155,6 +163,7 @@ public class DatabaseSync {
 
     /**
      * Convert mysql holidayctrl record to jpa entity
+     *
      * @param cr
      * @return
      */
@@ -172,6 +181,7 @@ public class DatabaseSync {
 
     /**
      * Convert mysql sector record to jpa entity
+     *
      * @param cr
      * @return
      */
@@ -190,6 +200,7 @@ public class DatabaseSync {
 
     /**
      * Convert mysql country record to jpa entity
+     *
      * @param sr
      * @return
      */
@@ -230,7 +241,7 @@ public class DatabaseSync {
      * @param <TEntity>
      * @param <TCentralRecord>
      */
-    private <TEntity, TCentralRecord extends Record> void updateEntities (
+    private <TEntity, TCentralRecord extends Record> void updateEntities(
             JpaRepository<TEntity, ?> destRepository,
             EntityPathBase<TEntity> destQdslEntityPath,
             DateTimePath<Timestamp> destQdslTimestampPath,
@@ -250,7 +261,7 @@ public class DatabaseSync {
 
         mEntityManager.setFlushMode(FlushModeType.COMMIT);
 
-        if (deleteBeforeUpdate || destQdslEntityPath == null ||destQdslTimestampPath == null ) {
+        if (deleteBeforeUpdate || destQdslEntityPath == null || destQdslTimestampPath == null) {
             mTransaction.execute((ts) -> {
                 log.apply("Deleting");
                 destRepository.deleteAllInBatch();
@@ -266,27 +277,34 @@ public class DatabaseSync {
             log.apply("Timestamp check");
             timestamp = query.from(destQdslEntityPath).singleResult(destQdslTimestampPath.max());
         }
+        final Timestamp fTimestamp = timestamp;
 
         // Get newer records from central
-        log.apply("Fetching");
-        Result<TCentralRecord> source = mGenericJooqRepository.findNewerThan(timestamp, sourceTable, sourceTableField);
-        log.apply(String.format("Fetched %d", source.size()));
+        // masc20150530. JOOQ cursor requires an explicit transaction
+        mTransactionJooq.execute((tsJooq) -> {
+            log.apply("Fetching");
+            Iterable<TCentralRecord> source = mGenericJooqRepository.findNewerThan(fTimestamp, sourceTable, sourceTableField);
+            log.apply(String.format("Fetched"));
 
-        // Save to embedded
-        //TODO: saving/transaction commit gets very slow when deleting and inserting within the same transaction
-        //destRepository.save((Iterable<TEntity>) source.stream().map(d -> conversionFunction.apply(d))::iterator);
-        // It's also faster to flush and clear in between
-        log.apply("Inserting");
-        mTransaction.execute((ts) -> {
-            int i = 0;
-            for (TEntity r : (Iterable<TEntity>)source.stream().map(d -> conversionFunction.apply(d))::iterator) {
-                destRepository.save(r);
-                if (i++ % 100 == 0) {
-                    mEntityManager.flush();
-                    mEntityManager.clear();
+            // Save to embedded
+            //TODO: saving/transaction commit gets very slow when deleting and inserting within the same transaction
+            //destRepository.save((Iterable<TEntity>) source.stream().map(d -> conversionFunction.apply(d))::iterator);
+            // It's also faster to flush and clear in between
+            log.apply("Inserting");
+            mTransaction.execute((ts) -> {
+                int i = 0;
+                for (TEntity r : (Iterable<TEntity>) StreamSupport.stream(source.spliterator(), false).map(d -> conversionFunction.apply(d))::iterator) {
+                    destRepository.save(r);
+                    if (i++ % 100 == 0) {
+                        mEntityManager.flush();
+                        mEntityManager.clear();
+                    }
                 }
-            }
+                return null;
+            });
+            log.apply("Inserted");
             return null;
         });
+        log.apply("Done");
     }
 }

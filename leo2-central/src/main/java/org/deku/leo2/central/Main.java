@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * Created by masc on 30.07.14.
  */
-@Configuration("central.Main")
 public class Main extends org.deku.leo2.node.Main {
     private static AtomicReference<LazyInstance<Main>> mInstance
             = new AtomicReference<>(new LazyInstance(() -> new Main()));
@@ -57,10 +56,5 @@ public class Main extends org.deku.leo2.node.Main {
      */
     public static void main(String[] args) throws Exception {
         org.deku.leo2.node.Main.run(args);
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
     }
 }

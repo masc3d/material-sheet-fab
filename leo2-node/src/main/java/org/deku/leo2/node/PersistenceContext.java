@@ -34,7 +34,7 @@ public class PersistenceContext {
      * Embedded database persistence context
      */
     @Configuration
-    @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = false)
+    @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
     @EnableJpaRepositories(considerNestedRepositories = true)
     public static class Embedded implements DisposableBean /*, TransactionManagementConfigurer*/ {
         private Logger mLog = Logger.getLogger(PersistenceContext.Embedded.class.getName());
@@ -53,7 +53,7 @@ public class PersistenceContext {
 
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-            File dbPath = new File(Main.instance().getLocalHomeDirectory(), "db/leo2");
+            File dbPath = new File(Global.instance().getLocalHomeDirectory(), "db/leo2");
 
             dataSource.setDriverClassName("org.h2.Driver");
             if (!IN_MEMORY) {

@@ -16,7 +16,10 @@ compile - Compile classpath for source set 'main'.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
-|    \--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
+|         \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 +--- project :leo2-messaging
 |    +--- project :sx-common
 |    |    +--- com.google.guava:guava:18.+ -> 18.0
@@ -104,9 +107,7 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- javax.activation:activation:1.1
 |    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.9.+ -> 3.0.9.Final
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
-|    |    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1 (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.6.0-rc1
 |    |         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1
@@ -345,7 +346,10 @@ default - Configuration for default artifacts.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
-|    \--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
+|         \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 +--- project :leo2-messaging
 |    +--- project :sx-common
 |    |    +--- com.google.guava:guava:18.+ -> 18.0
@@ -433,9 +437,7 @@ default - Configuration for default artifacts.
 |    |    \--- javax.activation:activation:1.1
 |    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.9.+ -> 3.0.9.Final
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
-|    |    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1 (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.6.0-rc1
 |    |         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1
@@ -668,19 +670,28 @@ default - Configuration for default artifacts.
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1 (*)
-\--- org.javassist:javassist:3.+ -> 3.19.0-GA
++--- org.javassist:javassist:3.+ -> 3.19.0-GA
+\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
 
 providedCompile - Additional compile classpath for libraries that should not be part of the WAR archive.
 No dependencies
 
 providedRuntime - Additional runtime classpath for libraries that should not be part of the WAR archive.
-No dependencies
+\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE
+     +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+     +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
+     +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
+     \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
+          \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
 
 runtime - Runtime classpath for source set 'main'.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
-|    \--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
+|         \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 +--- project :leo2-messaging
 |    +--- project :sx-common
 |    |    +--- com.google.guava:guava:18.+ -> 18.0
@@ -768,9 +779,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- javax.activation:activation:1.1
 |    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.9.+ -> 3.0.9.Final
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
-|    |    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1 (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.6.0-rc1
 |    |         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1
@@ -1003,7 +1012,8 @@ runtime - Runtime classpath for source set 'main'.
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1 (*)
-\--- org.javassist:javassist:3.+ -> 3.19.0-GA
++--- org.javassist:javassist:3.+ -> 3.19.0-GA
+\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
 
 shadow
 No dependencies
@@ -1012,7 +1022,10 @@ testCompile - Compile classpath for source set 'test'.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
-|    \--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
+|         \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 +--- project :leo2-messaging
 |    +--- project :sx-common
 |    |    +--- com.google.guava:guava:18.+ -> 18.0
@@ -1100,9 +1113,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- javax.activation:activation:1.1
 |    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.9.+ -> 3.0.9.Final
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
-|    |    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1 (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.6.0-rc1
 |    |         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1
@@ -1346,7 +1357,10 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
-|    \--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc1
+|         +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
+|         \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 +--- project :leo2-messaging
 |    +--- project :sx-common
 |    |    +--- com.google.guava:guava:18.+ -> 18.0
@@ -1434,9 +1448,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- javax.activation:activation:1.1
 |    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.9.+ -> 3.0.9.Final
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1
-|    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1
-|    |    |    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1 (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.1 -> 2.6.0-rc1
 |    |         +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1
@@ -1670,6 +1682,7 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1 (*)
 +--- org.javassist:javassist:3.+ -> 3.19.0-GA
++--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
 +--- junit:junit:4.+ -> 4.12 (*)
 +--- org.jboss.resteasy:resteasy-client:3.0.9.+ -> 3.0.9.Final
 |    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final (*)

@@ -1,9 +1,6 @@
 package org.deku.leo2.central.data.repositories.jooq;
 
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.TableField;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 
@@ -27,13 +24,13 @@ public class GenericJooqRepository {
      * @param <TRecord> Type of jooq record
      * @return Jooq record
      */
-    public <TRecord extends Record> Result<TRecord> findNewerThan(
+    public <TRecord extends Record> Cursor<TRecord> findNewerThan(
             Timestamp ts,
             TableImpl<TRecord> table,
             TableField<? extends Record, Timestamp> field) {
 
         return mDSLContext.selectFrom(table)
                 .where((ts != null && field != null) ? field.gt(ts) : DSL.trueCondition())
-                .fetch();
+                .fetchLazy();
     }
 }
