@@ -10,9 +10,11 @@ import com.wordnik.swagger.jaxrs.listing.ApiListingResource;
 import com.wordnik.swagger.jaxrs.listing.SwaggerSerializers;
 import com.wordnik.swagger.models.Swagger;
 import com.wordnik.swagger.util.Yaml;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
@@ -36,7 +38,10 @@ public abstract class SwaggerListingResource {
 
     SwaggerContext mConfig;
 
-    @Context
+    // @Context
+    // masc201505.
+    // TODO: workaround for resteasy bug https://issues.jboss.org/browse/RESTEASY-828
+    @Inject
     ServletContext context;
 
     public SwaggerListingResource(SwaggerContext config) {

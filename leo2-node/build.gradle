@@ -33,10 +33,7 @@ dependencies {
     compile project(':leo2-messaging')
     compile project(':sx-common')
 
-    // slf4j logging (eg. spring logs)
-    // compile "org.slf4j:slf4j-jdk14:+"
-    // log4j logging (required by eclipse codegen)
-    compile "log4j:log4j:+"
+    // logging
     compile "org.slf4j:jul-to-slf4j:1.+"
     compile "org.slf4j:log4j-over-slf4j:1.+"
     compile "ch.qos.logback:logback-classic:1.+"
