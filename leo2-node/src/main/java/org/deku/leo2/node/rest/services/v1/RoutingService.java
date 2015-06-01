@@ -11,15 +11,20 @@ import org.deku.leo2.rest.entities.ShortTime;
 import org.deku.leo2.rest.entities.v1.HolidayType;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.tools.JavaCompiler;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 
 /**
  * Created by masc on 20.04.15.
@@ -49,33 +54,32 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         if (rcountry.equals(null)) {
             // kein Land
-            return rWSRouting;
+            throw new IllegalArgumentException("empty Country");
         }
 
-        if (rcountry.getZipFormat() == "") {
+        if (rcountry.getZipFormat().equals("")) {
             // ungültiges Land
-            return rWSRouting;
+            throw new IllegalArgumentException("unknown Country");
         }
 
 
         if (zip.length() < rcountry.getMinLen()) {
             //  ungültiger ZIP
-            return rWSRouting;
+            throw new IllegalArgumentException("Zipcode to short");
         }
 
         if (rcountry.getRoutingTyp() < 0 || rcountry.getRoutingTyp() > 3) {
             //  ungültiger Routingtyp
-            return rWSRouting;
+            throw new IllegalArgumentException("Country not enabled");
         }
 
         if (zip.length() > rcountry.getMaxLen()) {
             //  ungültiger ZIP
-            throw new IllegalArgumentException("Nicht konform");
+            throw new IllegalArgumentException("Zipcode to long");
             //return r;
         }
 
         String[] cZipFormat = rcountry.getZipFormat().split("");
-//        char[] cZipFormat = rcountry.getZipFormat().toCharArray();
         String[] cZip = zip.split("");
 
         int i = 0;
@@ -83,7 +87,6 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         String csZipFormat = "";
         String csZip = "";
         String csZipConform = "";
-        //String csZipNew = "";
         String zipConform = "";
         String zipQuery = "";
         int cCount = 0;
@@ -95,26 +98,27 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             csZip = cZip[i];
             csZipFormat = cZipFormat[j];
 
-
             switch (csZipFormat) {
                 case "w":
-                    if (csZip == " ")
+                    if (csZip.equals(" "))
                         i++;
-                    else if (csZip == "0") {
+                    else if (csZip.equals("0")) {
                         i++;
                         j++;
                     } else
                         j++;
                     break;
                 case "0":
-                    if (csZip == "") {
+                    if (csZip.equals("")) {
                         i++;
                         j++;
-                    } else if (csZip == " ") {
+                    } else if (csZip.equals(" ")) {
                         i = i + 1;
-//                    } else if (Ints.tryParse(csZip) == 0 && !(cZip.equals("0"))) {
-//                        csZipConform = "";
-//                        break zipCalcEnd;
+                    } else if (Ints.tryParse(csZip).equals(null)) {
+                        csZipConform = "";
+                        //&& !(cZip.equals("0")))
+
+                        break zipCalcEnd;
                     } else {
                         i++;
                         j++;
@@ -125,58 +129,57 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
                     if (csZip == "") {
                         csZipConform = "";
                         zipQuery = "";
-                        break;
                     } else if (csZip == " ") {
                         zipConform = "";
                         zipQuery = "";
-                        break;
-                    } else if (Ints.tryParse(csZip) > 0 || csZip == "0") {
+                    } else if (Ints.tryParse(csZip) > 0 || csZip.equals("0")) {
                         zipConform = "";
                         zipQuery = "";
-                        break;
                     } else {
                         i++;
                         j++;
                         csZipConform = csZip;
                     }
-
+                    break;
                 case "L":
-                    if (csZip == "")
-                        break;
+                    if (csZip.equals(""))
+                        ;
                     else if (csZip.contains("abcdefghijklmnopqrstuvwxyz0123456789 ")) {
                         i++;
                         j++;
                         csZipConform = csZip;
                     } else {
                         zipConform = "";
-                        break;
                     }
+                    break;
                 case "G":
-                    if (csZip == " ")
+                    if (csZip.equals(" "))
                         cCount++;
                     if (cCount > 1) {
-
                         zipConform = "";
                         break;
                     }
                     i++;
                     j++;
                     csZipConform = csZip;
+                    break;
                 case "-":
-                    if (csZip == "-") {
+                    if (csZip.equals("-")) {
                         i++;
                         j++;
                         csZipConform = csZip;
-                    } else if (Ints.tryParse(csZip) == null && csZip != "0") {
+                    } else if (Ints.tryParse(csZip).equals(null)) {
+                        //&& csZip != "0") {
                         csZipConform = "";
-                        break;
                     } else {
                         i++;
                         j = j + 2;
                         csZipConform = "-" + csZip;
                     }
+                    break;
                 default:
-                    throw new IllegalArgumentException("Format Nicht konform");
+                    throw new IllegalArgumentException("Zipcode not conform");
+
             }
 
 
@@ -187,46 +190,52 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         }
 
-        if (zipQuery == "") {
+        if (zipQuery.equals("")) {
             //  ungültiger ZIP
-            throw new IllegalArgumentException("Nicht konform");
+            throw new IllegalArgumentException("Zipcode not conform");
             //return r;
         }
 
         java.sql.Timestamp sqlvalidForm = Timestamp.valueOf(validForm.toString() + " 00:00:00");
 
 
-
         QRoute qRoute = QRoute.route;
         BooleanExpression rWhere = null;
+
+        // to do validto
 
         switch (rcountry.getRoutingTyp()) {
             case 0:
                 rWhere =
                         qRoute.lkz.eq(country)
                                 .and(qRoute.zip.eq(zipQuery))
-                                .and(qRoute.validfrom.goe(sqlvalidForm));
-                //... sortierung, validto
+                                .and(qRoute.validfrom.loe(sqlvalidForm));
+
                 break;
             case 1:
                 rWhere =
                         qRoute.lkz.eq(country)
-                                .and(qRoute.zip.eq(zipQuery))
-                                .and(qRoute.validfrom.goe(sqlvalidForm));
+                                .and(qRoute.zip.goe(zipQuery))
+                                .and(qRoute.validfrom.loe(sqlvalidForm));
                 break;
             case 2:
                 rWhere =
                         qRoute.lkz.eq(country)
-                                .and(qRoute.zip.eq(zipQuery))
-                                .and(qRoute.validfrom.goe(sqlvalidForm));
+                                .and(qRoute.zip.goe(zipQuery))
+                                .and(qRoute.validfrom.loe(sqlvalidForm));
                 break;
         }
-        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere);
+
+        // ??? feldauflösung via qRoute
+        Sort sort = null;
+        sort = new Sort(Sort.Direction.DESC, "validfrom");
+        Iterable<Route> rRouten = new ArrayList<>();
+//        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere, sort);
+//        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere ,new Sort(Sort.Direction.DESC,qRoute.validfrom.toString()) );
 
         if (!rRouten.iterator().hasNext()) {
             //  keine Route
-            throw new IllegalArgumentException("keine Route");
-            //return r;
+            throw new IllegalArgumentException("no Route to Depot");
         }
         Route routeFound = rRouten.iterator().next();
 
@@ -235,15 +244,14 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         HolidayType holidayType = HolidayType.Regular;
 
-//        ZonedDateTime dtsqlvalidForm=ZonedDateTime.parse(validForm.toString() ,DateTimeFormatter.BASIC_ISO_DATE);
         LocalDate dtsqlvalidForm;
         dtsqlvalidForm = LocalDate.parse(validForm.toString());
         DayOfWeek day = dtsqlvalidForm.getDayOfWeek();
 
-//        if (day== DateTimeConstants.SUNDAY)
-//            holidayType = HolidayType.Sunday;
-//        if (day== DateTimeConstants.SATURDAY)
-//            holidayType = HolidayType.Saturday;
+        if (day== DayOfWeek.SUNDAY)
+            holidayType = HolidayType.Sunday;
+        if (day== DayOfWeek.SATURDAY)
+            holidayType = HolidayType.Saturday;
 
         if (rholidayctrl != null) {
             if (rholidayctrl.getCtrlPos() == -1)
@@ -261,18 +269,20 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         rWSRouting.setZone(routeFound.getArea());
         rWSRouting.setIsland(routeFound.getIsland() != 0);
         rWSRouting.setEarliestTimeOfDelivery(new ShortTime(routeFound.getEtod().toString()));
+        //rWSRouting.setConformZipCode(zipConform);
+
 
         //Routing r = mRoutingService.find(new LocalDateParam(java.time.LocalDate.parse("2013-11-02")), "AT", "1010", "A");
 
 
 //        rWSRouting.setNextDelieveryDay(new LocalDateParam (java.time.LocalDate.parse("2013-11-02")));
 
-        rWSRouting.setNextDelieveryDay(new ShortDate(LocalDate.parse("2013-11-02")));
+        rWSRouting.setNextDelieveryDay(new ShortDate("2013-11-02"));
 //        rWSRouting.setNextDelieveryDay(java.time.LocalDate.of(2015,5,11 ));
         //        rWSRouting.setNextDelieveryDay(java.time.LocalDate LocalDateof(2015, 5, 11));
 
 
-                //new LocalDate(java.time.LocalDate.parse("2015-05-22") ) );
+        //new LocalDate(java.time.LocalDate.parse("2015-05-22") ) );
 
 //        Routing r = new Routing("sector1", "zone1", LocalTime.now(), 12, HolidayType.RegionalBankHoliday, false);
 
