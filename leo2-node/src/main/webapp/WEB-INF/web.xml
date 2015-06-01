@@ -38,7 +38,7 @@
         </param-value>
     </context-param>
 
-    <!--. Listeners -->
+    <!-- Listeners -->
     <listener>
         <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
     </listener>
@@ -51,6 +51,17 @@
             org.deku.leo2.node.web.ServletContextListener
         </listener-class>
     </listener>
+
+    <!-- ActiveMQ servlet -->
+    <servlet>
+    <description>leo2 webservice servlet</description>
+    <servlet-name>leo2-jms</servlet-name>
+    <servlet-class>org.deku.leo2.messaging.activemq.HttpExternalTunnelServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>leo2-jms</servlet-name>
+        <url-pattern>/jms/*</url-pattern>
+    </servlet-mapping>
 
     <!-- Leo2 servlet -->
     <servlet>

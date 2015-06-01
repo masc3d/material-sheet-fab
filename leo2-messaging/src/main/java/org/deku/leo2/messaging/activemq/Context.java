@@ -1,4 +1,4 @@
-package org.deku.leo2.messaging;
+package org.deku.leo2.messaging.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.jms.pool.PooledConnectionFactory;
@@ -16,7 +16,7 @@ public class Context {
      */
     public static ConnectionFactory createConnectionFactory(String hostname, Integer httpPort) {
         PooledConnectionFactory pcf = new PooledConnectionFactory();
-        pcf.setConnectionFactory(new ActiveMQConnectionFactory(Util.createActiveMqUri(hostname, httpPort, true)));
+        pcf.setConnectionFactory(new ActiveMQConnectionFactory(Util.createUri(hostname, httpPort, true)));
         return pcf;
     }
 }

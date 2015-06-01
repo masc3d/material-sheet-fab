@@ -3,6 +3,8 @@ package org.deku.leo2.node;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.apache.log4j.BasicConfigurator;
+import org.deku.leo2.messaging.Broker;
+import org.deku.leo2.messaging.activemq.BrokerImpl;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.BeansException;
@@ -78,8 +80,15 @@ public class Global implements Disposable, ApplicationContextAware {
         BasicConfigurator.configure();
     }
 
+    public void initialize() throws Exception {
+    }
+
     @Override
     public void dispose() {
-
+        try {
+            BrokerImpl.getInstance().stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,4 +1,4 @@
-package org.deku.leo2.messaging;
+package org.deku.leo2.messaging.activemq;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,8 +13,10 @@ class Util {
      * @param httpPort Optional http port, if omitted native port will be used
      * @return ActiveMQ URI
      */
-    public static URI createActiveMqUri(String hostname, Integer httpPort, boolean failover) {
+    public static URI createUri(String hostname, Integer httpPort, boolean failover) {
         String scheme;
+        String path = (httpPort != null) ? "/jms" : "";
+
         int port;
         if (httpPort != null) {
             scheme = "http";
@@ -28,7 +30,7 @@ class Util {
             scheme = "failover:" + scheme;
 
         try {
-            return new URI(String.format("%s://%s:%d", scheme, hostname, port));
+            return new URI(String.format("%s://%s:%d%s", scheme, hostname, port, path));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -39,7 +41,7 @@ class Util {
      * @param hostname
      * @return
      */
-    public static URI createActiveMqUri(String hostname, boolean failover) {
-        return createActiveMqUri(hostname, null, failover);
+    public static URI createUri(String hostname, boolean failover) {
+        return createUri(hostname, null, failover);
     }
 }
