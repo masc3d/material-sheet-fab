@@ -1,12 +1,12 @@
 package org.deku.leo2.messaging.activemq;
 
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.broker.TransportConnector;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.transport.TransportServer;
 import org.deku.leo2.messaging.Broker;
 import sx.LazyInstance;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -36,7 +36,11 @@ public class BrokerImpl implements Broker {
     /** Logger */
     private Logger mLogger = Logger.getLogger(BrokerImpl.class.getName());
     /** Native broker service */
-    private BrokerService mBrokerService = new BrokerService();
+    private BrokerService mBrokerService;
+
+    /** Data directory for store */
+    private File mDataDirectory;
+
     /** List of peer brokers */
     List<PeerBroker> mPeerBrokers = new ArrayList<>();
     List<TransportServer> mExternalTransportServers = new ArrayList<>();
@@ -64,6 +68,7 @@ public class BrokerImpl implements Broker {
         this.stop();
 
         mBrokerService = new BrokerService();
+        mBrokerService.setDataDirectoryFile(mDataDirectory);
 
         // All embedded brokers will listen on openwire and http
         mBrokerService.addConnector(Util.createUri("localhost", false));
@@ -106,6 +111,17 @@ public class BrokerImpl implements Broker {
         pb.httpPort = httpPort;
         mPeerBrokers.add(pb);
     }
+
+    @Override
+    public void setDataDirectory(File file) {
+        mDataDirectory = file;
+    }
+
+    public File getDataDirectory() {
+        return mDataDirectory;
+    }
+
+
 
     @Override
     public void dispose() {
