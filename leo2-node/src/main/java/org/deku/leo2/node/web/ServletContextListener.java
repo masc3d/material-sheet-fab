@@ -25,10 +25,10 @@ public class ServletContextListener implements javax.servlet.ServletContextListe
 
         ConfigurableListableBeanFactory clbf = wac.getBeanFactory();
 
-        mLog.info(String.format("Registered beans: %d", wac.getBeanDefinitionCount()));
+        mLog.fine(String.format("Registered beans: %d", wac.getBeanDefinitionCount()));
         for (String beanName : wac.getBeanDefinitionNames()) {
             Object s = clbf.getSingleton(beanName);
-            mLog.info(String.format("%s: %s", beanName, (s != null) ? s.getClass().getName() : "<null>"));
+            mLog.fine(String.format("%s: %s", beanName, (s != null) ? s.getClass().getName() : "<null>"));
         }
 
 //        try {

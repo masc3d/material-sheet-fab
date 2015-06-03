@@ -21,7 +21,7 @@ apply plugin: 'io.spring.dependency-management'
 
 sourceCompatibility = 1.8
 version = '0.1'
-mainClassName = "org.deku.leo2.node.MainSpringBoot"
+mainClassName = "org.deku.leo2.node.Main"
 
 repositories {
     mavenCentral()
@@ -38,9 +38,6 @@ dependencies {
     compile "org.slf4j:log4j-over-slf4j:1.+"
     compile "ch.qos.logback:logback-classic:1.+"
 
-    // jetty
-    compile "org.eclipse.jetty.aggregate:jetty-all:$v_jetty"
-
     // webservice
     // for various javax interfaces (eg. ServletContextListener)
     compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
@@ -56,16 +53,6 @@ dependencies {
     // persistence framework(s)
     // eclipselink
     compile "org.eclipse.persistence:eclipselink:$v_eclipselink"
-    // eclipselink codegen/annotation processor
-    // NOTE: disabled as we don't need/use criteria API just yet (using QueryDSL)
-//    compile "org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:$v_eclipselink"
-//    // needed for eclipselink codegen under specific circumstances (eg querydsl related spring repository interfaces)
-//    providedCompile("org.hibernate:hibernate-core:+") {
-//        transitive = false
-//    }
-//    providedCompile("jaxen:jaxen:+") {
-//        transitive = false
-//    }
 
     // queryDSL
     compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
@@ -75,22 +62,17 @@ dependencies {
     // spring
     compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
     compile "org.springframework:spring-web:$v_spring"
-    compile "org.springframework:spring-webmvc:$v_spring"
-    compile "org.springframework:spring-aspects:$v_spring"
+    //compile "org.springframework:spring-aspects:$v_spring"
     // spring boot
     compile("org.springframework.boot:spring-boot-starter:$v_springboot")
     compile("org.springframework.boot:spring-boot-starter-web:$v_springboot") {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
-    compile("org.springframework.boot:spring-boot-starter-jetty:$v_springboot")
+    compile("org.springframework.boot:spring-boot-starter-undertow:$v_springboot")
     //providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$v_springboot")
 
     // JSR-330
     compile 'javax.inject:javax.inject:1'
-
-    // deltaspike data
-//    compile 'org.apache.deltaspike.modules:deltaspike-data-module-api:+'
-//    compile 'org.apache.deltaspike.modules:deltaspike-data-module-impl:+'
 
     compile 'org.jinq:jinq-jpa:+'
 
