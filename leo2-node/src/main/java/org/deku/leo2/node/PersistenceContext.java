@@ -23,108 +23,101 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
- * Created by masc on 28.08.14.
+ * Embedded database persistence context
  */
-public class PersistenceContext {
+@Configuration(PersistenceContext.DB_EMBEDDED)
+@EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
+@EnableJpaRepositories(considerNestedRepositories = true)
+public class PersistenceContext implements DisposableBean /*, TransactionManagementConfigurer*/ {
+    public static final String DB_EMBEDDED = "db_embedded";
     private Logger mLog = Logger.getLogger(PersistenceContext.class.getName());
 
-    public static final String DB_EMBEDDED = "db_embedded";
+    private boolean mShowSql = false;
 
-    /**
-     * Embedded database persistence context
-     */
-    @Configuration
-    @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
-    @EnableJpaRepositories(considerNestedRepositories = true)
-    public static class Embedded implements DisposableBean /*, TransactionManagementConfigurer*/ {
-        private Logger mLog = Logger.getLogger(PersistenceContext.Embedded.class.getName());
+    @Inject
+    @Qualifier(DB_EMBEDDED)
+    private AbstractDataSource mDataSource;
 
-        private boolean mShowSql = false;
+    @Bean
+    @Lazy
+    @Qualifier(DB_EMBEDDED)
+    public AbstractDataSource dataSource() {
+        final boolean IN_MEMORY = false;
 
-        @Inject
-        @Qualifier(DB_EMBEDDED)
-        private AbstractDataSource mDataSource;
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-        @Bean
-        @Lazy
-        @Qualifier(DB_EMBEDDED)
-        public AbstractDataSource dataSource() {
-            final boolean IN_MEMORY = false;
+        File dbPath = new File(Global.instance().getLocalHomeDirectory(), "db/leo2");
 
-            DriverManagerDataSource dataSource = new DriverManagerDataSource();
-
-            File dbPath = new File(Global.instance().getLocalHomeDirectory(), "db/leo2");
-
-            dataSource.setDriverClassName("org.h2.Driver");
-            if (!IN_MEMORY) {
-                dataSource.setUrl("jdbc:h2:file:" + dbPath.toString());
-            } else {
-                dataSource.setUrl("jdbc:h2:mem:db1");
-            }
-
-            Properties dataSourceProperties = new Properties();
-            dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
-            dataSourceProperties.setProperty("connectTimeout", "1000");
-            // For in memory db
-            if (IN_MEMORY) {
-                dataSourceProperties.setProperty("INIT", "CREATE SCHEMA IF NOT EXISTS leo2");
-                dataSourceProperties.setProperty("DB_CLOSE_DELAY", "-1");
-            }
-
-            dataSource.setConnectionProperties(dataSourceProperties);
-
-            return dataSource;
+        dataSource.setDriverClassName("org.h2.Driver");
+        if (!IN_MEMORY) {
+            dataSource.setUrl("jdbc:h2:file:" + dbPath.toString());
+        } else {
+            dataSource.setUrl("jdbc:h2:mem:db1");
         }
 
-        //region JPA
-        @Bean
-        @Qualifier(DB_EMBEDDED)
-        public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-            JpaTransactionManager transactionManager = new JpaTransactionManager();
-            transactionManager.setEntityManagerFactory(emf);
-            transactionManager.setDataSource(dataSource());
-
-            return transactionManager;
+        Properties dataSourceProperties = new Properties();
+        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
+        dataSourceProperties.setProperty("connectTimeout", "1000");
+        // For in memory db
+        if (IN_MEMORY) {
+            dataSourceProperties.setProperty("INIT", "CREATE SCHEMA IF NOT EXISTS leo2");
+            dataSourceProperties.setProperty("DB_CLOSE_DELAY", "-1");
         }
 
-        @Lazy
-        @Bean
-        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-            // TODO. more robust behaviour when database is down.
-            // eg. webservice fails when database is unreachable (on startup eg.)
-            // more tests required referring to db outages during runtime
-            LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-            em.setDataSource(dataSource());
-            em.setPackagesToScan("org.deku.leo2.node.data.entities");
+        dataSource.setConnectionProperties(dataSourceProperties);
 
-            JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
-            em.setJpaVendorAdapter(vendorAdapter);
+        return dataSource;
+    }
 
-            Properties eclipseLinkProperties = new Properties();
-            eclipseLinkProperties.setProperty("javax.persistence.schema-generation.database.action", "create");
-            eclipseLinkProperties.setProperty("javax.persistence.schema-generation.create-database-schemas", "true");
-            eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true");
-            eclipseLinkProperties.setProperty("eclipselink.weaving", "false");
-            eclipseLinkProperties.setProperty("eclipselink.target-database", "org.eclipse.persistence.platform.database.H2Platform");
-            eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc");
+    //region JPA
+    @Bean
+    @Qualifier(DB_EMBEDDED)
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(emf);
+        transactionManager.setDataSource(dataSource());
+
+        return transactionManager;
+    }
+
+    @Lazy
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        // TODO. more robust behaviour when database is down.
+        // eg. webservice fails when database is unreachable (on startup eg.)
+        // more tests required referring to db outages during runtime
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(dataSource());
+        em.setPackagesToScan("org.deku.leo2.node.data.entities");
+
+        JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
+        em.setJpaVendorAdapter(vendorAdapter);
+
+        Properties eclipseLinkProperties = new Properties();
+        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.database.action", "create");
+        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.create-database-schemas", "true");
+        eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true");
+        eclipseLinkProperties.setProperty("eclipselink.weaving", "false");
+        eclipseLinkProperties.setProperty("eclipselink.target-database", "org.eclipse.persistence.platform.database.H2Platform");
+        eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc");
 
 
-            if (mShowSql) {
-                // Show SQL
-                eclipseLinkProperties.setProperty("eclipselink.logging.level.sql", "FINE");
-                eclipseLinkProperties.setProperty("eclipselink.logging.parameters", "true");
-            }
-
-            em.setJpaProperties(eclipseLinkProperties);
-
-            return em;
+        if (mShowSql) {
+            // Show SQL
+            eclipseLinkProperties.setProperty("eclipselink.logging.level.sql", "FINE");
+            eclipseLinkProperties.setProperty("eclipselink.logging.parameters", "true");
         }
-        //endregion
 
-        @Override
-        public void destroy() throws Exception {
+        em.setJpaProperties(eclipseLinkProperties);
 
-        }
+        return em;
+    }
+    //endregion
+
+    @Override
+    public void destroy() throws Exception {
+
+    }
 
 //        @Override
 //        public PlatformTransactionManager annotationDrivenTransactionManager() {
@@ -135,7 +128,6 @@ public class PersistenceContext {
 //        public PlatformTransactionManager annotationDrivenTransactionManager() {
 //            return null;
 //        }
-    }
 
 //    @Aspect
 //    public class DAOInterceptor {
@@ -153,3 +145,4 @@ public class PersistenceContext {
 //        }
 //    }
 }
+

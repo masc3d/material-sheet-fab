@@ -1,20 +1,24 @@
 package org.deku.leo2.central;
 
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+
 /**
- * leo2-central main class.
+ * Spring boot main class.
+ * Disabled auto configuraton as it's slow. Pulling in configurations manually as needed.
  *
- * Derives from node's main class.
- * Requires @Configuration to pull in spring components configured via base class.
- *
- * Created by masc on 30.07.14.
+ * Created by masc on 28.05.15.
  */
-public class Main {
+@Configuration("central.MainSpringBoot")
+@ComponentScan
+public class Main extends org.deku.leo2.node.Main {
     /**
      * Standalone jetty
      * @param args
      * @throws Exception
      */
-    public static void main(String[] args) throws Exception {
-        org.deku.leo2.node.Main.run(args);
+    public static void main(String[] args) {
+        org.deku.leo2.node.Main.run(Main.class, args);
     }
 }

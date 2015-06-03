@@ -1,48 +1,48 @@
 package org.deku.leo2.node;
 
 import com.google.common.base.Stopwatch;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.resteasy.autoconfigure.ResteasyAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
+
+import java.util.logging.Logger;
 
 /**
- * Bare, custom bootstrapper
- * Created by masc on 30.07.14.
+ * Spring boot main class.
+ *
+ * Created by masc on 28.05.15.
  */
+@Configuration("node.MainSpringBoot")
+@ComponentScan
+// Auto configuraton is slow. Pulling in configurations manually as needed.
+@Import({
+        EmbeddedServletContainerAutoConfiguration.class,
+        ServerPropertiesAutoConfiguration.class,
+        ResteasyAutoConfiguration.class,
+})
 public class Main {
+    private static Logger mLog = Logger.getLogger(Main.class.getName());
+
     /**
-     * Main entry point
-     *
+     * Standalone jetty
      * @param args
      * @throws Exception
      */
-    public static void main(String[] args) throws Exception {
-        run(args);
+    public static void main(String[] args) {
+        Main.run(Main.class, args);
     }
 
-    public static void run(String[] args) throws Exception {
+    protected static void run(Class c, String[] args) {
         Stopwatch sw = Stopwatch.createStarted();
-        Global.instance().initializeLogging();
+        SpringApplication app = new SpringApplication(c);
+        ConfigurableApplicationContext context = app.run(args);
 
-        Server server = new Server(8080);
-
-        WebAppContext context = new WebAppContext();
-        context.setContextPath("/leo2");
-
-        // This setup relies on the copyWebapp gradle task which copies the webapp directory into the classpath root
-        String r = Main.class.getResource("/webapp").toString();
-        System.out.println(r);
-        String d = Main.class.getResource("/webapp/WEB-INF/web.xml").toString();
-        System.out.println(d);
-
-        context.setDescriptor(d);
-        context.setResourceBase(r);
-
-        context.setWelcomeFiles(new String[]{"index.html"});
-        server.setHandler(context);
-        server.start();
-
-        //System.out.println(String.format("Started in %s. Enter to stop webservice", sw.toString()));
-        //System.in.read();
-        //server.stop();
+        mLog.info(String.format("Started in %s", sw));
     }
 }

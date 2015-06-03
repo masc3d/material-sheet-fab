@@ -1,7 +1,7 @@
 package org.deku.leo2.node.web;
 
 import org.deku.leo2.node.Global;
-import org.deku.leo2.node.MainSpringBoot;
+import org.deku.leo2.node.Main;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 /**
  * Created by masc on 27.05.15.
  */
-@Profile(MainSpringBoot.SPRING_PROFILE_BOOT)
 @Configuration
 public class WebContext implements ServletContextInitializer {
     Logger mLog = Logger.getLogger(WebContext.class.getName());

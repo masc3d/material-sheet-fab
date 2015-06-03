@@ -1,6 +1,6 @@
 package org.deku.leo2.node.web;
 
-import org.deku.leo2.node.MainSpringBoot;
+import org.deku.leo2.node.Main;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
@@ -20,8 +20,7 @@ public class WebApplicationInitializer extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        builder.profiles(MainSpringBoot.SPRING_PROFILE_BOOT);
-        return builder.sources(MainSpringBoot.class);
+        return builder.sources(Main.class);
     }
 
     @Override

@@ -23,96 +23,89 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Central database persistence context
  * Created by masc on 28.08.14.
  */
-public class PersistenceContext {
-    private Logger mLog = Logger.getLogger(PersistenceContext.class.getName());
-
+@Configuration(PersistenceContext.DB_CENTRAL)
+@Import(org.deku.leo2.node.PersistenceContext.class)
+@EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
+public class PersistenceContext implements DisposableBean {
     public static final String DB_CENTRAL = "db_central";
 
-    /**
-     * Central database persistence context
-     */
-    @Configuration
-    @Import(org.deku.leo2.node.PersistenceContext.Embedded.class)
-    @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
-    public static class Central implements DisposableBean {
-        private Logger mLog = Logger.getLogger(PersistenceContext.Central.class.getName());
+    private Logger mLog = Logger.getLogger(PersistenceContext.class.getName());
 
-        @Inject
-        @Qualifier(DB_CENTRAL)
-        private AbstractDataSource mDataSource;
 
-        @Bean
-        @Lazy
-        @Qualifier(DB_CENTRAL)
-        public AbstractDataSource dataSourceCentral() {
-            DriverManagerDataSource dataSource = new DriverManagerDataSource();
-            dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-            dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/dekuclient");
-            dataSource.setUsername("leo2");
-            dataSource.setPassword("leo2");
+    @Inject
+    @Qualifier(DB_CENTRAL)
+    private AbstractDataSource mDataSource;
 
-            Properties dataSourceProperties = new Properties();
-            dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
-            dataSourceProperties.setProperty("connectTimeout", "1000");
-            dataSource.setConnectionProperties(dataSourceProperties);
+    @Bean
+    @Lazy
+    @Qualifier(DB_CENTRAL)
+    public AbstractDataSource dataSourceCentral() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/dekuclient");
+        dataSource.setUsername("leo2");
+        dataSource.setPassword("leo2");
 
-            return dataSource;
-        }
+        Properties dataSourceProperties = new Properties();
+        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
+        dataSourceProperties.setProperty("connectTimeout", "1000");
+        dataSource.setConnectionProperties(dataSourceProperties);
 
-        @Inject
-        private TransactionAwareDataSourceProxy mJooqTransactionAwareDataSource;
+        return dataSource;
+    }
 
-        @Inject
-        private DataSourceConnectionProvider mJooqConnectionProvider;
+    @Inject
+    private TransactionAwareDataSourceProxy mJooqTransactionAwareDataSource;
 
-        @Bean
-        public TransactionAwareDataSourceProxy jooqTransactionAwareDataSourceProxy() {
-            return new TransactionAwareDataSourceProxy(mDataSource);
-        }
+    @Inject
+    private DataSourceConnectionProvider mJooqConnectionProvider;
 
-        @Bean
-        @Qualifier(DB_CENTRAL)
-        public DataSourceTransactionManager jooqTransactionManager() {
-            return new DataSourceTransactionManager(mDataSource);
-        }
+    @Bean
+    public TransactionAwareDataSourceProxy jooqTransactionAwareDataSourceProxy() {
+        return new TransactionAwareDataSourceProxy(mDataSource);
+    }
 
-        @Bean
-        public DataSourceConnectionProvider jooqConnectionProvider() {
-            return new DataSourceConnectionProvider(mJooqTransactionAwareDataSource);
-        }
+    @Bean
+    @Qualifier(DB_CENTRAL)
+    public DataSourceTransactionManager jooqTransactionManager() {
+        return new DataSourceTransactionManager(mDataSource);
+    }
 
-        @Bean
-        public DefaultDSLContext dslContext() {
-            return new DefaultDSLContext(mJooqConnectionProvider, SQLDialect.MYSQL);
-        }
+    @Bean
+    public DataSourceConnectionProvider jooqConnectionProvider() {
+        return new DataSourceConnectionProvider(mJooqTransactionAwareDataSource);
+    }
 
-        @Override
-        public void destroy() throws Exception {
-            mLog.info("Cleaning up persistence context");
+    @Bean
+    public DefaultDSLContext dslContext() {
+        return new DefaultDSLContext(mJooqConnectionProvider, SQLDialect.MYSQL);
+    }
 
-            // Close all JDBC drivers
-            Enumeration<Driver> drivers = DriverManager.getDrivers();
-            Driver d = null;
-            while (drivers.hasMoreElements()) {
-                try {
-                    d = drivers.nextElement();
-                    DriverManager.deregisterDriver(d);
-                    mLog.info(String.format("Driver %s deregistered", d));
-                }
-                catch (SQLException ex) {
-                    mLog.log(Level.SEVERE, String.format("Error deregistering driver %s", d), ex);
-                }
-            }
+    @Override
+    public void destroy() throws Exception {
+        mLog.info("Cleaning up persistence context");
 
-            // Close mysql connection cleanup thread
+        // Close all JDBC drivers
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        Driver d = null;
+        while (drivers.hasMoreElements()) {
             try {
-                AbandonedConnectionCleanupThread.shutdown();
+                d = drivers.nextElement();
+                DriverManager.deregisterDriver(d);
+                mLog.info(String.format("Driver %s deregistered", d));
+            } catch (SQLException ex) {
+                mLog.log(Level.SEVERE, String.format("Error deregistering driver %s", d), ex);
             }
-            catch (InterruptedException e) {
-                mLog.log(Level.SEVERE, e.getMessage(), e);
-            }
+        }
+
+        // Close mysql connection cleanup thread
+        try {
+            AbandonedConnectionCleanupThread.shutdown();
+        } catch (InterruptedException e) {
+            mLog.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -132,3 +125,4 @@ public class PersistenceContext {
 //        }
 //    }
 }
+
