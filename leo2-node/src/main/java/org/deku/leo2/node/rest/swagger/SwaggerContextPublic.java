@@ -31,7 +31,8 @@ public class SwaggerContextPublic implements SwaggerContext {
                 .description("LEO2 public webservice API")
                 .version("1.0.0")
                 .contact(new Contact()
-                        .email("masc@disappear.de"));
+                        .email("wolfgang.drewelies@derkurier.de"))
+                ;
 
         Swagger swagger = new Swagger().info(info);
         swagger.basePath("/leo2/rs/api");

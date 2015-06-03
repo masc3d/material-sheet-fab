@@ -92,8 +92,8 @@ compile - Compile classpath for source set 'main'.
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
 +--- com.dooapp.fxform2:core:8.+ -> 8.0.9
 |    \--- javax.validation:validation-api:1.1.0.Final
-+--- org.controlsfx:controlsfx:8.+ -> 8.20.8
-|    \--- org.controlsfx:openjfx-dialogs:1.0.2
++--- org.controlsfx:controlsfx:8.+ -> 8.40.9
+|    \--- org.controlsfx:openjfx-dialogs:1.0.3
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- javax.jms:jms-api:1.1-rev-1
@@ -237,8 +237,8 @@ default - Configuration for default artifacts.
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
 +--- com.dooapp.fxform2:core:8.+ -> 8.0.9
 |    \--- javax.validation:validation-api:1.1.0.Final
-+--- org.controlsfx:controlsfx:8.+ -> 8.20.8
-|    \--- org.controlsfx:openjfx-dialogs:1.0.2
++--- org.controlsfx:controlsfx:8.+ -> 8.40.9
+|    \--- org.controlsfx:openjfx-dialogs:1.0.3
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- javax.jms:jms-api:1.1-rev-1
@@ -385,8 +385,8 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
 +--- com.dooapp.fxform2:core:8.+ -> 8.0.9
 |    \--- javax.validation:validation-api:1.1.0.Final
-+--- org.controlsfx:controlsfx:8.+ -> 8.20.8
-|    \--- org.controlsfx:openjfx-dialogs:1.0.2
++--- org.controlsfx:controlsfx:8.+ -> 8.40.9
+|    \--- org.controlsfx:openjfx-dialogs:1.0.3
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- javax.jms:jms-api:1.1-rev-1
@@ -533,8 +533,8 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
 +--- com.dooapp.fxform2:core:8.+ -> 8.0.9
 |    \--- javax.validation:validation-api:1.1.0.Final
-+--- org.controlsfx:controlsfx:8.+ -> 8.20.8
-|    \--- org.controlsfx:openjfx-dialogs:1.0.2
++--- org.controlsfx:controlsfx:8.+ -> 8.40.9
+|    \--- org.controlsfx:openjfx-dialogs:1.0.3
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- javax.jms:jms-api:1.1-rev-1
@@ -679,8 +679,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
 +--- com.dooapp.fxform2:core:8.+ -> 8.0.9
 |    \--- javax.validation:validation-api:1.1.0.Final
-+--- org.controlsfx:controlsfx:8.+ -> 8.20.8
-|    \--- org.controlsfx:openjfx-dialogs:1.0.2
++--- org.controlsfx:controlsfx:8.+ -> 8.40.9
+|    \--- org.controlsfx:openjfx-dialogs:1.0.3
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- javax.jms:jms-api:1.1-rev-1

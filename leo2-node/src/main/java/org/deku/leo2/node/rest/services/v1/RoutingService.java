@@ -8,7 +8,7 @@ import org.deku.leo2.node.data.repositories.HolidayctrlRepository;
 import org.deku.leo2.node.data.repositories.RouteRepository;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.ShortTime;
-import org.deku.leo2.rest.entities.v1.HolidayType;
+import org.deku.leo2.rest.entities.v1.DayType;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
 import org.springframework.data.domain.Sort;
@@ -18,10 +18,11 @@ import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.function.Function;
 
 /**
  * Created by masc on 20.04.15.
@@ -40,7 +41,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
     HolidayctrlRepository mHolidayctrlRepostitory;
 
     @Override
-    public Routing find(ShortDate validForm, String country, String zip, String product) {
+    public Routing find(ShortDate senddate, String country, String zip, String product) {
 
         Routing rWSRouting = new Routing();
 
@@ -50,33 +51,126 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         Country rcountry = mCountryRepository.findOne(country);
 
         if (rcountry.equals(null)) {
-            // kein Land
             throw new IllegalArgumentException("empty Country");
         }
 
         if (rcountry.getZipFormat().equals("")) {
-            // ungültiges Land
             throw new IllegalArgumentException("unknown Country");
         }
 
 
         if (zip.length() < rcountry.getMinLen()) {
-            //  ungültiger ZIP
             throw new IllegalArgumentException("Zipcode to short");
         }
 
         if (rcountry.getRoutingTyp() < 0 || rcountry.getRoutingTyp() > 3) {
-            //  ungültiger Routingtyp
             throw new IllegalArgumentException("Country not enabled");
         }
 
         if (zip.length() > rcountry.getMaxLen()) {
-            //  ungültiger ZIP
             throw new IllegalArgumentException("Zipcode to long");
-            //return r;
         }
 
-        String[] cZipFormat = rcountry.getZipFormat().split("");
+        s2str Zret = parceZip(rcountry.getZipFormat(), zip);
+
+        String zipQuery=Zret.s1;
+        String zipConform=Zret.s2;
+
+        if (zipQuery.equals("")) {
+            throw new IllegalArgumentException("Zipcode not conform");
+        }
+
+        java.sql.Timestamp sqlvalidForm = Timestamp.valueOf(senddate.toString() + " 00:00:00");
+
+
+        QRoute qRoute = QRoute.route;
+        BooleanExpression rWhere = null;
+
+        // to do validto
+
+        switch (rcountry.getRoutingTyp()) {
+            case 0:
+                rWhere =
+                        qRoute.lkz.eq(country)
+                                .and(qRoute.zip.eq(zipQuery))
+                                .and(qRoute.validfrom.loe(sqlvalidForm));
+
+                break;
+            case 1:
+                rWhere =
+                        qRoute.lkz.eq(country)
+                                .and(qRoute.zip.goe(zipQuery))
+                                .and(qRoute.validfrom.loe(sqlvalidForm));
+                break;
+            case 2:
+                rWhere =
+                        qRoute.lkz.eq(country)
+                                .and(qRoute.zip.goe(zipQuery))
+                                .and(qRoute.validfrom.loe(sqlvalidForm));
+                break;
+        }
+
+        // ??? feldauflösung via qRoute
+//        Sort sort = null;
+//        sort = new Sort(Sort.Direction.DESC, "validfrom");
+//test
+//        Iterable<Route> rRouten = new ArrayList<>();
+//        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere ,new Sort(Sort.Direction.DESC,qRoute.validfrom.toString()) );
+        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere, new Sort(Sort.Direction.DESC, "validfrom"));
+
+        if (!rRouten.iterator().hasNext()) {
+            throw new IllegalArgumentException("no Route to Depot");
+        }
+        Route routeFound = rRouten.iterator().next();
+
+        Function<Time, ShortTime> convertTime = (t) -> {
+            if (t != null)
+                return new ShortTime(t.toString());
+            return null;
+        };
+
+        convertTime.apply(null);
+
+        rWSRouting.setSector(routeFound.getSector());
+        rWSRouting.setDayType(getDayType(LocalDate.parse(senddate.toString()), country, routeFound.getHolidayctrl()));
+        rWSRouting.setRouting(routeFound.getStation());
+        rWSRouting.setZone(routeFound.getArea());
+        rWSRouting.setIsland(routeFound.getIsland() != 0);
+        rWSRouting.setEarliestTimeOfDelivery(sqlTimeToShortTime(routeFound.getEtod()));
+        rWSRouting.setEarliestTimeOfDelivery(new ShortTime(routeFound.getEtod().toString()));
+        if (zipConform != null)
+            rWSRouting.setZipCode(zipConform);
+
+        rWSRouting.setterm(routeFound.getTransittime());
+        if (routeFound.getLtodsa() != null)
+            rWSRouting.setSundayDeliveryUntil(new ShortTime(routeFound.getLtodsa().toString()));
+        rWSRouting.setDelieveryDay(getNextDeliveryDay(LocalDate.parse(senddate.toString()), country, routeFound.getHolidayctrl()));
+
+        return rWSRouting;
+    }
+
+    public static ShortTime sqlTimeToShortTime(java.sql.Time time) {
+        if (time == null)
+            return null;
+        return new ShortTime(time.toString());
+    }
+
+    private class s2str{
+        String s1;
+        String s2;
+
+        public s2str(String s1, String s2) {
+            this.s1 = s1;
+            this.s2 = s2;
+        }
+    }
+
+
+    private s2str parceZip(String zipFormat, String zip){
+
+        String zipQuery="";
+        String zipConform="";
+        String[] cZipFormat = zipFormat.split("");
         String[] cZip = zip.split("");
 
         int i = 0;
@@ -84,14 +178,13 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         String csZipFormat = "";
         String csZip = "";
         String csZipConform = "";
-        String zipConform = "";
-        String zipQuery = "";
+
         int cCount = 0;
 
 
         zipCalcEnd:
 
-        while (j < rcountry.getZipFormat().length()) {
+        while (j < zip.length()) {
             csZip = cZip[i];
             csZipFormat = cZipFormat[j];
 
@@ -187,103 +280,40 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         }
 
-        if (zipQuery.equals("")) {
-            //  ungültiger ZIP
-            throw new IllegalArgumentException("Zipcode not conform");
-            //return r;
-        }
+        return new s2str (zipQuery,zipConform);
+    }
 
-        java.sql.Timestamp sqlvalidForm = Timestamp.valueOf(validForm.toString() + " 00:00:00");
+    private DayType getDayType(LocalDate javaDate, String Country, String Holidayctrl) {
+        DayType daytype = DayType.WorkDay;
 
+        DayOfWeek javaday = javaDate.getDayOfWeek();
 
-        QRoute qRoute = QRoute.route;
-        BooleanExpression rWhere = null;
+        if (javaday == DayOfWeek.SUNDAY)
+            daytype = DayType.Sunday;
+        if (javaday == DayOfWeek.SATURDAY)
+            daytype = DayType.Saturday;
 
-        // to do validto
-
-        switch (rcountry.getRoutingTyp()) {
-            case 0:
-                rWhere =
-                        qRoute.lkz.eq(country)
-                                .and(qRoute.zip.eq(zipQuery))
-                                .and(qRoute.validfrom.loe(sqlvalidForm));
-
-                break;
-            case 1:
-                rWhere =
-                        qRoute.lkz.eq(country)
-                                .and(qRoute.zip.goe(zipQuery))
-                                .and(qRoute.validfrom.loe(sqlvalidForm));
-                break;
-            case 2:
-                rWhere =
-                        qRoute.lkz.eq(country)
-                                .and(qRoute.zip.goe(zipQuery))
-                                .and(qRoute.validfrom.loe(sqlvalidForm));
-                break;
-        }
-
-        // ??? feldauflösung via qRoute
-        Sort sort = null;
-        sort = new Sort(Sort.Direction.DESC, "validfrom");
-        Iterable<Route> rRouten = new ArrayList<>();
-//        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere, sort);
-//        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere ,new Sort(Sort.Direction.DESC,qRoute.validfrom.toString()) );
-
-        if (!rRouten.iterator().hasNext()) {
-            //  keine Route
-            throw new IllegalArgumentException("no Route to Depot");
-        }
-        Route routeFound = rRouten.iterator().next();
-
-//** Feitertage
-        Holidayctrl rholidayctrl = mHolidayctrlRepostitory.findOne(new HolidayctrlPK(sqlvalidForm, country));
-
-        HolidayType holidayType = HolidayType.Regular;
-
-        LocalDate dtsqlvalidForm;
-        dtsqlvalidForm = LocalDate.parse(validForm.toString());
-        DayOfWeek day = dtsqlvalidForm.getDayOfWeek();
-
-        if (day== DayOfWeek.SUNDAY)
-            holidayType = HolidayType.Sunday;
-        if (day== DayOfWeek.SATURDAY)
-            holidayType = HolidayType.Saturday;
+        Holidayctrl rholidayctrl = mHolidayctrlRepostitory.findOne(new HolidayctrlPK(java.sql.Timestamp.valueOf(javaDate.toString() + " 00:00:00"), Country));
 
         if (rholidayctrl != null) {
             if (rholidayctrl.getCtrlPos() == -1)
-                holidayType = HolidayType.BankHoliday;
+                daytype = DayType.Holiday;
             else if (rholidayctrl.getCtrlPos() > 0) {
-                if (routeFound.getHolidayctrl().substring(rholidayctrl.getCtrlPos(), rholidayctrl.getCtrlPos()) == "J")
-                    holidayType = HolidayType.RegionalBankHoliday;
+                if (Holidayctrl.substring(rholidayctrl.getCtrlPos(), rholidayctrl.getCtrlPos()) == "J")
+                    daytype = DayType.RegionalHoliday;
             }
         }
 
+        return daytype;
+    }
 
-        rWSRouting.setSector(routeFound.getSector());
-        rWSRouting.setHoliday(holidayType);
-        rWSRouting.setRouting(routeFound.getStation());
-        rWSRouting.setZone(routeFound.getArea());
-        rWSRouting.setIsland(routeFound.getIsland() != 0);
-        rWSRouting.setEarliestTimeOfDelivery(new ShortTime(routeFound.getEtod().toString()));
-        //rWSRouting.setConformZipCode(zipConform);
+    private ShortDate getNextDeliveryDay(LocalDate javaDate, String Country, String Holidayctrl) {
 
+        do
+            javaDate = javaDate.plusDays(1);
+        while (!getDayType(javaDate, Country, Holidayctrl).equals(DayType.WorkDay));
 
-        //Routing r = mRoutingService.find(new LocalDateParam(java.time.LocalDate.parse("2013-11-02")), "AT", "1010", "A");
-
-
-//        rWSRouting.setNextDelieveryDay(new LocalDateParam (java.time.LocalDate.parse("2013-11-02")));
-
-        rWSRouting.setNextDelieveryDay(new ShortDate("2013-11-02"));
-//        rWSRouting.setNextDelieveryDay(java.time.LocalDate.of(2015,5,11 ));
-        //        rWSRouting.setNextDelieveryDay(java.time.LocalDate LocalDateof(2015, 5, 11));
-
-
-        //new LocalDate(java.time.LocalDate.parse("2015-05-22") ) );
-
-//        Routing r = new Routing("sector1", "zone1", LocalTime.now(), 12, HolidayType.RegionalBankHoliday, false);
-
-        return rWSRouting;
+        return new ShortDate(javaDate.toString());
     }
 
     @Override

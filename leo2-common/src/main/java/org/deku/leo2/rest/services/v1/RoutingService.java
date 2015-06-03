@@ -24,21 +24,24 @@ public interface RoutingService {
     @ApiOperation(value = "Determine routing")
     // TODO: not working atm due to bug: https://github.com/swagger-api/swagger-core/issues/905
     @ApiImplicitParams(
-            @ApiImplicitParam(name = "date", value = "Date", required = true, paramType = "query", dataType = "string")
+            @ApiImplicitParam(name = "senddate", value = "Date", required = true, paramType = "query", dataType = "string")
     )
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "No depots found")
     })
-    Routing find(@QueryParam("date")
-                 @ApiParam(value = "Date")
+    Routing find(@QueryParam("senddate")
+                 @ApiParam(value = "Date (YYYY-MM-DD)")
                  ShortDate date,
                  @QueryParam("country")
-                 @ApiParam(value = "Country ")
+                 @ApiParam(value = "Country two-letter ISO-3166")
                  String country,
                  @QueryParam("zip")
-                 @ApiParam(value = "Zip code") String zip,
+                 @ApiParam(value = "Zip code accordant to country spezification") String zip,
                  @QueryParam("product")
-                 @ApiParam(value = "Product") String product);
+                 @ApiParam(value = "Optional: Product") String product);
+
+
+
 
     @GET
     @Path("/find/via")
