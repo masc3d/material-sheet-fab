@@ -1,7 +1,6 @@
 package org.deku.leo2.node;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import javax.inject.Named;
 

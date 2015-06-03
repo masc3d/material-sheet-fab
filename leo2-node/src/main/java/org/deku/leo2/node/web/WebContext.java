@@ -1,6 +1,5 @@
 package org.deku.leo2.node.web;
 
-import org.deku.leo2.node.Config;
 import org.deku.leo2.node.Global;
 import org.deku.leo2.node.MainSpringBoot;
 import org.jboss.resteasy.core.Dispatcher;
@@ -10,16 +9,9 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.springmvc.ResteasyHandlerMapping;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContext;

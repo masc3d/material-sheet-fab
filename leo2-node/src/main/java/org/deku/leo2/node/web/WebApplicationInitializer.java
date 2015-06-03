@@ -1,14 +1,9 @@
 package org.deku.leo2.node.web;
 
-import org.deku.leo2.node.Global;
 import org.deku.leo2.node.MainSpringBoot;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Named;

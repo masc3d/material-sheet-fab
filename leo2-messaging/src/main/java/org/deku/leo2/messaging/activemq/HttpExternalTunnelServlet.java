@@ -1,11 +1,9 @@
 package org.deku.leo2.messaging.activemq;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.transport.TransportAcceptListener;
 import org.apache.activemq.transport.http.HttpTransportFactory;
 import org.apache.activemq.transport.http.HttpTunnelServlet;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import java.net.URI;
 import java.util.HashMap;

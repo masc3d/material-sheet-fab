@@ -1,7 +1,5 @@
 package org.deku.leo2.central.web;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import org.deku.leo2.central.data.DatabaseSync;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;

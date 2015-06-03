@@ -2,11 +2,14 @@ package org.deku.leo2.node;
 
 import com.google.common.base.Stopwatch;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.web.*;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.resteasy.autoconfigure.ResteasyAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 
 import java.util.logging.Logger;
 

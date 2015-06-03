@@ -1,7 +1,5 @@
 package org.deku.leo2.rest.entities.v1;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.ShortTime;

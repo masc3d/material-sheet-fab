@@ -10,7 +10,6 @@ import com.wordnik.swagger.jaxrs.listing.ApiListingResource;
 import com.wordnik.swagger.jaxrs.listing.SwaggerSerializers;
 import com.wordnik.swagger.models.Swagger;
 import com.wordnik.swagger.util.Yaml;
-import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

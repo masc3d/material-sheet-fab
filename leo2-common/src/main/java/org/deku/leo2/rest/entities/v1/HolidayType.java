@@ -1,9 +1,5 @@
 package org.deku.leo2.rest.entities.v1;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlType;
-
 /**
  * Created by masc on 20.04.15.
  */

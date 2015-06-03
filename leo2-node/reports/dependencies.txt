@@ -79,6 +79,7 @@ compile - Compile classpath for source set 'main'.
 +--- org.eclipse.jetty.aggregate:jetty-all:9.2.+ -> 9.2.11.v20150529
 |    +--- javax.websocket:javax.websocket-api:1.0
 |    \--- javax.servlet:javax.servlet-api:3.1.0
++--- javax.servlet:javax.servlet-api:3.1.0
 +--- org.jboss.resteasy:resteasy-jaxrs:3.0.+ -> 3.0.11.Final
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
@@ -373,6 +374,7 @@ default - Configuration for default artifacts.
 +--- org.eclipse.jetty.aggregate:jetty-all:9.2.+ -> 9.2.11.v20150529
 |    +--- javax.websocket:javax.websocket-api:1.0
 |    \--- javax.servlet:javax.servlet-api:3.1.0
++--- javax.servlet:javax.servlet-api:3.1.0
 +--- org.jboss.resteasy:resteasy-jaxrs:3.0.+ -> 3.0.11.Final
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
@@ -679,6 +681,7 @@ runtime - Runtime classpath for source set 'main'.
 +--- org.eclipse.jetty.aggregate:jetty-all:9.2.+ -> 9.2.11.v20150529
 |    +--- javax.websocket:javax.websocket-api:1.0
 |    \--- javax.servlet:javax.servlet-api:3.1.0
++--- javax.servlet:javax.servlet-api:3.1.0
 +--- org.jboss.resteasy:resteasy-jaxrs:3.0.+ -> 3.0.11.Final
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
@@ -976,6 +979,7 @@ testCompile - Compile classpath for source set 'test'.
 +--- org.eclipse.jetty.aggregate:jetty-all:9.2.+ -> 9.2.11.v20150529
 |    +--- javax.websocket:javax.websocket-api:1.0
 |    \--- javax.servlet:javax.servlet-api:3.1.0
++--- javax.servlet:javax.servlet-api:3.1.0
 +--- org.jboss.resteasy:resteasy-jaxrs:3.0.+ -> 3.0.11.Final
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
@@ -1275,6 +1279,7 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- org.eclipse.jetty.aggregate:jetty-all:9.2.+ -> 9.2.11.v20150529
 |    +--- javax.websocket:javax.websocket-api:1.0
 |    \--- javax.servlet:javax.servlet-api:3.1.0
++--- javax.servlet:javax.servlet-api:3.1.0
 +--- org.jboss.resteasy:resteasy-jaxrs:3.0.+ -> 3.0.11.Final
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final

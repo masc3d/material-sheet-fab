@@ -1,10 +1,5 @@
 package org.deku.leo2.node.rest;
 
-import org.deku.leo2.node.rest.services.SwaggerListingResourceInternal;
-import org.deku.leo2.node.rest.services.SwaggerListingResourcePublic;
-
-import javax.inject.Named;
-import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;

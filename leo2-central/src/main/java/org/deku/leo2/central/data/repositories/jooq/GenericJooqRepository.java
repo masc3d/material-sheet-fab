@@ -1,6 +1,9 @@
 package org.deku.leo2.central.data.repositories.jooq;
 
-import org.jooq.*;
+import org.jooq.Cursor;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.TableField;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 

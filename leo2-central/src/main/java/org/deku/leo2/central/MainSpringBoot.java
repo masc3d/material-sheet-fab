@@ -1,16 +1,8 @@
 package org.deku.leo2.central;
 
-import org.deku.leo2.node.*;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.web.*;
-import org.springframework.boot.resteasy.autoconfigure.ResteasyAutoConfiguration;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
-
-import javax.inject.Named;
 
 /**
  * Spring boot main class.

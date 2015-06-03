@@ -3,29 +3,20 @@ package org.deku.leo2.node;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.apache.log4j.BasicConfigurator;
-import org.deku.leo2.messaging.Broker;
 import org.deku.leo2.messaging.activemq.BrokerImpl;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.util.ClassUtils;
-import org.yaml.snakeyaml.Yaml;
 import sx.Disposable;
 import sx.LazyInstance;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**

@@ -1,10 +1,7 @@
 package org.deku.leo2.central.web;
 
-import org.deku.leo2.central.MainSpringBoot;
-import org.deku.leo2.node.Main;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.context.annotation.Profile;
 
 import javax.inject.Named;
 import javax.servlet.ServletContext;

@@ -1,14 +1,11 @@
 package org.deku.leo2.node.web;
 
-import org.deku.leo2.messaging.activemq.BrokerImpl;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.inject.Named;
 import javax.servlet.ServletContextEvent;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
