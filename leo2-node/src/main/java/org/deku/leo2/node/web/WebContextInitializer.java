@@ -1,7 +1,6 @@
 package org.deku.leo2.node.web;
 
 import org.deku.leo2.node.Global;
-import org.deku.leo2.node.Main;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
@@ -11,9 +10,9 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.springmvc.ResteasyHandlerMapping;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
@@ -22,9 +21,9 @@ import java.util.logging.Logger;
 /**
  * Created by masc on 27.05.15.
  */
-@Configuration
-public class WebContext implements ServletContextInitializer {
-    Logger mLog = Logger.getLogger(WebContext.class.getName());
+@Named
+public class WebContextInitializer implements ServletContextInitializer {
+    Logger mLog = Logger.getLogger(WebContextInitializer.class.getName());
 
     @Inject
     ResteasyDeployment mResteasyDeployment;
@@ -56,7 +55,7 @@ public class WebContext implements ServletContextInitializer {
             // This setup has the following advantages
             // * faster startup time (~2 seconds) as spring-webmvc/dispatcher not needed
             // * uses dedicated http dispatcher servlet for resteasy (ResteasyHandlerMappng has issues
-            //   as it throws errors on any invalid resource and it's queries even for paths outside prefix
+            //   as it throws errors on any invalid resource, ven for paths outside scope/prefix)
             servletContext.setAttribute(ResteasyProviderFactory.class.getName(), mResteasyDeployment.getProviderFactory());
             servletContext.setAttribute(Dispatcher.class.getName(), mResteasyDeployment.getDispatcher());
             servletContext.setAttribute(Registry.class.getName(), mResteasyDeployment.getRegistry());
