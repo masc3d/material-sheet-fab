@@ -9,34 +9,44 @@ import java.util.function.Supplier;
 public class LazyInstance<T> {
     final Object mLock = new Object();
     Supplier<T> mSupplier;
-    T instance = null;
+    volatile T mInstance = null;
 
     public LazyInstance(Supplier<T> supplier) {
         mSupplier = supplier;
     }
+
     public LazyInstance() {
-        this( null );
+        this(null);
     }
 
     /**
      * Get instance using supplier passed with c'tor
+     *
      * @return instance
      */
     public T get() {
         return this.get(mSupplier);
     }
 
+    public void set(T instance) {
+        synchronized (mLock) {
+            mInstance = instance;
+        }
+    }
+
     /**
      * Get instance
+     *
      * @param supplier Supplier to provide instance
      * @return Instance
      */
     public T get(Supplier<T> supplier) {
-        if (instance == null) {
-            synchronized ( mLock ) {
-                instance = supplier.get();
+        if (mInstance == null) {
+            synchronized (mLock) {
+                if (supplier != null)
+                    mInstance = supplier.get();
             }
         }
-        return instance;
+        return mInstance;
     }
 }
