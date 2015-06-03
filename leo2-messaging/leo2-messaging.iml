@@ -36,8 +36,6 @@
     <orderEntry type="library" exported="" name="Gradle: com.thoughtworks.xstream:xstream:1.4.8" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.fusesource.mqtt-client:mqtt-client:1.10" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch-transport:1.21" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: javax.websocket:javax.websocket-api:1.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.httpcomponents:httpcore:4.4.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-codec:commons-codec:1.9" level="project" />
@@ -45,6 +43,6 @@
     <orderEntry type="library" exported="" name="Gradle: xpp3:xpp3_min:1.1.4c" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch:1.21" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.slf4j:slf4j-api:1.7.12" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.eclipse.jetty.aggregate:jetty-all:9.2.11.v20150529" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" level="project" />
   </component>
 </module>

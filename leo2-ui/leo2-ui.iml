@@ -24,7 +24,6 @@
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet:2.17" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.17" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.dooapp.fxform2:core:8.0.9" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.controlsfx:controlsfx:8.20.8" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javax.el:el-api:2.2.1-b04" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javax.validation:validation-api:1.1.0.Final" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javax.ws.rs:javax.ws.rs-api:2.0.1" level="project" />
@@ -33,7 +32,6 @@
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.containers:jersey-container-servlet-core:2.17" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.core:jersey-server:2.17" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.grizzly:grizzly-http-server:2.3.16" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.controlsfx:openjfx-dialogs:1.0.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: javax.annotation:javax.annotation-api:1.2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.jersey.bundles.repackaged:jersey-guava:2.17" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.glassfish.hk2:osgi-resource-locator:1.0.1" level="project" />
@@ -59,5 +57,7 @@
     <orderEntry type="library" exported="" name="Gradle: org.hibernate:hibernate-validator:5.2.0.CR1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml:classmate:1.1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.jboss.logging:jboss-logging:3.3.0.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.controlsfx:controlsfx:8.40.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.controlsfx:openjfx-dialogs:1.0.3" level="project" />
   </component>
 </module>

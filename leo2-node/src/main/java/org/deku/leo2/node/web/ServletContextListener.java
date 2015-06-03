@@ -1,6 +1,6 @@
 package org.deku.leo2.node.web;
 
-import org.slf4j.LoggerFactory;
+import org.deku.leo2.messaging.activemq.BrokerImpl;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -8,15 +8,15 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.inject.Named;
 import javax.servlet.ServletContextEvent;
-import org.slf4j.Logger;
-//import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by masc on 17.09.14.
  */
 @Named("node.ServletContextListener")
 public class ServletContextListener implements javax.servlet.ServletContextListener {
-    Logger mLog = LoggerFactory.getLogger(ServletContextListener.class.getName());
+    Logger mLog = Logger.getLogger(ServletContextListener.class.getName());
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -28,10 +28,17 @@ public class ServletContextListener implements javax.servlet.ServletContextListe
 
         ConfigurableListableBeanFactory clbf = wac.getBeanFactory();
 
+        mLog.info(String.format("Registered beans: %d", wac.getBeanDefinitionCount()));
         for (String beanName : wac.getBeanDefinitionNames()) {
             Object s = clbf.getSingleton(beanName);
             mLog.info(String.format("%s: %s", beanName, (s != null) ? s.getClass().getName() : "<null>"));
         }
+
+//        try {
+//            BrokerImpl.getInstance().start();
+//        } catch (Exception e) {
+//            mLog.log(Level.SEVERE, e.getMessage(), e);
+//        }
     }
 
     @Override

@@ -95,9 +95,7 @@ public class PersistenceContext {
             // more tests required referring to db outages during runtime
             LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
             em.setDataSource(dataSource());
-            em.setPackagesToScan(new String[]{
-                    "org.deku.leo2.node.data.entities"
-            });
+            em.setPackagesToScan("org.deku.leo2.node.data.entities");
 
             JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
             em.setJpaVendorAdapter(vendorAdapter);

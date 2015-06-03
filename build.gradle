@@ -26,7 +26,7 @@ subprojects {
             v_jersey = "2.+"
             // Resteasy > 3.0.9 breaks integration with spring-boot.
             // it actually still works fine when spring is initialized via resteasy's SpringContextLoaderListener
-            v_resteasy = "3.0.9.+"
+            v_resteasy = "3.0.+"
             v_jackson = "2.+"
             v_hk2 = "2.+"
             v_eclipselink = "2.+"

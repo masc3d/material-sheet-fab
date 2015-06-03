@@ -1,33 +1,34 @@
 package org.deku.leo2.node;
 
+import com.google.common.base.Stopwatch;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.web.*;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.resteasy.autoconfigure.ResteasyAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.*;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import java.util.logging.Logger;
 
 /**
  * Spring boot main class.
- * Disabled auto configuraton as it's slow. Pulling in configurations manually as needed.
  *
  * Created by masc on 28.05.15.
  */
 @Profile(MainSpringBoot.SPRING_PROFILE_BOOT)
 @Configuration("node.MainSpringBoot")
 @ComponentScan
-@EnableWebMvc
+// Auto configuraton is slow. Pulling in configurations manually as needed.
 @Import({
         EmbeddedServletContainerAutoConfiguration.class,
         ServerPropertiesAutoConfiguration.class,
-        HttpMessageConvertersAutoConfiguration.class,
-        WebMvcAutoConfiguration.class,
-        DispatcherServletAutoConfiguration.class,
         ResteasyAutoConfiguration.class,
 })
 public class MainSpringBoot {
-    /** Profile name for spring-boot */
+    /** Spring-boot profile */
     public static final String SPRING_PROFILE_BOOT = "spring-boot";
+
+    private static Logger mLog = Logger.getLogger(MainSpringBoot.class.getName());
 
     /**
      * Standalone jetty
@@ -39,10 +40,11 @@ public class MainSpringBoot {
     }
 
     protected static void run(Class c, String[] args) {
-        Global.instance().initializeLogging();
-
+        Stopwatch sw = Stopwatch.createStarted();
         SpringApplication app = new SpringApplication(c);
         app.setAdditionalProfiles(SPRING_PROFILE_BOOT);
         ConfigurableApplicationContext context = app.run(args);
+
+        mLog.info(String.format("Started in %s", sw));
     }
 }

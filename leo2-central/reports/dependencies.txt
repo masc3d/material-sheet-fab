@@ -184,29 +184,30 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-webmvc:4.+ -> 4.1.6.RELEASE
+|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-web:4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-aspects:4.+ -> 4.1.6.RELEASE
 |    |    \--- org.aspectj:aspectjweaver:1.8.5
-|    +--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
-|    |    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE
-|    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE
-|    |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    |    \--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE
-|    |    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE (*)
-|    |    |    |    \--- org.yaml:snakeyaml:1.14
-|    |    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE
-|    |    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    +--- org.slf4j:jul-to-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
+|    +--- org.springframework.boot:spring-boot-starter:1.+ -> 1.2.3.RELEASE
+|    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE
+|    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14
-|    |    +--- org.springframework.boot:spring-boot-starter-tomcat:1.2.3.RELEASE
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
-|    |    |    \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
-|    |    |         \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+|    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE
+|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    \--- org.yaml:snakeyaml:1.14
+|    +--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
+|    |    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.5 -> 2.6.0-rc1 (*)
 |    |    +--- org.hibernate:hibernate-validator:5.1.3.Final
 |    |    |    +--- javax.validation:validation-api:1.1.0.Final
@@ -214,12 +215,7 @@ compile - Compile classpath for source set 'main'.
 |    |    |    \--- com.fasterxml:classmate:1.0.0
 |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-web:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE
-|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
-|    |         \--- org.springframework:spring-web:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter-jetty:1.+ -> 1.2.3.RELEASE
 |    |    +--- org.eclipse.jetty:jetty-jsp:9.2.9.v20150224
 |    |    |    +--- org.eclipse.jetty.toolchain:jetty-schemas:3.1.M0
@@ -312,8 +308,7 @@ compile - Compile classpath for source set 'main'.
 |    |    |    +--- org.javassist:javassist:3.18.2-GA -> 3.19.0-GA
 |    |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
-|    +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-|    \--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
+|    \--- org.javassist:javassist:3.+ -> 3.19.0-GA
 +--- project :sx-common (*)
 +--- org.jooq:jooq:3.+ -> 3.6.1
 \--- mysql:mysql-connector-java:5.+ -> 5.1.35
@@ -490,29 +485,30 @@ default - Configuration for default artifacts.
 |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-webmvc:4.+ -> 4.1.6.RELEASE
+|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-web:4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-aspects:4.+ -> 4.1.6.RELEASE
 |    |    \--- org.aspectj:aspectjweaver:1.8.5
-|    +--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
-|    |    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE
-|    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE
-|    |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    |    \--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE
-|    |    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE (*)
-|    |    |    |    \--- org.yaml:snakeyaml:1.14
-|    |    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE
-|    |    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    +--- org.slf4j:jul-to-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
+|    +--- org.springframework.boot:spring-boot-starter:1.+ -> 1.2.3.RELEASE
+|    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE
+|    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14
-|    |    +--- org.springframework.boot:spring-boot-starter-tomcat:1.2.3.RELEASE
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
-|    |    |    \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
-|    |    |         \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+|    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE
+|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    \--- org.yaml:snakeyaml:1.14
+|    +--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
+|    |    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.5 -> 2.6.0-rc1 (*)
 |    |    +--- org.hibernate:hibernate-validator:5.1.3.Final
 |    |    |    +--- javax.validation:validation-api:1.1.0.Final
@@ -520,12 +516,7 @@ default - Configuration for default artifacts.
 |    |    |    \--- com.fasterxml:classmate:1.0.0
 |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-web:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE
-|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
-|    |         \--- org.springframework:spring-web:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter-jetty:1.+ -> 1.2.3.RELEASE
 |    |    +--- org.eclipse.jetty:jetty-jsp:9.2.9.v20150224
 |    |    |    +--- org.eclipse.jetty.toolchain:jetty-schemas:3.1.M0
@@ -618,12 +609,16 @@ default - Configuration for default artifacts.
 |    |    |    +--- org.javassist:javassist:3.18.2-GA -> 3.19.0-GA
 |    |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
-|    +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-|    \--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
+|    \--- org.javassist:javassist:3.+ -> 3.19.0-GA
 +--- project :sx-common (*)
 +--- org.jooq:jooq:3.+ -> 3.6.1
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
-\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
+\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE
+     +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+     +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
+     +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
+     \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
+          \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
 
 providedCompile - Additional compile classpath for libraries that should not be part of the WAR archive.
 No dependencies
@@ -808,29 +803,30 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-webmvc:4.+ -> 4.1.6.RELEASE
+|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-web:4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-aspects:4.+ -> 4.1.6.RELEASE
 |    |    \--- org.aspectj:aspectjweaver:1.8.5
-|    +--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
-|    |    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE
-|    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE
-|    |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    |    \--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE
-|    |    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE (*)
-|    |    |    |    \--- org.yaml:snakeyaml:1.14
-|    |    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE
-|    |    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    +--- org.slf4j:jul-to-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
+|    +--- org.springframework.boot:spring-boot-starter:1.+ -> 1.2.3.RELEASE
+|    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE
+|    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14
-|    |    +--- org.springframework.boot:spring-boot-starter-tomcat:1.2.3.RELEASE
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
-|    |    |    \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
-|    |    |         \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+|    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE
+|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    \--- org.yaml:snakeyaml:1.14
+|    +--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
+|    |    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.5 -> 2.6.0-rc1 (*)
 |    |    +--- org.hibernate:hibernate-validator:5.1.3.Final
 |    |    |    +--- javax.validation:validation-api:1.1.0.Final
@@ -838,12 +834,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    \--- com.fasterxml:classmate:1.0.0
 |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-web:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE
-|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
-|    |         \--- org.springframework:spring-web:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter-jetty:1.+ -> 1.2.3.RELEASE
 |    |    +--- org.eclipse.jetty:jetty-jsp:9.2.9.v20150224
 |    |    |    +--- org.eclipse.jetty.toolchain:jetty-schemas:3.1.M0
@@ -936,12 +927,16 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    +--- org.javassist:javassist:3.18.2-GA -> 3.19.0-GA
 |    |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
-|    +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-|    \--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
+|    \--- org.javassist:javassist:3.+ -> 3.19.0-GA
 +--- project :sx-common (*)
 +--- org.jooq:jooq:3.+ -> 3.6.1
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
-\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
+\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE
+     +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+     +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
+     +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
+     \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
+          \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
 
 shadow
 No dependencies
@@ -1118,29 +1113,30 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-webmvc:4.+ -> 4.1.6.RELEASE
+|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-web:4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-aspects:4.+ -> 4.1.6.RELEASE
 |    |    \--- org.aspectj:aspectjweaver:1.8.5
-|    +--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
-|    |    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE
-|    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE
-|    |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    |    \--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE
-|    |    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE (*)
-|    |    |    |    \--- org.yaml:snakeyaml:1.14
-|    |    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE
-|    |    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    +--- org.slf4j:jul-to-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
+|    +--- org.springframework.boot:spring-boot-starter:1.+ -> 1.2.3.RELEASE
+|    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE
+|    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14
-|    |    +--- org.springframework.boot:spring-boot-starter-tomcat:1.2.3.RELEASE
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
-|    |    |    \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
-|    |    |         \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+|    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE
+|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    \--- org.yaml:snakeyaml:1.14
+|    +--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
+|    |    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.5 -> 2.6.0-rc1 (*)
 |    |    +--- org.hibernate:hibernate-validator:5.1.3.Final
 |    |    |    +--- javax.validation:validation-api:1.1.0.Final
@@ -1148,12 +1144,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    \--- com.fasterxml:classmate:1.0.0
 |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-web:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE
-|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
-|    |         \--- org.springframework:spring-web:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter-jetty:1.+ -> 1.2.3.RELEASE
 |    |    +--- org.eclipse.jetty:jetty-jsp:9.2.9.v20150224
 |    |    |    +--- org.eclipse.jetty.toolchain:jetty-schemas:3.1.M0
@@ -1246,8 +1237,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    +--- org.javassist:javassist:3.18.2-GA -> 3.19.0-GA
 |    |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
-|    +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-|    \--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
+|    \--- org.javassist:javassist:3.+ -> 3.19.0-GA
 +--- project :sx-common (*)
 +--- org.jooq:jooq:3.+ -> 3.6.1
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
@@ -1429,29 +1419,30 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-webmvc:4.+ -> 4.1.6.RELEASE
+|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-web:4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-aspects:4.+ -> 4.1.6.RELEASE
 |    |    \--- org.aspectj:aspectjweaver:1.8.5
-|    +--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
-|    |    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE
-|    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE
-|    |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    |    \--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE
-|    |    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE (*)
-|    |    |    |    \--- org.yaml:snakeyaml:1.14
-|    |    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE
-|    |    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    +--- org.slf4j:jul-to-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.11 -> 1.7.12 (*)
-|    |    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
+|    +--- org.springframework.boot:spring-boot-starter:1.+ -> 1.2.3.RELEASE
+|    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.3.RELEASE
+|    |    |    +--- org.springframework.boot:spring-boot:1.2.3.RELEASE (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14
-|    |    +--- org.springframework.boot:spring-boot-starter-tomcat:1.2.3.RELEASE
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
-|    |    |    +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
-|    |    |    \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
-|    |    |         \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+|    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.3.RELEASE
+|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.11 -> 1.7.12 (*)
+|    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    \--- org.yaml:snakeyaml:1.14
+|    +--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
+|    |    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.5 -> 2.6.0-rc1 (*)
 |    |    +--- org.hibernate:hibernate-validator:5.1.3.Final
 |    |    |    +--- javax.validation:validation-api:1.1.0.Final
@@ -1459,12 +1450,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    \--- com.fasterxml:classmate:1.0.0
 |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-web:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE
-|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |         +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
-|    |         \--- org.springframework:spring-web:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter-jetty:1.+ -> 1.2.3.RELEASE
 |    |    +--- org.eclipse.jetty:jetty-jsp:9.2.9.v20150224
 |    |    |    +--- org.eclipse.jetty.toolchain:jetty-schemas:3.1.M0
@@ -1557,12 +1543,16 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    +--- org.javassist:javassist:3.18.2-GA -> 3.19.0-GA
 |    |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
-|    +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-|    \--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
+|    \--- org.javassist:javassist:3.+ -> 3.19.0-GA
 +--- project :sx-common (*)
 +--- org.jooq:jooq:3.+ -> 3.6.1
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
-+--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE (*)
++--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE
+|    +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+|    +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
+|    +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
+|    \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
+|         \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
 +--- junit:junit:4.+ -> 4.12 (*)
 +--- org.jboss.resteasy:resteasy-client:3.0.9.+ -> 3.0.9.Final
 |    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final (*)

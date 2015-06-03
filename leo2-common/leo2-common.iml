@@ -41,11 +41,11 @@
     <orderEntry type="library" scope="TEST" name="Gradle: commons-codec:commons-codec:1.9" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.jboss.resteasy:resteasy-client:3.0.9.Final" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.jboss.resteasy:jaxrs-api:3.0.9.Final" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jboss.resteasy:resteasy-client:3.0.11.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.jboss.resteasy:jaxrs-api:3.0.11.Final" level="project" />
   </component>
 </module>

@@ -1,21 +1,42 @@
 package org.deku.leo2.node.web;
 
 import org.deku.leo2.node.Global;
+import org.deku.leo2.node.MainSpringBoot;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Named;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.util.logging.Logger;
 
 /**
  * Created by masc on 05.05.15.
  */
-@Named
-public class WebApplicationInitializer implements org.springframework.web.WebApplicationInitializer {
+@Named("webapp-init-node")
+public class WebApplicationInitializer extends SpringBootServletInitializer {
     Logger mLog = Logger.getLogger(WebApplicationInitializer.class.getName());
 
     @Override
-    public void onStartup(ServletContext container) {
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        builder.profiles(MainSpringBoot.SPRING_PROFILE_BOOT);
+        return builder.sources(MainSpringBoot.class);
+    }
+
+    @Override
+    public void onStartup(ServletContext container) throws ServletException {
         mLog.info("Leo2 node web application initializer");
-        Global.instance().initializeLogging();
+
+        // Only start if there's no application context yet.
+        if (!(container.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)
+                instanceof ApplicationContext)) {
+            super.onStartup(container);
+        }
     }
 }

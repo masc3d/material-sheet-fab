@@ -26,6 +26,7 @@
         <param-value>org.deku.leo2.node</param-value>
     </context-param>
 
+
     <!-- Resteasy configuration -->
     <context-param>
         <param-name>resteasy.providers</param-name>

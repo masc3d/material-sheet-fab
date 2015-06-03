@@ -75,12 +75,15 @@ dependencies {
     // spring
     compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
     compile "org.springframework:spring-web:$v_spring"
+    compile "org.springframework:spring-webmvc:$v_spring"
     compile "org.springframework:spring-aspects:$v_spring"
     // spring boot
-
-    compile("org.springframework.boot:spring-boot-starter-web:$v_springboot")
+    compile("org.springframework.boot:spring-boot-starter:$v_springboot")
+    compile("org.springframework.boot:spring-boot-starter-web:$v_springboot") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
     compile("org.springframework.boot:spring-boot-starter-jetty:$v_springboot")
-    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$v_springboot")
+    //providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$v_springboot")
 
     // JSR-330
     compile 'javax.inject:javax.inject:1'
