@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.controlsfx.control.Notifications;
 import org.deku.leo2.bridge.LeoBridge;
 import org.deku.leo2.fx.MainController;
@@ -16,15 +18,13 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Main application entry point
  */
 public class Main extends Application {
     private static Main mInstance;
-    private static Logger mLogger = Logger.getLogger(Main.class.getName());
+    private static Log mLogger = LogFactory.getLog(Main.class);
 
     private Stage mPrimaryStage;
     private Locale mLocale;
@@ -189,7 +189,7 @@ public class Main extends Application {
             try {
                 LeoBridge.instance().start();
             } catch (IOException e) {
-                mLogger.log(Level.SEVERE, e.getMessage(), e);
+                mLogger.error(e.getMessage(), e);
             }
         });
     }

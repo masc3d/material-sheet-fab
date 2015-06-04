@@ -32,12 +32,12 @@ public class LogListener extends SimpleListener {
             if (message instanceof ObjectMessage) {
                 ObjectMessage om = (ObjectMessage) message;
 
-                this.getLogger().info("object type: " + om.getObject().getClass().getName());
+                this.getLog().info("object type: " + om.getObject().getClass().getName());
                 org.deku.leo2.messaging.log.v1.LogMessage lm = (org.deku.leo2.messaging.log.v1.LogMessage) om.getObject();
-                this.getLogger().info("object received: " + lm.toString());
+                this.getLog().info("object received: " + lm.toString());
             } else {
                 TextMessage tm = (TextMessage) message;
-                this.getLogger().info("text received: " + tm.getText());
+                this.getLog().info("text received: " + tm.getText());
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

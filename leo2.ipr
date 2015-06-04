@@ -1,328 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ArtifactManager">
-    <artifact type="war" name="Gradle : leo2:leo2-node : leo2-node-0.1.war">
-      <output-path>$PROJECT_DIR$/out/artifacts/leo2-node</output-path>
-      <properties id="gradle-properties">
-        <options external-project-path="$PROJECT_DIR$/leo2-node" />
-      </properties>
-      <root id="archive" name="leo2-node-0.1.war">
-        <element id="javaee-facet-resources" facet="leo2-node/web/Web Gradle : leo2-node-0.1.war" />
-        <element id="directory" name="WEB-INF">
-          <element id="directory" name="classes">
-            <element id="module-output" name="leo2-node" />
-            <element id="dir-copy" path="$PROJECT_DIR$/leo2-node/build/classes/main" />
-          </element>
-          <element id="directory" name="lib">
-            <element id="archive" name="leo2-sx-common-1.0.jar">
-              <element id="module-output" name="sx-common" />
-              <element id="dir-copy" path="$PROJECT_DIR$/sx-common/build/resources/main" />
-            </element>
-            <element id="library" level="project" name="Gradle: com.google.guava:guava:18.0" />
-            <element id="library" level="project" name="Gradle: javax.jms:jms-api:1.1-rev-1" />
-            <element id="library" level="project" name="Gradle: junit:junit:4.12" />
-            <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
-            <element id="archive" name="leo2-leo2-common-1.0.jar">
-              <element id="module-output" name="leo2-common" />
-              <element id="dir-copy" path="$PROJECT_DIR$/leo2-common/build/resources/main" />
-            </element>
-            <element id="library" level="project" name="Gradle: javax.ws.rs:javax.ws.rs-api:2.0.1" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:javax.persistence:2.1.0" />
-            <element id="library" level="project" name="Gradle: com.wordnik:swagger-annotations:1.5.3-M1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1" />
-            <element id="archive" name="leo2-leo2-messaging-1.0.jar">
-              <element id="module-output" name="leo2-messaging" />
-              <element id="dir-copy" path="$PROJECT_DIR$/leo2-messaging/build/resources/main" />
-            </element>
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-broker:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-kahadb-store:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-jms-pool:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-client:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-openwire-legacy:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq.protobuf:activemq-protobuf:1.1" />
-            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1" />
-            <element id="library" level="project" name="Gradle: commons-net:commons-net:3.3" />
-            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1" />
-            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1" />
-            <element id="library" level="project" name="Gradle: commons-pool:commons-pool:1.6" />
-            <element id="library" level="project" name="Gradle: org.fusesource.hawtbuf:hawtbuf:1.11" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-http:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-stomp:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-mqtt:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient:4.4.1" />
-            <element id="library" level="project" name="Gradle: com.thoughtworks.xstream:xstream:1.4.8" />
-            <element id="library" level="project" name="Gradle: org.fusesource.mqtt-client:mqtt-client:1.10" />
-            <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch-transport:1.21" />
-            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpcore:4.4.1" />
-            <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
-            <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.9" />
-            <element id="library" level="project" name="Gradle: xmlpull:xmlpull:1.1.3.1" />
-            <element id="library" level="project" name="Gradle: xpp3:xpp3_min:1.1.4c" />
-            <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch:1.21" />
-            <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.12" />
-            <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" />
-            <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.2" />
-            <element id="library" level="project" name="Gradle: com.h2database:h2:1.4.187" />
-            <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
-            <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
-            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final" />
-            <element id="library" level="project" name="Gradle: javax.activation:activation:1.1" />
-            <element id="library" level="project" name="Gradle: commons-io:commons-io:2.1" />
-            <element id="library" level="project" name="Gradle: net.jcip:jcip-annotations:1.0" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
-            <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
-            <element id="library" level="project" name="Gradle: org.glassfish:javax.json:1.0.4" />
-            <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-commons:1.10.0.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-orm:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-context:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-aop:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-tx:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-beans:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
-            <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.2" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.2" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
-            <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
-            <element id="library" level="project" name="Gradle: javax.ws.rs:jsr311-api:1.1.1" />
-            <element id="library" level="project" name="Gradle: org.reflections:reflections:0.9.9" />
-            <element id="library" level="project" name="Gradle: org.codehaus.jettison:jettison:1.3.2" />
-            <element id="library" level="project" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" />
-            <element id="library" level="project" name="Gradle: com.mysema.commons:mysema-commons-lang:0.2.4" />
-            <element id="library" level="project" name="Gradle: com.infradna.tool:bridge-method-annotation:1.13" />
-            <element id="library" level="project" name="Gradle: com.mysema.codegen:codegen:0.6.6" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-jdbc:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-expression:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: aopalliance:aopalliance:1.0" />
-            <element id="library" level="project" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4" />
-            <element id="library" level="project" name="Gradle: org.apache.commons:commons-lang3:3.2.1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2" />
-            <element id="library" level="project" name="Gradle: com.wordnik:swagger-models:1.5.3-M1" />
-            <element id="library" level="project" name="Gradle: com.google.code.findbugs:annotations:2.0.1" />
-            <element id="library" level="project" name="Gradle: com.sun.xml.bind:jaxb-impl:2.2.7" />
-            <element id="library" level="project" name="Gradle: org.eclipse.jdt.core.compiler:ecj:4.3.1" />
-            <element id="library" level="project" name="Gradle: joda-time:joda-time:2.2" />
-            <element id="library" level="project" name="Gradle: com.sun.xml.bind:jaxb-core:2.2.7" />
-            <element id="library" level="project" name="Gradle: com.sun.xml.fastinfoset:FastInfoset:1.2.12" />
-            <element id="library" level="project" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" />
-            <element id="library" level="project" name="Gradle: com.sun.istack:istack-commons-runtime:2.16" />
-            <element id="library" level="project" name="Gradle: javax.xml.bind:jsr173_api:1.0" />
-            <element id="library" level="project" name="Gradle: org.slf4j:log4j-over-slf4j:1.7.12" />
-            <element id="library" level="project" name="Gradle: org.slf4j:jul-to-slf4j:1.7.12" />
-            <element id="library" level="project" name="Gradle: org.slf4j:jcl-over-slf4j:1.7.12" />
-            <element id="library" level="project" name="Gradle: ch.qos.logback:logback-classic:1.1.3" />
-            <element id="library" level="project" name="Gradle: ch.qos.logback:logback-core:1.1.3" />
-            <element id="library" level="project" name="Gradle: org.yaml:snakeyaml:1.14" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.4" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4:jpa" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-collections:3.6.4" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.4" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.4" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.hibernate:hibernate-validator:5.1.3.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.logging:jboss-logging:3.3.0.Final" />
-            <element id="library" level="project" name="Gradle: com.fasterxml:classmate:1.0.0" />
-            <element id="library" level="project" name="Gradle: org.glassfish:javax.el:3.0.1-b08" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-spring:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:jaxrs-api:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.3.RELEASE" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.3.Final" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.3.Final" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.3.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-api:3.3.0.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-nio:3.3.0.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-webmvc:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter:1.2.4.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.2.4.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE" />
-          </element>
-        </element>
-        <element id="directory" name="META-INF">
-          <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/leo2-node/exploded/leo2-node-0.1.war/META-INF/MANIFEST.MF" />
-        </element>
-      </root>
-    </artifact>
-    <artifact type="exploded-war" name="Gradle : leo2:leo2-node : leo2-node-0.1.war (exploded)">
-      <output-path>$PROJECT_DIR$/out/artifacts/leo2-node/exploded/leo2-node-0.1.war</output-path>
-      <properties id="gradle-properties">
-        <options external-project-path="$PROJECT_DIR$/leo2-node" />
-      </properties>
-      <root id="root">
-        <element id="javaee-facet-resources" facet="leo2-node/web/Web Gradle : leo2-node-0.1.war" />
-        <element id="directory" name="WEB-INF">
-          <element id="directory" name="classes">
-            <element id="module-output" name="leo2-node" />
-            <element id="dir-copy" path="$PROJECT_DIR$/leo2-node/build/classes/main" />
-          </element>
-          <element id="directory" name="lib">
-            <element id="archive" name="leo2-sx-common-1.0.jar">
-              <element id="module-output" name="sx-common" />
-              <element id="dir-copy" path="$PROJECT_DIR$/sx-common/build/resources/main" />
-            </element>
-            <element id="library" level="project" name="Gradle: com.google.guava:guava:18.0" />
-            <element id="library" level="project" name="Gradle: javax.jms:jms-api:1.1-rev-1" />
-            <element id="library" level="project" name="Gradle: junit:junit:4.12" />
-            <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
-            <element id="archive" name="leo2-leo2-common-1.0.jar">
-              <element id="module-output" name="leo2-common" />
-              <element id="dir-copy" path="$PROJECT_DIR$/leo2-common/build/resources/main" />
-            </element>
-            <element id="library" level="project" name="Gradle: javax.ws.rs:javax.ws.rs-api:2.0.1" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:javax.persistence:2.1.0" />
-            <element id="library" level="project" name="Gradle: com.wordnik:swagger-annotations:1.5.3-M1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1" />
-            <element id="archive" name="leo2-leo2-messaging-1.0.jar">
-              <element id="module-output" name="leo2-messaging" />
-              <element id="dir-copy" path="$PROJECT_DIR$/leo2-messaging/build/resources/main" />
-            </element>
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-broker:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-kahadb-store:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-jms-pool:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-client:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-openwire-legacy:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq.protobuf:activemq-protobuf:1.1" />
-            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1" />
-            <element id="library" level="project" name="Gradle: commons-net:commons-net:3.3" />
-            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1" />
-            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1" />
-            <element id="library" level="project" name="Gradle: commons-pool:commons-pool:1.6" />
-            <element id="library" level="project" name="Gradle: org.fusesource.hawtbuf:hawtbuf:1.11" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-http:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-stomp:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-mqtt:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient:4.4.1" />
-            <element id="library" level="project" name="Gradle: com.thoughtworks.xstream:xstream:1.4.8" />
-            <element id="library" level="project" name="Gradle: org.fusesource.mqtt-client:mqtt-client:1.10" />
-            <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch-transport:1.21" />
-            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpcore:4.4.1" />
-            <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
-            <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.9" />
-            <element id="library" level="project" name="Gradle: xmlpull:xmlpull:1.1.3.1" />
-            <element id="library" level="project" name="Gradle: xpp3:xpp3_min:1.1.4c" />
-            <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch:1.21" />
-            <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.12" />
-            <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" />
-            <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.2" />
-            <element id="library" level="project" name="Gradle: com.h2database:h2:1.4.187" />
-            <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
-            <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
-            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final" />
-            <element id="library" level="project" name="Gradle: javax.activation:activation:1.1" />
-            <element id="library" level="project" name="Gradle: commons-io:commons-io:2.1" />
-            <element id="library" level="project" name="Gradle: net.jcip:jcip-annotations:1.0" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" />
-            <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
-            <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
-            <element id="library" level="project" name="Gradle: org.glassfish:javax.json:1.0.4" />
-            <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-commons:1.10.0.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-orm:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-context:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-aop:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-tx:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-beans:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
-            <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.2" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.2" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
-            <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
-            <element id="library" level="project" name="Gradle: javax.ws.rs:jsr311-api:1.1.1" />
-            <element id="library" level="project" name="Gradle: org.reflections:reflections:0.9.9" />
-            <element id="library" level="project" name="Gradle: org.codehaus.jettison:jettison:1.3.2" />
-            <element id="library" level="project" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" />
-            <element id="library" level="project" name="Gradle: com.mysema.commons:mysema-commons-lang:0.2.4" />
-            <element id="library" level="project" name="Gradle: com.infradna.tool:bridge-method-annotation:1.13" />
-            <element id="library" level="project" name="Gradle: com.mysema.codegen:codegen:0.6.6" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-jdbc:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-expression:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: aopalliance:aopalliance:1.0" />
-            <element id="library" level="project" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4" />
-            <element id="library" level="project" name="Gradle: org.apache.commons:commons-lang3:3.2.1" />
-            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2" />
-            <element id="library" level="project" name="Gradle: com.wordnik:swagger-models:1.5.3-M1" />
-            <element id="library" level="project" name="Gradle: com.google.code.findbugs:annotations:2.0.1" />
-            <element id="library" level="project" name="Gradle: com.sun.xml.bind:jaxb-impl:2.2.7" />
-            <element id="library" level="project" name="Gradle: org.eclipse.jdt.core.compiler:ecj:4.3.1" />
-            <element id="library" level="project" name="Gradle: joda-time:joda-time:2.2" />
-            <element id="library" level="project" name="Gradle: com.sun.xml.bind:jaxb-core:2.2.7" />
-            <element id="library" level="project" name="Gradle: com.sun.xml.fastinfoset:FastInfoset:1.2.12" />
-            <element id="library" level="project" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" />
-            <element id="library" level="project" name="Gradle: com.sun.istack:istack-commons-runtime:2.16" />
-            <element id="library" level="project" name="Gradle: javax.xml.bind:jsr173_api:1.0" />
-            <element id="library" level="project" name="Gradle: org.slf4j:log4j-over-slf4j:1.7.12" />
-            <element id="library" level="project" name="Gradle: org.slf4j:jul-to-slf4j:1.7.12" />
-            <element id="library" level="project" name="Gradle: org.slf4j:jcl-over-slf4j:1.7.12" />
-            <element id="library" level="project" name="Gradle: ch.qos.logback:logback-classic:1.1.3" />
-            <element id="library" level="project" name="Gradle: ch.qos.logback:logback-core:1.1.3" />
-            <element id="library" level="project" name="Gradle: org.yaml:snakeyaml:1.14" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.4" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4:jpa" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-collections:3.6.4" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.4" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.4" />
-            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.hibernate:hibernate-validator:5.1.3.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.logging:jboss-logging:3.3.0.Final" />
-            <element id="library" level="project" name="Gradle: com.fasterxml:classmate:1.0.0" />
-            <element id="library" level="project" name="Gradle: org.glassfish:javax.el:3.0.1-b08" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-spring:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:jaxrs-api:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.3.RELEASE" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.3.Final" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.3.Final" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.3.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-api:3.3.0.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-nio:3.3.0.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final" />
-            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final" />
-            <element id="library" level="project" name="Gradle: org.springframework:spring-webmvc:4.1.6.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter:1.2.4.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.2.4.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE" />
-          </element>
-        </element>
-        <element id="directory" name="META-INF">
-          <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/leo2-node/exploded/leo2-node-0.1.war/META-INF/MANIFEST.MF" />
-        </element>
-      </root>
-    </artifact>
     <artifact type="war" name="Gradle : leo2:leo2-central : leo2-central-0.1.war">
       <output-path>$PROJECT_DIR$/out/artifacts/leo2-central</output-path>
       <properties id="gradle-properties">
@@ -354,6 +32,7 @@
             <element id="library" level="project" name="Gradle: javax.jms:jms-api:1.1-rev-1" />
             <element id="library" level="project" name="Gradle: junit:junit:4.12" />
             <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
+            <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
             <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.35" />
             <element id="archive" name="leo2-leo2-messaging-1.0.jar">
               <element id="module-output" name="leo2-messaging" />
@@ -374,18 +53,17 @@
             <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-http:5.11.1" />
             <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-stomp:5.11.1" />
             <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-mqtt:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient:4.4.1" />
             <element id="library" level="project" name="Gradle: com.thoughtworks.xstream:xstream:1.4.8" />
             <element id="library" level="project" name="Gradle: org.fusesource.mqtt-client:mqtt-client:1.10" />
             <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch-transport:1.21" />
             <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpcore:4.4.1" />
-            <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
             <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.9" />
             <element id="library" level="project" name="Gradle: xmlpull:xmlpull:1.1.3.1" />
             <element id="library" level="project" name="Gradle: xpp3:xpp3_min:1.1.4c" />
             <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch:1.21" />
             <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.12" />
             <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
+            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient:4.5" />
             <element id="archive" name="leo2-leo2-node-0.1.jar">
               <element id="module-output" name="leo2-node" />
               <element id="dir-copy" path="$PROJECT_DIR$/leo2-node/build/classes/main" />
@@ -469,10 +147,6 @@
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:jaxrs-api:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.3.RELEASE" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.3.Final" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.3.Final" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.3.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-api:3.3.0.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-nio:3.3.0.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final" />
@@ -482,6 +156,10 @@
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.4.Final" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.4.Final" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: org.jooq:jooq:3.6.2" />
             <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.spec.javax.servlet/jboss-servlet-api_3.1_spec/1.0.0.Final/f87e23319ee434bca087c339ce456916a6ade08b/jboss-servlet-api_3.1_spec-1.0.0.Final.jar" />
           </element>
@@ -522,6 +200,7 @@
             <element id="library" level="project" name="Gradle: javax.jms:jms-api:1.1-rev-1" />
             <element id="library" level="project" name="Gradle: junit:junit:4.12" />
             <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
+            <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
             <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.35" />
             <element id="archive" name="leo2-leo2-messaging-1.0.jar">
               <element id="module-output" name="leo2-messaging" />
@@ -542,18 +221,17 @@
             <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-http:5.11.1" />
             <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-stomp:5.11.1" />
             <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-mqtt:5.11.1" />
-            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient:4.4.1" />
             <element id="library" level="project" name="Gradle: com.thoughtworks.xstream:xstream:1.4.8" />
             <element id="library" level="project" name="Gradle: org.fusesource.mqtt-client:mqtt-client:1.10" />
             <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch-transport:1.21" />
             <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpcore:4.4.1" />
-            <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
             <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.9" />
             <element id="library" level="project" name="Gradle: xmlpull:xmlpull:1.1.3.1" />
             <element id="library" level="project" name="Gradle: xpp3:xpp3_min:1.1.4c" />
             <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch:1.21" />
             <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.12" />
             <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
+            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient:4.5" />
             <element id="archive" name="leo2-leo2-node-0.1.jar">
               <element id="module-output" name="leo2-node" />
               <element id="dir-copy" path="$PROJECT_DIR$/leo2-node/build/classes/main" />
@@ -637,10 +315,6 @@
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:jaxrs-api:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.3.RELEASE" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.3.Final" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.3.Final" />
-            <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.3.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-api:3.3.0.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-nio:3.3.0.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final" />
@@ -650,12 +324,338 @@
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.4.Final" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.4.Final" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: org.jooq:jooq:3.6.2" />
             <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.spec.javax.servlet/jboss-servlet-api_3.1_spec/1.0.0.Final/f87e23319ee434bca087c339ce456916a6ade08b/jboss-servlet-api_3.1_spec-1.0.0.Final.jar" />
           </element>
         </element>
         <element id="directory" name="META-INF">
           <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/leo2-central/exploded/leo2-central-0.1.war/META-INF/MANIFEST.MF" />
+        </element>
+      </root>
+    </artifact>
+    <artifact type="war" name="Gradle : leo2:leo2-node : leo2-node-0.1.war">
+      <output-path>$PROJECT_DIR$/out/artifacts/leo2-node</output-path>
+      <properties id="gradle-properties">
+        <options external-project-path="$PROJECT_DIR$/leo2-node" />
+      </properties>
+      <root id="archive" name="leo2-node-0.1.war">
+        <element id="javaee-facet-resources" facet="leo2-node/web/Web Gradle : leo2-node-0.1.war" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="leo2-node" />
+            <element id="dir-copy" path="$PROJECT_DIR$/leo2-node/build/classes/main" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="archive" name="leo2-sx-common-1.0.jar">
+              <element id="module-output" name="sx-common" />
+              <element id="dir-copy" path="$PROJECT_DIR$/sx-common/build/resources/main" />
+            </element>
+            <element id="library" level="project" name="Gradle: com.google.guava:guava:18.0" />
+            <element id="library" level="project" name="Gradle: javax.jms:jms-api:1.1-rev-1" />
+            <element id="library" level="project" name="Gradle: junit:junit:4.12" />
+            <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
+            <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
+            <element id="archive" name="leo2-leo2-common-1.0.jar">
+              <element id="module-output" name="leo2-common" />
+              <element id="dir-copy" path="$PROJECT_DIR$/leo2-common/build/resources/main" />
+            </element>
+            <element id="library" level="project" name="Gradle: javax.ws.rs:javax.ws.rs-api:2.0.1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:javax.persistence:2.1.0" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-annotations:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1" />
+            <element id="archive" name="leo2-leo2-messaging-1.0.jar">
+              <element id="module-output" name="leo2-messaging" />
+              <element id="dir-copy" path="$PROJECT_DIR$/leo2-messaging/build/resources/main" />
+            </element>
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-broker:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-kahadb-store:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-jms-pool:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-client:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-openwire-legacy:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq.protobuf:activemq-protobuf:1.1" />
+            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1" />
+            <element id="library" level="project" name="Gradle: commons-net:commons-net:3.3" />
+            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1" />
+            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1" />
+            <element id="library" level="project" name="Gradle: commons-pool:commons-pool:1.6" />
+            <element id="library" level="project" name="Gradle: org.fusesource.hawtbuf:hawtbuf:1.11" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-http:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-stomp:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-mqtt:5.11.1" />
+            <element id="library" level="project" name="Gradle: com.thoughtworks.xstream:xstream:1.4.8" />
+            <element id="library" level="project" name="Gradle: org.fusesource.mqtt-client:mqtt-client:1.10" />
+            <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch-transport:1.21" />
+            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpcore:4.4.1" />
+            <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.9" />
+            <element id="library" level="project" name="Gradle: xmlpull:xmlpull:1.1.3.1" />
+            <element id="library" level="project" name="Gradle: xpp3:xpp3_min:1.1.4c" />
+            <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch:1.21" />
+            <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.12" />
+            <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
+            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient:4.5" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.2" />
+            <element id="library" level="project" name="Gradle: com.h2database:h2:1.4.187" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
+            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final" />
+            <element id="library" level="project" name="Gradle: javax.activation:activation:1.1" />
+            <element id="library" level="project" name="Gradle: commons-io:commons-io:2.1" />
+            <element id="library" level="project" name="Gradle: net.jcip:jcip-annotations:1.0" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
+            <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
+            <element id="library" level="project" name="Gradle: org.glassfish:javax.json:1.0.4" />
+            <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-commons:1.10.0.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-orm:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-context:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-aop:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-tx:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-beans:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
+            <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.2" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.2" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: javax.ws.rs:jsr311-api:1.1.1" />
+            <element id="library" level="project" name="Gradle: org.reflections:reflections:0.9.9" />
+            <element id="library" level="project" name="Gradle: org.codehaus.jettison:jettison:1.3.2" />
+            <element id="library" level="project" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" />
+            <element id="library" level="project" name="Gradle: com.mysema.commons:mysema-commons-lang:0.2.4" />
+            <element id="library" level="project" name="Gradle: com.infradna.tool:bridge-method-annotation:1.13" />
+            <element id="library" level="project" name="Gradle: com.mysema.codegen:codegen:0.6.6" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-jdbc:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-expression:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: aopalliance:aopalliance:1.0" />
+            <element id="library" level="project" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4" />
+            <element id="library" level="project" name="Gradle: org.apache.commons:commons-lang3:3.2.1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-models:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: com.google.code.findbugs:annotations:2.0.1" />
+            <element id="library" level="project" name="Gradle: com.sun.xml.bind:jaxb-impl:2.2.7" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jdt.core.compiler:ecj:4.3.1" />
+            <element id="library" level="project" name="Gradle: joda-time:joda-time:2.2" />
+            <element id="library" level="project" name="Gradle: com.sun.xml.bind:jaxb-core:2.2.7" />
+            <element id="library" level="project" name="Gradle: com.sun.xml.fastinfoset:FastInfoset:1.2.12" />
+            <element id="library" level="project" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" />
+            <element id="library" level="project" name="Gradle: com.sun.istack:istack-commons-runtime:2.16" />
+            <element id="library" level="project" name="Gradle: javax.xml.bind:jsr173_api:1.0" />
+            <element id="library" level="project" name="Gradle: org.slf4j:log4j-over-slf4j:1.7.12" />
+            <element id="library" level="project" name="Gradle: org.slf4j:jul-to-slf4j:1.7.12" />
+            <element id="library" level="project" name="Gradle: org.slf4j:jcl-over-slf4j:1.7.12" />
+            <element id="library" level="project" name="Gradle: ch.qos.logback:logback-classic:1.1.3" />
+            <element id="library" level="project" name="Gradle: ch.qos.logback:logback-core:1.1.3" />
+            <element id="library" level="project" name="Gradle: org.yaml:snakeyaml:1.14" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.4" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4:jpa" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-collections:3.6.4" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.4" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.4" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.hibernate:hibernate-validator:5.1.3.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.logging:jboss-logging:3.3.0.Final" />
+            <element id="library" level="project" name="Gradle: com.fasterxml:classmate:1.0.0" />
+            <element id="library" level="project" name="Gradle: org.glassfish:javax.el:3.0.1-b08" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-spring:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:jaxrs-api:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-api:3.3.0.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-nio:3.3.0.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-webmvc:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.4.Final" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.4.Final" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.4.Final" />
+          </element>
+        </element>
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/leo2-node/exploded/leo2-node-0.1.war/META-INF/MANIFEST.MF" />
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="Gradle : leo2:leo2-node : leo2-node-0.1.war (exploded)">
+      <output-path>$PROJECT_DIR$/out/artifacts/leo2-node/exploded/leo2-node-0.1.war</output-path>
+      <properties id="gradle-properties">
+        <options external-project-path="$PROJECT_DIR$/leo2-node" />
+      </properties>
+      <root id="root">
+        <element id="javaee-facet-resources" facet="leo2-node/web/Web Gradle : leo2-node-0.1.war" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="leo2-node" />
+            <element id="dir-copy" path="$PROJECT_DIR$/leo2-node/build/classes/main" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="archive" name="leo2-sx-common-1.0.jar">
+              <element id="module-output" name="sx-common" />
+              <element id="dir-copy" path="$PROJECT_DIR$/sx-common/build/resources/main" />
+            </element>
+            <element id="library" level="project" name="Gradle: com.google.guava:guava:18.0" />
+            <element id="library" level="project" name="Gradle: javax.jms:jms-api:1.1-rev-1" />
+            <element id="library" level="project" name="Gradle: junit:junit:4.12" />
+            <element id="library" level="project" name="Gradle: org.hamcrest:hamcrest-core:1.3" />
+            <element id="library" level="project" name="Gradle: commons-logging:commons-logging:1.2" />
+            <element id="archive" name="leo2-leo2-common-1.0.jar">
+              <element id="module-output" name="leo2-common" />
+              <element id="dir-copy" path="$PROJECT_DIR$/leo2-common/build/resources/main" />
+            </element>
+            <element id="library" level="project" name="Gradle: javax.ws.rs:javax.ws.rs-api:2.0.1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:javax.persistence:2.1.0" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-annotations:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.0-rc1" />
+            <element id="archive" name="leo2-leo2-messaging-1.0.jar">
+              <element id="module-output" name="leo2-messaging" />
+              <element id="dir-copy" path="$PROJECT_DIR$/leo2-messaging/build/resources/main" />
+            </element>
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-broker:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-kahadb-store:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-jms-pool:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-client:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-openwire-legacy:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq.protobuf:activemq-protobuf:1.1" />
+            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1" />
+            <element id="library" level="project" name="Gradle: commons-net:commons-net:3.3" />
+            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1" />
+            <element id="library" level="project" name="Gradle: org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1" />
+            <element id="library" level="project" name="Gradle: commons-pool:commons-pool:1.6" />
+            <element id="library" level="project" name="Gradle: org.fusesource.hawtbuf:hawtbuf:1.11" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-http:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-stomp:5.11.1" />
+            <element id="library" level="project" name="Gradle: org.apache.activemq:activemq-mqtt:5.11.1" />
+            <element id="library" level="project" name="Gradle: com.thoughtworks.xstream:xstream:1.4.8" />
+            <element id="library" level="project" name="Gradle: org.fusesource.mqtt-client:mqtt-client:1.10" />
+            <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch-transport:1.21" />
+            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpcore:4.4.1" />
+            <element id="library" level="project" name="Gradle: commons-codec:commons-codec:1.9" />
+            <element id="library" level="project" name="Gradle: xmlpull:xmlpull:1.1.3.1" />
+            <element id="library" level="project" name="Gradle: xpp3:xpp3_min:1.1.4c" />
+            <element id="library" level="project" name="Gradle: org.fusesource.hawtdispatch:hawtdispatch:1.21" />
+            <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.12" />
+            <element id="library" level="project" name="Gradle: javax.servlet:javax.servlet-api:3.1.0" />
+            <element id="library" level="project" name="Gradle: org.apache.httpcomponents:httpclient:4.5" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:eclipselink:2.6.0" />
+            <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.2" />
+            <element id="library" level="project" name="Gradle: com.h2database:h2:1.4.187" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
+            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final" />
+            <element id="library" level="project" name="Gradle: javax.activation:activation:1.1" />
+            <element id="library" level="project" name="Gradle: commons-io:commons-io:2.1" />
+            <element id="library" level="project" name="Gradle: net.jcip:jcip-annotations:1.0" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc1" />
+            <element id="library" level="project" name="Gradle: org.eclipse.persistence:commonj.sdo:2.1.1" />
+            <element id="library" level="project" name="Gradle: javax.validation:validation-api:1.1.0.Final" />
+            <element id="library" level="project" name="Gradle: org.glassfish:javax.json:1.0.4" />
+            <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-commons:1.10.0.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-orm:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-context:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-aop:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-tx:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-beans:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
+            <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.2" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.2" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: javax.ws.rs:jsr311-api:1.1.1" />
+            <element id="library" level="project" name="Gradle: org.reflections:reflections:0.9.9" />
+            <element id="library" level="project" name="Gradle: org.codehaus.jettison:jettison:1.3.2" />
+            <element id="library" level="project" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" />
+            <element id="library" level="project" name="Gradle: com.mysema.commons:mysema-commons-lang:0.2.4" />
+            <element id="library" level="project" name="Gradle: com.infradna.tool:bridge-method-annotation:1.13" />
+            <element id="library" level="project" name="Gradle: com.mysema.codegen:codegen:0.6.6" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-jdbc:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-expression:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: aopalliance:aopalliance:1.0" />
+            <element id="library" level="project" name="Gradle: org.codehaus.woodstox:stax2-api:3.1.4" />
+            <element id="library" level="project" name="Gradle: org.apache.commons:commons-lang3:3.2.1" />
+            <element id="library" level="project" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2" />
+            <element id="library" level="project" name="Gradle: com.wordnik:swagger-models:1.5.3-M1" />
+            <element id="library" level="project" name="Gradle: com.google.code.findbugs:annotations:2.0.1" />
+            <element id="library" level="project" name="Gradle: com.sun.xml.bind:jaxb-impl:2.2.7" />
+            <element id="library" level="project" name="Gradle: org.eclipse.jdt.core.compiler:ecj:4.3.1" />
+            <element id="library" level="project" name="Gradle: joda-time:joda-time:2.2" />
+            <element id="library" level="project" name="Gradle: com.sun.xml.bind:jaxb-core:2.2.7" />
+            <element id="library" level="project" name="Gradle: com.sun.xml.fastinfoset:FastInfoset:1.2.12" />
+            <element id="library" level="project" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" />
+            <element id="library" level="project" name="Gradle: com.sun.istack:istack-commons-runtime:2.16" />
+            <element id="library" level="project" name="Gradle: javax.xml.bind:jsr173_api:1.0" />
+            <element id="library" level="project" name="Gradle: org.slf4j:log4j-over-slf4j:1.7.12" />
+            <element id="library" level="project" name="Gradle: org.slf4j:jul-to-slf4j:1.7.12" />
+            <element id="library" level="project" name="Gradle: org.slf4j:jcl-over-slf4j:1.7.12" />
+            <element id="library" level="project" name="Gradle: ch.qos.logback:logback-classic:1.1.3" />
+            <element id="library" level="project" name="Gradle: ch.qos.logback:logback-core:1.1.3" />
+            <element id="library" level="project" name="Gradle: org.yaml:snakeyaml:1.14" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-jpa:3.6.4" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4:jpa" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-collections:3.6.4" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.4" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.4" />
+            <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.hibernate:hibernate-validator:5.1.3.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.logging:jboss-logging:3.3.0.Final" />
+            <element id="library" level="project" name="Gradle: com.fasterxml:classmate:1.0.0" />
+            <element id="library" level="project" name="Gradle: org.glassfish:javax.el:3.0.1-b08" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-spring:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jackson2-provider:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:jaxrs-api:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-api:3.3.0.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.xnio:xnio-nio:3.3.0.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final" />
+            <element id="library" level="project" name="Gradle: org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final" />
+            <element id="library" level="project" name="Gradle: org.springframework:spring-webmvc:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.4.Final" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.4.Final" />
+            <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.4.Final" />
+          </element>
+        </element>
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/leo2-node/exploded/leo2-node-0.1.war/META-INF/MANIFEST.MF" />
         </element>
       </root>
     </artifact>
@@ -1373,31 +1373,31 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/commons-pool/commons-pool/1.6/9376f5559455b8fe1b15308d3ad9c545f6905b1a/commons-pool-1.6-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: io.undertow:undertow-core:1.1.3.Final">
+    <library name="Gradle: io.undertow:undertow-core:1.1.4.Final">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-core/1.1.3.Final/ad1616ea8d2104d08b92614cbd7a24d8a350302f/undertow-core-1.1.3.Final.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-core/1.1.4.Final/4bc19fd7fe1ad96644b0d03b92155daf003ea26d/undertow-core-1.1.4.Final.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-core/1.1.3.Final/4ea4dfd6f58557c8a368ff98cdce8ba8c153a1a4/undertow-core-1.1.3.Final-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-core/1.1.4.Final/2c757ec6c5f14ce09194d11c7297ce4c17805df4/undertow-core-1.1.4.Final-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: io.undertow:undertow-servlet:1.1.3.Final">
+    <library name="Gradle: io.undertow:undertow-servlet:1.1.4.Final">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-servlet/1.1.3.Final/1c02b4c7a1b1282208d1954ce1aa64884f6023ac/undertow-servlet-1.1.3.Final.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-servlet/1.1.4.Final/e4080a103468fb9eed458195321e7fc9334609ae/undertow-servlet-1.1.4.Final.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-servlet/1.1.3.Final/fe650c91d8203542597c08d7849fe0ee578ee2bb/undertow-servlet-1.1.3.Final-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-servlet/1.1.4.Final/570004a1261c794a8e4d58d20fccb4f6ad0b596a/undertow-servlet-1.1.4.Final-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: io.undertow:undertow-websockets-jsr:1.1.3.Final">
+    <library name="Gradle: io.undertow:undertow-websockets-jsr:1.1.4.Final">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-websockets-jsr/1.1.3.Final/eaecb4acf2fd500b7d3677d1110589d9f79c1a28/undertow-websockets-jsr-1.1.3.Final.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-websockets-jsr/1.1.4.Final/a580d994a1149aa742e7ec79ed8f0c445bbda329/undertow-websockets-jsr-1.1.4.Final.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-websockets-jsr/1.1.3.Final/ebcb156d7af239f2b55709fed5fdba4c20a1af5c/undertow-websockets-jsr-1.1.3.Final-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.undertow/undertow-websockets-jsr/1.1.4.Final/32b3080736e780eac95854c238f9a2c5d4d87a0b/undertow-websockets-jsr-1.1.4.Final-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: javax.activation:activation:1.1">
@@ -1646,13 +1646,13 @@
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="Gradle: org.apache.httpcomponents:httpclient:4.4.1">
+    <library name="Gradle: org.apache.httpcomponents:httpclient:4.5">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.4.1/16d0bc512222f1253ee6b64d389c84e22f697f0/httpclient-4.4.1.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5/a1e6cbb3cc2c5f210dd1310ff9fcb2c09c0d1438/httpclient-4.5.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.4.1/30cb4791019c7280227e027b01814f4964a02482/httpclient-4.4.1-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5/c9504d3448744739d334bde12bfbc91fd7f85115/httpclient-4.5-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.apache.httpcomponents:httpcore:4.4.1">
@@ -2330,9 +2330,9 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-tomcat/1.2.3.RELEASE/e632740def8a25776a095d4cf1e2201be63d91ec/spring-boot-starter-tomcat-1.2.3.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.3.RELEASE">
+    <library name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-undertow/1.2.3.RELEASE/a6253b9bb72c65b188dc17ab4eb61abcbbac6a36/spring-boot-starter-undertow-1.2.3.RELEASE.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-undertow/1.2.4.RELEASE/313f3f43f5bb0d4cd12ea79a55be08e448db7f83/spring-boot-starter-undertow-1.2.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

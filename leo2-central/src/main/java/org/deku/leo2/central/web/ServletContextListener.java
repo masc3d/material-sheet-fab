@@ -1,5 +1,7 @@
 package org.deku.leo2.central.web;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.data.DatabaseSync;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -8,14 +10,13 @@ import javax.inject.Named;
 import javax.servlet.ServletContextEvent;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
 /**
  * Created by masc on 17.09.14.
  */
 @Named("central.ServletContextListener")
 public class ServletContextListener implements javax.servlet.ServletContextListener {
-    Logger mLog = Logger.getLogger(ServletContextListener.class.getName());
+    Log mLog = LogFactory.getLog(ServletContextListener.class);
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {

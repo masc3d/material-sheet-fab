@@ -1,5 +1,7 @@
 package org.deku.leo2.node.rest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import sx.util.Cast;
 
 import javax.inject.Named;
@@ -7,8 +9,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by masc on 21.04.15.
@@ -41,11 +41,11 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
         }
     }
 
-    Logger mLogger = Logger.getLogger(ExceptionMapper.class.getName());
+    Log mLogger = LogFactory.getLog(ExceptionMapper.class);
 
     @Override
     public javax.ws.rs.core.Response toResponse(Exception e) {
-        mLogger.log(Level.SEVERE, e.getMessage(), e);
+        mLogger.error(e.getMessage(), e);
         WebApplicationException we = Cast.as(WebApplicationException.class, e);
 
         ExceptionResult result;

@@ -23,6 +23,7 @@ compile - Compile classpath for source set 'main'.
 +--- project :leo2-messaging
 |    +--- project :sx-common
 |    |    +--- com.google.guava:guava:18.+ -> 18.0
+|    |    +--- commons-logging:commons-logging:+ -> 1.2
 |    |    +--- javax.jms:jms-api:1.1-rev-1
 |    |    \--- junit:junit:4.+ -> 4.12
 |    |         \--- org.hamcrest:hamcrest-core:1.3
@@ -59,14 +60,14 @@ compile - Compile classpath for source set 'main'.
 |    |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    |    \--- commons-net:commons-net:3.3
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
 |    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- project :sx-common (*)
 +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.12
@@ -81,7 +82,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1
-|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1
 |    \--- net.jcip:jcip-annotations:1.0
 +--- org.jboss.resteasy:resteasy-spring:3.0.+ -> 3.0.11.Final
@@ -192,9 +193,9 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
 |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    \--- org.yaml:snakeyaml:1.14
-+--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
-|    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE -> 1.2.4.RELEASE (*)
-|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.5 -> 2.6.0-rc1 (*)
++--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.4.RELEASE
+|    +--- org.springframework.boot:spring-boot-starter:1.2.4.RELEASE (*)
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.6 -> 2.6.0-rc1 (*)
 |    +--- org.hibernate:hibernate-validator:5.1.3.Final
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    +--- org.jboss.logging:jboss-logging:3.1.3.GA -> 3.3.0.Final
@@ -223,12 +224,12 @@ compile - Compile classpath for source set 'main'.
 |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    \--- org.glassfish:javax.el:3.0.0 -> 3.0.1-b08
 +--- javax.inject:javax.inject:1
-+--- org.jinq:jinq-jpa:+ -> 1.7.2
++--- org.jinq:jinq-jpa:+ -> 1.8
 |    +--- org.ow2.asm:asm-all:5.0.1
-|    +--- org.jinq:api:1.7.2
-|    \--- org.jinq:analysis:1.7.2
+|    +--- org.jinq:api:1.8
+|    \--- org.jinq:analysis:1.8
 |         +--- org.ow2.asm:asm-all:5.0.1
-|         \--- org.jinq:api:1.7.2
+|         \--- org.jinq:api:1.8
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2
@@ -273,6 +274,7 @@ default - Configuration for default artifacts.
 +--- project :leo2-messaging
 |    +--- project :sx-common
 |    |    +--- com.google.guava:guava:18.+ -> 18.0
+|    |    +--- commons-logging:commons-logging:+ -> 1.2
 |    |    +--- javax.jms:jms-api:1.1-rev-1
 |    |    \--- junit:junit:4.+ -> 4.12
 |    |         \--- org.hamcrest:hamcrest-core:1.3
@@ -309,14 +311,14 @@ default - Configuration for default artifacts.
 |    |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    |    \--- commons-net:commons-net:3.3
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
 |    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- project :sx-common (*)
 +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.12
@@ -331,7 +333,7 @@ default - Configuration for default artifacts.
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1
-|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1
 |    \--- net.jcip:jcip-annotations:1.0
 +--- org.jboss.resteasy:resteasy-spring:3.0.+ -> 3.0.11.Final
@@ -442,9 +444,9 @@ default - Configuration for default artifacts.
 |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
 |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    \--- org.yaml:snakeyaml:1.14
-+--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
-|    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE -> 1.2.4.RELEASE (*)
-|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.5 -> 2.6.0-rc1 (*)
++--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.4.RELEASE
+|    +--- org.springframework.boot:spring-boot-starter:1.2.4.RELEASE (*)
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.6 -> 2.6.0-rc1 (*)
 |    +--- org.hibernate:hibernate-validator:5.1.3.Final
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    +--- org.jboss.logging:jboss-logging:3.1.3.GA -> 3.3.0.Final
@@ -473,12 +475,12 @@ default - Configuration for default artifacts.
 |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    \--- org.glassfish:javax.el:3.0.0 -> 3.0.1-b08
 +--- javax.inject:javax.inject:1
-+--- org.jinq:jinq-jpa:+ -> 1.7.2
++--- org.jinq:jinq-jpa:+ -> 1.8
 |    +--- org.ow2.asm:asm-all:5.0.1
-|    +--- org.jinq:api:1.7.2
-|    \--- org.jinq:analysis:1.7.2
+|    +--- org.jinq:api:1.8
+|    \--- org.jinq:analysis:1.8
 |         +--- org.ow2.asm:asm-all:5.0.1
-|         \--- org.jinq:api:1.7.2
+|         \--- org.jinq:api:1.8
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2
@@ -535,6 +537,7 @@ runtime - Runtime classpath for source set 'main'.
 +--- project :leo2-messaging
 |    +--- project :sx-common
 |    |    +--- com.google.guava:guava:18.+ -> 18.0
+|    |    +--- commons-logging:commons-logging:+ -> 1.2
 |    |    +--- javax.jms:jms-api:1.1-rev-1
 |    |    \--- junit:junit:4.+ -> 4.12
 |    |         \--- org.hamcrest:hamcrest-core:1.3
@@ -571,14 +574,14 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    |    \--- commons-net:commons-net:3.3
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
 |    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- project :sx-common (*)
 +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.12
@@ -593,7 +596,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1
-|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1
 |    \--- net.jcip:jcip-annotations:1.0
 +--- org.jboss.resteasy:resteasy-spring:3.0.+ -> 3.0.11.Final
@@ -704,9 +707,9 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
 |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    \--- org.yaml:snakeyaml:1.14
-+--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
-|    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE -> 1.2.4.RELEASE (*)
-|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.5 -> 2.6.0-rc1 (*)
++--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.4.RELEASE
+|    +--- org.springframework.boot:spring-boot-starter:1.2.4.RELEASE (*)
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.6 -> 2.6.0-rc1 (*)
 |    +--- org.hibernate:hibernate-validator:5.1.3.Final
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    +--- org.jboss.logging:jboss-logging:3.1.3.GA -> 3.3.0.Final
@@ -735,12 +738,12 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    \--- org.glassfish:javax.el:3.0.0 -> 3.0.1-b08
 +--- javax.inject:javax.inject:1
-+--- org.jinq:jinq-jpa:+ -> 1.7.2
++--- org.jinq:jinq-jpa:+ -> 1.8
 |    +--- org.ow2.asm:asm-all:5.0.1
-|    +--- org.jinq:api:1.7.2
-|    \--- org.jinq:analysis:1.7.2
+|    +--- org.jinq:api:1.8
+|    \--- org.jinq:analysis:1.8
 |         +--- org.ow2.asm:asm-all:5.0.1
-|         \--- org.jinq:api:1.7.2
+|         \--- org.jinq:api:1.8
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2
@@ -788,6 +791,7 @@ testCompile - Compile classpath for source set 'test'.
 +--- project :leo2-messaging
 |    +--- project :sx-common
 |    |    +--- com.google.guava:guava:18.+ -> 18.0
+|    |    +--- commons-logging:commons-logging:+ -> 1.2
 |    |    +--- javax.jms:jms-api:1.1-rev-1
 |    |    \--- junit:junit:4.+ -> 4.12
 |    |         \--- org.hamcrest:hamcrest-core:1.3
@@ -824,14 +828,14 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    |    \--- commons-net:commons-net:3.3
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
 |    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- project :sx-common (*)
 +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.12
@@ -846,7 +850,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1
-|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1
 |    \--- net.jcip:jcip-annotations:1.0
 +--- org.jboss.resteasy:resteasy-spring:3.0.+ -> 3.0.11.Final
@@ -957,9 +961,9 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
 |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    \--- org.yaml:snakeyaml:1.14
-+--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
-|    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE -> 1.2.4.RELEASE (*)
-|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.5 -> 2.6.0-rc1 (*)
++--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.4.RELEASE
+|    +--- org.springframework.boot:spring-boot-starter:1.2.4.RELEASE (*)
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.6 -> 2.6.0-rc1 (*)
 |    +--- org.hibernate:hibernate-validator:5.1.3.Final
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    +--- org.jboss.logging:jboss-logging:3.1.3.GA -> 3.3.0.Final
@@ -988,12 +992,12 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    \--- org.glassfish:javax.el:3.0.0 -> 3.0.1-b08
 +--- javax.inject:javax.inject:1
-+--- org.jinq:jinq-jpa:+ -> 1.7.2
++--- org.jinq:jinq-jpa:+ -> 1.8
 |    +--- org.ow2.asm:asm-all:5.0.1
-|    +--- org.jinq:api:1.7.2
-|    \--- org.jinq:analysis:1.7.2
+|    +--- org.jinq:api:1.8
+|    \--- org.jinq:analysis:1.8
 |         +--- org.ow2.asm:asm-all:5.0.1
-|         \--- org.jinq:api:1.7.2
+|         \--- org.jinq:api:1.8
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2
@@ -1043,6 +1047,7 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- project :leo2-messaging
 |    +--- project :sx-common
 |    |    +--- com.google.guava:guava:18.+ -> 18.0
+|    |    +--- commons-logging:commons-logging:+ -> 1.2
 |    |    +--- javax.jms:jms-api:1.1-rev-1
 |    |    \--- junit:junit:4.+ -> 4.12
 |    |         \--- org.hamcrest:hamcrest-core:1.3
@@ -1079,14 +1084,14 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    |    \--- commons-net:commons-net:3.3
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
 |    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- project :sx-common (*)
 +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.12
@@ -1101,7 +1106,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1
-|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1
 |    \--- net.jcip:jcip-annotations:1.0
 +--- org.jboss.resteasy:resteasy-spring:3.0.+ -> 3.0.11.Final
@@ -1212,9 +1217,9 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
 |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    \--- org.yaml:snakeyaml:1.14
-+--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.3.RELEASE
-|    +--- org.springframework.boot:spring-boot-starter:1.2.3.RELEASE -> 1.2.4.RELEASE (*)
-|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.5 -> 2.6.0-rc1 (*)
++--- org.springframework.boot:spring-boot-starter-web:1.+ -> 1.2.4.RELEASE
+|    +--- org.springframework.boot:spring-boot-starter:1.2.4.RELEASE (*)
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.4.6 -> 2.6.0-rc1 (*)
 |    +--- org.hibernate:hibernate-validator:5.1.3.Final
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    +--- org.jboss.logging:jboss-logging:3.1.3.GA -> 3.3.0.Final
@@ -1243,12 +1248,12 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    \--- org.glassfish:javax.el:3.0.0 -> 3.0.1-b08
 +--- javax.inject:javax.inject:1
-+--- org.jinq:jinq-jpa:+ -> 1.7.2
++--- org.jinq:jinq-jpa:+ -> 1.8
 |    +--- org.ow2.asm:asm-all:5.0.1
-|    +--- org.jinq:api:1.7.2
-|    \--- org.jinq:analysis:1.7.2
+|    +--- org.jinq:api:1.8
+|    \--- org.jinq:analysis:1.8
 |         +--- org.ow2.asm:asm-all:5.0.1
-|         \--- org.jinq:api:1.7.2
+|         \--- org.jinq:api:1.8
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2

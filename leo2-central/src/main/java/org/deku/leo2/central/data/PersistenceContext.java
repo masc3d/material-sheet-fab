@@ -1,6 +1,8 @@
 package org.deku.leo2.central.data;
 
 import com.mysql.jdbc.AbandonedConnectionCleanupThread;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultDSLContext;
@@ -19,8 +21,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Central database persistence context
@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 public class PersistenceContext implements DisposableBean {
     public static final String DB_CENTRAL = "db_central";
 
-    private Logger mLog = Logger.getLogger(PersistenceContext.class.getName());
+    private Log mLog = LogFactory.getLog(PersistenceContext.class);
 
 
     @Inject
@@ -98,7 +98,7 @@ public class PersistenceContext implements DisposableBean {
                 DriverManager.deregisterDriver(d);
                 mLog.info(String.format("Driver %s deregistered", d));
             } catch (SQLException ex) {
-                mLog.log(Level.SEVERE, String.format("Error deregistering driver %s", d), ex);
+                mLog.error(String.format("Error deregistering driver %s", d), ex);
             }
         }
 
@@ -106,13 +106,13 @@ public class PersistenceContext implements DisposableBean {
         try {
             AbandonedConnectionCleanupThread.shutdown();
         } catch (InterruptedException e) {
-            mLog.log(Level.SEVERE, e.getMessage(), e);
+            mLog.error(e.getMessage(), e);
         }
     }
 
 //    @Aspect
 //    public class DAOInterceptor {
-//        private Logger log = Logger.getLogger(DAOInterceptor.class.getName());
+//        private Logger log = Logger.getLog(DAOInterceptor.class.getName());
 //
 //        @Around("execution(* com.webforefront.jpa.service..*.*(..))")
 //        public Object logQueryTimes(ProceedingJoinPoint pjp) throws Throwable {

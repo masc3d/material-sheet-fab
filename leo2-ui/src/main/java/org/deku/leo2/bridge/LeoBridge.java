@@ -38,7 +38,7 @@ public class LeoBridge implements Disposable, MessageService.Listener {
             super(JacksonFeature.class);
 
             // Server debug logging
-            // registerInstances(new LoggingFilter(Logger.getLogger(LeoBridge.class.getName()), true));
+            // registerInstances(new LoggingFilter(Logger.getLog(LeoBridge.class.getName()), true));
 
             packages("org.deku.leo2.bridge.services");
         }
@@ -80,7 +80,7 @@ public class LeoBridge implements Disposable, MessageService.Listener {
             c.property(ClientProperties.CONNECT_TIMEOUT, 500);
 
             // Client debug logging
-            // c.register(new LoggingFilter(Logger.getLogger(LeoBridge.class.getName()), true));
+            // c.register(new LoggingFilter(Logger.getLog(LeoBridge.class.getName()), true));
 
             mMessageServiceClient = WebResourceFactory.newResource(IMessageService.class, c.target(CLIENT_URI));
         }

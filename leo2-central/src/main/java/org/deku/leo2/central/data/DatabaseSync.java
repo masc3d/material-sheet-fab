@@ -4,6 +4,8 @@ import com.google.common.base.Stopwatch;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.path.DateTimePath;
 import com.mysema.query.types.path.EntityPathBase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.data.entities.jooq.Tables;
 import org.deku.leo2.central.data.entities.jooq.tables.records.*;
 import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
@@ -26,7 +28,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import java.sql.Timestamp;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.StreamSupport;
 
 /**
@@ -34,7 +35,7 @@ import java.util.stream.StreamSupport;
  */
 @Named
 public class DatabaseSync {
-    private static Logger mLog = Logger.getLogger(DatabaseSync.class.getName());
+    private static Log mLog = LogFactory.getLog(DatabaseSync.class);
 
     @javax.persistence.PersistenceContext
     EntityManager mEntityManager;

@@ -1,6 +1,7 @@
 package org.deku.leo2.messaging;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.deku.leo2.messaging.activemq.BrokerImpl;
 import org.deku.leo2.messaging.log.LogListener;
 import org.deku.leo2.messaging.log.LogProducer;
 import org.junit.After;
@@ -15,13 +16,13 @@ import javax.jms.JMSException;
 public class LogTest {
     @Before
     public void setup() throws Exception {
-        Broker.getInstance().start();
+        BrokerImpl.getInstance().start();
         System.out.println("intialized");
     }
 
     @After
     public void tearDown() throws Exception {
-        Broker.getInstance().stop();
+        BrokerImpl.getInstance().stop();
     }
 
     @Test

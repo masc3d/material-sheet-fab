@@ -3,14 +3,14 @@ package org.deku.leo2.messaging.activemq;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.transport.TransportServer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
 import sx.LazyInstance;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Singleton instance for leo2 embedded brokers
@@ -34,7 +34,7 @@ public class BrokerImpl implements Broker {
     }
 
     /** Logger */
-    private Logger mLogger = Logger.getLogger(BrokerImpl.class.getName());
+    private Log mLog = LogFactory.getLog(BrokerImpl.class);
     /** Native broker service */
     private BrokerService mBrokerService;
 
@@ -128,7 +128,7 @@ public class BrokerImpl implements Broker {
         try {
             this.stop();
         } catch (Exception e) {
-            mLogger.log(Level.SEVERE, e.getMessage(), e);
+            mLog.error(e.getMessage(), e);
         }
     }
 }

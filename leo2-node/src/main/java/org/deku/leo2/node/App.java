@@ -1,5 +1,7 @@
 package org.deku.leo2.node;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.deku.leo2.messaging.activemq.BrokerImpl;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -12,7 +14,6 @@ import sx.LazyInstance;
 
 import java.io.File;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 
 /**
  * Created by masc on 30.05.15.
@@ -39,7 +40,7 @@ public class App implements Disposable, ApplicationContextAware {
     }
     //endregion
 
-    private static Logger mLog = Logger.getLogger(App.class.getName());
+    private static Log mLog = LogFactory.getLog(App.class);
     private boolean mIsInitialized;
 
     private LazyInstance<File> mLocalHomeDirectory;

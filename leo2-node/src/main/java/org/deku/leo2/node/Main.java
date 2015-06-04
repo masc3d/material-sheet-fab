@@ -1,6 +1,8 @@
 package org.deku.leo2.node;
 
 import com.google.common.base.Stopwatch;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -24,8 +26,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Spring boot main class.
@@ -42,7 +42,7 @@ import java.util.logging.Logger;
         ResteasyAutoConfiguration.class,
 })
 public class Main extends SpringBootServletInitializer implements ApplicationListener, SpringApplicationRunListener {
-    private Logger mLog = Logger.getLogger(Main.class.getName());
+    private Log mLog = LogFactory.getLog(Main.class);
 
     /**
      * Standalone jetty

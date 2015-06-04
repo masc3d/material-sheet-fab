@@ -1,5 +1,7 @@
 package org.deku.leo2.node.web;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.node.App;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
@@ -15,14 +17,13 @@ import javax.inject.Named;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-import java.util.logging.Logger;
 
 /**
  * Created by masc on 27.05.15.
  */
 @Named
 public class WebContextInitializer implements ServletContextInitializer {
-    Logger mLog = Logger.getLogger(WebContextInitializer.class.getName());
+    Log mLog = LogFactory.getLog(WebContextInitializer.class.getName());
 
     @Inject
     ResteasyDeployment mResteasyDeployment;

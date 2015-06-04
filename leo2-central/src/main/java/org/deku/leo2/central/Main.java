@@ -1,5 +1,6 @@
 package org.deku.leo2.central;
 
+import org.apache.commons.logging.*;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,7 +10,6 @@ import org.springframework.core.annotation.Order;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.logging.Logger;
 
 /**
  * Spring boot main class.
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ComponentScan
 public class Main extends org.deku.leo2.node.Main {
-    private static Logger mLog = Logger.getLogger(Main.class.getName());
+    private static Log mLog = LogFactory.getLog(Main.class);
     /**
      * Standalone jetty
      * @param args

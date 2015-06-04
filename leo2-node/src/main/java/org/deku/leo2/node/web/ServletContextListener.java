@@ -1,19 +1,20 @@
 package org.deku.leo2.node.web;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.inject.Named;
 import javax.servlet.ServletContextEvent;
-import java.util.logging.Logger;
 
 /**
  * Created by masc on 17.09.14.
  */
 @Named("node.ServletContextListener")
 public class ServletContextListener implements javax.servlet.ServletContextListener {
-    Logger mLog = Logger.getLogger(ServletContextListener.class.getName());
+    Log mLog = LogFactory.getLog(ServletContextListener.class);
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -25,10 +26,10 @@ public class ServletContextListener implements javax.servlet.ServletContextListe
 
         ConfigurableListableBeanFactory clbf = wac.getBeanFactory();
 
-        mLog.fine(String.format("Registered beans: %d", wac.getBeanDefinitionCount()));
+        mLog.debug(String.format("Registered beans: %d", wac.getBeanDefinitionCount()));
         for (String beanName : wac.getBeanDefinitionNames()) {
             Object s = clbf.getSingleton(beanName);
-            mLog.fine(String.format("%s: %s", beanName, (s != null) ? s.getClass().getName() : "<null>"));
+            mLog.debug(String.format("%s: %s", beanName, (s != null) ? s.getClass().getName() : "<null>"));
         }
 
 //        try {

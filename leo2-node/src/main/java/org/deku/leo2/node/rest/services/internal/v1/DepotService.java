@@ -1,5 +1,7 @@
 package org.deku.leo2.node.rest.services.internal.v1;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.node.data.entities.Station;
 import org.deku.leo2.node.data.repositories.StationRepository;
 import org.deku.leo2.rest.entities.internal.v1.Depot;
@@ -10,7 +12,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.StreamSupport;
 
 /**
@@ -20,7 +21,7 @@ import java.util.stream.StreamSupport;
 @Path("internal/v1/depot")
 @Produces(MediaType.APPLICATION_JSON)
 public class DepotService implements org.deku.leo2.rest.services.internal.v1.DepotService {
-    Logger mLog = Logger.getLogger(DepotService.class.getName());
+    Log mLog = LogFactory.getLog(DepotService.class);
 
     @Inject
     StationRepository mStationRepository;

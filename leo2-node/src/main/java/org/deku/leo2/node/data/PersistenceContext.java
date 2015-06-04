@@ -1,5 +1,7 @@
 package org.deku.leo2.node.data;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.node.App;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,7 +20,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import java.io.File;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * Embedded database persistence context
@@ -29,7 +30,7 @@ import java.util.logging.Logger;
 @EnableJpaRepositories(considerNestedRepositories = false)
 public class PersistenceContext implements DisposableBean /*, TransactionManagementConfigurer*/ {
     public static final String DB_EMBEDDED = "db_embedded";
-    private Logger mLog = Logger.getLogger(PersistenceContext.class.getName());
+    private Log mLog = LogFactory.getLog(PersistenceContext.class.getName());
 
     private boolean mShowSql = false;
 
@@ -130,7 +131,7 @@ public class PersistenceContext implements DisposableBean /*, TransactionManagem
 
 //    @Aspect
 //    public class DAOInterceptor {
-//        private Logger log = Logger.getLogger(DAOInterceptor.class.getName());
+//        private Logger log = Logger.getLog(DAOInterceptor.class.getName());
 //
 //        @Around("execution(* com.webforefront.jpa.service..*.*(..))")
 //        public Object logQueryTimes(ProceedingJoinPoint pjp) throws Throwable {

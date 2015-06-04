@@ -1,5 +1,7 @@
 package org.deku.leo2.node.data;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.node.data.PersistenceContext;
 import org.jinq.jpa.JPAQueryLogger;
 import org.jinq.jpa.JinqJPAStreamProvider;
@@ -10,13 +12,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Created by masc on 14.05.15.
  */
 public class PersistenceUtil {
-    private Logger mLog = Logger.getLogger(PersistenceContext.class.getName());
+    private Log mLog = LogFactory.getLog(PersistenceContext.class);
 
     private JinqJPAStreamProvider mJinqStreamProvider;
     private boolean mShowJinqQueries = false;
@@ -106,7 +107,7 @@ public class PersistenceUtil {
                 em.persist(t);
             }
         } catch (Exception e) {
-            mLog.severe(e.toString());
+            mLog.error(e.getMessage(), e);
         }
         return t;
     }
