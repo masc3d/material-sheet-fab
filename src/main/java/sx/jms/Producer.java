@@ -1,17 +1,17 @@
 package sx.jms;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import sx.Disposable;
 
 import javax.jms.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Lightweight jms producer abstraction.
  * Created by masc on 16.04.15.
  */
 public abstract class Producer implements Disposable {
-    Logger mLogger;
+    Log mLog;
     ConnectionFactory mConnectionFactory;
     Connection mConnection;
     Session mSession;
@@ -19,7 +19,7 @@ public abstract class Producer implements Disposable {
     MessageProducer mProducer;
 
     public Producer(ConnectionFactory connectionFactory) {
-        mLogger = Logger.getLogger(this.getClass().getName());
+        mLog = LogFactory.getLog(this.getClass());
         mConnectionFactory = connectionFactory;
     }
 
@@ -67,7 +67,7 @@ public abstract class Producer implements Disposable {
             try {
                 mConnection.stop();
             } catch (JMSException e) {
-                mLogger.log(Level.SEVERE, e.getMessage(), e);
+                mLog.error(e.getMessage(), e);
             }
     }
 }

@@ -1,17 +1,18 @@
 package sx.junit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.AssumptionViolatedException;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 /**
  * Created by masc on 14.04.15.
  */
 public class LoggingStopwatchRule extends Stopwatch {
-    private static final Logger logger = Logger.getLogger("");
+    private static final Log logger = LogFactory.getLog(LoggingStopwatchRule.class);
 
     private static void logInfo(Description description, String status, long nanos) {
         String testName = description.getDisplayName();

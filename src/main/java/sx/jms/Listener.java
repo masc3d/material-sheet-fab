@@ -1,13 +1,13 @@
 package sx.jms;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import sx.Disposable;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Lightweight jms listener abstraction.
@@ -15,11 +15,11 @@ import java.util.logging.Logger;
  * Created by masc on 16.04.15.
  */
 public abstract class Listener implements Disposable, MessageListener, ExceptionListener {
-    private Logger mLogger;
+    private Log mLog;
     private ConnectionFactory mConnectionFactory;
 
     public Listener(ConnectionFactory connectionFactory) {
-        mLogger = Logger.getLogger(this.getClass().getName());
+        mLog = LogFactory.getLog(this.getClass());
         mConnectionFactory = connectionFactory;
     }
 
@@ -27,8 +27,8 @@ public abstract class Listener implements Disposable, MessageListener, Exception
 
     public abstract void stop() throws JMSException;
 
-    protected Logger getLogger() {
-        return mLogger;
+    protected Log getLog() {
+        return mLog;
     }
     protected ConnectionFactory getConnectionFactory() {
         return mConnectionFactory;
@@ -39,12 +39,12 @@ public abstract class Listener implements Disposable, MessageListener, Exception
         try {
             this.stop();
         } catch(Exception e) {
-            mLogger.log(Level.SEVERE, e.getMessage(), e);
+            mLog.error(e.getMessage(), e);
         }
     }
 
     @Override
     public void onException(JMSException e) {
-        mLogger.log(Level.SEVERE, e.getMessage(), e);
+        mLog.error(e.getMessage(), e);
     }
 }

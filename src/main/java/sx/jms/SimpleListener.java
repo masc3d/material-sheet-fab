@@ -2,7 +2,6 @@ package sx.jms;
 
 import javax.jms.*;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Simple single threaded jms listener
@@ -55,13 +54,13 @@ public abstract class SimpleListener extends Listener {
                         mSession.commit();
                 } catch(Exception e) {
                     // TODO: verify if exception is routed to onException handler when not caught here
-                    this.getLogger().log(Level.SEVERE, e.getMessage(), e);
+                    this.getLog().error(e.getMessage(), e);
 
                     if (transacted) {
                         try {
                             mSession.rollback();
                         } catch (JMSException e1) {
-                            this.getLogger().log(Level.SEVERE, e.getMessage(), e);
+                            this.getLog().error(e.getMessage(), e);
                         }
                     }
                 }
