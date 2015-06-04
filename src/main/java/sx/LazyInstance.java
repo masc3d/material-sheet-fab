@@ -20,31 +20,43 @@ public class LazyInstance<T> {
     }
 
     /**
-     * Get instance using supplier passed with c'tor
-     *
-     * @return instance
+     * Set instance
+     * @param supplier
+     * @param ignoreExisting Does not throw if instance is already set
+     */
+    public void set(Supplier<T> supplier, boolean ignoreExisting) {
+        synchronized (mLock) {
+            if (!ignoreExisting && mInstance != null)
+                throw new IllegalStateException("Instance already set");
+            mSupplier = supplier;
+        }
+    }
+
+    /**
+     * Set instance
+     * @param supplier
+     */
+    public void set(Supplier<T> supplier) {
+        this.set(supplier, false);
+    }
+
+    /**
+     * Get instance
      */
     public T get() {
         return this.get(mSupplier);
     }
 
-    public void set(T instance) {
-        synchronized (mLock) {
-            mInstance = instance;
-        }
-    }
-
     /**
-     * Get instance
-     *
-     * @param supplier Supplier to provide instance
-     * @return Instance
+     * Get instance using supplier passed with c'tor
+     * @return instance
      */
     public T get(Supplier<T> supplier) {
         if (mInstance == null) {
             synchronized (mLock) {
-                if (supplier != null)
-                    mInstance = supplier.get();
+                mSupplier = supplier;
+                if (mSupplier != null)
+                    mInstance = mSupplier.get();
             }
         }
         return mInstance;
