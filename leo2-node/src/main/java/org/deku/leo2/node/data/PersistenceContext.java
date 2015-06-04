@@ -1,11 +1,9 @@
-package org.deku.leo2.node;
+package org.deku.leo2.node.data;
 
+import org.deku.leo2.node.App;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.AdviceMode;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -26,8 +24,9 @@ import java.util.logging.Logger;
  * Embedded database persistence context
  */
 @Configuration(PersistenceContext.DB_EMBEDDED)
+@ComponentScan
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
-@EnableJpaRepositories(considerNestedRepositories = true)
+@EnableJpaRepositories(considerNestedRepositories = false)
 public class PersistenceContext implements DisposableBean /*, TransactionManagementConfigurer*/ {
     public static final String DB_EMBEDDED = "db_embedded";
     private Logger mLog = Logger.getLogger(PersistenceContext.class.getName());

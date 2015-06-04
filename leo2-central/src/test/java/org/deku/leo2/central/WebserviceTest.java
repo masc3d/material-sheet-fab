@@ -1,7 +1,6 @@
-package org.deku.leo2.central.rest;
+package org.deku.leo2.central;
 
 import org.deku.leo2.node.rest.ObjectMapperProvider;
-import org.eclipse.jetty.server.Server;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +14,6 @@ import java.net.URI;
  * Created by masc on 20.04.15.
  */
 public class WebserviceTest {
-    Server mServer;
     private Client client;
     private WebTarget target;
 
@@ -33,7 +31,6 @@ public class WebserviceTest {
 
     @After
     public void tearDown() throws Exception {
-        mServer.stop();
     }
 
 

@@ -109,6 +109,7 @@ subprojects {
             force "org.javassist:javassist:3.+"
             force "com.thoughtworks.xstream:xstream:1.+"
             force "xml-apis:xml-apis:1.+"
+            force "org.hamcrest:hamcrest-core:1.+"
 
             // SLF4J
             force "org.slf4j:slf4j-api:1.7.+"

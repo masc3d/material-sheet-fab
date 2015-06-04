@@ -61,7 +61,7 @@ dependencies {
 
     // webservice client libraries for test cases
     testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
-    testCompile "org.springframework:spring-test:$v_spring"
+    testCompile "org.springframework.boot:spring-boot-starter-test:$v_springboot"
 
     testCompile project(':sx-common')
 }

@@ -90,11 +90,7 @@ public class App implements Disposable, ApplicationContextAware {
 //        Object c = y.load(this.getClass().getClassLoader().getResourceAsStream("application.yml"));
     }
 
-    public void bootstrap() {
-        mLog.info("Leo2 node bootstrap");
-    }
-
-    public void initialize() throws Exception {
+    public void initialize() {
         mLog.info("Leo2 node initialize");
 
         // Disable JOOQ logo

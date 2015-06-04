@@ -27,15 +27,15 @@ public class Main extends org.deku.leo2.node.Main {
      * @param args
      * @throws Exception
      */
-    public static void main(String[] args) throws Exception {
-        initializeInjection();
+    public static void main(String[] args) {
+        App.inject(App::new);
         org.deku.leo2.node.Main.run(Main.class, args);
     }
 
     @Override
     public void onStartup(ServletContext container) throws ServletException {
         mLog.info("leo2.central.main.onStartup");
-        initializeInjection();
+        App.inject(App::new);
         super.onStartup(container);
     }
 
@@ -45,11 +45,5 @@ public class Main extends org.deku.leo2.node.Main {
         return builder
                 .sources(Main.class)
                 .listeners(this);
-    }
-
-    private static void initializeInjection() {
-        mLog.info("injection");
-        // Inject node singleton overrides
-        App.inject(App::new);
     }
 }

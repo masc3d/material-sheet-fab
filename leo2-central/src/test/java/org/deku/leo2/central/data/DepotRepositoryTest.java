@@ -1,5 +1,6 @@
 package org.deku.leo2.central.data;
 
+import org.deku.leo2.central.DataTest;
 import org.deku.leo2.node.data.entities.Station;
 import org.deku.leo2.node.data.repositories.StationRepository;
 import org.junit.Test;

@@ -1,5 +1,6 @@
-package org.deku.leo2.node;
+package org.deku.leo2.node.data;
 
+import org.deku.leo2.node.data.PersistenceContext;
 import org.jinq.jpa.JPAQueryLogger;
 import org.jinq.jpa.JinqJPAStreamProvider;
 import org.jinq.orm.stream.JinqStream;

@@ -49,14 +49,12 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
      * @param args
      * @throws Exception
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Main.run(Main.class, args);
     }
 
-    protected static void run(Class c, String[] args) throws Exception {
-        Stopwatch sw = Stopwatch.createStarted();
-
-        App.instance().bootstrap();
+    protected static void run(Class c, String[] args) {
+        App.instance().initialize();
         SpringApplication.run(c);
     }
 
@@ -78,22 +76,14 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
             return;
         }
 
-        App.instance().bootstrap();
+        App.instance().initialize();
+
         super.onStartup(container);
     }
 
     @Override
     public final void onApplicationEvent(ApplicationEvent event) {
         mLog.info(event.toString());
-
-        if (event instanceof ContextRefreshedEvent) {
-            try {
-                if (!App.instance().isInitialized())
-                    App.instance().initialize();
-            } catch (Exception e) {
-                mLog.log(Level.SEVERE, e.getMessage(), e);
-            }
-        }
     }
 
     @Override

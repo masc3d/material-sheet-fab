@@ -7,11 +7,11 @@
           <root url="file://$MODULE_DIR$/src/main/webapp" relative="/" />
         </webroots>
         <sourceRoots>
-          <root url="file://$MODULE_DIR$/src/generated/apt" />
-          <root url="file://$MODULE_DIR$/src/generated/java" />
           <root url="file://$MODULE_DIR$/src/main/java" />
-          <root url="file://$MODULE_DIR$/src/generated/resources" />
           <root url="file://$MODULE_DIR$/src/main/resources" />
+          <root url="file://$MODULE_DIR$/src/generated/java" />
+          <root url="file://$MODULE_DIR$/src/generated/apt" />
+          <root url="file://$MODULE_DIR$/src/generated/resources" />
         </sourceRoots>
       </configuration>
     </facet>

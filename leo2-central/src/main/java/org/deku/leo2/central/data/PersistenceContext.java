@@ -1,4 +1,4 @@
-package org.deku.leo2.central;
+package org.deku.leo2.central.data;
 
 import com.mysql.jdbc.AbandonedConnectionCleanupThread;
 import org.jooq.SQLDialect;
@@ -27,7 +27,8 @@ import java.util.logging.Logger;
  * Created by masc on 28.08.14.
  */
 @Configuration(PersistenceContext.DB_CENTRAL)
-@Import(org.deku.leo2.node.PersistenceContext.class)
+@ComponentScan
+@Import(org.deku.leo2.node.data.PersistenceContext.class)
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 public class PersistenceContext implements DisposableBean {
     public static final String DB_CENTRAL = "db_central";
