@@ -1,6 +1,6 @@
 package org.deku.leo2.node.web;
 
-import org.deku.leo2.node.Global;
+import org.deku.leo2.node.App;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
@@ -9,7 +9,6 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.springmvc.ResteasyHandlerMapping;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
-import org.springframework.context.annotation.Configuration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,36 +37,30 @@ public class WebContextInitializer implements ServletContextInitializer {
     public void onStartup(ServletContext servletContext) throws ServletException {
         mLog.info("Leo2 webcontext startup");
 
-        try {
-            Global.instance().initialize();
+        // Spring dispatcher servlet (variant 1)
+        // requires the following spring boot autoconfigurations:
+        // * HttpMessageConvertersAutoConfiguration.class,
+        // * WebMvcAutoConfiguration.class,
+        // * DispatcherServletAutoConfiguration.class,
 
-            // Spring dispatcher servlet (variant 1)
-            // requires the following spring boot autoconfigurations:
-            // * HttpMessageConvertersAutoConfiguration.class,
-            // * WebMvcAutoConfiguration.class,
-            // * DispatcherServletAutoConfiguration.class,
+        // Configuring resteasy handler mapping
+        //mResteasyHandlerMapping.setPrefix("/rs/api");
+        //mResteasyHandlerMapping.setThrowNotFound(false);
 
-            // Configuring resteasy handler mapping
-            //mResteasyHandlerMapping.setPrefix("/rs/api");
-            //mResteasyHandlerMapping.setThrowNotFound(false);
+        // Resteasy dispatcher servlet configuration (variant 2)
+        // This setup has the following advantages
+        // * faster startup time (~2 seconds) as spring-webmvc/dispatcher not needed
+        // * uses dedicated http dispatcher servlet for resteasy (ResteasyHandlerMappng has issues
+        //   as it throws errors on any invalid resource, ven for paths outside scope/prefix)
+        servletContext.setAttribute(ResteasyProviderFactory.class.getName(), mResteasyDeployment.getProviderFactory());
+        servletContext.setAttribute(Dispatcher.class.getName(), mResteasyDeployment.getDispatcher());
+        servletContext.setAttribute(Registry.class.getName(), mResteasyDeployment.getRegistry());
 
-            // Resteasy dispatcher servlet configuration (variant 2)
-            // This setup has the following advantages
-            // * faster startup time (~2 seconds) as spring-webmvc/dispatcher not needed
-            // * uses dedicated http dispatcher servlet for resteasy (ResteasyHandlerMappng has issues
-            //   as it throws errors on any invalid resource, ven for paths outside scope/prefix)
-            servletContext.setAttribute(ResteasyProviderFactory.class.getName(), mResteasyDeployment.getProviderFactory());
-            servletContext.setAttribute(Dispatcher.class.getName(), mResteasyDeployment.getDispatcher());
-            servletContext.setAttribute(Registry.class.getName(), mResteasyDeployment.getRegistry());
-
-            ServletRegistration.Dynamic sr = servletContext.addServlet("rs", HttpServletDispatcher.class);
-            sr.setInitParameter("resteasy.servlet.mapping.prefix", "/rs/api");
-            sr.setInitParameter("javax.ws.rs.Application", "org.deku.leo2.node.rest.WebserviceApplication");
-            sr.setLoadOnStartup(1);
-            sr.addMapping("/rs/api/*");
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
+        ServletRegistration.Dynamic sr = servletContext.addServlet("rs", HttpServletDispatcher.class);
+        sr.setInitParameter("resteasy.servlet.mapping.prefix", "/rs/api");
+        sr.setInitParameter("javax.ws.rs.Application", "org.deku.leo2.node.rest.WebserviceApplication");
+        sr.setLoadOnStartup(1);
+        sr.addMapping("/rs/api/*");
     }
 
     /**

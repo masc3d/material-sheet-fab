@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Created by masc on 30.05.15.
  */
-@Configuration("central.Global")
-@ComponentScan
-public class Global extends org.deku.leo2.node.Global {
+public class App extends org.deku.leo2.node.App {
+
+    public static App instance() {
+        return (App)org.deku.leo2.node.App.instance();
+    }
 }

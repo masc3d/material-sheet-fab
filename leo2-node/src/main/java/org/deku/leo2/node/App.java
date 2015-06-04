@@ -1,50 +1,50 @@
 package org.deku.leo2.node;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 import org.apache.log4j.BasicConfigurator;
 import org.deku.leo2.messaging.activemq.BrokerImpl;
-import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import sx.Disposable;
 import sx.LazyInstance;
 
-import javax.inject.Inject;
 import java.io.File;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 /**
  * Created by masc on 30.05.15.
  */
-@Configuration("node.Global")
-@ComponentScan
-public class Global implements Disposable, ApplicationContextAware {
-    private static AtomicReference<LazyInstance<Global>> mInstance
-            = new AtomicReference<>(new LazyInstance(() -> new Global()));
+public class App implements Disposable, ApplicationContextAware {
 
-    private LazyInstance<File> mLocalHomeDirectory;
-
-    @Inject
-    Config mConfig;
+    //region Singleton
+    private static LazyInstance<App> mInstance = new LazyInstance(App::new);
 
     /**
      * Singleton instance
      * @return
      */
-    public static Global instance() {
-        return mInstance.get().get();
+    public static App instance() {
+        return mInstance.get();
     }
 
-    public Global() {
-        // Spring application context
-        // mContext = new AnnotationConfigApplicationContext(Main.class.getPackage().getName());
-        mInstance.set(new LazyInstance(() -> this));
+    /**
+     * Static injection
+     * @param supplier
+     */
+    public static void inject(Supplier<App> supplier) {
+        mInstance.set(supplier);
+    }
+    //endregion
+
+    private static Logger mLog = Logger.getLogger(App.class.getName());
+    private boolean mIsInitialized;
+
+    private LazyInstance<File> mLocalHomeDirectory;
+
+    protected App() {
         mLocalHomeDirectory = new LazyInstance<>( () ->  new File(System.getProperty("user.home"), ".leo2"));
     }
 
@@ -66,6 +66,10 @@ public class Global implements Disposable, ApplicationContextAware {
         return mLocalHomeDirectory.get();
     }
 
+    public boolean isInitialized() {
+        return mIsInitialized;
+    }
+
     /**
      * Intialize logging.
      * Not required for spring-boot.
@@ -76,10 +80,6 @@ public class Global implements Disposable, ApplicationContextAware {
 
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
-
-        // SLF4J
-        Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        root.setLevel(Level.INFO);
     }
 
     /**
@@ -90,12 +90,20 @@ public class Global implements Disposable, ApplicationContextAware {
 //        Object c = y.load(this.getClass().getClassLoader().getResourceAsStream("application.yml"));
     }
 
+    public void bootstrap() {
+        mLog.info("Leo2 node bootstrap");
+    }
+
     public void initialize() throws Exception {
+        mLog.info("Leo2 node initialize");
+
         // Disable JOOQ logo
         System.setProperty("org.jooq.no-logo", "true");
 
-        BrokerImpl.getInstance().setDataDirectory(this.getLocalHomeDirectory());
+        BrokerImpl.getInstance().setDataDirectory(App.instance().getLocalHomeDirectory());
         //BrokerImpl.getInstance().start();
+
+        mIsInitialized = true;
     }
 
     @Override

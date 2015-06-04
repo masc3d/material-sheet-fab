@@ -46,7 +46,7 @@ public class PersistenceContext implements DisposableBean /*, TransactionManagem
 
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-        File dbPath = new File(Global.instance().getLocalHomeDirectory(), "db/leo2");
+        File dbPath = new File(App.instance().getLocalHomeDirectory(), "db/leo2");
 
         dataSource.setDriverClassName("org.h2.Driver");
         if (!IN_MEMORY) {

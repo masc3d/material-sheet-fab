@@ -2,15 +2,29 @@ package org.deku.leo2.node;
 
 import com.google.common.base.Stopwatch;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.boot.resteasy.autoconfigure.ResteasyAutoConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.web.context.WebApplicationContext;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -19,6 +33,7 @@ import java.util.logging.Logger;
  * Created by masc on 28.05.15.
  */
 @Configuration("node.MainSpringBoot")
+@Order(Ordered.LOWEST_PRECEDENCE)
 @ComponentScan
 // Auto configuraton is slow. Pulling in configurations manually as needed.
 @Import({
@@ -26,23 +41,83 @@ import java.util.logging.Logger;
         ServerPropertiesAutoConfiguration.class,
         ResteasyAutoConfiguration.class,
 })
-public class Main {
-    private static Logger mLog = Logger.getLogger(Main.class.getName());
+public class Main extends SpringBootServletInitializer implements ApplicationListener, SpringApplicationRunListener {
+    private Logger mLog = Logger.getLogger(Main.class.getName());
 
     /**
      * Standalone jetty
      * @param args
      * @throws Exception
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Main.run(Main.class, args);
     }
 
-    protected static void run(Class c, String[] args) {
+    protected static void run(Class c, String[] args) throws Exception {
         Stopwatch sw = Stopwatch.createStarted();
-        SpringApplication app = new SpringApplication(c);
-        ConfigurableApplicationContext context = app.run(args);
 
-        mLog.info(String.format("Started in %s", sw));
+        App.instance().bootstrap();
+        SpringApplication.run(c);
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        mLog.info("Leo2 node main.configure");
+        return builder
+                .sources(Main.class)
+                .listeners(this);
+    }
+
+    @Override
+    public void onStartup(ServletContext container) throws ServletException {
+        mLog.info("Leo2 node main.onStartup");
+
+        // Only start if there's no application context yet.
+        if (container.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)
+                instanceof ApplicationContext) {
+            return;
+        }
+
+        App.instance().bootstrap();
+        super.onStartup(container);
+    }
+
+    @Override
+    public final void onApplicationEvent(ApplicationEvent event) {
+        mLog.info(event.toString());
+
+        if (event instanceof ContextRefreshedEvent) {
+            try {
+                if (!App.instance().isInitialized())
+                    App.instance().initialize();
+            } catch (Exception e) {
+                mLog.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+    }
+
+    @Override
+    public void started() {
+        mLog.info("SPRING started");
+    }
+
+    @Override
+    public void environmentPrepared(ConfigurableEnvironment environment) {
+        mLog.info("SPRING env prepared");
+    }
+
+    @Override
+    public void contextPrepared(ConfigurableApplicationContext context) {
+        mLog.info("SPRING context prepared");
+    }
+
+    @Override
+    public void contextLoaded(ConfigurableApplicationContext context) {
+        mLog.info("SPRING context loaded");
+    }
+
+    @Override
+    public void finished(ConfigurableApplicationContext context, Throwable exception) {
+        mLog.info("SPRING finished");
     }
 }
