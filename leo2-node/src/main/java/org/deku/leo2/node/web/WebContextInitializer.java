@@ -1,5 +1,6 @@
 package org.deku.leo2.node.web;
 
+import io.undertow.server.handlers.resource.*;
 import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,6 +22,9 @@ import javax.inject.Named;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * Created by masc on 27.05.15.
@@ -78,6 +82,35 @@ public class WebContextInitializer implements ServletContextInitializer {
                 new UndertowDeploymentInfoCustomizer() {
                     @Override
                     public void customize(DeploymentInfo deploymentInfo) {
+                        deploymentInfo.setResourceManager(new ResourceManager() {
+                            @Override
+                            public Resource getResource(String path) throws IOException {
+                                String basePath = "/webapp";
+                                path = basePath + path;
+                                URL url = WebContextInitializer.class.getResource(path);
+                                return new URLResource(url, url.openConnection(), path);
+                            }
+
+                            @Override
+                            public boolean isResourceChangeListenerSupported() {
+                                return false;
+                            }
+
+                            @Override
+                            public void registerResourceChangeListener(ResourceChangeListener listener) {
+
+                            }
+
+                            @Override
+                            public void removeResourceChangeListener(ResourceChangeListener listener) {
+
+                            }
+
+                            @Override
+                            public void close() throws IOException {
+
+                            }
+                        });
                         deploymentInfo.addWelcomePage("index.html");
                     }
                 }
