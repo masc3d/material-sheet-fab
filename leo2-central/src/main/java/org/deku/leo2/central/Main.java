@@ -19,7 +19,7 @@ import javax.servlet.ServletException;
  */
 @Configuration("central.MainSpringBoot")
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@ComponentScan
+@ComponentScan(lazyInit = true)
 public class Main extends org.deku.leo2.node.Main {
     private static Log mLog = LogFactory.getLog(Main.class);
     /**

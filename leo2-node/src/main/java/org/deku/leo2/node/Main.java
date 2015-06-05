@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -34,12 +35,13 @@ import javax.servlet.ServletException;
  */
 @Configuration("node.MainSpringBoot")
 @Order(Ordered.LOWEST_PRECEDENCE)
-@ComponentScan
+@ComponentScan(lazyInit = true)
 // Auto configuraton is slow. Pulling in configurations manually as needed.
 @Import({
         EmbeddedServletContainerAutoConfiguration.class,
         ServerPropertiesAutoConfiguration.class,
         ResteasyAutoConfiguration.class,
+        //DataSourceAutoConfiguration.class
 })
 public class Main extends SpringBootServletInitializer implements ApplicationListener, SpringApplicationRunListener {
     private Log mLog = LogFactory.getLog(Main.class);

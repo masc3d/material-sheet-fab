@@ -6,6 +6,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.deku.leo2.messaging.activemq.BrokerImpl;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.BeansException;
+import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -96,6 +97,10 @@ public class App implements Disposable, ApplicationContextAware {
 
         // Disable JOOQ logo
         System.setProperty("org.jooq.no-logo", "true");
+
+        // Set additional config file location for spring
+        System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY,
+                new File(this.getLocalHomeDirectory(), "leo2.properties").toString());
 
         BrokerImpl.getInstance().setDataDirectory(App.instance().getLocalHomeDirectory());
         //BrokerImpl.getInstance().start();

@@ -2,7 +2,9 @@ package org.deku.leo2.node.web;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -28,8 +30,12 @@ public class ServletContextListener implements javax.servlet.ServletContextListe
 
         mLog.debug(String.format("Registered beans: %d", wac.getBeanDefinitionCount()));
         for (String beanName : wac.getBeanDefinitionNames()) {
+            BeanDefinition rbd = clbf.getMergedBeanDefinition(beanName);
             Object s = clbf.getSingleton(beanName);
-            mLog.debug(String.format("%s: %s", beanName, (s != null) ? s.getClass().getName() : "<null>"));
+            mLog.debug(String.format("%s: %s, lazy %s",
+                    beanName,
+                    (s != null) ? s.getClass().getName() : "<null>",
+                    rbd.isLazyInit()));
         }
 
 //        try {

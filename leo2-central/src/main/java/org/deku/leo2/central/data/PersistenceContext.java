@@ -27,7 +27,7 @@ import java.util.Properties;
  * Created by masc on 28.08.14.
  */
 @Configuration(PersistenceContext.DB_CENTRAL)
-@ComponentScan
+@ComponentScan(lazyInit = true)
 @Import(org.deku.leo2.node.data.PersistenceContext.class)
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 public class PersistenceContext implements DisposableBean {

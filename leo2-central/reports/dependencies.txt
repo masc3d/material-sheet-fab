@@ -527,23 +527,23 @@ default - Configuration for default artifacts.
 +--- project :sx-common (*)
 +--- org.jooq:jooq:3.+ -> 3.6.2
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
-\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE
-     +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
-     +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
-     +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
-     \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
-          \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.4.RELEASE
+     +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.23
+     +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.23
+     +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.23
+     \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.23
+          \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.23
 
 providedCompile - Additional compile classpath for libraries that should not be part of the WAR archive.
 No dependencies
 
 providedRuntime - Additional runtime classpath for libraries that should not be part of the WAR archive.
-\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE
-     +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
-     +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
-     +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
-     \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
-          \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.4.RELEASE
+     +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.23
+     +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.23
+     +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.23
+     \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.23
+          \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.23
 
 runtime - Runtime classpath for source set 'main'.
 +--- project :leo2-common
@@ -802,12 +802,12 @@ runtime - Runtime classpath for source set 'main'.
 +--- project :sx-common (*)
 +--- org.jooq:jooq:3.+ -> 3.6.2
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
-\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE
-     +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
-     +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
-     +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
-     \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
-          \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
+\--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.4.RELEASE
+     +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.23
+     +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.23
+     +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.23
+     \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.23
+          \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.23
 
 shadow
 No dependencies
@@ -1341,12 +1341,12 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- project :sx-common (*)
 +--- org.jooq:jooq:3.+ -> 3.6.2
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
-+--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.3.RELEASE
-|    +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
-|    +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.20
-|    +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20
-|    \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20
-|         \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.20
++--- org.springframework.boot:spring-boot-starter-tomcat:1.+ -> 1.2.4.RELEASE
+|    +--- org.apache.tomcat.embed:tomcat-embed-core:8.0.23
+|    +--- org.apache.tomcat.embed:tomcat-embed-el:8.0.23
+|    +--- org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.23
+|    \--- org.apache.tomcat.embed:tomcat-embed-websocket:8.0.23
+|         \--- org.apache.tomcat.embed:tomcat-embed-core:8.0.23
 +--- junit:junit:4.+ -> 4.12 (*)
 +--- org.jboss.resteasy:resteasy-client:3.0.+ -> 3.0.11.Final
 |    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final (*)

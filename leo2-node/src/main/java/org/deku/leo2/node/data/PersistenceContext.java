@@ -25,7 +25,7 @@ import java.util.Properties;
  * Embedded database persistence context
  */
 @Configuration(PersistenceContext.DB_EMBEDDED)
-@ComponentScan
+@ComponentScan(lazyInit = true)
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 @EnableJpaRepositories(considerNestedRepositories = false)
 public class PersistenceContext implements DisposableBean /*, TransactionManagementConfigurer*/ {
@@ -70,6 +70,7 @@ public class PersistenceContext implements DisposableBean /*, TransactionManagem
     }
 
     //region JPA
+    @Lazy
     @Bean
     @Qualifier(DB_EMBEDDED)
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {

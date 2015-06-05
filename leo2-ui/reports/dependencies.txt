@@ -96,6 +96,7 @@ compile - Compile classpath for source set 'main'.
 |    \--- org.controlsfx:openjfx-dialogs:1.0.3
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- javax.jms:jms-api:1.1-rev-1
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3
@@ -139,14 +140,14 @@ compile - Compile classpath for source set 'main'.
      |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
      |    |    \--- commons-net:commons-net:3.3
      |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-     |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
+     |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
      |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
      |    |    +--- commons-logging:commons-logging:1.2
      |    |    \--- commons-codec:commons-codec:1.9
      |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
      |         +--- xmlpull:xmlpull:1.1.3.1
      |         \--- xpp3:xpp3_min:1.1.4c
-     +--- org.apache.httpcomponents:httpclient:4.+ -> 4.4.1 (*)
+     +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
      \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 
 default - Configuration for default artifacts.
@@ -239,6 +240,7 @@ default - Configuration for default artifacts.
 |    \--- org.controlsfx:openjfx-dialogs:1.0.3
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- javax.jms:jms-api:1.1-rev-1
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3
@@ -282,14 +284,14 @@ default - Configuration for default artifacts.
      |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
      |    |    \--- commons-net:commons-net:3.3
      |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-     |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
+     |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
      |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
      |    |    +--- commons-logging:commons-logging:1.2
      |    |    \--- commons-codec:commons-codec:1.9
      |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
      |         +--- xmlpull:xmlpull:1.1.3.1
      |         \--- xpp3:xpp3_min:1.1.4c
-     +--- org.apache.httpcomponents:httpclient:4.+ -> 4.4.1 (*)
+     +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
      \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 
 launch4j - The launch4j configuration for this project.
@@ -385,6 +387,7 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- org.controlsfx:openjfx-dialogs:1.0.3
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- javax.jms:jms-api:1.1-rev-1
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3
@@ -428,14 +431,14 @@ runtime - Runtime classpath for source set 'main'.
      |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
      |    |    \--- commons-net:commons-net:3.3
      |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-     |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
+     |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
      |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
      |    |    +--- commons-logging:commons-logging:1.2
      |    |    \--- commons-codec:commons-codec:1.9
      |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
      |         +--- xmlpull:xmlpull:1.1.3.1
      |         \--- xpp3:xpp3_min:1.1.4c
-     +--- org.apache.httpcomponents:httpclient:4.+ -> 4.4.1 (*)
+     +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
      \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 
 shadow
@@ -531,6 +534,7 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- org.controlsfx:openjfx-dialogs:1.0.3
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- javax.jms:jms-api:1.1-rev-1
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3
@@ -574,14 +578,14 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    |    \--- commons-net:commons-net:3.3
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
 |    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 \--- junit:junit:4.+ -> 4.12 (*)
 
@@ -675,6 +679,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- org.controlsfx:openjfx-dialogs:1.0.3
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- javax.jms:jms-api:1.1-rev-1
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3
@@ -718,14 +723,14 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    |    \--- commons-net:commons-net:3.3
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.4.1
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
 |    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.4.1 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 \--- junit:junit:4.+ -> 4.12 (*)
 
