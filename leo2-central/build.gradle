@@ -1,6 +1,10 @@
 // Gradle dependencies/plugins
 buildscript {
     dependencies {
+        // spring boot
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$v_springboot")
+        classpath("io.spring.gradle:dependency-management-plugin:$v_springboot_plugin")
+
         // cargo gradle plugin for remote delpoyment
         classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.+'
 
@@ -28,6 +32,8 @@ apply plugin: 'war'
 apply plugin: 'cargo'
 apply plugin: 'application'
 apply plugin: 'jooq'
+apply plugin: 'spring-boot'
+apply plugin: 'io.spring.dependency-management'
 
 
 sourceCompatibility = 1.8

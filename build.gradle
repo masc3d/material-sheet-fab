@@ -32,6 +32,7 @@ subprojects {
             v_eclipselink = "2.+"
             v_spring = "4.+"
             v_springboot = "1.+"
+            v_springboot_plugin = "0.5.1.RELEASE"
             v_querydsl = "3.+"
             v_jetty = "9.2.+"
             v_junit = "4.+"

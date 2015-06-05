@@ -219,7 +219,6 @@ compile - Compile classpath for source set 'main'.
 |    |    |         \--- org.jboss.xnio:xnio-api:3.3.0.Final
 |    |    +--- io.undertow:undertow-servlet:1.1.4.Final
 |    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
-|    |    |    +--- org.jboss.spec.javax.servlet:jboss-servlet-api_3.1_spec:1.0.0.Final
 |    |    |    \--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final
 |    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final
 |    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
@@ -477,7 +476,6 @@ default - Configuration for default artifacts.
 |    |    |         \--- org.jboss.xnio:xnio-api:3.3.0.Final
 |    |    +--- io.undertow:undertow-servlet:1.1.4.Final
 |    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
-|    |    |    +--- org.jboss.spec.javax.servlet:jboss-servlet-api_3.1_spec:1.0.0.Final
 |    |    |    \--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final
 |    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final
 |    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
@@ -752,7 +750,6 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |         \--- org.jboss.xnio:xnio-api:3.3.0.Final
 |    |    +--- io.undertow:undertow-servlet:1.1.4.Final
 |    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
-|    |    |    +--- org.jboss.spec.javax.servlet:jboss-servlet-api_3.1_spec:1.0.0.Final
 |    |    |    \--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final
 |    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final
 |    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
@@ -1019,7 +1016,6 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |         \--- org.jboss.xnio:xnio-api:3.3.0.Final
 |    |    +--- io.undertow:undertow-servlet:1.1.4.Final
 |    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
-|    |    |    +--- org.jboss.spec.javax.servlet:jboss-servlet-api_3.1_spec:1.0.0.Final
 |    |    |    \--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final
 |    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final
 |    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
@@ -1291,7 +1287,6 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |         \--- org.jboss.xnio:xnio-api:3.3.0.Final
 |    |    +--- io.undertow:undertow-servlet:1.1.4.Final
 |    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
-|    |    |    +--- org.jboss.spec.javax.servlet:jboss-servlet-api_3.1_spec:1.0.0.Final
 |    |    |    \--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final
 |    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final
 |    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
@@ -1362,4 +1357,5 @@ testRuntime - Runtime classpath for source set 'test'.
      \--- org.springframework:spring-test:4.1.6.RELEASE
           \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 
-(*) - dependencies omitted (listed previously)
+versionManagement
+No dependencies
