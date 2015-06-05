@@ -1,5 +1,6 @@
 package org.deku.leo2.node;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
@@ -14,6 +15,12 @@ import sx.Disposable;
 import sx.LazyInstance;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -45,9 +52,11 @@ public class App implements Disposable, ApplicationContextAware {
     private boolean mIsInitialized;
 
     private LazyInstance<File> mLocalHomeDirectory;
+    private LazyInstance<File> mLocalConfigurationFile;
 
     protected App() {
         mLocalHomeDirectory = new LazyInstance<>( () ->  new File(System.getProperty("user.home"), ".leo2"));
+        mLocalConfigurationFile = new LazyInstance<>( () -> new File(mLocalHomeDirectory.get(), "leo2.properties"));
     }
 
     /**
@@ -64,9 +73,22 @@ public class App implements Disposable, ApplicationContextAware {
         mContext = (ConfigurableApplicationContext)applicationContext;
     }
 
+    /**
+     * Leo2 local home/data directory
+     * @return
+     */
     public File getLocalHomeDirectory() {
         return mLocalHomeDirectory.get();
     }
+
+    /**
+     * Leo2 local configuration file
+     * @return
+     */
+    public File getLocalConfigurationFile() {
+        return mLocalConfigurationFile.get();
+    }
+
 
     public boolean isInitialized() {
         return mIsInitialized;
@@ -99,13 +121,35 @@ public class App implements Disposable, ApplicationContextAware {
         System.setProperty("org.jooq.no-logo", "true");
 
         // Set additional config file location for spring
+        List<URL> configLocations = new ArrayList<>();
+
+        // Add local home configuration
+        try {
+            configLocations.add(new URL("file:" + this.getLocalConfigurationFile().toString()));
+        } catch (MalformedURLException e) {
+            mLog.error(e.getMessage(), e);
+        }
+
+        // Add application.properties from all classpaths
+        // TODO: needs refinement, should only read application.properties from specific jars
+        try {
+            configLocations.addAll(Collections.list(Main.class.getClassLoader().getResources("application.properties")));
+        } catch (IOException e) {
+            mLog.error(e.getMessage(), e);
+        }
+
         System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY,
-                new File(this.getLocalHomeDirectory(), "leo2.properties").toString());
+                String.join(",",
+                        Lists.reverse(configLocations)
+                        .stream()
+                        .map(u -> u.toString()).toArray(size -> new String[size])));
 
         BrokerImpl.getInstance().setDataDirectory(App.instance().getLocalHomeDirectory());
         //BrokerImpl.getInstance().start();
 
         mIsInitialized = true;
+
+        //throw new IllegalStateException();
     }
 
     @Override
