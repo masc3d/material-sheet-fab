@@ -1,8 +1,8 @@
 package org.deku.leo2.node.web;
 
+import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.node.App;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
@@ -10,7 +10,11 @@ import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.springmvc.ResteasyHandlerMapping;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.context.annotation.Bean;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -62,6 +66,23 @@ public class WebContextInitializer implements ServletContextInitializer {
         sr.setInitParameter("javax.ws.rs.Application", "org.deku.leo2.node.rest.WebserviceApplication");
         sr.setLoadOnStartup(1);
         sr.addMapping("/rs/api/*");
+    }
+
+    @Bean
+    public EmbeddedServletContainerFactory servletContainer() {
+        // Creating embedded servlet container factory manually
+        // as it's currently the only way to customize welcome pages
+        // Undertow doesn't have index.html by default.
+        UndertowEmbeddedServletContainerFactory factory = new UndertowEmbeddedServletContainerFactory();
+        factory.getDeploymentInfoCustomizers().add(
+                new UndertowDeploymentInfoCustomizer() {
+                    @Override
+                    public void customize(DeploymentInfo deploymentInfo) {
+                        deploymentInfo.addWelcomePage("index.html");
+                    }
+                }
+        );
+        return factory;
     }
 
     /**

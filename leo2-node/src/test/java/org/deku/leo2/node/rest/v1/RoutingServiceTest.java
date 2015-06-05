@@ -1,6 +1,6 @@
-package org.deku.leo2.central.rest.v1;
+package org.deku.leo2.node.rest.v1;
 
-import org.deku.leo2.central.WebserviceTest;
+import org.deku.leo2.node.WebserviceTest;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;

@@ -1,9 +1,10 @@
-package org.deku.leo2.central;
+package org.deku.leo2.node;
 
 import org.deku.leo2.node.rest.ObjectMapperProvider;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -13,6 +14,7 @@ import java.net.URI;
 /**
  * Created by masc on 20.04.15.
  */
+@Ignore
 public class WebserviceTest {
     private Client client;
     private WebTarget target;
@@ -21,7 +23,7 @@ public class WebserviceTest {
 
     @Before
     public void setup() throws Exception {
-        org.deku.leo2.central.Main.main(null);
+        org.deku.leo2.node.Main.main(null);
 
         // Setup jaxrs client & target
         this.client = ClientBuilder.newClient();

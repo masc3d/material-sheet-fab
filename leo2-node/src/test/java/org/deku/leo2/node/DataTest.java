@@ -1,22 +1,15 @@
-package org.deku.leo2.central;
+package org.deku.leo2.node;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import org.deku.leo2.central.data.PersistenceContext;
-import org.deku.leo2.node.rest.services.v1.RoutingService;
+import org.deku.leo2.node.data.PersistenceContext;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.*;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.web.context.ContextLoaderListener;
 
 import javax.servlet.ServletContext;
 

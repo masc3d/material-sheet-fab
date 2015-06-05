@@ -3,7 +3,7 @@ package org.deku.leo2.central.data;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.central.DataTest;
+import org.deku.leo2.node.DataTest;
 import org.junit.Test;
 
 import javax.inject.Inject;
