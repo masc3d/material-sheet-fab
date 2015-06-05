@@ -46,6 +46,8 @@ public class WebContextInitializer implements ServletContextInitializer {
     public void onStartup(ServletContext servletContext) throws ServletException {
         mLog.info("Leo2 webcontext startup");
 
+        String restEasyPath = "/rs/api";
+
         // Spring dispatcher servlet (variant 1)
         // requires the following spring boot autoconfigurations:
         // * HttpMessageConvertersAutoConfiguration.class,
@@ -66,10 +68,10 @@ public class WebContextInitializer implements ServletContextInitializer {
         servletContext.setAttribute(Registry.class.getName(), mResteasyDeployment.getRegistry());
 
         ServletRegistration.Dynamic sr = servletContext.addServlet("rs", HttpServletDispatcher.class);
-        sr.setInitParameter("resteasy.servlet.mapping.prefix", "/rs/api");
+        sr.setInitParameter("resteasy.servlet.mapping.prefix", restEasyPath);
         sr.setInitParameter("javax.ws.rs.Application", "org.deku.leo2.node.rest.WebserviceApplication");
         sr.setLoadOnStartup(1);
-        sr.addMapping("/rs/api/*");
+        sr.addMapping(restEasyPath + "/*");
     }
 
     @Bean
@@ -86,9 +88,10 @@ public class WebContextInitializer implements ServletContextInitializer {
                             @Override
                             public Resource getResource(String path) throws IOException {
                                 String basePath = "/webapp";
-                                path = basePath + path;
-                                URL url = WebContextInitializer.class.getResource(path);
-                                return new URLResource(url, url.openConnection(), path);
+                                String filePath = new File(basePath, path).toString();
+                                URL url = WebContextInitializer.class.getResource(filePath);
+                                URLResource urlResource = new URLResource(url, url.openConnection(), filePath);
+                                return urlResource;
                             }
 
                             @Override
