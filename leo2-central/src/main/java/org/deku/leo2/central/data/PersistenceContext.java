@@ -3,19 +3,22 @@ package org.deku.leo2.central.data;
 import com.mysql.jdbc.AbandonedConnectionCleanupThread;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deku.leo2.node.Config;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.*;
-import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.inject.Inject;
+import javax.sql.DataSource;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -35,21 +38,24 @@ public class PersistenceContext implements DisposableBean {
 
     private Log mLog = LogFactory.getLog(PersistenceContext.class);
 
+    @Inject
+    Config mConfig;
 
     @Inject
     @Qualifier(DB_CENTRAL)
-    private AbstractDataSource mDataSource;
+    private DataSource mDataSource;
 
     @Bean
     @Lazy
     @Qualifier(DB_CENTRAL)
-    public AbstractDataSource dataSourceCentral() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://10.0.10.10:3306/dekuclient");
-        dataSource.setUsername("leo2");
-        dataSource.setPassword("leo2");
+    @ConfigurationProperties(prefix="datasource.central")
+    public DataSource dataSourceCentral() {
+        DriverManagerDataSource dataSource = (DriverManagerDataSource)DataSourceBuilder
+                .create()
+                .type(DriverManagerDataSource.class)
+                .build();
 
+        // TODO: figure out how to get those into application.properties
         Properties dataSourceProperties = new Properties();
         dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
         dataSourceProperties.setProperty("connectTimeout", "1000");
