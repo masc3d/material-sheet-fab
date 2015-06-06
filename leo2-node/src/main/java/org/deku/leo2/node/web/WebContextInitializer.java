@@ -74,7 +74,7 @@ public class WebContextInitializer implements ServletContextInitializer {
         sr.setInitParameter("resteasy.servlet.mapping.prefix", RESTEASY_MAPPING_PATH);
         sr.setInitParameter("javax.ws.rs.Application", "org.deku.leo2.node.rest.WebserviceApplication");
         sr.setLoadOnStartup(1);
-        sr.addMapping(new File(RESTEASY_MAPPING_PATH, "*").toString());
+        sr.addMapping(RESTEASY_MAPPING_PATH + "/*");
     }
 
     @Bean
@@ -90,7 +90,7 @@ public class WebContextInitializer implements ServletContextInitializer {
                         deploymentInfo.setResourceManager(new ResourceManager() {
                             @Override
                             public Resource getResource(String path) throws IOException {
-                                String filePath = new File(STATIC_CONTENT_CLASSPATH, path).toString();
+                                String filePath = STATIC_CONTENT_CLASSPATH + path;
                                 URL url = WebContextInitializer.class.getResource(filePath);
                                 URLResource urlResource = new URLResource(url, url.openConnection(), filePath) {
                                     @Override
