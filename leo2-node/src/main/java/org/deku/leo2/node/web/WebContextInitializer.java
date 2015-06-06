@@ -104,6 +104,8 @@ public class WebContextInitializer implements ServletContextInitializer {
                             public Resource getResource(String path) throws IOException {
                                 String filePath = STATIC_CONTENT_CLASSPATH + path;
                                 URL url = WebContextInitializer.class.getResource(filePath);
+                                if (url == null)
+                                    return null;
                                 URLResource urlResource = new URLResource(url, url.openConnection(), filePath) {
                                     @Override
                                     public boolean isDirectory() {
