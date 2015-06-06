@@ -74,7 +74,6 @@
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.2" />
             <element id="library" level="project" name="Gradle: com.h2database:h2:1.4.187" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
             <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
@@ -96,8 +95,6 @@
             <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.2" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
@@ -136,7 +133,6 @@
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.4" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.4" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE" />
             <element id="library" level="project" name="Gradle: org.hibernate:hibernate-validator:5.1.3.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.logging:jboss-logging:3.3.0.Final" />
             <element id="library" level="project" name="Gradle: com.fasterxml:classmate:1.0.0" />
@@ -152,16 +148,19 @@
             <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-webmvc:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.8" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.8" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.8" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: org.jooq:jooq:3.6.2" />
-            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.spec.javax.servlet/jboss-servlet-api_3.1_spec/1.0.0.Final/f87e23319ee434bca087c339ce456916a6ade08b/jboss-servlet-api_3.1_spec-1.0.0.Final.jar" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -242,7 +241,6 @@
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.2" />
             <element id="library" level="project" name="Gradle: com.h2database:h2:1.4.187" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
             <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
@@ -264,8 +262,6 @@
             <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.2" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
@@ -304,7 +300,6 @@
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.4" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.4" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE" />
             <element id="library" level="project" name="Gradle: org.hibernate:hibernate-validator:5.1.3.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.logging:jboss-logging:3.3.0.Final" />
             <element id="library" level="project" name="Gradle: com.fasterxml:classmate:1.0.0" />
@@ -320,16 +315,19 @@
             <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-webmvc:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.8" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.8" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.8" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: org.jooq:jooq:3.6.2" />
-            <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.spec.javax.servlet/jboss-servlet-api_3.1_spec/1.0.0.Final/f87e23319ee434bca087c339ce456916a6ade08b/jboss-servlet-api_3.1_spec-1.0.0.Final.jar" />
           </element>
         </element>
         <element id="directory" name="META-INF">
@@ -405,7 +403,6 @@
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.2" />
             <element id="library" level="project" name="Gradle: com.h2database:h2:1.4.187" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
             <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
@@ -427,8 +424,6 @@
             <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.2" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
@@ -467,7 +462,6 @@
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.4" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.4" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE" />
             <element id="library" level="project" name="Gradle: org.hibernate:hibernate-validator:5.1.3.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.logging:jboss-logging:3.3.0.Final" />
             <element id="library" level="project" name="Gradle: com.fasterxml:classmate:1.0.0" />
@@ -483,11 +477,15 @@
             <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-webmvc:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.8" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.8" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.8" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.4.Final" />
@@ -566,7 +564,6 @@
             <element id="library" level="project" name="Gradle: org.springframework.data:spring-data-jpa:1.8.0.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-web:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: javax.inject:javax.inject:1" />
-            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.7.2" />
             <element id="library" level="project" name="Gradle: com.h2database:h2:1.4.187" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-jaxrs:1.5.3-M1" />
             <element id="library" level="project" name="Gradle: org.javassist:javassist:3.19.0-GA" />
@@ -588,8 +585,6 @@
             <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.1.6.RELEASE" />
             <element id="library" level="project" name="Gradle: org.aspectj:aspectjrt:1.8.5" />
             <element id="library" level="project" name="Gradle: org.ow2.asm:asm-all:5.0.1" />
-            <element id="library" level="project" name="Gradle: org.jinq:api:1.7.2" />
-            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.7.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.4.2" />
             <element id="library" level="project" name="Gradle: com.wordnik:swagger-core:1.5.3-M1" />
@@ -628,7 +623,6 @@
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-core:3.6.4" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-codegen:3.6.4" />
             <element id="library" level="project" name="Gradle: com.mysema.querydsl:querydsl-apt:3.6.4" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE" />
             <element id="library" level="project" name="Gradle: org.hibernate:hibernate-validator:5.1.3.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.logging:jboss-logging:3.3.0.Final" />
             <element id="library" level="project" name="Gradle: com.fasterxml:classmate:1.0.0" />
@@ -644,11 +638,15 @@
             <element id="library" level="project" name="Gradle: org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final" />
             <element id="library" level="project" name="Gradle: org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final" />
             <element id="library" level="project" name="Gradle: org.springframework:spring-webmvc:4.1.6.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.jinq:jinq-jpa:1.8" />
+            <element id="library" level="project" name="Gradle: org.jinq:api:1.8" />
+            <element id="library" level="project" name="Gradle: org.jinq:analysis:1.8" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.4.RELEASE" />
+            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE" />
-            <element id="library" level="project" name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-core:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-servlet:1.1.4.Final" />
             <element id="library" level="project" name="Gradle: io.undertow:undertow-websockets-jsr:1.1.4.Final" />
@@ -886,12 +884,180 @@
   <component name="ProjectCodeStyleSettingsManager">
     <option name="PER_PROJECT_SETTINGS">
       <value>
+        <option name="FIELD_NAME_PREFIX" value="m" />
+        <option name="JD_ADD_BLANK_AFTER_DESCRIPTION" value="false" />
+        <option name="JD_DO_NOT_WRAP_ONE_LINE_COMMENTS" value="true" />
+        <option name="JD_PRESERVE_LINE_FEEDS" value="true" />
+        <AndroidXmlCodeStyleSettings>
+          <option name="USE_CUSTOM_SETTINGS" value="true" />
+        </AndroidXmlCodeStyleSettings>
         <XML>
+          <option name="XML_KEEP_LINE_BREAKS" value="false" />
+          <option name="XML_ALIGN_ATTRIBUTES" value="false" />
+          <option name="XML_SPACE_INSIDE_EMPTY_TAG" value="true" />
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
         </XML>
+        <codeStyleSettings language="XML">
+          <option name="FORCE_REARRANGE_MODE" value="1" />
+          <indentOptions>
+            <option name="CONTINUATION_INDENT_SIZE" value="4" />
+          </indentOptions>
+          <arrangement>
+            <rules>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>xmlns:android</NAME>
+                      <XML_NAMESPACE>Namespace:</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>xmlns:.*</NAME>
+                      <XML_NAMESPACE>Namespace:</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                  <order>BY_NAME</order>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>.*:id</NAME>
+                      <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>.*:name</NAME>
+                      <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>name</NAME>
+                      <XML_NAMESPACE>^$</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>style</NAME>
+                      <XML_NAMESPACE>^$</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>.*</NAME>
+                      <XML_NAMESPACE>^$</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                  <order>BY_NAME</order>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>.*:layout_width</NAME>
+                      <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>.*:layout_height</NAME>
+                      <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>.*:layout_.*</NAME>
+                      <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                  <order>BY_NAME</order>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>.*:width</NAME>
+                      <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                  <order>BY_NAME</order>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>.*:height</NAME>
+                      <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                  <order>BY_NAME</order>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>.*</NAME>
+                      <XML_NAMESPACE>http://schemas.android.com/apk/res/android</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                  <order>BY_NAME</order>
+                </rule>
+              </section>
+              <section>
+                <rule>
+                  <match>
+                    <AND>
+                      <NAME>.*</NAME>
+                      <XML_NAMESPACE>.*</XML_NAMESPACE>
+                    </AND>
+                  </match>
+                  <order>BY_NAME</order>
+                </rule>
+              </section>
+            </rules>
+          </arrangement>
+        </codeStyleSettings>
       </value>
     </option>
-    <option name="PREFERRED_PROJECT_CODE_STYLE" value="Default (1)" />
+    <option name="USE_PER_PROJECT_SETTINGS" value="true" />
+    <option name="PREFERRED_PROJECT_CODE_STYLE" value="masc" />
   </component>
   <component name="ProjectModuleManager">
     <modules>
@@ -1682,40 +1848,40 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.1/9700be0d0a331691654a8e901943c9a74e33c5fc/httpcore-4.4.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.apache.tomcat.embed:tomcat-embed-core:8.0.20">
+    <library name="Gradle: org.apache.tomcat.embed:tomcat-embed-core:8.0.23">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-core/8.0.20/5810725255089f4d0b7ab19ac70b8c4a9cd8d4a3/tomcat-embed-core-8.0.20.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-core/8.0.23/79dc3aea4f447392ab0bdc1359c31a931cd307d6/tomcat-embed-core-8.0.23.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-core/8.0.20/c353a390a62f801ce0d031cefdcf513634940087/tomcat-embed-core-8.0.20-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-core/8.0.23/736a24e68147530022e0a4b2e63005ab8d3eeee6/tomcat-embed-core-8.0.23-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.apache.tomcat.embed:tomcat-embed-el:8.0.20">
+    <library name="Gradle: org.apache.tomcat.embed:tomcat-embed-el:8.0.23">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-el/8.0.20/8050b326d0ee31ba91b06e420b57efe77a6f0516/tomcat-embed-el-8.0.20.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-el/8.0.23/5a1ca084156665968232112b6606c0b259213aab/tomcat-embed-el-8.0.23.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-el/8.0.20/6f5945c68a72ca85f513b12f17d86601f1da6ae9/tomcat-embed-el-8.0.20-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-el/8.0.23/962d3fa10722ae8623f03badb0df31ccb882df4/tomcat-embed-el-8.0.23-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.20">
+    <library name="Gradle: org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.23">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-logging-juli/8.0.20/234ee053b3dbd4bca2fc221a99d4f7d292d33e0b/tomcat-embed-logging-juli-8.0.20.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-logging-juli/8.0.23/2ec89b09cb0eb133a03d9f513474f99ff667b93b/tomcat-embed-logging-juli-8.0.23.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-logging-juli/8.0.20/898c70a96db07261f7f3c3003264c900d8f080d5/tomcat-embed-logging-juli-8.0.20-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-logging-juli/8.0.23/c5c7a9173c14f989d30aecdb76c842d8396ec4d7/tomcat-embed-logging-juli-8.0.23-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.apache.tomcat.embed:tomcat-embed-websocket:8.0.20">
+    <library name="Gradle: org.apache.tomcat.embed:tomcat-embed-websocket:8.0.23">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-websocket/8.0.20/b4914491d1baa90958e5c951bec7140e65874f3/tomcat-embed-websocket-8.0.20.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-websocket/8.0.23/839167a26dec5dcef85fb19e2e429878b7215293/tomcat-embed-websocket-8.0.23.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-websocket/8.0.20/fa795768128e0fb4b978bcce065d85b263e199e9/tomcat-embed-websocket-8.0.20-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.tomcat.embed/tomcat-embed-websocket/8.0.23/76ba4fade60847daf7a9490ffd9b44b57f1e92cc/tomcat-embed-websocket-8.0.23-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.aspectj:aspectjrt:1.8.5">
@@ -2204,31 +2370,31 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jboss.xnio/xnio-nio/3.3.0.Final/c6c00f547b77c990b1a854bfc4e0a474a71abc21/xnio-nio-3.3.0.Final-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:analysis:1.7.2">
+    <library name="Gradle: org.jinq:analysis:1.8">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.7.2/c9b858065b4baa5e1d9f56534f4a9aba80a15917/analysis-1.7.2.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.8/6baeda8e11b836d1b7854d50243e90b9a53ff534/analysis-1.8.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.7.2/a794b14428c7a5ef2c8f5b7ad0bf229c3dab0fb2/analysis-1.7.2-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/analysis/1.8/97244c4e2fe4fd1942e6ead7cf142a48ae3b4bc3/analysis-1.8-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:api:1.7.2">
+    <library name="Gradle: org.jinq:api:1.8">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.7.2/f275e412d856f71056ddc21ec9f0569e4602429b/api-1.7.2.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.8/da6ae3d8cfa6ce881b06b9cd42cf7904489262c/api-1.8.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.7.2/527a6e77ddfe1b2c054062918c6ccec96927bc0a/api-1.7.2-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/api/1.8/bb82c1d3cf418eab358a29dbde7c140941fbfaf7/api-1.8-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.jinq:jinq-jpa:1.7.2">
+    <library name="Gradle: org.jinq:jinq-jpa:1.8">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7.2/be9749c5b41f51b31344659191fa39e32db97817/jinq-jpa-1.7.2.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.8/875befea9842a3471528e4eeb10c68d13a21c912/jinq-jpa-1.8.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.7.2/b81f2976f1e00da2029bfa990f13706d4c5f5ec1/jinq-jpa-1.7.2-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jinq/jinq-jpa/1.8/df94c36229c26ee6d6a795a17dc23b48da72fc73/jinq-jpa-1.8-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.jooq:jooq:3.6.2">
@@ -2339,13 +2505,13 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-test/1.2.4.RELEASE/fef6b45cfa797d1cad1993a41a58b5dc44f378fb/spring-boot-starter-test-1.2.4.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: org.springframework.boot:spring-boot-starter-tomcat:1.2.3.RELEASE">
+    <library name="Gradle: org.springframework.boot:spring-boot-starter-tomcat:1.2.4.RELEASE">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-tomcat/1.2.3.RELEASE/32de443f4e43ceee62c3e1e855fee076fec546b3/spring-boot-starter-tomcat-1.2.3.RELEASE.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-tomcat/1.2.4.RELEASE/5b3366a1e3af771d27b7fb22b5ef8871a7bcf7f0/spring-boot-starter-tomcat-1.2.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-tomcat/1.2.3.RELEASE/e632740def8a25776a095d4cf1e2201be63d91ec/spring-boot-starter-tomcat-1.2.3.RELEASE-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-tomcat/1.2.4.RELEASE/537bcdd5d7d9ebefa345623bfb03a6df3ad1a468/spring-boot-starter-tomcat-1.2.4.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.springframework.boot:spring-boot-starter-undertow:1.2.4.RELEASE">
@@ -2355,13 +2521,13 @@
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.3.RELEASE">
+    <library name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.4.RELEASE">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-web/1.2.3.RELEASE/d4a2ea5c2dfa465054d9b2675ff7794d8d97f311/spring-boot-starter-web-1.2.3.RELEASE.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-web/1.2.4.RELEASE/adeeafac27347c0767ef5753eced12877ab4457/spring-boot-starter-web-1.2.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-web/1.2.3.RELEASE/f99ddef9928e000d34eadde6cc0084464708f02e/spring-boot-starter-web-1.2.3.RELEASE-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-starter-web/1.2.4.RELEASE/3c1bf754f3ebcb82150f4cf4a43bb505ff1bee26/spring-boot-starter-web-1.2.4.RELEASE-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: org.springframework.boot:spring-boot-starter:1.2.4.RELEASE">
