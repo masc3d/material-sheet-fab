@@ -25,6 +25,7 @@ import javax.servlet.ServletRegistration;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
 
 /**
  * Created by masc on 27.05.15.
@@ -32,6 +33,10 @@ import java.net.URL;
 @Named
 public class WebContextInitializer implements ServletContextInitializer {
     Log mLog = LogFactory.getLog(WebContextInitializer.class.getName());
+
+    private static final String STATIC_CONTENT_CLASSPATH = "/webapp";
+    private static final String RESTEASY_MAPPING_PATH = "/rs/api";
+    private static final String[] WELCOME_FILES = new String[] { "index.html" };
 
     @Inject
     ResteasyDeployment mResteasyDeployment;
@@ -45,8 +50,6 @@ public class WebContextInitializer implements ServletContextInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         mLog.info("Leo2 webcontext startup");
-
-        String restEasyPath = "/rs/api";
 
         // Spring dispatcher servlet (variant 1)
         // requires the following spring boot autoconfigurations:
@@ -68,10 +71,10 @@ public class WebContextInitializer implements ServletContextInitializer {
         servletContext.setAttribute(Registry.class.getName(), mResteasyDeployment.getRegistry());
 
         ServletRegistration.Dynamic sr = servletContext.addServlet("rs", HttpServletDispatcher.class);
-        sr.setInitParameter("resteasy.servlet.mapping.prefix", restEasyPath);
+        sr.setInitParameter("resteasy.servlet.mapping.prefix", RESTEASY_MAPPING_PATH);
         sr.setInitParameter("javax.ws.rs.Application", "org.deku.leo2.node.rest.WebserviceApplication");
         sr.setLoadOnStartup(1);
-        sr.addMapping(restEasyPath + "/*");
+        sr.addMapping(new File(RESTEASY_MAPPING_PATH, "*").toString());
     }
 
     @Bean
@@ -87,34 +90,31 @@ public class WebContextInitializer implements ServletContextInitializer {
                         deploymentInfo.setResourceManager(new ResourceManager() {
                             @Override
                             public Resource getResource(String path) throws IOException {
-                                String basePath = "/webapp";
-                                String filePath = new File(basePath, path).toString();
+                                String filePath = new File(STATIC_CONTENT_CLASSPATH, path).toString();
                                 URL url = WebContextInitializer.class.getResource(filePath);
-                                URLResource urlResource = new URLResource(url, url.openConnection(), filePath);
+                                URLResource urlResource = new URLResource(url, url.openConnection(), filePath) {
+                                    @Override
+                                    public boolean isDirectory() {
+                                        return (this.getContentLength() == 0);
+                                    }
+                                };
                                 return urlResource;
                             }
 
                             @Override
-                            public boolean isResourceChangeListenerSupported() {
-                                return false;
-                            }
+                            public boolean isResourceChangeListenerSupported() { return false; }
 
                             @Override
-                            public void registerResourceChangeListener(ResourceChangeListener listener) {
-
-                            }
+                            public void registerResourceChangeListener(ResourceChangeListener listener) { }
 
                             @Override
-                            public void removeResourceChangeListener(ResourceChangeListener listener) {
-
-                            }
+                            public void removeResourceChangeListener(ResourceChangeListener listener) { }
 
                             @Override
-                            public void close() throws IOException {
-
-                            }
+                            public void close() throws IOException { }
                         });
-                        deploymentInfo.addWelcomePage("index.html");
+                        for (String wp : WELCOME_FILES)
+                            deploymentInfo.addWelcomePage(wp);
                     }
                 }
         );
