@@ -116,7 +116,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc1 (*)
-+--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
++--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.1-RC1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
 |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    +--- javax.validation:validation-api:1.1.0.Final
@@ -367,7 +367,7 @@ default - Configuration for default artifacts.
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc1 (*)
-+--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
++--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.1-RC1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
 |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    +--- javax.validation:validation-api:1.1.0.Final
@@ -630,7 +630,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc1 (*)
-+--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
++--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.1-RC1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
 |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    +--- javax.validation:validation-api:1.1.0.Final
@@ -884,7 +884,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc1 (*)
-+--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
++--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.1-RC1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
 |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    +--- javax.validation:validation-api:1.1.0.Final
@@ -1140,7 +1140,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc1
 |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc1 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc1 (*)
-+--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.0
++--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.1-RC1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.0
 |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    +--- javax.validation:validation-api:1.1.0.Final
