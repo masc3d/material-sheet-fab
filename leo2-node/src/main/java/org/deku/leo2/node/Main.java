@@ -2,12 +2,13 @@ package org.deku.leo2.node;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deku.leo2.messaging.activemq.BrokerImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.boot.resteasy.autoconfigure.ResteasyAutoConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -83,6 +84,9 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
     @Override
     public final void onApplicationEvent(ApplicationEvent event) {
         mLog.info(event.toString());
+        if (event instanceof EmbeddedServletContainerInitializedEvent) {
+            // Post spring initialization
+        }
     }
 
     @Override

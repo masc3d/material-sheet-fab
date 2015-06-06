@@ -7,6 +7,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
 import sx.LazyInstance;
+import sx.util.EventDelegate;
+import sx.util.EventDispatcher;
+import sx.util.EventListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,16 +28,39 @@ public class BrokerImpl implements Broker {
         public Integer httpPort;
     }
 
+    //region Singleton
     private static LazyInstance<BrokerImpl> mInstance = new LazyInstance<>(() -> new BrokerImpl());
+
     /**
      * Singleton accessor
      */
     public static BrokerImpl getInstance() {
         return mInstance.get();
     }
+    //endregion
 
-    /** Logger */
+    //region Events
+
+    /**
+     * Broker event listener interface
+     */
+    public interface Listener extends EventListener {
+        void onStart();
+    }
+
+    /**
+     * Broker event dispatcher/delegate
+     */
+    private EventDispatcher<Listener> mListenerEventDispatcher = EventDispatcher.createThreadSafe();
+
+    public EventDelegate<Listener> getListenerEventDispatcher() {
+        return mListenerEventDispatcher;
+    }
+    //endregion
+
+    /** Log */
     private Log mLog = LogFactory.getLog(BrokerImpl.class);
+
     /** Native broker service */
     private BrokerService mBrokerService;
 
@@ -45,9 +71,7 @@ public class BrokerImpl implements Broker {
     List<PeerBroker> mPeerBrokers = new ArrayList<>();
     List<TransportServer> mExternalTransportServers = new ArrayList<>();
 
-    /**
-     * c'tor
-     */
+    /** c'tor */
     private BrokerImpl() {
     }
 
@@ -83,6 +107,8 @@ public class BrokerImpl implements Broker {
             mBrokerService.addConnector(ts);
         }
         mBrokerService.start();
+
+        mListenerEventDispatcher.emit(Listener::onStart);
     }
 
     /**
@@ -120,7 +146,6 @@ public class BrokerImpl implements Broker {
     public File getDataDirectory() {
         return mDataDirectory;
     }
-
 
 
     @Override

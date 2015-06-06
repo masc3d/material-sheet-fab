@@ -4,6 +4,7 @@ import io.undertow.server.handlers.resource.*;
 import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deku.leo2.messaging.activemq.HttpExternalTunnelServlet;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
@@ -19,11 +20,14 @@ import org.springframework.context.annotation.Bean;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 
@@ -70,11 +74,19 @@ public class WebContextInitializer implements ServletContextInitializer {
         servletContext.setAttribute(Dispatcher.class.getName(), mResteasyDeployment.getDispatcher());
         servletContext.setAttribute(Registry.class.getName(), mResteasyDeployment.getRegistry());
 
-        ServletRegistration.Dynamic sr = servletContext.addServlet("rs", HttpServletDispatcher.class);
+        ServletRegistration.Dynamic sr = servletContext.addServlet(HttpServletDispatcher.class.getName(), HttpServletDispatcher.class);
         sr.setInitParameter("resteasy.servlet.mapping.prefix", RESTEASY_MAPPING_PATH);
         sr.setInitParameter("javax.ws.rs.Application", "org.deku.leo2.node.rest.WebserviceApplication");
         sr.setLoadOnStartup(1);
         sr.addMapping(RESTEASY_MAPPING_PATH + "/*");
+
+        try {
+            sr = servletContext.addServlet(HttpExternalTunnelServlet.class.getName(), new HttpExternalTunnelServlet(new URI("http://localhost:8080/jms")));
+            sr.setLoadOnStartup(1);
+            sr.addMapping("/jms/*");
+        } catch (URISyntaxException e) {
+            throw new ServletException(e);
+        }
     }
 
     @Bean
@@ -95,7 +107,10 @@ public class WebContextInitializer implements ServletContextInitializer {
                                 URLResource urlResource = new URLResource(url, url.openConnection(), filePath) {
                                     @Override
                                     public boolean isDirectory() {
-                                        return (this.getContentLength() == 0);
+                                        if (this.getFile() != null)
+                                            return super.isDirectory();
+                                        else
+                                            return (this.getContentLength() == 0);
                                     }
                                 };
                                 return urlResource;
