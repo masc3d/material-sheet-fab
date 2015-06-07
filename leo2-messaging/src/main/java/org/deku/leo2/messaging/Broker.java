@@ -7,12 +7,25 @@ import java.io.File;
 /**
  * Created by masc on 01.06.15.
  */
-public interface Broker extends Disposable {
-    void start() throws Exception;
+public abstract class Broker implements Disposable {
+    public final static String LEO2_USERNAME = "leo2";
+    public final static String LEO2_PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC";
 
-    void stop() throws Exception;
+    /**
+     * Set broker data directory
+     * @param file Data directory
+     */
+    public abstract void setDataDirectory(File file);
 
-    void addPeerBroker(String hostname, Integer httpPort);
+    /**
+     * Add peer (network transport) broker
+     * @param hostname
+     * @param httpPort
+     */
+    public abstract void addPeerBroker(String hostname, Integer httpPort);
 
-    void setDataDirectory(File file);
+    /** Start broker */
+    public abstract void start() throws Exception;
+    /** Stop broker */
+    public abstract void stop() throws Exception;
 }

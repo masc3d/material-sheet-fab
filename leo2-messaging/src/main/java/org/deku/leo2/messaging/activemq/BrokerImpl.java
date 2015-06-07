@@ -1,10 +1,18 @@
 package org.deku.leo2.messaging.activemq;
 
+import com.google.common.collect.Lists;
+import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.filter.DestinationMap;
+import org.apache.activemq.filter.DestinationMapEntry;
 import org.apache.activemq.network.NetworkConnector;
+import org.apache.activemq.security.*;
 import org.apache.activemq.transport.TransportServer;
+import org.apache.activemq.transport.discovery.DiscoveryTransport;
+import org.apache.activemq.transport.discovery.http.HTTPDiscoveryAgent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.auth.AUTH;
 import org.deku.leo2.messaging.Broker;
 import sx.LazyInstance;
 import sx.util.EventDelegate;
@@ -12,6 +20,7 @@ import sx.util.EventDispatcher;
 import sx.util.EventListener;
 
 import java.io.File;
+import java.nio.file.attribute.GroupPrincipal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +28,7 @@ import java.util.List;
  * Singleton instance for leo2 embedded brokers
  * Created by masc on 16.04.15.
  */
-public class BrokerImpl implements Broker {
+public class BrokerImpl extends Broker {
     /**
      * Peer broker
      */
@@ -91,13 +100,14 @@ public class BrokerImpl implements Broker {
     public synchronized void start() throws Exception {
         this.stop();
 
+        // Broker initialization
         mBrokerService = new BrokerService();
         mBrokerService.setDataDirectoryFile(mDataDirectory);
 
-        // All embedded brokers will listen on openwire and http
-        mBrokerService.addConnector(Util.createUri("localhost", false));
-        //mBrokerService.addConnector(Util.createUri("localhost", 8080, false));
+        // Statically defined transport connectors for clients to connect to
+        mBrokerService.addConnector(Util.createUri("0.0.0.0", false));
 
+        // Peer/network connectors for brokers to inter-connect
         for (PeerBroker pb : mPeerBrokers) {
             NetworkConnector nc = mBrokerService.addNetworkConnector(Util.createUri(pb.hostname, pb.httpPort, true));
             nc.setDuplex(true);
@@ -106,6 +116,67 @@ public class BrokerImpl implements Broker {
         for (TransportServer ts : mExternalTransportServers) {
             mBrokerService.addConnector(ts);
         }
+
+        // Broker plugins
+        List<BrokerPlugin> brokerPlugins = new ArrayList<>();;
+
+        // Authentication
+        SimpleAuthenticationPlugin pAuth = new SimpleAuthenticationPlugin();
+
+        // Users
+        List<AuthenticationUser> users = new ArrayList<>();
+        String GROUP_LEO = "leo2";
+        users.add(new AuthenticationUser(LEO2_USERNAME, LEO2_PASSWORD, GROUP_LEO));
+        pAuth.setUsers(users);
+
+        // Authorizations
+        List<DestinationMapEntry> authzEntries = new ArrayList<>();
+
+        AuthorizationEntry pAuthzEntry = new AuthorizationEntry();
+
+        // Leo group, all access
+        pAuthzEntry = new AuthorizationEntry();
+        pAuthzEntry.setTopic(">");
+        pAuthzEntry.setAdmin(GROUP_LEO);
+        pAuthzEntry.setRead(GROUP_LEO);
+        pAuthzEntry.setWrite(GROUP_LEO);
+        authzEntries.add(pAuthzEntry);
+
+        pAuthzEntry = new AuthorizationEntry();
+        pAuthzEntry.setQueue(">");
+        pAuthzEntry.setAdmin(GROUP_LEO);
+        pAuthzEntry.setRead(GROUP_LEO);
+        pAuthzEntry.setWrite(GROUP_LEO);
+        authzEntries.add(pAuthzEntry);
+
+        // Leo group, all access to temp destinations
+        pAuthzEntry = new TempDestinationAuthorizationEntry();
+        pAuthzEntry.setTopic(">");
+        pAuthzEntry.setAdmin(GROUP_LEO);
+        pAuthzEntry.setRead(GROUP_LEO);
+        pAuthzEntry.setWrite(GROUP_LEO);
+        authzEntries.add(pAuthzEntry);
+
+        pAuthzEntry = new TempDestinationAuthorizationEntry();
+        pAuthzEntry.setQueue(">");
+        pAuthzEntry.setAdmin(GROUP_LEO);
+        pAuthzEntry.setRead(GROUP_LEO);
+        pAuthzEntry.setWrite(GROUP_LEO);
+        authzEntries.add(pAuthzEntry);
+
+        // Authorization map
+        DefaultAuthorizationMap authzMap = new DefaultAuthorizationMap();
+        authzMap.setAuthorizationEntries(authzEntries);
+
+        // Authorization plugin
+        AuthorizationPlugin pAuthz = new AuthorizationPlugin();
+        pAuthz.setMap(authzMap);
+
+        // Register plugins
+        brokerPlugins.add(pAuth);
+        brokerPlugins.add(pAuthz);
+        mBrokerService.setPlugins(brokerPlugins.toArray(new BrokerPlugin[0]));
+
         mBrokerService.start();
 
         mListenerEventDispatcher.emit(Listener::onStart);

@@ -46,6 +46,8 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- commons-pool:commons-pool:1.6
+|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1
+|    |    \--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1
 |    |    +--- org.apache.activemq:activemq-stomp:5.11.1
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
@@ -67,6 +69,28 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
+|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
+|    |    |    +--- aopalliance:aopalliance:1.0
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
+|    |    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE
+|    |    |    |         \--- commons-logging:commons-logging:1.2
+|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
+|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-messaging:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
+|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- project :sx-common (*)
@@ -141,10 +165,8 @@ compile - Compile classpath for source set 'main'.
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 +--- org.springframework.data:spring-data-jpa:1.8.0.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.10.0.RELEASE
-|    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    |    \--- commons-logging:commons-logging:1.2
-|    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12
 |    |         \--- org.slf4j:slf4j-api:1.7.12
@@ -154,19 +176,9 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.springframework:spring-jdbc:4.1.6.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
-|    |    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE (*)
-|    +--- org.springframework:spring-context:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
-|    |    |    +--- aopalliance:aopalliance:1.0
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
-|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-context:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-aop:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -297,6 +309,8 @@ default - Configuration for default artifacts.
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- commons-pool:commons-pool:1.6
+|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1
+|    |    \--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1
 |    |    +--- org.apache.activemq:activemq-stomp:5.11.1
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
@@ -318,6 +332,28 @@ default - Configuration for default artifacts.
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
+|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
+|    |    |    +--- aopalliance:aopalliance:1.0
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
+|    |    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE
+|    |    |    |         \--- commons-logging:commons-logging:1.2
+|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
+|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-messaging:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
+|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- project :sx-common (*)
@@ -392,10 +428,8 @@ default - Configuration for default artifacts.
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 +--- org.springframework.data:spring-data-jpa:1.8.0.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.10.0.RELEASE
-|    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    |    \--- commons-logging:commons-logging:1.2
-|    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12
 |    |         \--- org.slf4j:slf4j-api:1.7.12
@@ -405,19 +439,9 @@ default - Configuration for default artifacts.
 |    |    +--- org.springframework:spring-jdbc:4.1.6.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
-|    |    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE (*)
-|    +--- org.springframework:spring-context:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
-|    |    |    +--- aopalliance:aopalliance:1.0
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
-|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-context:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-aop:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -560,6 +584,8 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- commons-pool:commons-pool:1.6
+|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1
+|    |    \--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1
 |    |    +--- org.apache.activemq:activemq-stomp:5.11.1
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
@@ -581,6 +607,28 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
+|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
+|    |    |    +--- aopalliance:aopalliance:1.0
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
+|    |    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE
+|    |    |    |         \--- commons-logging:commons-logging:1.2
+|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
+|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-messaging:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
+|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- project :sx-common (*)
@@ -655,10 +703,8 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 +--- org.springframework.data:spring-data-jpa:1.8.0.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.10.0.RELEASE
-|    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    |    \--- commons-logging:commons-logging:1.2
-|    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12
 |    |         \--- org.slf4j:slf4j-api:1.7.12
@@ -668,19 +714,9 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.springframework:spring-jdbc:4.1.6.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
-|    |    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE (*)
-|    +--- org.springframework:spring-context:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
-|    |    |    +--- aopalliance:aopalliance:1.0
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
-|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-context:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-aop:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -814,6 +850,8 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- commons-pool:commons-pool:1.6
+|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1
+|    |    \--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1
 |    |    +--- org.apache.activemq:activemq-stomp:5.11.1
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
@@ -835,6 +873,28 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
+|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
+|    |    |    +--- aopalliance:aopalliance:1.0
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
+|    |    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE
+|    |    |    |         \--- commons-logging:commons-logging:1.2
+|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
+|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-messaging:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
+|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- project :sx-common (*)
@@ -909,10 +969,8 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 +--- org.springframework.data:spring-data-jpa:1.8.0.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.10.0.RELEASE
-|    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    |    \--- commons-logging:commons-logging:1.2
-|    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12
 |    |         \--- org.slf4j:slf4j-api:1.7.12
@@ -922,19 +980,9 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.springframework:spring-jdbc:4.1.6.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
-|    |    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE (*)
-|    +--- org.springframework:spring-context:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
-|    |    |    +--- aopalliance:aopalliance:1.0
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
-|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-context:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-aop:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -1070,6 +1118,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- commons-pool:commons-pool:1.6
+|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1
+|    |    \--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1
 |    |    +--- org.apache.activemq:activemq-stomp:5.11.1
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
@@ -1091,6 +1141,28 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
+|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
+|    |    |    +--- aopalliance:aopalliance:1.0
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
+|    |    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE
+|    |    |    |         \--- commons-logging:commons-logging:1.2
+|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
+|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-messaging:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
+|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
+|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    \--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- project :sx-common (*)
@@ -1165,10 +1237,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 +--- org.springframework.data:spring-data-jpa:1.8.0.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.10.0.RELEASE
-|    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    |    \--- commons-logging:commons-logging:1.2
-|    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12
 |    |         \--- org.slf4j:slf4j-api:1.7.12
@@ -1178,19 +1248,9 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.springframework:spring-jdbc:4.1.6.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
-|    |    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE (*)
-|    +--- org.springframework:spring-context:4.0.9.RELEASE -> 4.1.6.RELEASE
-|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
-|    |    |    +--- aopalliance:aopalliance:1.0
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
-|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-context:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-aop:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)

@@ -15,7 +15,7 @@ class Util {
      */
     public static URI createUri(String hostname, Integer httpPort, boolean failover) {
         String scheme;
-        String path = (httpPort != null) ? "/jms" : "";
+        String path = (httpPort != null) ? "/leo2/jms" : "";
 
         int port;
         if (httpPort != null) {
