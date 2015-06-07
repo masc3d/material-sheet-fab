@@ -1,6 +1,16 @@
 package org.deku.leo2.messaging.log;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.deku.leo2.messaging.Context;
+import org.deku.leo2.messaging.log.v1.LogMessage;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import sx.Disposable;
 import sx.jms.SimpleListener;
+import sx.jms.SpringJmsListener;
 
 import javax.jms.*;
 import java.util.Arrays;
@@ -10,24 +20,22 @@ import java.util.List;
  * Leo2 log message listener
  * Created by masc on 16.04.15.
  */
-public class LogListener extends SimpleListener {
-    public LogListener(ConnectionFactory factory) {
-        super(factory);
+public class LogListener extends SpringJmsListener {
+    private Context mContext;
+
+    public LogListener(Context context) {
+        super(context.getConnectionFactory());
+        mContext = context;
     }
 
     @Override
-    protected Session createSession(Connection connection) throws JMSException {
-        return connection.createSession(true, Session.SESSION_TRANSACTED);
-    }
-
-    @Override
-    protected List<Destination> createDestinations(Session session) throws JMSException {
-        return Arrays.asList(session.createQueue(
-                        org.deku.leo2.messaging.log.v1.LogMessage.LOG_QUEUE_NAME));
+    protected Destination createDestination() {
+        return mContext.createQueue(LogMessage.LOG_QUEUE_NAME);
     }
 
     @Override
     public void onMessage(Message message) {
+        this.getLog().info("message");
         try {
             if (message instanceof ObjectMessage) {
                 ObjectMessage om = (ObjectMessage) message;
@@ -43,4 +51,5 @@ public class LogListener extends SimpleListener {
             throw new RuntimeException(e);
         }
     }
+
 }

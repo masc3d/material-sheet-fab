@@ -33,7 +33,7 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet
      */
     public HttpExternalTunnelServlet(URI publicUri) {
         mPublicUri = publicUri;
-        BrokerImpl.getInstance().getListenerEventDispatcher().add(mBrokerEventListener);
+        ContextImpl.instance().getBroker().getListenerEventDispatcher().add(mBrokerEventListener);
     }
 
     /** Broker event listener */
@@ -69,8 +69,8 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet
                     mPublicUri, getServletContext());
 
             // Broker should not be started at this time
-            BrokerImpl.getInstance().addConnector(transportConnector);
-            BrokerImpl.getInstance().start();
+            ContextImpl.instance().getBroker().addConnector(transportConnector);
+            ContextImpl.instance().getBroker().start();
         } catch (Exception e) {
             throw new ServletException(e);
         }

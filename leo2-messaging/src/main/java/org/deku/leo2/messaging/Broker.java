@@ -8,8 +8,9 @@ import java.io.File;
  * Created by masc on 01.06.15.
  */
 public abstract class Broker implements Disposable {
-    public final static String LEO2_USERNAME = "leo2";
-    public final static String LEO2_PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC";
+    public final static String NAME = "broker";
+    public final static String USERNAME = "leo2";
+    public final static String PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC";
 
     /**
      * Set broker data directory

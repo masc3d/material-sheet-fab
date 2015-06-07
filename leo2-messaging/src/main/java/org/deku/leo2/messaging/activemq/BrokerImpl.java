@@ -1,31 +1,24 @@
 package org.deku.leo2.messaging.activemq;
 
-import com.google.common.collect.Lists;
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.filter.DestinationMap;
 import org.apache.activemq.filter.DestinationMapEntry;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.security.*;
 import org.apache.activemq.transport.TransportServer;
-import org.apache.activemq.transport.discovery.DiscoveryTransport;
-import org.apache.activemq.transport.discovery.http.HTTPDiscoveryAgent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.auth.AUTH;
 import org.deku.leo2.messaging.Broker;
-import sx.LazyInstance;
 import sx.util.EventDelegate;
 import sx.util.EventDispatcher;
 import sx.util.EventListener;
 
 import java.io.File;
-import java.nio.file.attribute.GroupPrincipal;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Singleton instance for leo2 embedded brokers
+ * Broker implementation for activemq
  * Created by masc on 16.04.15.
  */
 public class BrokerImpl extends Broker {
@@ -37,19 +30,7 @@ public class BrokerImpl extends Broker {
         public Integer httpPort;
     }
 
-    //region Singleton
-    private static LazyInstance<BrokerImpl> mInstance = new LazyInstance<>(() -> new BrokerImpl());
-
-    /**
-     * Singleton accessor
-     */
-    public static BrokerImpl getInstance() {
-        return mInstance.get();
-    }
-    //endregion
-
     //region Events
-
     /**
      * Broker event listener interface
      */
@@ -81,7 +62,7 @@ public class BrokerImpl extends Broker {
     List<TransportServer> mExternalTransportServers = new ArrayList<>();
 
     /** c'tor */
-    private BrokerImpl() {
+    public BrokerImpl() {
     }
 
     /**
@@ -106,6 +87,9 @@ public class BrokerImpl extends Broker {
 
         // Statically defined transport connectors for clients to connect to
         mBrokerService.addConnector(Util.createUri("0.0.0.0", false));
+        // Create VM broker for direct (in memory/vm) connections.
+        // The Broker name has to match for clients to connect
+        mBrokerService.addConnector("vm://" + NAME);
 
         // Peer/network connectors for brokers to inter-connect
         for (PeerBroker pb : mPeerBrokers) {
@@ -126,7 +110,7 @@ public class BrokerImpl extends Broker {
         // Users
         List<AuthenticationUser> users = new ArrayList<>();
         String GROUP_LEO = "leo2";
-        users.add(new AuthenticationUser(LEO2_USERNAME, LEO2_PASSWORD, GROUP_LEO));
+        users.add(new AuthenticationUser(USERNAME, PASSWORD, GROUP_LEO));
         pAuth.setUsers(users);
 
         // Authorizations
@@ -177,6 +161,7 @@ public class BrokerImpl extends Broker {
         brokerPlugins.add(pAuthz);
         mBrokerService.setPlugins(brokerPlugins.toArray(new BrokerPlugin[0]));
 
+        mBrokerService.setBrokerName(Broker.NAME);
         mBrokerService.start();
 
         mListenerEventDispatcher.emit(Listener::onStart);
@@ -217,7 +202,6 @@ public class BrokerImpl extends Broker {
     public File getDataDirectory() {
         return mDataDirectory;
     }
-
 
     @Override
     public void dispose() {

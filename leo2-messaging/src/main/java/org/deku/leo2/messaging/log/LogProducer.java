@@ -1,6 +1,9 @@
 package org.deku.leo2.messaging.log;
 
-import sx.jms.Producer;
+import org.deku.leo2.messaging.Context;
+import org.deku.leo2.messaging.log.v1.LogMessage;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 import javax.jms.*;
 import java.util.logging.Level;
@@ -10,29 +13,30 @@ import java.util.logging.LogRecord;
  * Leo2 log message producer
  * Created by masc on 16.04.15.
  */
-public class LogProducer extends Producer {
-    Session mSession;
+public class LogProducer /*extends Producer*/ {
     Queue mQueue;
-    MessageProducer mProducer;
+    Context mContext;
+    JmsTemplate mTemplate;
 
-    public LogProducer(ConnectionFactory connectionFactory) {
-        super(connectionFactory);
-    }
+    public LogProducer(Context context) {
+        mContext = context;
 
-    @Override
-    protected Session createSession() throws JMSException {
-        return this.getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
-    }
+        //super(connectionFactory);
+        mTemplate = new JmsTemplate(mContext.getConnectionFactory());
+        mTemplate.setSessionAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
+        mTemplate.setSessionTransacted(false);
 
-    @Override
-    protected Destination createDestination() throws JMSException {
-        return this.getSession().createQueue(org.deku.leo2.messaging.log.v1.LogMessage.LOG_QUEUE_NAME);
+        mQueue = mContext.createQueue(LogMessage.LOG_QUEUE_NAME);
     }
 
     public synchronized void send(String message) throws JMSException {
-        ObjectMessage om = this.getSession().createObjectMessage();
-        om.setObject(new org.deku.leo2.messaging.log.v1.LogMessage(new LogRecord(Level.INFO, message)));
-
-        this.getProducer().send(om);
+        mTemplate.send(mQueue, new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                ObjectMessage om = session.createObjectMessage();
+                om.setObject(new org.deku.leo2.messaging.log.v1.LogMessage(new LogRecord(Level.INFO, message)));
+                return om;
+            }
+        });
     }
 }
