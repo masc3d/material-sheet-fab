@@ -106,18 +106,18 @@ compile - Compile classpath for source set 'main'.
 |    \--- org.slf4j:slf4j-api:1.7.12
 +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 +--- javax.servlet:javax.servlet-api:3.1.0
-+--- org.jboss.resteasy:resteasy-jaxrs:3.0.+ -> 3.0.11.Final
-|    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
++--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.+ -> 3.0.9.Final
+|    +--- org.jboss.resteasy:jaxrs-api:3.0.9.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1
 |    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1
 |    \--- net.jcip:jcip-annotations:1.0
-+--- org.jboss.resteasy:resteasy-spring:3.0.+ -> 3.0.11.Final
-|    +--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final (*)
-|    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
-|    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final
-|    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final
++--- org.jboss.resteasy:resteasy-spring:3.0.9.+ -> 3.0.9.Final
+|    +--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final (*)
+|    +--- org.jboss.resteasy:jaxrs-api:3.0.9.Final
+|    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.9.Final
+|    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.9.Final
 |    |    |    \--- com.sun.xml.bind:jaxb-impl:2.2.7
 |    |    |         +--- com.sun.xml.bind:jaxb-core:2.2.7
 |    |    |         |    +--- javax.xml.bind:jaxb-api:2.2.7
@@ -127,7 +127,7 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- org.codehaus.jettison:jettison:1.3.2
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    \--- javax.activation:activation:1.1
-+--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.+ -> 3.0.11.Final
++--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.9.+ -> 3.0.9.Final
 |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1 (*)
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
@@ -272,12 +272,14 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
 +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-\--- org.jinq:jinq-jpa:+ -> 1.8
-     +--- org.ow2.asm:asm-all:5.0.1
-     +--- org.jinq:api:1.8
-     \--- org.jinq:analysis:1.8
-          +--- org.ow2.asm:asm-all:5.0.1
-          \--- org.jinq:api:1.8
++--- org.jinq:jinq-jpa:+ -> 1.8
+|    +--- org.ow2.asm:asm-all:5.0.1
+|    +--- org.jinq:api:1.8
+|    \--- org.jinq:analysis:1.8
+|         +--- org.ow2.asm:asm-all:5.0.1
+|         \--- org.jinq:api:1.8
++--- org.aspectj:aspectjtools:+ -> 1.8.6
+\--- org.aspectj:aspectjweaver:+ -> 1.8.6
 
 default - Configuration for default artifacts.
 +--- project :leo2-common
@@ -373,18 +375,18 @@ default - Configuration for default artifacts.
 |    \--- org.slf4j:slf4j-api:1.7.12
 +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 +--- javax.servlet:javax.servlet-api:3.1.0
-+--- org.jboss.resteasy:resteasy-jaxrs:3.0.+ -> 3.0.11.Final
-|    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
++--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.+ -> 3.0.9.Final
+|    +--- org.jboss.resteasy:jaxrs-api:3.0.9.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1
 |    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1
 |    \--- net.jcip:jcip-annotations:1.0
-+--- org.jboss.resteasy:resteasy-spring:3.0.+ -> 3.0.11.Final
-|    +--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final (*)
-|    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
-|    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final
-|    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final
++--- org.jboss.resteasy:resteasy-spring:3.0.9.+ -> 3.0.9.Final
+|    +--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final (*)
+|    +--- org.jboss.resteasy:jaxrs-api:3.0.9.Final
+|    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.9.Final
+|    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.9.Final
 |    |    |    \--- com.sun.xml.bind:jaxb-impl:2.2.7
 |    |    |         +--- com.sun.xml.bind:jaxb-core:2.2.7
 |    |    |         |    +--- javax.xml.bind:jaxb-api:2.2.7
@@ -394,7 +396,7 @@ default - Configuration for default artifacts.
 |    |    \--- org.codehaus.jettison:jettison:1.3.2
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    \--- javax.activation:activation:1.1
-+--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.+ -> 3.0.11.Final
++--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.9.+ -> 3.0.9.Final
 |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1 (*)
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
@@ -539,12 +541,14 @@ default - Configuration for default artifacts.
 |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
 +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-\--- org.jinq:jinq-jpa:+ -> 1.8
-     +--- org.ow2.asm:asm-all:5.0.1
-     +--- org.jinq:api:1.8
-     \--- org.jinq:analysis:1.8
-          +--- org.ow2.asm:asm-all:5.0.1
-          \--- org.jinq:api:1.8
++--- org.jinq:jinq-jpa:+ -> 1.8
+|    +--- org.ow2.asm:asm-all:5.0.1
+|    +--- org.jinq:api:1.8
+|    \--- org.jinq:analysis:1.8
+|         +--- org.ow2.asm:asm-all:5.0.1
+|         \--- org.jinq:api:1.8
++--- org.aspectj:aspectjtools:+ -> 1.8.6
+\--- org.aspectj:aspectjweaver:+ -> 1.8.6
 
 generatedCompile - Compile classpath for source set 'generated'.
 No dependencies
@@ -652,18 +656,18 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- org.slf4j:slf4j-api:1.7.12
 +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 +--- javax.servlet:javax.servlet-api:3.1.0
-+--- org.jboss.resteasy:resteasy-jaxrs:3.0.+ -> 3.0.11.Final
-|    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
++--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.+ -> 3.0.9.Final
+|    +--- org.jboss.resteasy:jaxrs-api:3.0.9.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1
 |    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1
 |    \--- net.jcip:jcip-annotations:1.0
-+--- org.jboss.resteasy:resteasy-spring:3.0.+ -> 3.0.11.Final
-|    +--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final (*)
-|    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
-|    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final
-|    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final
++--- org.jboss.resteasy:resteasy-spring:3.0.9.+ -> 3.0.9.Final
+|    +--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final (*)
+|    +--- org.jboss.resteasy:jaxrs-api:3.0.9.Final
+|    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.9.Final
+|    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.9.Final
 |    |    |    \--- com.sun.xml.bind:jaxb-impl:2.2.7
 |    |    |         +--- com.sun.xml.bind:jaxb-core:2.2.7
 |    |    |         |    +--- javax.xml.bind:jaxb-api:2.2.7
@@ -673,7 +677,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- org.codehaus.jettison:jettison:1.3.2
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    \--- javax.activation:activation:1.1
-+--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.+ -> 3.0.11.Final
++--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.9.+ -> 3.0.9.Final
 |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1 (*)
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
@@ -818,12 +822,14 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc1 (*)
 +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-\--- org.jinq:jinq-jpa:+ -> 1.8
-     +--- org.ow2.asm:asm-all:5.0.1
-     +--- org.jinq:api:1.8
-     \--- org.jinq:analysis:1.8
-          +--- org.ow2.asm:asm-all:5.0.1
-          \--- org.jinq:api:1.8
++--- org.jinq:jinq-jpa:+ -> 1.8
+|    +--- org.ow2.asm:asm-all:5.0.1
+|    +--- org.jinq:api:1.8
+|    \--- org.jinq:analysis:1.8
+|         +--- org.ow2.asm:asm-all:5.0.1
+|         \--- org.jinq:api:1.8
++--- org.aspectj:aspectjtools:+ -> 1.8.6
+\--- org.aspectj:aspectjweaver:+ -> 1.8.6
 
 shadow
 No dependencies
@@ -922,18 +928,18 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- org.slf4j:slf4j-api:1.7.12
 +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 +--- javax.servlet:javax.servlet-api:3.1.0
-+--- org.jboss.resteasy:resteasy-jaxrs:3.0.+ -> 3.0.11.Final
-|    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
++--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.+ -> 3.0.9.Final
+|    +--- org.jboss.resteasy:jaxrs-api:3.0.9.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1
 |    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1
 |    \--- net.jcip:jcip-annotations:1.0
-+--- org.jboss.resteasy:resteasy-spring:3.0.+ -> 3.0.11.Final
-|    +--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final (*)
-|    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
-|    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final
-|    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final
++--- org.jboss.resteasy:resteasy-spring:3.0.9.+ -> 3.0.9.Final
+|    +--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final (*)
+|    +--- org.jboss.resteasy:jaxrs-api:3.0.9.Final
+|    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.9.Final
+|    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.9.Final
 |    |    |    \--- com.sun.xml.bind:jaxb-impl:2.2.7
 |    |    |         +--- com.sun.xml.bind:jaxb-core:2.2.7
 |    |    |         |    +--- javax.xml.bind:jaxb-api:2.2.7
@@ -943,7 +949,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- org.codehaus.jettison:jettison:1.3.2
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    \--- javax.activation:activation:1.1
-+--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.+ -> 3.0.11.Final
++--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.9.+ -> 3.0.9.Final
 |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1 (*)
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
@@ -1094,9 +1100,11 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- org.jinq:analysis:1.8
 |         +--- org.ow2.asm:asm-all:5.0.1
 |         \--- org.jinq:api:1.8
++--- org.aspectj:aspectjtools:+ -> 1.8.6
++--- org.aspectj:aspectjweaver:+ -> 1.8.6
 +--- junit:junit:4.+ -> 4.12 (*)
-+--- org.jboss.resteasy:resteasy-client:3.0.+ -> 3.0.11.Final
-|    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final (*)
++--- org.jboss.resteasy:resteasy-client:3.0.9.+ -> 3.0.9.Final
+|    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final (*)
 \--- org.springframework:spring-test:4.+ -> 4.1.6.RELEASE
      \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 
@@ -1194,18 +1202,18 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- org.slf4j:slf4j-api:1.7.12
 +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 +--- javax.servlet:javax.servlet-api:3.1.0
-+--- org.jboss.resteasy:resteasy-jaxrs:3.0.+ -> 3.0.11.Final
-|    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
++--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.+ -> 3.0.9.Final
+|    +--- org.jboss.resteasy:jaxrs-api:3.0.9.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1
 |    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1
 |    \--- net.jcip:jcip-annotations:1.0
-+--- org.jboss.resteasy:resteasy-spring:3.0.+ -> 3.0.11.Final
-|    +--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final (*)
-|    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
-|    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.11.Final
-|    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.11.Final
++--- org.jboss.resteasy:resteasy-spring:3.0.9.+ -> 3.0.9.Final
+|    +--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final (*)
+|    +--- org.jboss.resteasy:jaxrs-api:3.0.9.Final
+|    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.9.Final
+|    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.9.Final
 |    |    |    \--- com.sun.xml.bind:jaxb-impl:2.2.7
 |    |    |         +--- com.sun.xml.bind:jaxb-core:2.2.7
 |    |    |         |    +--- javax.xml.bind:jaxb-api:2.2.7
@@ -1215,7 +1223,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- org.codehaus.jettison:jettison:1.3.2
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    \--- javax.activation:activation:1.1
-+--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.+ -> 3.0.11.Final
++--- org.jboss.resteasy:resteasy-jackson2-provider:3.0.9.+ -> 3.0.9.Final
 |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.6.0-rc1
 |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.6.0-rc1 (*)
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.6.0-rc1
@@ -1366,9 +1374,11 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- org.jinq:analysis:1.8
 |         +--- org.ow2.asm:asm-all:5.0.1
 |         \--- org.jinq:api:1.8
++--- org.aspectj:aspectjtools:+ -> 1.8.6
++--- org.aspectj:aspectjweaver:+ -> 1.8.6
 +--- junit:junit:4.+ -> 4.12 (*)
-+--- org.jboss.resteasy:resteasy-client:3.0.+ -> 3.0.11.Final
-|    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final (*)
++--- org.jboss.resteasy:resteasy-client:3.0.9.+ -> 3.0.9.Final
+|    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.9.Final (*)
 \--- org.springframework:spring-test:4.+ -> 4.1.6.RELEASE
      \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 

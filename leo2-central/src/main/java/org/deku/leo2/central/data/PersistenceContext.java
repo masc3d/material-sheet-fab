@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.*;
+import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
@@ -39,19 +40,22 @@ public class PersistenceContext implements DisposableBean {
     private Log mLog = LogFactory.getLog(PersistenceContext.class);
 
     @Inject
-    Config mConfig;
-
-    @Inject
     @Qualifier(DB_CENTRAL)
-    private DataSource mDataSource;
+    private AbstractDataSource mDataSource;
 
-    @Bean
+    // TODO: tomcat deployment breaks with circular dependency when wither dataSourceCentral()
+    // or jooqTransactionAwareDataSourceProxy() are not @Lazy.
+    // This works perfectly fine when running standalone.
     @Lazy
+    @Bean
     @Qualifier(DB_CENTRAL)
     @ConfigurationProperties(prefix="datasource.central")
-    public DataSource dataSourceCentral() {
+    public AbstractDataSource dataSourceCentral() {
         DriverManagerDataSource dataSource = (DriverManagerDataSource)DataSourceBuilder
                 .create()
+                // When running within tomcat, spring can't figure out the driver type (even though mysql is
+                // part of jdbc url)
+                .driverClassName("com.mysql.jdbc.Driver")
                 .type(DriverManagerDataSource.class)
                 .build();
 
@@ -70,6 +74,8 @@ public class PersistenceContext implements DisposableBean {
     @Inject
     private DataSourceConnectionProvider mJooqConnectionProvider;
 
+    // TODO: tomcat breakage without @Lazy. see above (dataSourceCentral())
+    @Lazy
     @Bean
     public TransactionAwareDataSourceProxy jooqTransactionAwareDataSourceProxy() {
         return new TransactionAwareDataSourceProxy(mDataSource);

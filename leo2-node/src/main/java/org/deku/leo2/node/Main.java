@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.BrokerImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -23,6 +24,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
@@ -44,8 +46,11 @@ import javax.servlet.ServletException;
 public class Main extends SpringBootServletInitializer implements ApplicationListener, SpringApplicationRunListener {
     private Log mLog = LogFactory.getLog(Main.class);
 
+    @Inject
+    Config.Central mCentralConfig;
+
     /**
-     * Standalone jetty
+     * Standalone startup
      * @param args
      * @throws Exception
      */
@@ -58,18 +63,14 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
         SpringApplication.run(c);
     }
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        mLog.info("Leo2 node main.configure");
-        return builder
-                .sources(Main.class)
-                .listeners(this);
-    }
-
+    /**
+     * Tomcat/servlet container startup
+     * @param container
+     * @throws ServletException
+     */
     @Override
     public void onStartup(ServletContext container) throws ServletException {
-        mLog.info("Leo2 node main.onStartup");
-
+        mLog.info("leo2.node.main.onStartup");
         // Only start if there's no application context yet.
         if (container.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)
                 instanceof ApplicationContext) {
@@ -81,9 +82,23 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
         super.onStartup(container);
     }
 
+    /**
+     * Tomcat/servlet container context setup
+     * @param builder
+     * @return
+     */
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        mLog.info("leo2.node.main.configure");
+        return builder
+                .sources(Main.class)
+                .listeners(this);
+    }
+
     @Override
     public final void onApplicationEvent(ApplicationEvent event) {
         mLog.info(event.toString());
+        //mLog.info(mCentralConfig.getUrl());
         if (event instanceof EmbeddedServletContainerInitializedEvent) {
             // Post spring initialization
         }
