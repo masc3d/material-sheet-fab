@@ -10,14 +10,11 @@ import javax.servlet.ServletException;
 import java.net.URI;
 import java.util.HashMap;
 
-//@Component("JMSTunnel")
-
 /**
  * External http tunnel servlet for activemq.
  * Automatically starts the broker when initialized.
  */
-public class HttpExternalTunnelServlet extends HttpTunnelServlet
-        /*implements org.springframework.web.HttpRequestHandler**/ {
+public class HttpExternalTunnelServlet extends HttpTunnelServlet {
     private Log mLog = LogFactory.getLog(HttpExternalTunnelServlet.class);
 
     private HttpExternalTransportServer transportConnector;
@@ -74,14 +71,5 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet
         } catch (Exception e) {
             throw new ServletException(e);
         }
-
     }
-
-//    @Override
-//    /**
-//     * Spring request handler support
-//     */
-//    public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        service(request, response);
-//    }
 }

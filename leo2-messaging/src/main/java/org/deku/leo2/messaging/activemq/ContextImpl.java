@@ -17,14 +17,21 @@ import javax.jms.Topic;
  * Created by masc on 16.04.15.
  */
 public class ContextImpl implements Context {
+    /** Singleton instance */
     private static LazyInstance<ContextImpl> mContext = new LazyInstance<>(ContextImpl::new);
 
-    private LazyInstance<BrokerImpl> mBroker = new LazyInstance<>(BrokerImpl::new);
+    /** Broker */
+    private BrokerImpl mBroker = new BrokerImpl();
+    /** Connection factory */
     private ConnectionFactory mConnectionFactory;
 
     public ContextImpl() {
         PooledConnectionFactory psf = new PooledConnectionFactory();
-        psf.setConnectionFactory(new ActiveMQConnectionFactory(Broker.USERNAME, Broker.PASSWORD, "vm://" + Broker.NAME));
+        psf.setConnectionFactory(new ActiveMQConnectionFactory(
+                Broker.USERNAME,
+                Broker.PASSWORD,
+                // Explicitly do _not_ create (another) embedded broker on connection, just in case
+                String.format("vm://%s?create=false", Broker.NAME)));
         mConnectionFactory = psf;
     }
 
@@ -34,7 +41,7 @@ public class ContextImpl implements Context {
 
     @Override
     public BrokerImpl getBroker() {
-        return mBroker.get();
+        return mBroker;
     }
 
     @Override

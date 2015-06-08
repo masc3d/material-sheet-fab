@@ -14,6 +14,8 @@ import sx.util.EventDispatcher;
 import sx.util.EventListener;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,14 +88,14 @@ public class BrokerImpl extends Broker {
         mBrokerService.setDataDirectoryFile(mDataDirectory);
 
         // Statically defined transport connectors for clients to connect to
-        mBrokerService.addConnector(Util.createUri("0.0.0.0", false));
+        mBrokerService.addConnector(createUri("0.0.0.0", false));
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect
         mBrokerService.addConnector("vm://" + NAME);
 
         // Peer/network connectors for brokers to inter-connect
         for (PeerBroker pb : mPeerBrokers) {
-            NetworkConnector nc = mBrokerService.addNetworkConnector(Util.createUri(pb.hostname, pb.httpPort, true));
+            NetworkConnector nc = mBrokerService.addNetworkConnector(createUri(pb.hostname, pb.httpPort, true));
             nc.setDuplex(true);
             mBrokerService.addNetworkConnector(nc);
         }
@@ -148,7 +150,7 @@ public class BrokerImpl extends Broker {
         pAuthzEntry.setWrite(GROUP_LEO);
         authzEntries.add(pAuthzEntry);
 
-        // Authorization map
+        // Create authorization map from entries
         DefaultAuthorizationMap authzMap = new DefaultAuthorizationMap();
         authzMap.setAuthorizationEntries(authzEntries);
 
@@ -210,5 +212,43 @@ public class BrokerImpl extends Broker {
         } catch (Exception e) {
             mLog.error(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Create ActiveMQ URI
+     * @param hostname Hostname
+     * @param httpPort Optional http port, if omitted native port will be used
+     * @return ActiveMQ URI
+     */
+    public static URI createUri(String hostname, Integer httpPort, boolean failover) {
+        String scheme;
+        String path = (httpPort != null) ? "/leo2/jms" : "";
+
+        int port;
+        if (httpPort != null) {
+            scheme = "http";
+            port = httpPort;
+        } else {
+            scheme = "tcp";
+            port = 61616;
+        }
+
+        if (failover)
+            scheme = "failover:" + scheme;
+
+        try {
+            return new URI(String.format("%s://%s:%d%s", scheme, hostname, port, path));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Create native ActiveMQ URI
+     * @param hostname
+     * @return
+     */
+    public static URI createUri(String hostname, boolean failover) {
+        return createUri(hostname, null, failover);
     }
 }

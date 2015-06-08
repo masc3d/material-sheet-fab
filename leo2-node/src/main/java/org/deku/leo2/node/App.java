@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
+import org.deku.leo2.messaging.Context;
 import org.deku.leo2.messaging.activemq.BrokerImpl;
+import org.deku.leo2.messaging.activemq.ContextImpl;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
@@ -144,7 +146,7 @@ public class App implements Disposable, ApplicationContextAware {
                         .stream()
                         .map(u -> u.toString()).toArray(size -> new String[size])));
 
-        BrokerImpl.getInstance().setDataDirectory(App.instance().getLocalHomeDirectory());
+        ContextImpl.instance().getBroker().setDataDirectory(App.instance().getLocalHomeDirectory());
         //BrokerImpl.getInstance().start();
 
         mIsInitialized = true;
@@ -155,7 +157,7 @@ public class App implements Disposable, ApplicationContextAware {
     @Override
     public void dispose() {
         try {
-            BrokerImpl.getInstance().stop();
+            ContextImpl.instance().getBroker().stop();
         } catch (Exception e) {
             e.printStackTrace();
         }
