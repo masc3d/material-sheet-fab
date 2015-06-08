@@ -1,37 +1,40 @@
 // Gradle dependencies/plugins
 buildscript {
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:$v_springboot")
-        classpath("io.spring.gradle:dependency-management-plugin:$v_springboot_plugin")
-
-        // cargo gradle plugin for remote delpoyment
-        classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.+'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$v_springboot_gradle_plugin")
     }
 }
 
-plugins {
-    id "com.github.johnrengelman.shadow" version "1.2.1"
-}
-
-apply plugin: 'war'
-apply plugin: 'cargo'
 apply plugin: 'application'
 apply plugin: 'spring-boot'
-apply plugin: 'io.spring.dependency-management'
 
 sourceCompatibility = 1.8
 version = '0.1'
 mainClassName = "org.deku.leo2.node.Main"
 
-repositories {
-    mavenCentral()
-}
+// Spring platform/plugin dependencyManagement
+//dependencyManagement {
+//    imports {
+//        mavenBom "io.spring.platform:platform-bom:$v_spring_platform"
+//    }
+//}
 
 dependencies {
     // leo2 webservice dependencies
     compile project(':leo2-common')
     compile project(':leo2-messaging')
     compile project(':sx-common')
+
+    // spring
+    compile 'org.springframework.data:spring-data-jpa:1.8.+'
+    compile "org.springframework:spring-web"
+    //compile "org.springframework:spring-aspects"
+    // spring boot
+    compile("org.springframework.boot:spring-boot-starter")
+    compile("org.springframework.boot:spring-boot-starter-web") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+    compile("org.springframework.boot:spring-boot-starter-undertow")
 
     // logging
     compile "org.slf4j:jul-to-slf4j:1.+"
@@ -55,33 +58,26 @@ dependencies {
     compile "org.eclipse.persistence:eclipselink:$v_eclipselink"
 
     // queryDSL
+    compile "com.mysema.querydsl:querydsl-core:$v_querydsl"
     compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
     compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
     compile "com.mysema.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
 
-    // spring
-    compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
-    compile "org.springframework:spring-web:$v_spring"
-    //compile "org.springframework:spring-aspects:$v_spring"
-    // spring boot
-    compile("org.springframework.boot:spring-boot-starter:$v_springboot")
-    compile("org.springframework.boot:spring-boot-starter-web:$v_springboot") {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-    }
-    compile("org.springframework.boot:spring-boot-starter-undertow:$v_springboot")
-    //providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$v_springboot")
-
     // JSR-330
     compile 'javax.inject:javax.inject:1'
-
-    compile 'org.jinq:jinq-jpa:+'
 
     // databases
     compile "com.h2database:h2:$v_h2"
 
+    // discovery
+    compile "javax.jmdns:jmdns:3.+"
+
     // json doc
     compile 'com.wordnik:swagger-jaxrs:+'
     compile 'org.javassist:javassist:3.+'
+
+    // TODO: for testing jinq
+    compile 'org.jinq:jinq-jpa:+'
 
     // TODO: For testing aspectj proxies with spring
 //    compile "org.aspectj:aspectjtools:+"
@@ -92,7 +88,7 @@ dependencies {
 
     // webservice client libraries for test cases
     testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
-    testCompile "org.springframework:spring-test:$v_spring"
+    testCompile "org.springframework:spring-test"
 
     testCompile project(':sx-common')
 }
@@ -103,35 +99,9 @@ run {
     standardInput = System.in
 }
 
-// war plugin configuration
-war {
-    // Some specific jetty components (and transitive deps) break tomcat deployment.
-    // tomcat will fail with LifecycleException
-    // In the long run we will probably need separate configurations/dependency sets for war/jar
-    rootSpec.exclude("**/jetty*.jar")
-    rootSpec.exclude("**/javax-websocket*.jar")
-    rootSpec.exclude("**/javax.servlet-api*.jar")
-}
-
-// cargo plugin configuration
-cargo {
-    containerId = 'tomcat7x'
-    port = 8080
-
-    deployable {
-        context = '/leo2'
-    }
-
-    remote {
-        hostname = '10.0.10.10'
-        username = 'tomcat'
-        password = 'tomcat'
-    }
-}
-
-// cargo task dependencies
-tasks.cargoDeployRemote.dependsOn(war)
-tasks.cargoRedeployRemote.dependsOn(war)
+//springBoot {
+//    executable = true
+//}
 
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir

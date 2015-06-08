@@ -2,11 +2,7 @@
 buildscript {
     dependencies {
         // spring boot
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:$v_springboot")
-        classpath("io.spring.gradle:dependency-management-plugin:$v_springboot_plugin")
-
-        // cargo gradle plugin for remote delpoyment
-        classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.+'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$v_springboot_gradle_plugin")
 
         // jooq codegen gradle plugin
         classpath 'com.github.ben-manes:gradle-jooq-plugin:+'
@@ -24,25 +20,20 @@ buildscript {
     }
 }
 
-plugins {
-    id "com.github.johnrengelman.shadow" version "1.2.1"
-}
-
-apply plugin: 'war'
-apply plugin: 'cargo'
 apply plugin: 'application'
 apply plugin: 'jooq'
 apply plugin: 'spring-boot'
-apply plugin: 'io.spring.dependency-management'
-
 
 sourceCompatibility = 1.8
 version = '0.1'
 mainClassName = "org.deku.leo2.central.Main"
 
-repositories {
-    mavenCentral()
-}
+// Spring platform/plugin dependencyManagement
+//dependencyManagement {
+//    imports {
+//        mavenBom "io.spring.platform:platform-bom:$v_spring_platform"
+//    }
+//}
 
 dependencies {
     // leo2 webservice dependencies
@@ -54,13 +45,8 @@ dependencies {
     // jooq
     compile "org.jooq:jooq:$v_jooq"
 
-    // JSR-330
-    // compile 'javax.inject:javax.inject:1'
-
     // databases
     compile 'mysql:mysql-connector-java:5.+'
-
-    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$v_springboot")
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: '4.+'
@@ -78,35 +64,9 @@ run {
     standardInput = System.in
 }
 
-// war plugin configuration
-war {
-    // Some specific jetty components (and transitive deps) break tomcat deployment.
-    // tomcat will fail with LifecycleException
-    // In the long run we will probably need separate configurations/dependency sets for war/jar
-    rootSpec.exclude("**/jetty*.jar")
-    rootSpec.exclude("**/javax-websocket*.jar")
-    rootSpec.exclude("**/javax.servlet-api*.jar")
-}
-
-// cargo plugin configuration
-cargo {
-    containerId = 'tomcat7x'
-    port = 8080
-
-    deployable {
-        context = '/leo2'
-    }
-
-    remote {
-        hostname = '10.0.10.10'
-        username = 'tomcat'
-        password = 'tomcat'
-    }
-}
-
-// cargo task dependencies
-tasks.cargoDeployRemote.dependsOn(war)
-tasks.cargoRedeployRemote.dependsOn(war)
+//springBoot {
+//    executable = true
+//}
 
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir

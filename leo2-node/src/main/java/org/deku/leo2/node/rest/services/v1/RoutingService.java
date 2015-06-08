@@ -116,7 +116,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 //test
 //        Iterable<Route> rRouten = new ArrayList<>();
 //        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere ,new Sort(Sort.Direction.DESC,qRoute.validfrom.toString()) );
-        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere, new Sort(Sort.Direction.DESC, "validfrom"));
+        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere, qRoute.validfrom.desc());
 
         if (!rRouten.iterator().hasNext()) {
             throw new IllegalArgumentException("no Route to Depot");

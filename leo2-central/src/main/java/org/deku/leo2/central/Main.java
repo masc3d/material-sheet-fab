@@ -29,7 +29,7 @@ public class Main extends org.deku.leo2.node.Main {
      * @param args
      * @throws Exception
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         App.inject(App::new);
         org.deku.leo2.node.Main.run(Main.class, args);
     }

@@ -104,7 +104,7 @@ public class BrokerImpl extends Broker {
         }
 
         // Broker plugins
-        List<BrokerPlugin> brokerPlugins = new ArrayList<>();;
+        List<BrokerPlugin> brokerPlugins = new ArrayList<>();
 
         // Authentication
         SimpleAuthenticationPlugin pAuth = new SimpleAuthenticationPlugin();

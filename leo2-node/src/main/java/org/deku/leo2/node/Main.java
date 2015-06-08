@@ -27,6 +27,8 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Spring boot main class.
@@ -54,11 +56,11 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
      * @param args
      * @throws Exception
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Main.run(Main.class, args);
     }
 
-    protected static void run(Class c, String[] args) {
+    protected static void run(Class c, String[] args) throws Exception {
         App.instance().initialize();
         SpringApplication.run(c);
     }
@@ -77,7 +79,11 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
             return;
         }
 
-        App.instance().initialize();
+        try {
+            App.instance().initialize();
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
 
         super.onStartup(container);
     }

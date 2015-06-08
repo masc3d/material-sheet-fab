@@ -53,6 +53,8 @@ public class App implements Disposable, ApplicationContextAware {
     private static Log mLog = LogFactory.getLog(App.class);
     private boolean mIsInitialized;
 
+    protected List<URL> mConfigLocations = new ArrayList();
+
     private LazyInstance<File> mLocalHomeDirectory;
     private LazyInstance<File> mLocalConfigurationFile;
 
@@ -91,38 +93,18 @@ public class App implements Disposable, ApplicationContextAware {
         return mLocalConfigurationFile.get();
     }
 
-
     public boolean isInitialized() {
         return mIsInitialized;
     }
 
-    /**
-     * Intialize logging.
-     * Not required for spring-boot.
-     */
-    public void initializeLogging() {
-        // Log4j logging (to make resteasy log entries visible, needs refinement)
-        BasicConfigurator.configure();
-
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-    }
-
-    /**
-     * Not required for spring-boot.
-     */
-    public void initializeConfig() {
-//        Yaml y = new Yaml();
-//        Object c = y.load(this.getClass().getClassLoader().getResourceAsStream("application.yml"));
-    }
-
-    public void initialize() {
+    public void initialize() throws Exception {
         mLog.info("Leo2 node initialize");
 
         // Disable JOOQ logo
         System.setProperty("org.jooq.no-logo", "true");
 
         // Set additional config file location for spring
+        //region Configuration
         List<URL> configLocations = new ArrayList<>();
 
         // Add local home configuration
@@ -135,7 +117,7 @@ public class App implements Disposable, ApplicationContextAware {
         // Add application.properties from all classpaths
         // TODO: needs refinement, should only read application.properties from specific jars
         try {
-            configLocations.addAll(Collections.list(Main.class.getClassLoader().getResources("application.properties")));
+            configLocations.addAll(Collections.list(Thread.currentThread().getContextClassLoader().getResources("application.properties")));
         } catch (IOException e) {
             mLog.error(e.getMessage(), e);
         }
@@ -145,13 +127,12 @@ public class App implements Disposable, ApplicationContextAware {
                         Lists.reverse(configLocations)
                         .stream()
                         .map(u -> u.toString()).toArray(size -> new String[size])));
+        //endregion
 
+        // Initialize broker
         ContextImpl.instance().getBroker().setDataDirectory(App.instance().getLocalHomeDirectory());
-        //BrokerImpl.getInstance().start();
 
         mIsInitialized = true;
-
-        //throw new IllegalStateException();
     }
 
     @Override
