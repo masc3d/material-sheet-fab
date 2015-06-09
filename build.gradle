@@ -40,6 +40,7 @@ subprojects {
         // Resteasy > 3.0.9 breaks integration with spring-boot.
         // it actually still works fine when spring is initialized via resteasy's SpringContextLoaderListener
         v_resteasy = "3.0.+"
+        v_slf4j = "1.+"
         v_spring = "4.1.6.+"
         v_spring_platform = "1.1.3.BUILD-SNAPSHOT"
         v_springboot = "1.2.4.+"
@@ -72,14 +73,6 @@ subprojects {
             failOnVersionConflict()
 
             // Force overrides for newer versions of (transitive) dependencies for all projects consistently
-
-//            componentSelection { m ->
-//                all { ComponentSelection selection ->
-//                    if (selection.candidate.group == 'org.springframework.boot')
-//                        println selection.candidate.module
-//                    }
-//            }
-
             // Version overrides
             resolutionStrategy.eachDependency { DependencyResolveDetails details ->
                 // Spring
@@ -88,57 +81,21 @@ subprojects {
                 // Jackson
                 } else if (details.requested.group.startsWith('com.fasterxml.jackson')) {
                     details.useVersion v_jackson
+                } else if (details.requested.group == 'org.slf4j') {
+                    details.useVersion v_slf4j
                 }
             }
-
-            // Java
-            force "javax.servlet:javax.servlet-api:$v_javax_servlet"
-
-            // Glassfish
-            force "org.glassfish.hk2:hk2:$v_hk2"
-            force "org.glassfish.hk2:hk2-api:$v_hk2"
-            force "org.glassfish.hk2:hk2-locator:$v_hk2"
-            force "org.glassfish.hk2:spring-bridge:$v_hk2"
-            force "org.glassfish.hk2.external:javax.inject:$v_hk2"
-            force "org.glassfish:javax.el:3.+"
-
-            // Jersey
-            force "org.glassfish.jersey.containers:jersey-container-servlet-core:$v_jersey"
-            force "org.glassfish.jersey.core:jersey-server:$v_jersey"
-
-            // Jetty
-            force "org.eclipse.jetty.aggregate:jetty-all:$v_jetty"
-            force "org.eclipse.jetty.websocket:javax-websocket-server-impl:$v_jetty"
-            force "org.eclipse.jetty.websocket:websocket-server:$v_jetty"
-            force "org.eclipse.jetty:jetty-webapp:$v_jetty"
-
-            // Jooq
-            force "org.jooq:jooq-meta:$v_jooq"
-            force "org.jooq:jooq-codegen:$v_jooq"
 
             // Apache common
             force "commons-logging:commons-logging:1.+"
             force "org.apache.httpcomponents:httpclient:4.+"
-            force "org.apache.ant:ant:1.+"
-            force "org.apache.ant:ant-launcher:1.+"
 
             // Hawt
             force "org.fusesource.hawtdispatch:hawtdispatch-transport:1.+"
             force "org.fusesource.hawtbuf:hawtbuf:1.+"
 
             force "com.google.guava:guava:$v_guava"
-            force "com.mysema.querydsl:querydsl-codegen:$v_querydsl"
-            force "org.javassist:javassist:3.+"
             force "com.thoughtworks.xstream:xstream:1.+"
-            force "xml-apis:xml-apis:1.+"
-            force "org.hamcrest:hamcrest-core:1.+"
-            force "org.yaml:snakeyaml:1.+"
-
-            // SLF4J
-            force "org.slf4j:slf4j-api:1.7.+"
-            force "org.slf4j:log4j-over-slf4j:1.7.+"
-            force "org.slf4j:jcl-over-slf4j:1.7.+"
-            force "org.slf4j:jul-to-slf4j:1.7.+"
 
             force "org.jboss.logging:jboss-logging:3.+"
             force "org.jboss.logging:jboss-logging-annotations:1.+"

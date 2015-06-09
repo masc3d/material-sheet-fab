@@ -31,7 +31,6 @@ dependencies {
     // spring
     compile 'org.springframework.data:spring-data-jpa:1.8.+'
     compile "org.springframework.data:spring-data-commons:1.10.+"
-    compile "org.yaml:snakeyaml:1.+"
 
     compile "org.springframework:spring-web"
     //compile "org.springframework:spring-aspects"
