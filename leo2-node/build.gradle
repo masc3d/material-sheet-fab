@@ -13,11 +13,14 @@ version = '0.1'
 mainClassName = "org.deku.leo2.node.Main"
 
 // Spring platform/plugin dependencyManagement
-//dependencyManagement {
-//    imports {
-//        mavenBom "io.spring.platform:platform-bom:$v_spring_platform"
-//    }
-//}
+dependencyManagement {
+    imports {
+        mavenBom "io.spring.platform:platform-bom:$v_spring_platform"
+    }
+
+    dependencies {
+    }
+}
 
 dependencies {
     // leo2 webservice dependencies
@@ -27,6 +30,9 @@ dependencies {
 
     // spring
     compile 'org.springframework.data:spring-data-jpa:1.8.+'
+    compile "org.springframework.data:spring-data-commons:1.10.+"
+    compile "org.yaml:snakeyaml:1.+"
+
     compile "org.springframework:spring-web"
     //compile "org.springframework:spring-aspects"
     // spring boot
@@ -99,9 +105,9 @@ run {
     standardInput = System.in
 }
 
-//springBoot {
-//    executable = true
-//}
+springBoot {
+    executable = true
+}
 
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir

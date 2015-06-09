@@ -10,7 +10,7 @@ compile - Compile classpath for source set 'main'.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:+ -> 1.2
-|    +--- org.springframework:spring-jms:4.1.+ -> 4.1.6.RELEASE
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
@@ -90,7 +90,7 @@ default - Configuration for default artifacts.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:+ -> 1.2
-|    +--- org.springframework:spring-jms:4.1.+ -> 4.1.6.RELEASE
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
@@ -170,7 +170,7 @@ runtime - Runtime classpath for source set 'main'.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:+ -> 1.2
-|    +--- org.springframework:spring-jms:4.1.+ -> 4.1.6.RELEASE
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
@@ -250,7 +250,7 @@ testCompile - Compile classpath for source set 'test'.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:+ -> 1.2
-|    +--- org.springframework:spring-jms:4.1.+ -> 4.1.6.RELEASE
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
@@ -331,7 +331,7 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:+ -> 1.2
-|    +--- org.springframework:spring-jms:4.1.+ -> 4.1.6.RELEASE
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
