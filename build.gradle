@@ -53,6 +53,7 @@ subprojects {
     ext["jackson.version"] = v_jackson
     ext["activemq.version"] = v_activemq
     ext["guava.version"] = v_guava
+    ext["servlet-api.version"] = v_javax_servlet
 
     // Global buildscript repositories
     buildscript {
@@ -85,6 +86,8 @@ subprojects {
                     details.useVersion v_slf4j
                 }
             }
+
+            force "com.mysema.querydsl:querydsl-codegen:$v_querydsl"
 
             // Apache common
             force "commons-logging:commons-logging:1.+"

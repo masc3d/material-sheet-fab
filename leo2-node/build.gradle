@@ -22,6 +22,10 @@ dependencyManagement {
     }
 }
 
+dependencyManagement.importedProperties.sort().each { p ->
+    println p
+}
+
 dependencies {
     // leo2 webservice dependencies
     compile project(':leo2-common')

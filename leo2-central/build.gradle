@@ -29,11 +29,14 @@ version = '0.1'
 mainClassName = "org.deku.leo2.central.Main"
 
 // Spring platform/plugin dependencyManagement
-//dependencyManagement {
-//    imports {
-//        mavenBom "io.spring.platform:platform-bom:$v_spring_platform"
-//    }
-//}
+dependencyManagement {
+    imports {
+        mavenBom "io.spring.platform:platform-bom:$v_spring_platform"
+    }
+
+    dependencies {
+    }
+}
 
 dependencies {
     // leo2 webservice dependencies
@@ -64,9 +67,9 @@ run {
     standardInput = System.in
 }
 
-//springBoot {
-//    executable = true
-//}
+springBoot {
+    executable = true
+}
 
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
