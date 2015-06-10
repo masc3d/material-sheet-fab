@@ -1,30 +1,8 @@
-// Gradle dependencies/plugins
-buildscript {
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:$v_springboot_gradle_plugin")
-    }
-}
-
 apply plugin: 'application'
-apply plugin: 'spring-boot'
 
 sourceCompatibility = 1.8
 version = '0.1'
 mainClassName = "org.deku.leo2.node.Main"
-
-// Spring platform/plugin dependencyManagement
-dependencyManagement {
-    imports {
-        mavenBom "io.spring.platform:platform-bom:$v_spring_platform"
-    }
-
-    dependencies {
-    }
-}
-
-dependencyManagement.importedProperties.sort().each { p ->
-    println p
-}
 
 dependencies {
     // leo2 webservice dependencies

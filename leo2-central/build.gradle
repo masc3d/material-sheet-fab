@@ -1,9 +1,6 @@
 // Gradle dependencies/plugins
 buildscript {
     dependencies {
-        // spring boot
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:$v_springboot_gradle_plugin")
-
         // jooq codegen gradle plugin
         classpath 'com.github.ben-manes:gradle-jooq-plugin:+'
 
@@ -16,27 +13,16 @@ buildscript {
         }
 
         // mysql jdbc connector
-        classpath 'mysql:mysql-connector-java:5.+'
+        classpath "mysql:mysql-connector-java:$v_mysql"
     }
 }
 
 apply plugin: 'application'
 apply plugin: 'jooq'
-apply plugin: 'spring-boot'
 
 sourceCompatibility = 1.8
 version = '0.1'
 mainClassName = "org.deku.leo2.central.Main"
-
-// Spring platform/plugin dependencyManagement
-dependencyManagement {
-    imports {
-        mavenBom "io.spring.platform:platform-bom:$v_spring_platform"
-    }
-
-    dependencies {
-    }
-}
 
 dependencies {
     // leo2 webservice dependencies
@@ -49,7 +35,7 @@ dependencies {
     compile "org.jooq:jooq:$v_jooq"
 
     // databases
-    compile 'mysql:mysql-connector-java:5.+'
+    compile "mysql:mysql-connector-java:$v_mysql"
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: '4.+'
@@ -68,7 +54,7 @@ run {
 }
 
 springBoot {
-    executable = true
+    executable = false
 }
 
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
