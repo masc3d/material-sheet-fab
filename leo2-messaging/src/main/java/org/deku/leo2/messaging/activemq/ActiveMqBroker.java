@@ -34,6 +34,9 @@ public class ActiveMqBroker extends Broker {
     }
     //endregion
 
+    // Defaults
+    private static final int NATIVE_TCP_PORT = 61616;
+
     /** Log */
     private Log mLog = LogFactory.getLog(ActiveMqBroker.class);
 
@@ -45,6 +48,7 @@ public class ActiveMqBroker extends Broker {
 
     /** c'tor */
     private ActiveMqBroker() {
+        super(NATIVE_TCP_PORT);
     }
 
     /**
@@ -68,7 +72,8 @@ public class ActiveMqBroker extends Broker {
         mBrokerService.setDataDirectoryFile(this.getDataDirectory());
 
         // Statically defined transport connectors for native clients to connect to
-        mBrokerService.addConnector(String.format("tcp://0.0.0.0:61616"));
+        mBrokerService.addConnector(String.format("tcp://0.0.0.0:%d",
+                this.getNativeTcpPort()));
 
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect

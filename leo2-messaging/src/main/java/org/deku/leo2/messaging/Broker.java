@@ -91,10 +91,19 @@ public abstract class Broker implements Disposable {
     public final static String USERNAME = "leo2";
     public final static String PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC";
 
+    private Integer mNativeTcpPort;
     private List<PeerBroker> mPeerBrokers = new ArrayList<>();
 
     /** Data directory for store */
     private File mDataDirectory;
+
+    /**
+     * c'tor for derived classes to provide defaults
+     * @param nativeTcpPort
+     */
+    protected Broker(Integer nativeTcpPort) {
+        mNativeTcpPort = nativeTcpPort;
+    }
 
     protected abstract void startImpl() throws Exception;
 
@@ -117,16 +126,30 @@ public abstract class Broker implements Disposable {
         this.stopImpl();
     }
 
+    /** Broker data directory */
+    public File getDataDirectory() {
+        return mDataDirectory;
+    }
+
     /**
-     * Set broker data directory. Must be set prior to starting the broker.
+     * Set broker data directory.
      * @param file Data directory
      */
     public final void setDataDirectory(File file) {
         mDataDirectory = file;
     }
 
-    public File getDataDirectory() {
-        return mDataDirectory;
+    /** Broker native protocol tcp port */
+    public Integer getNativeTcpPort() {
+        return mNativeTcpPort;
+    }
+
+    /**
+     * Set broker native tcp port.
+     * @param nativeTcpPort
+     */
+    public void setNativeTcpPort(Integer nativeTcpPort) {
+        mNativeTcpPort = nativeTcpPort;
     }
 
     /**
