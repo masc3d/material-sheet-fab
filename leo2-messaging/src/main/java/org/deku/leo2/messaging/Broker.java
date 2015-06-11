@@ -1,6 +1,9 @@
 package org.deku.leo2.messaging;
 
 import sx.Disposable;
+import sx.event.EventDelegate;
+import sx.event.EventDispatcher;
+import sx.event.EventListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,16 +73,61 @@ public abstract class Broker implements Disposable {
         private Integer mPort;
     }
 
+    //region Events
+
+    /** Broker event listener interface */
+    public interface Listener extends EventListener {
+        void onStart();
+    }
+
+    /** Broker event dispatcher/delegate */
+    private EventDispatcher<Listener> mListenerEventDispatcher = EventDispatcher.createThreadSafe();
+
+    public EventDelegate<Listener> getListenerEventDispatcher() {
+        return mListenerEventDispatcher;
+    }
+    //endregion
+
     public final static String USERNAME = "leo2";
     public final static String PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC";
 
     private List<PeerBroker> mPeerBrokers = new ArrayList<>();
 
+    /** Data directory for store */
+    private File mDataDirectory;
+
+    protected abstract void startImpl() throws Exception;
+
+    protected abstract void stopImpl() throws Exception;
+
     /**
-     * Set broker data directory
+     * Start broker
+     * @throws Exception
+     */
+    public synchronized final void start() throws Exception {
+        this.startImpl();
+        mListenerEventDispatcher.emit(Listener::onStart);
+    }
+
+    /**
+     * Stop broker
+     * @throws Exception
+     */
+    public synchronized final void stop() throws Exception {
+        this.stopImpl();
+    }
+
+    /**
+     * Set broker data directory. Must be set prior to starting the broker.
      * @param file Data directory
      */
-    public abstract void setDataDirectory(File file);
+    public final void setDataDirectory(File file) {
+        mDataDirectory = file;
+    }
+
+    public File getDataDirectory() {
+        return mDataDirectory;
+    }
 
     /**
      * Add peer (network transport) broker
@@ -92,9 +140,4 @@ public abstract class Broker implements Disposable {
     public List<PeerBroker> getPeerBrokers() {
         return mPeerBrokers;
     }
-
-    /** Start broker */
-    public abstract void start() throws Exception;
-    /** Stop broker */
-    public abstract void stop() throws Exception;
 }

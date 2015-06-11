@@ -34,29 +34,11 @@ public class ActiveMqBroker extends Broker {
     }
     //endregion
 
-    //region Events
-
-    /** Broker event listener interface */
-    public interface Listener extends EventListener {
-        void onStart();
-    }
-
-    /** Broker event dispatcher/delegate */
-    private EventDispatcher<Listener> mListenerEventDispatcher = EventDispatcher.createThreadSafe();
-
-    public EventDelegate<Listener> getListenerEventDispatcher() {
-        return mListenerEventDispatcher;
-    }
-    //endregion
-
     /** Log */
     private Log mLog = LogFactory.getLog(ActiveMqBroker.class);
 
     /** Native broker service */
     private BrokerService mBrokerService;
-
-    /** Data directory for store */
-    private File mDataDirectory;
 
     /** External transport servers, eg. servlets */
     List<TransportServer> mExternalTransportServers = new ArrayList<>();
@@ -78,12 +60,12 @@ public class ActiveMqBroker extends Broker {
      * @throws Exception
      */
     @Override
-    public synchronized void start() throws Exception {
+    protected void startImpl() throws Exception {
         this.stop();
 
         // Broker initialization
         mBrokerService = new BrokerService();
-        mBrokerService.setDataDirectoryFile(mDataDirectory);
+        mBrokerService.setDataDirectoryFile(this.getDataDirectory());
 
         // Statically defined transport connectors for native clients to connect to
         mBrokerService.addConnector(String.format("tcp://0.0.0.0:61616"));
@@ -168,8 +150,6 @@ public class ActiveMqBroker extends Broker {
 
         mBrokerService.setPlugins(brokerPlugins.toArray(new BrokerPlugin[0]));
         mBrokerService.start();
-
-        mListenerEventDispatcher.emit(Listener::onStart);
     }
 
     /**
@@ -177,20 +157,11 @@ public class ActiveMqBroker extends Broker {
      * @throws Exception
      */
     @Override
-    public synchronized void stop() throws Exception {
+    protected void stopImpl() throws Exception {
         if (mBrokerService != null) {
             mBrokerService.stop();
             mBrokerService = null;
         }
-    }
-
-    @Override
-    public void setDataDirectory(File file) {
-        mDataDirectory = file;
-    }
-
-    public File getDataDirectory() {
-        return mDataDirectory;
     }
 
     @Override
