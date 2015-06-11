@@ -3,20 +3,43 @@ apply plugin: 'java'
 sourceCompatibility = 1.8
 version = '1.0'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    // webservice
-    compile 'javax.ws.rs:javax.ws.rs-api:2.+'
+    compile project(':sx-common')
+
+    // logging
+    compile 'commons-logging:commons-logging:+'
+    compile "ch.qos.logback:logback-classic:+"
+    compile "org.slf4j:jcl-over-slf4j:+"
+
+    // javax
+    compile "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs"
+    compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
 
     // persistence
-    compile 'org.eclipse.persistence:javax.persistence:2.+'
+    compile "org.eclipse.persistence:javax.persistence:$v_eclipselink"
 
     // swagger for json doc
     compile 'com.wordnik:swagger-annotations:+'
     compile "com.fasterxml.jackson.core:jackson-databind:$v_jackson"
+
+    // messaging
+    // ActiveMQ
+    compile "org.apache.activemq:activemq-broker:$v_activemq"
+    compile "org.apache.activemq:activemq-kahadb-store:$v_activemq"
+    compile "org.apache.activemq:activemq-jms-pool:$v_activemq"
+    compile "org.apache.activemq:activemq-jaas:$v_activemq"
+    compile "org.apache.activemq:activemq-mqtt:$v_activemq"
+    compile("org.apache.activemq:activemq-http:$v_activemq") {
+        exclude group: 'org.springframework'
+        exclude group: 'org.apache.activemq', module: 'activemq-spring'
+        exclude group: 'org.eclipse.jetty.aggregate'
+    }
+    // http support
+    compile 'org.apache.httpcomponents:httpclient:4.+'
+    compile 'com.thoughtworks.xstream:xstream:1.+'
+
+    // spring
+    compile("org.springframework:spring-jms:$v_spring")
 
     testCompile group: 'junit', name: 'junit', version: v_junit
 

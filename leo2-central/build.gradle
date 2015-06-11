@@ -22,10 +22,9 @@ mainClassName = "org.deku.leo2.central.Main"
 
 dependencies {
     // leo2 webservice dependencies
-    compile project(':leo2-common')
-    compile project(':leo2-messaging')
-    compile project(':leo2-node')
     compile project(':sx-common')
+    compile project(':leo2-common')
+    compile project(':leo2-node')
 
     // db
     compile "mysql:mysql-connector-java:$v_mysql"

@@ -28,7 +28,8 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.+'
+    compile project(':sx-common')
+    compile project(':leo2-common')
 
     // JSR-303 bean validation
     compile 'org.glassfish.web:el-impl:2.+'
@@ -52,10 +53,7 @@ dependencies {
     compile 'com.dooapp.fxform2:core:8.+'
     compile 'org.controlsfx:controlsfx:8.+'
 
-    compile project(':sx-common')
-
-    compile project(':leo2-common')
-    compile project(':leo2-messaging')
+    testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
 //task proguard(type: proguard.gradle.ProGuardTask) {

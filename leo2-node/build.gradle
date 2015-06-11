@@ -7,14 +7,12 @@ mainClassName = "org.deku.leo2.node.Main"
 
 dependencies {
     // leo2 webservice dependencies
-    compile project(':leo2-common')
-    compile project(':leo2-messaging')
     compile project(':sx-common')
+    compile project(':leo2-common')
 
     // spring
     compile 'org.springframework.data:spring-data-jpa:1.8.+'
     compile "org.springframework.data:spring-data-commons:1.10.+"
-
     compile "org.springframework:spring-web"
     //compile "org.springframework:spring-aspects"
     // spring boot
@@ -26,9 +24,9 @@ dependencies {
     optional "org.springframework.boot:spring-boot-configuration-processor"
 
     // logging
-    compile "org.slf4j:jul-to-slf4j:1.+"
-    compile "org.slf4j:log4j-over-slf4j:1.+"
-    compile "ch.qos.logback:logback-classic:1.+"
+    compile "org.slf4j:jul-to-slf4j:+"
+    compile "org.slf4j:log4j-over-slf4j:+"
+    compile "ch.qos.logback:logback-classic:+"
 
     // webservice
     // for various javax interfaces (eg. ServletContextListener)
