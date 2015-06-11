@@ -20,7 +20,6 @@ package sx.event;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,30 +34,30 @@ public class RegularEventDispatcher<T extends EventListener> extends EventDispat
     /**
      * Weak references of listeners
      */
-    private final ArrayList<WeakReference<T>> _listeners = new ArrayList<WeakReference<T>>();
+    private final ArrayList<ListenerReference> _listeners = new ArrayList<ListenerReference>();
 
     @Override
     public void add(T listener) {
-        _listeners.add(new WeakReference<T>(listener));
+        _listeners.add(new ListenerReference(listener, listener.getClass()));
     }
 
     @Override
     public void remove(final T listener) {
-        _listeners.removeAll(Collections2.filter(_listeners, new Predicate<WeakReference<T>>() {
+        _listeners.removeAll(Collections2.filter(_listeners, new Predicate<ListenerReference>() {
             @Override
-            public boolean apply(WeakReference<T> input) {
+            public boolean apply(ListenerReference input) {
                 return input.get() == listener;
             }
         }));
     }
 
     @Override
-    protected void remove(List<WeakReference<T>> listeners) {
+    protected void remove(List<ListenerReference> listeners) {
         _listeners.removeAll(listeners);
     }
 
     @Override
-    protected List<WeakReference<T>> getListeners() {
-        return new ArrayList<WeakReference<T>>(_listeners);
+    protected List<ListenerReference> getListeners() {
+        return new ArrayList<ListenerReference>(_listeners);
     }
 }

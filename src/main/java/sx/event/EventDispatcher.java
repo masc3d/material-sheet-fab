@@ -1,5 +1,9 @@
 package sx.event;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +15,21 @@ import java.util.List;
  * Created by masc on 11.08.14.
  */
 public abstract class EventDispatcher<T extends EventListener> implements EventDelegate<T> {
+    private Log mLog = LogFactory.getLog(this.getClass());
+
+    /** Listener reference with type information */
+    class ListenerReference extends WeakReference<T> {
+        private Class mClass;
+        public ListenerReference(T referent, Class c) {
+            super(referent);
+            mClass = c;
+        }
+
+        public Class getListenerClass() {
+            return mClass;
+        }
+    }
+
     /**
      * Generic runnable interface for event emission
      *
@@ -40,11 +59,11 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
      *
      * @param listeners
      */
-    protected abstract void remove(List<WeakReference<T>> listeners);
+    protected abstract void remove(List<ListenerReference> listeners);
     /**
      * Get copy of listener references
      */
-    protected abstract List<WeakReference<T>> getListeners();
+    protected abstract List<ListenerReference> getListeners();
 
     /**
      * Emit event to listeners
@@ -52,23 +71,31 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
      * @param r Runnable supposed to call listener interface method
      */
     public void emit(Runnable<T> r) {
-        List<WeakReference<T>> invalidRefs = null;
+        List<ListenerReference> invalidRefs = null;
 
-        List<WeakReference<T>> listenerRefs = this.getListeners();
-        for (WeakReference<T> listener : listenerRefs) {
+        List<ListenerReference> listenerRefs = this.getListeners();
+        for (ListenerReference listener : listenerRefs) {
             T instance = listener.get();
             if (instance != null)
                 r.run(instance);
             else {
                 if (invalidRefs == null)
-                    invalidRefs = new ArrayList<WeakReference<T>>();
+                    invalidRefs = new ArrayList<ListenerReference>();
                 invalidRefs.add(listener);
             }
         }
 
         // Remove invalid refs
-        if (invalidRefs != null)
-            this.remove(invalidRefs);
+            if (invalidRefs != null) {
+                for (ListenerReference ir : invalidRefs) {
+                    mLog.info(String.format("Removing gc'ed listener %s (%s)",
+                            ir.getListenerClass(),
+                            String.join(",",
+                                    (Iterable)Lists.newArrayList(ir.getListenerClass().getInterfaces()).stream().map(c -> c.toString())::iterator
+                            )));
+                }
+                this.remove(invalidRefs);
+            }
     }
 
     /**
