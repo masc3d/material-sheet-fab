@@ -2,10 +2,8 @@ package org.deku.leo2.node;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.activemq.BrokerImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -24,11 +22,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Spring boot main class.
@@ -47,9 +42,6 @@ import java.util.List;
 })
 public class Main extends SpringBootServletInitializer implements ApplicationListener, SpringApplicationRunListener {
     private Log mLog = LogFactory.getLog(Main.class);
-
-    @Inject
-    Config.Central mCentralConfig;
 
     /**
      * Standalone startup

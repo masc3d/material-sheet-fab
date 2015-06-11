@@ -1,10 +1,15 @@
 package org.deku.leo2.node.web;
 
+import com.google.common.base.Strings;
 import io.undertow.server.handlers.resource.*;
 import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deku.leo2.messaging.Broker;
+import org.deku.leo2.messaging.activemq.ActiveMqBroker;
 import org.deku.leo2.messaging.activemq.HttpExternalTunnelServlet;
+import org.deku.leo2.node.messaging.BrokerSettings;
+import org.deku.leo2.node.peer.PeerSettings;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
@@ -20,16 +25,13 @@ import org.springframework.context.annotation.Bean;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Paths;
 
 /**
  * Created by masc on 27.05.15.
@@ -50,6 +52,12 @@ public class WebContextInitializer implements ServletContextInitializer {
 
     @Inject
     SpringBeanProcessor mSpringBeanProcessor;
+
+    @Inject
+    PeerSettings mPeerSettings;
+
+    @Inject
+    BrokerSettings mBrokerSettings;
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
@@ -81,11 +89,26 @@ public class WebContextInitializer implements ServletContextInitializer {
         sr.addMapping(RESTEASY_MAPPING_PATH + "/*");
 
         try {
-            sr = servletContext.addServlet(HttpExternalTunnelServlet.class.getName(), new HttpExternalTunnelServlet(new URI("http://localhost:8080/jms")));
+            sr = servletContext.addServlet(HttpExternalTunnelServlet.class.getName(),
+                    new HttpExternalTunnelServlet(
+                            new URI("http://localhost:8080/leo2/jms")));
             sr.setLoadOnStartup(1);
-            sr.addMapping("/jms/*");
+            sr.addMapping(this.mBrokerSettings.getHttpContextPath() + "/*");
         } catch (URISyntaxException e) {
             throw new ServletException(e);
+        }
+
+        // Broker configuration, must be done before tunnel servlet starts
+
+        if (!Strings.isNullOrEmpty(mPeerSettings.getHost())) {
+            // TODO: we could probe for available remote ports here, but this implies
+            // init of peer brokers should also be threaded, as timeouts may occur
+            mLog.info(String.format("Adding peer broker: %s", mPeerSettings.getHost()));
+
+            ActiveMqBroker.instance().addPeerBroker(new Broker.PeerBroker(
+                    mPeerSettings.getHost(),
+                    Broker.TransportType.TCP,
+                    null));
         }
     }
 

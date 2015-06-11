@@ -16,32 +16,25 @@ import javax.jms.Topic;
  * Messaging context implementation for activemq
  * Created by masc on 16.04.15.
  */
-public class ContextImpl implements Context {
+public class ActiveMqContext implements Context {
     /** Singleton instance */
-    private static LazyInstance<ContextImpl> mContext = new LazyInstance<>(ContextImpl::new);
+    private static LazyInstance<ActiveMqContext> mContext = new LazyInstance<>(ActiveMqContext::new);
 
-    /** Broker */
-    private BrokerImpl mBroker = new BrokerImpl();
-    /** Connection factory */
+    /** Connection factory for connecting to the embedded broker */
     private ConnectionFactory mConnectionFactory;
 
-    public ContextImpl() {
+    public ActiveMqContext() {
         PooledConnectionFactory psf = new PooledConnectionFactory();
         psf.setConnectionFactory(new ActiveMQConnectionFactory(
                 Broker.USERNAME,
                 Broker.PASSWORD,
                 // Explicitly do _not_ create (another) embedded broker on connection, just in case
-                String.format("vm://%s?create=false", Broker.NAME)));
+                "vm://localhost?create=false"));
         mConnectionFactory = psf;
     }
 
-    public static ContextImpl instance() {
+    public static ActiveMqContext instance() {
         return mContext.get();
-    }
-
-    @Override
-    public BrokerImpl getBroker() {
-        return mBroker;
     }
 
     @Override

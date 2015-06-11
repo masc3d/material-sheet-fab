@@ -3,11 +3,8 @@ package org.deku.leo2.node;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.BasicConfigurator;
-import org.deku.leo2.messaging.Context;
-import org.deku.leo2.messaging.activemq.BrokerImpl;
-import org.deku.leo2.messaging.activemq.ContextImpl;
-import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.deku.leo2.messaging.activemq.ActiveMqBroker;
+import org.deku.leo2.messaging.activemq.ActiveMqContext;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.context.ApplicationContext;
@@ -29,6 +26,7 @@ import java.util.function.Supplier;
  * Created by masc on 30.05.15.
  */
 public class App implements Disposable, ApplicationContextAware {
+    private static Log mLog = LogFactory.getLog(App.class);
 
     //region Singleton
     private static LazyInstance<App> mInstance = new LazyInstance(App::new);
@@ -49,9 +47,6 @@ public class App implements Disposable, ApplicationContextAware {
         mInstance.set(supplier);
     }
     //endregion
-
-    private static Log mLog = LogFactory.getLog(App.class);
-    private boolean mIsInitialized;
 
     protected List<URL> mConfigLocations = new ArrayList();
 
@@ -93,10 +88,6 @@ public class App implements Disposable, ApplicationContextAware {
         return mLocalConfigurationFile.get();
     }
 
-    public boolean isInitialized() {
-        return mIsInitialized;
-    }
-
     public void initialize() throws Exception {
         mLog.info("Leo2 node initialize");
 
@@ -130,15 +121,14 @@ public class App implements Disposable, ApplicationContextAware {
         //endregion
 
         // Initialize broker
-        ContextImpl.instance().getBroker().setDataDirectory(App.instance().getLocalHomeDirectory());
-
-        mIsInitialized = true;
+        ActiveMqBroker.instance().setDataDirectory(
+                App.instance().getLocalHomeDirectory());
     }
 
     @Override
     public void dispose() {
         try {
-            ContextImpl.instance().getBroker().stop();
+            ActiveMqBroker.instance().stop();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -270,12 +270,15 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc2 (*)
 +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-\--- org.jinq:jinq-jpa:+ -> 1.8
-     +--- org.ow2.asm:asm-all:5.0.1
-     +--- org.jinq:api:1.8
-     \--- org.jinq:analysis:1.8
-          +--- org.ow2.asm:asm-all:5.0.1
-          \--- org.jinq:api:1.8
++--- org.jinq:jinq-jpa:+ -> 1.8
+|    +--- org.ow2.asm:asm-all:5.0.1
+|    +--- org.jinq:api:1.8
+|    \--- org.jinq:analysis:1.8
+|         +--- org.ow2.asm:asm-all:5.0.1
+|         \--- org.jinq:api:1.8
+\--- org.springframework.boot:spring-boot-configuration-processor: -> 1.2.4.RELEASE
+     +--- org.json:json:20140107
+     \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 
 default - Configuration for default artifacts.
 +--- project :leo2-common
@@ -554,6 +557,12 @@ No dependencies
 generatedRuntime - Runtime classpath for source set 'generated'.
 No dependencies
 
+optional
+\--- org.springframework.boot:spring-boot-configuration-processor: -> 1.2.4.RELEASE
+
+provided
+No dependencies
+
 runtime - Runtime classpath for source set 'main'.
 +--- project :leo2-common
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -818,12 +827,15 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc2 (*)
 +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-\--- org.jinq:jinq-jpa:+ -> 1.8
-     +--- org.ow2.asm:asm-all:5.0.1
-     +--- org.jinq:api:1.8
-     \--- org.jinq:analysis:1.8
-          +--- org.ow2.asm:asm-all:5.0.1
-          \--- org.jinq:api:1.8
++--- org.jinq:jinq-jpa:+ -> 1.8
+|    +--- org.ow2.asm:asm-all:5.0.1
+|    +--- org.jinq:api:1.8
+|    \--- org.jinq:analysis:1.8
+|         +--- org.ow2.asm:asm-all:5.0.1
+|         \--- org.jinq:api:1.8
+\--- org.springframework.boot:spring-boot-configuration-processor: -> 1.2.4.RELEASE
+     +--- org.json:json:20140107
+     \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 
 testCompile - Compile classpath for source set 'test'.
 +--- project :leo2-common
@@ -1095,6 +1107,9 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- org.jinq:analysis:1.8
 |         +--- org.ow2.asm:asm-all:5.0.1
 |         \--- org.jinq:api:1.8
++--- org.springframework.boot:spring-boot-configuration-processor: -> 1.2.4.RELEASE
+|    +--- org.json:json:20140107
+|    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 +--- junit:junit:4.+ -> 4.12 (*)
 +--- org.jboss.resteasy:resteasy-client:3.0.+ -> 3.0.11.Final
 |    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final (*)
@@ -1371,6 +1386,9 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- org.jinq:analysis:1.8
 |         +--- org.ow2.asm:asm-all:5.0.1
 |         \--- org.jinq:api:1.8
++--- org.springframework.boot:spring-boot-configuration-processor: -> 1.2.4.RELEASE
+|    +--- org.json:json:20140107
+|    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 +--- junit:junit:4.+ -> 4.12 (*)
 +--- org.jboss.resteasy:resteasy-client:3.0.+ -> 3.0.11.Final
 |    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final (*)

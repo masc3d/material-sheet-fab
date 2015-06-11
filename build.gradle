@@ -9,14 +9,14 @@ buildscript {
     }
     repositories {
         jcenter()
-        maven {
-            url "http://repo.spring.io/snapshot"
-        }
+        maven { url 'http://repo.spring.io/snapshot' }
+        maven { url 'http://repo.spring.io/plugins-release' }
         mavenCentral()
     }
 
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:" + v_springboot_gradle_plugin)
+        classpath 'org.springframework.build.gradle:propdeps-plugin:+'
     }
 }
 
@@ -132,7 +132,7 @@ subprojects {
                     details.useVersion v_javax_servlet
                 }
             }
-            
+
             force "com.mysema.querydsl:querydsl-codegen:$v_querydsl"
 
             // Apache common

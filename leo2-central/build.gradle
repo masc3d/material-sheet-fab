@@ -5,12 +5,8 @@ buildscript {
         classpath 'com.github.ben-manes:gradle-jooq-plugin:+'
 
         // override jooq dependencies of gradle-jooq-plugin with desired version
-        classpath("org.jooq:jooq-codegen:$v_jooq") {
-            force: true
-        }
-        classpath("org.jooq:jooq-meta:$v_jooq") {
-            force: true
-        }
+        classpath("org.jooq:jooq-codegen:$v_jooq") { force true }
+        classpath("org.jooq:jooq-meta:$v_jooq") { force true }
 
         // mysql jdbc connector
         classpath "mysql:mysql-connector-java:$v_mysql"
@@ -31,11 +27,11 @@ dependencies {
     compile project(':leo2-node')
     compile project(':sx-common')
 
+    // db
+    compile "mysql:mysql-connector-java:$v_mysql"
+
     // jooq
     compile "org.jooq:jooq:$v_jooq"
-
-    // databases
-    compile "mysql:mysql-connector-java:$v_mysql"
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: '4.+'
@@ -54,7 +50,7 @@ run {
 }
 
 springBoot {
-    executable = false
+    executable = true
 }
 
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)

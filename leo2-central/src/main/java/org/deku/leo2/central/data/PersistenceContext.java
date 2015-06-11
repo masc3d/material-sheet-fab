@@ -3,7 +3,6 @@ package org.deku.leo2.central.data;
 import com.mysql.jdbc.AbandonedConnectionCleanupThread;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.node.Config;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultDSLContext;

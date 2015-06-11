@@ -3,12 +3,14 @@ package org.deku.leo2.messaging.activemq;
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.filter.DestinationMapEntry;
+import org.apache.activemq.network.DiscoveryNetworkConnector;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.security.*;
 import org.apache.activemq.transport.TransportServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
+import sx.LazyInstance;
 import sx.util.EventDelegate;
 import sx.util.EventDispatcher;
 import sx.util.EventListener;
@@ -23,26 +25,23 @@ import java.util.List;
  * Broker implementation for activemq
  * Created by masc on 16.04.15.
  */
-public class BrokerImpl extends Broker {
-    /**
-     * Peer broker
-     */
-    private class PeerBroker {
-        public String hostname;
-        public Integer httpPort;
+public class ActiveMqBroker extends Broker {
+    //region Singleton
+    private static LazyInstance<ActiveMqBroker> mInstance = new LazyInstance<>(ActiveMqBroker::new);
+
+    public static ActiveMqBroker instance() {
+        return mInstance.get();
     }
+    //endregion
 
     //region Events
-    /**
-     * Broker event listener interface
-     */
+
+    /** Broker event listener interface */
     public interface Listener extends EventListener {
         void onStart();
     }
 
-    /**
-     * Broker event dispatcher/delegate
-     */
+    /** Broker event dispatcher/delegate */
     private EventDispatcher<Listener> mListenerEventDispatcher = EventDispatcher.createThreadSafe();
 
     public EventDelegate<Listener> getListenerEventDispatcher() {
@@ -51,7 +50,7 @@ public class BrokerImpl extends Broker {
     //endregion
 
     /** Log */
-    private Log mLog = LogFactory.getLog(BrokerImpl.class);
+    private Log mLog = LogFactory.getLog(ActiveMqBroker.class);
 
     /** Native broker service */
     private BrokerService mBrokerService;
@@ -59,16 +58,15 @@ public class BrokerImpl extends Broker {
     /** Data directory for store */
     private File mDataDirectory;
 
-    /** List of peer brokers */
-    List<PeerBroker> mPeerBrokers = new ArrayList<>();
+    /** External transport servers, eg. servlets */
     List<TransportServer> mExternalTransportServers = new ArrayList<>();
 
     /** c'tor */
-    public BrokerImpl() {
+    private ActiveMqBroker() {
     }
 
     /**
-     * Active MQ broker service instance
+     * Add transport server, eg. from servlet
      * @return
      */
     public void addConnector(TransportServer transportServer) throws Exception {
@@ -87,15 +85,19 @@ public class BrokerImpl extends Broker {
         mBrokerService = new BrokerService();
         mBrokerService.setDataDirectoryFile(mDataDirectory);
 
-        // Statically defined transport connectors for clients to connect to
-        mBrokerService.addConnector(createUri("0.0.0.0", false));
+        // Statically defined transport connectors for native clients to connect to
+        mBrokerService.addConnector(String.format("tcp://0.0.0.0:61616"));
+
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect
-        mBrokerService.addConnector("vm://" + NAME);
+        mBrokerService.addConnector("vm://localhost");
 
         // Peer/network connectors for brokers to inter-connect
-        for (PeerBroker pb : mPeerBrokers) {
-            NetworkConnector nc = mBrokerService.addNetworkConnector(createUri(pb.hostname, pb.httpPort, true));
+        for (PeerBroker pb : this.getPeerBrokers()) {
+            URI hostUrl = createUri(pb, false);
+            NetworkConnector nc = new DiscoveryNetworkConnector(URI.create(String.format("static:(%s)", hostUrl)));
+            nc.setUserName(USERNAME);
+            nc.setPassword(PASSWORD);
             nc.setDuplex(true);
             mBrokerService.addNetworkConnector(nc);
         }
@@ -106,7 +108,7 @@ public class BrokerImpl extends Broker {
         // Broker plugins
         List<BrokerPlugin> brokerPlugins = new ArrayList<>();
 
-        // Authentication
+        //region Authentication
         SimpleAuthenticationPlugin pAuth = new SimpleAuthenticationPlugin();
 
         // Users
@@ -115,7 +117,10 @@ public class BrokerImpl extends Broker {
         users.add(new AuthenticationUser(USERNAME, PASSWORD, GROUP_LEO));
         pAuth.setUsers(users);
 
-        // Authorizations
+        brokerPlugins.add(pAuth);
+        //endregion
+
+        //region Authorizations
         List<DestinationMapEntry> authzEntries = new ArrayList<>();
 
         AuthorizationEntry pAuthzEntry = new AuthorizationEntry();
@@ -158,12 +163,10 @@ public class BrokerImpl extends Broker {
         AuthorizationPlugin pAuthz = new AuthorizationPlugin();
         pAuthz.setMap(authzMap);
 
-        // Register plugins
-        brokerPlugins.add(pAuth);
         brokerPlugins.add(pAuthz);
-        mBrokerService.setPlugins(brokerPlugins.toArray(new BrokerPlugin[0]));
+        //endregion
 
-        mBrokerService.setBrokerName(Broker.NAME);
+        mBrokerService.setPlugins(brokerPlugins.toArray(new BrokerPlugin[0]));
         mBrokerService.start();
 
         mListenerEventDispatcher.emit(Listener::onStart);
@@ -179,21 +182,6 @@ public class BrokerImpl extends Broker {
             mBrokerService.stop();
             mBrokerService = null;
         }
-    }
-
-    /**
-     * Adds a peer broker to this broker's configuration
-     * This setting needs to be set before starting the broker
-     * or the broker has to be restarted for the change to take effect.
-     * @param hostname Hostname of the peer broker
-     * @param httpPort Optional http port. If null, the native port/protocol will be used
-     */
-    @Override
-    public void addPeerBroker(String hostname, Integer httpPort) {
-        PeerBroker pb = new PeerBroker();
-        pb.hostname = hostname;
-        pb.httpPort = httpPort;
-        mPeerBrokers.add(pb);
     }
 
     @Override
@@ -216,39 +204,31 @@ public class BrokerImpl extends Broker {
 
     /**
      * Create ActiveMQ URI
-     * @param hostname Hostname
-     * @param httpPort Optional http port, if omitted native port will be used
+     * @param peerBroker Peer broker
+     * @param failover
      * @return ActiveMQ URI
      */
-    public static URI createUri(String hostname, Integer httpPort, boolean failover) {
-        String scheme;
-        String path = (httpPort != null) ? "/leo2/jms" : "";
-
-        int port;
-        if (httpPort != null) {
-            scheme = "http";
-            port = httpPort;
-        } else {
-            scheme = "tcp";
-            port = 61616;
+    public static URI createUri(PeerBroker peerBroker, boolean failover) {
+        String scheme = peerBroker.getTransportType().toString();
+        String path = peerBroker.getHttpPath();
+        if (path == null)
+            path = "";
+        Integer port = peerBroker.getPort();
+        if (port == null) {
+            port = (peerBroker.getTransportType() == TransportType.TCP) ? 61616 : 80;
         }
 
         if (failover)
             scheme = "failover:" + scheme;
 
         try {
-            return new URI(String.format("%s://%s:%d%s", scheme, hostname, port, path));
+            return new URI(String.format("%s://%s:%d%s",
+                    scheme,
+                    peerBroker.getHostname(),
+                    port,
+                    path));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Create native ActiveMQ URI
-     * @param hostname
-     * @return
-     */
-    public static URI createUri(String hostname, boolean failover) {
-        return createUri(hostname, null, failover);
     }
 }
