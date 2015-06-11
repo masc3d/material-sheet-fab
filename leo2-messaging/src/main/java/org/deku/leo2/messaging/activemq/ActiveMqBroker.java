@@ -11,9 +11,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
 import sx.LazyInstance;
-import sx.util.EventDelegate;
-import sx.util.EventDispatcher;
-import sx.util.EventListener;
+import sx.event.EventDelegate;
+import sx.event.EventDispatcher;
+import sx.event.EventListener;
 
 import java.io.File;
 import java.net.URI;

@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 /**
  * Created by masc on 30.05.15.
  */
-public class App implements Disposable, ApplicationContextAware {
+public class App implements Disposable {
     private static Log mLog = LogFactory.getLog(App.class);
 
     //region Singleton
@@ -50,26 +50,12 @@ public class App implements Disposable, ApplicationContextAware {
 
     protected List<URL> mConfigLocations = new ArrayList();
 
-    private LazyInstance<File> mLocalHomeDirectory;
-    private LazyInstance<File> mLocalConfigurationFile;
+    private File mLocalHomeDirectory;
+    private File mLocalConfigurationFile;
 
     protected App() {
-        mLocalHomeDirectory = new LazyInstance<>( () ->  new File(System.getProperty("user.home"), ".leo2"));
-        mLocalConfigurationFile = new LazyInstance<>( () -> new File(mLocalHomeDirectory.get(), "leo2.properties"));
-    }
-
-    /**
-     * Spring application context
-     */
-    ConfigurableApplicationContext mContext;
-
-    public ConfigurableApplicationContext getContext() {
-        return mContext;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        mContext = (ConfigurableApplicationContext)applicationContext;
+        mLocalHomeDirectory = new File(System.getProperty("user.home"), ".leo2");
+        mLocalConfigurationFile = new File(this.getLocalHomeDirectory(), "leo2.properties");
     }
 
     /**
@@ -77,7 +63,7 @@ public class App implements Disposable, ApplicationContextAware {
      * @return
      */
     public File getLocalHomeDirectory() {
-        return mLocalHomeDirectory.get();
+        return mLocalHomeDirectory;
     }
 
     /**
@@ -85,7 +71,7 @@ public class App implements Disposable, ApplicationContextAware {
      * @return
      */
     public File getLocalConfigurationFile() {
-        return mLocalConfigurationFile.get();
+        return mLocalConfigurationFile;
     }
 
     public void initialize() throws Exception {

@@ -9,10 +9,10 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import sx.Disposable;
-import sx.util.EventDelegate;
-import sx.util.EventDispatcher;
-import sx.util.EventListener;
-import sx.util.ThreadSafeEventDispatcher;
+import sx.event.EventDelegate;
+import sx.event.EventDispatcher;
+import sx.event.EventListener;
+import sx.event.ThreadSafeEventDispatcher;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
