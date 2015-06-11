@@ -33,7 +33,7 @@ dependencies {
 
     // JSR-303 bean validation
     compile 'org.glassfish.web:el-impl:2.+'
-    compile 'org.hibernate:hibernate-validator:5.+'
+    compile "org.hibernate:hibernate-validator:$v_hibernate"
 
     // JAX-RS client
     compile "org.glassfish.jersey.core:jersey-client:$v_jersey"

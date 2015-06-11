@@ -1,5 +1,4 @@
 apply plugin: 'application'
-apply plugin: 'propdeps'
 
 sourceCompatibility = 1.8
 version = '0.1'
@@ -13,15 +12,15 @@ dependencies {
     // spring
     compile 'org.springframework.data:spring-data-jpa:1.8.+'
     compile "org.springframework.data:spring-data-commons:1.10.+"
-    compile "org.springframework:spring-web"
+    compile "org.springframework:spring-web:$v_spring"
     //compile "org.springframework:spring-aspects"
     // spring boot
-    compile("org.springframework.boot:spring-boot-starter")
-    compile("org.springframework.boot:spring-boot-starter-web") {
+    compile "org.springframework.boot:spring-boot-starter:$v_springboot"
+    compile("org.springframework.boot:spring-boot-starter-web:$v_springboot") {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
-    compile("org.springframework.boot:spring-boot-starter-undertow")
-    optional "org.springframework.boot:spring-boot-configuration-processor"
+    compile "org.springframework.boot:spring-boot-starter-undertow:$v_springboot"
+    //optional "org.springframework.boot:spring-boot-configuration-processor"
 
     // logging
     compile "org.slf4j:jul-to-slf4j:+"
@@ -84,10 +83,6 @@ run {
     errorOutput = System.err
     standardOutput = System.out
     standardInput = System.in
-}
-
-springBoot {
-    executable = true
 }
 
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)

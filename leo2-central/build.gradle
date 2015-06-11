@@ -48,10 +48,6 @@ run {
     standardInput = System.in
 }
 
-springBoot {
-    executable = true
-}
-
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)

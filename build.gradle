@@ -29,6 +29,7 @@ allprojects {
             v_guava = "18.0"
             v_h2 = "1.+"
             v_hk2 = "2.+"
+            v_hibernate = "5.2.+"
             v_jackson = "2.+"
             v_javax_servlet = "3.1.+"
             v_javax_persistence = "2.1.+"
@@ -51,7 +52,6 @@ allprojects {
     }
 }
 
-
 project(':leo2-node') {
     apply plugin: 'spring-boot'
 
@@ -60,6 +60,10 @@ project(':leo2-node') {
         imports {
             mavenBom "io.spring.platform:platform-bom:$v_spring_platform"
         }
+    }
+
+    springBoot {
+        executable = true
     }
 }
 
@@ -71,6 +75,10 @@ project(':leo2-central') {
         imports {
             mavenBom "io.spring.platform:platform-bom:$v_spring_platform"
         }
+    }
+
+    springBoot {
+        executable = true
     }
 }
 
@@ -132,6 +140,14 @@ subprojects {
                     details.useVersion v_guava
                 } else if (details.requested.group == 'javax.servlet') {
                     details.useVersion v_javax_servlet
+                } else if (details.requested.group == 'org.hamcrest') {
+                    details.useVersion "1.+"
+                } else if (details.requested.group == 'org.javassist') {
+                    details.useVersion "3.+"
+                } else if (details.requested.group == 'org.yaml') {
+                    details.useVersion "1.+"
+                } else if (details.requested.group == 'org.hibernate') {
+                    details.useVersion v_hibernate
                 }
             }
 
