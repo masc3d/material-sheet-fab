@@ -9,6 +9,8 @@ import org.apache.commons.logging.LogFactory;
 import javax.servlet.ServletException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * External http tunnel servlet for activemq.
@@ -67,7 +69,16 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet {
 
             // Broker should not be started at this time
             ActiveMqBroker.instance().addConnector(transportConnector);
-            ActiveMqBroker.instance().start();
+
+            // Start broker threaded to improve startup time
+            ExecutorService exec = Executors.newSingleThreadExecutor();
+            exec.execute(() -> {
+                try {
+                    ActiveMqBroker.instance().start();
+                } catch (Exception e) {
+                    mLog.error(e.getMessage(), e);
+                }
+            });
         } catch (Exception e) {
             throw new ServletException(e);
         }

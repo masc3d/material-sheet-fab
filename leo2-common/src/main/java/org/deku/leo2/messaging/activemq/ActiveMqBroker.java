@@ -71,13 +71,13 @@ public class ActiveMqBroker extends Broker {
         mBrokerService = new BrokerService();
         mBrokerService.setDataDirectoryFile(this.getDataDirectory());
 
-        // Statically defined transport connectors for native clients to connect to
-        mBrokerService.addConnector(String.format("tcp://0.0.0.0:%d",
-                this.getNativeTcpPort()));
-
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect
         mBrokerService.addConnector("vm://localhost");
+
+        // Statically defined transport connectors for native clients to connect to
+        mBrokerService.addConnector(String.format("tcp://0.0.0.0:%d",
+                this.getNativeTcpPort()));
 
         // Peer/network connectors for brokers to inter-connect
         for (PeerBroker pb : this.getPeerBrokers()) {
