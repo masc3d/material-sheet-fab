@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package sx.util;
+package sx.event;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;

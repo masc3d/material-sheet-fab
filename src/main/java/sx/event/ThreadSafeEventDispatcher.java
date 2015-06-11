@@ -1,4 +1,4 @@
-package sx.util;
+package sx.event;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
