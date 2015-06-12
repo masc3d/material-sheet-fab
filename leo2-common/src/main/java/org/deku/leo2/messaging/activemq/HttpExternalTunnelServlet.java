@@ -76,7 +76,7 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet {
                 try {
                     ActiveMqBroker.instance().start();
                 } catch (Exception e) {
-                    mLog.error(e.getMessage(), e);
+                    throw new RuntimeException(e);
                 }
             });
         } catch (Exception e) {

@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
 import org.deku.leo2.messaging.activemq.ActiveMqBroker;
 import org.deku.leo2.messaging.activemq.HttpExternalTunnelServlet;
+import org.deku.leo2.node.App;
 import org.deku.leo2.node.messaging.BrokerSettings;
 import org.deku.leo2.node.peer.PeerSettings;
 import org.jboss.resteasy.core.Dispatcher;
@@ -22,6 +23,7 @@ import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -62,6 +64,9 @@ public class WebContextInitializer implements ServletContextInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         mLog.info("Leo2 webcontext startup");
+
+        // Inject web application context
+        App.instance().setApplicationContext(WebApplicationContextUtils.getWebApplicationContext(servletContext));
 
         // Spring dispatcher servlet (variant 1)
         // requires the following spring boot autoconfigurations:

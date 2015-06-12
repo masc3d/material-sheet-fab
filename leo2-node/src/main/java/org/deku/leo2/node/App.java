@@ -4,12 +4,13 @@ import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.ActiveMqBroker;
-import org.deku.leo2.messaging.activemq.ActiveMqContext;
 import org.springframework.beans.BeansException;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import sx.Disposable;
 import sx.LazyInstance;
 
@@ -25,7 +26,11 @@ import java.util.function.Supplier;
 /**
  * Created by masc on 30.05.15.
  */
-public class App implements Disposable {
+public class App implements
+        Disposable,
+        // Srping won't recognize this as App is not a bean but
+        // we'll inject this within web application initializer
+        ApplicationContextAware {
     private static Log mLog = LogFactory.getLog(App.class);
 
     //region Singleton
@@ -53,6 +58,8 @@ public class App implements Disposable {
     private File mLocalHomeDirectory;
     private File mLocalConfigurationFile;
 
+    private ApplicationContext mSpringApplicationContext;
+
     protected App() {
         mLocalHomeDirectory = new File(System.getProperty("user.home"), ".leo2");
         mLocalConfigurationFile = new File(this.getLocalHomeDirectory(), "leo2.properties");
@@ -76,6 +83,15 @@ public class App implements Disposable {
 
     public void initialize() throws Exception {
         mLog.info("Leo2 node initialize");
+
+        // Uncaught threaded exception handler
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                mLog.error(e.getMessage(), e);
+                App.this.shutdown(-1);
+            }
+        });
 
         // Disable JOOQ logo
         System.setProperty("org.jooq.no-logo", "true");
@@ -118,5 +134,28 @@ public class App implements Disposable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Shutdown application
+     * @param exitCode Exit code
+     */
+    public void shutdown(int exitCode) {
+        if (mSpringApplicationContext != null) {
+            SpringApplication.exit(mSpringApplicationContext);
+        }
+        System.exit(0);
+    }
+    public void shutdown() {
+        this.shutdown(0);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        mSpringApplicationContext = applicationContext;
+    }
+
+    public ApplicationContext getSpringApplicationContext() {
+        return mSpringApplicationContext;
     }
 }

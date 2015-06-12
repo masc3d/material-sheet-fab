@@ -95,7 +95,8 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
 
     @Override
     public final void onApplicationEvent(ApplicationEvent event) {
-        mLog.info(event.toString());
+        mLog.info(String.format("Spring application event: %s",
+                event.getClass().getSimpleName()));
         //mLog.info(mCentralConfig.getUrl());
         if (event instanceof EmbeddedServletContainerInitializedEvent) {
             // Post spring initialization
