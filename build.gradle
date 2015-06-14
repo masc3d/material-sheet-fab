@@ -164,3 +164,21 @@ subprojects {
         }
     }
 }
+
+// copy intelllij data sources into place. this change will not be visible until IDE is restarted
+task copyIntellijDataSources(type: Copy) {
+    def ideaWorkspaceDir = '.idea'
+    def dataSourcesPresetFile = 'dataSources.preset.xml'
+    def dataSourcesFile = 'dataSources.xml'
+
+    if (!new File(ideaWorkspaceDir, dataSourcesFile).exists())
+        copy {
+            from(ideaWorkspaceDir)
+            into(ideaWorkspaceDir)
+            include dataSourcesPresetFile
+            rename dataSourcesPresetFile, dataSourcesFile
+        }
+}
+tasks.copyIntellijDataSources.execute()
+
+
