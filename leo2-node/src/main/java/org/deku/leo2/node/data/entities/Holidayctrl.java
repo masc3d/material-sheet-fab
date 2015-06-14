@@ -1,6 +1,7 @@
 package org.deku.leo2.node.data.entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -8,8 +9,9 @@ import java.sql.Timestamp;
  */
 @Entity
 @IdClass(HolidayctrlPK.class)
-@Table(name = "holidayctrl")
-public class Holidayctrl {
+public class Holidayctrl implements Serializable {
+    private static final long serialVersionUID = -1785072859096492614L;
+
     private Timestamp holiday;
     private Integer ctrlPos;
     private String country;
@@ -17,7 +19,6 @@ public class Holidayctrl {
     private Timestamp timestamp;
 
     @Id
-    @Column(name = "Holiday")
     public Timestamp getHoliday() {
         return holiday;
     }
@@ -27,7 +28,6 @@ public class Holidayctrl {
     }
 
     @Basic
-    @Column(name = "CtrlPos")
     public Integer getCtrlPos() {
         return ctrlPos;
     }
@@ -37,7 +37,6 @@ public class Holidayctrl {
     }
 
     @Id
-    @Column(name = "Country")
     public String getCountry() {
         return country;
     }
@@ -47,7 +46,6 @@ public class Holidayctrl {
     }
 
     @Basic
-    @Column(name = "Description")
     public String getDescription() {
         return description;
     }
@@ -57,7 +55,6 @@ public class Holidayctrl {
     }
 
     @Basic
-    @Column(name = "timestamp")
     public Timestamp getTimestamp() {
         return timestamp;
     }

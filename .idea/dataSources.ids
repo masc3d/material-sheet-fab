@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<component name="dataSourceStorage">
-  <data-source name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
-    <database-info product="" version="" jdbc-version="" driver-name="" driver-version=""/>
-  </data-source>
-  <data-source name="H2 - leo2" uuid="1de09889-d65d-4040-a468-aae8aac0749f">
-    <database-info product="" version="" jdbc-version="" driver-name="" driver-version=""/>
-  </data-source>
-</component>

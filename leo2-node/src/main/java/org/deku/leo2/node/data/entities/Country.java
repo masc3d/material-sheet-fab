@@ -1,14 +1,16 @@
 package org.deku.leo2.node.data.entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
  * Created by JT on 11.05.15.
  */
 @Entity
-@Table(name = "country")
-public class Country {
+public class Country implements Serializable {
+    private static final long serialVersionUID = 2361810454760700247L;
+
     private String lkz;
     private String lname;
     private Timestamp timestamp;
@@ -18,7 +20,6 @@ public class Country {
     private String zipFormat;
 
     @Id
-    @Column(name = "LKZ")
     public String getLkz() {
         return lkz;
     }
@@ -28,7 +29,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "LNAME")
     public String getLname() {
         return lname;
     }
@@ -38,7 +38,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "Timestamp")
     public Timestamp getTimestamp() {
         return timestamp;
     }
@@ -48,7 +47,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "RoutingTyp")
     public Integer getRoutingTyp() {
         return routingTyp;
     }
@@ -58,7 +56,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "MinLen")
     public Integer getMinLen() {
         return minLen;
     }
@@ -68,7 +65,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "MaxLen")
     public Integer getMaxLen() {
         return maxLen;
     }
@@ -78,7 +74,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "ZipFormat")
     public String getZipFormat() {
         return zipFormat;
     }

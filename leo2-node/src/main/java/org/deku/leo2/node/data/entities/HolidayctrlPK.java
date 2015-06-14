@@ -12,7 +12,6 @@ public class HolidayctrlPK implements Serializable {
     private Timestamp holiday;
     private String country;
 
-    @Column(name = "Holiday")
     @Id
     public Timestamp getHoliday() {
         return holiday;
@@ -22,7 +21,6 @@ public class HolidayctrlPK implements Serializable {
         this.holiday = holiday;
     }
 
-    @Column(name = "Country")
     @Id
     public String getCountry() {
         return country;
@@ -33,7 +31,6 @@ public class HolidayctrlPK implements Serializable {
     }
 
     public HolidayctrlPK() {
-
     }
 
     public HolidayctrlPK(Timestamp holiday, String country) {

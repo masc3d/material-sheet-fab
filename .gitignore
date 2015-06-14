@@ -25,3 +25,5 @@ leo2-node/src/generated
 workspace.xml
 *.iml
 modules.xml
+*.ids
+dataSources.local.xml

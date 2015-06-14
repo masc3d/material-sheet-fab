@@ -9,9 +9,10 @@ import java.sql.Timestamp;
  * Created by JT on 11.05.15.
  */
 public class RoutePK implements Serializable {
+    private static final long serialVersionUID = -334675901549944875L;
+
     private String product;
 
-    @Column(name = "product")
     @Id
     public String getProduct() {
         return product;
@@ -23,7 +24,6 @@ public class RoutePK implements Serializable {
 
     private String lkz;
 
-    @Column(name = "lkz")
     @Id
     public String getLkz() {
         return lkz;
@@ -35,7 +35,6 @@ public class RoutePK implements Serializable {
 
     private String zip;
 
-    @Column(name = "zip")
     @Id
     public String getZip() {
         return zip;
@@ -47,7 +46,6 @@ public class RoutePK implements Serializable {
 
     private Timestamp validfrom;
 
-    @Column(name = "validfrom")
     @Id
     public Timestamp getValidfrom() {
         return validfrom;
