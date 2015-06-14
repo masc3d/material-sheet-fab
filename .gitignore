@@ -21,3 +21,4 @@ leo2-messaging/reports/dependencies
 leo2-node/reports/dependencies
 leo2-ui/reports/dependencies
 leo2-node/src/generated
+.idea/libraries
