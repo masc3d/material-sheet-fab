@@ -32,10 +32,10 @@ public class LogListener extends SpringJmsListener {
     public void onMessage(Message message) {
         try {
             SimpleMessageConverter c = new SimpleMessageConverter();
-            ArrayList<LogMessage> cMessage = (ArrayList<LogMessage>)c.fromMessage(message);
-            //LogMessage[] cMessage = (LogMessage[])c.fromMessage(message);
+//            ArrayList<LogMessage> cMessage = (ArrayList<LogMessage>)c.fromMessage(message);
+            LogMessage[] cMessage = (LogMessage[])c.fromMessage(message);
 
-            mLog.info(String.format("Received %d log messages", cMessage.size()));
+            mLog.info(String.format("Received %d log messages", cMessage.length));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

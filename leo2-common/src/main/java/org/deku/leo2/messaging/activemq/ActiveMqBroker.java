@@ -74,6 +74,11 @@ public class ActiveMqBroker extends Broker {
         // Broker initialization
         mBrokerService = new BrokerService();
         mBrokerService.setDataDirectoryFile(this.getDataDirectory());
+        // Required for redelivery plugin/policy
+        mBrokerService.setSchedulerSupport(true);
+        // Disabling activemq's integrated  shutdown hook, favoring consumer side ordered shutdown
+        mBrokerService.setUseShutdownHook(false);
+
 
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect
@@ -157,7 +162,9 @@ public class ActiveMqBroker extends Broker {
         brokerPlugins.add(pAuthz);
         //endregion
 
+        //region Redelivery policy
         RedeliveryPlugin pRedelivery = new RedeliveryPlugin();
+        // TODO: verify if those plugin options are really needed
         pRedelivery.setFallbackToDeadLetter(false);
         pRedelivery.setSendToDlqIfMaxRetriesExceeded(false);
 
@@ -170,11 +177,8 @@ public class ActiveMqBroker extends Broker {
         rp.setUseExponentialBackOff(true);
 
         rpm.setDefaultEntry(rp);
-
         pRedelivery.setRedeliveryPolicyMap(rpm);
-
-        mBrokerService.setSchedulerSupport(true);
-        mBrokerService.setUseShutdownHook(false);
+        //endregion
 
         brokerPlugins.add(pRedelivery);
 

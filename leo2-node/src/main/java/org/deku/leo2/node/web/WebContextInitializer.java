@@ -30,6 +30,7 @@ import javax.inject.Named;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -108,7 +109,7 @@ public class WebContextInitializer implements ServletContextInitializer {
         ActiveMqBroker.instance().setNativeTcpPort(mBrokerSettings.getNativePort());
 
         ActiveMqBroker.instance().setDataDirectory(
-                App.instance().getLocalHomeDirectory());
+                new File(App.instance().getLocalHomeDirectory(), "activemq"));
 
         if (!Strings.isNullOrEmpty(mPeerSettings.getHost())) {
             // TODO: we could probe for available remote ports here, but this implies
