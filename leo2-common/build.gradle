@@ -41,6 +41,9 @@ dependencies {
     // spring
     compile("org.springframework:spring-jms:$v_spring")
 
+    // serialization
+    compile "com.esotericsoftware:kryo:3.+"
+
     testCompile group: 'junit', name: 'junit', version: v_junit
 
     // webservice client libraries for test cases

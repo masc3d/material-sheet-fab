@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
@@ -40,7 +41,7 @@ import javax.servlet.ServletException;
         ResteasyAutoConfiguration.class,
         //DataSourceAutoConfiguration.class
 })
-public class Main extends SpringBootServletInitializer implements ApplicationListener, SpringApplicationRunListener {
+public class Main extends SpringBootServletInitializer {
     private Log mLog = LogFactory.getLog(Main.class);
 
     /**
@@ -54,7 +55,11 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
 
     protected static void run(Class c, String[] args) throws Exception {
         App.instance().initialize();
-        SpringApplication.run(c);
+
+        new SpringApplicationBuilder()
+                .sources(c)
+                .listeners(App.instance())
+                .run(args);
     }
 
     /**
@@ -65,18 +70,6 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
     @Override
     public void onStartup(ServletContext container) throws ServletException {
         mLog.info("leo2.node.main.onStartup");
-        // Only start if there's no application context yet.
-        if (container.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE)
-                instanceof ApplicationContext) {
-            return;
-        }
-
-        try {
-            App.instance().initialize();
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
-
         super.onStartup(container);
     }
 
@@ -88,43 +81,13 @@ public class Main extends SpringBootServletInitializer implements ApplicationLis
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
         mLog.info("leo2.node.main.configure");
+        try {
+            App.instance().initialize();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return builder
                 .sources(Main.class)
-                .listeners(this);
-    }
-
-    @Override
-    public final void onApplicationEvent(ApplicationEvent event) {
-        mLog.info(String.format("Spring application event: %s",
-                event.getClass().getSimpleName()));
-        //mLog.info(mCentralConfig.getUrl());
-        if (event instanceof EmbeddedServletContainerInitializedEvent) {
-            // Post spring initialization
-        }
-    }
-
-    @Override
-    public void started() {
-        mLog.info("SPRING started");
-    }
-
-    @Override
-    public void environmentPrepared(ConfigurableEnvironment environment) {
-        mLog.info("SPRING env prepared");
-    }
-
-    @Override
-    public void contextPrepared(ConfigurableApplicationContext context) {
-        mLog.info("SPRING context prepared");
-    }
-
-    @Override
-    public void contextLoaded(ConfigurableApplicationContext context) {
-        mLog.info("SPRING context loaded");
-    }
-
-    @Override
-    public void finished(ConfigurableApplicationContext context, Throwable exception) {
-        mLog.info("SPRING finished");
+                .listeners(App.instance());
     }
 }

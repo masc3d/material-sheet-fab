@@ -2,51 +2,40 @@ package org.deku.leo2.messaging.log;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.Context;
+import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.log.v1.LogMessage;
-import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import sx.Disposable;
-import sx.jms.SimpleListener;
+import org.springframework.jms.support.converter.SimpleMessageConverter;
 import sx.jms.SpringJmsListener;
 
 import javax.jms.*;
-import java.util.Arrays;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Leo2 log message listener
  * Created by masc on 16.04.15.
  */
 public class LogListener extends SpringJmsListener {
-    private Context mContext;
+    private Log mLog = LogFactory.getLog(this.getClass());
+    private MessagingContext mMessagingContext;
 
-    public LogListener(Context context) {
-        super(context.getConnectionFactory());
-        mContext = context;
+    public LogListener(MessagingContext messagingContext) {
+        super(messagingContext.getConnectionFactory());
+        mMessagingContext = messagingContext;
     }
 
     @Override
     protected Destination createDestination() {
-        return mContext.createQueue(LogMessage.LOG_QUEUE_NAME);
+        return mMessagingContext.createQueue(LogMessage.LOG_QUEUE_NAME);
     }
 
     @Override
     public void onMessage(Message message) {
-        this.getLog().info("message");
         try {
-            if (message instanceof ObjectMessage) {
-                ObjectMessage om = (ObjectMessage) message;
+            SimpleMessageConverter c = new SimpleMessageConverter();
+            ArrayList<LogMessage> cMessage = (ArrayList<LogMessage>)c.fromMessage(message);
+            //LogMessage[] cMessage = (LogMessage[])c.fromMessage(message);
 
-                this.getLog().info("object type: " + om.getObject().getClass().getName());
-                org.deku.leo2.messaging.log.v1.LogMessage lm = (org.deku.leo2.messaging.log.v1.LogMessage) om.getObject();
-                this.getLog().info("object received: " + lm.toString());
-            } else {
-                TextMessage tm = (TextMessage) message;
-                this.getLog().info("text received: " + tm.getText());
-            }
+            mLog.info(String.format("Received %d log messages", cMessage.size()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

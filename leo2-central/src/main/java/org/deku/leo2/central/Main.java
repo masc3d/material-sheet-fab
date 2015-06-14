@@ -37,15 +37,20 @@ public class Main extends org.deku.leo2.node.Main {
     @Override
     public void onStartup(ServletContext container) throws ServletException {
         mLog.info("leo2.central.main.onStartup");
-        App.inject(App::new);
         super.onStartup(container);
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
         mLog.info("leo2.central.main.configure");
+        App.inject(App::new);
+        try {
+            App.instance().initialize();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return builder
                 .sources(Main.class)
-                .listeners(this);
+                .listeners(App.instance());
     }
 }

@@ -36,7 +36,8 @@ public class App extends org.deku.leo2.node.App {
 
     @Override
     public void initialize() throws Exception {
-        super.initialize();
+        // No JMS logging for leo2-central
+        super.initialize(LogConfigurationType.NONE);
 
         // Register to broker start
         ActiveMqBroker.instance().getListenerEventDispatcher().add(mBrokerListener);

@@ -103,7 +103,12 @@ public class WebContextInitializer implements ServletContextInitializer {
             throw new ServletException(e);
         }
 
-        // Broker configuration, must be done before tunnel servlet starts
+        // Broker configuration, must occur before tunnel servlet starts
+        mLog.info("Configuring messaging broker");
+        ActiveMqBroker.instance().setNativeTcpPort(mBrokerSettings.getNativePort());
+
+        ActiveMqBroker.instance().setDataDirectory(
+                App.instance().getLocalHomeDirectory());
 
         if (!Strings.isNullOrEmpty(mPeerSettings.getHost())) {
             // TODO: we could probe for available remote ports here, but this implies

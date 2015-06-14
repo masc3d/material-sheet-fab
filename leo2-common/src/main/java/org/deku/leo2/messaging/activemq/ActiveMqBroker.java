@@ -1,7 +1,13 @@
 package org.deku.leo2.messaging.activemq;
 
+import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.broker.region.policy.DeadLetterStrategy;
+import org.apache.activemq.broker.region.policy.PolicyEntry;
+import org.apache.activemq.broker.region.policy.PolicyMap;
+import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
+import org.apache.activemq.broker.util.RedeliveryPlugin;
 import org.apache.activemq.filter.DestinationMapEntry;
 import org.apache.activemq.network.DiscoveryNetworkConnector;
 import org.apache.activemq.network.NetworkConnector;
@@ -10,6 +16,7 @@ import org.apache.activemq.transport.TransportServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
+import sx.Disposable;
 import sx.LazyInstance;
 import sx.event.EventDelegate;
 import sx.event.EventDispatcher;
@@ -36,9 +43,6 @@ public class ActiveMqBroker extends Broker {
 
     // Defaults
     private static final int NATIVE_TCP_PORT = 61616;
-
-    /** Log */
-    private Log mLog = LogFactory.getLog(ActiveMqBroker.class);
 
     /** Native broker service */
     private BrokerService mBrokerService;
@@ -153,6 +157,27 @@ public class ActiveMqBroker extends Broker {
         brokerPlugins.add(pAuthz);
         //endregion
 
+        RedeliveryPlugin pRedelivery = new RedeliveryPlugin();
+        pRedelivery.setFallbackToDeadLetter(false);
+        pRedelivery.setSendToDlqIfMaxRetriesExceeded(false);
+
+        RedeliveryPolicyMap rpm = new RedeliveryPolicyMap();
+
+        RedeliveryPolicy rp = new RedeliveryPolicy();
+        rp.setMaximumRedeliveries(-1);
+        rp.setInitialRedeliveryDelay(2000);
+        rp.setBackOffMultiplier(2);
+        rp.setUseExponentialBackOff(true);
+
+        rpm.setDefaultEntry(rp);
+
+        pRedelivery.setRedeliveryPolicyMap(rpm);
+
+        mBrokerService.setSchedulerSupport(true);
+        mBrokerService.setUseShutdownHook(false);
+
+        brokerPlugins.add(pRedelivery);
+
         mBrokerService.setPlugins(brokerPlugins.toArray(new BrokerPlugin[0]));
         mBrokerService.start();
     }
@@ -170,12 +195,8 @@ public class ActiveMqBroker extends Broker {
     }
 
     @Override
-    public void dispose() {
-        try {
-            this.stop();
-        } catch (Exception e) {
-            mLog.error(e.getMessage(), e);
-        }
+    protected boolean isStartedImpl() {
+        return mBrokerService != null && mBrokerService.isStarted();
     }
 
     /**
