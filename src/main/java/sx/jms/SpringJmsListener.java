@@ -49,18 +49,14 @@ public abstract class SpringJmsListener extends Listener {
         if (mListenerContainer == null) {
             mDestination = this.createDestination();
 
-//            mTransactionManager = new JmsTransactionManager(this.getConnectionFactory());
-
             mListenerContainer = new DefaultMessageListenerContainer();
             mListenerContainer.setConnectionFactory(this.getConnectionFactory());
             mListenerContainer.setMessageListener(this);
             mListenerContainer.setSessionTransacted(true);
-            mListenerContainer.setSessionAcknowledgeMode(Session.SESSION_TRANSACTED);
             mListenerContainer.setErrorHandler(new ErrorHandler() {
                 @Override
                 public void handleError(Throwable t) { }
             });
-            //mListenerContainer.setTransactionManager(mTransactionManager);
             mListenerContainer.setDestination(mDestination);
             this.configure(mListenerContainer);
             mListenerContainer.afterPropertiesSet();
