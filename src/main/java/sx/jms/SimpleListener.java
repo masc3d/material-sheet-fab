@@ -7,7 +7,7 @@ import java.util.List;
  * Simple single threaded jms listener
  * Created by masc on 17.04.15.
  */
-public abstract class SimpleListener extends Listener {
+public abstract class SimpleListener extends Listener implements MessageListener {
     Connection mConnection;
     Session mSession;
 

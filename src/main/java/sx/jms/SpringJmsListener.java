@@ -4,17 +4,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.util.ErrorHandler;
 
-import javax.jms.*;
-import java.util.List;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSException;
 
 /**
  * Spring listener implementation
  * Created by masc on 07.06.15.
  */
-public abstract class SpringJmsListener extends Listener {
+public abstract class SpringJmsListener extends Listener implements SessionAwareMessageListener, ErrorHandler {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     /** Destination this listener is attached to */
@@ -53,10 +54,7 @@ public abstract class SpringJmsListener extends Listener {
             mListenerContainer.setConnectionFactory(this.getConnectionFactory());
             mListenerContainer.setMessageListener(this);
             mListenerContainer.setSessionTransacted(true);
-            mListenerContainer.setErrorHandler(new ErrorHandler() {
-                @Override
-                public void handleError(Throwable t) { }
-            });
+            mListenerContainer.setErrorHandler(this);
             mListenerContainer.setDestination(mDestination);
             this.configure(mListenerContainer);
             mListenerContainer.afterPropertiesSet();
@@ -67,6 +65,11 @@ public abstract class SpringJmsListener extends Listener {
     @Override
     public void stop() throws JMSException {
         mListenerContainer.stop();
+    }
+
+    @Override
+    public void handleError(Throwable t) {
+        mLog.error(t.getMessage(), t);
     }
 
     @Override
