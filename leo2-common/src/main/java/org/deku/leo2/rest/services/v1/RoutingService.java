@@ -31,7 +31,8 @@ public interface RoutingService {
     })
     Routing find(@QueryParam("senddate")
                  @ApiParam(value = "Date (YYYY-MM-DD)")
-                 ShortDate date,
+                 String date,
+                 //ShortDate date,
                  @QueryParam("country")
                  @ApiParam(value = "Country two-letter ISO-3166")
                  String country,

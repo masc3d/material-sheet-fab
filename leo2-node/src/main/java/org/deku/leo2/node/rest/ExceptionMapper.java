@@ -36,9 +36,9 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
             return mException.getMessage();
         }
 
-        public String getLocalizedMessage() {
-            return mException.getLocalizedMessage();
-        }
+//        public String getLocalizedMessage() {
+//            return mException.getLocalizedMessage();
+//        }
     }
 
     Log mLogger = LogFactory.getLog(ExceptionMapper.class);

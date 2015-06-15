@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * Created by JT on 11.05.15.
  */
 @Entity
-@Table(name = "country")
+@Table(name = "mas_country")
 public class Country {
     private String lkz;
     private String lname;
@@ -18,7 +18,6 @@ public class Country {
     private String zipFormat;
 
     @Id
-    @Column(name = "LKZ")
     public String getLkz() {
         return lkz;
     }
@@ -28,7 +27,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "LNAME")
     public String getLname() {
         return lname;
     }
@@ -38,7 +36,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "Timestamp")
     public Timestamp getTimestamp() {
         return timestamp;
     }
@@ -48,7 +45,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "RoutingTyp")
     public Integer getRoutingTyp() {
         return routingTyp;
     }
