@@ -1,12 +1,10 @@
 package org.deku.leo2.messaging.log.v1;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import org.slf4j.helpers.MessageFormatter;
 
 import java.io.Serializable;
-import java.util.logging.LogRecord;
 
 /**
  * Created by masc on 16.04.15.

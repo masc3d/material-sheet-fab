@@ -3,9 +3,6 @@ package org.deku.leo2.messaging.activemq;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.broker.region.policy.DeadLetterStrategy;
-import org.apache.activemq.broker.region.policy.PolicyEntry;
-import org.apache.activemq.broker.region.policy.PolicyMap;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.broker.util.RedeliveryPlugin;
 import org.apache.activemq.filter.DestinationMapEntry;
@@ -13,16 +10,9 @@ import org.apache.activemq.network.DiscoveryNetworkConnector;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.security.*;
 import org.apache.activemq.transport.TransportServer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
-import sx.Disposable;
 import sx.LazyInstance;
-import sx.event.EventDelegate;
-import sx.event.EventDispatcher;
-import sx.event.EventListener;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -173,8 +163,8 @@ public class ActiveMqBroker extends Broker {
         RedeliveryPolicy rp = new RedeliveryPolicy();
         rp.setMaximumRedeliveries(-1);
         rp.setInitialRedeliveryDelay(2000);
-        rp.setBackOffMultiplier(2);
-        rp.setUseExponentialBackOff(true);
+//        rp.setBackOffMultiplier(2);
+//        rp.setUseExponentialBackOff(true);
 
         rpm.setDefaultEntry(rp);
         pRedelivery.setRedeliveryPolicyMap(rpm);

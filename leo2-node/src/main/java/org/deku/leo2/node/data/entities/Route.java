@@ -1,10 +1,11 @@
 package org.deku.leo2.node.data.entities;
 
 import org.eclipse.persistence.annotations.Index;
-import org.eclipse.persistence.annotations.Indexes;
 
-import org.eclipse.persistence.annotations.*;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;

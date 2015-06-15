@@ -1,7 +1,10 @@
 package org.deku.leo2.node.web;
 
 import com.google.common.base.Strings;
-import io.undertow.server.handlers.resource.*;
+import io.undertow.server.handlers.resource.Resource;
+import io.undertow.server.handlers.resource.ResourceChangeListener;
+import io.undertow.server.handlers.resource.ResourceManager;
+import io.undertow.server.handlers.resource.URLResource;
 import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -11,7 +11,6 @@ import org.deku.leo2.rest.entities.ShortTime;
 import org.deku.leo2.rest.entities.v1.DayType;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
