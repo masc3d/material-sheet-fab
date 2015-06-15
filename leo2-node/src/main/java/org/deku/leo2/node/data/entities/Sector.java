@@ -1,6 +1,10 @@
 package org.deku.leo2.node.data.entities;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -8,7 +12,9 @@ import java.sql.Timestamp;
  */
 @Entity
 @IdClass(SectorPK.class)
-public class Sector {
+public class Sector implements Serializable {
+    private static final long serialVersionUID = 5174752592128866406L;
+
     private String product;
     private String sectorfrom;
     private String sectorto;
@@ -18,7 +24,6 @@ public class Sector {
     private Timestamp timestamp;
 
     @Id
-    @Column(name = "product")
     public String getProduct() {
         return product;
     }
@@ -28,7 +33,6 @@ public class Sector {
     }
 
     @Id
-    @Column(name = "sectorfrom")
     public String getSectorfrom() {
         return sectorfrom;
     }
@@ -38,7 +42,6 @@ public class Sector {
     }
 
     @Id
-    @Column(name = "sectorto")
     public String getSectorto() {
         return sectorto;
     }
@@ -48,7 +51,6 @@ public class Sector {
     }
 
     @Id
-    @Column(name = "validfrom")
     public Timestamp getValidfrom() {
         return validfrom;
     }
@@ -58,7 +60,6 @@ public class Sector {
     }
 
     @Basic
-    @Column(name = "validto")
     public Timestamp getValidto() {
         return validto;
     }
@@ -68,7 +69,6 @@ public class Sector {
     }
 
     @Basic
-    @Column(name = "via")
     public String getVia() {
         return via;
     }
@@ -78,7 +78,6 @@ public class Sector {
     }
 
     @Basic
-    @Column(name = "timestamp")
     public Timestamp getTimestamp() {
         return timestamp;
     }

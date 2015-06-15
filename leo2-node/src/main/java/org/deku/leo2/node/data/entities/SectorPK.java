@@ -1,6 +1,5 @@
 package org.deku.leo2.node.data.entities;
 
-import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -9,9 +8,10 @@ import java.sql.Timestamp;
  * Created by JT on 11.05.15.
  */
 public class SectorPK implements Serializable {
+    private static final long serialVersionUID = -5461559970235583222L;
+
     private String product;
 
-    @Column(name = "product")
     @Id
     public String getProduct() {
         return product;
@@ -23,7 +23,6 @@ public class SectorPK implements Serializable {
 
     private String sectorfrom;
 
-    @Column(name = "sectorfrom")
     @Id
     public String getSectorfrom() {
         return sectorfrom;
@@ -35,7 +34,6 @@ public class SectorPK implements Serializable {
 
     private String sectorto;
 
-    @Column(name = "sectorto")
     @Id
     public String getSectorto() {
         return sectorto;
@@ -47,7 +45,6 @@ public class SectorPK implements Serializable {
 
     private Timestamp validfrom;
 
-    @Column(name = "validfrom")
     @Id
     public Timestamp getValidfrom() {
         return validfrom;

@@ -2,11 +2,9 @@ package org.deku.leo2.central;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
@@ -37,15 +35,20 @@ public class Main extends org.deku.leo2.node.Main {
     @Override
     public void onStartup(ServletContext container) throws ServletException {
         mLog.info("leo2.central.main.onStartup");
-        App.inject(App::new);
         super.onStartup(container);
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
         mLog.info("leo2.central.main.configure");
+        App.inject(App::new);
+        try {
+            App.instance().initialize();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return builder
                 .sources(Main.class)
-                .listeners(this);
+                .listeners(App.instance());
     }
 }

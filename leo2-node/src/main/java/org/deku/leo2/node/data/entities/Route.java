@@ -1,6 +1,12 @@
 package org.deku.leo2.node.data.entities;
 
-import javax.persistence.*;
+import org.eclipse.persistence.annotations.Index;
+
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
 
@@ -9,8 +15,9 @@ import java.sql.Timestamp;
  */
 @Entity
 @IdClass(RoutePK.class)
-@Table(name = "route", indexes = @Index(columnList = "timestamp"))
-public class Route {
+public class Route implements Serializable {
+    private static final long serialVersionUID = -3738208098013706941L;
+
     private String product;
     private String lkz;
     private String zip;
@@ -31,7 +38,6 @@ public class Route {
     private String holidayctrl;
 
     @Id
-    @Column(name = "product")
     public String getProduct() {
         return product;
     }
@@ -41,7 +47,6 @@ public class Route {
     }
 
     @Id
-    @Column(name = "lkz")
     public String getLkz() {
         return lkz;
     }
@@ -51,7 +56,6 @@ public class Route {
     }
 
     @Id
-    @Column(name = "zip")
     public String getZip() {
         return zip;
     }
@@ -61,7 +65,6 @@ public class Route {
     }
 
     @Id
-    @Column(name = "validfrom")
     public Timestamp getValidfrom() {
         return validfrom;
     }
@@ -71,7 +74,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "validto")
     public Timestamp getValidto() {
         return validto;
     }
@@ -81,7 +83,7 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "timestamp")
+    @Index
     public Timestamp getTimestamp() {
         return timestamp;
     }
@@ -91,7 +93,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "station")
     public Integer getStation() {
         return station;
     }
@@ -101,7 +102,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "sector")
     public String getSector() {
         return sector;
     }
@@ -111,7 +111,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "area")
     public String getArea() {
         return area;
     }
@@ -121,7 +120,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "etod")
     public Time getEtod() {
         return etod;
     }
@@ -131,7 +129,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "ltop")
     public Time getLtop() {
         return ltop;
     }
@@ -141,7 +138,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "transittime")
     public Integer getTransittime() {
         return transittime;
     }
@@ -151,7 +147,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "ltodsa")
     public Time getLtodsa() {
         return ltodsa;
     }
@@ -161,7 +156,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "ltodholiday")
     public Time getLtodholiday() {
         return ltodholiday;
     }
@@ -171,7 +165,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "island")
     public Integer getIsland() {
         return island;
     }
@@ -181,7 +174,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "etod2")
     public Time getEtod2() {
         return etod2;
     }
@@ -191,7 +183,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "ltop2")
     public Time getLtop2() {
         return ltop2;
     }
@@ -201,7 +192,6 @@ public class Route {
     }
 
     @Basic
-    @Column(name = "holidayctrl")
     public String getHolidayctrl() {
         return holidayctrl;
     }

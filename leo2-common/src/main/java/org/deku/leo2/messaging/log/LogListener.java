@@ -2,54 +2,52 @@ package org.deku.leo2.messaging.log;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.Context;
+import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.log.v1.LogMessage;
-import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import sx.Disposable;
-import sx.jms.SimpleListener;
+import org.springframework.jms.support.converter.SimpleMessageConverter;
 import sx.jms.SpringJmsListener;
 
-import javax.jms.*;
-import java.util.Arrays;
-import java.util.List;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * Leo2 log message listener
  * Created by masc on 16.04.15.
  */
 public class LogListener extends SpringJmsListener {
-    private Context mContext;
+    private Log mLog = LogFactory.getLog(this.getClass());
+    private MessagingContext mMessagingContext;
+    private SimpleMessageConverter mMessageConverter = new SimpleMessageConverter();
 
-    public LogListener(Context context) {
-        super(context.getConnectionFactory());
-        mContext = context;
+    public LogListener(MessagingContext messagingContext) {
+        super(messagingContext.getConnectionFactory());
+        mMessagingContext = messagingContext;
     }
 
     @Override
     protected Destination createDestination() {
-        return mContext.createQueue(LogMessage.LOG_QUEUE_NAME);
+        return mMessagingContext.createQueue(LogMessage.LOG_QUEUE_NAME);
     }
 
     @Override
-    public void onMessage(Message message) {
-        this.getLog().info("message");
+    public void onMessage(Message message, Session session) throws JMSException {
         try {
-            if (message instanceof ObjectMessage) {
-                ObjectMessage om = (ObjectMessage) message;
+            mLog.debug(String.format("message id [%s] %s",
+                    message.getJMSMessageID(),
+                    LocalDateTime.ofInstant(
+                            Instant.ofEpochMilli(
+                                    message.getJMSTimestamp()), ZoneId.systemDefault())));
 
-                this.getLog().info("object type: " + om.getObject().getClass().getName());
-                org.deku.leo2.messaging.log.v1.LogMessage lm = (org.deku.leo2.messaging.log.v1.LogMessage) om.getObject();
-                this.getLog().info("object received: " + lm.toString());
-            } else {
-                TextMessage tm = (TextMessage) message;
-                this.getLog().info("text received: " + tm.getText());
-            }
+            LogMessage[] cMessage = (LogMessage[])mMessageConverter.fromMessage(message);
+
+            mLog.debug(String.format("Received %d log messages", cMessage.length));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
 }

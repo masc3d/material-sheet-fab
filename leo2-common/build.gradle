@@ -1,5 +1,3 @@
-apply plugin: 'java'
-
 sourceCompatibility = 1.8
 version = '1.0'
 
@@ -40,6 +38,9 @@ dependencies {
 
     // spring
     compile("org.springframework:spring-jms:$v_spring")
+
+    // serialization
+    compile "com.esotericsoftware:kryo:3.+"
 
     testCompile group: 'junit', name: 'junit', version: v_junit
 

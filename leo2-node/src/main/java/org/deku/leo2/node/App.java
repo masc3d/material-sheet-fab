@@ -1,16 +1,22 @@
 package org.deku.leo2.node;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.ActiveMqBroker;
+import org.deku.leo2.messaging.activemq.ActiveMqContext;
+import org.deku.leo2.messaging.log.LogAppender;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import sx.Disposable;
 import sx.LazyInstance;
 
@@ -30,8 +36,15 @@ public class App implements
         Disposable,
         // Srping won't recognize this as App is not a bean but
         // we'll inject this within web application initializer
-        ApplicationContextAware {
+        ApplicationContextAware,
+        ApplicationListener {
+    /** Logger */
     private static Log mLog = LogFactory.getLog(App.class);
+
+    protected enum LogConfigurationType {
+        JMS,
+        NONE
+    }
 
     //region Singleton
     private static LazyInstance<App> mInstance = new LazyInstance(App::new);
@@ -60,6 +73,8 @@ public class App implements
 
     private ApplicationContext mSpringApplicationContext;
 
+    private ArrayList<Disposable> mDisposables = new ArrayList<>();
+
     protected App() {
         mLocalHomeDirectory = new File(System.getProperty("user.home"), ".leo2");
         mLocalConfigurationFile = new File(this.getLocalHomeDirectory(), "leo2.properties");
@@ -81,7 +96,28 @@ public class App implements
         return mLocalConfigurationFile;
     }
 
-    public void initialize() throws Exception {
+    private Runnable mConfigureLoggingFunc = () -> {};
+
+    public void initialize(LogConfigurationType logConfigurationType) throws Exception {
+        // Initialize logging
+        switch (logConfigurationType) {
+            case JMS:
+                Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+                LogAppender lAppender = new LogAppender(ActiveMqContext.instance());
+
+                mConfigureLoggingFunc = () -> {
+                    LoggerContext lContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+                    // Configure jms log appender
+                    lAppender.setContext(lContext);
+                    lAppender.start();
+                    lRoot.addAppender(lAppender);
+                };
+                mConfigureLoggingFunc.run();
+                mDisposables.add(() -> {
+                    lRoot.detachAppender(lAppender);
+                    lAppender.dispose();
+                });
+        }
         mLog.info("Leo2 node initialize");
 
         // Uncaught threaded exception handler
@@ -118,21 +154,36 @@ public class App implements
         System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY,
                 String.join(",",
                         Lists.reverse(configLocations)
-                        .stream()
-                        .map(u -> u.toString()).toArray(size -> new String[size])));
+                                .stream()
+                                .map(u -> u.toString()).toArray(size -> new String[size])));
         //endregion
 
-        // Initialize broker
-        ActiveMqBroker.instance().setDataDirectory(
-                App.instance().getLocalHomeDirectory());
+        Runtime.getRuntime().addShutdownHook(new Thread("App shutdown hook") {
+            @Override
+            public void run() {
+                App.instance().dispose();
+            }
+        });
+    }
+
+    public void initialize() throws Exception {
+        this.initialize(LogConfigurationType.JMS);
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
+        for (Disposable d : new ArrayList<Disposable>(mDisposables)) {
+            try {
+                mLog.info(String.format("Disposing %s", d.getClass().getName()));
+                d.dispose();
+            } catch (Exception e) {
+                mLog.error(e.getMessage(), e);
+            }
+        }
         try {
             ActiveMqBroker.instance().stop();
         } catch (Exception e) {
-            e.printStackTrace();
+            mLog.error(e.getMessage(), e);
         }
     }
 
@@ -140,12 +191,11 @@ public class App implements
      * Shutdown application
      * @param exitCode Exit code
      */
-    public void shutdown(int exitCode) {
-        if (mSpringApplicationContext != null) {
-            SpringApplication.exit(mSpringApplicationContext);
-        }
-        System.exit(0);
+    public synchronized void shutdown(int exitCode) {
+        mLog.info("Shutting down");
+        System.exit(exitCode);
     }
+
     public void shutdown() {
         this.shutdown(0);
     }
@@ -157,5 +207,23 @@ public class App implements
 
     public ApplicationContext getSpringApplicationContext() {
         return mSpringApplicationContext;
+    }
+
+
+    @Override
+    public final void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof ApplicationEnvironmentPreparedEvent) {
+            // Spring resets logging configuration.
+            // As we don't want to supply a logging framework specific config file, simply reapplying
+            // logging configuration after spring environment has been prepared.
+            mConfigureLoggingFunc.run();
+        }
+
+        mLog.info(String.format("Spring application event: %s",
+                event.getClass().getSimpleName()));
+        //mLog.info(mCentralConfig.getUrl());
+        if (event instanceof EmbeddedServletContainerInitializedEvent) {
+            // Post spring initialization
+        }
     }
 }

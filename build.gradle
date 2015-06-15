@@ -1,6 +1,3 @@
-apply plugin: 'idea'
-apply plugin: 'eclipse'
-
 version = '0.1'
 
 buildscript {
@@ -84,8 +81,6 @@ project(':leo2-central') {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'eclipse'
-    apply plugin: 'idea'
     apply plugin: 'project-report'
 
     // Reporting setup
@@ -169,3 +164,21 @@ subprojects {
         }
     }
 }
+
+// copy intelllij data sources into place. this change will not be visible until IDE is restarted
+task copyIntellijDataSources(type: Copy) {
+    def ideaWorkspaceDir = '.idea'
+    def dataSourcesPresetFile = 'dataSources.preset.xml'
+    def dataSourcesFile = 'dataSources.xml'
+
+    if (!new File(ideaWorkspaceDir, dataSourcesFile).exists())
+        copy {
+            from(ideaWorkspaceDir)
+            into(ideaWorkspaceDir)
+            include dataSourcesPresetFile
+            rename dataSourcesPresetFile, dataSourcesFile
+        }
+}
+tasks.copyIntellijDataSources.execute()
+
+

@@ -8,7 +8,9 @@ import javax.jms.Topic;
  * Messaging context interface definition
  * Created by masc on 07.06.15.
  */
-public interface Context {
+public interface MessagingContext {
+    /** Broker for this messaging context */
+    Broker getBroker();
     /** Create jms message queue */
     Queue createQueue(String name);
     /** Create jms message topic */

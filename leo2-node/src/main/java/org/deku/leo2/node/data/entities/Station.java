@@ -12,7 +12,6 @@ public class Station {
     private Integer stationId;
 
     @Id
-    @javax.persistence.Column(name = "StationID")
     public Integer getStationId() {
         return stationId;
     }
@@ -24,7 +23,6 @@ public class Station {
     private String adress1;
 
     @Basic
-    @javax.persistence.Column(name = "Adress1")
     public String getAdress1() {
         return adress1;
     }
@@ -36,7 +34,6 @@ public class Station {
     private String adress2;
 
     @Basic
-    @javax.persistence.Column(name = "Adress2")
     public String getAdress2() {
         return adress2;
     }
@@ -48,7 +45,6 @@ public class Station {
     private String country;
 
     @Basic
-    @javax.persistence.Column(name = "Country")
     public String getCountry() {
         return country;
     }
@@ -60,7 +56,6 @@ public class Station {
     private String zip;
 
     @Basic
-    @javax.persistence.Column(name = "ZIP")
     public String getZip() {
         return zip;
     }
@@ -72,7 +67,6 @@ public class Station {
     private String city;
 
     @Basic
-    @javax.persistence.Column(name = "City")
     public String getCity() {
         return city;
     }
@@ -84,7 +78,6 @@ public class Station {
     private String street;
 
     @Basic
-    @javax.persistence.Column(name = "Street")
     public String getStreet() {
         return street;
     }
@@ -96,7 +89,6 @@ public class Station {
     private String houseNr;
 
     @Basic
-    @javax.persistence.Column(name = "HouseNr")
     public String getHouseNr() {
         return houseNr;
     }
@@ -108,7 +100,6 @@ public class Station {
     private String phone1;
 
     @Basic
-    @javax.persistence.Column(name = "Phone1")
     public String getPhone1() {
         return phone1;
     }
@@ -120,7 +111,6 @@ public class Station {
     private String phone2;
 
     @Basic
-    @javax.persistence.Column(name = "Phone2")
     public String getPhone2() {
         return phone2;
     }
@@ -132,7 +122,6 @@ public class Station {
     private String telefax;
 
     @Basic
-    @javax.persistence.Column(name = "Telefax")
     public String getTelefax() {
         return telefax;
     }
@@ -144,7 +133,6 @@ public class Station {
     private String mobile;
 
     @Basic
-    @javax.persistence.Column(name = "Mobile")
     public String getMobile() {
         return mobile;
     }
@@ -156,7 +144,6 @@ public class Station {
     private String servicePhone1;
 
     @Basic
-    @javax.persistence.Column(name = "ServicePhone1")
     public String getServicePhone1() {
         return servicePhone1;
     }
@@ -168,7 +155,6 @@ public class Station {
     private String servicePhone2;
 
     @Basic
-    @javax.persistence.Column(name = "ServicePhone2")
     public String getServicePhone2() {
         return servicePhone2;
     }
@@ -180,7 +166,6 @@ public class Station {
     private String contactPerson1;
 
     @Basic
-    @javax.persistence.Column(name = "ContactPerson1")
     public String getContactPerson1() {
         return contactPerson1;
     }
@@ -192,7 +177,6 @@ public class Station {
     private String contactPerson2;
 
     @Basic
-    @javax.persistence.Column(name = "ContactPerson2")
     public String getContactPerson2() {
         return contactPerson2;
     }
@@ -204,7 +188,6 @@ public class Station {
     private String email;
 
     @Basic
-    @javax.persistence.Column(name = "Email")
     public String getEmail() {
         return email;
     }
@@ -216,7 +199,6 @@ public class Station {
     private String webadress;
 
     @Basic
-    @javax.persistence.Column(name = "Webadress")
     public String getWebadress() {
         return webadress;
     }
@@ -228,7 +210,6 @@ public class Station {
     private Integer stationNr;
 
     @Basic
-    @javax.persistence.Column(name = "StationNr")
     public Integer getStationNr() {
         return stationNr;
     }
@@ -240,7 +221,6 @@ public class Station {
     private Integer strang;
 
     @Basic
-    @javax.persistence.Column(name = "Strang")
     public Integer getStrang() {
         return strang;
     }
@@ -252,7 +232,6 @@ public class Station {
     private Double poslong;
 
     @Basic
-    @javax.persistence.Column(name = "poslong")
     public Double getPoslong() {
         return poslong;
     }
@@ -264,7 +243,6 @@ public class Station {
     private Double poslat;
 
     @Basic
-    @javax.persistence.Column(name = "poslat")
     public Double getPoslat() {
         return poslat;
     }
@@ -276,7 +254,6 @@ public class Station {
     private String sector;
 
     @Basic
-    @javax.persistence.Column(name = "Sector")
     public String getSector() {
         return sector;
     }
@@ -288,7 +265,6 @@ public class Station {
     private String uStId;
 
     @Basic
-    @javax.persistence.Column(name = "UStId")
     public String getuStId() {
         return uStId;
     }
@@ -300,7 +276,6 @@ public class Station {
     private String billingAdress1;
 
     @Basic
-    @javax.persistence.Column(name = "BillingAdress1")
     public String getBillingAdress1() {
         return billingAdress1;
     }
@@ -312,7 +287,6 @@ public class Station {
     private String billingAdress2;
 
     @Basic
-    @javax.persistence.Column(name = "BillingAdress2")
     public String getBillingAdress2() {
         return billingAdress2;
     }
@@ -324,7 +298,6 @@ public class Station {
     private String billingCountry;
 
     @Basic
-    @javax.persistence.Column(name = "BillingCountry")
     public String getBillingCountry() {
         return billingCountry;
     }
@@ -336,7 +309,6 @@ public class Station {
     private String billingZip;
 
     @Basic
-    @javax.persistence.Column(name = "BillingZip")
     public String getBillingZip() {
         return billingZip;
     }
@@ -348,7 +320,6 @@ public class Station {
     private String billingCity;
 
     @Basic
-    @javax.persistence.Column(name = "BillingCity")
     public String getBillingCity() {
         return billingCity;
     }
@@ -360,7 +331,6 @@ public class Station {
     private String billingStreet;
 
     @Basic
-    @javax.persistence.Column(name = "BillingStreet")
     public String getBillingStreet() {
         return billingStreet;
     }
@@ -372,7 +342,6 @@ public class Station {
     private String billingHouseNr;
 
     @Basic
-    @javax.persistence.Column(name = "BillingHouseNr")
     public String getBillingHouseNr() {
         return billingHouseNr;
     }

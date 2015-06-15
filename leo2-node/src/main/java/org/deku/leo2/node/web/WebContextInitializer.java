@@ -1,7 +1,10 @@
 package org.deku.leo2.node.web;
 
 import com.google.common.base.Strings;
-import io.undertow.server.handlers.resource.*;
+import io.undertow.server.handlers.resource.Resource;
+import io.undertow.server.handlers.resource.ResourceChangeListener;
+import io.undertow.server.handlers.resource.ResourceManager;
+import io.undertow.server.handlers.resource.URLResource;
 import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +33,7 @@ import javax.inject.Named;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -103,7 +107,12 @@ public class WebContextInitializer implements ServletContextInitializer {
             throw new ServletException(e);
         }
 
-        // Broker configuration, must be done before tunnel servlet starts
+        // Broker configuration, must occur before tunnel servlet starts
+        mLog.info("Configuring messaging broker");
+        ActiveMqBroker.instance().setNativeTcpPort(mBrokerSettings.getNativePort());
+
+        ActiveMqBroker.instance().setDataDirectory(
+                new File(App.instance().getLocalHomeDirectory(), "activemq"));
 
         if (!Strings.isNullOrEmpty(mPeerSettings.getHost())) {
             // TODO: we could probe for available remote ports here, but this implies

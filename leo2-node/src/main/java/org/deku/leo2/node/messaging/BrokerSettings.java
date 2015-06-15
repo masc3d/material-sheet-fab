@@ -17,7 +17,15 @@ public class BrokerSettings {
         return mNativePort;
     }
 
+    public void setNativePort(Integer nativePort) {
+        mNativePort = nativePort;
+    }
+
     public String getHttpContextPath() {
         return mHttpContextPath;
+    }
+
+    public void setHttpContextPath(String httpContextPath) {
+        mHttpContextPath = httpContextPath;
     }
 }

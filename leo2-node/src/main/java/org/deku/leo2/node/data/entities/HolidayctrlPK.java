@@ -1,6 +1,5 @@
 package org.deku.leo2.node.data.entities;
 
-import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -12,7 +11,6 @@ public class HolidayctrlPK implements Serializable {
     private Timestamp holiday;
     private String country;
 
-    @Column(name = "Holiday")
     @Id
     public Timestamp getHoliday() {
         return holiday;
@@ -22,7 +20,6 @@ public class HolidayctrlPK implements Serializable {
         this.holiday = holiday;
     }
 
-    @Column(name = "Country")
     @Id
     public String getCountry() {
         return country;
@@ -33,7 +30,6 @@ public class HolidayctrlPK implements Serializable {
     }
 
     public HolidayctrlPK() {
-
     }
 
     public HolidayctrlPK(Timestamp holiday, String country) {

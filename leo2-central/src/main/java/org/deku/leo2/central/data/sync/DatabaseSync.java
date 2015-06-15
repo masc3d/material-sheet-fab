@@ -1,4 +1,4 @@
-package org.deku.leo2.central.data;
+package org.deku.leo2.central.data.sync;
 
 import com.google.common.base.Stopwatch;
 import com.mysema.query.jpa.impl.JPAQuery;
