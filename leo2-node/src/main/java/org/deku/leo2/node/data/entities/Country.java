@@ -1,6 +1,7 @@
 package org.deku.leo2.node.data.entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -8,7 +9,9 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "mas_country")
-public class Country {
+public class Country implements Serializable {
+    private static final long serialVersionUID = 2361810454760700247L;
+
     private String lkz;
     private String lname;
     private Timestamp timestamp;
@@ -54,7 +57,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "MinLen")
     public Integer getMinLen() {
         return minLen;
     }
@@ -64,7 +66,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "MaxLen")
     public Integer getMaxLen() {
         return maxLen;
     }
@@ -74,7 +75,6 @@ public class Country {
     }
 
     @Basic
-    @Column(name = "ZipFormat")
     public String getZipFormat() {
         return zipFormat;
     }

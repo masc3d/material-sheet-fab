@@ -3,12 +3,15 @@ package org.deku.leo2.node.data.entities;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * Created by JT on 11.05.15.
  */
 @Entity
-public class Station {
+public class Station implements Serializable {
+    private static final long serialVersionUID = 7124430646756787268L;
+    
     private Integer stationId;
 
     @Id

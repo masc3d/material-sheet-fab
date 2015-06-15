@@ -8,6 +8,8 @@ import java.sql.Timestamp;
  * Created by JT on 11.05.15.
  */
 public class HolidayctrlPK implements Serializable {
+    private static final long serialVersionUID = -9065046008272046352L;
+
     private Timestamp holiday;
     private String country;
 
