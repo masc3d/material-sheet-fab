@@ -60,6 +60,8 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
     public LogAppender(MessagingContext messagingContext) {
         mMessagingContext = messagingContext;
 
+        mScheduledExecutorService = Executors.newScheduledThreadPool(1);
+
         mTemplate = new JmsTemplate(mMessagingContext.getConnectionFactory());
         mTemplate.setSessionAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
         mTemplate.setSessionTransacted(true);
@@ -67,8 +69,6 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
         mMessagingContext.getBroker().getListenerEventDispatcher().add(mBrokerListener);
         if (mMessagingContext.getBroker().isStarted())
             mBrokerListener.onStart();
-
-        mScheduledExecutorService = Executors.newScheduledThreadPool(1);
     }
 
     /**
@@ -82,14 +82,16 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
             mLogMessageBuffer.clear();
         }
 
-        mLog.debug(String.format("Flushing [%d]", logMessageBuffer.size()));
-        try {
-            mTemplate.convertAndSend(mQueue, logMessageBuffer.toArray(new LogMessage[0]));
-        } catch(Exception e) {
-            // TODO: investigate why exceptions go unnoticed silently and are not
-            // caught by global DefaultUncaughtExceptionHandler
-            mLog.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+        if (logMessageBuffer.size() > 0) {
+            mLog.debug(String.format("Flushing [%d]", logMessageBuffer.size()));
+            try {
+                mTemplate.convertAndSend(mQueue, logMessageBuffer.toArray(new LogMessage[0]));
+            } catch(Exception e) {
+                // TODO: investigate why exceptions go unnoticed silently and are not
+                // caught by global DefaultUncaughtExceptionHandler
+                mLog.error(e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
         }
     }
 

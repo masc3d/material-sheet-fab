@@ -28,3 +28,4 @@ modules.xml
 *.ids
 dataSources.local.xml
 dataSources.xml
+leo2-common/activemq-data
