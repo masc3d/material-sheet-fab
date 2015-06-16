@@ -72,6 +72,7 @@ public class WebContextInitializer implements ServletContextInitializer {
         // Inject web application context
         App.instance().setApplicationContext(WebApplicationContextUtils.getWebApplicationContext(servletContext));
 
+        //region Setup servlets
         // Spring dispatcher servlet (variant 1)
         // requires the following spring boot autoconfigurations:
         // * HttpMessageConvertersAutoConfiguration.class,
@@ -106,7 +107,9 @@ public class WebContextInitializer implements ServletContextInitializer {
         } catch (URISyntaxException e) {
             throw new ServletException(e);
         }
+        //endregion
 
+        //region Setup message broker
         // Broker configuration, must occur before tunnel servlet starts
         mLog.info("Configuring messaging broker");
         ActiveMqBroker.instance().setNativeTcpPort(mBrokerSettings.getNativePort());
@@ -124,6 +127,7 @@ public class WebContextInitializer implements ServletContextInitializer {
                     Broker.TransportType.TCP,
                     null));
         }
+        //endregion
     }
 
     @Bean
@@ -177,7 +181,8 @@ public class WebContextInitializer implements ServletContextInitializer {
 
     /**
      * Spring webmvc configurer adapter.
-     * Only required when using spring-webmvc with dispatcher servlet for eg. configuring static content
+     * Only required when using spring-webmvc with dispatcher servlet for eg. configuring static content.
+     * IMPORTANT: Please don't remove, this may be needed in the future as more web content/functionality is added.
      */
 //    @Component
 //    public static class WebMvcConfigurer extends WebMvcConfigurerAdapter {
