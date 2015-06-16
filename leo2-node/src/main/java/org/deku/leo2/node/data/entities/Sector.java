@@ -16,10 +16,10 @@ public class Sector implements Serializable {
     private static final long serialVersionUID = 5174752592128866406L;
 
     private String product;
-    private String sectorfrom;
-    private String sectorto;
-    private Timestamp validfrom;
-    private Timestamp validto;
+    private String sectorFrom;
+    private String sectorTo;
+    private Timestamp validFrom;
+    private Timestamp validTo;
     private String via;
     private Timestamp timestamp;
 
@@ -33,39 +33,39 @@ public class Sector implements Serializable {
     }
 
     @Id
-    public String getSectorfrom() {
-        return sectorfrom;
+    public String getSectorFrom() {
+        return sectorFrom;
     }
 
-    public void setSectorfrom(String sectorfrom) {
-        this.sectorfrom = sectorfrom;
-    }
-
-    @Id
-    public String getSectorto() {
-        return sectorto;
-    }
-
-    public void setSectorto(String sectorto) {
-        this.sectorto = sectorto;
+    public void setSectorFrom(String sectorFrom) {
+        this.sectorFrom = sectorFrom;
     }
 
     @Id
-    public Timestamp getValidfrom() {
-        return validfrom;
+    public String getSectorTo() {
+        return sectorTo;
     }
 
-    public void setValidfrom(Timestamp validfrom) {
-        this.validfrom = validfrom;
+    public void setSectorTo(String sectorTo) {
+        this.sectorTo = sectorTo;
+    }
+
+    @Id
+    public Timestamp getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(Timestamp validFrom) {
+        this.validFrom = validFrom;
     }
 
     @Basic
-    public Timestamp getValidto() {
-        return validto;
+    public Timestamp getValidTo() {
+        return validTo;
     }
 
-    public void setValidto(Timestamp validto) {
-        this.validto = validto;
+    public void setValidTo(Timestamp validTo) {
+        this.validTo = validTo;
     }
 
     @Basic
@@ -94,10 +94,10 @@ public class Sector implements Serializable {
         Sector sector = (Sector) o;
 
         if (product != null ? !product.equals(sector.product) : sector.product != null) return false;
-        if (sectorfrom != null ? !sectorfrom.equals(sector.sectorfrom) : sector.sectorfrom != null) return false;
-        if (sectorto != null ? !sectorto.equals(sector.sectorto) : sector.sectorto != null) return false;
-        if (validfrom != null ? !validfrom.equals(sector.validfrom) : sector.validfrom != null) return false;
-        if (validto != null ? !validto.equals(sector.validto) : sector.validto != null) return false;
+        if (sectorFrom != null ? !sectorFrom.equals(sector.sectorFrom) : sector.sectorFrom != null) return false;
+        if (sectorTo != null ? !sectorTo.equals(sector.sectorTo) : sector.sectorTo != null) return false;
+        if (validFrom != null ? !validFrom.equals(sector.validFrom) : sector.validFrom != null) return false;
+        if (validTo != null ? !validTo.equals(sector.validTo) : sector.validTo != null) return false;
         if (via != null ? !via.equals(sector.via) : sector.via != null) return false;
         if (timestamp != null ? !timestamp.equals(sector.timestamp) : sector.timestamp != null) return false;
 
@@ -107,10 +107,10 @@ public class Sector implements Serializable {
     @Override
     public int hashCode() {
         int result = product != null ? product.hashCode() : 0;
-        result = 31 * result + (sectorfrom != null ? sectorfrom.hashCode() : 0);
-        result = 31 * result + (sectorto != null ? sectorto.hashCode() : 0);
-        result = 31 * result + (validfrom != null ? validfrom.hashCode() : 0);
-        result = 31 * result + (validto != null ? validto.hashCode() : 0);
+        result = 31 * result + (sectorFrom != null ? sectorFrom.hashCode() : 0);
+        result = 31 * result + (sectorTo != null ? sectorTo.hashCode() : 0);
+        result = 31 * result + (validFrom != null ? validFrom.hashCode() : 0);
+        result = 31 * result + (validTo != null ? validTo.hashCode() : 0);
         result = 31 * result + (via != null ? via.hashCode() : 0);
         result = 31 * result + (timestamp != null ? timestamp.hashCode() : 0);
         return result;

@@ -164,7 +164,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         convertTime.apply(null);
 
         rWSRouting.setSector(routeFound.getSector());
-        rWSRouting.setDayType(getDayType(LocalDate.parse(senddateShort.toString()), country, routeFound.getHolidayctrl()));
+        rWSRouting.setDayType(getDayType(LocalDate.parse(senddateShort.toString()), country, routeFound.getHolidayCtrl()));
         rWSRouting.setRouting(routeFound.getStation());
         rWSRouting.setZone(routeFound.getArea());
         rWSRouting.setIsland(routeFound.getIsland() != 0);
@@ -173,10 +173,10 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         if (zipConform != null)
             rWSRouting.setZipCode(zipConform);
 
-        rWSRouting.setterm(routeFound.getTransittime());
+        rWSRouting.setterm(routeFound.getTransitTime());
         if (routeFound.getLtodsa() != null)
             rWSRouting.setSundayDeliveryUntil(new ShortTime(routeFound.getLtodsa().toString()));
-        rWSRouting.setDelieveryDay(getNextDeliveryDay(LocalDate.parse(senddateShort.toString()), country, routeFound.getHolidayctrl()));
+        rWSRouting.setDelieveryDay(getNextDeliveryDay(LocalDate.parse(senddateShort.toString()), country, routeFound.getHolidayCtrl()));
 
         return rWSRouting;
     }
@@ -324,7 +324,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         if (javaday == DayOfWeek.SATURDAY)
             daytype = DayType.Saturday;
 
-        Holidayctrl rholidayctrl = mHolidayctrlRepostitory.findOne(new HolidayctrlPK(java.sql.Timestamp.valueOf(javaDate.toString() + " 00:00:00"), Country));
+        HolidayCtrl rholidayctrl = mHolidayctrlRepostitory.findOne(new HolidayCtrlPK(java.sql.Timestamp.valueOf(javaDate.toString() + " 00:00:00"), Country));
 
         if (rholidayctrl != null) {
             if (rholidayctrl.getCtrlPos() == -1)

@@ -171,7 +171,7 @@ public class App implements
     }
 
     @Override
-    public synchronized void dispose() {
+    public void dispose() {
         for (Disposable d : new ArrayList<Disposable>(mDisposables)) {
             try {
                 mLog.info(String.format("Disposing %s", d.getClass().getName()));
@@ -191,7 +191,7 @@ public class App implements
      * Shutdown application
      * @param exitCode Exit code
      */
-    public synchronized void shutdown(int exitCode) {
+    public void shutdown(int exitCode) {
         mLog.info("Shutting down");
         System.exit(exitCode);
     }

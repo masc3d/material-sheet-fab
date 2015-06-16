@@ -21,26 +21,26 @@ public class SectorPK implements Serializable {
         this.product = product;
     }
 
-    private String sectorfrom;
+    private String sectorFrom;
 
     @Id
-    public String getSectorfrom() {
-        return sectorfrom;
+    public String getSectorFrom() {
+        return sectorFrom;
     }
 
-    public void setSectorfrom(String sectorfrom) {
-        this.sectorfrom = sectorfrom;
+    public void setSectorFrom(String sectorFrom) {
+        this.sectorFrom = sectorFrom;
     }
 
-    private String sectorto;
+    private String sectorTo;
 
     @Id
-    public String getSectorto() {
-        return sectorto;
+    public String getSectorTo() {
+        return sectorTo;
     }
 
-    public void setSectorto(String sectorto) {
-        this.sectorto = sectorto;
+    public void setSectorTo(String sectorTo) {
+        this.sectorTo = sectorTo;
     }
 
     private Timestamp validfrom;
@@ -62,8 +62,8 @@ public class SectorPK implements Serializable {
         SectorPK sectorPK = (SectorPK) o;
 
         if (product != null ? !product.equals(sectorPK.product) : sectorPK.product != null) return false;
-        if (sectorfrom != null ? !sectorfrom.equals(sectorPK.sectorfrom) : sectorPK.sectorfrom != null) return false;
-        if (sectorto != null ? !sectorto.equals(sectorPK.sectorto) : sectorPK.sectorto != null) return false;
+        if (sectorFrom != null ? !sectorFrom.equals(sectorPK.sectorFrom) : sectorPK.sectorFrom != null) return false;
+        if (sectorTo != null ? !sectorTo.equals(sectorPK.sectorTo) : sectorPK.sectorTo != null) return false;
         if (validfrom != null ? !validfrom.equals(sectorPK.validfrom) : sectorPK.validfrom != null) return false;
 
         return true;
@@ -72,8 +72,8 @@ public class SectorPK implements Serializable {
     @Override
     public int hashCode() {
         int result = product != null ? product.hashCode() : 0;
-        result = 31 * result + (sectorfrom != null ? sectorfrom.hashCode() : 0);
-        result = 31 * result + (sectorto != null ? sectorto.hashCode() : 0);
+        result = 31 * result + (sectorFrom != null ? sectorFrom.hashCode() : 0);
+        result = 31 * result + (sectorTo != null ? sectorTo.hashCode() : 0);
         result = 31 * result + (validfrom != null ? validfrom.hashCode() : 0);
         return result;
     }

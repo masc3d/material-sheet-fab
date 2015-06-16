@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Entity
 public class Station implements Serializable {
     private static final long serialVersionUID = 7124430646756787268L;
-    
+
     private Integer stationId;
 
     @Id
@@ -23,26 +23,26 @@ public class Station implements Serializable {
         this.stationId = stationId;
     }
 
-    private String adress1;
+    private String address1;
 
     @Basic
-    public String getAdress1() {
-        return adress1;
+    public String getAddress1() {
+        return address1;
     }
 
-    public void setAdress1(String adress1) {
-        this.adress1 = adress1;
+    public void setAddress1(String address1) {
+        this.address1 = address1;
     }
 
-    private String adress2;
+    private String address2;
 
     @Basic
-    public String getAdress2() {
-        return adress2;
+    public String getAddress2() {
+        return address2;
     }
 
-    public void setAdress2(String adress2) {
-        this.adress2 = adress2;
+    public void setAddress2(String address2) {
+        this.address2 = address2;
     }
 
     private String country;
@@ -199,15 +199,15 @@ public class Station implements Serializable {
         this.email = email;
     }
 
-    private String webadress;
+    private String webAddress;
 
     @Basic
-    public String getWebadress() {
-        return webadress;
+    public String getWebAddress() {
+        return webAddress;
     }
 
-    public void setWebadress(String webadress) {
-        this.webadress = webadress;
+    public void setWebAddress(String webAddress) {
+        this.webAddress = webAddress;
     }
 
     private Integer stationNr;
@@ -232,26 +232,26 @@ public class Station implements Serializable {
         this.strang = strang;
     }
 
-    private Double poslong;
+    private Double posLong;
 
     @Basic
-    public Double getPoslong() {
-        return poslong;
+    public Double getPosLong() {
+        return posLong;
     }
 
-    public void setPoslong(Double poslong) {
-        this.poslong = poslong;
+    public void setPosLong(Double posLong) {
+        this.posLong = posLong;
     }
 
-    private Double poslat;
+    private Double posLat;
 
     @Basic
-    public Double getPoslat() {
-        return poslat;
+    public Double getPosLat() {
+        return posLat;
     }
 
-    public void setPoslat(Double poslat) {
-        this.poslat = poslat;
+    public void setPosLat(Double posLat) {
+        this.posLat = posLat;
     }
 
     private String sector;
@@ -276,26 +276,26 @@ public class Station implements Serializable {
         this.uStId = uStId;
     }
 
-    private String billingAdress1;
+    private String billingAddress1;
 
     @Basic
-    public String getBillingAdress1() {
-        return billingAdress1;
+    public String getBillingAddress1() {
+        return billingAddress1;
     }
 
-    public void setBillingAdress1(String billingAdress1) {
-        this.billingAdress1 = billingAdress1;
+    public void setBillingAddress1(String billingAddress1) {
+        this.billingAddress1 = billingAddress1;
     }
 
-    private String billingAdress2;
+    private String billingAddress2;
 
     @Basic
-    public String getBillingAdress2() {
-        return billingAdress2;
+    public String getBillingAddress2() {
+        return billingAddress2;
     }
 
-    public void setBillingAdress2(String billingAdress2) {
-        this.billingAdress2 = billingAdress2;
+    public void setBillingAddress2(String billingAddress2) {
+        this.billingAddress2 = billingAddress2;
     }
 
     private String billingCountry;
@@ -361,8 +361,8 @@ public class Station implements Serializable {
         Station station = (Station) o;
 
         if (stationId != null ? !stationId.equals(station.stationId) : station.stationId != null) return false;
-        if (adress1 != null ? !adress1.equals(station.adress1) : station.adress1 != null) return false;
-        if (adress2 != null ? !adress2.equals(station.adress2) : station.adress2 != null) return false;
+        if (address1 != null ? !address1.equals(station.address1) : station.address1 != null) return false;
+        if (address2 != null ? !address2.equals(station.address2) : station.address2 != null) return false;
         if (country != null ? !country.equals(station.country) : station.country != null) return false;
         if (zip != null ? !zip.equals(station.zip) : station.zip != null) return false;
         if (city != null ? !city.equals(station.city) : station.city != null) return false;
@@ -381,16 +381,16 @@ public class Station implements Serializable {
         if (contactPerson2 != null ? !contactPerson2.equals(station.contactPerson2) : station.contactPerson2 != null)
             return false;
         if (email != null ? !email.equals(station.email) : station.email != null) return false;
-        if (webadress != null ? !webadress.equals(station.webadress) : station.webadress != null) return false;
+        if (webAddress != null ? !webAddress.equals(station.webAddress) : station.webAddress != null) return false;
         if (stationNr != null ? !stationNr.equals(station.stationNr) : station.stationNr != null) return false;
         if (strang != null ? !strang.equals(station.strang) : station.strang != null) return false;
-        if (poslong != null ? !poslong.equals(station.poslong) : station.poslong != null) return false;
-        if (poslat != null ? !poslat.equals(station.poslat) : station.poslat != null) return false;
+        if (posLong != null ? !posLong.equals(station.posLong) : station.posLong != null) return false;
+        if (posLat != null ? !posLat.equals(station.posLat) : station.posLat != null) return false;
         if (sector != null ? !sector.equals(station.sector) : station.sector != null) return false;
         if (uStId != null ? !uStId.equals(station.uStId) : station.uStId != null) return false;
-        if (billingAdress1 != null ? !billingAdress1.equals(station.billingAdress1) : station.billingAdress1 != null)
+        if (billingAddress1 != null ? !billingAddress1.equals(station.billingAddress1) : station.billingAddress1 != null)
             return false;
-        if (billingAdress2 != null ? !billingAdress2.equals(station.billingAdress2) : station.billingAdress2 != null)
+        if (billingAddress2 != null ? !billingAddress2.equals(station.billingAddress2) : station.billingAddress2 != null)
             return false;
         if (billingCountry != null ? !billingCountry.equals(station.billingCountry) : station.billingCountry != null)
             return false;
@@ -407,8 +407,8 @@ public class Station implements Serializable {
     @Override
     public int hashCode() {
         int result = stationId != null ? stationId.hashCode() : 0;
-        result = 31 * result + (adress1 != null ? adress1.hashCode() : 0);
-        result = 31 * result + (adress2 != null ? adress2.hashCode() : 0);
+        result = 31 * result + (address1 != null ? address1.hashCode() : 0);
+        result = 31 * result + (address2 != null ? address2.hashCode() : 0);
         result = 31 * result + (country != null ? country.hashCode() : 0);
         result = 31 * result + (zip != null ? zip.hashCode() : 0);
         result = 31 * result + (city != null ? city.hashCode() : 0);
@@ -423,15 +423,15 @@ public class Station implements Serializable {
         result = 31 * result + (contactPerson1 != null ? contactPerson1.hashCode() : 0);
         result = 31 * result + (contactPerson2 != null ? contactPerson2.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (webadress != null ? webadress.hashCode() : 0);
+        result = 31 * result + (webAddress != null ? webAddress.hashCode() : 0);
         result = 31 * result + (stationNr != null ? stationNr.hashCode() : 0);
         result = 31 * result + (strang != null ? strang.hashCode() : 0);
-        result = 31 * result + (poslong != null ? poslong.hashCode() : 0);
-        result = 31 * result + (poslat != null ? poslat.hashCode() : 0);
+        result = 31 * result + (posLong != null ? posLong.hashCode() : 0);
+        result = 31 * result + (posLat != null ? posLat.hashCode() : 0);
         result = 31 * result + (sector != null ? sector.hashCode() : 0);
         result = 31 * result + (uStId != null ? uStId.hashCode() : 0);
-        result = 31 * result + (billingAdress1 != null ? billingAdress1.hashCode() : 0);
-        result = 31 * result + (billingAdress2 != null ? billingAdress2.hashCode() : 0);
+        result = 31 * result + (billingAddress1 != null ? billingAddress1.hashCode() : 0);
+        result = 31 * result + (billingAddress2 != null ? billingAddress2.hashCode() : 0);
         result = 31 * result + (billingCountry != null ? billingCountry.hashCode() : 0);
         result = 31 * result + (billingZip != null ? billingZip.hashCode() : 0);
         result = 31 * result + (billingCity != null ? billingCity.hashCode() : 0);

@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 /**
  * Created by JT on 11.05.15.
  */
-public class HolidayctrlPK implements Serializable {
+public class HolidayCtrlPK implements Serializable {
     private static final long serialVersionUID = -9065046008272046352L;
 
     private Timestamp holiday;
@@ -31,10 +31,10 @@ public class HolidayctrlPK implements Serializable {
         this.country = country;
     }
 
-    public HolidayctrlPK() {
+    public HolidayCtrlPK() {
     }
 
-    public HolidayctrlPK(Timestamp holiday, String country) {
+    public HolidayCtrlPK(Timestamp holiday, String country) {
         this.holiday = holiday;
         this.country = country;
     }
@@ -44,7 +44,7 @@ public class HolidayctrlPK implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        HolidayctrlPK that = (HolidayctrlPK) o;
+        HolidayCtrlPK that = (HolidayCtrlPK) o;
 
         if (holiday != null ? !holiday.equals(that.holiday) : that.holiday != null) return false;
         if (country != null ? !country.equals(that.country) : that.country != null) return false;

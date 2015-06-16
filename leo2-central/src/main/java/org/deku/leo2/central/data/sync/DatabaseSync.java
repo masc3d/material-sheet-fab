@@ -137,8 +137,8 @@ public class DatabaseSync {
         // TODO: map correctly, this is just random
         s.setStationId(depotlisteRecord.getId());
         s.setStationNr(depotlisteRecord.getId());
-        s.setAdress1(depotlisteRecord.getFirma1());
-        s.setAdress2(depotlisteRecord.getFirma2());
+        s.setAddress1(depotlisteRecord.getFirma1());
+        s.setAddress2(depotlisteRecord.getFirma2());
         s.setBillingCity(depotlisteRecord.getOrt());
 
         return s;
@@ -170,8 +170,8 @@ public class DatabaseSync {
      * @param cr
      * @return
      */
-    private static Holidayctrl convert(HolidayctrlRecord cr) {
-        Holidayctrl d = new Holidayctrl();
+    private static HolidayCtrl convert(HolidayctrlRecord cr) {
+        HolidayCtrl d = new HolidayCtrl();
 
         d.setCountry(cr.getCountry());
         d.setCtrlPos(cr.getCtrlpos());
@@ -192,11 +192,11 @@ public class DatabaseSync {
         Sector d = new Sector();
 
         d.setProduct(cr.getProduct());
-        d.setSectorfrom(cr.getSectorfrom());
-        d.setSectorto(cr.getSectorto());
+        d.setSectorFrom(cr.getSectorfrom());
+        d.setSectorTo(cr.getSectorto());
         d.setTimestamp(cr.getTimestamp());
-        d.setValidfrom(cr.getValidfrom());
-        d.setValidto(cr.getValidto());
+        d.setValidFrom(cr.getValidfrom());
+        d.setValidTo(cr.getValidto());
 
         return d;
     }
@@ -213,7 +213,7 @@ public class DatabaseSync {
         d.setArea(sr.getArea());
         d.setEtod(sr.getEtod());
         d.setEtod2(sr.getEtod2());
-        d.setHolidayctrl(sr.getHolidayctrl());
+        d.setHolidayCtrl(sr.getHolidayctrl());
         d.setIsland(sr.getIsland());
         d.setLkz(sr.getLkz());
         d.setLtodholiday(sr.getLtodholiday());
@@ -224,9 +224,9 @@ public class DatabaseSync {
         d.setSector(sr.getSector());
         d.setStation(sr.getStation());
         d.setTimestamp(sr.getTimestamp());
-        d.setTransittime(sr.getTransittime());
-        d.setValidfrom(sr.getValidfrom());
-        d.setValidto(sr.getValidto());
+        d.setTransitTime(sr.getTransittime());
+        d.setValidFrom(sr.getValidfrom());
+        d.setValidTo(sr.getValidto());
         d.setZip(sr.getZip());
 
         return d;

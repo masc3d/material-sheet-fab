@@ -43,15 +43,15 @@ public class RoutePK implements Serializable {
         this.zip = zip;
     }
 
-    private Timestamp validfrom;
+    private Timestamp validFrom;
 
     @Id
-    public Timestamp getValidfrom() {
-        return validfrom;
+    public Timestamp getValidFrom() {
+        return validFrom;
     }
 
-    public void setValidfrom(Timestamp validfrom) {
-        this.validfrom = validfrom;
+    public void setValidFrom(Timestamp validFrom) {
+        this.validFrom = validFrom;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class RoutePK implements Serializable {
         if (product != null ? !product.equals(routePK.product) : routePK.product != null) return false;
         if (lkz != null ? !lkz.equals(routePK.lkz) : routePK.lkz != null) return false;
         if (zip != null ? !zip.equals(routePK.zip) : routePK.zip != null) return false;
-        if (validfrom != null ? !validfrom.equals(routePK.validfrom) : routePK.validfrom != null) return false;
+        if (validFrom != null ? !validFrom.equals(routePK.validFrom) : routePK.validFrom != null) return false;
 
         return true;
     }
@@ -74,7 +74,7 @@ public class RoutePK implements Serializable {
         int result = product != null ? product.hashCode() : 0;
         result = 31 * result + (lkz != null ? lkz.hashCode() : 0);
         result = 31 * result + (zip != null ? zip.hashCode() : 0);
-        result = 31 * result + (validfrom != null ? validfrom.hashCode() : 0);
+        result = 31 * result + (validFrom != null ? validFrom.hashCode() : 0);
         return result;
     }
 }

@@ -35,8 +35,8 @@ public class DepotService implements org.deku.leo2.rest.services.internal.v1.Dep
         Depot rDepot = new Depot();
         rDepot.setDepotMatchcode(d.getuStId());
         rDepot.setDepotNr(d.getStationId());
-        rDepot.setFirma1(d.getBillingAdress1());
-        rDepot.setFirma2(d.getBillingAdress2());
+        rDepot.setFirma1(d.getBillingAddress1());
+        rDepot.setFirma2(d.getBillingAddress2());
         rDepot.setLkz(d.getCountry());
         rDepot.setOrt(d.getCity());
         rDepot.setPlz(d.getZip());

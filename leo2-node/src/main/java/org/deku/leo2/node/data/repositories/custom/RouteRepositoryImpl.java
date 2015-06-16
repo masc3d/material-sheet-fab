@@ -21,7 +21,7 @@ public class RouteRepositoryImpl implements RouteRepositoryCustom {
         Iterable <Route> rRoute=mRouteRepository.findAll(
                 qRoute.lkz.eq(mroutePK.getLkz())
                         .and(qRoute.zip.eq(mroutePK.getZip()))
-                .and(qRoute.validfrom.goe(mroutePK.getValidfrom()))
+                .and(qRoute.validfrom.goe(mroutePK.getValidFrom()))
 
         );
 
