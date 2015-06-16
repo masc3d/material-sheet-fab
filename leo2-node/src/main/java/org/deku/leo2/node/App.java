@@ -74,6 +74,7 @@ public class App implements
     private ApplicationContext mSpringApplicationContext;
 
     private ArrayList<Disposable> mDisposables = new ArrayList<>();
+    private volatile boolean mIsShuttingDown;
 
     protected App() {
         mLocalHomeDirectory = new File(System.getProperty("user.home"), ".leo2");
@@ -192,6 +193,12 @@ public class App implements
      * @param exitCode Exit code
      */
     public void shutdown(int exitCode) {
+        if (mIsShuttingDown) {
+            mLog.warn("Already shutting down");
+            return;
+        }
+
+        mIsShuttingDown = true;
         mLog.info("Shutting down");
         System.exit(exitCode);
     }
