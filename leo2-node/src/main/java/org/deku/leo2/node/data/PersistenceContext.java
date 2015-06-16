@@ -89,7 +89,7 @@ public class PersistenceContext implements DisposableBean /*, TransactionManagem
         // more tests required referring to db outages during runtime
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("org.deku.leo2.node.data.entities");
+        em.setPackagesToScan(PersistenceContext.class.getPackage().getName());
 
         JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

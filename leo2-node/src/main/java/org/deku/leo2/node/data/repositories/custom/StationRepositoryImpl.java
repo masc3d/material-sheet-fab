@@ -23,8 +23,8 @@ public class StationRepositoryImpl implements StationRepositoryCustom {
         QStation station = QStation.station;
         Iterable<Station> depots = mDepotRepository.findAll(
                 station.stationNr.stringValue().contains(query)
-                        .or(station.adress1.contains(query))
-                        .or(station.adress2.contains(query))
+                        .or(station.address1.contains(query))
+                        .or(station.address2.contains(query))
                         .or(station.zip.startsWith(query))
                         .or(station.country.startsWith(query))
                         .or(station.city.contains(query))

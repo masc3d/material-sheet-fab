@@ -123,20 +123,20 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
                 rWhere =
                         qRoute.lkz.eq(country)
                                 .and(qRoute.zip.eq(zipQuery))
-                                .and(qRoute.validfrom.loe(sqlvalidForm));
+                                .and(qRoute.validFrom.loe(sqlvalidForm));
 
                 break;
             case 1:
                 rWhere =
                         qRoute.lkz.eq(country)
                                 .and(qRoute.zip.goe(zipQuery))
-                                .and(qRoute.validfrom.loe(sqlvalidForm));
+                                .and(qRoute.validFrom.loe(sqlvalidForm));
                 break;
             case 2:
                 rWhere =
                         qRoute.lkz.eq(country)
                                 .and(qRoute.zip.goe(zipQuery))
-                                .and(qRoute.validfrom.loe(sqlvalidForm));
+                                .and(qRoute.validFrom.loe(sqlvalidForm));
                 break;
         }
 
@@ -147,7 +147,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 //        Iterable<Route> rRouten = new ArrayList<>();
 //        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere ,new Sort(Sort.Direction.DESC,qRoute.validfrom.toString()) );
 //        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere, new Sort(Sort.Direction.DESC, "validfrom"));
-        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere, qRoute.validfrom.desc());
+        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere, qRoute.validFrom.desc());
 
 
         if (!rRouten.iterator().hasNext()) {

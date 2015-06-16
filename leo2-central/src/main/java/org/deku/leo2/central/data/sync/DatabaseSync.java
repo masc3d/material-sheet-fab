@@ -98,8 +98,8 @@ public class DatabaseSync {
                 Tables.HOLIDAYCTRL,
                 org.deku.leo2.central.data.entities.jooq.tables.Holidayctrl.HOLIDAYCTRL.TIMESTAMP,
                 mHolidayCtrlRepository,
-                QHolidayctrl.holidayctrl,
-                QHolidayctrl.holidayctrl.timestamp,
+                QHolidayCtrl.holidayCtrl,
+                QHolidayCtrl.holidayCtrl.timestamp,
                 (s) -> convert(s),
                 alwaysDelete);
 

@@ -43,15 +43,15 @@ public class SectorPK implements Serializable {
         this.sectorTo = sectorTo;
     }
 
-    private Timestamp validfrom;
+    private Timestamp validFrom;
 
     @Id
-    public Timestamp getValidfrom() {
-        return validfrom;
+    public Timestamp getValidFrom() {
+        return validFrom;
     }
 
-    public void setValidfrom(Timestamp validfrom) {
-        this.validfrom = validfrom;
+    public void setValidFrom(Timestamp validFrom) {
+        this.validFrom = validFrom;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class SectorPK implements Serializable {
         if (product != null ? !product.equals(sectorPK.product) : sectorPK.product != null) return false;
         if (sectorFrom != null ? !sectorFrom.equals(sectorPK.sectorFrom) : sectorPK.sectorFrom != null) return false;
         if (sectorTo != null ? !sectorTo.equals(sectorPK.sectorTo) : sectorPK.sectorTo != null) return false;
-        if (validfrom != null ? !validfrom.equals(sectorPK.validfrom) : sectorPK.validfrom != null) return false;
+        if (validFrom != null ? !validFrom.equals(sectorPK.validFrom) : sectorPK.validFrom != null) return false;
 
         return true;
     }
@@ -74,7 +74,7 @@ public class SectorPK implements Serializable {
         int result = product != null ? product.hashCode() : 0;
         result = 31 * result + (sectorFrom != null ? sectorFrom.hashCode() : 0);
         result = 31 * result + (sectorTo != null ? sectorTo.hashCode() : 0);
-        result = 31 * result + (validfrom != null ? validfrom.hashCode() : 0);
+        result = 31 * result + (validFrom != null ? validFrom.hashCode() : 0);
         return result;
     }
 }
