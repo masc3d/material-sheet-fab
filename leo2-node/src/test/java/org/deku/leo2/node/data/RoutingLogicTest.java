@@ -2,13 +2,9 @@ package org.deku.leo2.node.data;
 
 import org.deku.leo2.node.DataTest;
 import org.deku.leo2.node.rest.services.v1.RoutingService;
-import org.deku.leo2.rest.entities.ShortDate;
-import org.deku.leo2.rest.entities.v1.Routing;
 import org.junit.Test;
 
 import javax.inject.Inject;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 
 /**
  * Created by JT on 15.05.15.

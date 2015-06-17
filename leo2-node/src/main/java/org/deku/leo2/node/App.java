@@ -100,7 +100,7 @@ public class App implements
 
     private Runnable mConfigureLoggingFunc = () -> {};
 
-    public void initialize(LogConfigurationType logConfigurationType) throws Exception {
+    public void initialize(LogConfigurationType logConfigurationType) {
         if (mIsInitialized)
             throw new IllegalStateException("Application already initialized");
         mIsInitialized = true;
@@ -172,7 +172,7 @@ public class App implements
         });
     }
 
-    public void initialize() throws Exception {
+    public void initialize() {
         this.initialize(LogConfigurationType.JMS);
     }
 

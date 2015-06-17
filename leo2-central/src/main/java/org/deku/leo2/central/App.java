@@ -35,7 +35,7 @@ public class App extends org.deku.leo2.node.App {
 
 
     @Override
-    public void initialize() throws Exception {
+    public void initialize() {
         // No JMS logging for leo2-central
         super.initialize(LogConfigurationType.NONE);
 

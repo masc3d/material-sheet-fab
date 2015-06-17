@@ -10,6 +10,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -31,6 +32,7 @@ import java.util.Properties;
 @Configuration(PersistenceContext.DB_CENTRAL)
 @ComponentScan(lazyInit = true)
 @Import(org.deku.leo2.node.data.PersistenceContext.class)
+@EnableConfigurationProperties
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 public class PersistenceContext implements DisposableBean {
     public static final String DB_CENTRAL = "db_central";
