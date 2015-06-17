@@ -12,7 +12,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @IdClass(HolidayCtrlPK.class)
-public class HolidayCtrl implements Serializable {
+public class HolidayCtrl2 implements Serializable {
     private static final long serialVersionUID = -1785072859096492614L;
 
     private Timestamp holiday;
@@ -71,7 +71,7 @@ public class HolidayCtrl implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        HolidayCtrl that = (HolidayCtrl) o;
+        HolidayCtrl2 that = (HolidayCtrl2) o;
 
         if (holiday != null ? !holiday.equals(that.holiday) : that.holiday != null) return false;
         if (ctrlPos != null ? !ctrlPos.equals(that.ctrlPos) : that.ctrlPos != null) return false;
