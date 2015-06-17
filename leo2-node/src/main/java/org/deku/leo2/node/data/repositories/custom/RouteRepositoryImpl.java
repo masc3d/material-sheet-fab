@@ -14,20 +14,4 @@ import javax.inject.Inject;
 public class RouteRepositoryImpl implements RouteRepositoryCustom {
     @Inject
     RouteRepository mRouteRepository;
-
-    @Transactional("jpa")
-    public Route findActualRoute(RoutePK mroutePK)    {
-        QRoute qRoute= QRoute.route;
-        Iterable <Route> rRoute=mRouteRepository.findAll(
-                qRoute.lkz.eq(mroutePK.getLkz())
-                        .and(qRoute.zip.eq(mroutePK.getZip()))
-                .and(qRoute.validFrom.goe(mroutePK.getValidFrom()))
-
-        );
-
-        Route routeFound=rRoute.iterator().next();
-
-        return routeFound;
-    }
-
 }
