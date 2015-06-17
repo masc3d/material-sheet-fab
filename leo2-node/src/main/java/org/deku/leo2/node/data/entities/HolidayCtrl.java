@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  * Created by JT on 11.05.15.
  */
 @Entity
-@IdClass(HolidayCtrlPK2.class)
+@IdClass(HolidayCtrlPK.class)
 public class HolidayCtrl implements Serializable {
     private static final long serialVersionUID = -1785072859096492614L;
 

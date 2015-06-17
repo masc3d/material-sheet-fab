@@ -41,7 +41,7 @@ public class App implements
     /** Logger */
     private static Log mLog = LogFactory.getLog(App.class);
 
-    protected enum LogConfigurationType {
+    public enum LogConfigurationType {
         JMS,
         NONE
     }
@@ -75,6 +75,7 @@ public class App implements
 
     private ArrayList<Disposable> mDisposables = new ArrayList<>();
     private volatile boolean mIsShuttingDown;
+    private volatile boolean mIsInitialized;
 
     protected App() {
         mLocalHomeDirectory = new File(System.getProperty("user.home"), ".leo2");
@@ -100,6 +101,10 @@ public class App implements
     private Runnable mConfigureLoggingFunc = () -> {};
 
     public void initialize(LogConfigurationType logConfigurationType) throws Exception {
+        if (mIsInitialized)
+            throw new IllegalStateException("Application already initialized");
+        mIsInitialized = true;
+
         // Initialize logging
         switch (logConfigurationType) {
             case JMS:
