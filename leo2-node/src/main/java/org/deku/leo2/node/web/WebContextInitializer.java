@@ -114,9 +114,6 @@ public class WebContextInitializer implements ServletContextInitializer {
         mLog.info("Configuring messaging broker");
         ActiveMqBroker.instance().setNativeTcpPort(mBrokerSettings.getNativePort());
 
-        ActiveMqBroker.instance().setDataDirectory(
-                new File(App.instance().getLocalHomeDirectory(), "activemq"));
-
         if (!Strings.isNullOrEmpty(mPeerSettings.getHost())) {
             // TODO: we could probe for available remote ports here, but this implies
             // init of peer brokers should also be threaded, as timeouts may occur

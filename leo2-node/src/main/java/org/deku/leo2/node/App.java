@@ -164,6 +164,10 @@ public class App implements
                                 .map(u -> u.toString()).toArray(size -> new String[size])));
         //endregion
 
+        // Basic broker configuration
+        ActiveMqBroker.instance().setDataDirectory(
+                new File(App.instance().getLocalHomeDirectory(), "activemq"));
+
         Runtime.getRuntime().addShutdownHook(new Thread("App shutdown hook") {
             @Override
             public void run() {
