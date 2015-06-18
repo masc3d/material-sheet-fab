@@ -2,6 +2,7 @@ package org.deku.leo2.central;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import org.deku.leo2.central.data.sync.DatabaseSync;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ import javax.servlet.ServletContext;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
         org.deku.leo2.central.data.PersistenceContext.class,
-        org.deku.leo2.node.data.PersistenceContext.class,
+        org.deku.leo2.node.data.PersistenceContext.class
 }, initializers = ConfigFileApplicationContextInitializer.class)
 public class DataTest {
     public DataTest() {
