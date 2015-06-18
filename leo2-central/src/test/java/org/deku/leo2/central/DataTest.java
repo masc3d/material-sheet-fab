@@ -1,4 +1,4 @@
-package org.deku.leo2.node;
+package org.deku.leo2.central;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -18,10 +18,12 @@ import javax.servlet.ServletContext;
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
+        org.deku.leo2.central.data.PersistenceContext.class,
         org.deku.leo2.node.data.PersistenceContext.class,
 }, initializers = ConfigFileApplicationContextInitializer.class)
 public class DataTest {
     public DataTest() {
+        App.inject(App::new);
         App.instance().initialize();
 
         Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);

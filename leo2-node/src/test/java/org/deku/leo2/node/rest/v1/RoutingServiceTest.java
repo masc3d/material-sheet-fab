@@ -29,7 +29,7 @@ public class RoutingServiceTest extends WebserviceTest {
         }
 
         {
-            Routing routing = this.getService(RoutingService.class).find(new ShortDate(LocalDate.now()), "country", "zip", "product");
+            Routing routing = this.getService(RoutingService.class).find(new ShortDate(LocalDate.now()).toString(), "country", "zip", "product");
             System.out.println(routing.toString());
         }
     }

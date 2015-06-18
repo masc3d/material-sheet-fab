@@ -42,11 +42,8 @@ public class Main extends org.deku.leo2.node.Main {
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
         mLog.info("leo2.central.main.configure");
         App.inject(App::new);
-        try {
-            App.instance().initialize();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        App.instance().initialize();
+
         return builder
                 .sources(Main.class)
                 .listeners(App.instance());

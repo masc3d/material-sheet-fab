@@ -71,11 +71,7 @@ public class Main extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
         mLog.info("leo2.node.main.configure");
-        try {
-            App.instance().initialize();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        App.instance().initialize();
         return builder
                 .sources(Main.class)
                 .listeners(App.instance());
