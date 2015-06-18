@@ -32,11 +32,16 @@ public class Route implements Serializable {
     private Time ltop;
     private Integer term;
     private Integer saturdayOK;
+    private Time ltodsa;
+    private Time ltodholiday;
+    private Integer island;
+    private String holidayCtrl;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
+    @Id
     public Integer getLayer() {
         return layer;
     }
@@ -45,6 +50,7 @@ public class Route implements Serializable {
         this.layer = layer;
     }
 
+    @Id
     public String getCountry() {
         return country;
     }
@@ -53,6 +59,7 @@ public class Route implements Serializable {
         this.country = country;
     }
 
+    @Id
     public String getZipFrom() {
         return zipFrom;
     }
@@ -61,6 +68,7 @@ public class Route implements Serializable {
         this.zipFrom = zipFrom;
     }
 
+    @Basic
     public String getZipTo() {
         return zipTo;
     }
@@ -69,6 +77,7 @@ public class Route implements Serializable {
         this.zipTo = zipTo;
     }
 
+    @Id
     public Integer getValidCRTR() {
         return validCRTR;
     }
@@ -77,6 +86,7 @@ public class Route implements Serializable {
         this.validCRTR = validCRTR;
     }
 
+    @Basic
     public Integer getTerm() {
         return term;
     }
@@ -85,6 +95,7 @@ public class Route implements Serializable {
         this.term = term;
     }
 
+    @Basic
     public Integer getSaturdayOK() {
         return saturdayOK;
     }
@@ -92,12 +103,6 @@ public class Route implements Serializable {
     public void setSaturdayOK(Integer saturdayOK) {
         this.saturdayOK = saturdayOK;
     }
-
-    private Time ltodsa;
-    private Time ltodholiday;
-    private Integer island;
-    private String holidayCtrl;
-
 
 
     @Id
@@ -119,7 +124,6 @@ public class Route implements Serializable {
     }
 
     @Basic
-    @Index
     public Timestamp getTimestamp() {
         return timestamp;
     }
