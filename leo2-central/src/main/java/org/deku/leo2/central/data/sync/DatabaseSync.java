@@ -166,10 +166,10 @@ public class DatabaseSync {
 
         c.setCode(cr.getCode());
         c.setName(cr.getName());
-        c.setMaxLen(cr.getMaxlen());
-        c.setMinLen(cr.getMinlen());
-        c.setRoutingTyp(cr.getRoutingtyp().intValue());
         c.setTimestamp(cr.getTimestamp());
+        c.setRoutingTyp(cr.getRoutingtyp());
+        c.setMinLen(cr.getMinlen());
+        c.setMaxLen(cr.getMaxlen());
         c.setZipFormat(cr.getZipformat());
 
         return c;
@@ -239,17 +239,24 @@ public class DatabaseSync {
     private static Route convert(MstRouteRecord sr) {
         Route d = new Route();
 
-        d.setArea(sr.getArea());
-        d.setEtod(sr.getEtod());
-        d.setHolidayCtrl(sr.getHolidayctrl());
-        d.setIsland(sr.getIsland());
-        d.setLtodholiday(sr.getLtodholiday());
-        d.setLtodsa(sr.getLtodsa());
-        d.setLtop(sr.getLtop());
-        d.setStation(sr.getStation());
-        d.setTimestamp(sr.getTimestamp());
+        d.setLayer(sr.getLayer());
+        d.setCountry(sr.getCountry());
+        d.setZipFrom(sr.getZipfrom());
+        d.setZipTo(sr.getZipto());
+        d.setValidCRTR(sr.getValidctrl());
         d.setValidFrom(sr.getValidfrom());
         d.setValidTo(sr.getValidto());
+        d.setTimestamp(sr.getTimestamp());
+        d.setStation(sr.getStation());
+        d.setArea(sr.getArea());
+        d.setEtod(sr.getEtod());
+        d.setLtop(sr.getLtop());
+        d.setTerm(sr.getTerm());
+        d.setSaturdayOK(sr.getSaturdayok());
+        d.setLtodsa(sr.getLtodsa());
+        d.setLtodholiday(sr.getLtodholiday());
+        d.setIsland(sr.getIsland());
+        d.setHolidayCtrl(sr.getHolidayctrl());
 
         return d;
     }
