@@ -10,40 +10,47 @@ import java.sql.Timestamp;
 public class RoutePK implements Serializable {
     private static final long serialVersionUID = -334675901549944875L;
 
-    private String product;
-
-    @Id
-    public String getProduct() {
-        return product;
-    }
-
-    public void setProduct(String product) {
-        this.product = product;
-    }
-
-    private String lkz;
-
-    @Id
-    public String getLkz() {
-        return lkz;
-    }
-
-    public void setLkz(String lkz) {
-        this.lkz = lkz;
-    }
-
-    private String zip;
-
-    @Id
-    public String getZip() {
-        return zip;
-    }
-
-    public void setZip(String zip) {
-        this.zip = zip;
-    }
-
+    private Integer layer;
+    private String country;
+    private String zipFrom;
+    private Integer validCRTR;
     private Timestamp validFrom;
+
+    @Id
+    public Integer getLayer() {
+        return layer;
+    }
+
+    public void setLayer(Integer layer) {
+        this.layer = layer;
+    }
+
+    @Id
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    @Id
+    public String getZipFrom() {
+        return zipFrom;
+    }
+
+    public void setZipFrom(String zipFrom) {
+        this.zipFrom = zipFrom;
+    }
+
+    @Id
+    public Integer getValidCRTR() {
+        return validCRTR;
+    }
+
+    public void setValidCRTR(Integer validCRTR) {
+        this.validCRTR = validCRTR;
+    }
 
     @Id
     public Timestamp getValidFrom() {
@@ -54,27 +61,18 @@ public class RoutePK implements Serializable {
         this.validFrom = validFrom;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        RoutePK routePK = (RoutePK) o;
-
-        if (product != null ? !product.equals(routePK.product) : routePK.product != null) return false;
-        if (lkz != null ? !lkz.equals(routePK.lkz) : routePK.lkz != null) return false;
-        if (zip != null ? !zip.equals(routePK.zip) : routePK.zip != null) return false;
-        if (validFrom != null ? !validFrom.equals(routePK.validFrom) : routePK.validFrom != null) return false;
-
-        return true;
+    public RoutePK() {
     }
 
-    @Override
-    public int hashCode() {
-        int result = product != null ? product.hashCode() : 0;
-        result = 31 * result + (lkz != null ? lkz.hashCode() : 0);
-        result = 31 * result + (zip != null ? zip.hashCode() : 0);
-        result = 31 * result + (validFrom != null ? validFrom.hashCode() : 0);
-        return result;
+    public RoutePK(Integer layer, String country, String zipFrom, Integer validCRTR, Timestamp validFrom) {
+        this.layer = layer;
+        this.country = country;
+        this.zipFrom = zipFrom;
+        this.validCRTR = validCRTR;
+        this.validFrom = validFrom;
+
     }
+
+
 }

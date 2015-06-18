@@ -7,6 +7,7 @@ import com.mysema.query.types.path.EntityPathBase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.data.entities.jooq.Tables;
+import org.deku.leo2.central.data.entities.jooq.tables.*;
 import org.deku.leo2.central.data.entities.jooq.tables.records.*;
 import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
 import org.deku.leo2.node.data.PersistenceContext;
@@ -55,6 +56,8 @@ public class DatabaseSync {
     HolidayctrlRepository mHolidayCtrlRepository;
     @Inject
     SectorRepository mSectorRepository;
+    @Inject
+    ValueRepository mValueRepository;
 
     @Inject
     public DatabaseSync(@Qualifier(PersistenceContext.DB_EMBEDDED) PlatformTransactionManager tx,
@@ -86,8 +89,8 @@ public class DatabaseSync {
                 alwaysDelete);
 
         this.updateEntities(
-                Tables.COUNTRY,
-                org.deku.leo2.central.data.entities.jooq.tables.Country.COUNTRY.TIMESTAMP,
+                Tables.MST_COUNTRY,
+                MstCountry.MST_COUNTRY.TIMESTAMP,
                 mCountryRepository,
                 QCountry.country,
                 QCountry.country.timestamp,
@@ -95,8 +98,8 @@ public class DatabaseSync {
                 alwaysDelete);
 
         this.updateEntities(
-                Tables.HOLIDAYCTRL,
-                org.deku.leo2.central.data.entities.jooq.tables.Holidayctrl.HOLIDAYCTRL.TIMESTAMP,
+                Tables.MST_HOLIDAYCTRL,
+                MstHolidayctrl.MST_HOLIDAYCTRL.TIMESTAMP,
                 mHolidayCtrlRepository,
                 QHolidayCtrl.holidayCtrl,
                 QHolidayCtrl.holidayCtrl.timestamp,
@@ -104,8 +107,8 @@ public class DatabaseSync {
                 alwaysDelete);
 
         this.updateEntities(
-                Tables.ROUTE,
-                org.deku.leo2.central.data.entities.jooq.tables.Route.ROUTE.TIMESTAMP,
+                Tables.MST_ROUTE,
+                MstRoute.MST_ROUTE.MST_ROUTE.TIMESTAMP,
                 mRouteRepository,
                 QRoute.route,
                 QRoute.route.timestamp,
@@ -113,20 +116,29 @@ public class DatabaseSync {
                 alwaysDelete);
 
         this.updateEntities(
-                Tables.SECTOR,
-                org.deku.leo2.central.data.entities.jooq.tables.Sector.SECTOR.TIMESTAMP,
+                Tables.MST_SECTOR,
+                MstSector.MST_SECTOR.MST_SECTOR.TIMESTAMP,
                 mSectorRepository,
                 QSector.sector,
                 QSector.sector.timestamp,
                 (s) -> convert(s),
                 alwaysDelete);
 
+        this.updateEntities(
+                Tables.SYS_VALUES,
+                SysValues.SYS_VALUES.SYS_VALUES.TIMESTAMP,
+                mValueRepository,
+                QValues.values,
+                QValues.values.timestamp,
+                (s) -> convert(s),
+                alwaysDelete);
+
+
         mLog.info("Database sync took " + sw.toString());
     }
 
     /**
      * Convert tbldepotliste mysql record to jpa entity
-     *
      * @param depotlisteRecord
      * @return
      */
@@ -146,15 +158,14 @@ public class DatabaseSync {
 
     /**
      * Convert mysql country record to jpa entity
-     *
      * @param cr
      * @return
      */
-    private static Country convert(CountryRecord cr) {
+    private static Country convert(MstCountryRecord cr) {
         Country c = new Country();
 
-        c.setLkz(cr.getLkz());
-        c.setLname(cr.getLname());
+        c.setCode(cr.getCode());
+        c.setName(cr.getName());
         c.setMaxLen(cr.getMaxlen());
         c.setMinLen(cr.getMinlen());
         c.setRoutingTyp(cr.getRoutingtyp().intValue());
@@ -166,11 +177,10 @@ public class DatabaseSync {
 
     /**
      * Convert mysql holidayctrl record to jpa entity
-     *
      * @param cr
      * @return
      */
-    private static HolidayCtrl convert(HolidayctrlRecord cr) {
+    private static HolidayCtrl convert(MstHolidayctrlRecord cr) {
         HolidayCtrl d = new HolidayCtrl();
 
         d.setCountry(cr.getCountry());
@@ -184,14 +194,12 @@ public class DatabaseSync {
 
     /**
      * Convert mysql sector record to jpa entity
-     *
      * @param cr
      * @return
      */
-    private static Sector convert(SectorRecord cr) {
+    private static Sector convert(MstSectorRecord cr) {
         Sector d = new Sector();
 
-        d.setProduct(cr.getProduct());
         d.setSectorFrom(cr.getSectorfrom());
         d.setSectorTo(cr.getSectorto());
         d.setTimestamp(cr.getTimestamp());
@@ -202,47 +210,60 @@ public class DatabaseSync {
     }
 
     /**
-     * Convert mysql country record to jpa entity
-     *
+     * Convert mysql value record to jpa entity
+     * @param cs
+     * @return
+     */
+    private static Values convert(SysValuesRecord cs) {
+        Values d = new Values();
+
+        d.setTyp(cs.getTyp());
+        d.setId(cs.getId());
+        d.setSort(cs.getSort());
+        d.setDescription(cs.getDescription());
+        d.setP1i(cs.getP1i());
+        d.setP2i(cs.getP2i());
+        d.setP3s(cs.getP3s());
+        d.setP4s(cs.getP4s());
+
+
+        return d;
+    }
+
+
+    /**
+     * Convert mysql route record to jpa entity
      * @param sr
      * @return
      */
-    private static Route convert(RouteRecord sr) {
+    private static Route convert(MstRouteRecord sr) {
         Route d = new Route();
 
         d.setArea(sr.getArea());
         d.setEtod(sr.getEtod());
-        d.setEtod2(sr.getEtod2());
         d.setHolidayCtrl(sr.getHolidayctrl());
         d.setIsland(sr.getIsland());
-        d.setLkz(sr.getLkz());
         d.setLtodholiday(sr.getLtodholiday());
         d.setLtodsa(sr.getLtodsa());
         d.setLtop(sr.getLtop());
-        d.setLtop2(sr.getLtop2());
-        d.setProduct(sr.getProduct());
-        d.setSector(sr.getSector());
         d.setStation(sr.getStation());
         d.setTimestamp(sr.getTimestamp());
-        d.setTransitTime(sr.getTransittime());
         d.setValidFrom(sr.getValidfrom());
         d.setValidTo(sr.getValidto());
-        d.setZip(sr.getZip());
 
         return d;
     }
 
     /**
      * Generic updater for entites from jooq to jpa
-     *
-     * @param sourceTable JOOQ source table
-     * @param sourceTableField JOOQ source timestamp field
-     * @param destRepository Destination JPA repository
-     * @param destQdslEntityPath Destination QueryDSL entity table path
+     * @param sourceTable           JOOQ source table
+     * @param sourceTableField      JOOQ source timestamp field
+     * @param destRepository        Destination JPA repository
+     * @param destQdslEntityPath    Destination QueryDSL entity table path
      * @param destQdslTimestampPath Destination QueryDSL timestamp field path
-     * @param conversionFunction Conversion function JOOQ record -> JPA entity
-     * @param <TEntity> Type of destiantion JPA entity
-     * @param <TCentralRecord> Type of source JOOQ record
+     * @param conversionFunction    Conversion function JOOQ record -> JPA entity
+     * @param <TEntity>             Type of destiantion JPA entity
+     * @param <TCentralRecord>      Type of source JOOQ record
      */
     private <TCentralRecord extends Record, TEntity> void updateEntities(
             TableImpl<TCentralRecord> sourceTable,

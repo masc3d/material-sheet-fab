@@ -72,7 +72,7 @@ jooq {
             name 'org.jooq.util.mysql.MySQLDatabase'
             inputSchema 'dekuclient'
 
-            includes 'tbldepotliste|country|holidayctrl|route|sector|station'
+            includes 'tbldepotliste|mst_.*|sys_.*'
             //excludes '.*'
 
             // masc20140916. (almost) all tables

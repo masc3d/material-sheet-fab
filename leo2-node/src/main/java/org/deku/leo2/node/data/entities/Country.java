@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 public class Country implements Serializable {
     private static final long serialVersionUID = 2361810454760700247L;
 
-    private String lkz;
-    private String lname;
+    private String code;
+    private String name;
     private Timestamp timestamp;
     private Integer routingTyp;
     private Integer minLen;
@@ -21,21 +21,21 @@ public class Country implements Serializable {
     private String zipFormat;
 
     @Id
-    public String getLkz() {
-        return lkz;
+    public String getCode() {
+        return code;
     }
 
-    public void setLkz(String lkz) {
-        this.lkz = lkz;
+    public void setCode(String zipCode) {
+        this.code = code;
     }
 
     @Basic
-    public String getLname() {
-        return lname;
+    public String getName() {
+        return name;
     }
 
-    public void setLname(String lname) {
-        this.lname = lname;
+    public void setName(String name) {
+        this.code = name;
     }
 
     @Basic
@@ -83,33 +83,4 @@ public class Country implements Serializable {
         this.zipFormat = zipFormat;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Country country = (Country) o;
-
-        if (lkz != null ? !lkz.equals(country.lkz) : country.lkz != null) return false;
-        if (lname != null ? !lname.equals(country.lname) : country.lname != null) return false;
-        if (timestamp != null ? !timestamp.equals(country.timestamp) : country.timestamp != null) return false;
-        if (routingTyp != null ? !routingTyp.equals(country.routingTyp) : country.routingTyp != null) return false;
-        if (minLen != null ? !minLen.equals(country.minLen) : country.minLen != null) return false;
-        if (maxLen != null ? !maxLen.equals(country.maxLen) : country.maxLen != null) return false;
-        if (zipFormat != null ? !zipFormat.equals(country.zipFormat) : country.zipFormat != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = lkz != null ? lkz.hashCode() : 0;
-        result = 31 * result + (lname != null ? lname.hashCode() : 0);
-        result = 31 * result + (timestamp != null ? timestamp.hashCode() : 0);
-        result = 31 * result + (routingTyp != null ? routingTyp.hashCode() : 0);
-        result = 31 * result + (minLen != null ? minLen.hashCode() : 0);
-        result = 31 * result + (maxLen != null ? maxLen.hashCode() : 0);
-        result = 31 * result + (zipFormat != null ? zipFormat.hashCode() : 0);
-        return result;
-    }
 }

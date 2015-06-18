@@ -52,7 +52,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             throw new IllegalArgumentException("empty Senddate");
         }
 
-        ShortDate senddateShort=  new ShortDate ( senddate) ;
+        ShortDate senddateShort = new ShortDate(senddate);
 
         java.time.LocalDate sd = LocalDate.from(senddateShort.getLocalDate());
 
@@ -121,21 +121,21 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         switch (rcountry.getRoutingTyp()) {
             case 0:
                 rWhere =
-                        qRoute.lkz.eq(country)
-                                .and(qRoute.zip.eq(zipQuery))
+                        qRoute.country.eq(country)
+                                .and(qRoute.country.eq(zipQuery))
                                 .and(qRoute.validFrom.loe(sqlvalidForm));
 
                 break;
             case 1:
                 rWhere =
-                        qRoute.lkz.eq(country)
-                                .and(qRoute.zip.goe(zipQuery))
+                        qRoute.country.eq(country)
+                                .and(qRoute.country.goe(zipQuery))
                                 .and(qRoute.validFrom.loe(sqlvalidForm));
                 break;
             case 2:
                 rWhere =
-                        qRoute.lkz.eq(country)
-                                .and(qRoute.zip.goe(zipQuery))
+                        qRoute.country.eq(country)
+                                .and(qRoute.country.goe(zipQuery))
                                 .and(qRoute.validFrom.loe(sqlvalidForm));
                 break;
         }
@@ -163,7 +163,6 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         convertTime.apply(null);
 
-        rWSRouting.setSector(routeFound.getSector());
         rWSRouting.setDayType(getDayType(LocalDate.parse(senddateShort.toString()), country, routeFound.getHolidayCtrl()));
         rWSRouting.setRouting(routeFound.getStation());
         rWSRouting.setZone(routeFound.getArea());
@@ -173,7 +172,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         if (zipConform != null)
             rWSRouting.setZipCode(zipConform);
 
-        rWSRouting.setterm(routeFound.getTransitTime());
+        rWSRouting.setterm(routeFound.getTerm());
         if (routeFound.getLtodsa() != null)
             rWSRouting.setSundayDeliveryUntil(new ShortTime(routeFound.getLtodsa().toString()));
         rWSRouting.setDelieveryDay(getNextDeliveryDay(LocalDate.parse(senddateShort.toString()), country, routeFound.getHolidayCtrl()));
@@ -288,7 +287,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
                         i++;
                         j++;
                         csZipConform = csZip;
-                    } else if (Ints.tryParse(csZip)== null) {
+                    } else if (Ints.tryParse(csZip) == null) {
                         csZipConform = "";
                     } else {
                         i++;
@@ -307,7 +306,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
                 zipQuery = zipQuery + csZipConform;
 
             if (!validZip)
-                zipQuery="";
+                zipQuery = "";
 
         }
 

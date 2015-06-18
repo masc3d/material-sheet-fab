@@ -278,12 +278,12 @@ compile - Compile classpath for source set 'main'.
 |    |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc2 (*)
 |    +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-|    \--- org.jinq:jinq-jpa:+ -> 1.8
+|    \--- org.jinq:jinq-jpa:+ -> 1.8.1
 |         +--- org.ow2.asm:asm-all:5.0.1
-|         +--- org.jinq:api:1.8
-|         \--- org.jinq:analysis:1.8
+|         +--- org.jinq:api:1.8.1
+|         \--- org.jinq:analysis:1.8.1
 |              +--- org.ow2.asm:asm-all:5.0.1
-|              \--- org.jinq:api:1.8
+|              \--- org.jinq:api:1.8.1
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 \--- org.jooq:jooq:3.+ -> 3.6.2
 
@@ -559,12 +559,12 @@ default - Configuration for default artifacts.
 |    |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc2 (*)
 |    +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-|    \--- org.jinq:jinq-jpa:+ -> 1.8
+|    \--- org.jinq:jinq-jpa:+ -> 1.8.1
 |         +--- org.ow2.asm:asm-all:5.0.1
-|         +--- org.jinq:api:1.8
-|         \--- org.jinq:analysis:1.8
+|         +--- org.jinq:api:1.8.1
+|         \--- org.jinq:analysis:1.8.1
 |              +--- org.ow2.asm:asm-all:5.0.1
-|              \--- org.jinq:api:1.8
+|              \--- org.jinq:api:1.8.1
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 \--- org.jooq:jooq:3.+ -> 3.6.2
 
@@ -840,12 +840,12 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc2 (*)
 |    +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-|    \--- org.jinq:jinq-jpa:+ -> 1.8
+|    \--- org.jinq:jinq-jpa:+ -> 1.8.1
 |         +--- org.ow2.asm:asm-all:5.0.1
-|         +--- org.jinq:api:1.8
-|         \--- org.jinq:analysis:1.8
+|         +--- org.jinq:api:1.8.1
+|         \--- org.jinq:analysis:1.8.1
 |              +--- org.ow2.asm:asm-all:5.0.1
-|              \--- org.jinq:api:1.8
+|              \--- org.jinq:api:1.8.1
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 \--- org.jooq:jooq:3.+ -> 3.6.2
 
@@ -1121,12 +1121,12 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc2 (*)
 |    +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-|    \--- org.jinq:jinq-jpa:+ -> 1.8
+|    \--- org.jinq:jinq-jpa:+ -> 1.8.1
 |         +--- org.ow2.asm:asm-all:5.0.1
-|         +--- org.jinq:api:1.8
-|         \--- org.jinq:analysis:1.8
+|         +--- org.jinq:api:1.8.1
+|         \--- org.jinq:analysis:1.8.1
 |              +--- org.ow2.asm:asm-all:5.0.1
-|              \--- org.jinq:api:1.8
+|              \--- org.jinq:api:1.8.1
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 +--- org.jooq:jooq:3.+ -> 3.6.2
 +--- junit:junit:4.+ -> 4.12 (*)
@@ -1416,12 +1416,12 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    \--- com.google.code.findbugs:annotations:2.0.1
 |    |    \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2 -> 2.6.0-rc2 (*)
 |    +--- org.javassist:javassist:3.+ -> 3.19.0-GA
-|    \--- org.jinq:jinq-jpa:+ -> 1.8
+|    \--- org.jinq:jinq-jpa:+ -> 1.8.1
 |         +--- org.ow2.asm:asm-all:5.0.1
-|         +--- org.jinq:api:1.8
-|         \--- org.jinq:analysis:1.8
+|         +--- org.jinq:api:1.8.1
+|         \--- org.jinq:analysis:1.8.1
 |              +--- org.ow2.asm:asm-all:5.0.1
-|              \--- org.jinq:api:1.8
+|              \--- org.jinq:api:1.8.1
 +--- mysql:mysql-connector-java:5.+ -> 5.1.35
 +--- org.jooq:jooq:3.+ -> 3.6.2
 +--- junit:junit:4.+ -> 4.12 (*)

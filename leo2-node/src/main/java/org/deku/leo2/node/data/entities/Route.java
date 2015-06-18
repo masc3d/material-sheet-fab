@@ -18,51 +18,87 @@ import java.sql.Timestamp;
 public class Route implements Serializable {
     private static final long serialVersionUID = -3738208098013706941L;
 
-    private String product;
-    private String lkz;
-    private String zip;
+    private Integer layer;
+    private String country;
+    private String zipFrom;
+    private String zipTo;
+    private Integer validCRTR;
     private Timestamp validFrom;
     private Timestamp validTo;
     private Timestamp timestamp;
     private Integer station;
-    private String sector;
     private String area;
     private Time etod;
     private Time ltop;
-    private Integer transitTime;
+    private Integer term;
+    private Integer saturdayOK;
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public Integer getLayer() {
+        return layer;
+    }
+
+    public void setLayer(Integer layer) {
+        this.layer = layer;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getZipFrom() {
+        return zipFrom;
+    }
+
+    public void setZipFrom(String zipFrom) {
+        this.zipFrom = zipFrom;
+    }
+
+    public String getZipTo() {
+        return zipTo;
+    }
+
+    public void setZipTo(String zipTo) {
+        this.zipTo = zipTo;
+    }
+
+    public Integer getValidCRTR() {
+        return validCRTR;
+    }
+
+    public void setValidCRTR(Integer validCRTR) {
+        this.validCRTR = validCRTR;
+    }
+
+    public Integer getTerm() {
+        return term;
+    }
+
+    public void setTerm(Integer term) {
+        this.term = term;
+    }
+
+    public Integer getSaturdayOK() {
+        return saturdayOK;
+    }
+
+    public void setSaturdayOK(Integer saturdayOK) {
+        this.saturdayOK = saturdayOK;
+    }
+
     private Time ltodsa;
     private Time ltodholiday;
     private Integer island;
-    private Time etod2;
-    private Time ltop2;
     private String holidayCtrl;
 
-    @Id
-    public String getProduct() {
-        return product;
-    }
 
-    public void setProduct(String product) {
-        this.product = product;
-    }
-
-    @Id
-    public String getLkz() {
-        return lkz;
-    }
-
-    public void setLkz(String lkz) {
-        this.lkz = lkz;
-    }
-
-    @Id
-    public String getZip() {
-        return zip;
-    }
-
-    public void setZip(String zip) {
-        this.zip = zip;
-    }
 
     @Id
     public Timestamp getValidFrom() {
@@ -101,14 +137,6 @@ public class Route implements Serializable {
         this.station = station;
     }
 
-    @Basic
-    public String getSector() {
-        return sector;
-    }
-
-    public void setSector(String sector) {
-        this.sector = sector;
-    }
 
     @Basic
     public String getArea() {
@@ -137,14 +165,6 @@ public class Route implements Serializable {
         this.ltop = ltop;
     }
 
-    @Basic
-    public Integer getTransitTime() {
-        return transitTime;
-    }
-
-    public void setTransitTime(Integer transitTime) {
-        this.transitTime = transitTime;
-    }
 
     @Basic
     public Time getLtodsa() {
@@ -173,23 +193,6 @@ public class Route implements Serializable {
         this.island = island;
     }
 
-    @Basic
-    public Time getEtod2() {
-        return etod2;
-    }
-
-    public void setEtod2(Time etod2) {
-        this.etod2 = etod2;
-    }
-
-    @Basic
-    public Time getLtop2() {
-        return ltop2;
-    }
-
-    public void setLtop2(Time ltop2) {
-        this.ltop2 = ltop2;
-    }
 
     @Basic
     public String getHolidayCtrl() {
@@ -200,55 +203,4 @@ public class Route implements Serializable {
         this.holidayCtrl = holidayCtrl;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Route route = (Route) o;
-
-        if (product != null ? !product.equals(route.product) : route.product != null) return false;
-        if (lkz != null ? !lkz.equals(route.lkz) : route.lkz != null) return false;
-        if (zip != null ? !zip.equals(route.zip) : route.zip != null) return false;
-        if (validFrom != null ? !validFrom.equals(route.validFrom) : route.validFrom != null) return false;
-        if (validTo != null ? !validTo.equals(route.validTo) : route.validTo != null) return false;
-        if (timestamp != null ? !timestamp.equals(route.timestamp) : route.timestamp != null) return false;
-        if (station != null ? !station.equals(route.station) : route.station != null) return false;
-        if (sector != null ? !sector.equals(route.sector) : route.sector != null) return false;
-        if (area != null ? !area.equals(route.area) : route.area != null) return false;
-        if (etod != null ? !etod.equals(route.etod) : route.etod != null) return false;
-        if (ltop != null ? !ltop.equals(route.ltop) : route.ltop != null) return false;
-        if (transitTime != null ? !transitTime.equals(route.transitTime) : route.transitTime != null) return false;
-        if (ltodsa != null ? !ltodsa.equals(route.ltodsa) : route.ltodsa != null) return false;
-        if (ltodholiday != null ? !ltodholiday.equals(route.ltodholiday) : route.ltodholiday != null) return false;
-        if (island != null ? !island.equals(route.island) : route.island != null) return false;
-        if (etod2 != null ? !etod2.equals(route.etod2) : route.etod2 != null) return false;
-        if (ltop2 != null ? !ltop2.equals(route.ltop2) : route.ltop2 != null) return false;
-        if (holidayCtrl != null ? !holidayCtrl.equals(route.holidayCtrl) : route.holidayCtrl != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = product != null ? product.hashCode() : 0;
-        result = 31 * result + (lkz != null ? lkz.hashCode() : 0);
-        result = 31 * result + (zip != null ? zip.hashCode() : 0);
-        result = 31 * result + (validFrom != null ? validFrom.hashCode() : 0);
-        result = 31 * result + (validTo != null ? validTo.hashCode() : 0);
-        result = 31 * result + (timestamp != null ? timestamp.hashCode() : 0);
-        result = 31 * result + (station != null ? station.hashCode() : 0);
-        result = 31 * result + (sector != null ? sector.hashCode() : 0);
-        result = 31 * result + (area != null ? area.hashCode() : 0);
-        result = 31 * result + (etod != null ? etod.hashCode() : 0);
-        result = 31 * result + (ltop != null ? ltop.hashCode() : 0);
-        result = 31 * result + (transitTime != null ? transitTime.hashCode() : 0);
-        result = 31 * result + (ltodsa != null ? ltodsa.hashCode() : 0);
-        result = 31 * result + (ltodholiday != null ? ltodholiday.hashCode() : 0);
-        result = 31 * result + (island != null ? island.hashCode() : 0);
-        result = 31 * result + (etod2 != null ? etod2.hashCode() : 0);
-        result = 31 * result + (ltop2 != null ? ltop2.hashCode() : 0);
-        result = 31 * result + (holidayCtrl != null ? holidayCtrl.hashCode() : 0);
-        return result;
-    }
 }
