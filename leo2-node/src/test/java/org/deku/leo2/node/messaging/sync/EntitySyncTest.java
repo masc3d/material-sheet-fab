@@ -36,7 +36,9 @@ public class EntitySyncTest extends DataTest {
         Logger l = (Logger) LoggerFactory.getLogger("org.deku.leo2.node");
         l.setLevel(Level.DEBUG);
 
+        // Enforcing tcp connection
         ActiveMQContext.instance().setLocalUri(new URI("tcp://localhost:61616"));
+        // Starting broker
         ActiveMQContext.instance().getBroker().start();
 
         mListener = new EntityPublisher(ActiveMQContext.instance(), mEntityManagerFactory);

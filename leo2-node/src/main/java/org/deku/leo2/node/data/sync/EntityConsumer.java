@@ -1,5 +1,6 @@
 package org.deku.leo2.node.data.sync;
 
+import com.google.common.base.Stopwatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
@@ -64,6 +65,8 @@ public class EntityConsumer implements Disposable {
             mTemplate.execute(session -> {
                 mReceiveQueue = session.createTemporaryQueue();
 
+                Stopwatch sw = Stopwatch.createStarted();
+                mLog.info(String.format("Requesting entities of type [%s]", entityType.toString()));
                 // Send entity state message
                 mTemplate.convertAndSend(mRequestQueue,
                         new EntityStateMessage(entityType, null), message -> {
@@ -81,9 +84,8 @@ public class EntityConsumer implements Disposable {
                     do {
                         entities = Arrays.asList((Object[])mTemplate.receiveAndConvert(mReceiveQueue));
                         count += entities.size();
-                        mLog.debug(String.format("Received entities [%d]", count));
                     } while (entities.size() > 0);
-                    mLog.debug("Receiving done");
+                    mLog.info(String.format("Received %d in %s", count, sw.toString()));
                 } catch(Exception e) {
                     mLog.error(e.getMessage(), e);
                 }
