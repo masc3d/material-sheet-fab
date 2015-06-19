@@ -7,6 +7,8 @@ import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.MessageConverter;
 import sx.Disposable;
 
 import javax.jms.DeliveryMode;
@@ -32,6 +34,7 @@ public class EntityConsumer implements Disposable {
     private TemporaryQueue mReceiveQueue = null;
     /** Spring jms communication abstraction */
     private JmsTemplate mTemplate;
+    private ObjectMessageConverter mObjectMessageConverter = new ObjectMessageConverter();
 
     ExecutorService mExecutorService;
 
@@ -44,6 +47,7 @@ public class EntityConsumer implements Disposable {
 
         mTemplate = new JmsTemplate(mMessagingContext.getConnectionFactory());
         mTemplate.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        mTemplate.setMessageConverter(mObjectMessageConverter);
         mTemplate.setSessionTransacted(true);
 
         // Create destinations
@@ -85,7 +89,7 @@ public class EntityConsumer implements Disposable {
                         entities = Arrays.asList((Object[])mTemplate.receiveAndConvert(mReceiveQueue));
                         count += entities.size();
                     } while (entities.size() > 0);
-                    mLog.info(String.format("Received %d in %s", count, sw.toString()));
+                    mLog.info(String.format("Received %d in %s (%d)", count, sw.toString(), mObjectMessageConverter.getBytesRead()));
                 } catch(Exception e) {
                     mLog.error(e.getMessage(), e);
                 }
