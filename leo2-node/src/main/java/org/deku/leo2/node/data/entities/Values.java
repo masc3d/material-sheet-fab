@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  * Created by JT on 17.06.15.
  */
 @Entity
-@Table(name = "sys_values")
+@Table(name = "mst_values")
 @IdClass(ValuesPK.class)
 public class Values implements Serializable {
     private static final long serialVersionUID = 2361810454760700247L;

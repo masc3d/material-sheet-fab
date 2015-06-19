@@ -1,9 +1,6 @@
 package org.deku.leo2.node.data.entities;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -11,6 +8,7 @@ import java.sql.Timestamp;
  * Created by JT on 11.05.15.
  */
 @Entity
+@Table(name = "mst_sector")
 @IdClass(SectorPK.class)
 public class Sector implements Serializable {
     private static final long serialVersionUID = 5174752592128866406L;

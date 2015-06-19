@@ -8,7 +8,7 @@ import java.sql.Timestamp;
  * Created by JT on 11.05.15.
  */
 @Entity
-@Table(name = "mas_country")
+@Table(name = "mst_country")
 public class Country implements Serializable {
     private static final long serialVersionUID = 2361810454760700247L;
 

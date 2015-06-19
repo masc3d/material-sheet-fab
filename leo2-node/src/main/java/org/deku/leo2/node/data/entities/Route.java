@@ -2,10 +2,7 @@ package org.deku.leo2.node.data.entities;
 
 import org.eclipse.persistence.annotations.Index;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -14,6 +11,7 @@ import java.sql.Timestamp;
  * Created by JT on 11.05.15.
  */
 @Entity
+@Table(name = "mst_route")
 @IdClass(RoutePK.class)
 public class Route implements Serializable {
     private static final long serialVersionUID = -3738208098013706941L;
