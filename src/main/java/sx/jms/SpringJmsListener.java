@@ -64,7 +64,7 @@ public abstract class SpringJmsListener extends Listener implements SessionAware
 
     @Override
     public void stop() throws JMSException {
-        mListenerContainer.stop();
+        mListenerContainer.shutdown();
     }
 
     @Override
