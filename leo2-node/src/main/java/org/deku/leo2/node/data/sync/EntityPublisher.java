@@ -110,7 +110,7 @@ public class EntityPublisher extends SpringJmsListener {
         try {
             jmsTemplate.convertAndSend(message.getJMSReplyTo(), new EntityUpdateMessage(count));
 
-            final int CHUNK_SIZE = 10000;
+            final int CHUNK_SIZE = 500;
             ArrayList buffer = new ArrayList(CHUNK_SIZE);
             mLog.info(String.format("Sending %d of type %s", count, entityType));
             while (true) {

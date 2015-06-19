@@ -17,6 +17,8 @@ public class EntityStateMessage implements Serializable {
     private Class mEntityType;
     private ZonedDateTime mTimestamp;
 
+    public EntityStateMessage() { }
+
     public EntityStateMessage(Class entityType, ZonedDateTime timestamp) {
         mEntityType = entityType;
         mTimestamp = timestamp;

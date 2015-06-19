@@ -62,6 +62,11 @@ dependencies {
     compile 'com.wordnik:swagger-jaxrs:+'
     compile 'org.javassist:javassist:3.+'
 
+    // serialization
+    compile "com.esotericsoftware:kryo:3.+"
+
+    compile "org.xerial.snappy:snappy-java:+"
+
     // TODO: for testing jinq
     compile 'org.jinq:jinq-jpa:+'
 

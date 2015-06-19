@@ -12,6 +12,8 @@ public class EntityUpdateMessage implements Serializable {
 
     private Long mAmount;
 
+    public EntityUpdateMessage() { }
+
     /**
      * c'tor
      * @param amount Amount of records
