@@ -9,7 +9,7 @@ import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
-import org.deku.leo2.messaging.activemq.ActiveMqBroker;
+import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.HttpExternalTunnelServlet;
 import org.deku.leo2.node.App;
 import org.deku.leo2.node.messaging.BrokerSettings;
@@ -33,7 +33,6 @@ import javax.inject.Named;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -112,14 +111,14 @@ public class WebContextInitializer implements ServletContextInitializer {
         //region Setup message broker
         // Broker configuration, must occur before tunnel servlet starts
         mLog.info("Configuring messaging broker");
-        ActiveMqBroker.instance().setNativeTcpPort(mBrokerSettings.getNativePort());
+        ActiveMQBroker.instance().setNativeTcpPort(mBrokerSettings.getNativePort());
 
         if (!Strings.isNullOrEmpty(mPeerSettings.getHost())) {
             // TODO: we could probe for available remote ports here, but this implies
             // init of peer brokers should also be threaded, as timeouts may occur
             mLog.info(String.format("Adding peer broker: %s", mPeerSettings.getHost()));
 
-            ActiveMqBroker.instance().addPeerBroker(new Broker.PeerBroker(
+            ActiveMQBroker.instance().addPeerBroker(new Broker.PeerBroker(
                     mPeerSettings.getHost(),
                     Broker.TransportType.TCP,
                     null));

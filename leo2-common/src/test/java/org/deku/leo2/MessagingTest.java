@@ -3,7 +3,7 @@ package org.deku.leo2;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.deku.leo2.messaging.Broker;
-import org.deku.leo2.messaging.activemq.ActiveMqBroker;
+import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.junit.After;
 import org.junit.Before;
 
@@ -26,7 +26,7 @@ public abstract class MessagingTest {
         lMessaging.setLevel(Level.DEBUG);
 
         // Start broker
-        mBroker = ActiveMqBroker.instance();
+        mBroker = ActiveMQBroker.instance();
         mBroker.start();
     }
 

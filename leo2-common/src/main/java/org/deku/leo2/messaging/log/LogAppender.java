@@ -63,7 +63,6 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
         mScheduledExecutorService = Executors.newScheduledThreadPool(1);
 
         mTemplate = new JmsTemplate(mMessagingContext.getConnectionFactory());
-        mTemplate.setSessionAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
         mTemplate.setSessionTransacted(true);
 
         mMessagingContext.getBroker().getListenerEventDispatcher().add(mBrokerListener);

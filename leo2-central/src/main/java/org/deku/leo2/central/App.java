@@ -2,8 +2,8 @@ package org.deku.leo2.central;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.activemq.ActiveMqBroker;
-import org.deku.leo2.messaging.activemq.ActiveMqContext;
+import org.deku.leo2.messaging.activemq.ActiveMQBroker;
+import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.messaging.log.LogListener;
 
 import javax.jms.JMSException;
@@ -16,11 +16,11 @@ public class App extends org.deku.leo2.node.App {
 
     LogListener mLogListener;
 
-    private ActiveMqBroker.Listener mBrokerListener = new ActiveMqBroker.Listener() {
+    private ActiveMQBroker.Listener mBrokerListener = new ActiveMQBroker.Listener() {
         @Override
         public void onStart() {
             mLog.info("Detected broker start, attaching listeners");
-            mLogListener = new LogListener(ActiveMqContext.instance());
+            mLogListener = new LogListener(ActiveMQContext.instance());
             try {
                 mLogListener.start();
             } catch (JMSException e) {
@@ -40,6 +40,6 @@ public class App extends org.deku.leo2.node.App {
         super.initialize(LogConfigurationType.NONE);
 
         // Register to broker start
-        ActiveMqBroker.instance().getListenerEventDispatcher().add(mBrokerListener);
+        ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerListener);
     }
 }

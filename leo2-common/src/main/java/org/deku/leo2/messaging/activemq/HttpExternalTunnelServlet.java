@@ -32,11 +32,11 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet {
      */
     public HttpExternalTunnelServlet(URI publicUri) {
         mPublicUri = publicUri;
-        ActiveMqBroker.instance().getListenerEventDispatcher().add(mBrokerEventListener);
+        ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerEventListener);
     }
 
     /** Broker event listener */
-    private class BrokerEventListener implements ActiveMqBroker.Listener {
+    private class BrokerEventListener implements ActiveMQBroker.Listener {
 
         @Override
         public void onStart() {
@@ -68,13 +68,13 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet {
                     mPublicUri, getServletContext());
 
             // Broker should not be started at this time
-            ActiveMqBroker.instance().addConnector(transportConnector);
+            ActiveMQBroker.instance().addConnector(transportConnector);
 
             // Start broker threaded to improve startup time
             ExecutorService exec = Executors.newSingleThreadExecutor();
             exec.execute(() -> {
                 try {
-                    ActiveMqBroker.instance().start();
+                    ActiveMQBroker.instance().start();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

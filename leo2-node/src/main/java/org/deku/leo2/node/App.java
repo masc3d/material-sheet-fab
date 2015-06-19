@@ -5,8 +5,8 @@ import ch.qos.logback.classic.LoggerContext;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.activemq.ActiveMqBroker;
-import org.deku.leo2.messaging.activemq.ActiveMqContext;
+import org.deku.leo2.messaging.activemq.ActiveMQBroker;
+import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.messaging.log.LogAppender;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -109,7 +109,7 @@ public class App implements
         switch (logConfigurationType) {
             case JMS:
                 Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-                LogAppender lAppender = new LogAppender(ActiveMqContext.instance());
+                LogAppender lAppender = new LogAppender(ActiveMQContext.instance());
 
                 mConfigureLoggingFunc = () -> {
                     LoggerContext lContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -165,7 +165,7 @@ public class App implements
         //endregion
 
         // Basic broker configuration
-        ActiveMqBroker.instance().setDataDirectory(
+        ActiveMQBroker.instance().setDataDirectory(
                 new File(App.instance().getLocalHomeDirectory(), "activemq"));
 
         Runtime.getRuntime().addShutdownHook(new Thread("App shutdown hook") {
@@ -191,7 +191,7 @@ public class App implements
             }
         }
         try {
-            ActiveMqBroker.instance().stop();
+            ActiveMQBroker.instance().stop();
         } catch (Exception e) {
             mLog.error(e.getMessage(), e);
         }
