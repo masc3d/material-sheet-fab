@@ -71,14 +71,14 @@ public class EntityConsumer implements Disposable {
                 MessageProducer mp = session.createProducer(requestQueue);
                 mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
                 mp.setTimeToLive(5 * 60 * 1000);
-                final Message[] msg = {mObjectMessageConverter.toMessage(new EntityStateMessage(entityType, null), session)};
-                msg[0].setJMSReplyTo(receiveQueue);
-                mp.send(msg[0]);
+                Message msg = mObjectMessageConverter.toMessage(new EntityStateMessage(entityType, null), session);
+                msg.setJMSReplyTo(receiveQueue);
+                mp.send(msg);
 
                 // Receive entity update message
                 MessageConsumer mc = session.createConsumer(receiveQueue);
-                msg[0] = mc.receive();
-                EntityUpdateMessage euMessage = (EntityUpdateMessage)mObjectMessageConverter.fromMessage(msg[0]);
+                msg = mc.receive();
+                EntityUpdateMessage euMessage = (EntityUpdateMessage)mObjectMessageConverter.fromMessage(msg);
 
                 mLog.debug(euMessage);
 
@@ -88,14 +88,15 @@ public class EntityConsumer implements Disposable {
                     List entities = null;
                     long count = 0;
                     long timestamp = 0;
+                    Message m;
                     do {
-                        msg[0] = mc.receive();
-                        if (msg[0].getJMSTimestamp() < timestamp)
-                            mLog.warn(String.format("INCONSISTENT ORDER (%d < %d)", msg[0].getJMSTimestamp(), timestamp));
+                        m = mc.receive();
+                        if (m.getJMSTimestamp() < timestamp)
+                            mLog.warn(String.format("INCONSISTENT ORDER (%d < %d)", m.getJMSTimestamp(), timestamp));
 
-                        timestamp = msg[0].getJMSTimestamp();
+                        timestamp = m.getJMSTimestamp();
 
-                        entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(msg[0]));
+                        entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(m));
 
                         // TODO: db insert. preliminary for testing, requires timestamp support to work properly
 //                        for (Object o : entities) {
