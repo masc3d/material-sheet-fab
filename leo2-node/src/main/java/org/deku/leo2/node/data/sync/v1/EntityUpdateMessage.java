@@ -25,4 +25,9 @@ public class EntityUpdateMessage implements Serializable {
     public Long getAmount() {
         return mAmount;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s amount [%d]", this.getClass().getSimpleName(), this.getAmount());
+    }
 }

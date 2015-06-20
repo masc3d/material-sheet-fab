@@ -1,6 +1,7 @@
 package org.deku.leo2.node.data.sync;
 
 import com.google.common.base.Stopwatch;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
@@ -11,13 +12,12 @@ import org.springframework.jms.support.converter.MappingJackson2MessageConverter
 import org.springframework.jms.support.converter.MessageConverter;
 import sx.Disposable;
 
-import javax.jms.DeliveryMode;
-import javax.jms.Queue;
-import javax.jms.TemporaryQueue;
+import javax.jms.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -29,9 +29,6 @@ public class EntityConsumer implements Disposable {
     private Log mLog = LogFactory.getLog(this.getClass());
     /** Messaging context */
     private MessagingContext mMessagingContext;
-    /** Jms destination queue */
-    private Queue mRequestQueue = null;
-    private TemporaryQueue mReceiveQueue = null;
     /** Spring jms communication abstraction */
     private JmsTemplate mTemplate;
     private ObjectMessageConverter mObjectMessageConverter = new ObjectMessageConverter();
@@ -44,19 +41,6 @@ public class EntityConsumer implements Disposable {
      */
     public EntityConsumer(MessagingContext messagingContext) {
         mMessagingContext = messagingContext;
-
-        mTemplate = new JmsTemplate(mMessagingContext.getConnectionFactory());
-        mTemplate.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-        mTemplate.setMessageConverter(mObjectMessageConverter);
-        mTemplate.setSessionTransacted(true);
-
-        // Create destinations
-        mTemplate.execute(session -> {
-            mRequestQueue = session.createQueue(EntityStateMessage.ENTITY_QUEUE_NAME);
-            mReceiveQueue = session.createTemporaryQueue();
-            return null;
-        });
-
         mExecutorService = Executors.newSingleThreadExecutor();
     }
 
@@ -66,36 +50,54 @@ public class EntityConsumer implements Disposable {
      */
     public void request(Class entityType) {
         mExecutorService.submit(() -> {
-            mTemplate.execute(session -> {
-                mReceiveQueue = session.createTemporaryQueue();
+            try {
+                Connection cn = mMessagingContext.getConnectionFactory().createConnection();
+                cn.start();
+                Session session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+                Queue requestQueue = session.createQueue(EntityStateMessage.ENTITY_QUEUE_NAME);
+                TemporaryQueue receiveQueue = session.createTemporaryQueue();
 
                 Stopwatch sw = Stopwatch.createStarted();
                 mLog.info(String.format("Requesting entities of type [%s]", entityType.toString()));
+
                 // Send entity state message
-                mTemplate.convertAndSend(mRequestQueue,
-                        new EntityStateMessage(entityType, null), message -> {
-                            message.setJMSReplyTo(mReceiveQueue);
-                            return message;
-                        });
+                MessageProducer mp = session.createProducer(requestQueue);
+                mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+                mp.setTimeToLive(5 * 60 * 1000);
+                Message msg = mObjectMessageConverter.toMessage(new EntityStateMessage(entityType, null), session);
+                msg.setJMSReplyTo(receiveQueue);
+                mp.send(msg);
 
-                try {
-                    // Receive entity update message
-                    EntityUpdateMessage euMessage = (EntityUpdateMessage)mTemplate.receiveAndConvert(mReceiveQueue);
+                // Receive entity update message
+                MessageConsumer mc = session.createConsumer(receiveQueue);
+                msg = mc.receive();
+                EntityUpdateMessage euMessage = (EntityUpdateMessage)mObjectMessageConverter.fromMessage(msg);
 
-                    // Receive entities
-                    List entities;
-                    Integer count = 0;
-                    do {
-                        entities = Arrays.asList((Object[])mTemplate.receiveAndConvert(mReceiveQueue));
-                        count += entities.size();
-                    } while (entities.size() > 0);
-                    mLog.info(String.format("Received %d in %s (%d)", count, sw.toString(), mObjectMessageConverter.getBytesRead()));
-                } catch(Exception e) {
-                    mLog.error(e.getMessage(), e);
-                }
+                mLog.debug(euMessage);
 
-                return null;
-            });
+                // Receive entities
+                List entities = null;
+                long count = 0;
+                long timestamp = 0;
+                do {
+                    msg = mc.receive();
+                    if (msg.getJMSTimestamp() < timestamp)
+                        mLog.warn(String.format("INCONSISTENT ORDER (%d < %d)", msg.getJMSTimestamp(), timestamp));
+
+                    timestamp = msg.getJMSTimestamp();
+
+                    //entities = Arrays.asList((Object[])mTemplate.receiveAndConvert(receiveQueue));
+                    entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(msg));
+                    //mLog.debug(String.format("Received %d entities", entities.size()));
+                    count += entities.size();
+                } while (entities.size() > 0);
+                mLog.info(String.format("Received %d in %s (%d)", count, sw.toString(), mObjectMessageConverter.getBytesRead()));
+            } catch (Exception e) {
+                mLog.error(e.getMessage(), e);
+            }
+
+            return null;
         });
     }
 

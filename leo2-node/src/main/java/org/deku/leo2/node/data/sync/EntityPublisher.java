@@ -13,7 +13,6 @@ import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.springframework.jms.InvalidDestinationException;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
@@ -37,7 +36,6 @@ import java.util.List;
 /**
  * Created by masc on 18.06.15.
  */
-@Named
 public class EntityPublisher extends SpringJmsListener {
     private Log mLog = LogFactory.getLog(this.getClass());
     /** Messaging context */
@@ -77,13 +75,7 @@ public class EntityPublisher extends SpringJmsListener {
 
         Stopwatch sw = Stopwatch.createStarted();
 
-        /** Jms template */
-        JmsTemplate jmsTemplate;
-        jmsTemplate = new JmsTemplate(mMessagingContext.getConnectionFactory());
-
         ObjectMessageConverter messageConverter = new ObjectMessageConverter();
-        jmsTemplate.setMessageConverter(messageConverter);
-
 
         // Entity state message
         EntityStateMessage esMessage = (EntityStateMessage) messageConverter.fromMessage(message);
@@ -108,7 +100,11 @@ public class EntityPublisher extends SpringJmsListener {
 
         ScrollableCursor cursor = (ScrollableCursor) jq.getSingleResult();
         try {
-            jmsTemplate.convertAndSend(message.getJMSReplyTo(), new EntityUpdateMessage(count));
+            EntityUpdateMessage euMessage = new EntityUpdateMessage(count);
+            mLog.debug(euMessage);
+
+            MessageProducer mp = session.createProducer(message.getJMSReplyTo());
+            mp.send(messageConverter.toMessage(euMessage, session));
 
             final int CHUNK_SIZE = 500;
             ArrayList buffer = new ArrayList(CHUNK_SIZE);
@@ -121,7 +117,8 @@ public class EntityPublisher extends SpringJmsListener {
                 }
                 if (buffer.size() >= CHUNK_SIZE || next == null) {
                     if (buffer.size() > 0) {
-                        jmsTemplate.convertAndSend(message.getJMSReplyTo(), buffer.toArray());
+                        //mLog.debug(String.format("Sending %d", buffer.size()));
+                        mp.send(messageConverter.toMessage(buffer.toArray(),session));
                         buffer.clear();
                     }
 
@@ -131,7 +128,7 @@ public class EntityPublisher extends SpringJmsListener {
             }
 
             // Send empty array -> EOS
-            jmsTemplate.convertAndSend(message.getJMSReplyTo(), new Object[0]);
+            mp.send(messageConverter.toMessage(new Object[0], session));
 
             mLog.info(String.format("Sent %d in %s (%d)", count, sw, messageConverter.getBytesWritten()));
         } catch (InvalidDestinationException e) {
