@@ -16,6 +16,7 @@ import sx.Disposable;
 import javax.jms.*;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import java.lang.IllegalStateException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,11 +92,16 @@ public class EntityConsumer implements Disposable {
                     Message m;
                     do {
                         m = mc.receive();
-                        if (m.getJMSTimestamp() < timestamp)
-                            mLog.warn(String.format("INCONSISTENT ORDER (%d < %d)", m.getJMSTimestamp(), timestamp));
 
+                        // Verify message order
+                        if (m.getJMSTimestamp() < timestamp)
+                            throw new IllegalStateException(
+                                    String.format("Inconsistent message order (%d < %d)", m.getJMSTimestamp(), timestamp));
+
+                        // Store last timestamp
                         timestamp = m.getJMSTimestamp();
 
+                        // Deserialize entities
                         entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(m));
 
                         // TODO: db insert. preliminary for testing, requires timestamp support to work properly
@@ -121,8 +127,6 @@ public class EntityConsumer implements Disposable {
         mExecutorService.shutdown();
         try {
             mExecutorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-
-        }
+        } catch (InterruptedException e) { }
     }
 }

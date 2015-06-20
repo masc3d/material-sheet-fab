@@ -37,7 +37,7 @@ public class LogListener extends SpringJmsListener {
     @Override
     public void onMessage(Message message, Session session) throws JMSException {
         try {
-            mLog.debug(String.format("message id [%s] %s",
+            mLog.trace(String.format("message id [%s] %s",
                     message.getJMSMessageID(),
                     LocalDateTime.ofInstant(
                             Instant.ofEpochMilli(
@@ -45,7 +45,7 @@ public class LogListener extends SpringJmsListener {
 
             LogMessage[] cMessage = (LogMessage[])mMessageConverter.fromMessage(message);
 
-            mLog.debug(String.format("Received %d log messages", cMessage.length));
+            mLog.trace(String.format("Received %d log messages", cMessage.length));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -82,7 +82,7 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
         }
 
         if (logMessageBuffer.size() > 0) {
-            mLog.debug(String.format("Flushing [%d]", logMessageBuffer.size()));
+            mLog.trace(String.format("Flushing [%d]", logMessageBuffer.size()));
             try {
                 mTemplate.convertAndSend(mQueue, logMessageBuffer.toArray(new LogMessage[0]));
             } catch(Exception e) {
