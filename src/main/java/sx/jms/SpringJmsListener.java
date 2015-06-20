@@ -46,7 +46,8 @@ public abstract class SpringJmsListener extends Listener implements SessionAware
     protected void configure(DefaultMessageListenerContainer listenerContainer) { }
 
     @Override
-    public void start() throws JMSException {
+    public void start() {
+        mLog.info(String.format("Starting %s", this.getClass().getSimpleName()));
         if (mListenerContainer == null) {
             mDestination = this.createDestination();
 
@@ -63,7 +64,8 @@ public abstract class SpringJmsListener extends Listener implements SessionAware
     }
 
     @Override
-    public void stop() throws JMSException {
+    public void stop() {
+        mLog.info(String.format("Stopping %s", this.getClass().getSimpleName()));
         mListenerContainer.shutdown();
     }
 
@@ -74,9 +76,6 @@ public abstract class SpringJmsListener extends Listener implements SessionAware
 
     @Override
     public void dispose() {
-        try {
-            this.stop();
-        } catch (JMSException e) {
-        }
+        this.stop();
     }
 }
