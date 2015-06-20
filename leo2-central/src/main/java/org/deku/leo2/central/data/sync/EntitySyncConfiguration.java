@@ -5,9 +5,13 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.node.data.PersistenceContext;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
@@ -15,7 +19,8 @@ import javax.persistence.PersistenceUnit;
  * Created by masc on 20.06.15.
  */
 @Configuration("central.EntitySyncConfiguration")
-public class EntitySyncConfiguration implements InitializingBean {
+@Lazy(false)
+public class EntitySyncConfiguration {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     @PersistenceUnit(name = PersistenceContext.DB_EMBEDDED)
@@ -30,21 +35,13 @@ public class EntitySyncConfiguration implements InitializingBean {
         }
     };
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-    }
-
-    @Bean
-    EntitySync entitySync() {
-        // Configure entity snyc
+    @PostConstruct
+    public void onInitialize() {
         EntitySync.instance().setEntityManagerFactory(mEntityManagerFactory);
 
         // Start when broker is started
         ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerListener);
         if (ActiveMQBroker.instance().isStarted())
             mBrokerListener.onStart();
-
-        return EntitySync.instance();
     }
-
 }

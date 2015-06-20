@@ -5,9 +5,12 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.node.App;
 import org.deku.leo2.node.data.PersistenceContext;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
@@ -15,6 +18,7 @@ import javax.persistence.PersistenceUnit;
  * Created by masc on 20.06.15.
  */
 @Configuration("node.EntitySyncConfiguration")
+@Lazy(false)
 public class EntitySyncConfiguration {
     private Log mLog = LogFactory.getLog(this.getClass());
 
@@ -30,8 +34,8 @@ public class EntitySyncConfiguration {
         }
     };
 
-    @Bean
-    public EntitySync entitySync() {
+    @PostConstruct
+    public void onInitialize() {
         if (App.instance().getEntitySyncConfigurationType() == App.EntitySyncConfigurationType.CONSUMER) {
             // Configure entity snyc
             EntitySync.instance().setEntityManagerFactory(mEntityManagerFactory);
@@ -41,7 +45,5 @@ public class EntitySyncConfiguration {
             if (ActiveMQBroker.instance().isStarted())
                 mBrokerListener.onStart();
         }
-
-        return EntitySync.instance();
     }
 }

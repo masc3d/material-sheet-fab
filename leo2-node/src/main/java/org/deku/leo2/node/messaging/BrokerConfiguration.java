@@ -9,7 +9,9 @@ import org.deku.leo2.node.peer.PeerSettings;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -18,7 +20,8 @@ import javax.inject.Named;
  */
 @Configuration
 @ConfigurationProperties(prefix="broker")
-public class BrokerConfiguration implements InitializingBean {
+@Lazy(false)
+public class BrokerConfiguration {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     @Inject
@@ -43,8 +46,8 @@ public class BrokerConfiguration implements InitializingBean {
         mHttpContextPath = httpContextPath;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void initialize() throws Exception {
 
         //region Setup message broker
         // Broker configuration, must occur before tunnel servlet starts
