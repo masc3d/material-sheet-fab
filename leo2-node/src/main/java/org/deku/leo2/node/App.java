@@ -8,6 +8,8 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.messaging.log.LogAppender;
+import org.deku.leo2.messaging.log.LogListener;
+import org.deku.leo2.node.data.sync.EntitySync;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
@@ -20,6 +22,7 @@ import org.springframework.context.ApplicationListener;
 import sx.Disposable;
 import sx.LazyInstance;
 
+import javax.jms.JMSException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -43,6 +46,11 @@ public class App implements
 
     public enum LogConfigurationType {
         JMS,
+        NONE
+    }
+
+    public enum EntitySyncConfigurationType {
+        CONSUMER,
         NONE
     }
 
@@ -77,6 +85,12 @@ public class App implements
     private volatile boolean mIsShuttingDown;
     private volatile boolean mIsInitialized;
 
+    private EntitySyncConfigurationType mEntitySyncConfigurationType;
+
+    public EntitySyncConfigurationType getEntitySyncConfigurationType() {
+        return mEntitySyncConfigurationType;
+    }
+
     protected App() {
         mLocalHomeDirectory = new File(System.getProperty("user.home"), ".leo2");
         mLocalConfigurationFile = new File(this.getLocalHomeDirectory(), "leo2.properties");
@@ -100,10 +114,21 @@ public class App implements
 
     private Runnable mConfigureLoggingFunc = () -> {};
 
-    public void initialize(LogConfigurationType logConfigurationType) {
+    /**
+     *
+     * @param logConfigurationType
+     * @param entitySyncConfigurationType
+     */
+    public void initialize(
+            LogConfigurationType logConfigurationType,
+            EntitySyncConfigurationType entitySyncConfigurationType) {
+
         if (mIsInitialized)
             throw new IllegalStateException("Application already initialized");
         mIsInitialized = true;
+
+        // Configuration options
+        mEntitySyncConfigurationType = entitySyncConfigurationType;
 
         // Initialize logging
         switch (logConfigurationType) {
@@ -177,7 +202,9 @@ public class App implements
     }
 
     public void initialize() {
-        this.initialize(LogConfigurationType.JMS);
+        this.initialize(
+                LogConfigurationType.JMS,
+                EntitySyncConfigurationType.CONSUMER);
     }
 
     @Override

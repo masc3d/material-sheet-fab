@@ -12,7 +12,7 @@ import org.deku.leo2.messaging.Broker;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.HttpExternalTunnelServlet;
 import org.deku.leo2.node.App;
-import org.deku.leo2.node.messaging.BrokerSettings;
+import org.deku.leo2.node.messaging.BrokerConfiguration;
 import org.deku.leo2.node.peer.PeerSettings;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
@@ -42,7 +42,7 @@ import java.net.URL;
  * Created by masc on 27.05.15.
  */
 @Named
-public class WebContextInitializer implements ServletContextInitializer {
+class WebContextInitializer implements ServletContextInitializer {
     Log mLog = LogFactory.getLog(WebContextInitializer.class.getName());
 
     private static final String STATIC_CONTENT_CLASSPATH = "/webapp";
@@ -59,10 +59,7 @@ public class WebContextInitializer implements ServletContextInitializer {
     SpringBeanProcessor mSpringBeanProcessor;
 
     @Inject
-    PeerSettings mPeerSettings;
-
-    @Inject
-    BrokerSettings mBrokerSettings;
+    BrokerConfiguration mBrokerConfiguration;
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
@@ -102,26 +99,9 @@ public class WebContextInitializer implements ServletContextInitializer {
                     new HttpExternalTunnelServlet(
                             new URI("http://localhost:8080/leo2/jms")));
             sr.setLoadOnStartup(1);
-            sr.addMapping(this.mBrokerSettings.getHttpContextPath() + "/*");
+            sr.addMapping(this.mBrokerConfiguration.getHttpContextPath() + "/*");
         } catch (URISyntaxException e) {
             throw new ServletException(e);
-        }
-        //endregion
-
-        //region Setup message broker
-        // Broker configuration, must occur before tunnel servlet starts
-        mLog.info("Configuring messaging broker");
-        ActiveMQBroker.instance().setNativeTcpPort(mBrokerSettings.getNativePort());
-
-        if (!Strings.isNullOrEmpty(mPeerSettings.getHost())) {
-            // TODO: we could probe for available remote ports here, but this implies
-            // init of peer brokers should also be threaded, as timeouts may occur
-            mLog.info(String.format("Adding peer broker: %s", mPeerSettings.getHost()));
-
-            ActiveMQBroker.instance().addPeerBroker(new Broker.PeerBroker(
-                    mPeerSettings.getHost(),
-                    Broker.TransportType.TCP,
-                    null));
         }
         //endregion
     }

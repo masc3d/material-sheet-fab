@@ -9,6 +9,7 @@ import org.jinq.orm.stream.JinqStream;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -78,7 +79,7 @@ public class PersistenceUtil {
 
     //region JPA helpers
     public interface TransactionBlock {
-        void perform();
+        void perform() throws Exception;
     }
 
     /**
@@ -88,25 +89,21 @@ public class PersistenceUtil {
      * @param <T>        Type of instance
      * @return Persistent instance of class or null on error
      */
-    public <T> T persistentInstance(EntityManager em, Class<T> type, Object primaryKey) {
+    public static <T> T persistentInstance(EntityManager em, Class<T> type, Object primaryKey) throws Exception {
         T t = null;
-        try {
-            t = em.find(type, primaryKey);
-            if (t == null) {
-                t = type.newInstance();
+        t = em.find(type, primaryKey);
+        if (t == null) {
+            t = type.newInstance();
 
-                for (Method m : type.getMethods()) {
-                    if (m.getAnnotation(javax.persistence.Id.class) != null) {
-                        m = type.getMethod("s" + m.getName().substring(1), primaryKey.getClass());
-                        m.invoke(t, primaryKey);
-                        break;
-                    }
+            for (Method m : type.getMethods()) {
+                if (m.getAnnotation(javax.persistence.Id.class) != null) {
+                    m = type.getMethod("s" + m.getName().substring(1), primaryKey.getClass());
+                    m.invoke(t, primaryKey);
+                    break;
                 }
-
-                em.persist(t);
             }
-        } catch (Exception e) {
-            mLog.error(e.getMessage(), e);
+
+            em.persist(t);
         }
         return t;
     }
@@ -121,6 +118,9 @@ public class PersistenceUtil {
             et.begin();
             b.perform();
             et.commit();
+        }
+        catch(Exception e) {
+            throw new RuntimeException(e);
         } finally {
             if (et.isActive())
                 et.rollback();

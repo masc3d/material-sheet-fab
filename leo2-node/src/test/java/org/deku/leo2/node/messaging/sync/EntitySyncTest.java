@@ -42,7 +42,7 @@ public class EntitySyncTest extends DataTest {
         ActiveMQContext.instance().getBroker().start();
 
         mListener = new EntityPublisher(ActiveMQContext.instance(), mEntityManagerFactory);
-        mClient = new EntityConsumer(ActiveMQContext.instance());
+        mClient = new EntityConsumer(ActiveMQContext.instance(), mEntityManagerFactory);
     }
 
     @After

@@ -5,6 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
+import org.deku.leo2.node.data.PersistenceUtil;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
 import org.springframework.jms.core.JmsTemplate;
@@ -13,6 +14,8 @@ import org.springframework.jms.support.converter.MessageConverter;
 import sx.Disposable;
 
 import javax.jms.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +32,8 @@ public class EntityConsumer implements Disposable {
     private Log mLog = LogFactory.getLog(this.getClass());
     /** Messaging context */
     private MessagingContext mMessagingContext;
+    /** Entity manager factory */
+    private EntityManagerFactory mEntityManagerFactory;
     /** Spring jms communication abstraction */
     private JmsTemplate mTemplate;
     private ObjectMessageConverter mObjectMessageConverter = new ObjectMessageConverter();
@@ -39,8 +44,9 @@ public class EntityConsumer implements Disposable {
      * c'tor
      * @param messagingContext
      */
-    public EntityConsumer(MessagingContext messagingContext) {
+    public EntityConsumer(MessagingContext messagingContext, EntityManagerFactory entityManagerFactory) {
         mMessagingContext = messagingContext;
+        mEntityManagerFactory = entityManagerFactory;
         mExecutorService = Executors.newSingleThreadExecutor();
     }
 
@@ -65,34 +71,42 @@ public class EntityConsumer implements Disposable {
                 MessageProducer mp = session.createProducer(requestQueue);
                 mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
                 mp.setTimeToLive(5 * 60 * 1000);
-                Message msg = mObjectMessageConverter.toMessage(new EntityStateMessage(entityType, null), session);
-                msg.setJMSReplyTo(receiveQueue);
-                mp.send(msg);
+                final Message[] msg = {mObjectMessageConverter.toMessage(new EntityStateMessage(entityType, null), session)};
+                msg[0].setJMSReplyTo(receiveQueue);
+                mp.send(msg[0]);
 
                 // Receive entity update message
                 MessageConsumer mc = session.createConsumer(receiveQueue);
-                msg = mc.receive();
-                EntityUpdateMessage euMessage = (EntityUpdateMessage)mObjectMessageConverter.fromMessage(msg);
+                msg[0] = mc.receive();
+                EntityUpdateMessage euMessage = (EntityUpdateMessage)mObjectMessageConverter.fromMessage(msg[0]);
 
                 mLog.debug(euMessage);
 
                 // Receive entities
-                List entities = null;
-                long count = 0;
-                long timestamp = 0;
-                do {
-                    msg = mc.receive();
-                    if (msg.getJMSTimestamp() < timestamp)
-                        mLog.warn(String.format("INCONSISTENT ORDER (%d < %d)", msg.getJMSTimestamp(), timestamp));
+                EntityManager em = mEntityManagerFactory.createEntityManager();
+                PersistenceUtil.transaction(em, () -> {
+                    List entities = null;
+                    long count = 0;
+                    long timestamp = 0;
+                    do {
+                        msg[0] = mc.receive();
+                        if (msg[0].getJMSTimestamp() < timestamp)
+                            mLog.warn(String.format("INCONSISTENT ORDER (%d < %d)", msg[0].getJMSTimestamp(), timestamp));
 
-                    timestamp = msg.getJMSTimestamp();
+                        timestamp = msg[0].getJMSTimestamp();
 
-                    //entities = Arrays.asList((Object[])mTemplate.receiveAndConvert(receiveQueue));
-                    entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(msg));
-                    //mLog.debug(String.format("Received %d entities", entities.size()));
-                    count += entities.size();
-                } while (entities.size() > 0);
-                mLog.info(String.format("Received %d in %s (%d)", count, sw.toString(), mObjectMessageConverter.getBytesRead()));
+                        entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(msg[0]));
+
+                        // TODO: db insert. preliminary for testing, requires timestamp support to work properly
+//                        for (Object o : entities) {
+//                            em.persist(o);
+//                        }
+
+                        mLog.trace(String.format("Received %d entities", entities.size()));
+                        count += entities.size();
+                    } while (entities.size() > 0);
+                    mLog.info(String.format("Received %d in %s (%d)", count, sw.toString(), mObjectMessageConverter.getBytesRead()));
+                });
             } catch (Exception e) {
                 mLog.error(e.getMessage(), e);
             }

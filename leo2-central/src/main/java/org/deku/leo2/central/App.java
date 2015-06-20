@@ -21,11 +21,7 @@ public class App extends org.deku.leo2.node.App {
         public void onStart() {
             mLog.info("Detected broker start, attaching listeners");
             mLogListener = new LogListener(ActiveMQContext.instance());
-            try {
-                mLogListener.start();
-            } catch (JMSException e) {
-                mLog.error(e.getMessage(), e);
-            }
+            mLogListener.start();
         }
     };
 
@@ -37,7 +33,7 @@ public class App extends org.deku.leo2.node.App {
     @Override
     public void initialize() {
         // No JMS logging for leo2-central
-        super.initialize(LogConfigurationType.NONE);
+        super.initialize(LogConfigurationType.NONE, EntitySyncConfigurationType.NONE);
 
         // Register to broker start
         ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerListener);
