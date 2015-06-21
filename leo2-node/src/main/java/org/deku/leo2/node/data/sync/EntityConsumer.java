@@ -7,6 +7,7 @@ import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.data.PersistenceUtil;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
+import org.junit.rules.Timeout;
 import org.springframework.jms.core.JmsTemplate;
 import sx.Disposable;
 
@@ -20,12 +21,15 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by masc on 18.06.15.
  */
 public class EntityConsumer implements Disposable {
     private Log mLog = LogFactory.getLog(this.getClass());
+
+    private static final int RECEIVE_TIMEOUT = 5000;
     /** Messaging context */
     private MessagingContext mMessagingContext;
     /** Entity manager factory */
@@ -56,7 +60,7 @@ public class EntityConsumer implements Disposable {
                 EntityManager em = mEntityManagerFactory.createEntityManager();
                 EntityRepository er = new EntityRepository(em, entityType);
 
-                Timestamp timestamp = er.findNewestTimestamp();
+                Timestamp timestamp = er.findMaxTimestamp();
 
                 Connection cn = mMessagingContext.getConnectionFactory().createConnection();
                 cn.start();
@@ -81,7 +85,9 @@ public class EntityConsumer implements Disposable {
 
                 // Receive entity update message
                 MessageConsumer mc = session.createConsumer(receiveQueue);
-                msg = mc.receive();
+                msg = mc.receive(RECEIVE_TIMEOUT);
+                if (msg == null)
+                    throw new TimeoutException("Timeout while waiting for entity update message");
                 EntityUpdateMessage euMessage = (EntityUpdateMessage) mObjectMessageConverter.fromMessage(msg);
 
                 mLog.debug(euMessage);
@@ -89,12 +95,18 @@ public class EntityConsumer implements Disposable {
 
                 if (euMessage.getAmount() > 0) {
                     PersistenceUtil.transaction(em, () -> {
+                        if (!er.hasTimestampAttribute()) {
+                            mLog.debug("No timestamp attribtue found -> removing all entities");
+                            er.removeAll();
+                        }
                         // Receive entities
                         List entities = null;
                         long lastJmsTimestamp = 0;
                         Message m;
                         do {
-                            m = mc.receive();
+                            m = mc.receive(RECEIVE_TIMEOUT);
+                            if (m == null)
+                                throw new TimeoutException("Timeout while waiting for next entities chunk");
 
                             // Verify message order
                             if (m.getJMSTimestamp() < lastJmsTimestamp)
@@ -139,6 +151,8 @@ public class EntityConsumer implements Disposable {
                 mLog.info(String.format("Received and stored %d in %s (%d)", count[0], sw.toString(), mObjectMessageConverter.getBytesRead()));
 
                 em.close();
+            } catch( TimeoutException e) {
+                mLog.error(e.getMessage());
             } catch (Exception e) {
                 mLog.error(e.getMessage(), e);
             }

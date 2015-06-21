@@ -1,7 +1,7 @@
 package org.deku.leo2.node.data.sync;
 
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
-import org.deku.leo2.node.data.entities.Route;
+import org.deku.leo2.node.data.entities.*;
 import sx.LazyInstance;
 
 import javax.persistence.EntityManagerFactory;
@@ -28,6 +28,10 @@ public class EntitySync {
 
     public void start() {
         mEntityConsumer = new EntityConsumer(ActiveMQContext.instance(), mEntityManagerFactory);
+        mEntityConsumer.request(Station.class);
+        mEntityConsumer.request(Country.class);
+        mEntityConsumer.request(HolidayCtrl.class);
         mEntityConsumer.request(Route.class);
+        mEntityConsumer.request(Sector.class);
     }
 }
