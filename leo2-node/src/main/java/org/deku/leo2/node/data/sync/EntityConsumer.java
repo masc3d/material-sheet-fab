@@ -57,6 +57,8 @@ public class EntityConsumer implements Disposable {
     public void request(Class entityType) {
         mExecutorService.submit(() -> {
             try {
+                mObjectMessageConverter.resetStatistics();
+
                 EntityManager em = mEntityManagerFactory.createEntityManager();
                 EntityRepository er = new EntityRepository(em, entityType);
 
@@ -148,7 +150,7 @@ public class EntityConsumer implements Disposable {
                         } while (entities.size() > 0);
                     });
                 }
-                mLog.info(String.format("Received and stored %d in %s (%d)", count[0], sw.toString(), mObjectMessageConverter.getBytesRead()));
+                mLog.info(String.format("Received and stored %d in %s (%d bytes)", count[0], sw.toString(), mObjectMessageConverter.getBytesRead()));
 
                 em.close();
             } catch( TimeoutException e) {

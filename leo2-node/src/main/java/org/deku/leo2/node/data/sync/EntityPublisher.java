@@ -109,7 +109,7 @@ public class EntityPublisher extends SpringJmsListener {
             mp.send(messageConverter.toMessage(new Object[0], session));
         }
 
-        mLog.info(String.format("Sent %d in %s (%d)", count, sw, messageConverter.getBytesWritten()));
+        mLog.info(String.format("Sent %d in %s (%d bytes)", count, sw, messageConverter.getBytesWritten()));
 
         em.close();
     }
