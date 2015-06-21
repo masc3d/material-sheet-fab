@@ -3,16 +3,11 @@ package org.deku.leo2.central.web;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.data.sync.DatabaseSync;
-import org.deku.leo2.central.data.sync.EntitySync;
-import org.deku.leo2.node.data.PersistenceContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.jms.JMSException;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 import javax.servlet.ServletContextEvent;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

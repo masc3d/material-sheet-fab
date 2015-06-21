@@ -2,7 +2,6 @@ package org.deku.leo2.node.data.entities;
 
 import javax.persistence.Id;
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 /**
  * Created by JT on 17.06.15.

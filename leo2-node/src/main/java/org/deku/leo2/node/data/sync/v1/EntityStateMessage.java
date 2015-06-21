@@ -2,7 +2,6 @@ package org.deku.leo2.node.data.sync.v1;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.time.ZonedDateTime;
 
 /**
  * Message sent by

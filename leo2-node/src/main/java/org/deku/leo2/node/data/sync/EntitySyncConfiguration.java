@@ -5,8 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.node.App;
 import org.deku.leo2.node.data.PersistenceContext;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 

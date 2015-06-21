@@ -8,8 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.messaging.log.LogAppender;
-import org.deku.leo2.messaging.log.LogListener;
-import org.deku.leo2.node.data.sync.EntitySync;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
@@ -22,7 +20,6 @@ import org.springframework.context.ApplicationListener;
 import sx.Disposable;
 import sx.LazyInstance;
 
-import javax.jms.JMSException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;

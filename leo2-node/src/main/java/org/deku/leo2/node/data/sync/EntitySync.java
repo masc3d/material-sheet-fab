@@ -1,6 +1,5 @@
 package org.deku.leo2.node.data.sync;
 
-import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.data.entities.Route;
 import sx.LazyInstance;

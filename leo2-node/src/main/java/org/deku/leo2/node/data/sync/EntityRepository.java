@@ -5,7 +5,6 @@ import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.queries.ScrollableCursor;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
 import java.sql.Timestamp;

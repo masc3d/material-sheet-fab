@@ -1,6 +1,5 @@
 package org.deku.leo2.node.web;
 
-import com.google.common.base.Strings;
 import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.ResourceChangeListener;
 import io.undertow.server.handlers.resource.ResourceManager;
@@ -8,12 +7,9 @@ import io.undertow.server.handlers.resource.URLResource;
 import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.Broker;
-import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.HttpExternalTunnelServlet;
 import org.deku.leo2.node.App;
 import org.deku.leo2.node.messaging.BrokerConfiguration;
-import org.deku.leo2.node.peer.PeerSettings;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;

@@ -1,6 +1,5 @@
 package org.deku.leo2.node.data.repositories.custom;
 
-import org.deku.leo2.node.data.entities.QCountry;
 import org.deku.leo2.node.data.repositories.CountryRepository;
 
 import javax.inject.Inject;

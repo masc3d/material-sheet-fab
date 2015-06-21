@@ -6,8 +6,6 @@ import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.messaging.log.LogListener;
 
-import javax.jms.JMSException;
-
 /**
  * Created by masc on 30.05.15.
  */

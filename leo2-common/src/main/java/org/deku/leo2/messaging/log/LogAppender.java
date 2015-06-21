@@ -12,7 +12,6 @@ import org.springframework.jms.core.JmsTemplate;
 import sx.Disposable;
 
 import javax.jms.Queue;
-import javax.jms.Session;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

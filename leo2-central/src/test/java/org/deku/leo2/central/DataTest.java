@@ -2,7 +2,6 @@ package org.deku.leo2.central;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import org.deku.leo2.central.data.sync.DatabaseSync;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
