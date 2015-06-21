@@ -80,7 +80,8 @@ public class EntityRepository {
     }
 
     /**
-     * Find entities newer than specific timestamp
+     * Find entities newer than specific timestamp.
+     * The resultset is ordered by timestamp
      * @param timestamp
      * @return Cursor
      */
@@ -94,17 +95,18 @@ public class EntityRepository {
         Root croot = cq.from(mEntityType);
         ParameterExpression<Timestamp> cparam = null;
         Predicate prTimestamp = null;
+        Path<Timestamp> pathTimestamp = croot.get("timestamp");
         if (timestamp != null) {
             cparam = cb.parameter(Timestamp.class);
-            prTimestamp = cb.greaterThan(croot.get("timestamp"), cparam);
+            prTimestamp = cb.greaterThan(pathTimestamp, cparam);
         }
 
         // Select
         cq.select(croot);
         if (prTimestamp != null)
             cq.where(prTimestamp);
-        // Order by primary key (supposed to keep similar records together for better compression ratio)
-        cq.orderBy(cb.asc(croot));
+
+        cq.orderBy(cb.asc(pathTimestamp));
 
         // Execute entity query
         Query q = mEntityManager.createQuery(cq)

@@ -71,10 +71,11 @@ public class EntityConsumer implements Disposable {
                 cn.start();
                 Session session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
+                Stopwatch sw = Stopwatch.createStarted();
+
                 Queue requestQueue = session.createQueue(EntityStateMessage.ENTITY_QUEUE_NAME);
                 TemporaryQueue receiveQueue = session.createTemporaryQueue();
 
-                Stopwatch sw = Stopwatch.createStarted();
                 mLog.info(String.format("Requesting entities of type [%s]", entityType.toString()));
 
                 // Send entity state message
@@ -90,14 +91,14 @@ public class EntityConsumer implements Disposable {
                 // Receive entity update message
                 MessageConsumer mc = session.createConsumer(receiveQueue);
                 msg = mc.receive();
-                EntityUpdateMessage euMessage = (EntityUpdateMessage)mObjectMessageConverter.fromMessage(msg);
+                EntityUpdateMessage euMessage = (EntityUpdateMessage) mObjectMessageConverter.fromMessage(msg);
 
                 mLog.debug(euMessage);
+                final long[] count = {0};
 
-                // Receive entities
-                PersistenceUtil.transaction(em, () -> {
+                if (euMessage.getAmount() > 0) {
+                    // Receive entities
                     List entities = null;
-                    long count = 0;
                     long lastJmsTimestamp = 0;
                     Message m;
                     do {
@@ -114,31 +115,40 @@ public class EntityConsumer implements Disposable {
                         // Deserialize entities
                         entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(m));
 
-                        // Merge entities
-                        if (timestamp != null) {
-                            // If there's already entities, clean out existing first.
-                            // it's much faster than merging everything
-                            for (Object o : entities) {
-                                Object o2 = em.find(entityType,
-                                        em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(o));
+                        final List tEntities = entities;
+                        PersistenceUtil.transaction(em, () -> {
 
-                                if (o2 != null) {
-                                    em.remove(o2);
+                            // Merge entities
+                            if (timestamp != null) {
+                                mLog.trace("Removing existing entities");
+                                // If there's already entities, clean out existing first.
+                                // it's much faster than merging everything
+                                for (Object o : tEntities) {
+                                    Object o2 = em.find(entityType,
+                                            em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(o));
+
+                                    if (o2 != null) {
+                                        em.remove(o2);
+                                    }
                                 }
+                                em.flush();
+                                em.clear();
+                            }
+
+                            // Persist entities
+                            for (Object o : tEntities) {
+                                em.persist(o);
                             }
                             em.flush();
-                        }
-
-                        // Persist entities
-                        for (Object o : entities) {
-                            em.persist(o);
-                        }
+                            em.clear();
+                        });
 
                         mLog.trace(String.format("Received %d entities", entities.size()));
-                        count += entities.size();
+                        count[0] += entities.size();
                     } while (entities.size() > 0);
-                    mLog.info(String.format("Received %d in %s (%d)", count, sw.toString(), mObjectMessageConverter.getBytesRead()));
-                });
+                }
+                mLog.info(String.format("Received and stored %d in %s (%d)", count[0], sw.toString(), mObjectMessageConverter.getBytesRead()));
+
                 em.close();
             } catch (Exception e) {
                 mLog.error(e.getMessage(), e);
@@ -153,6 +163,7 @@ public class EntityConsumer implements Disposable {
         mExecutorService.shutdown();
         try {
             mExecutorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (InterruptedException e) { }
+        } catch (InterruptedException e) {
+        }
     }
 }

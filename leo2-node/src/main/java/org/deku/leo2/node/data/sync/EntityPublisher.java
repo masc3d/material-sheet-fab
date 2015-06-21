@@ -89,15 +89,15 @@ public class EntityPublisher extends SpringJmsListener {
         // Count records
         Long count = er.countNewerThan(timestamp);
 
-        // Query with cursor
-        ScrollableCursor cursor = er.findNewerThan(timestamp);
+        EntityUpdateMessage euMessage = new EntityUpdateMessage(count);
+        mLog.debug(euMessage);
 
-        try {
-            EntityUpdateMessage euMessage = new EntityUpdateMessage(count);
-            mLog.debug(euMessage);
+        MessageProducer mp = session.createProducer(message.getJMSReplyTo());
+        mp.send(messageConverter.toMessage(euMessage, session));
 
-            MessageProducer mp = session.createProducer(message.getJMSReplyTo());
-            mp.send(messageConverter.toMessage(euMessage, session));
+        if (count > 0) {
+            // Query with cursor
+            ScrollableCursor cursor = er.findNewerThan(timestamp);
 
             final int CHUNK_SIZE = 500;
             ArrayList buffer = new ArrayList(CHUNK_SIZE);
@@ -122,11 +122,10 @@ public class EntityPublisher extends SpringJmsListener {
 
             // Send empty array -> EOS
             mp.send(messageConverter.toMessage(new Object[0], session));
-
-            mLog.info(String.format("Sent %d in %s (%d)", count, sw, messageConverter.getBytesWritten()));
-        } catch (InvalidDestinationException e) {
-            mLog.warn("Destination invalid, removed");
         }
+
+        mLog.info(String.format("Sent %d in %s (%d)", count, sw, messageConverter.getBytesWritten()));
+
         em.close();
     }
 }
