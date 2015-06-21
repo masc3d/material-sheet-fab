@@ -1,6 +1,7 @@
 package org.deku.leo2.node.data.sync.v1;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 
 /**
@@ -15,11 +16,11 @@ public class EntityStateMessage implements Serializable {
     public static final String ENTITY_QUEUE_NAME = "leo2.entity.v1";
 
     private Class mEntityType;
-    private ZonedDateTime mTimestamp;
+    private Timestamp mTimestamp;
 
     public EntityStateMessage() { }
 
-    public EntityStateMessage(Class entityType, ZonedDateTime timestamp) {
+    public EntityStateMessage(Class entityType, Timestamp timestamp) {
         mEntityType = entityType;
         mTimestamp = timestamp;
     }
@@ -28,7 +29,7 @@ public class EntityStateMessage implements Serializable {
         return mEntityType;
     }
 
-    public ZonedDateTime getTimestamp() {
+    public Timestamp getTimestamp() {
         return mTimestamp;
     }
 }

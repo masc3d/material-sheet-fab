@@ -25,8 +25,9 @@ import javax.jms.*;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -80,25 +81,17 @@ public class EntityPublisher extends SpringJmsListener {
         // Entity state message
         EntityStateMessage esMessage = (EntityStateMessage) messageConverter.fromMessage(message);
         Class entityType = esMessage.getEntityType();
+        Timestamp timestamp = esMessage.getTimestamp();
 
         EntityManager em = mEntityManagerFactory.createEntityManager();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        EntityRepository er = new EntityRepository(em, entityType);
 
-        // Query count
-        CriteriaQuery<Long> cqCount = cb.createQuery(Long.class);
-        cqCount.select(cb.count(cqCount.from(entityType)));
-        Long count = em.createQuery(cqCount).getSingleResult();
+        // Count records
+        Long count = er.countNewerThan(timestamp);
 
-        // Query entities
-        CriteriaQuery cq = cb.createQuery(entityType);
-        cq.select(cq.from(entityType));
+        // Query with cursor
+        ScrollableCursor cursor = er.findNewerThan(timestamp);
 
-        Query jq = em.createQuery(cq)
-                // Eclipselink specific hints for enabling cursor support, will change result of query to cursor
-                .setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly)
-                .setHint(QueryHints.SCROLLABLE_CURSOR, true);
-
-        ScrollableCursor cursor = (ScrollableCursor) jq.getSingleResult();
         try {
             EntityUpdateMessage euMessage = new EntityUpdateMessage(count);
             mLog.debug(euMessage);

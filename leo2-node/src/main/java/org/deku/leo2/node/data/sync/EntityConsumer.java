@@ -8,6 +8,7 @@ import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.data.PersistenceUtil;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
+import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
@@ -18,6 +19,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.lang.IllegalStateException;
 import java.lang.reflect.Array;
+import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,6 +62,11 @@ public class EntityConsumer implements Disposable {
     public void request(Class entityType) {
         mExecutorService.submit(() -> {
             try {
+                EntityManager em = mEntityManagerFactory.createEntityManager();
+                EntityRepository er = new EntityRepository(em, entityType);
+
+                Timestamp timestamp = er.findNewestTimestamp();
+
                 Connection cn = mMessagingContext.getConnectionFactory().createConnection();
                 cn.start();
                 Session session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -72,7 +81,9 @@ public class EntityConsumer implements Disposable {
                 MessageProducer mp = session.createProducer(requestQueue);
                 mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
                 mp.setTimeToLive(5 * 60 * 1000);
-                Message msg = mObjectMessageConverter.toMessage(new EntityStateMessage(entityType, null), session);
+                Message msg = mObjectMessageConverter.toMessage(
+                        new EntityStateMessage(entityType, timestamp),
+                        session);
                 msg.setJMSReplyTo(receiveQueue);
                 mp.send(msg);
 
@@ -84,36 +95,51 @@ public class EntityConsumer implements Disposable {
                 mLog.debug(euMessage);
 
                 // Receive entities
-                EntityManager em = mEntityManagerFactory.createEntityManager();
                 PersistenceUtil.transaction(em, () -> {
                     List entities = null;
                     long count = 0;
-                    long timestamp = 0;
+                    long lastJmsTimestamp = 0;
                     Message m;
                     do {
                         m = mc.receive();
 
                         // Verify message order
-                        if (m.getJMSTimestamp() < timestamp)
+                        if (m.getJMSTimestamp() < lastJmsTimestamp)
                             throw new IllegalStateException(
                                     String.format("Inconsistent message order (%d < %d)", m.getJMSTimestamp(), timestamp));
 
                         // Store last timestamp
-                        timestamp = m.getJMSTimestamp();
+                        lastJmsTimestamp = m.getJMSTimestamp();
 
                         // Deserialize entities
                         entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(m));
 
-                        // TODO: db insert. preliminary for testing, requires timestamp support to work properly
-//                        for (Object o : entities) {
-//                            em.persist(o);
-//                        }
+                        // Merge entities
+                        if (timestamp != null) {
+                            // If there's already entities, clean out existing first.
+                            // it's much faster than merging everything
+                            for (Object o : entities) {
+                                Object o2 = em.find(entityType,
+                                        em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(o));
+
+                                if (o2 != null) {
+                                    em.remove(o2);
+                                }
+                            }
+                            em.flush();
+                        }
+
+                        // Persist entities
+                        for (Object o : entities) {
+                            em.persist(o);
+                        }
 
                         mLog.trace(String.format("Received %d entities", entities.size()));
                         count += entities.size();
                     } while (entities.size() > 0);
                     mLog.info(String.format("Received %d in %s (%d)", count, sw.toString(), mObjectMessageConverter.getBytesRead()));
                 });
+                em.close();
             } catch (Exception e) {
                 mLog.error(e.getMessage(), e);
             }
