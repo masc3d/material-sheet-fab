@@ -122,6 +122,7 @@ public class Route implements Serializable {
     }
 
     @Basic
+    @Index
     public Timestamp getTimestamp() {
         return timestamp;
     }
