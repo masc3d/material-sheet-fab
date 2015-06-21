@@ -9,7 +9,6 @@ import org.springframework.util.ErrorHandler;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
-import javax.jms.JMSException;
 
 /**
  * Spring listener implementation
