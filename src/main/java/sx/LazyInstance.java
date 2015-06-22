@@ -1,5 +1,6 @@
 package sx;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -9,7 +10,7 @@ import java.util.function.Supplier;
 public class LazyInstance<T> {
     final Object mLock = new Object();
     Supplier<T> mSupplier;
-    volatile T mInstance = null;
+    volatile Optional<T> mInstance = null;
 
     public LazyInstance(Supplier<T> supplier) {
         mSupplier = supplier;
@@ -55,10 +56,9 @@ public class LazyInstance<T> {
         if (mInstance == null) {
             synchronized (mLock) {
                 mSupplier = supplier;
-                if (mSupplier != null)
-                    mInstance = mSupplier.get();
+                mInstance = Optional.ofNullable(mSupplier.get());
             }
         }
-        return mInstance;
+        return mInstance.orElse(null);
     }
 }
