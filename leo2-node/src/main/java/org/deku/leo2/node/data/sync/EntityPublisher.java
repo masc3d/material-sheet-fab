@@ -106,7 +106,9 @@ public class EntityPublisher extends SpringJmsListener {
             }
 
             // Send empty array -> EOS
-            mp.send(messageConverter.toMessage(new Object[0], session));
+            Message eosMsg = messageConverter.toMessage(new Object[0], session);
+            eosMsg.setBooleanProperty("eos", true);
+            mp.send(eosMsg);
         }
 
         mLog.info(String.format("Sent %d in %s (%d bytes)", count, sw, messageConverter.getBytesWritten()));

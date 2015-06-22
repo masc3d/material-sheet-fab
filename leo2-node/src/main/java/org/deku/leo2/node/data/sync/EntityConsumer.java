@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by masc on 18.06.15.
@@ -93,67 +94,89 @@ public class EntityConsumer implements Disposable {
                 EntityUpdateMessage euMessage = (EntityUpdateMessage) mObjectMessageConverter.fromMessage(msg);
 
                 mLog.debug(euMessage);
-                final long[] count = {0};
+                AtomicLong count = new AtomicLong();
+
+                ExecutorService executorService = Executors.newFixedThreadPool(4);
 
                 if (euMessage.getAmount() > 0) {
                     PersistenceUtil.transaction(em, () -> {
                         if (!er.hasTimestampAttribute()) {
-                            mLog.debug("No timestamp attribtue found -> removing all entities");
+                            mLog.debug("No timestamp attribute found -> removing all entities");
                             er.removeAll();
                         }
-                        // Receive entities
-                        List entities = null;
-                        long lastJmsTimestamp = 0;
-                        Message m;
-                        do {
-                            m = mc.receive(RECEIVE_TIMEOUT);
-                            if (m == null)
-                                throw new TimeoutException("Timeout while waiting for next entities chunk");
-
-                            // Verify message order
-                            if (m.getJMSTimestamp() < lastJmsTimestamp)
-                                throw new IllegalStateException(
-                                        String.format("Inconsistent message order (%d < %d)", m.getJMSTimestamp(), timestamp));
-
-                            // Store last timestamp
-                            lastJmsTimestamp = m.getJMSTimestamp();
-
-                            // Deserialize entities
-                            entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(m));
-
-                            // Merge entities
-                            if (timestamp != null) {
-                                mLog.trace("Removing existing entities");
-                                // If there's already entities, clean out existing first.
-                                // it's much faster than merging everything
-                                for (Object o : entities) {
-                                    Object o2 = em.find(entityType,
-                                            em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(o));
-
-                                    if (o2 != null) {
-                                        em.remove(o2);
-                                    }
-                                }
-                                em.flush();
-                                em.clear();
-                            }
-
-                            // Persist entities
-                            for (Object o : entities) {
-                                em.persist(o);
-                            }
-                            em.flush();
-                            em.clear();
-
-                            mLog.trace(String.format("Received %d entities", entities.size()));
-                            count[0] += entities.size();
-                        } while (entities.size() > 0);
                     });
+
+                    // Receive entities
+                    boolean eos = false;
+                    long lastJmsTimestamp = 0;
+                    do {
+                        msg = mc.receive(RECEIVE_TIMEOUT);
+                        if (msg == null)
+                            throw new TimeoutException("Timeout while waiting for next entities chunk");
+
+                        // Verify message order
+                        if (msg.getJMSTimestamp() < lastJmsTimestamp)
+                            throw new IllegalStateException(
+                                    String.format("Inconsistent message order (%d < %d)", msg.getJMSTimestamp(), timestamp));
+
+                        // Store last timestamp
+                        lastJmsTimestamp = msg.getJMSTimestamp();
+
+                        eos = msg.propertyExists("eos");
+
+                        if (!eos) {
+                            final Message tMsg = msg;
+
+                            List entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(tMsg));
+
+                            executorService.submit(() -> {
+                                try {
+                                    mLog.trace("Transaction thread chunk processing starting");
+                                    // Deserialize entities
+
+                                    EntityManager tEm = mEntityManagerFactory.createEntityManager();
+                                    PersistenceUtil.transaction(tEm, () -> {
+                                        // Merge entities
+                                        if (timestamp != null) {
+                                            mLog.trace("Removing existing entities");
+                                            // If there's already entities, clean out existing first.
+                                            // it's much faster than merging everything
+                                            for (Object o : entities) {
+                                                Object o2 = tEm.find(entityType,
+                                                        tEm.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(o));
+
+                                                if (o2 != null) {
+                                                    tEm.remove(o2);
+                                                }
+                                            }
+                                            tEm.flush();
+                                            tEm.clear();
+                                        }
+
+                                        // Persist entities
+                                        for (Object o : entities) {
+                                            tEm.persist(o);
+                                        }
+                                        tEm.flush();
+                                        tEm.clear();
+                                        tEm.close();
+                                        mLog.trace("Transaction thread done");
+                                        count.getAndUpdate(c -> c + entities.size());
+                                    });
+                                } catch(Exception e) {
+                                    mLog.error(e.getMessage(), e);
+                                }
+                            });
+                        }
+                    } while (!eos);
                 }
-                mLog.info(String.format("Received and stored %d in %s (%d bytes)", count[0], sw.toString(), mObjectMessageConverter.getBytesRead()));
+                mLog.trace("Joining transaction threads");
+                executorService.shutdown();
+                executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+                mLog.info(String.format("Received and stored %d in %s (%d bytes)", count.get(), sw.toString(), mObjectMessageConverter.getBytesRead()));
 
                 em.close();
-            } catch( TimeoutException e) {
+            } catch (TimeoutException e) {
                 mLog.error(e.getMessage());
             } catch (Exception e) {
                 mLog.error(e.getMessage(), e);
