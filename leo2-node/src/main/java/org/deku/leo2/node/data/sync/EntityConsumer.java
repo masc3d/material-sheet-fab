@@ -103,99 +103,61 @@ public class EntityConsumer implements Disposable {
                             mLog.debug("No timestamp attribute found -> removing all entities");
                             er.removeAll();
                         }
+
+                        // Receive entities
+                        boolean eos = false;
+                        long lastJmsTimestamp = 0;
+                        do {
+                            Message tMsg = mc.receive(RECEIVE_TIMEOUT);
+                            if (tMsg == null)
+                                throw new TimeoutException("Timeout while waiting for next entities chunk");
+
+                            // Verify message order
+                            if (tMsg.getJMSTimestamp() < lastJmsTimestamp)
+                                throw new IllegalStateException(
+                                        String.format("Inconsistent message order (%d < %d)", tMsg.getJMSTimestamp(), timestamp));
+
+                            // Store last timestamp
+                            lastJmsTimestamp = tMsg.getJMSTimestamp();
+
+                            eos = tMsg.propertyExists(EntityUpdateMessage.EOS_PROPERTY);
+
+                            if (!eos) {
+                                // Deserialize entities
+                                List entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(tMsg));
+
+                                // TODO: exceptions within transactions behave in a strange way.
+                                // data of transactions that were committed may not be there and h2 may report
+                                // cache level state nio exceptions.
+                                // Data seems to remain consistent though
+
+                                if (timestamp != null) {
+                                    mLog.trace("Removing existing entities");
+                                    // If there's already entities, clean out existing first.
+                                    // it's much faster than merging everything
+                                    for (Object o : entities) {
+                                        Object o2 = em.find(entityType,
+                                                em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(o));
+
+                                        if (o2 != null) {
+                                            em.remove(o2);
+                                        }
+                                    }
+                                    em.flush();
+                                    em.clear();
+                                }
+
+                                // Persist entities
+                                for (Object o : entities) {
+                                    em.persist(o);
+                                }
+                                em.flush();
+                                em.clear();
+                                count.getAndUpdate(c -> c + entities.size());
+                            }
+                        } while (!eos);
                     });
 
-                    // Receive entities
-                    boolean eos = false;
-                    long lastJmsTimestamp = 0;
-                    long threadIndex = 0;
-                    Future future = null;
-                    do {
-                        threadIndex++;
-                        msg = mc.receive(RECEIVE_TIMEOUT);
-                        if (msg == null)
-                            throw new TimeoutException("Timeout while waiting for next entities chunk");
-
-                        // Verify message order
-                        if (msg.getJMSTimestamp() < lastJmsTimestamp)
-                            throw new IllegalStateException(
-                                    String.format("Inconsistent message order (%d < %d)", msg.getJMSTimestamp(), timestamp));
-
-                        // Store last timestamp
-                        lastJmsTimestamp = msg.getJMSTimestamp();
-
-                        eos = msg.propertyExists(EntityUpdateMessage.EOS_PROPERTY);
-
-                        if (!eos) {
-                            final Message tMsg = msg;
-
-                            // Deserialize entities
-                            List entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(tMsg));
-
-                            final Future tPreviousFuture = future;
-                            final long tThreadIndex = threadIndex;
-                            future = executorService.submit(() -> {
-                                Exception result = null;
-                                EntityManager em1 = null;
-                                try {
-                                    mLog.trace(String.format("[%d] Transaction thread chunk processing starting", tThreadIndex));
-
-                                    // TODO: exceptions within transactions behave in a strange way.
-                                    // data of transactions that were committed may not be there and h2 may report
-                                    // cache level state nio exceptions.
-                                    // Data seems to remain consistent though
-
-                                    em1 = mEntityManagerFactory.createEntityManager();
-                                    final EntityManager tEm = em1;
-                                    PersistenceUtil.transaction(tEm, () -> {
-                                        if (timestamp != null) {
-                                            mLog.trace("Removing existing entities");
-                                            // If there's already entities, clean out existing first.
-                                            // it's much faster than merging everything
-                                            for (Object o : entities) {
-                                                Object o2 = tEm.find(entityType,
-                                                        tEm.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(o));
-
-                                                if (o2 != null) {
-                                                    tEm.remove(o2);
-                                                }
-                                            }
-                                            tEm.flush();
-                                            tEm.clear();
-                                        }
-
-                                        // Persist entities
-                                        for (Object o : entities) {
-                                            tEm.persist(o);
-                                        }
-                                        tEm.flush();
-                                        tEm.clear();
-
-                                        // Wait for previous future and check result
-                                        if (tPreviousFuture != null) {
-                                            mLog.trace(String.format("[%d] Waiting for previous future", tThreadIndex));
-                                            Exception previousFutureResult = (Exception) tPreviousFuture.get();
-                                            if (previousFutureResult != null)
-                                                throw new IllegalStateException("Previous future threw exception");
-                                        }
-                                    });
-                                    count.getAndUpdate(c -> c + entities.size());
-                                    mLog.trace(String.format("[%d] Transaction thread committed", tThreadIndex));
-                                } catch(Exception e) {
-                                    result = e;
-                                    executorService.shutdownNow();
-                                    if (e instanceof InterruptedException) {
-                                        mLog.error("Interrupted, presumably due to error within previous transaction");
-                                    } else {
-                                        mLog.error(e.getMessage(), e);
-                                    }
-                                }
-                                if (em1 != null)
-                                    em1.close();
-                                return result;
-                            });
-                        }
-                    } while (!eos);
                 }
                 mLog.trace("Joining transaction threads");
                 executorService.shutdown();
