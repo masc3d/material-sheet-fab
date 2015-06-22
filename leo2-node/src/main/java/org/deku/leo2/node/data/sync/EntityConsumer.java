@@ -127,16 +127,18 @@ public class EntityConsumer implements Disposable {
                         if (!eos) {
                             final Message tMsg = msg;
 
+                            // Deserialize entities
                             List entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(tMsg));
 
                             executorService.submit(() -> {
                                 try {
                                     mLog.trace("Transaction thread chunk processing starting");
-                                    // Deserialize entities
+
+                                    // TODO: add transaction context/sync support to ensure that subsequent
+                                    // transactions abort when a previous fails, preserving order of records/timestamps
 
                                     EntityManager tEm = mEntityManagerFactory.createEntityManager();
                                     PersistenceUtil.transaction(tEm, () -> {
-                                        // Merge entities
                                         if (timestamp != null) {
                                             mLog.trace("Removing existing entities");
                                             // If there's already entities, clean out existing first.
