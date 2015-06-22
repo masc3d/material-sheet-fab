@@ -230,6 +230,22 @@ public class DatabaseSync {
         return d;
     }
 
+    /**
+     * Convert mysql value record to jpa entity
+     * @param rs
+     * @return
+     */
+    private static RoutingLayer convert(SysRoutinglayerRecord rs) {
+        RoutingLayer d = new RoutingLayer();
+
+        d.setLayer(rs.getLayer());
+        d.setServices(rs.getServices());
+        d.setDescription(rs.getDescription());
+
+
+        return d;
+    }
+
 
     /**
      * Convert mysql route record to jpa entity
