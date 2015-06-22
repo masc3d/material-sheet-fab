@@ -18,9 +18,9 @@ import java.net.URISyntaxException;
  * Messaging context implementation for activemq
  * Created by masc on 16.04.15.
  */
-public class ActiveMQContext2 implements MessagingContext {
+public class ActiveMQContext implements MessagingContext {
     /** Singleton instance */
-    private static LazyInstance<ActiveMQContext2> mContext = new LazyInstance<>(ActiveMQContext2::new);
+    private static LazyInstance<ActiveMQContext> mContext = new LazyInstance<>(ActiveMQContext::new);
 
     /** Url for establishing connection to local/embedded broker */
     private URI mLocalUri;
@@ -28,7 +28,7 @@ public class ActiveMQContext2 implements MessagingContext {
     /** Connection factory for connecting to the embedded broker */
     private ConnectionFactory mConnectionFactory;
 
-    public ActiveMQContext2() {
+    public ActiveMQContext() {
         try {
             mLocalUri = new URI("vm://localhost?create=false");
         } catch (URISyntaxException e) {
@@ -36,13 +36,13 @@ public class ActiveMQContext2 implements MessagingContext {
         }
     }
 
-    public static ActiveMQContext2 instance() {
+    public static ActiveMQContext instance() {
         return mContext.get();
     }
 
     @Override
     public Broker getBroker() {
-        return ActiveMQBroker2.instance();
+        return ActiveMQBroker.instance();
     }
 
     @Override

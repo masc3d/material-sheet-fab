@@ -22,11 +22,11 @@ import java.util.List;
  * Broker implementation for activemq
  * Created by masc on 16.04.15.
  */
-public class ActiveMQBroker2 extends Broker {
+public class ActiveMQBroker extends Broker {
     //region Singleton
-    private static LazyInstance<ActiveMQBroker2> mInstance = new LazyInstance<>(ActiveMQBroker2::new);
+    private static LazyInstance<ActiveMQBroker> mInstance = new LazyInstance<>(ActiveMQBroker::new);
 
-    public static ActiveMQBroker2 instance() {
+    public static ActiveMQBroker instance() {
         return mInstance.get();
     }
     //endregion
@@ -41,7 +41,7 @@ public class ActiveMQBroker2 extends Broker {
     List<TransportServer> mExternalTransportServers = new ArrayList<>();
 
     /** c'tor */
-    private ActiveMQBroker2() {
+    private ActiveMQBroker() {
         super(NATIVE_TCP_PORT);
     }
 
