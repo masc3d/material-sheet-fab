@@ -10,6 +10,8 @@ import java.io.Serializable;
 public class EntityUpdateMessage implements Serializable {
     private static final long serialVersionUID = -8032738544698874536L;
 
+    public static final String EOS_PROPERTY = "eos";
+
     private Long mAmount;
 
     public EntityUpdateMessage() { }

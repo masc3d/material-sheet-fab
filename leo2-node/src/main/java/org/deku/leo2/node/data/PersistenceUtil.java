@@ -111,7 +111,7 @@ public class PersistenceUtil {
      * Transaction block wrapper
      * @param b
      */
-    public static void transaction(EntityManager em, TransactionBlock b) {
+    public static void transaction(EntityManager em, TransactionBlock b) throws Exception {
         EntityTransaction et = em.getTransaction();
         try {
             et.begin();
@@ -119,7 +119,7 @@ public class PersistenceUtil {
             et.commit();
         }
         catch(Exception e) {
-            throw new RuntimeException(e);
+            throw e;
         } finally {
             if (et.isActive())
                 et.rollback();

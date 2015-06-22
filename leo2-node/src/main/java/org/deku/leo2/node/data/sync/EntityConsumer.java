@@ -18,10 +18,7 @@ import java.lang.IllegalStateException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -96,7 +93,9 @@ public class EntityConsumer implements Disposable {
                 mLog.debug(euMessage);
                 AtomicLong count = new AtomicLong();
 
-                ExecutorService executorService = Executors.newFixedThreadPool(4);
+                // Transaction processing thread pool
+                ExecutorService executorService = Executors.newFixedThreadPool(
+                        Runtime.getRuntime().availableProcessors());
 
                 if (euMessage.getAmount() > 0) {
                     PersistenceUtil.transaction(em, () -> {
@@ -109,7 +108,10 @@ public class EntityConsumer implements Disposable {
                     // Receive entities
                     boolean eos = false;
                     long lastJmsTimestamp = 0;
+                    long threadIndex = 0;
+                    Future future = null;
                     do {
+                        threadIndex++;
                         msg = mc.receive(RECEIVE_TIMEOUT);
                         if (msg == null)
                             throw new TimeoutException("Timeout while waiting for next entities chunk");
@@ -122,7 +124,7 @@ public class EntityConsumer implements Disposable {
                         // Store last timestamp
                         lastJmsTimestamp = msg.getJMSTimestamp();
 
-                        eos = msg.propertyExists("eos");
+                        eos = msg.propertyExists(EntityUpdateMessage.EOS_PROPERTY);
 
                         if (!eos) {
                             final Message tMsg = msg;
@@ -130,14 +132,21 @@ public class EntityConsumer implements Disposable {
                             // Deserialize entities
                             List entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(tMsg));
 
-                            executorService.submit(() -> {
+                            final Future tPreviousFuture = future;
+                            final long tThreadIndex = threadIndex;
+                            future = executorService.submit(() -> {
+                                Exception result = null;
+                                EntityManager em1 = null;
                                 try {
-                                    mLog.trace("Transaction thread chunk processing starting");
+                                    mLog.trace(String.format("[%d] Transaction thread chunk processing starting", tThreadIndex));
 
-                                    // TODO: add transaction context/sync support to ensure that subsequent
-                                    // transactions abort when a previous fails, preserving order of records/timestamps
+                                    // TODO: exceptions within transactions behave in a strange way.
+                                    // data of transactions that were committed may not be there and h2 may report
+                                    // cache level state nio exceptions.
+                                    // Data seems to remain consistent though
 
-                                    EntityManager tEm = mEntityManagerFactory.createEntityManager();
+                                    em1 = mEntityManagerFactory.createEntityManager();
+                                    final EntityManager tEm = em1;
                                     PersistenceUtil.transaction(tEm, () -> {
                                         if (timestamp != null) {
                                             mLog.trace("Removing existing entities");
@@ -161,13 +170,29 @@ public class EntityConsumer implements Disposable {
                                         }
                                         tEm.flush();
                                         tEm.clear();
-                                        tEm.close();
-                                        mLog.trace("Transaction thread done");
-                                        count.getAndUpdate(c -> c + entities.size());
+
+                                        // Wait for previous future and check result
+                                        if (tPreviousFuture != null) {
+                                            mLog.trace(String.format("[%d] Waiting for previous future", tThreadIndex));
+                                            Exception previousFutureResult = (Exception) tPreviousFuture.get();
+                                            if (previousFutureResult != null)
+                                                throw new IllegalStateException("Previous future threw exception");
+                                        }
                                     });
+                                    count.getAndUpdate(c -> c + entities.size());
+                                    mLog.trace(String.format("[%d] Transaction thread committed", tThreadIndex));
                                 } catch(Exception e) {
-                                    mLog.error(e.getMessage(), e);
+                                    result = e;
+                                    executorService.shutdownNow();
+                                    if (e instanceof InterruptedException) {
+                                        mLog.error("Interrupted, presumably due to error within previous transaction");
+                                    } else {
+                                        mLog.error(e.getMessage(), e);
+                                    }
                                 }
+                                if (em1 != null)
+                                    em1.close();
+                                return result;
                             });
                         }
                     } while (!eos);
