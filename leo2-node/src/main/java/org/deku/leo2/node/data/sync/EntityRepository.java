@@ -64,7 +64,7 @@ public class EntityRepository {
         if (mTimestampAttribute.get() != null && timestamp != null) {
             cparam = cb.parameter(Timestamp.class);
             Path pathTimestamp = croot.get(mTimestampAttribute.get().getName());
-            prTimestamp = cb.greaterThanOrEqualTo(pathTimestamp, cparam);
+            prTimestamp = cb.greaterThan(pathTimestamp, cparam);
         }
 
         // Count query
@@ -130,7 +130,7 @@ public class EntityRepository {
         if (mTimestampAttribute.get() != null && timestamp != null) {
             pathTimestamp = croot.get(mTimestampAttribute.get().getName());
             cparam = cb.parameter(Timestamp.class);
-            prTimestamp = cb.greaterThanOrEqualTo(pathTimestamp, cparam);
+            prTimestamp = cb.greaterThan(pathTimestamp, cparam);
         }
 
         // Select
