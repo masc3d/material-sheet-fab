@@ -27,14 +27,14 @@ public class SwaggerContextInternal implements SwaggerContext {
 
     public SwaggerContextInternal() {
         Info info = new Info()
-                .title("LEO2 internal webservice")
-                .description("LEO2 internal webservice API")
+                .title("LEON internal webservice")
+                .description("LEON internal webservice API")
                 .version("1.0.0")
                 .contact(new Contact()
                         .email("masc@disappear.de"));
 
         Swagger swagger = new Swagger().info(info);
-        swagger.basePath("/leo2/rs/api");
+        swagger.basePath("/rs/api");
 
 //    swagger.securityDefinition("api_key", new ApiKeyAuthDefinition("api_key", In.HEADER));
 //    swagger.securityDefinition("petstore_auth",
