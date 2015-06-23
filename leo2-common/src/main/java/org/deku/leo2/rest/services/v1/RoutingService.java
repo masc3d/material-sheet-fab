@@ -43,7 +43,7 @@ public interface RoutingService {
     @POST
     @Path("/request")
     @ApiOperation(value = "Post routing request")
-    Routing request(@ApiParam() RoutingRequest routingRequest);
+    Routing request(@ApiParam(value="Routing request") RoutingRequest routingRequest);
 
     @GET
     @Path("/find/via")

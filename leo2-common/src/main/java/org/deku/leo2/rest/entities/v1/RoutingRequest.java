@@ -1,10 +1,12 @@
 package org.deku.leo2.rest.entities.v1;
 
+import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * Created by masc on 23.06.15.
  */
+@ApiModel(description = "Routing request")
 public class RoutingRequest {
     private Float mWeight;
     private String mServices;

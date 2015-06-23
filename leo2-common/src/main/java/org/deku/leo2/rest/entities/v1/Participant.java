@@ -10,7 +10,7 @@ import java.util.Date;
  * Sender or consignee attributes
  * Created by masc on 23.06.15.
  */
-@ApiModel(description = "")
+@ApiModel(description = "Participant in transaction, delivery or consignee")
 public class Participant {
     private ShortDate mDate;
     private String mFrom;
