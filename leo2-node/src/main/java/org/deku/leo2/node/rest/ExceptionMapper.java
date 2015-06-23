@@ -61,16 +61,16 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
             result = new ExceptionResult(Response.Status.NOT_FOUND.getStatusCode(),
                     String.format("JSON mapping error [%s]: %s", locationMessage, jm.getCause().getMessage()));
         } else if (e instanceof JsonProcessingException) {
-            JsonParseException je = (JsonParseException) e;
+            JsonProcessingException je = (JsonProcessingException) e;
             JsonLocation jl = je.getLocation();
 
             Optional<String> locationMessage = Optional.empty();
             if (jl != null) {
-                locationMessage = Optional.of(String.format("in line %d column %d", jl.getLineNr(), jl.getColumnNr()));
+                locationMessage = Optional.of(String.format(" in line %d column %d", jl.getLineNr(), jl.getColumnNr()));
             }
 
             result = new ExceptionResult(Response.Status.NOT_FOUND.getStatusCode(),
-                    String.format("JSON parse error%s: %s",
+                    String.format("JSON processing error%s: %s",
                             locationMessage.orElse(""),
                             je.getOriginalMessage()));
         } else {
