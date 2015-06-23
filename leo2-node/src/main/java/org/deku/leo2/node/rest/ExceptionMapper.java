@@ -52,15 +52,20 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
     public javax.ws.rs.core.Response toResponse(Exception e) {
         ExceptionResult result;
         if (e instanceof WebApplicationException) {
+            //region WebApplicationException
             WebApplicationException we = (WebApplicationException) e;
             result = new ExceptionResult(we.getResponse().getStatus(), we);
+            //endregion
         } else if (e instanceof JsonMappingException) {
+            //region JsonMappingException
             JsonMappingException jm = (JsonMappingException) e;
             String locationMessage = String.join(".", (Iterable)jm.getPath().stream().map(p -> p.getFieldName())::iterator);
 
             result = new ExceptionResult(Response.Status.NOT_FOUND.getStatusCode(),
                     String.format("JSON mapping error [%s]: %s", locationMessage, jm.getCause().getMessage()));
+            //endregion
         } else if (e instanceof JsonProcessingException) {
+            //region JsonProcessingException
             JsonProcessingException je = (JsonProcessingException) e;
             JsonLocation jl = je.getLocation();
 
@@ -73,6 +78,7 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
                     String.format("JSON processing error%s: %s",
                             locationMessage.orElse(""),
                             je.getOriginalMessage()));
+            //endregion
         } else {
             result = new ExceptionResult(Response.Status.NOT_FOUND.getStatusCode(), e);
         }
