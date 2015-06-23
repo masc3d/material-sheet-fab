@@ -13,22 +13,22 @@ public class RoutingRequest {
 
     public RoutingRequest() { }
 
-    @ApiModelProperty(value="Weight", position = 10, required = true)
+    @ApiModelProperty(value="Services", position = 10, required = true)
+    public void setServices(String services) {
+        mServices = services;
+    }
+
+    public String getServices() {
+        return mServices;
+    }
+
+    @ApiModelProperty(value="Weight", position = 20, required = true)
     public Float getWeight() {
         return mWeight;
     }
 
     public void setWeight(Float weight) {
         mWeight = weight;
-    }
-
-    public void setServices(String services) {
-        mServices = services;
-    }
-
-    @ApiModelProperty(value="Services", position = 20, required = true)
-    public String getServices() {
-        return mServices;
     }
 
     @ApiModelProperty(value="Sender", position = 30, required = true)
