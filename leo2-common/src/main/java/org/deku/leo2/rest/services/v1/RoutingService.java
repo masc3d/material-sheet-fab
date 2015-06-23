@@ -2,13 +2,12 @@ package org.deku.leo2.rest.services.v1;
 
 import com.wordnik.swagger.annotations.*;
 import org.deku.leo2.rest.entities.ShortDate;
+import org.deku.leo2.rest.entities.v1.Participant;
 import org.deku.leo2.rest.entities.v1.Routing;
+import org.deku.leo2.rest.entities.v1.RoutingRequest;
 import org.deku.leo2.rest.entities.v1.RoutingVia;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -41,8 +40,10 @@ public interface RoutingService {
                  @QueryParam("product")
                  @ApiParam(value = "Optional: Product") String product);
 
-
-
+    @POST
+    @Path("/request")
+    @ApiOperation(value = "Post routing request")
+    Routing request(@ApiParam() RoutingRequest routingRequest);
 
     @GET
     @Path("/find/via")

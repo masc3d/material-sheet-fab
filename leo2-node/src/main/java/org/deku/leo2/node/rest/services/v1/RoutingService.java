@@ -8,12 +8,11 @@ import org.deku.leo2.node.data.repositories.HolidayctrlRepository;
 import org.deku.leo2.node.data.repositories.RouteRepository;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.ShortTime;
-import org.deku.leo2.rest.entities.v1.DayType;
-import org.deku.leo2.rest.entities.v1.Routing;
-import org.deku.leo2.rest.entities.v1.RoutingVia;
+import org.deku.leo2.rest.entities.v1.*;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -178,6 +177,11 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         rWSRouting.setDelieveryDay(getNextDeliveryDay(LocalDate.parse(senddateShort.toString()), country, routeFound.getHolidayCtrl()));
 
         return rWSRouting;
+    }
+
+    @Override
+    public Routing request(RoutingRequest routingRequest) {
+        return null;
     }
 
     public static ShortTime sqlTimeToShortTime(java.sql.Time time) {
