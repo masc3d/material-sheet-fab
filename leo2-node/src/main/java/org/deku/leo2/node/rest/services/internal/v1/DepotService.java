@@ -4,10 +4,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.node.data.entities.Station;
 import org.deku.leo2.node.data.repositories.StationRepository;
+import org.deku.leo2.node.rest.ApiKey;
 import org.deku.leo2.rest.entities.internal.v1.Depot;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -17,7 +19,8 @@ import java.util.stream.StreamSupport;
 /**
  * Created by masc on 17.09.14.
  */
-@Component
+@Named
+@ApiKey(false)
 @Path("internal/v1/depot")
 @Produces(MediaType.APPLICATION_JSON)
 public class DepotService implements org.deku.leo2.rest.services.internal.v1.DepotService {

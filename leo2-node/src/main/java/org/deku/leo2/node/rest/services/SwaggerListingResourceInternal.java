@@ -1,5 +1,6 @@
 package org.deku.leo2.node.rest.services;
 
+import org.deku.leo2.node.rest.ApiKey;
 import org.deku.leo2.node.rest.swagger.SwaggerContextInternal;
 import org.deku.leo2.node.rest.swagger.SwaggerListingResource;
 
@@ -11,6 +12,7 @@ import javax.ws.rs.Path;
  * Created by masc on 20.05.15.
  */
 @Named
+@ApiKey(false)
 @Path("/internal")
 public class SwaggerListingResourceInternal extends SwaggerListingResource {
     public SwaggerListingResourceInternal() {

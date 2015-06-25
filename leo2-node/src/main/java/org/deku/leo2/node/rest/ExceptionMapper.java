@@ -21,6 +21,8 @@ import java.util.Optional;
 @Named
 @Provider
 public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exception> {
+    Log mLog = LogFactory.getLog(this.getClass());
+
     /**
      * Represents webservice result on exception
      */
@@ -45,8 +47,6 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
             return mMessage;
         }
     }
-
-    Log mLogger = LogFactory.getLog(ExceptionMapper.class);
 
     @Override
     public javax.ws.rs.core.Response toResponse(Exception e) {
