@@ -16,6 +16,11 @@ public class Sector implements Serializable {
     private String sectorFrom;
     private String sectorTo;
     private Timestamp validFrom;
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
     private Timestamp validTo;
     private String via;
     private Timestamp timestamp;

@@ -58,6 +58,10 @@ public class DatabaseSync {
     SectorRepository mSectorRepository;
     @Inject
     ValueRepository mValueRepository;
+    @Inject
+    RoutingLayerRepository mRoutingLayerRepository;
+
+
 
     @Inject
     public DatabaseSync(@Qualifier(PersistenceContext.DB_EMBEDDED) PlatformTransactionManager tx,
@@ -80,11 +84,11 @@ public class DatabaseSync {
         boolean alwaysDelete = reload;
 
         this.updateEntities(
-                Tables.TBLDEPOTLISTE,
-                null,
+                Tables.MST_STATION,
+                MstStation.MST_STATION.TIMESTAMP,
                 mStationRepository,
                 QStation.station,
-                null,
+                QStation.station.timestamp,
                 (s) -> convert(s),
                 alwaysDelete);
 
@@ -124,34 +128,40 @@ public class DatabaseSync {
                 (s) -> convert(s),
                 alwaysDelete);
 
+//        this.updateEntities(
+//                Tables.SYS_VALUES,
+//                SysValues.SYS_VALUES.SYS_VALUES.TIMESTAMP,
+//                mValueRepository,
+//                QValues.values,
+//                QValues.values.timestamp,
+//                (s) -> convert(s),
+//                alwaysDelete);
+
         this.updateEntities(
-                Tables.SYS_VALUES,
-                SysValues.SYS_VALUES.SYS_VALUES.TIMESTAMP,
-                mValueRepository,
-                QValues.values,
-                QValues.values.timestamp,
+                Tables.SYS_ROUTINGLAYER,
+                SysRoutinglayer.SYS_ROUTINGLAYER.SYS_ROUTINGLAYER.TIMESTAMP,
+                mRoutingLayerRepository,
+                QRoutingLayer.routingLayer,
+                QRoutingLayer.routingLayer.timestamp,
                 (s) -> convert(s),
                 alwaysDelete);
+
 
 
         mLog.info("Database sync took " + sw.toString());
     }
 
     /**
-     * Convert tbldepotliste mysql record to jpa entity
-     * @param depotlisteRecord
+     * Convert mysql mst_station record to jpa entity
+     * @param ds
      * @return
      */
-    private static Station convert(TbldepotlisteRecord depotlisteRecord) {
+    private static Station convert(MstStationRecord ds) {
         Station s = new Station();
 
-        // Map tbldepotliste record to station
-        // TODO: map correctly, this is just random
-        s.setStationId(depotlisteRecord.getId());
-        s.setStationNr(depotlisteRecord.getId());
-        s.setAddress1(depotlisteRecord.getFirma1());
-        s.setAddress2(depotlisteRecord.getFirma2());
-        s.setBillingCity(depotlisteRecord.getOrt());
+        s.setStationNr(ds.getStationnr());
+        s.setSector(ds.getSectors());
+        //TODO rest
 
         return s;
     }
@@ -241,7 +251,7 @@ public class DatabaseSync {
         d.setLayer(rs.getLayer());
         d.setServices(rs.getServices());
         d.setDescription(rs.getDescription());
-
+        d.setTimestamp(rs.getTimestamp());
 
         return d;
     }

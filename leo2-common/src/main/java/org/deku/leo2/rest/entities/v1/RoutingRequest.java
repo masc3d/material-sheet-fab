@@ -9,22 +9,22 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "Routing request")
 public class RoutingRequest {
     private Float mWeight;
-    private String mServices;
+    private Integer mServices;
     private Participant mSender;
     private Participant mConsignee;
 
     public RoutingRequest() { }
 
-    @ApiModelProperty(value="Services", position = 10, required = true)
-    public void setServices(String services) {
+    @ApiModelProperty(value="Sum of DeKu Servicvalues", position = 10, required = true)
+    public void setServices(Integer services) {
         mServices = services;
     }
 
-    public String getServices() {
+    public Integer getServices() {
         return mServices;
     }
 
-    @ApiModelProperty(value="Weight", position = 20, required = true)
+    @ApiModelProperty(value="Real weight", position = 20, required = true)
     public Float getWeight() {
         return mWeight;
     }

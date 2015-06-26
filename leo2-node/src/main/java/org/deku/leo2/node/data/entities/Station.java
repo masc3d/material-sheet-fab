@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * Created by JT on 11.05.15.
@@ -14,16 +15,42 @@ import java.io.Serializable;
 public class Station implements Serializable {
     private static final long serialVersionUID = 7124430646756787268L;
 
-    private Integer stationId;
+//    private Integer stationId;
+//
+//    @Id
+//    public Integer getStationId() {
+//        return stationId;
+//    }
+//
+//    public void setStationId(Integer stationId) {
+//        this.stationId = stationId;
+//    }
+
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    @Basic
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
 
     @Id
-    public Integer getStationId() {
-        return stationId;
+    public Integer getStationNr() {
+        return stationNr;
     }
 
-    public void setStationId(Integer stationId) {
-        this.stationId = stationId;
+    public void setStationNr(Integer stationNr) {
+        this.stationNr = stationNr;
     }
+
+    private Timestamp timestamp;
+
 
     private String address1;
 
@@ -214,14 +241,6 @@ public class Station implements Serializable {
 
     private Integer stationNr;
 
-    @Basic
-    public Integer getStationNr() {
-        return stationNr;
-    }
-
-    public void setStationNr(Integer stationNr) {
-        this.stationNr = stationNr;
-    }
 
     private Integer strang;
 
@@ -355,90 +374,5 @@ public class Station implements Serializable {
         this.billingHouseNr = billingHouseNr;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        Station station = (Station) o;
-
-        if (stationId != null ? !stationId.equals(station.stationId) : station.stationId != null) return false;
-        if (address1 != null ? !address1.equals(station.address1) : station.address1 != null) return false;
-        if (address2 != null ? !address2.equals(station.address2) : station.address2 != null) return false;
-        if (country != null ? !country.equals(station.country) : station.country != null) return false;
-        if (zip != null ? !zip.equals(station.zip) : station.zip != null) return false;
-        if (city != null ? !city.equals(station.city) : station.city != null) return false;
-        if (street != null ? !street.equals(station.street) : station.street != null) return false;
-        if (houseNr != null ? !houseNr.equals(station.houseNr) : station.houseNr != null) return false;
-        if (phone1 != null ? !phone1.equals(station.phone1) : station.phone1 != null) return false;
-        if (phone2 != null ? !phone2.equals(station.phone2) : station.phone2 != null) return false;
-        if (telefax != null ? !telefax.equals(station.telefax) : station.telefax != null) return false;
-        if (mobile != null ? !mobile.equals(station.mobile) : station.mobile != null) return false;
-        if (servicePhone1 != null ? !servicePhone1.equals(station.servicePhone1) : station.servicePhone1 != null)
-            return false;
-        if (servicePhone2 != null ? !servicePhone2.equals(station.servicePhone2) : station.servicePhone2 != null)
-            return false;
-        if (contactPerson1 != null ? !contactPerson1.equals(station.contactPerson1) : station.contactPerson1 != null)
-            return false;
-        if (contactPerson2 != null ? !contactPerson2.equals(station.contactPerson2) : station.contactPerson2 != null)
-            return false;
-        if (email != null ? !email.equals(station.email) : station.email != null) return false;
-        if (webAddress != null ? !webAddress.equals(station.webAddress) : station.webAddress != null) return false;
-        if (stationNr != null ? !stationNr.equals(station.stationNr) : station.stationNr != null) return false;
-        if (strang != null ? !strang.equals(station.strang) : station.strang != null) return false;
-        if (posLong != null ? !posLong.equals(station.posLong) : station.posLong != null) return false;
-        if (posLat != null ? !posLat.equals(station.posLat) : station.posLat != null) return false;
-        if (sector != null ? !sector.equals(station.sector) : station.sector != null) return false;
-        if (uStId != null ? !uStId.equals(station.uStId) : station.uStId != null) return false;
-        if (billingAddress1 != null ? !billingAddress1.equals(station.billingAddress1) : station.billingAddress1 != null)
-            return false;
-        if (billingAddress2 != null ? !billingAddress2.equals(station.billingAddress2) : station.billingAddress2 != null)
-            return false;
-        if (billingCountry != null ? !billingCountry.equals(station.billingCountry) : station.billingCountry != null)
-            return false;
-        if (billingZip != null ? !billingZip.equals(station.billingZip) : station.billingZip != null) return false;
-        if (billingCity != null ? !billingCity.equals(station.billingCity) : station.billingCity != null) return false;
-        if (billingStreet != null ? !billingStreet.equals(station.billingStreet) : station.billingStreet != null)
-            return false;
-        if (billingHouseNr != null ? !billingHouseNr.equals(station.billingHouseNr) : station.billingHouseNr != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = stationId != null ? stationId.hashCode() : 0;
-        result = 31 * result + (address1 != null ? address1.hashCode() : 0);
-        result = 31 * result + (address2 != null ? address2.hashCode() : 0);
-        result = 31 * result + (country != null ? country.hashCode() : 0);
-        result = 31 * result + (zip != null ? zip.hashCode() : 0);
-        result = 31 * result + (city != null ? city.hashCode() : 0);
-        result = 31 * result + (street != null ? street.hashCode() : 0);
-        result = 31 * result + (houseNr != null ? houseNr.hashCode() : 0);
-        result = 31 * result + (phone1 != null ? phone1.hashCode() : 0);
-        result = 31 * result + (phone2 != null ? phone2.hashCode() : 0);
-        result = 31 * result + (telefax != null ? telefax.hashCode() : 0);
-        result = 31 * result + (mobile != null ? mobile.hashCode() : 0);
-        result = 31 * result + (servicePhone1 != null ? servicePhone1.hashCode() : 0);
-        result = 31 * result + (servicePhone2 != null ? servicePhone2.hashCode() : 0);
-        result = 31 * result + (contactPerson1 != null ? contactPerson1.hashCode() : 0);
-        result = 31 * result + (contactPerson2 != null ? contactPerson2.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (webAddress != null ? webAddress.hashCode() : 0);
-        result = 31 * result + (stationNr != null ? stationNr.hashCode() : 0);
-        result = 31 * result + (strang != null ? strang.hashCode() : 0);
-        result = 31 * result + (posLong != null ? posLong.hashCode() : 0);
-        result = 31 * result + (posLat != null ? posLat.hashCode() : 0);
-        result = 31 * result + (sector != null ? sector.hashCode() : 0);
-        result = 31 * result + (uStId != null ? uStId.hashCode() : 0);
-        result = 31 * result + (billingAddress1 != null ? billingAddress1.hashCode() : 0);
-        result = 31 * result + (billingAddress2 != null ? billingAddress2.hashCode() : 0);
-        result = 31 * result + (billingCountry != null ? billingCountry.hashCode() : 0);
-        result = 31 * result + (billingZip != null ? billingZip.hashCode() : 0);
-        result = 31 * result + (billingCity != null ? billingCity.hashCode() : 0);
-        result = 31 * result + (billingStreet != null ? billingStreet.hashCode() : 0);
-        result = 31 * result + (billingHouseNr != null ? billingHouseNr.hashCode() : 0);
-        return result;
-    }
 }

@@ -13,8 +13,8 @@ import java.util.Date;
 @ApiModel(description = "Participant in transaction, delivery or consignee")
 public class Participant {
     private ShortDate mDate;
-    private String mFrom;
-    private String mTo;
+    private String mTimeFrom;
+    private String mTimeTo;
     private String mCountry;
     private String mZip;
 
@@ -48,20 +48,28 @@ public class Participant {
     }
 
     @ApiModelProperty(dataType = "string", example = "10:00", position = 40, required = true, value = "Time window (from)", allowableValues = "00:00 - 23:59")
-    public String getFrom() {
-        return mFrom;
+    public String getTimeFrom() {
+        return mTimeFrom;
     }
 
-    public void setFrom(String from) {
-        mFrom = from;
+    public void setTimeFrom(String timefrom) {
+        mTimeFrom = timefrom;
     }
 
     @ApiModelProperty(dataType = "string", example = "10:00", position = 50, required = true, value = "Time window (to)", allowableValues = "00:00 - 23:59")
-    public String getTo() {
-        return mTo;
+    public String getTimeTo() {
+        return mTimeTo;
     }
 
-    public void setTo(String to) {
-        mTo = to;
+    public void setTimeTo(String timeto) {
+        mTimeTo = timeto;
+    }
+
+    public Participant(ShortDate date, String timeFrom, String timeTo, String country, String zip) {
+        mDate = date;
+        mTimeFrom = timeFrom;
+        mTimeTo = timeTo;
+        mCountry = country;
+        mZip = zip;
     }
 }

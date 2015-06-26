@@ -10,13 +10,13 @@ import javax.inject.Inject;
  * Created by JT on 15.05.15.
  */
 public class RoutingLogicTest extends DataTest {
-    @Inject
-    RoutingService mRoutingService;
-
-    @Test
-    public void testRouting() {
-        //mRoutingService.find()
-    }
+//    @Inject
+//    RoutingService mRoutingService;
+//
+//    @Test
+//    public void testRouting() {
+//        //mRoutingService.find()
+//    }
 
 //    @Test
 //    public void testRoutingGermany() {

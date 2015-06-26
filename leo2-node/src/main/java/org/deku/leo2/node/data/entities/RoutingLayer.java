@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * Created by JT on 22.06.15.
@@ -18,6 +19,7 @@ public class RoutingLayer implements Serializable {
     private Integer layer;
     private Integer services;
     private String description;
+    private Timestamp timestamp;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -51,4 +53,12 @@ public class RoutingLayer implements Serializable {
         this.description = description;
     }
 
+    @Basic
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
 }

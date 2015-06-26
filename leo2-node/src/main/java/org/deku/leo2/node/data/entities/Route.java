@@ -40,6 +40,7 @@ public class Route implements Serializable {
     }
 
     @Id
+    @Index
     public Integer getLayer() {
         return layer;
     }
