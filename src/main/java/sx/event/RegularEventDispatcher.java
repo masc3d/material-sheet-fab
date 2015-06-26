@@ -35,6 +35,8 @@ import java.util.List;
 public class RegularEventDispatcher<T extends EventListener> extends EventDispatcher<T> {
     /**
      * Weak references of listeners
+     * TODO: Use a hashed type of list eg. LinkedHashSet or possibly a hashset which allows duplicates
+     * for better performance especially when removing listeners (there may be a lot)
      */
     private final ArrayList<ListenerReference> _listeners = new ArrayList<ListenerReference>();
 
