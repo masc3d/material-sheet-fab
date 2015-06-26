@@ -2,7 +2,7 @@ package org.deku.leo2.node.data;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.node.App;
+import org.deku.leo2.node.LocalStorage;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.*;
@@ -46,7 +46,7 @@ public class PersistenceContext implements DisposableBean /*, TransactionManagem
 
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-        File dbPath = new File(App.instance().getLocalHomeDirectory(), "db/leo2");
+        File dbPath = new File(LocalStorage.instance().getDataDirectory(), "h2/leo2");
 
         dataSource.setDriverClassName("org.h2.Driver");
         if (!IN_MEMORY) {

@@ -42,12 +42,16 @@ public class App implements
     private static Log mLog = LogFactory.getLog(App.class);
 
     public enum LogConfigurationType {
+        /** Application will configure a log appender sending records via jms */
         JMS,
+        /** No sepcific log configuration */
         NONE
     }
 
     public enum EntitySyncConfigurationType {
+        /** Application will set up an entity sync consumer, requesting and receiving entity updates */
         CONSUMER,
+        /** No entity sync */
         NONE
     }
 
@@ -73,9 +77,6 @@ public class App implements
 
     protected List<URL> mConfigLocations = new ArrayList();
 
-    private File mLocalHomeDirectory;
-    private File mLocalConfigurationFile;
-
     private ApplicationContext mSpringApplicationContext;
 
     private ArrayList<Disposable> mDisposables = new ArrayList<>();
@@ -88,26 +89,8 @@ public class App implements
         return mEntitySyncConfigurationType;
     }
 
-    protected App() {
-        mLocalHomeDirectory = new File(System.getProperty("user.home"), ".leo2");
-        mLocalConfigurationFile = new File(this.getLocalHomeDirectory(), "leo2.properties");
-    }
-
-    /**
-     * Leo2 local home/data directory
-     * @return
-     */
-    public File getLocalHomeDirectory() {
-        return mLocalHomeDirectory;
-    }
-
-    /**
-     * Leo2 local configuration file
-     * @return
-     */
-    public File getLocalConfigurationFile() {
-        return mLocalConfigurationFile;
-    }
+    /** c'tor */
+    protected App() { }
 
     private Runnable mConfigureLoggingFunc = () -> {};
 
@@ -126,6 +109,9 @@ public class App implements
 
         // Configuration options
         mEntitySyncConfigurationType = entitySyncConfigurationType;
+
+        // Initialize local storage
+        LocalStorage.instance().initialize();
 
         // Initialize logging
         switch (logConfigurationType) {
@@ -166,7 +152,7 @@ public class App implements
 
         // Add local home configuration
         try {
-            configLocations.add(new URL("file:" + this.getLocalConfigurationFile().toString()));
+            configLocations.add(new URL("file:" + LocalStorage.instance().getApplicationConfigurationFile().toString()));
         } catch (MalformedURLException e) {
             mLog.error(e.getMessage(), e);
         }
@@ -188,7 +174,7 @@ public class App implements
 
         // Basic broker configuration
         ActiveMQBroker.instance().setDataDirectory(
-                new File(App.instance().getLocalHomeDirectory(), "activemq"));
+                new File(LocalStorage.instance().getHomeDirectory(), "activemq"));
 
         Runtime.getRuntime().addShutdownHook(new Thread("App shutdown hook") {
             @Override
