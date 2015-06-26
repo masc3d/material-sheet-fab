@@ -11,7 +11,7 @@ using System.ComponentModel;
 [assembly: AssemblyConfiguration("desc3")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("LeoBridge")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -38,5 +38,5 @@ using System.ComponentModel;
 [assembly: AssemblyFileVersion(AssemblyConstants.Version + ".0.0")]
 
 static internal class AssemblyConstants {
-    internal const string Version = "1.8";
+    internal const string Version = "2.01";
 }
