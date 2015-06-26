@@ -71,6 +71,7 @@ public class Sector implements Serializable {
     }
 
     @Basic
+    @Column(nullable = false)
     public Timestamp getTimestamp() {
         return timestamp;
     }

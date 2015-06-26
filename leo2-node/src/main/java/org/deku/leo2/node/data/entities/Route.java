@@ -123,6 +123,7 @@ public class Route implements Serializable {
     }
 
     @Basic
+    @Column(nullable = false)
     @Index
     public Timestamp getTimestamp() {
         return timestamp;

@@ -1,9 +1,6 @@
 package org.deku.leo2.node.data.entities;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -54,6 +51,7 @@ public class RoutingLayer implements Serializable {
     }
 
     @Basic
+    @Column(nullable = false)
     public Timestamp getTimestamp() {
         return timestamp;
     }

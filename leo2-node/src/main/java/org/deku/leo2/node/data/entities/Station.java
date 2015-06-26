@@ -1,9 +1,6 @@
 package org.deku.leo2.node.data.entities;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -31,14 +28,7 @@ public class Station implements Serializable {
         return serialVersionUID;
     }
 
-    @Basic
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
+    private Integer stationNr;
 
     @Id
     public Integer getStationNr() {
@@ -51,6 +41,15 @@ public class Station implements Serializable {
 
     private Timestamp timestamp;
 
+    @Basic
+    @Column(nullable = false)
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
 
     private String address1;
 
@@ -238,9 +237,6 @@ public class Station implements Serializable {
     public void setWebAddress(String webAddress) {
         this.webAddress = webAddress;
     }
-
-    private Integer stationNr;
-
 
     private Integer strang;
 

@@ -56,6 +56,7 @@ public class HolidayCtrl implements Serializable {
     }
 
     @Basic
+    @Column(nullable = false)
     public Timestamp getTimestamp() {
         return timestamp;
     }

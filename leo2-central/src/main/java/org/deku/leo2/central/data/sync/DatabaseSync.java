@@ -149,9 +149,37 @@ public class DatabaseSync {
         Station s = new Station();
 
         s.setStationNr(ds.getStationnr());
+        s.setTimestamp(ds.getTimestamp());
+        s.setAddress1(ds.getAddress1());
+        s.setAddress2(ds.getAddress2());
+        s.setBillingAddress1(ds.getBillingaddress1());
+        s.setBillingAddress2(ds.getBillingaddress2());
+        s.setBillingCity(ds.getBillingcity());
+        s.setBillingCountry(ds.getBillingcountry());
+        s.setBillingHouseNr(ds.getBillinghousenr());
+        s.setBillingStreet(ds.getBillingstreet());
+        s.setBillingZip(ds.getBillingzip());
+        s.setCity(ds.getCity());
+        s.setContactPerson1(ds.getContactperson1());
+        s.setContactPerson2(ds.getContactperson2());
+        s.setCountry(ds.getCountry());
+        s.setEmail(ds.getEmail());
+        s.setHouseNr(ds.getHousenr());
+        s.setMobile(ds.getMobile());
+        s.setPhone1(ds.getPhone1());
+        s.setPhone2(ds.getPhone2());
+        s.setPosLat(ds.getPoslat());
+        s.setPosLong(ds.getPoslong());
         s.setSector(ds.getSectors());
-        //TODO rest
-
+        s.setServicePhone1(ds.getServicephone1());
+        s.setServicePhone2(ds.getServicephone2());
+        // TODO: strang? strange? ;)
+        s.setStrang(null);
+        s.setStreet(ds.getStreet());
+        s.setTelefax(ds.getTelefax());
+        s.setuStId(ds.getUstid());
+        s.setWebAddress(ds.getWebaddress());
+        s.setZip(ds.getZip());
         return s;
     }
 
