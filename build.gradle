@@ -18,7 +18,7 @@ sourceSets {
 
 dependencies {
     compile 'com.google.guava:guava:18.+'
-    compile 'commons-logging:commons-logging:+'
+    compile 'commons-logging:commons-logging:1.+'
     provided 'javax.jms:jms-api:1.1-rev-1'
     provided 'junit:junit:4.+'
 
