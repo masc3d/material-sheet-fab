@@ -9,7 +9,8 @@ No dependencies
 compile - Compile classpath for source set 'main'.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
-|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- javax.jms:jms-api:1.1-rev-1
 |    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
@@ -32,7 +33,6 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
 |    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    +--- javax.jms:jms-api:1.1-rev-1
 |    \--- junit:junit:4.+ -> 4.11
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
@@ -286,7 +286,8 @@ compile - Compile classpath for source set 'main'.
 default - Configuration for default artifacts.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
-|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- javax.jms:jms-api:1.1-rev-1
 |    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
@@ -309,7 +310,6 @@ default - Configuration for default artifacts.
 |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
 |    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    +--- javax.jms:jms-api:1.1-rev-1
 |    \--- junit:junit:4.+ -> 4.11
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
@@ -569,7 +569,8 @@ No dependencies
 runtime - Runtime classpath for source set 'main'.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
-|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- javax.jms:jms-api:1.1-rev-1
 |    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
@@ -592,7 +593,6 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
 |    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    +--- javax.jms:jms-api:1.1-rev-1
 |    \--- junit:junit:4.+ -> 4.11
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
@@ -846,7 +846,8 @@ runtime - Runtime classpath for source set 'main'.
 testCompile - Compile classpath for source set 'test'.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
-|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- javax.jms:jms-api:1.1-rev-1
 |    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
@@ -869,7 +870,6 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
 |    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    +--- javax.jms:jms-api:1.1-rev-1
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
@@ -1128,7 +1128,8 @@ testCompile - Compile classpath for source set 'test'.
 testRuntime - Runtime classpath for source set 'test'.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
-|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- javax.jms:jms-api:1.1-rev-1
 |    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
@@ -1151,7 +1152,6 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
 |    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    +--- javax.jms:jms-api:1.1-rev-1
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
