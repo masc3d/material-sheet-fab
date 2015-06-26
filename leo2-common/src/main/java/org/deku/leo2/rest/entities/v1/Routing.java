@@ -11,8 +11,8 @@ import org.deku.leo2.rest.entities.ShortTime;
 
 public class Routing {
 
-    private RoutingParticipant mRoutingSender = new RoutingParticipant();
-    private RoutingParticipant mRoutingConsignee = new RoutingParticipant();
+    private RoutingParticipant mSender = new RoutingParticipant();
+    private RoutingParticipant mConsignee = new RoutingParticipant();
     private String[] mViaHubs;
     private String mLabelContent = "";
     private String mMessage = "";
@@ -22,11 +22,11 @@ public class Routing {
     public Routing() {
     }
 
-    public Routing(ShortDate sendDate, ShortDate deliveryDate, RoutingParticipant routingSender, RoutingParticipant routingConsignee, String[] viaHubs,
+    public Routing(ShortDate sendDate, ShortDate deliveryDate, RoutingParticipant sender, RoutingParticipant consignee, String[] viaHubs,
                    String labelContent, String message) {
 
-        mRoutingSender = routingSender;
-        mRoutingConsignee = routingConsignee;
+        mSender = sender;
+        mConsignee = consignee;
         mViaHubs = viaHubs;
         mLabelContent = labelContent;
         mMessage = message;
@@ -53,21 +53,21 @@ public class Routing {
     }
 
     @ApiModelProperty(position = 30)
-    public RoutingParticipant getRoutingSender() {
-        return mRoutingSender;
+    public RoutingParticipant getSender() {
+        return mSender;
     }
 
-    public void setRoutingSender(RoutingParticipant routingSender) {
-        mRoutingSender = routingSender;
+    public void setSender(RoutingParticipant sender) {
+        mSender = sender;
     }
 
     @ApiModelProperty(position = 40)
-    public RoutingParticipant getRoutingConsignee() {
-        return mRoutingConsignee;
+    public RoutingParticipant getConsignee() {
+        return mConsignee;
     }
 
-    public void setRoutingConsignee(RoutingParticipant routingConsignee) {
-        mRoutingConsignee = routingConsignee;
+    public void setConsignee(RoutingParticipant consignee) {
+        mConsignee = consignee;
     }
 
     @ApiModelProperty(dataType = "string", example = "F,N", position = 50, required = true, value = "Used via Hubs: \"F,N\"")

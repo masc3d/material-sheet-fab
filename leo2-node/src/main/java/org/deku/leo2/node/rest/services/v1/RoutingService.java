@@ -251,8 +251,8 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         rWSRouting.setSendDate(mSendDate);
         rWSRouting.setDeliveryDate(mDeliveryDate);
 
-        rWSRouting.setRoutingSender(mRoutingParticipantSender.iterator().next());
-        rWSRouting.setRoutingConsignee(mRoutingParticipantConsignee.iterator().next());
+        rWSRouting.setSender(mRoutingParticipantSender.iterator().next());
+        rWSRouting.setConsignee(mRoutingParticipantConsignee.iterator().next());
         rWSRouting.setViaHubs(mViaHubs);
         rWSRouting.setLabelContent("NST N");
         rWSRouting.setMessage("OK");
