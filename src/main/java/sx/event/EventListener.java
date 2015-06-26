@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package sx.util;
+package sx.event;
 
 /**
  * Generic event listener
