@@ -61,8 +61,6 @@ public class DatabaseSync {
     @Inject
     RoutingLayerRepository mRoutingLayerRepository;
 
-
-
     @Inject
     public DatabaseSync(@Qualifier(PersistenceContext.DB_EMBEDDED) PlatformTransactionManager tx,
                         @Qualifier(org.deku.leo2.central.data.PersistenceContext.DB_CENTRAL) PlatformTransactionManager txJooq) {
@@ -127,15 +125,6 @@ public class DatabaseSync {
                 QSector.sector.timestamp,
                 (s) -> convert(s),
                 alwaysDelete);
-
-//        this.updateEntities(
-//                Tables.SYS_VALUES,
-//                SysValues.SYS_VALUES.SYS_VALUES.TIMESTAMP,
-//                mValueRepository,
-//                QValues.values,
-//                QValues.values.timestamp,
-//                (s) -> convert(s),
-//                alwaysDelete);
 
         this.updateEntities(
                 Tables.SYS_ROUTINGLAYER,
