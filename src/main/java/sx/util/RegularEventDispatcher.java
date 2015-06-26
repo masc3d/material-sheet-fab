@@ -19,6 +19,7 @@ package sx.util;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -44,12 +45,13 @@ public class RegularEventDispatcher<T extends EventListener> extends EventDispat
 
     @Override
     public void remove(final T listener) {
-        _listeners.removeAll(Collections2.filter(_listeners, new Predicate<WeakReference<T>>() {
+        ArrayList toRemove = Lists.newArrayList(Collections2.filter(_listeners, new Predicate<WeakReference<T>>() {
             @Override
             public boolean apply(WeakReference<T> input) {
                 return input.get() == listener;
             }
         }));
+        _listeners.removeAll(toRemove);
     }
 
     @Override
