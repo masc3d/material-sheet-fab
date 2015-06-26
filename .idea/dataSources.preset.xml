@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="1906354813">
+  <component name="DataSourceManagerImpl" format="xml" hash="3958690483">
     <data-source source="LOCAL" name="MySQL - dekuclient@10.0.10.10" uuid="908ac2d1-02f5-43ae-91ce-83187acf41dc">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
@@ -22,7 +22,7 @@
       <jdbc-url>jdbc:h2:file:$USER_HOME$/.leo2/db/leo2</jdbc-url>
       <libraries>
         <library>
-          <url>file://$USER_HOME$/Java/h2/bin/h2-1.4.181.jar</url>
+          <url>file://$USER_HOME$/Java/h2/bin/h2-1.4.187.jar</url>
         </library>
       </libraries>
     </data-source>
