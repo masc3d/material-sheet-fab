@@ -7,14 +7,13 @@ import sx.Disposable;
 import javax.jms.ConnectionFactory;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
-import javax.jms.MessageListener;
 
 /**
  * Lightweight jms listener abstraction.
  * This is the top level abstract class, only binding a connection factory.
  * Created by masc on 16.04.15.
  */
-public abstract class Listener implements Disposable, MessageListener, ExceptionListener {
+public abstract class Listener implements Disposable, ExceptionListener {
     private Log mLog;
     private ConnectionFactory mConnectionFactory;
 

@@ -1,4 +1,4 @@
-package sx.util;
+package sx.event;
 
 /**
  * Multicast event delegate interface

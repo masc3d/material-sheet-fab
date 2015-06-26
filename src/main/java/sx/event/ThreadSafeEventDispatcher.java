@@ -1,6 +1,5 @@
-package sx.util;
+package sx.event;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -20,12 +19,12 @@ public class ThreadSafeEventDispatcher<T extends EventListener> extends RegularE
     }
 
     @Override
-    protected synchronized List<WeakReference<T>> getListeners() {
+    protected synchronized List<ListenerReference> getListeners() {
         return super.getListeners();
     }
 
     @Override
-    protected synchronized void remove(List<WeakReference<T>> listeners) {
+    protected synchronized void remove(List<ListenerReference> listeners) {
         super.remove(listeners);
     }
 }
