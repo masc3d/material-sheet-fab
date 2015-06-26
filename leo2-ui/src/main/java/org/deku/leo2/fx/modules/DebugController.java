@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.Main;
 import org.deku.leo2.Settings;
 import org.deku.leo2.bridge.LeoBridge;
@@ -13,13 +15,12 @@ import org.deku.leo2.fx.ModuleController;
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 /**
  * Created by masc on 27.09.14.
  */
 public class DebugController extends ModuleController implements Initializable {
-    Logger mLog = Logger.getLogger(DebugController.class.getName());
+    Log mLog = LogFactory.getLog(DebugController.class);
 
     @FXML
     private TextField mLeoBridgeMessageTextField;
@@ -43,7 +44,7 @@ public class DebugController extends ModuleController implements Initializable {
         try {
             LeoBridge.instance().sendMessage(new Message(mLeoBridgeMessageTextField.getText()));
         } catch(Exception e) {
-            mLog.severe(e.getMessage());
+            mLog.error(e.getMessage(), e);
         }
     }
 
@@ -56,7 +57,7 @@ public class DebugController extends ModuleController implements Initializable {
         try {
             LeoBridge.instance().sendMessage(msg);
         } catch(Exception e) {
-            mLog.severe(e.getMessage());
+            mLog.error(e.getMessage(), e);
         }
     }
 

@@ -1,17 +1,149 @@
-apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
-version = '1.0'
-
-repositories {
-    mavenCentral()
-}
+version = '0.1'
+mainClassName = "org.deku.leo2.node.Main"
 
 dependencies {
+    // leo2 webservice dependencies
     compile project(':sx-common')
-
     compile project(':leo2-common')
-    compile project(':leo2-messaging')
 
+    // spring
+    compile 'org.springframework.data:spring-data-jpa:1.8.+'
+    compile "org.springframework.data:spring-data-commons:1.10.+"
+    compile "org.springframework:spring-web:$v_spring"
+    //compile "org.springframework:spring-aspects"
+    // spring boot
+    compile "org.springframework.boot:spring-boot-starter:$v_springboot"
+    compile("org.springframework.boot:spring-boot-starter-web:$v_springboot") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+    compile "org.springframework.boot:spring-boot-starter-undertow:$v_springboot"
+    //optional "org.springframework.boot:spring-boot-configuration-processor"
+
+    // logging
+    compile "org.slf4j:jul-to-slf4j:+"
+    compile "org.slf4j:log4j-over-slf4j:+"
+    compile "ch.qos.logback:logback-classic:+"
+
+    // webservice
+    // for various javax interfaces (eg. ServletContextListener)
+    compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
+    // jaxrs/resteasy
+    compile "org.jboss.resteasy:resteasy-jaxrs:$v_resteasy"
+    compile "org.jboss.resteasy:resteasy-spring:$v_resteasy"
+    compile "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy"
+
+    // jackson JSON serializer
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
+
+    // persistence framework(s)
+    // eclipselink
+    compile "org.eclipse.persistence:eclipselink:$v_eclipselink"
+
+    // queryDSL
+    compile "com.mysema.querydsl:querydsl-core:$v_querydsl"
+    compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
+    compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
+    compile "com.mysema.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
+
+    // JSR-330
+    compile 'javax.inject:javax.inject:1'
+
+    // databases
+    compile "com.h2database:h2:$v_h2"
+
+    // discovery
+    compile "javax.jmdns:jmdns:3.+"
+
+    // json doc
+    compile 'com.wordnik:swagger-jaxrs:+'
+    compile 'org.javassist:javassist:3.+'
+
+    // serialization
+    compile "com.esotericsoftware:kryo:3.+"
+
+    compile "org.xerial.snappy:snappy-java:+"
+
+    // TODO: for testing jinq
+    compile 'org.jinq:jinq-jpa:+'
+
+    // TODO: For testing aspectj proxies with spring
+//    compile "org.aspectj:aspectjtools:+"
+//    compile "org.aspectj:aspectjweaver:+"
+
+    // test dependencies
     testCompile group: 'junit', name: 'junit', version: '4.+'
+
+    // webservice client libraries for test cases
+    testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
+    testCompile "org.springframework:spring-test"
+
+    testCompile project(':sx-common')
 }
+
+run {
+    errorOutput = System.err
+    standardOutput = System.out
+    standardInput = System.in
+}
+
+// Required for eclipse modelgen to find xml resources (eg. persistence.xml)
+sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+compileJava.dependsOn(processResources)
+
+// Location for generated sources
+// Directory for apt must be dedicated (no other generators may write here)
+// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+def srcdir_apt = file("$projectDir/src/generated/apt")
+
+compileJava {
+    doFirst {
+        // Source dir must exist
+        srcdir_apt.exists() || srcdir_apt.mkdirs()
+        // Tell javac about the generated sources location
+        options.compilerArgs = [
+                '-s', srcdir_apt.toString()
+        ]
+    }
+}
+
+// Add generated sources to a separate sourceset, so IDEs can see them
+// (Adding sources to main/java instead will cause subsequent builds to fail)
+sourceSets {
+    generated {
+        java {
+            srcDirs += srcdir_apt
+        }
+    }
+}
+
+task copyWebapp(type: Copy) {
+    from 'src/main/webapp'
+    into 'build/classes/main/webapp'
+}
+
+compileJava.dependsOn(copyWebapp)
+
+// masc20150507. task prototypes
+////copying all dependencies attached to 'compile' into a specific folder
+//task copyAllDependencies(type: Copy) {
+//    //referring to the 'compile' configuration
+//    from configurations.compile
+//    into 'allLibs'
+//}
+//
+//configurations.all.each {
+//    println "compile: $it"
+//}
+//
+//sourceSets.main.compileClasspath.each {
+//    println "ss: $it"
+//}
+
+//configurations.compile.allDependencies.each {
+//    println "$it.group:$it.name:$it.version"
+//
+//}

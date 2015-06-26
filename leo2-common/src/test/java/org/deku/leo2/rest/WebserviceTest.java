@@ -1,7 +1,7 @@
 package org.deku.leo2.rest;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import org.glassfish.jersey.client.proxy.WebResourceFactory;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.After;
 import org.junit.Before;
 
@@ -36,6 +36,6 @@ public abstract class WebserviceTest {
     /** Convenience method to get service instance
      * @param c service interface class*/
     public <T> T getService(Class<T> c) {
-        return (T)WebResourceFactory.newResource(c, this.target);
+        return ((ResteasyWebTarget)target).proxy(c);
     }
 }

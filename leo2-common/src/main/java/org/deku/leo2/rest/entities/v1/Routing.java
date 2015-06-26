@@ -1,82 +1,100 @@
 package org.deku.leo2.rest.entities.v1;
 
-import org.deku.leo2.rest.adapters.LocalTimeAdapter;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalTime;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+import org.deku.leo2.rest.entities.ShortDate;
+import org.deku.leo2.rest.entities.ShortTime;
 
 /**
- * Routing service find response
- * Created by masc on 20.04.15.
+ * Routing service request response
+ * Created by JT on 23.06.15.
  */
-@XmlRootElement()
+
 public class Routing {
-    private String mSector;
-    private String mZone;
-    private LocalTime mEarliestDelivery;
-    private Integer mRouting;
-    private HolidayType mHoliday;
-    private Boolean mIsland;
+
+    private RoutingParticipant mSender = new RoutingParticipant();
+    private RoutingParticipant mConsignee = new RoutingParticipant();
+    private String[] mViaHubs;
+    private String mLabelContent = "";
+    private String mMessage = "";
+    private ShortDate mSendDate;
+    private ShortDate mDeliveryDate;
 
     public Routing() {
     }
 
-    public Routing(String sector, String zone, LocalTime earliestDelivery, Integer routing, HolidayType holiday, Boolean island) {
-        mSector = sector;
-        mZone = zone;
-        mEarliestDelivery = earliestDelivery;
-        mRouting = routing;
-        mHoliday = holiday;
-        mIsland = island;
+    public Routing(ShortDate sendDate, ShortDate deliveryDate, RoutingParticipant sender, RoutingParticipant consignee, String[] viaHubs,
+                   String labelContent, String message) {
+
+        mSender = sender;
+        mConsignee = consignee;
+        mViaHubs = viaHubs;
+        mLabelContent = labelContent;
+        mMessage = message;
+        mSendDate = sendDate;
+        mDeliveryDate = deliveryDate;
     }
 
-    public String getSector() {
-        return mSector;
+    @ApiModelProperty(dataType = "date", example = "2015-06-01", position = 10, required = true, value = "Senddate", allowableValues = "2015-06-01")
+    public ShortDate getSendDate() {
+        return mSendDate;
     }
 
-    public void setSector(String sector) {
-        mSector = sector;
+    public void setSendDate(ShortDate sendDate) {
+        mSendDate = sendDate;
     }
 
-    public String getZone() {
-        return mZone;
+    @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Deliverydate", allowableValues = "00:00 - 23:59")
+    public ShortDate getDeliveryDate() {
+        return mDeliveryDate;
     }
 
-    public void setZone(String zone) {
-        mZone = zone;
+    public void setDeliveryDate(ShortDate deliveryDate) {
+        mDeliveryDate = deliveryDate;
     }
 
-    @XmlJavaTypeAdapter(type=LocalTime.class, value=LocalTimeAdapter.class)
-    public LocalTime getEarliestDelivery() {
-        return mEarliestDelivery;
+    @ApiModelProperty(position = 30)
+    public RoutingParticipant getSender() {
+        return mSender;
     }
 
-    public void setEarliestDelivery(LocalTime earliestDelivery) {
-        mEarliestDelivery = earliestDelivery;
+    public void setSender(RoutingParticipant sender) {
+        mSender = sender;
     }
 
-    public Integer getRouting() {
-        return mRouting;
+    @ApiModelProperty(position = 40)
+    public RoutingParticipant getConsignee() {
+        return mConsignee;
     }
 
-    public void setRouting(Integer routing) {
-        mRouting = routing;
+    public void setConsignee(RoutingParticipant consignee) {
+        mConsignee = consignee;
     }
 
-    public HolidayType getHoliday() {
-        return mHoliday;
+    @ApiModelProperty(dataType = "string", example = "F,N", position = 50, required = true, value = "Used via Hubs: \"F,N\"")
+    public String[] getViaHubs() {
+        return mViaHubs;
     }
 
-    public void setHoliday(HolidayType holiday) {
-        mHoliday = holiday;
+    public void setViaHubs(String[] viaHubs) {
+        mViaHubs = viaHubs;
     }
 
-    public Boolean getIsland() {
-        return mIsland;
+    @ApiModelProperty(dataType = "string", example = "F,N", position = 60, required = true, value = "Routingstring on Label: \"F,N\"")
+    public String getLabelContent() {
+        return mLabelContent;
     }
 
-    public void setIsland(Boolean island) {
-        mIsland = island;
+    public void setLabelContent(String labelContent) {
+        mLabelContent = labelContent;
     }
+
+    @ApiModelProperty(dataType = "string", example = "OK", position = 70, required = true, value = "Infomassage: \"OK\"")
+    public String getMessage() {
+        return mMessage;
+    }
+
+    public void setMessage(String message) {
+        mMessage = message;
+    }
+
 }

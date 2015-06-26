@@ -1,94 +1,43 @@
 // Gradle dependencies/plugins
 buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-
     dependencies {
-        // cargo gradle plugin for remote delpoyment
-        classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.+'
+        // jooq codegen gradle plugin
+        classpath 'com.github.ben-manes:gradle-jooq-plugin:+'
+
+        // override jooq dependencies of gradle-jooq-plugin with desired version
+        classpath("org.jooq:jooq-codegen:$v_jooq") { force true }
+        classpath("org.jooq:jooq-meta:$v_jooq") { force true }
+
+        // mysql jdbc connector
+        classpath "mysql:mysql-connector-java:$v_mysql"
     }
 }
 
-plugins {
-    id "com.github.johnrengelman.shadow" version "1.2.1"
-}
-
-apply plugin: 'java'
-apply plugin: 'war'
-apply plugin: 'cargo'
 apply plugin: 'application'
-// IDEs
-apply plugin: 'idea'
-apply plugin: 'eclipse'
+apply plugin: 'jooq'
 
 sourceCompatibility = 1.8
 version = '0.1'
 mainClassName = "org.deku.leo2.central.Main"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    // slf4j logging (eg. spring logs)
-    compile 'org.slf4j:slf4j-jdk14:+'
-
-    // Webservice
-    // For various javax interfaces (eg. ServletContextListener)
-    compile 'javax.servlet:javax.servlet-api:3.+'
-    // jersey
-    compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.+'
-    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'
-    // jackson JSON serializer
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+'
-    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+'
-    // jersey webservice container for local running/debugging
-    // masc20150504. jersey-container-grizzly2-http is usually enough for running standalone
-    // as long as all configuration is provided via WebserviceResourceConfig.
-    // Still this would portentially allow us to run the entire servlet standalone
-    // (also pulling in jersey-container-grizzly2-http)
-    compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.+'
-    // jersey spring extension
-    compile 'org.glassfish.jersey.ext:jersey-spring3:2.+'
-
     // leo2 webservice dependencies
-    compile project(':leo2-common')
     compile project(':sx-common')
+    compile project(':leo2-common')
+    compile project(':leo2-node')
 
-    // persistence framework(s)
-    // eclipselink
-    compile 'org.eclipse.persistence:eclipselink:2.+'
-    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:2.+' // Eclipselink codegen/annotation processor
+    // db
+    compile "mysql:mysql-connector-java:$v_mysql"
 
-    // QueryDSL
-    compile 'com.mysema.querydsl:querydsl-jpa:3.+'
-    compile 'com.mysema.querydsl:querydsl-apt:3.+:jpa' // QueryDSL codegen/annotation processor
+    // jooq
+    compile "org.jooq:jooq:$v_jooq"
 
-    // Spring
-    compile 'org.springframework.data:spring-data-jpa:1.8.0.RELEASE'
-    compile 'org.springframework:spring-orm:4.+'
-    compile 'org.springframework:spring-context:4.+'
-    compile 'org.springframework:spring-web:4.+'
-
-    // JSR-330
-    compile 'javax.inject:javax.inject:1'
-
-    // deltaspike data
-//    compile 'org.apache.deltaspike.modules:deltaspike-data-module-api:+'
-//    compile 'org.apache.deltaspike.modules:deltaspike-data-module-impl:+'
-
-    compile 'org.jinq:jinq-jpa:+'
-
-    // jdbc connector(s)
-    compile 'mysql:mysql-connector-java:5.+'
-
+    // test dependencies
     testCompile group: 'junit', name: 'junit', version: '4.+'
-    // Webservice client libraries for test cases
-    testCompile 'org.glassfish.jersey.core:jersey-client:2.+'
-    testCompile 'org.glassfish.jersey.ext:jersey-proxy-client:2.+'
-    testCompile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.+'
+
+    // webservice client libraries for test cases
+    testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
+    testCompile "org.springframework.boot:spring-boot-starter-test:$v_springboot"
 
     testCompile project(':sx-common')
 }
@@ -99,56 +48,70 @@ run {
     standardInput = System.in
 }
 
-// war plugin configuration
-war {
-}
-
-// cargo plugin configuration
-cargo {
-    containerId = 'tomcat7x'
-    port = 8080
-
-    deployable {
-        context = '/leo2'
-    }
-
-    remote {
-        hostname = '10.0.10.10'
-        username = 'tomcat'
-        password = 'tomcat'
-    }
-}
-
-// task dependencies
-tasks.cargoDeployRemote.dependsOn(war)
-tasks.cargoRedeployRemote.dependsOn(war)
-
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
 // Location for generated sources
-def generatedSources = "$projectDir/generated"
-def generatedOutputDir = file("$generatedSources")
+// Directory for apt must be dedicated (no other generators may write here)
+// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+def srcdir_jooq = file("$projectDir/src/generated/jooq")
 
-compileJava {
-    doFirst {
-        generatedOutputDir.exists() || generatedOutputDir.mkdirs()
-        // Tell javac about the generated sources location
-        options.compilerArgs = [
-                '-s', "${generatedSources}"
-        ]
+// Generate jooq for each compilation run
+// tasks.compileJava.dependsOn(generateJooq)
+
+jooq {
+    jdbc {
+        url 'jdbc:mysql://10.0.10.10:3306'
+        driver 'com.mysql.jdbc.Driver'
+        user 'root'
+        password 'root'
     }
-}
+    generator {
+        database {
+            name 'org.jooq.util.mysql.MySQLDatabase'
+            inputSchema 'dekuclient'
 
-// Add generated sources to a separate sourceset, so IDEs can see them
-// (Adding sources to main/java instead will cause subsequent builds to fail)
-sourceSets {
-    generated {
-        java {
-            srcDirs += generatedOutputDir
+            includes 'tbldepotliste|mst_.*|sys_.*'
+            //excludes '.*'
+
+            // masc20140916. (almost) all tables
+            //includes '.*'
+            //excludes 'tbl_auftrag_info'
+        }
+
+        target {
+            packageName 'org.deku.leo2.central.data.entities.jooq'
+            directory srcdir_jooq.toString()
         }
     }
 }
+tasks.generateJooq.outputs.upToDateWhen { false }
 
+task copyWebapp(type: Copy) {
+    from 'src/main/webapp'
+    into 'build/classes/main/webapp'
+}
 
+compileJava.dependsOn(copyWebapp)
+
+// masc20150507. task prototypes
+////copying all dependencies attached to 'compile' into a specific folder
+//task copyAllDependencies(type: Copy) {
+//    //referring to the 'compile' configuration
+//    from configurations.compile
+//    into 'allLibs'
+//}
+//
+//configurations.all.each {
+//    println "compile: $it"
+//}
+//
+//sourceSets.main.compileClasspath.each {
+//    println "ss: $it"
+//}
+
+//configurations.compile.allDependencies.each {
+//    println "$it.group:$it.name:$it.version"
+//
+//}

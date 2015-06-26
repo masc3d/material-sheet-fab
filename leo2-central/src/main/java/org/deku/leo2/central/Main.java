@@ -1,63 +1,55 @@
 package org.deku.leo2.central;
 
-import org.deku.leo2.central.rest.WebserviceResourceConfig;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import sx.Disposable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.deku.leo2.central.data.sync.EntitySyncConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
-import java.io.IOException;
-import java.net.URI;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 /**
- * Created by masc on 30.07.14.
+ * Spring boot main class.
+ * Disabled auto configuraton as it's slow. Pulling in configurations manually as needed.
+ * <p>
+ * Created by masc on 28.05.15.
  */
-public class Main implements Disposable {
-    private volatile static Main mInstance = null;
-
-    public static Main instance() {
-        if (mInstance == null) {
-            synchronized (Main.class) {
-                mInstance = new Main();
-            }
-        }
-        return mInstance;
-    }
+@Configuration("central.MainSpringBoot")
+@Order(Ordered.HIGHEST_PRECEDENCE)
+@ComponentScan(lazyInit = true)
+@Import({EntitySyncConfiguration.class})
+public class Main extends org.deku.leo2.node.Main {
+    private static Log mLog = LogFactory.getLog(Main.class);
 
     /**
-     * Spring application context
+     * Standalone jetty
+     * @param args
+     * @throws Exception
      */
-    ApplicationContext mContext;
-
-    public ApplicationContext getContext() {
-        return mContext;
-    }
-
-    private Main() {
-        // Spring application context
-        mContext = new AnnotationConfigApplicationContext(Main.class.getPackage().getName());
-    }
-
-    public static void main(String[] args) throws IOException {
-        //final URI BASE_URI = URI.create("http://localhost:8080/leo2/");
-        final URI BASE_URI = URI.create("http://0.0.0.0:8080/leo2/");
-
-        ResourceConfig config = new WebserviceResourceConfig();
-        // Let spring/jersey bridge know the context
-        config.property("contextConfig", instance().getContext());
-
-        // TODO: verify why partial webservice paths may return empty result instead of 404
-        final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, config);
-
-        System.out.println("Enter to stop webservice");
-        System.in.read();
-
-        server.shutdownNow();
+    public static void main(String[] args) throws Exception {
+        App.inject(App::new);
+        org.deku.leo2.node.Main.run(Main.class, args);
     }
 
     @Override
-    public void dispose() {
+    public void onStartup(ServletContext container) throws ServletException {
+        mLog.info("leo2.central.main.onStartup");
+        super.onStartup(container);
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        mLog.info("leo2.central.main.configure");
+        App.inject(App::new);
+        App.instance().initialize();
+
+        return builder
+                .sources(Main.class)
+                .listeners(App.instance());
     }
 }

@@ -9,10 +9,10 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import sx.Disposable;
-import sx.util.EventDelegate;
-import sx.util.EventDispatcher;
-import sx.util.EventListener;
-import sx.util.ThreadSafeEventDispatcher;
+import sx.event.EventDelegate;
+import sx.event.EventDispatcher;
+import sx.event.EventListener;
+import sx.event.ThreadSafeEventDispatcher;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -38,7 +38,7 @@ public class LeoBridge implements Disposable, MessageService.Listener {
             super(JacksonFeature.class);
 
             // Server debug logging
-            // registerInstances(new LoggingFilter(Logger.getLogger(LeoBridge.class.getName()), true));
+            // registerInstances(new LoggingFilter(Logger.getLog(LeoBridge.class.getName()), true));
 
             packages("org.deku.leo2.bridge.services");
         }
@@ -80,7 +80,7 @@ public class LeoBridge implements Disposable, MessageService.Listener {
             c.property(ClientProperties.CONNECT_TIMEOUT, 500);
 
             // Client debug logging
-            // c.register(new LoggingFilter(Logger.getLogger(LeoBridge.class.getName()), true));
+            // c.register(new LoggingFilter(Logger.getLog(LeoBridge.class.getName()), true));
 
             mMessageServiceClient = WebResourceFactory.newResource(IMessageService.class, c.target(CLIENT_URI));
         }
