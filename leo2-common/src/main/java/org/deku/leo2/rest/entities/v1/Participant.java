@@ -20,7 +20,7 @@ public class Participant {
 
     public Participant() { }
 
-    @ApiModelProperty(value="Country two-letter ISO-3166", position = 10, required = true)
+    @ApiModelProperty(dataType = "string", example = "DE",value="Country two-letter ISO-3166", position = 10, required = true)
     public String getCountry() {
         return mCountry;
     }
@@ -29,7 +29,7 @@ public class Participant {
         mCountry = country;
     }
 
-    @ApiModelProperty(value="Zip code accordant to country spezification", position = 20, required = true)
+    @ApiModelProperty(dataType = "string", example = "36286",value="Zip code accordant to country spezification", position = 20, required = true)
     public String getZip() {
         return mZip;
     }
@@ -38,16 +38,8 @@ public class Participant {
         mZip = zip;
     }
 
-    @ApiModelProperty(dataType = "date", example = "2015-06-01", position = 30, required = true, value = "Delivery or pickup date", allowableValues = "00:00 - 23:59")
-    public ShortDate getDate() {
-        return mDate;
-    }
 
-    public void setDate(ShortDate date) {
-        mDate = date;
-    }
-
-    @ApiModelProperty(dataType = "string", example = "10:00", position = 40, required = true, value = "Time window (from)", allowableValues = "00:00 - 23:59")
+    @ApiModelProperty(dataType = "string", example = "09:00", position = 40, required = true, value = "Time window (from)", allowableValues = "00:00 - 23:59")
     public String getTimeFrom() {
         return mTimeFrom;
     }
@@ -56,7 +48,7 @@ public class Participant {
         mTimeFrom = timefrom;
     }
 
-    @ApiModelProperty(dataType = "string", example = "10:00", position = 50, required = true, value = "Time window (to)", allowableValues = "00:00 - 23:59")
+    @ApiModelProperty(dataType = "string", example = "12:00", position = 50, required = true, value = "Time window (to)", allowableValues = "00:00 - 23:59")
     public String getTimeTo() {
         return mTimeTo;
     }

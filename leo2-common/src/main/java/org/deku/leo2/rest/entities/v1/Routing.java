@@ -11,71 +11,30 @@ import org.deku.leo2.rest.entities.ShortTime;
 
 public class Routing {
 
-    private RoutingParticipant mRoutingSender= new RoutingParticipant();
-    private RoutingParticipant mRoutingConsignee= new RoutingParticipant();
+    private RoutingParticipant mRoutingSender = new RoutingParticipant();
+    private RoutingParticipant mRoutingConsignee = new RoutingParticipant();
     private String[] mViaHubs;
-    private String mLabelContent="";
-    private String mMessage="";
+    private String mLabelContent = "";
+    private String mMessage = "";
     private ShortDate mSendDate;
     private ShortDate mDeliveryDate;
 
     public Routing() {
     }
 
-    public Routing(ShortDate sendDate,ShortDate deliveryDate, RoutingParticipant routingSender, RoutingParticipant routingConsignee, String[] viaHubs, String labelContent, String message) {
+    public Routing(ShortDate sendDate, ShortDate deliveryDate, RoutingParticipant routingSender, RoutingParticipant routingConsignee, String[] viaHubs,
+                   String labelContent, String message) {
+
         mRoutingSender = routingSender;
         mRoutingConsignee = routingConsignee;
         mViaHubs = viaHubs;
         mLabelContent = labelContent;
         mMessage = message;
-        mSendDate=sendDate;
-        mDeliveryDate=deliveryDate;
+        mSendDate = sendDate;
+        mDeliveryDate = deliveryDate;
     }
 
-    public RoutingParticipant getRoutingSender() {
-        return mRoutingSender;
-    }
-
-    public void setRoutingSender(RoutingParticipant routingSender) {
-        mRoutingSender = routingSender;
-    }
-
-    public RoutingParticipant getRoutingConsignee() {
-        return mRoutingConsignee;
-    }
-
-    public void setRoutingConsignee(RoutingParticipant routingConsignee) {
-        mRoutingConsignee = routingConsignee;
-    }
-
-    @ApiModelProperty(dataType = "string", example = "01-1010", position = 10, required = true, value = "Zipcode contry conform: \"PL: 01-1010\"")
-    public String[] getViaHubs() {
-        return mViaHubs;
-    }
-
-    public void setViaHubs(String[] viaHubs) {
-        mViaHubs = viaHubs;
-    }
-
-    @ApiModelProperty(dataType = "string", example = "01-1010", position = 10, required = true, value = "Zipcode contry conform: \"PL: 01-1010\"")
-    public String getLabelContent() {
-        return mLabelContent;
-    }
-
-    public void setLabelContent(String labelContent) {
-        mLabelContent = labelContent;
-    }
-
-    @ApiModelProperty(dataType = "string", example = "01-1010", position = 10, required = true, value = "Zipcode contry conform: \"PL: 01-1010\"")
-    public String getMessage() {
-        return mMessage;
-    }
-
-    public void setMessage(String message) {
-        mMessage = message;
-    }
-
-    @ApiModelProperty(dataType = "string", example = "01-1010", position = 10, required = true, value = "Zipcode contry conform: \"PL: 01-1010\"")
+    @ApiModelProperty(dataType = "date", example = "2015-06-01", position = 10, required = true, value = "Senddate", allowableValues = "2015-06-01")
     public ShortDate getSendDate() {
         return mSendDate;
     }
@@ -84,7 +43,7 @@ public class Routing {
         mSendDate = sendDate;
     }
 
-    @ApiModelProperty(dataType = "string", example = "01-1010", position = 10, required = true, value = "Zipcode contry conform: \"PL: 01-1010\"")
+    @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Deliverydate", allowableValues = "00:00 - 23:59")
     public ShortDate getDeliveryDate() {
         return mDeliveryDate;
     }
@@ -92,4 +51,50 @@ public class Routing {
     public void setDeliveryDate(ShortDate deliveryDate) {
         mDeliveryDate = deliveryDate;
     }
+
+    @ApiModelProperty(position = 30)
+    public RoutingParticipant getRoutingSender() {
+        return mRoutingSender;
+    }
+
+    public void setRoutingSender(RoutingParticipant routingSender) {
+        mRoutingSender = routingSender;
+    }
+
+    @ApiModelProperty(position = 40)
+    public RoutingParticipant getRoutingConsignee() {
+        return mRoutingConsignee;
+    }
+
+    public void setRoutingConsignee(RoutingParticipant routingConsignee) {
+        mRoutingConsignee = routingConsignee;
+    }
+
+    @ApiModelProperty(dataType = "string", example = "F,N", position = 50, required = true, value = "Used via Hubs: \"F,N\"")
+    public String[] getViaHubs() {
+        return mViaHubs;
+    }
+
+    public void setViaHubs(String[] viaHubs) {
+        mViaHubs = viaHubs;
+    }
+
+    @ApiModelProperty(dataType = "string", example = "F,N", position = 60, required = true, value = "Routingstring on Label: \"F,N\"")
+    public String getLabelContent() {
+        return mLabelContent;
+    }
+
+    public void setLabelContent(String labelContent) {
+        mLabelContent = labelContent;
+    }
+
+    @ApiModelProperty(dataType = "string", example = "OK", position = 70, required = true, value = "Infomassage: \"OK\"")
+    public String getMessage() {
+        return mMessage;
+    }
+
+    public void setMessage(String message) {
+        mMessage = message;
+    }
+
 }

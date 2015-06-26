@@ -222,10 +222,10 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         Iterable<RoutingLayer> mLayer = mRoutingLayerRepository.findAll();
 //TODO rWereLayer bitmaske suchen
 
-        ShortDate mSendDate = routingRequest.getSender().getDate();
+        ShortDate mSendDate = routingRequest.getSendDate();
         List<String> mPossibleSenderSectors = new ArrayList<>();
 
-        Iterable<RoutingParticipant> mRoutingParticipantSender = queryRoute(routingRequest.getSender(), mLayer, mCTRLTransportUnit, "Sender: ");
+        Iterable<RoutingParticipant> mRoutingParticipantSender = queryRoute(mSendDate, routingRequest.getSender(), mLayer, mCTRLTransportUnit, "Sender: ");
 
         Iterator<RoutingParticipant> s = mRoutingParticipantSender.iterator();
         while (s.hasNext()) {
@@ -235,10 +235,10 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
 
 
-        ShortDate mDeliveryDate = routingRequest.getConsignee().getDate();
+        ShortDate mDeliveryDate = routingRequest.getDeliverDate();
 //        List<String> mPossibleConigneeSectors = new ArrayList<>();
 
-        Iterable<RoutingParticipant> mRoutingParticipantConsignee = queryRoute(routingRequest.getSender(), mLayer, mCTRLTransportUnit, "Consignee: ");
+        Iterable<RoutingParticipant> mRoutingParticipantConsignee = queryRoute(mDeliveryDate,routingRequest.getSender(), mLayer, mCTRLTransportUnit, "Consignee: ");
 
         Iterator<RoutingParticipant> c = mRoutingParticipantConsignee.iterator();
         while (c.hasNext()) {
@@ -267,7 +267,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
     }
 
 
-    private List<RoutingParticipant> queryRoute(Participant mParticipant, Iterable<RoutingLayer> mRoutingLayers, Integer mCTRL, String mExeptionPrefix) {
+    private List<RoutingParticipant> queryRoute(ShortDate mDate,  Participant mParticipant, Iterable<RoutingLayer> mRoutingLayers, Integer mCTRL, String mExeptionPrefix) {
 
 //        List<RoutingParticipant> mRoutingParticipants = new List<RoutingParticipant>() {
 //            @Override
@@ -390,7 +390,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         List<RoutingParticipant> mRoutingParticipants = new ArrayList<>();
 
-        ShortDate mDate = mParticipant.getDate();
+        //ShortDate mDate = mParticipant.getDate();
 
         if (mDate.equals(null)) {
             throw new IllegalArgumentException(mExeptionPrefix + "empty Date");
@@ -473,7 +473,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             RoutingLayer mRoutingLayer = l.next();
             RoutingParticipant mRoutingParticipantLayer = queryRouteLayer(mParticipant, mZipQuery, mSqlDate, mRoutingLayer, mCTRL, mExeptionPrefix);
 
-            if (!mRoutingParticipantLayer.getRouting().equals("0"))
+            if (!mRoutingParticipantLayer.getStation().equals("0"))
                 mRoutingParticipants.add(mRoutingParticipantLayer);
         }
 
@@ -594,14 +594,14 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             mqueryRouteLayer.setSector(rStation.getSector());
 
 //        mqueryRouteLayer.setDayType(getDayType(LocalDate.parse(mDate.toString()), mCountry, mRoutingParticipantLayer.routeFound.getHolidayCtrl()));
-            mqueryRouteLayer.setRouting(routeFound.getStation());
+            mqueryRouteLayer.setStation(routeFound.getStation());
             mqueryRouteLayer.setZone(routeFound.getArea());
             mqueryRouteLayer.setIsland(routeFound.getIsland() != 0);
             mqueryRouteLayer.setEarliestTimeOfDelivery(sqlTimeToShortTime(routeFound.getEtod()));
             mqueryRouteLayer.setEarliestTimeOfDelivery(new ShortTime(routeFound.getEtod().toString()));
 //        if (zipConform != null)
 //            mqueryRouteLayer.setZipCode(zipConform);
-            mqueryRouteLayer.setterm(routeFound.getTerm());
+            mqueryRouteLayer.setTerm(routeFound.getTerm());
             if (routeFound.getLtodsa() != null)
                 mqueryRouteLayer.setSundayDeliveryUntil(new ShortTime(routeFound.getLtodsa().toString()));
 //        mqueryRouteLayer.setDelieveryDay(getNextDeliveryDay(LocalDate.parse(mDate.toString()), mCountry, routeFound.getHolidayCtrl()));
