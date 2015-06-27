@@ -118,9 +118,10 @@ public class App implements
 
         //region Identity
         Identity identity = null;
-        if (LocalStorage.instance().getIdentityConfigurationFile().exists()) {
+        File identityFile = LocalStorage.instance().getIdentityConfigurationFile();
+        if (identityFile.exists()) {
             try {
-                identity = Identity.read(LocalStorage.instance().getIdentityConfigurationFile());
+                identity = Identity.read(identityFile);
             } catch (Exception e) {
                 mLog.error(e.getMessage(), e);
             }
@@ -138,7 +139,7 @@ public class App implements
         }
         // Store updates/created identity
         try {
-            identity.store(LocalStorage.instance().getIdentityConfigurationFile());
+            identity.store(identityFile);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
