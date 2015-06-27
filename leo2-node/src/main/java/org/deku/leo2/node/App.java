@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.messaging.log.LogAppender;
+import org.deku.leo2.node.auth.Identity;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
@@ -23,7 +24,9 @@ import sx.LazyInstance;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -112,6 +115,34 @@ public class App implements
 
         // Initialize local storage
         LocalStorage.instance().initialize();
+
+        //region Identity
+        Identity identity = null;
+        if (LocalStorage.instance().getIdentityConfigurationFile().exists()) {
+            try {
+                identity = Identity.read(LocalStorage.instance().getIdentityConfigurationFile());
+            } catch (Exception e) {
+                mLog.error(e.getMessage(), e);
+            }
+        }
+        // Create identity if it doesn't exist or could not be read/parsed
+        if (identity == null) {
+            identity = Identity.create();
+        } else {
+            // Update identity if there was one
+            try {
+                identity.update();
+            } catch (Exception e) {
+                mLog.error(e.getMessage(), e);
+            }
+        }
+        // Store updates/created identity
+        try {
+            identity.store(LocalStorage.instance().getIdentityConfigurationFile());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        //endregion
 
         // Initialize logging
         switch (logConfigurationType) {

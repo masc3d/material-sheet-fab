@@ -15,6 +15,7 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -28,7 +29,7 @@ public class Identity {
     private static final String PROP_KEY = "key";
     private static final String PROP_HOSTNAME = "hostname";
     private static final String PROP_HWADDRESS = "hw";
-    private static final String PROP_NETADDRESSES = "ipv4";
+    private static final String PROP_NETADDRESSES = "net";
 
     /** The numeric/short id of a node */
     private Integer mId;
@@ -108,7 +109,7 @@ public class Identity {
     /**
      * Update non-sensitive information
      */
-    private void update() throws UnknownHostException, SocketException {
+    public void update() throws UnknownHostException, SocketException {
         Integer id = null;
         String key = null;
         String hostname = null;
@@ -159,11 +160,18 @@ public class Identity {
      */
     public void store(File destination) throws IOException {
         Properties p = new Properties();
-        p.put(PROP_ID, this.getId());
-        p.put(PROP_KEY, this.getKey());
-        p.put(PROP_HOSTNAME, this.getHostname());
-        p.put(PROP_HWADDRESS, this.getHardwareAddress());
-        p.put(PROP_NETADDRESSES, this.getNetworkAddresses());
+
+        if (mId != null)
+            p.put(PROP_ID, mId);
+        if (mKey != null)
+            p.put(PROP_KEY, mKey);
+        if (mHostname != null)
+            p.put(PROP_HOSTNAME, mHostname);
+        if (mHardwareAddress != null)
+            p.put(PROP_HWADDRESS, mHardwareAddress);
+        if (mNetworkAddresses != null)
+            p.put(PROP_NETADDRESSES, mNetworkAddresses);
+
         p.store(new FileOutputStream(destination), "Identity");
     }
 
@@ -175,8 +183,9 @@ public class Identity {
     public static Identity read(File source) throws IOException {
         Properties p = new Properties();
         p.load(new FileInputStream(source));
+        String id = p.getProperty(PROP_ID);
         return new Identity(
-                Integer.valueOf(p.getProperty(PROP_ID)),
+                (id != null) ? Integer.valueOf(id) : null,
                 p.getProperty(PROP_KEY),
                 p.getProperty(PROP_HOSTNAME),
                 p.getProperty(PROP_HWADDRESS),
