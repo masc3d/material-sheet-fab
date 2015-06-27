@@ -366,9 +366,9 @@ testCompile - Compile classpath for source set 'test'.
 |         +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |         +--- commons-io:commons-io:2.1
 |         \--- net.jcip:jcip-annotations:1.0
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc2
-|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc2 -> 2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc2 -> 2.6.0-rc3 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc3
      +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc3
      |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
@@ -475,9 +475,9 @@ testRuntime - Runtime classpath for source set 'test'.
 |         +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |         +--- commons-io:commons-io:2.1
 |         \--- net.jcip:jcip-annotations:1.0
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc2
-|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc2 -> 2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc2 -> 2.6.0-rc3 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 \--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc3
      +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc3
      |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3

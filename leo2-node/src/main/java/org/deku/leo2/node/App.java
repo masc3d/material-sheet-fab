@@ -14,6 +14,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
@@ -115,35 +116,6 @@ public class App implements
 
         // Initialize local storage
         LocalStorage.instance().initialize();
-
-        //region Identity
-        Identity identity = null;
-        File identityFile = LocalStorage.instance().getIdentityConfigurationFile();
-        if (identityFile.exists()) {
-            try {
-                identity = Identity.read(identityFile);
-            } catch (Exception e) {
-                mLog.error(e.getMessage(), e);
-            }
-        }
-        // Create identity if it doesn't exist or could not be read/parsed
-        if (identity == null) {
-            identity = Identity.create();
-        } else {
-            // Update identity if there was one
-            try {
-                identity.update();
-            } catch (Exception e) {
-                mLog.error(e.getMessage(), e);
-            }
-        }
-        // Store updates/created identity
-        try {
-            identity.store(identityFile);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        //endregion
 
         // Initialize logging
         switch (logConfigurationType) {
@@ -270,17 +242,46 @@ public class App implements
 
     @Override
     public final void onApplicationEvent(ApplicationEvent event) {
+        mLog.trace(String.format("Spring application event: %s",
+                event.getClass().getSimpleName()));
+
         if (event instanceof ApplicationEnvironmentPreparedEvent) {
             // Spring resets logging configuration.
             // As we don't want to supply a logging framework specific config file, simply reapplying
             // logging configuration after spring environment has been prepared.
             mConfigureLoggingFunc.run();
+        } else if (event instanceof ApplicationPreparedEvent) {
+            //region Identity
+            Identity identity = null;
+            File identityFile = LocalStorage.instance().getIdentityConfigurationFile();
+            if (identityFile.exists()) {
+                try {
+                    identity = Identity.read(identityFile);
+                } catch (Exception e) {
+                    mLog.error(e.getMessage(), e);
+                }
+            }
+            // Create identity if it doesn't exist or could not be read/parsed
+            if (identity == null) {
+                identity = Identity.create();
+            } else {
+                // Update identity if there was one
+                try {
+                    identity.update();
+                } catch (Exception e) {
+                    mLog.error(e.getMessage(), e);
+                }
+            }
+            // Store updates/created identity
+            try {
+                identity.store(identityFile);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            mLog.info(identity);
+            //endregion
         }
-
-        mLog.info(String.format("Spring application event: %s",
-                event.getClass().getSimpleName()));
-        //mLog.info(mCentralConfig.getUrl());
-        if (event instanceof EmbeddedServletContainerInitializedEvent) {
+        else if (event instanceof EmbeddedServletContainerInitializedEvent) {
             // Post spring initialization
         }
     }

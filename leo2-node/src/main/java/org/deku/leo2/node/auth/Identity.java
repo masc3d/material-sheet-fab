@@ -10,13 +10,9 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 import java.net.*;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Identity of a leo2 node
@@ -107,6 +103,32 @@ public class Identity {
     }
 
     /**
+     * Find appropriate ipv4 address
+     * @param networkInterface
+     * @return
+     */
+    private Inet4Address findIpv4Address(NetworkInterface networkInterface) {
+        for (InetAddress li : Collections.list(networkInterface.getInetAddresses())) {
+            if (li instanceof Inet4Address && li.isSiteLocalAddress())
+                return (Inet4Address) li;
+        }
+        return null;
+    }
+
+    /**
+     * Find apporopriate ipv6 address
+     * @param networkInterface
+     * @return
+     */
+    private Inet6Address findIpv6Address(NetworkInterface networkInterface) {
+        for (InetAddress li : Collections.list(networkInterface.getInetAddresses())) {
+            if (li instanceof  Inet6Address && !li.isLinkLocalAddress())
+                return (Inet6Address) li;
+        }
+        return null;
+    }
+
+    /**
      * Update non-sensitive information
      */
     public void update() throws UnknownHostException, SocketException {
@@ -114,15 +136,29 @@ public class Identity {
         String key = null;
         String hostname = null;
         String hardwareAddress = null;
-        String ipv4 = null;
-        String ipv6 = null;
+        Inet4Address ipv4 = null;
+        Inet6Address ipv6 = null;
+
+        List<InetAddress> addresses = new ArrayList<InetAddress>();
 
         InetAddress localhost = InetAddress.getLocalHost();
-        NetworkInterface ni = NetworkInterface.getByInetAddress(localhost);
+        NetworkInterface networkInterface = NetworkInterface.getByInetAddress(localhost);
+
+        if (networkInterface == null) {
+            mLog.warn("No network interface referring to host name");
+
+            for (NetworkInterface nii : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (nii.isUp() && !nii.isLoopback()) {
+                    networkInterface = nii;
+                    localhost = findIpv4Address(nii);
+                    break;
+                }
+            }
+        }
 
         // Hardware address
         List<Byte> hwAddressParts = Lists.newArrayList(ArrayUtils.toObject(
-                ni.getHardwareAddress()));
+                networkInterface.getHardwareAddress()));
 
         // Format hardware address
         hardwareAddress = String.join(":", (Iterable) hwAddressParts.stream().map(c -> String.format("%02x", c))::iterator);
@@ -131,26 +167,19 @@ public class Identity {
         hostname = localhost.getCanonicalHostName();
 
         // Find network interface addresses
-        for (InetAddress li : Collections.list(ni.getInetAddresses())) {
-            if (li instanceof Inet4Address && ipv4 == null && li.isSiteLocalAddress()) {
-                ipv4 = li.toString();
-            } else if (li instanceof Inet6Address && ipv6 == null && !li.isLinkLocalAddress()) {
-                ipv6 = li.toString();
-            }
-        }
+        ipv4 = this.findIpv4Address(networkInterface);
+        if (ipv4 != null)
+            addresses.add(ipv4);
 
-        if (ipv4 == null)
-            ipv4 = Inet4Address.getLocalHost().getHostAddress();
-
-        if (ipv6 == null)
-            ipv6 = Inet6Address.getLocalHost().getHostAddress();
-
-        ipv4 = CharMatcher.is('/').trimLeadingFrom(ipv4);
-        ipv6 = CharMatcher.is('/').trimLeadingFrom(ipv6);
+        ipv6 = this.findIpv6Address(networkInterface);
+        if (ipv6 != null)
+            addresses.add(ipv6);
 
         mHostname = hostname;
         mHardwareAddress = hardwareAddress;
-        mNetworkAddresses = String.join(", ", ipv4, ipv6);
+        mNetworkAddresses = String.join(", ", (Iterable) addresses.stream().map(a ->
+                CharMatcher.is('/').trimLeadingFrom(a.toString()))
+                ::iterator);
     }
 
     /**
