@@ -7,14 +7,13 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.util.ErrorHandler;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
+import javax.jms.*;
 
 /**
  * Spring listener implementation
  * Created by masc on 07.06.15.
  */
-public abstract class SpringJmsListener extends Listener implements SessionAwareMessageListener, ErrorHandler {
+public abstract class SpringJmsListener extends Listener implements ErrorHandler {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     /** Destination this listener is attached to */
@@ -44,6 +43,9 @@ public abstract class SpringJmsListener extends Listener implements SessionAware
      */
     protected void configure(DefaultMessageListenerContainer listenerContainer) { }
 
+    /**
+     * Start listener
+     */
     @Override
     public void start() {
         mLog.info(String.format("Starting %s", this.getClass().getSimpleName()));
@@ -52,7 +54,12 @@ public abstract class SpringJmsListener extends Listener implements SessionAware
 
             mListenerContainer = new DefaultMessageListenerContainer();
             mListenerContainer.setConnectionFactory(this.getConnectionFactory());
-            mListenerContainer.setMessageListener(this);
+            mListenerContainer.setMessageListener(new SessionAwareMessageListener() {
+                @Override
+                public void onMessage(Message message, Session session) throws JMSException {
+                    SpringJmsListener.this.onMessage(message, session);
+                }
+            });
             mListenerContainer.setSessionTransacted(true);
             mListenerContainer.setErrorHandler(this);
             mListenerContainer.setDestination(mDestination);
@@ -62,6 +69,9 @@ public abstract class SpringJmsListener extends Listener implements SessionAware
         mListenerContainer.start();
     }
 
+    /**
+     * Stop listener
+     */
     @Override
     public void stop() {
         mLog.info(String.format("Stopping %s", this.getClass().getSimpleName()));

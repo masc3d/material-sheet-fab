@@ -7,20 +7,41 @@ import java.util.List;
  * Simple single threaded jms listener
  * Created by masc on 17.04.15.
  */
-public abstract class SimpleListener extends Listener implements MessageListener {
+public abstract class SimpleListener extends Listener {
     Connection mConnection;
     Session mSession;
 
+    /**
+     * c'tor
+     * @param connectionFactory
+     */
     public SimpleListener(ConnectionFactory connectionFactory) {
         super(connectionFactory);
     }
 
+    /**
+     * Optionally override to create connection
+     * @return JMS connection
+     * @throws JMSException
+     */
     protected Connection createConnection() throws JMSException {
         return this.getConnectionFactory().createConnection();
     }
 
+    /**
+     * Override to create customized session
+     * @param connection
+     * @return JMS session
+     * @throws JMSException
+     */
     protected abstract Session createSession(Connection connection) throws JMSException;
 
+    /**
+     * Override to create destinations to listen on
+     * @param session
+     * @return JMS destinations
+     * @throws JMSException
+     */
     protected abstract List<Destination> createDestinations(Session session) throws JMSException;
 
     protected Connection getConnection() {
@@ -31,6 +52,10 @@ public abstract class SimpleListener extends Listener implements MessageListener
         return mSession;
     }
 
+    /**
+     * Start listener
+     * @throws JMSException
+     */
     @Override
     public void start() throws JMSException {
         this.stop();
@@ -49,7 +74,7 @@ public abstract class SimpleListener extends Listener implements MessageListener
                 boolean transacted = false;
                 try {
                     transacted = mSession.getTransacted();
-                    SimpleListener.this.onMessage(message);
+                    SimpleListener.this.onMessage(message, mSession);
                     if (mSession.getTransacted())
                         mSession.commit();
                 } catch(Exception e) {
@@ -68,6 +93,10 @@ public abstract class SimpleListener extends Listener implements MessageListener
         }
     }
 
+    /**
+     * Stop listener
+     * @throws JMSException
+     */
     @Override
     public void stop() throws JMSException {
         if (this.mConnection != null)
