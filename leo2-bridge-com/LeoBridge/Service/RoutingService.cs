@@ -16,56 +16,6 @@ namespace LeoBridge.Service
     [ComVisible(true)]
     public interface IRoutingService
     {
-        //[OperationContract]
-        //[WebInvoke(
-        //    RequestFormat = WebMessageFormat.Json,
-        //    ResponseFormat = WebMessageFormat.Json,
-        //    UriTemplate = "/rs/api/v1/routing/find?senddate={date}&country={country}&zip={zip}&product={product}",
-        //    Method = "GET")]
-        //RoutingResult find(String date, String country, String zip, String product);
-
-        //[OperationContract]
-        //[WebInvoke(
-        //    RequestFormat = WebMessageFormat.Json,
-        //    ResponseFormat = WebMessageFormat.Json,
-        //    UriTemplate = "/rs/api/v1/routing/find/via?senddate={date}&source_sector={sourceSector}&destination_sector={destinationSector}",
-        //    Method = "GET")]
-        //RoutingViaResult findVia(String date, String sourceSector, String destinationSector);
-
-//{
-//  "sendDate": "2015-06-01",
-//  "deliverDate": "2015-06-02",
-//  "sender": {
-//    "country": "DE",
-//    "zip": "36286",
-//    "timeFrom": "09:00",
-//    "timeTo": "12:00"
-//  },
-//  "consignee": {
-//    "country": "DE",
-//    "zip": "36286",
-//    "timeFrom": "09:00",
-//    "timeTo": "12:00"
-//  },
-//  "services": 0,
-//  "weight": 0
-//}
-
-    //     [WebInvoke(UriTemplate = "/UplaodData", 
-    //              Method = "POST",
-    //               RequestFormat = WebMessageFormat.Json,
-    //               ResponseFormat = WebMessageFormat.Json)]
-    //    Student GetUpdatedStudent(Student s);
-    //}
-    //[DataContract]
-    //public class Student
-    //{
-    //    [DataMember]
-    //    public string RollNumber { get; set; }
-    //    [DataMember] 
-    //    public string Name { get; set; }
-    //}
-
         [OperationContract]
         [WebInvoke(
             RequestFormat = WebMessageFormat.Json,
@@ -121,84 +71,7 @@ namespace LeoBridge.Service
         public String labelContent;
         [DataMember(Name = "message", IsRequired = false)]
         public String message;
-
-
     }
-
-    //[ComVisible(true)]
-    //[ClassInterface(ClassInterfaceType.None)]
-    //[DataContract]
-    //public class RoutingResult
-    //{
-    //    [DataMember(Name = "zipCode", IsRequired = true)]
-    //    public String zipCode;
-    //    [DataMember(Name = "routing", IsRequired = true)]
-    //    public String Routing;
-    //    [DataMember(Name = "term", IsRequired = false)]
-    //    public int Term;
-    //    [DataMember(Name = "zone", IsRequired = true)]
-    //    public String Zone;
-    //    [DataMember(Name = "sector", IsRequired = false)]
-    //    public String Sector;
-    //    [DataMember(Name = "dayType", IsRequired = true)]
-    //    public String dayType;
-    //    [DataMember(Name = "island", IsRequired = true)]
-    //    public Boolean Island;
-    //    [DataMember(Name = "earliestTimeOfDelivery", IsRequired = true)]
-    //    public String earliestTimeOfDelivery;
-    //    [DataMember(Name = "earliestTimeOfDelivery2", IsRequired = false)]
-    //    public String earliestTimeOfDelivery2;
-    //    [DataMember(Name = "delieveryDay", IsRequired = true)]
-    //    public String delieveryDay;
-    //    [DataMember(Name = "saterdayDeliveryUntil", IsRequired = true)]
-    //    public String saterdayDeliveryUntil;
-    //    [DataMember(Name = "sundayDeliveryUntil", IsRequired = true)]
-    //    public String sundayDeliveryUntil;
-    //    [DataMember(Name = "pickupUntil", IsRequired = true)]
-    //    public String pickupUntil;
-    //    [DataMember(Name = "partnerManager", IsRequired = false)]
-    //    public String partnerManager;
-
-    //    public override string ToString()
-    //    {
-    //        return String.Format("zipCode [{0}] Routing Station [{1}] Term in Days [{2}] Zone [{3}] Sector [{4}] dayType [{5}] Island [{6}] earliest Time of Delivery [{7}] earliest Time of Delivery optonal [{8}] delievery Day [{9}] saterday Delivery until [{10}]  sunday Delivery until [{11}] pickupUntil [{12}] partnerManager [{13}] ",
-    //            this.zipCode,
-    //            this.Routing,
-    //            this.Term,
-    //            this.Zone,
-    //            this.Sector,
-    //            this.dayType,
-    //            this.Island,
-    //            this.earliestTimeOfDelivery,
-    //            this.earliestTimeOfDelivery2,
-    //            this.delieveryDay,
-    //            this.saterdayDeliveryUntil,
-    //            this.sundayDeliveryUntil,
-    //            this.pickupUntil,
-    //            this.partnerManager
-                
-    //            );
-    //    }
-
-    //}
-
-    //[ComVisible(true)]
-    //[ClassInterface(ClassInterfaceType.None)]
-    //[DataContract]
-    //public class RoutingViaResult
-    //{
-    //    [DataMember(Name = "sectors", IsRequired = true)]
-    //    public String[] Sectors { get; set; }
-    //    [DataMember(Name = "labelContent", IsRequired = true)]
-    //    public String LabelContent { get; set; }
-
-    //    public override string ToString()
-    //    {
-    //        return String.Format("Sectors [{0}] Label content [{1}]",
-    //            String.Join(",", this.Sectors).TrimEnd(','),
-    //            this.LabelContent);
-    //    }
-    //}
 
     [ComVisible(true)]
     [DataContract]
@@ -250,7 +123,6 @@ namespace LeoBridge.Service
     {
         public RoutingServiceProxy(ChannelFactory<IRoutingService> factory)
             : base(factory) { }
-        //RoutingRequestResult
         public RoutingRequestResult request(RoutingRequest r)
         {
             //try
@@ -272,8 +144,7 @@ namespace LeoBridge.Service
             //}
             try
             {
-                return this.ServiceClient.request(r);// request(r);
-
+                return this.ServiceClient.request(r);
             }
             catch ( Exception e)
             {
@@ -283,24 +154,6 @@ namespace LeoBridge.Service
 
         }
 
-        //public RoutingResult find(string date, string country, string zip, string product)
-        //{
-        //    try
-        //    {
-        //        DateTime dDat = DateTime.Parse(date);
-        //        date = dDat.ToString("yyyy-MM-dd");
-        //    }
-        //    catch {
-        //        date = " ";
-        //    }
-
-        //    return this.ServiceClient.find(date, country, zip, product);
-        //}
-
-//        public RoutingViaResult findVia(String date, String source_sector, String destination_sector)
-//        {
-//            return this.ServiceClient.findVia(date, source_sector, destination_sector);
-//        }
     }
     #endregion
 }

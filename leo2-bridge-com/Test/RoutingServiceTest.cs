@@ -23,11 +23,8 @@ namespace LeoBridgeTest
 
             sender = new LeoBridge.Service.participant();
             consignee = new LeoBridge.Service.participant();
-            //sender={"","","",""};
             
             LeoBridge.Service.RoutingRequest r = new RoutingRequest();
-            //sender=new pariticipant();
-            //sender.setcountry("DE");
             r.sendDate = "2015-06-01";
             r.deliverDate = "2015-06-02";
             consignee.country = "DE";
@@ -35,7 +32,6 @@ namespace LeoBridgeTest
             consignee.timefrom="10:00";
             consignee.timeto="12:00";
             r.consignee = consignee;
-//            participant sender=new participant();
             sender.country="DE";
             sender.zip = "80331";
             sender.timefrom = "10:00";
@@ -43,13 +39,9 @@ namespace LeoBridgeTest
             r.sender = sender;
             r.weight = 0;
             r.services = 0;
-            // Test repeated invocations
             for (int i = 0; i < 5; i++)
             {
-                //RoutingResult result = this.ClientFactory.RoutingService.find("2014-11-05", "DE", "64850", "s");
-                RoutingRequestResult result = this.ClientFactory.RoutingService.request(r);// routingRequest(r);
-                //"05.11.2014","06.11.2014",sender,consignee,0,0);
-
+                RoutingRequestResult result = this.ClientFactory.RoutingService.request(r);
                 Console.WriteLine(String.Format("{0}: {1}", i, result.ToString()));
             }
         }
