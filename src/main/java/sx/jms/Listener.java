@@ -5,6 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import sx.Disposable;
 
 import javax.jms.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Lightweight jms listener abstraction.
@@ -14,6 +16,8 @@ import javax.jms.*;
 public abstract class Listener implements Disposable, ExceptionListener, Handler<Message> {
     private Log mLog;
     private ConnectionFactory mConnectionFactory;
+    private HashMap<Class, Handler> mHandlerDelegates = new HashMap<Class, Handler>();
+    private Converter mConverter = null;
 
     public Listener(ConnectionFactory connectionFactory) {
         mLog = LogFactory.getLog(this.getClass());
@@ -27,8 +31,30 @@ public abstract class Listener implements Disposable, ExceptionListener, Handler
     protected Log getLog() {
         return mLog;
     }
+
     protected ConnectionFactory getConnectionFactory() {
         return mConnectionFactory;
+    }
+
+    public Converter getConverter() {
+        return mConverter;
+    }
+
+    public void setConverter(Converter converter) {
+        mConverter = converter;
+    }
+
+    /**
+     * Add handler delegate for handling messages of specific (object) type
+     * Delegate handlers requires a converter to be set.
+     * @param c
+     * @param delegate
+     * @param <T>
+     */
+    public <T> void addDelegate(Class<T> c, Handler<T> delegate) {
+        synchronized (mHandlerDelegates) {
+            mHandlerDelegates.put(c, delegate);
+        }
     }
 
     @Override
