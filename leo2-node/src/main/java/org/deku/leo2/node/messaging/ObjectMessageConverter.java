@@ -1,4 +1,4 @@
-package org.deku.leo2.node.data.sync;
+package org.deku.leo2.node.messaging;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -109,13 +109,6 @@ public class ObjectMessageConverter implements MessageConverter {
                 };
                 break;
         }
-    }
-
-    /**
-     * c'tor using
-     */
-    public ObjectMessageConverter() {
-        this(SerializationType.KRYO, CompressionType.GZIP);
     }
 
     @Override
