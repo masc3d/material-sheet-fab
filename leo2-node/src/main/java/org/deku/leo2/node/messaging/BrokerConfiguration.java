@@ -5,7 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
-import org.deku.leo2.node.peer.PeerSettings;
+import org.deku.leo2.node.peer.RemotePeerSettings;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -23,7 +23,7 @@ public class BrokerConfiguration {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     @Inject
-    PeerSettings mPeerSettings;
+    RemotePeerSettings mPeerSettings;
 
     private Integer mNativePort;
     private String mHttpContextPath;
