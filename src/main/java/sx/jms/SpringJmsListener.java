@@ -38,7 +38,7 @@ public abstract class SpringJmsListener extends Listener implements ErrorHandler
     protected abstract Destination createDestination();
 
     /**
-     * Can be overridden to customize listener container configuration
+     * Optionally overridden to customize listener container configuration
      * @param listenerContainer
      */
     protected void configure(DefaultMessageListenerContainer listenerContainer) { }
