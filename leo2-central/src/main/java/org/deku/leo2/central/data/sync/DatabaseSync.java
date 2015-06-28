@@ -10,7 +10,7 @@ import org.deku.leo2.central.data.entities.jooq.Tables;
 import org.deku.leo2.central.data.entities.jooq.tables.*;
 import org.deku.leo2.central.data.entities.jooq.tables.records.*;
 import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
-import org.deku.leo2.node.data.PersistenceContext;
+import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.deku.leo2.node.data.entities.*;
 import org.deku.leo2.node.data.repositories.*;
 import org.jooq.Record;
@@ -62,20 +62,20 @@ public class DatabaseSync {
     RoutingLayerRepository mRoutingLayerRepository;
 
     @Inject
-    public DatabaseSync(@Qualifier(PersistenceContext.DB_EMBEDDED) PlatformTransactionManager tx,
-                        @Qualifier(org.deku.leo2.central.data.PersistenceContext.DB_CENTRAL) PlatformTransactionManager txJooq) {
+    public DatabaseSync(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) PlatformTransactionManager tx,
+                        @Qualifier(org.deku.leo2.central.data.PersistenceConfiguration.DB_CENTRAL) PlatformTransactionManager txJooq) {
         mTransaction = new TransactionTemplate(tx);
         mTransaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
         mTransactionJooq = new TransactionTemplate(txJooq);
     }
 
-    @Transactional(value = PersistenceContext.DB_EMBEDDED)
+    @Transactional(value = PersistenceConfiguration.DB_EMBEDDED)
     public void sync() {
         this.sync(false);
     }
 
-    @Transactional(value = PersistenceContext.DB_EMBEDDED)
+    @Transactional(value = PersistenceConfiguration.DB_EMBEDDED)
     public void sync(boolean reload) {
         Stopwatch sw = Stopwatch.createStarted();
 

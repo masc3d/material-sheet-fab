@@ -141,9 +141,9 @@ compile - Compile classpath for source set 'main'.
 |    |         +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
 |    |         \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 |    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.1 -> 2.6.0-rc3
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc2
-|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc2 -> 2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc2 -> 2.6.0-rc3 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc3 (*)
 +--- org.glassfish.jersey.containers:jersey-container-servlet:2.+ -> 2.18
 |    +--- org.glassfish.jersey.containers:jersey-container-servlet-core:2.18
@@ -316,9 +316,9 @@ default - Configuration for default artifacts.
 |    |         +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
 |    |         \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 |    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.1 -> 2.6.0-rc3
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc2
-|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc2 -> 2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc2 -> 2.6.0-rc3 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc3 (*)
 +--- org.glassfish.jersey.containers:jersey-container-servlet:2.+ -> 2.18
 |    +--- org.glassfish.jersey.containers:jersey-container-servlet-core:2.18
@@ -494,9 +494,9 @@ runtime - Runtime classpath for source set 'main'.
 |    |         +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
 |    |         \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 |    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.1 -> 2.6.0-rc3
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc2
-|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc2 -> 2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc2 -> 2.6.0-rc3 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc3 (*)
 +--- org.glassfish.jersey.containers:jersey-container-servlet:2.+ -> 2.18
 |    +--- org.glassfish.jersey.containers:jersey-container-servlet-core:2.18
@@ -672,9 +672,9 @@ testCompile - Compile classpath for source set 'test'.
 |    |         +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
 |    |         \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 |    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.1 -> 2.6.0-rc3
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc2
-|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc2 -> 2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc2 -> 2.6.0-rc3 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc3 (*)
 +--- org.glassfish.jersey.containers:jersey-container-servlet:2.+ -> 2.18
 |    +--- org.glassfish.jersey.containers:jersey-container-servlet-core:2.18
@@ -848,9 +848,9 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |         +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
 |    |         \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 |    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.1 -> 2.6.0-rc3
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc2
-|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc2 -> 2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc2 -> 2.6.0-rc3 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
 +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc3 (*)
 +--- org.glassfish.jersey.containers:jersey-container-servlet:2.+ -> 2.18
 |    +--- org.glassfish.jersey.containers:jersey-container-servlet-core:2.18

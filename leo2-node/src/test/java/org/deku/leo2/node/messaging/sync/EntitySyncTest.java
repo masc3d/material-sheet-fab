@@ -4,7 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.DataTest;
-import org.deku.leo2.node.data.PersistenceContext;
+import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.deku.leo2.node.data.entities.Route;
 import org.deku.leo2.node.data.sync.EntityConsumer;
 import org.deku.leo2.node.data.sync.EntityPublisher;
@@ -25,7 +25,7 @@ import java.net.URI;
 //@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 public class EntitySyncTest extends DataTest {
-    @PersistenceUnit(name = PersistenceContext.DB_EMBEDDED)
+    @PersistenceUnit(name = PersistenceConfiguration.DB_EMBEDDED)
     private EntityManagerFactory mEntityManagerFactory;
 
     private EntityPublisher mListener;

@@ -1,5 +1,6 @@
 package org.deku.leo2.node;
 
+import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.ConfigFileApplicationContextInitializer;
@@ -15,7 +16,7 @@ import javax.servlet.ServletContext;
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        org.deku.leo2.node.data.PersistenceContext.class,
+        PersistenceConfiguration.class,
 }, initializers = ConfigFileApplicationContextInitializer.class)
 public class DataTest extends AppTest {
     // masc20150604. due to workaround of resteasy/spring @Context bug, have to deliver a dummy ServletContext here

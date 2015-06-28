@@ -24,13 +24,13 @@ import java.util.Properties;
 /**
  * Embedded database persistence context
  */
-@Configuration(PersistenceContext.DB_EMBEDDED)
+@Configuration(PersistenceConfiguration.DB_EMBEDDED)
 @ComponentScan(lazyInit = true)
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 @EnableJpaRepositories(considerNestedRepositories = false)
-public class PersistenceContext implements DisposableBean /*, TransactionManagementConfigurer*/ {
+public class PersistenceConfiguration implements DisposableBean /*, TransactionManagementConfigurer*/ {
     public static final String DB_EMBEDDED = "db_embedded";
-    private Log mLog = LogFactory.getLog(PersistenceContext.class.getName());
+    private Log mLog = LogFactory.getLog(PersistenceConfiguration.class.getName());
 
     private boolean mShowSql = false;
 
@@ -89,7 +89,7 @@ public class PersistenceContext implements DisposableBean /*, TransactionManagem
         // more tests required referring to db outages during runtime
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan(PersistenceContext.class.getPackage().getName());
+        em.setPackagesToScan(PersistenceConfiguration.class.getPackage().getName());
 
         JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

@@ -29,15 +29,15 @@ import java.util.Properties;
  * Central database persistence context
  * Created by masc on 28.08.14.
  */
-@Configuration(PersistenceContext.DB_CENTRAL)
+@Configuration(PersistenceConfiguration.DB_CENTRAL)
 @ComponentScan(lazyInit = true)
-@Import(org.deku.leo2.node.data.PersistenceContext.class)
+@Import(org.deku.leo2.node.data.PersistenceConfiguration.class)
 @EnableConfigurationProperties
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
-public class PersistenceContext implements DisposableBean {
+public class PersistenceConfiguration implements DisposableBean {
     public static final String DB_CENTRAL = "db_central";
 
-    private Log mLog = LogFactory.getLog(PersistenceContext.class);
+    private Log mLog = LogFactory.getLog(PersistenceConfiguration.class);
 
     @Inject
     @Qualifier(DB_CENTRAL)

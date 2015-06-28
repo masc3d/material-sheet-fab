@@ -3,7 +3,7 @@ package org.deku.leo2.central.data.sync;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
-import org.deku.leo2.node.data.PersistenceContext;
+import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
@@ -19,7 +19,7 @@ import javax.persistence.PersistenceUnit;
 public class EntitySyncConfiguration {
     private Log mLog = LogFactory.getLog(this.getClass());
 
-    @PersistenceUnit(name = PersistenceContext.DB_EMBEDDED)
+    @PersistenceUnit(name = PersistenceConfiguration.DB_EMBEDDED)
     EntityManagerFactory mEntityManagerFactory;
 
     /** Broker listener */

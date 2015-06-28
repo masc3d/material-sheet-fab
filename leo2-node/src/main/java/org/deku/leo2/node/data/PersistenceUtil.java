@@ -16,7 +16,7 @@ import java.util.Map;
  * Created by masc on 14.05.15.
  */
 public class PersistenceUtil {
-    private Log mLog = LogFactory.getLog(PersistenceContext.class);
+    private Log mLog = LogFactory.getLog(PersistenceConfiguration.class);
 
     private JinqJPAStreamProvider mJinqStreamProvider;
     private boolean mShowJinqQueries = false;
