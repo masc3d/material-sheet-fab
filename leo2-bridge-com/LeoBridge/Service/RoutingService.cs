@@ -51,18 +51,32 @@ namespace LeoBridge.Service
 //  "weight": 0
 //}
 
+    //     [WebInvoke(UriTemplate = "/UplaodData", 
+    //              Method = "POST",
+    //               RequestFormat = WebMessageFormat.Json,
+    //               ResponseFormat = WebMessageFormat.Json)]
+    //    Student GetUpdatedStudent(Student s);
+    //}
+    //[DataContract]
+    //public class Student
+    //{
+    //    [DataMember]
+    //    public string RollNumber { get; set; }
+    //    [DataMember] 
+    //    public string Name { get; set; }
+    //}
+
         [OperationContract]
         [WebInvoke(
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
 
-            BodyStyle = WebMessageBodyStyle.WrappedRequest,
             UriTemplate = "/rs/api/v1/routing/request",
-            
+
             Method = "POST"
-            
+
             )]
-        RoutingRequestResult routingRequest(String senddate, String deliverydate, participant sender, participant consignee, int services, double weight);
+        RoutingRequestResult request(RoutingRequest r);
 
     }
 
@@ -71,8 +85,26 @@ namespace LeoBridge.Service
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.None)]
     [DataContract]
+    public class RoutingRequest
+    {
+        [DataMember(Name = "sendDate", IsRequired = true)]
+        public String sendDate { get; set; }
+        [DataMember]
+        public String deliverDate { get; set; }
+        [DataMember]
+        public participant sender {get;set;}
+        [DataMember]
+        public participant consignee { get; set; }
+        [DataMember]
+        public int services { get; set; }
+        [DataMember]
+        public double weight {get;set;}
 
+    }
 
+    [ComVisible(true)]
+    [ClassInterface(ClassInterfaceType.None)]
+    [DataContract]
     public class RoutingRequestResult
     {
         [DataMember(Name = "sendDate", IsRequired = true)]
@@ -92,8 +124,6 @@ namespace LeoBridge.Service
 
 
     }
-
-
 
     //[ComVisible(true)]
     //[ClassInterface(ClassInterfaceType.None)]
@@ -169,17 +199,21 @@ namespace LeoBridge.Service
     //            this.LabelContent);
     //    }
     //}
-    #endregion
 
+    [ComVisible(true)]
+    [DataContract]
     public struct participant
     {
-        string country;
-        string zip;
-        string timefrom;
-        string timeto;
+        public string country { get; set; }
+        public string zip { get; set; }
+        public string timefrom { get; set; }
+        public string timeto { get; set; }
     }
 
-    public struct RoutingParticipant {
+    [ComVisible(true)]
+    [DataContract]
+    public struct RoutingParticipant
+    {
 
         [DataMember(Name = "station", IsRequired = false)]
         string station;
@@ -209,37 +243,43 @@ namespace LeoBridge.Service
         string partnerManager;
     }
 
+    #endregion
 
     #region Proxy
     public class RoutingServiceProxy : ServiceClientProxy<IRoutingService>, IRoutingService
     {
         public RoutingServiceProxy(ChannelFactory<IRoutingService> factory)
             : base(factory) { }
-
-
-
-        public RoutingRequestResult routingRequest(String senddate, String deliverydate, participant sender, participant consignee, int services, double weight)
-
+        //RoutingRequestResult
+        public RoutingRequestResult request(RoutingRequest r)
         {
+            //try
+            //{
+            //    DateTime dDat = DateTime.Parse(senddate);
+            //    senddate = dDat.ToString("yyyy-MM-dd");
+            //}
+            //catch {
+            //    senddate = " ";
+            //}
+            //try
+            //{
+            //    DateTime dDat = DateTime.Parse(deliverydate);
+            //    deliverydate = dDat.ToString("yyyy-MM-dd");
+            //}
+            //catch
+            //{
+            //    deliverydate = " ";
+            //}
             try
             {
-                DateTime dDat = DateTime.Parse(senddate);
-                senddate = dDat.ToString("yyyy-MM-dd");
-            }
-            catch {
-                senddate = " ";
-            }
-            try
-            {
-                DateTime dDat = DateTime.Parse(deliverydate);
-                deliverydate = dDat.ToString("yyyy-MM-dd");
-            }
-            catch
-            {
-                deliverydate = " ";
-            }
+                return this.ServiceClient.request(r);// request(r);
 
-            return this.ServiceClient.routingRequest(senddate, deliverydate,sender,consignee,services,weight);
+            }
+            catch ( Exception e)
+            {
+                Exception ex = e;
+                throw;
+            }
 
         }
 

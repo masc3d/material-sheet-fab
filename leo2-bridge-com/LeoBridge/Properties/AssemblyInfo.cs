@@ -38,5 +38,5 @@ using System.ComponentModel;
 [assembly: AssemblyFileVersion(AssemblyConstants.Version + ".0.0")]
 
 static internal class AssemblyConstants {
-    internal const string Version = "2.01";
+    internal const string Version = "2.02";
 }
