@@ -129,8 +129,7 @@ public class ObjectMessageConverter implements MessageConverter {
 
             return bm;
         } catch (Exception e) {
-            // TODO: verify why exceptions are swallowed (apparently)
-            throw new RuntimeException(e);
+            throw new MessageConversionException(e.getMessage(), e);
         }
     }
 
@@ -152,7 +151,7 @@ public class ObjectMessageConverter implements MessageConverter {
 
             return object;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new MessageConversionException(e.getMessage(), e);
         }
     }
 

@@ -8,8 +8,8 @@ import javax.inject.Named;
  * Created by masc on 11.06.15.
  */
 @Named
-@ConfigurationProperties(prefix="peer")
-public class PeerSettings {
+@ConfigurationProperties(prefix="remote")
+public class RemotePeerSettings {
     public class Broker {
 
         private Integer mNativePort;
