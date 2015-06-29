@@ -63,8 +63,7 @@ dependencies {
     compile 'org.javassist:javassist:3.+'
 
     // serialization
-    compile "com.esotericsoftware:kryo:3.+"
-
+    compile "com.esotericsoftware:kryo:$v_kryo"
     compile "org.xerial.snappy:snappy-java:+"
 
     // TODO: for testing jinq

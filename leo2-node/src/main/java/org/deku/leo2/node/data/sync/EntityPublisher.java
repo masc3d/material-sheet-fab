@@ -6,9 +6,8 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
-import org.deku.leo2.node.messaging.ObjectMessageConverter;
+import sx.jms.converters.DefaultMessageConverter;
 import org.eclipse.persistence.queries.ScrollableCursor;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import sx.jms.SpringJmsListener;
 
 import javax.jms.*;
@@ -30,6 +29,7 @@ public class EntityPublisher extends SpringJmsListener {
     /** Entity manager factory */
     private EntityManagerFactory mEntityManagerFactory;
 
+    private DefaultMessageConverter mMessageConverter;
     /**
      * c'tor
      * @param messagingContext
@@ -39,23 +39,17 @@ public class EntityPublisher extends SpringJmsListener {
         super(messagingContext.getConnectionFactory());
         mMessagingContext = messagingContext;
         mEntityManagerFactory = entityManagerFactory;
-    }
 
-    private ObjectMessageConverter createObjectMessageConverter() {
-        return new ObjectMessageConverter(
-                ObjectMessageConverter.SerializationType.KRYO,
-                ObjectMessageConverter.CompressionType.GZIP);
+        mMessageConverter = new DefaultMessageConverter(
+                DefaultMessageConverter.SerializationType.KRYO,
+                DefaultMessageConverter.CompressionType.GZIP);
+
+        this.setConverter(mMessageConverter);
     }
 
     @Override
     protected Destination createDestination() {
         return mMessagingContext.createQueue(EntityStateMessage.ENTITY_QUEUE_NAME);
-    }
-
-    @Override
-    protected void configure(DefaultMessageListenerContainer listenerContainer) {
-        listenerContainer.setMessageConverter(this.createObjectMessageConverter());
-        super.configure(listenerContainer);
     }
 
     @Override
@@ -68,7 +62,7 @@ public class EntityPublisher extends SpringJmsListener {
 
         Stopwatch sw = Stopwatch.createStarted();
 
-        ObjectMessageConverter messageConverter = this.createObjectMessageConverter();
+        DefaultMessageConverter messageConverter = mMessageConverter;
 
         // Entity state message
         EntityStateMessage esMessage = (EntityStateMessage) messageConverter.fromMessage(message);

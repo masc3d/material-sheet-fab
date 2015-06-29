@@ -35,6 +35,7 @@ allprojects {
             v_jetty = "9.2.+"
             v_jooq = "3.+"
             v_junit = "4.+"
+            v_kryo = "3.+"
             v_querydsl = "3.+"
             v_mysql = "5.+"
             // Resteasy > 3.0.9 breaks integration with spring-boot.

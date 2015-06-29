@@ -7,7 +7,7 @@ import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.data.PersistenceUtil;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
-import org.deku.leo2.node.messaging.ObjectMessageConverter;
+import sx.jms.converters.DefaultMessageConverter;
 import org.springframework.jms.core.JmsTemplate;
 import sx.Disposable;
 
@@ -34,9 +34,9 @@ public class EntityConsumer implements Disposable {
     private EntityManagerFactory mEntityManagerFactory;
     /** Spring jms communication abstraction */
     private JmsTemplate mTemplate;
-    private ObjectMessageConverter mObjectMessageConverter = new ObjectMessageConverter(
-            ObjectMessageConverter.SerializationType.KRYO,
-            ObjectMessageConverter.CompressionType.GZIP);
+    private DefaultMessageConverter mObjectMessageConverter = new DefaultMessageConverter(
+            DefaultMessageConverter.SerializationType.KRYO,
+            DefaultMessageConverter.CompressionType.GZIP);
 
     ExecutorService mExecutorService;
 

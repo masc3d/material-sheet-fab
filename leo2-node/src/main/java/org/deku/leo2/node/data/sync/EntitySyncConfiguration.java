@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
@@ -43,5 +44,9 @@ public class EntitySyncConfiguration {
             if (ActiveMQBroker.instance().isStarted())
                 mBrokerListener.onStart();
         }
+    }
+
+    @PreDestroy
+    public void onDestroy() {
     }
 }

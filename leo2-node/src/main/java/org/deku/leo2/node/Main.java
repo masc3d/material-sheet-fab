@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.node.data.sync.EntitySyncConfiguration;
 import org.deku.leo2.node.messaging.BrokerConfiguration;
+import org.deku.leo2.node.messaging.PeerMessageListenerConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -32,8 +33,10 @@ import javax.servlet.ServletException;
         EmbeddedServletContainerAutoConfiguration.class,
         ServerPropertiesAutoConfiguration.class,
         ResteasyAutoConfiguration.class,
+
         BrokerConfiguration.class,
-        EntitySyncConfiguration.class
+        EntitySyncConfiguration.class,
+        PeerMessageListenerConfiguration.class
         //DataSourceAutoConfiguration.class
 })
 @EnableConfigurationProperties

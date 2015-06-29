@@ -34,9 +34,4 @@ public class PeerMessageListener extends SpringJmsListener {
     protected Destination createDestination() {
         return mMessagingContext.createQueue(getQueueName(mPeerId));
     }
-
-    @Override
-    public void onMessage(Message message, Session session) {
-
-    }
 }
