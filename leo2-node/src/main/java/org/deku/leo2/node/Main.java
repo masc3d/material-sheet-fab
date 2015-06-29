@@ -57,6 +57,7 @@ public class Main extends SpringBootServletInitializer {
 
         new SpringApplicationBuilder()
                 .sources(c)
+                .profiles(App.instance().getProfile())
                 .listeners(App.instance())
                 .run(args);
     }
@@ -83,6 +84,7 @@ public class Main extends SpringBootServletInitializer {
         App.instance().initialize();
         return builder
                 .sources(Main.class)
+                .profiles(App.instance().getProfile())
                 .listeners(App.instance());
     }
 }

@@ -7,6 +7,7 @@ import org.deku.leo2.node.App;
 import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -16,7 +17,8 @@ import javax.persistence.PersistenceUnit;
 /**
  * Created by masc on 20.06.15.
  */
-@Configuration("node.EntitySyncConfiguration")
+@Configuration(App.PROFILE_NODE)
+@Profile( { App.PROFILE_NODE } )
 @Lazy(false)
 public class EntitySyncConfiguration {
     private Log mLog = LogFactory.getLog(this.getClass());
@@ -35,15 +37,13 @@ public class EntitySyncConfiguration {
 
     @PostConstruct
     public void onInitialize() {
-        if (App.instance().getEntitySyncConfigurationType() == App.EntitySyncConfigurationType.CONSUMER) {
-            // Configure entity snyc
-            EntitySync.instance().setEntityManagerFactory(mEntityManagerFactory);
+        // Configure entity snyc
+        EntitySync.instance().setEntityManagerFactory(mEntityManagerFactory);
 
-            // Start when broker is started
-            ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerListener);
-            if (ActiveMQBroker.instance().isStarted())
-                mBrokerListener.onStart();
-        }
+        // Start when broker is started
+        ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerListener);
+        if (ActiveMQBroker.instance().isStarted())
+            mBrokerListener.onStart();
     }
 
     @PreDestroy

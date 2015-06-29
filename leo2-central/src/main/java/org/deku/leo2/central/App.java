@@ -16,9 +16,11 @@ public class App extends org.deku.leo2.node.App {
         return (App)org.deku.leo2.node.App.instance();
     }
 
+    public static final String PROFILE_CENTRAL = "central";
+
     @Override
     public void initialize() {
         // No JMS logging for leo2-central
-        super.initialize(LogConfigurationType.NONE, EntitySyncConfigurationType.NONE);
+        super.initialize(LogConfigurationType.NONE, EntitySyncConfigurationType.NONE, PROFILE_CENTRAL);
     }
 }

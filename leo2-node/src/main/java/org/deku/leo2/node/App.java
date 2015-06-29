@@ -25,9 +25,7 @@ import sx.LazyInstance;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,19 +43,7 @@ public class App implements
     /** Logger */
     private static Log mLog = LogFactory.getLog(App.class);
 
-    public enum LogConfigurationType {
-        /** Application will configure a log appender sending records via jms */
-        JMS,
-        /** No sepcific log configuration */
-        NONE
-    }
-
-    public enum EntitySyncConfigurationType {
-        /** Application will set up an entity sync consumer, requesting and receiving entity updates */
-        CONSUMER,
-        /** No entity sync */
-        NONE
-    }
+    public static final String PROFILE_NODE = "node";
 
     //region Singleton
     private static LazyInstance<App> mInstance = new LazyInstance(App::new);
@@ -87,54 +73,51 @@ public class App implements
     private volatile boolean mIsShuttingDown;
     private volatile boolean mIsInitialized;
 
-    private EntitySyncConfigurationType mEntitySyncConfigurationType;
+    private String mProfile;
 
-    public EntitySyncConfigurationType getEntitySyncConfigurationType() {
-        return mEntitySyncConfigurationType;
+    public String getProfile() {
+        return mProfile;
     }
 
     /** c'tor */
-    protected App() { }
+    protected App() {
+    }
 
-    private Runnable mConfigureLoggingFunc = () -> {};
+    private Runnable mConfigureLoggingFunc = () -> {
+    };
 
     /**
-     *
-     * @param logConfigurationType
-     * @param entitySyncConfigurationType
+     * Intialize application
+     * @param profile Spring profile name
      */
-    public void initialize(
-            LogConfigurationType logConfigurationType,
-            EntitySyncConfigurationType entitySyncConfigurationType) {
+    public void initialize(String profile) {
 
         if (mIsInitialized)
             throw new IllegalStateException("Application already initialized");
         mIsInitialized = true;
 
-        // Configuration options
-        mEntitySyncConfigurationType = entitySyncConfigurationType;
+        mProfile = profile;
 
         // Initialize local storage
         LocalStorage.instance().initialize();
 
         // Initialize logging
-        switch (logConfigurationType) {
-            case JMS:
-                Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-                LogAppender lAppender = new LogAppender(ActiveMQContext.instance());
+        if (mProfile == PROFILE_NODE) {
+            Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+            LogAppender lAppender = new LogAppender(ActiveMQContext.instance());
 
-                mConfigureLoggingFunc = () -> {
-                    LoggerContext lContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-                    // Configure jms log appender
-                    lAppender.setContext(lContext);
-                    lAppender.start();
-                    lRoot.addAppender(lAppender);
-                };
-                mConfigureLoggingFunc.run();
-                mDisposables.add(() -> {
-                    lRoot.detachAppender(lAppender);
-                    lAppender.dispose();
-                });
+            mConfigureLoggingFunc = () -> {
+                LoggerContext lContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+                // Configure jms log appender
+                lAppender.setContext(lContext);
+                lAppender.start();
+                lRoot.addAppender(lAppender);
+            };
+            mConfigureLoggingFunc.run();
+            mDisposables.add(() -> {
+                lRoot.detachAppender(lAppender);
+                lAppender.dispose();
+            });
         }
         mLog.info("Leo2 node initialize");
 
@@ -189,9 +172,7 @@ public class App implements
     }
 
     public void initialize() {
-        this.initialize(
-                LogConfigurationType.JMS,
-                EntitySyncConfigurationType.CONSUMER);
+        this.initialize(PROFILE_NODE);
     }
 
     @Override
@@ -280,8 +261,7 @@ public class App implements
             }
             mLog.info(identity);
             //endregion
-        }
-        else if (event instanceof EmbeddedServletContainerInitializedEvent) {
+        } else if (event instanceof EmbeddedServletContainerInitializedEvent) {
             // Post spring initialization
         }
     }
