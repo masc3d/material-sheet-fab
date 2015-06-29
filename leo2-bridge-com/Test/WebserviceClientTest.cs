@@ -15,7 +15,11 @@ namespace LeoBridgeTest
             this.ClientFactory= new ServiceClientFactory();
             //this.ClientFactory.BaseUri = "http://leo2ws:8080/leo2";
             //this.ClientFactory.BaseUri = "http://217.7.24.80/leo2";
+//            this.ClientFactory.BaseUri = "http://217.7.24.80";
+           // this.ClientFactory.BaseUri = "http://leoservice.derkurier.de:80";
             this.ClientFactory.BaseUri = "http://217.7.24.80";
+                                          
+
         }
 
         protected ServiceClientFactory ClientFactory

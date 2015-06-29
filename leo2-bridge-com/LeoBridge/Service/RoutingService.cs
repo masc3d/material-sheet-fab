@@ -10,8 +10,6 @@ using System.Runtime.InteropServices;
 
 namespace LeoBridge.Service
 {
-
-
     [ServiceContract]
     [ComVisible(true)]
     public interface IRoutingService
@@ -19,15 +17,11 @@ namespace LeoBridge.Service
         [OperationContract]
         [WebInvoke(
             RequestFormat = WebMessageFormat.Json,
-            ResponseFormat = WebMessageFormat.Json,
-
+            ResponseFormat =  WebMessageFormat.Json,
             UriTemplate = "/rs/api/v1/routing/request",
-
             Method = "POST"
-
             )]
         RoutingRequestResult request(RoutingRequest r);
-
     }
 
 
@@ -66,7 +60,7 @@ namespace LeoBridge.Service
         [DataMember(Name = "consignee", IsRequired = false)]
         public RoutingParticipant consignee;
         [DataMember(Name = "viaHubs", IsRequired = false)]
-        public String viaHubs;
+        public String[] viaHubs;
         [DataMember(Name = "labelContent", IsRequired = false)]
         public String labelContent;
         [DataMember(Name = "message", IsRequired = false)]
@@ -77,10 +71,14 @@ namespace LeoBridge.Service
     [DataContract]
     public struct participant
     {
+        [DataMember(IsRequired = false)]
         public string country { get; set; }
+        [DataMember(IsRequired = false)]
         public string zip { get; set; }
-        public string timefrom { get; set; }
-        public string timeto { get; set; }
+        [DataMember(IsRequired = false)]
+        public string timeFrom { get; set; }
+        [DataMember(IsRequired = false)]
+        public string timeTo { get; set; }
     }
 
     [ComVisible(true)]
@@ -125,31 +123,35 @@ namespace LeoBridge.Service
             : base(factory) { }
         public RoutingRequestResult request(RoutingRequest r)
         {
-            //try
-            //{
-            //    DateTime dDat = DateTime.Parse(senddate);
-            //    senddate = dDat.ToString("yyyy-MM-dd");
-            //}
-            //catch {
-            //    senddate = " ";
-            //}
-            //try
-            //{
-            //    DateTime dDat = DateTime.Parse(deliverydate);
-            //    deliverydate = dDat.ToString("yyyy-MM-dd");
-            //}
-            //catch
-            //{
-            //    deliverydate = " ";
-            //}
+            try
+            {
+                DateTime dDat = DateTime.Parse(r.sendDate);
+                r.sendDate = dDat.ToString("yyyy-MM-dd");
+            }
+            catch
+            {
+                r.sendDate = System.DateTime.Now.ToString("yyyy-MM-dd");
+            }
+            try
+            {
+                DateTime dDat = DateTime.Parse(r.deliverDate);
+                r.deliverDate = dDat.ToString("yyyy-MM-dd");
+            }
+            catch
+            {
+                r.deliverDate = System.DateTime.Now.ToString("yyyy-MM-dd");
+            }
             try
             {
                 return this.ServiceClient.request(r);
             }
             catch ( Exception e)
             {
+                Console.WriteLine("EX [{0}]", e.Message);
+                
                 Exception ex = e;
-                throw;
+
+              throw;
             }
 
         }

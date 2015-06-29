@@ -29,13 +29,13 @@ namespace LeoBridgeTest
             r.deliverDate = "2015-06-02";
             consignee.country = "DE";
             consignee.zip = "80331";
-            consignee.timefrom="10:00";
-            consignee.timeto="12:00";
+            consignee.timeFrom="10:00";
+            consignee.timeTo="12:00";
             r.consignee = consignee;
             sender.country="DE";
             sender.zip = "80331";
-            sender.timefrom = "10:00";
-            sender.timeto = "12:00";
+            sender.timeFrom = "10:00";
+            sender.timeTo = "12:00";
             r.sender = sender;
             r.weight = 0;
             r.services = 0;
