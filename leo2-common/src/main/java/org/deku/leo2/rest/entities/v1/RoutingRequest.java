@@ -7,14 +7,14 @@ import org.deku.leo2.rest.entities.ShortDate;
 /**
  * Created by masc on 23.06.15.
  */
-@ApiModel(description = "Routing request")
+@ApiModel(value = "RoutingRequest", subTypes = {RoutingRequest.RequestParticipant.class}, description = "Routing request")
 public class RoutingRequest {
     /**
      * Sender or consignee attributes
      * Created by masc on 23.06.15.
      */
-    @ApiModel(description = "Participant in transaction, delivery or consignee")
-    public static class Participant {
+    @ApiModel(value = "RequestParticipant", description = "Request RequestParticipant. Delivery or consignee")
+    public static class RequestParticipant {
         //private ShortDate mDate;
         private String mTimeFrom;
         private String mTimeTo;
@@ -22,9 +22,10 @@ public class RoutingRequest {
         private String mZip;
         private String mStationByRequest;
 
-        public Participant() {
+        public RequestParticipant() {
         }
-        public Participant(String timeFrom, String timeTo, String country, String zip) {
+
+        public RequestParticipant(String timeFrom, String timeTo, String country, String zip) {
             //mDate = date;
             mTimeFrom = timeFrom;
             mTimeTo = timeTo;
@@ -81,12 +82,13 @@ public class RoutingRequest {
 
     private Float mWeight;
     private Integer mServices;
-    private Participant mSender;
-    private Participant mConsignee;
+    private RequestParticipant mSender;
+    private RequestParticipant mConsignee;
     private ShortDate mSendDate;
     private ShortDate mDeliveryDate;
 
-    public RoutingRequest() { }
+    public RoutingRequest() {
+    }
 
 
     @ApiModelProperty(dataType = "date", example = "2015-06-01", position = 10, required = true, value = "Senddate", allowableValues = "2015-06-01")
@@ -108,7 +110,7 @@ public class RoutingRequest {
     }
 
 
-    @ApiModelProperty(value="Sum of DeKu Servicvalues", position = 22, required = false)
+    @ApiModelProperty(value = "Sum of DeKu Servicvalues", position = 22, required = false)
     public void setServices(Integer services) {
         mServices = services;
     }
@@ -117,7 +119,7 @@ public class RoutingRequest {
         return mServices;
     }
 
-    @ApiModelProperty(value="Real weight", position = 24, required = false)
+    @ApiModelProperty(value = "Real weight", position = 24, required = false)
     public Float getWeight() {
         return mWeight;
     }
@@ -127,21 +129,21 @@ public class RoutingRequest {
     }
 
 
-    @ApiModelProperty(value="Sender", position = 30, required = false)
-    public Participant getSender() {
+    @ApiModelProperty(value = "Sender", position = 30, required = false)
+    public RequestParticipant getSender() {
         return mSender;
     }
 
-    public void setSender(Participant sender) {
+    public void setSender(RequestParticipant sender) {
         mSender = sender;
     }
 
-    @ApiModelProperty(value="Consignee", position = 40, required = false)
-    public Participant getConsignee() {
+    @ApiModelProperty(value = "Consignee", position = 40, required = false)
+    public RequestParticipant getConsignee() {
         return mConsignee;
     }
 
-    public void setConsignee(Participant consignee) {
+    public void setConsignee(RequestParticipant consignee) {
         mConsignee = consignee;
     }
 

@@ -1,5 +1,6 @@
 package org.deku.leo2.rest.entities.v1;
 
+import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.ShortTime;
@@ -8,11 +9,13 @@ import org.deku.leo2.rest.entities.ShortTime;
  * Routing service request response
  * Created by JT on 23.06.15.
  */
+@ApiModel(value = "Routing", subTypes = {Routing.Participant.class}, description = "Routing response")
 public class Routing {
     /**
      * Routing service request response member
      * Created by JT on 23.06.15.
      */
+    @ApiModel(value = "Participant", description = "Response Participant. Delivery or consignee")
     public static class Participant {
         private String mSector = "";
         private String mZone = "";
@@ -100,7 +103,7 @@ public class Routing {
             mSector = sector;
         }
 
-        @ApiModelProperty(dataType = "DayType", example = "WorkDay", position = 60, required = true, value = "Type of Day")
+        @ApiModelProperty(dataType = "string", example = "WorkDay", position = 60, required = true, value = "Type of Day")
         public String getDayType() {
             return mDayType;
         }
@@ -195,8 +198,8 @@ public class Routing {
 
     }
 
-    private Participant mSender = new Participant();
-    private Participant mConsignee = new Participant();
+    private Routing.Participant mSender = new Participant();
+    private Routing.Participant mConsignee = new Participant();
     private String[] mViaHubs;
     private String mLabelContent = "";
     private String mMessage = "";
@@ -206,7 +209,7 @@ public class Routing {
     public Routing() {
     }
 
-    public Routing(ShortDate sendDate, ShortDate deliveryDate, Participant sender, Participant consignee, String[] viaHubs,
+    public Routing(ShortDate sendDate, ShortDate deliveryDate, Routing.Participant sender, Routing.Participant consignee, String[] viaHubs,
                    String labelContent, String message) {
 
         mSender = sender;
@@ -237,20 +240,20 @@ public class Routing {
     }
 
     @ApiModelProperty(position = 30)
-    public Participant getSender() {
+    public Routing.Participant getSender() {
         return mSender;
     }
 
-    public void setSender(Participant sender) {
+    public void setSender(Routing.Participant sender) {
         mSender = sender;
     }
 
     @ApiModelProperty(position = 40)
-    public Participant getConsignee() {
+    public Routing.Participant getConsignee() {
         return mConsignee;
     }
 
-    public void setConsignee(Participant consignee) {
+    public void setConsignee(Routing.Participant consignee) {
         mConsignee = consignee;
     }
 

@@ -271,7 +271,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
 
     private List<Routing.Participant> queryRoute(ShortDate date,
-                                                 RoutingRequest.Participant requestParticipant,
+                                                 RoutingRequest.RequestParticipant requestRequestParticipant,
                                                  Iterable<RoutingLayer> routingLayers,
                                                  Integer ctrl,
                                                  String exeptionPrefix) {
@@ -280,7 +280,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         List<Routing.Participant> resultParticipants = new ArrayList<>();
 
-        //ShortDate date = requestParticipant.getDate();
+        //ShortDate date = requestRequestParticipant.getDate();
 
         if (date.equals(null)) {
             throw new IllegalArgumentException(exeptionPrefix + "empty Date");
@@ -292,14 +292,14 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         java.sql.Timestamp sqlDate = Timestamp.valueOf(date.toString() + " 00:00:00");
 
-        String country = requestParticipant.getCountry();
+        String country = requestRequestParticipant.getCountry();
 
         if (country.equals(null)) {
             throw new IllegalArgumentException(exeptionPrefix + "empty Country");
         } else
             country = country.toUpperCase();
 
-        String zip = requestParticipant.getZip();
+        String zip = requestRequestParticipant.getZip();
 
         if (zip.equals(null)) {
             throw new IllegalArgumentException(exeptionPrefix + "empty Zipcode");
@@ -361,7 +361,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         while (l.hasNext()) {
 
             RoutingLayer routingLayer = l.next();
-            Routing.Participant resultParticipantLayer = queryRouteLayer(requestParticipant, zipQuery, sqlDate, routingLayer, ctrl, exeptionPrefix);
+            Routing.Participant resultParticipantLayer = queryRouteLayer(requestRequestParticipant, zipQuery, sqlDate, routingLayer, ctrl, exeptionPrefix);
 
             if (!resultParticipantLayer.getStation().equals("0"))
                 resultParticipants.add(resultParticipantLayer);
@@ -404,7 +404,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         return resultParticipants;
     }
 
-    private Routing.Participant queryRouteLayer(RoutingRequest.Participant requestParticipant,
+    private Routing.Participant queryRouteLayer(RoutingRequest.RequestParticipant requestRequestParticipant,
                                                 String queryZipCode,
                                                 java.sql.Timestamp sqlDate,
                                                 RoutingLayer routingLayer,
@@ -426,7 +426,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         rWhere =
                 qRoute.layer.eq(routingLayer.getLayer())
-                        .and(qRoute.country.eq(requestParticipant.getCountry().toUpperCase()))
+                        .and(qRoute.country.eq(requestRequestParticipant.getCountry().toUpperCase()))
                         .and(qRoute.zipFrom.loe(queryZipCode))
                         .and(qRoute.zipTo.goe(queryZipCode))
                         .and(qRoute.validFrom.before(sqlDate))
@@ -491,7 +491,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             mqueryRouteLayer.setZipCode(queryZipCode);
 //            mqueryRouteLayer.setPartnerManager(rStation.getP);
 //        mqueryRouteLayer.setDayType(getDayType(LocalDate.parse(date.toString()), mCountry, mRoutingParticipantLayer.routeFound.getHolidayCtrl()));
-            mqueryRouteLayer.setDayType(getDayType(LocalDate.from( sqlDate.toLocalDateTime() ), requestParticipant.getCountry().toUpperCase(),routeFound.getHolidayCtrl()).toString());
+            mqueryRouteLayer.setDayType(getDayType(LocalDate.from( sqlDate.toLocalDateTime() ), requestRequestParticipant.getCountry().toUpperCase(),routeFound.getHolidayCtrl()).toString());
             mqueryRouteLayer.setStation(routeFound.getStation());
             mqueryRouteLayer.setZone(routeFound.getArea());
             mqueryRouteLayer.setIsland(routeFound.getIsland() != 0);
