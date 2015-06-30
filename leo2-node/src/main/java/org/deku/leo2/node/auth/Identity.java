@@ -109,7 +109,7 @@ public class Identity {
      */
     private Inet4Address findIpv4Address(NetworkInterface networkInterface) {
         for (InetAddress li : Collections.list(networkInterface.getInetAddresses())) {
-            if (li instanceof Inet4Address && li.isSiteLocalAddress())
+            if (li instanceof Inet4Address)
                 return (Inet4Address) li;
         }
         return null;

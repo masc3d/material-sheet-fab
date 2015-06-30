@@ -21,6 +21,6 @@ public class App extends org.deku.leo2.node.App {
     @Override
     public void initialize() {
         // No JMS logging for leo2-central
-        super.initialize(LogConfigurationType.NONE, EntitySyncConfigurationType.NONE, PROFILE_CENTRAL);
+        super.initialize(PROFILE_CENTRAL);
     }
 }

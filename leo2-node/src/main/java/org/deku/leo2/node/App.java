@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.messaging.log.LogAppender;
-import org.deku.leo2.node.auth.Identity;
+import org.deku.leo2.node.auth.IdentityConfiguration;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
@@ -43,6 +43,7 @@ public class App implements
     /** Logger */
     private static Log mLog = LogFactory.getLog(App.class);
 
+    /** Profile name for node specific processes */
     public static final String PROFILE_NODE = "node";
 
     //region Singleton
@@ -103,6 +104,7 @@ public class App implements
 
         // Initialize logging
         if (mProfile == PROFILE_NODE) {
+            // Setup message log appender
             Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
             LogAppender lAppender = new LogAppender(ActiveMQContext.instance());
 
@@ -232,34 +234,9 @@ public class App implements
             // logging configuration after spring environment has been prepared.
             mConfigureLoggingFunc.run();
         } else if (event instanceof ApplicationPreparedEvent) {
-            //region Identity
-            Identity identity = null;
-            File identityFile = LocalStorage.instance().getIdentityConfigurationFile();
-            if (identityFile.exists()) {
-                try {
-                    identity = Identity.read(identityFile);
-                } catch (Exception e) {
-                    mLog.error(e.getMessage(), e);
-                }
-            }
-            // Create identity if it doesn't exist or could not be read/parsed
-            if (identity == null) {
-                identity = Identity.create();
-            } else {
-                // Update identity if there was one
-                try {
-                    identity.update();
-                } catch (Exception e) {
-                    mLog.error(e.getMessage(), e);
-                }
-            }
-            // Store updates/created identity
-            try {
-                identity.store(identityFile);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            mLog.info(identity);
+            // Initialize identity
+            IdentityConfiguration.instance().initialize();
+
             //endregion
         } else if (event instanceof EmbeddedServletContainerInitializedEvent) {
             // Post spring initialization
