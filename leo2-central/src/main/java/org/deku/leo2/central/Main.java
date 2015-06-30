@@ -2,6 +2,7 @@ package org.deku.leo2.central;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deku.leo2.central.data.sync.DatabaseSyncConfiguration;
 import org.deku.leo2.central.data.sync.EntitySyncConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,7 +23,8 @@ import javax.servlet.ServletException;
 @Configuration("central.MainSpringBoot")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ComponentScan(lazyInit = true)
-@Import({EntitySyncConfiguration.class})
+@Import({EntitySyncConfiguration.class,
+        DatabaseSyncConfiguration.class})
 public class Main extends org.deku.leo2.node.Main {
     private static Log mLog = LogFactory.getLog(Main.class);
 
