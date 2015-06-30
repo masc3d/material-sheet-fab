@@ -3,24 +3,22 @@ package org.deku.leo2.node.rest.services.v1;
 import com.google.common.primitives.Ints;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.expr.BooleanExpression;
-import org.deku.leo2.node.data.entities.*;
-import org.deku.leo2.node.data.repositories.*;
+import org.deku.leo2.node.data.entities.master.*;
+import org.deku.leo2.node.data.entities.master.RoutingLayer;
+import org.deku.leo2.node.data.repositories.master.*;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.ShortTime;
 import org.deku.leo2.rest.entities.v1.*;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * Created by masc on 20.04.15.
@@ -197,14 +195,16 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         Integer mServices = routingRequest.getServices();
 
 // TODO REAL oder Volumen ???
-        Float mWeight = routingRequest.getWeight();
+        double mWeight = routingRequest.getWeight();
 
 
 // Unit CTRLs
 
-        Integer mCTRLTransportUnit = 1;
+        Integer mCTRLTransportUnit;
 
-        if (routingRequest.getWeight() > 100)
+        mCTRLTransportUnit = 1;
+
+        if (mWeight > 100)
             mCTRLTransportUnit = mCTRLTransportUnit + 2;
 
         if ((mServices & 256) == 256)
@@ -215,38 +215,41 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
 
 // check usable Layers
-
+//TODO
+        mCTRLTransportUnit = 23;
 
         QRoutingLayer qLayer = QRoutingLayer.routingLayer;
-        BooleanExpression rWhereLayer = qLayer.layer.eq(mCTRLTransportUnit);
-        Iterable<RoutingLayer> mLayer = mRoutingLayerRepository.findAll();
+
+        BooleanExpression rWhereLayer = qLayer.services.eq(mCTRLTransportUnit);
+
+        Iterable<RoutingLayer> mLayer = mRoutingLayerRepository.findAll(rWhereLayer);
 //TODO rWereLayer bitmaske suchen
 
         ShortDate mSendDate = routingRequest.getSendDate();
         List<String> mPossibleSenderSectors = new ArrayList<>();
 
-        Iterable<RoutingParticipant> mRoutingParticipantSender = queryRoute(mSendDate, routingRequest.getSender(), mLayer, mCTRLTransportUnit, "Sender: ");
+        Iterable<resultParticipant> mRoutingParticipantSender = queryRoute(mSendDate, routingRequest.getSender(), mLayer, mCTRLTransportUnit, "Sender: ");
 
-        Iterator<RoutingParticipant> s = mRoutingParticipantSender.iterator();
+        Iterator<resultParticipant> s = mRoutingParticipantSender.iterator();
         while (s.hasNext()) {
             if (!mPossibleSenderSectors.contains(s))
                 mPossibleSenderSectors.add(s.next().getSector());
         }
 
 
-
-        ShortDate mDeliveryDate = routingRequest.getDeliverDate();
+        ShortDate mDeliveryDate = routingRequest.getDeliveryDate();
 //        List<String> mPossibleConigneeSectors = new ArrayList<>();
 
-        Iterable<RoutingParticipant> mRoutingParticipantConsignee = queryRoute(mDeliveryDate,routingRequest.getSender(), mLayer, mCTRLTransportUnit, "Consignee: ");
+        Iterable<resultParticipant> mRoutingParticipantConsignee = queryRoute(mDeliveryDate, routingRequest.getConsignee(), mLayer, mCTRLTransportUnit, "Consignee: ");
 
-        Iterator<RoutingParticipant> c = mRoutingParticipantConsignee.iterator();
+        Iterator<resultParticipant> c = mRoutingParticipantConsignee.iterator();
         while (c.hasNext()) {
             if (!mPossibleSenderSectors.contains(c))
                 mPossibleSenderSectors.add(c.next().getSector());
         }
 
-        String[] mViaHubs = {"NST", "N"};
+
+        String[] mViaHubs = {"NST", "N1"};
 
         rWSRouting.setSendDate(mSendDate);
         rWSRouting.setDeliveryDate(mDeliveryDate);
@@ -267,9 +270,9 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
     }
 
 
-    private List<RoutingParticipant> queryRoute(ShortDate mDate,  Participant mParticipant, Iterable<RoutingLayer> mRoutingLayers, Integer mCTRL, String mExeptionPrefix) {
+    private List<resultParticipant> queryRoute(ShortDate mDate, requestParticipant mRequestParticipant, Iterable<RoutingLayer> mRoutingLayers, Integer mCTRL, String mExeptionPrefix) {
 
-//        List<RoutingParticipant> mRoutingParticipants = new List<RoutingParticipant>() {
+//        List<resultParticipant> mResultParticipants = new List<resultParticipant>() {
 //            @Override
 //            public int size() {
 //                return 0;
@@ -286,7 +289,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 //            }
 //
 //            @Override
-//            public Iterator<RoutingParticipant> iterator() {
+//            public Iterator<resultParticipant> iterator() {
 //                return null;
 //            }
 //
@@ -301,7 +304,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 //            }
 //
 //            @Override
-//            public boolean add(RoutingParticipant routingParticipant) {
+//            public boolean add(resultParticipant routingParticipant) {
 //                return false;
 //            }
 //
@@ -316,12 +319,12 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 //            }
 //
 //            @Override
-//            public boolean addAll(Collection<? extends RoutingParticipant> c) {
+//            public boolean addAll(Collection<? extends resultParticipant> c) {
 //                return false;
 //            }
 //
 //            @Override
-//            public boolean addAll(int index, Collection<? extends RoutingParticipant> c) {
+//            public boolean addAll(int index, Collection<? extends resultParticipant> c) {
 //                return false;
 //            }
 //
@@ -341,22 +344,22 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 //            }
 //
 //            @Override
-//            public RoutingParticipant get(int index) {
+//            public resultParticipant get(int index) {
 //                return null;
 //            }
 //
 //            @Override
-//            public RoutingParticipant set(int index, RoutingParticipant element) {
+//            public resultParticipant set(int index, resultParticipant element) {
 //                return null;
 //            }
 //
 //            @Override
-//            public void add(int index, RoutingParticipant element) {
+//            public void add(int index, resultParticipant element) {
 //
 //            }
 //
 //            @Override
-//            public RoutingParticipant remove(int index) {
+//            public resultParticipant remove(int index) {
 //                return null;
 //            }
 //
@@ -371,26 +374,26 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 //            }
 //
 //            @Override
-//            public ListIterator<RoutingParticipant> listIterator() {
+//            public ListIterator<resultParticipant> listIterator() {
 //                return null;
 //            }
 //
 //            @Override
-//            public ListIterator<RoutingParticipant> listIterator(int index) {
+//            public ListIterator<resultParticipant> listIterator(int index) {
 //                return null;
 //            }
 //
 //            @Override
-//            public List<RoutingParticipant> subList(int fromIndex, int toIndex) {
+//            public List<resultParticipant> subList(int fromIndex, int toIndex) {
 //                return null;
 //            }
 //        };
 
-//        RoutingParticipant mRoutingParticipant = new RoutingParticipant();
+//        resultParticipant mRoutingParticipant = new resultParticipant();
 
-        List<RoutingParticipant> mRoutingParticipants = new ArrayList<>();
+        List<resultParticipant> mResultParticipants = new ArrayList<>();
 
-        //ShortDate mDate = mParticipant.getDate();
+        //ShortDate mDate = mRequestParticipant.getDate();
 
         if (mDate.equals(null)) {
             throw new IllegalArgumentException(mExeptionPrefix + "empty Date");
@@ -402,14 +405,14 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         java.sql.Timestamp mSqlDate = Timestamp.valueOf(mDate.toString() + " 00:00:00");
 
-        String mCountry = mParticipant.getCountry();
+        String mCountry = mRequestParticipant.getCountry();
 
         if (mCountry.equals(null)) {
             throw new IllegalArgumentException(mExeptionPrefix + "empty Country");
         } else
             mCountry = mCountry.toUpperCase();
 
-        String mZip = mParticipant.getZip();
+        String mZip = mRequestParticipant.getZip();
 
         if (mZip.equals(null)) {
             throw new IllegalArgumentException(mExeptionPrefix + "empty Zipcode");
@@ -464,20 +467,20 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
 
 //for mRoutingLayer
-        //RoutingParticipant mRoutingParticipantLayer = null;
+        //resultParticipant mRoutingParticipantLayer = null;
 
 //TODO verbessern ?
         Iterator<RoutingLayer> l = mRoutingLayers.iterator();
         while (l.hasNext()) {
 
             RoutingLayer mRoutingLayer = l.next();
-            RoutingParticipant mRoutingParticipantLayer = queryRouteLayer(mParticipant, mZipQuery, mSqlDate, mRoutingLayer, mCTRL, mExeptionPrefix);
+            resultParticipant mResultParticipantLayer = queryRouteLayer(mRequestParticipant, mZipQuery, mSqlDate, mRoutingLayer, mCTRL, mExeptionPrefix);
 
-            if (!mRoutingParticipantLayer.getStation().equals("0"))
-                mRoutingParticipants.add(mRoutingParticipantLayer);
+            if (!mResultParticipantLayer.getStation().equals("0"))
+                mResultParticipants.add(mResultParticipantLayer);
         }
 
-//        RoutingParticipant e=new RoutingParticipant();
+//        resultParticipant e=new resultParticipant();
 
 //        mRoutingParticipantLayer.setDayType();
 //        mRoutingParticipantLayer.setRouting(routeFound.getStation());
@@ -511,12 +514,12 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
 //        convertTime.apply(null);
 
-        return mRoutingParticipants;
+        return mResultParticipants;
     }
 
-    private RoutingParticipant queryRouteLayer(Participant mParticipant, String mQueryZipCode, java.sql.Timestamp mSqlDate, RoutingLayer mRoutingLayer, Integer mCTRL, String mExeptionPrefix) {
+    private resultParticipant queryRouteLayer(requestParticipant mRequestParticipant, String mQueryZipCode, java.sql.Timestamp mSqlDate, RoutingLayer mRoutingLayer, Integer mCTRL, String mExeptionPrefix) {
 
-        RoutingParticipant mqueryRouteLayer = new RoutingParticipant();
+        resultParticipant mqueryRouteLayer = new resultParticipant();
 
 // TODO Join
 //        JPAQuery qJPARote = new JPAQuery();
@@ -531,7 +534,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         rWhere =
                 qRoute.layer.eq(mRoutingLayer.getLayer())
-                        .and(qRoute.country.eq(mParticipant.getCountry().toUpperCase()))
+                        .and(qRoute.country.eq(mRequestParticipant.getCountry().toUpperCase()))
                         .and(qRoute.zipFrom.loe(mQueryZipCode))
                         .and(qRoute.zipTo.goe(mQueryZipCode))
                         .and(qRoute.validFrom.before(mSqlDate))
@@ -592,8 +595,11 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
             Station rStation = mStationRepository.findOne(routeFound.getStation());
             mqueryRouteLayer.setSector(rStation.getSector());
-
+            mqueryRouteLayer.setCountry(routeFound.getCountry());
+            mqueryRouteLayer.setZipCode(mQueryZipCode);
+//            mqueryRouteLayer.setPartnerManager(rStation.getP);
 //        mqueryRouteLayer.setDayType(getDayType(LocalDate.parse(mDate.toString()), mCountry, mRoutingParticipantLayer.routeFound.getHolidayCtrl()));
+            mqueryRouteLayer.setDayType(getDayType(LocalDate.from( mSqlDate.toLocalDateTime() ),mRequestParticipant.getCountry().toUpperCase(),routeFound.getHolidayCtrl()).toString());
             mqueryRouteLayer.setStation(routeFound.getStation());
             mqueryRouteLayer.setZone(routeFound.getArea());
             mqueryRouteLayer.setIsland(routeFound.getIsland() != 0);

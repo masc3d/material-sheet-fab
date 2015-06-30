@@ -3,17 +3,17 @@ package org.deku.leo2.rest.entities.v1;
 /**
  * Created by JT on 02.06.15.
  */
-public enum DayType {
+public  enum DayType {
 //    unknown(0),
-    WorkDay(1),
-    Saturday(2),
-    Sunday(3),
-    Holiday(4),
-    RegionalHoliday(5);
+    WorkDay("WorkDay"),
+    Saturday("Saturday"),
+    Sunday("Sunday"),
+    Holiday("Holiday"),
+    RegionalHoliday("RegionalHoliday");
 
-    int mType;
+    String mType;
 
-    DayType(int type) {
+    DayType(String type) {
         mType = type;
     }
 }

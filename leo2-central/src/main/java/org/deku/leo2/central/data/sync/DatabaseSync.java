@@ -11,8 +11,12 @@ import org.deku.leo2.central.data.entities.jooq.tables.*;
 import org.deku.leo2.central.data.entities.jooq.tables.records.*;
 import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
 import org.deku.leo2.node.data.PersistenceConfiguration;
-import org.deku.leo2.node.data.entities.*;
-import org.deku.leo2.node.data.repositories.*;
+import org.deku.leo2.node.data.entities.master.*;
+import org.deku.leo2.node.data.entities.master.RoutingLayer;
+import org.deku.leo2.node.data.entities.system.Property;
+import org.deku.leo2.node.data.entities.system.QProperty;
+import org.deku.leo2.node.data.repositories.master.*;
+import org.deku.leo2.node.data.repositories.system.PropertyRepository;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.impl.TableImpl;
@@ -57,9 +61,13 @@ public class DatabaseSync {
     @Inject
     SectorRepository mSectorRepository;
     @Inject
-    ValueRepository mValueRepository;
+    PropertyRepository mPropertyRepository;
     @Inject
     RoutingLayerRepository mRoutingLayerRepository;
+
+    @Inject
+    StationSectorRepository mStationSectorRepository;
+
 
     @Inject
     public DatabaseSync(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) PlatformTransactionManager tx,
@@ -127,15 +135,33 @@ public class DatabaseSync {
                 alwaysDelete);
 
         this.updateEntities(
-                Tables.SYS_ROUTINGLAYER,
-                SysRoutinglayer.SYS_ROUTINGLAYER.SYS_ROUTINGLAYER.TIMESTAMP,
+                Tables.MST_ROUTINGLAYER,
+                MstRoutinglayer.MST_ROUTINGLAYER.MST_ROUTINGLAYER.TIMESTAMP,
                 mRoutingLayerRepository,
                 QRoutingLayer.routingLayer,
                 QRoutingLayer.routingLayer.timestamp,
                 (s) -> convert(s),
                 alwaysDelete);
 
+        this.updateEntities(
+                Tables.SYS_PROPERTY,
+                SysProperty.SYS_PROPERTY.SYS_PROPERTY.TIMESTAMP,
+                mPropertyRepository,
+                QProperty.property,
+                QProperty.property.timestamp,
+                (s) -> convert(s),
+                alwaysDelete
+        );
 
+        this.updateEntities(
+                Tables.MST_STATION_SECTOR,
+                MstStationSector.MST_STATION_SECTOR.MST_STATION_SECTOR.TIMESTAMP,
+                mStationSectorRepository,
+                QStationSector.stationSector,
+                QStationSector.stationSector.timestamp,
+                (s) -> convert(s),
+                alwaysDelete
+        );
 
         mLog.info("Database sync took " + sw.toString());
     }
@@ -148,37 +174,37 @@ public class DatabaseSync {
     private static Station convert(MstStationRecord ds) {
         Station s = new Station();
 
-        s.setStationNr(ds.getStationnr());
+        s.setStationNr(ds.getStationNr());
         s.setTimestamp(ds.getTimestamp());
         s.setAddress1(ds.getAddress1());
         s.setAddress2(ds.getAddress2());
-        s.setBillingAddress1(ds.getBillingaddress1());
-        s.setBillingAddress2(ds.getBillingaddress2());
-        s.setBillingCity(ds.getBillingcity());
-        s.setBillingCountry(ds.getBillingcountry());
-        s.setBillingHouseNr(ds.getBillinghousenr());
-        s.setBillingStreet(ds.getBillingstreet());
-        s.setBillingZip(ds.getBillingzip());
+        s.setBillingAddress1(ds.getBillingAddress1());
+        s.setBillingAddress2(ds.getBillingAddress2());
+        s.setBillingCity(ds.getBillingCity());
+        s.setBillingCountry(ds.getBillingCountry());
+        s.setBillingHouseNr(ds.getBillingHouseNr());
+        s.setBillingStreet(ds.getBillingStreet());
+        s.setBillingZip(ds.getBillingZip());
         s.setCity(ds.getCity());
-        s.setContactPerson1(ds.getContactperson1());
-        s.setContactPerson2(ds.getContactperson2());
+        s.setContactPerson1(ds.getContactPerson1());
+        s.setContactPerson2(ds.getContactPerson2());
         s.setCountry(ds.getCountry());
         s.setEmail(ds.getEmail());
-        s.setHouseNr(ds.getHousenr());
+        s.setHouseNr(ds.getHouseNr());
         s.setMobile(ds.getMobile());
         s.setPhone1(ds.getPhone1());
         s.setPhone2(ds.getPhone2());
         s.setPosLat(ds.getPoslat());
         s.setPosLong(ds.getPoslong());
         s.setSector(ds.getSectors());
-        s.setServicePhone1(ds.getServicephone1());
-        s.setServicePhone2(ds.getServicephone2());
+        s.setServicePhone1(ds.getServicePhone1());
+        s.setServicePhone2(ds.getServicePhone2());
         // TODO: strang? strange? ;)
         s.setStrang(null);
         s.setStreet(ds.getStreet());
         s.setTelefax(ds.getTelefax());
         s.setuStId(ds.getUstid());
-        s.setWebAddress(ds.getWebaddress());
+        s.setWebAddress(ds.getWebAddress());
         s.setZip(ds.getZip());
         return s;
     }
@@ -192,12 +218,12 @@ public class DatabaseSync {
         Country c = new Country();
 
         c.setCode(cr.getCode());
-        c.setName(cr.getName());
+//        c.getNameStringId(cr.getNameStringid() );
         c.setTimestamp(cr.getTimestamp());
-        c.setRoutingTyp(cr.getRoutingtyp());
-        c.setMinLen(cr.getMinlen());
-        c.setMaxLen(cr.getMaxlen());
-        c.setZipFormat(cr.getZipformat());
+        c.setRoutingTyp(cr.getRoutingTyp());
+        c.setMinLen(cr.getMinLen());
+        c.setMaxLen(cr.getMaxLen());
+        c.setZipFormat(cr.getZipFormat());
 
         return c;
     }
@@ -211,7 +237,7 @@ public class DatabaseSync {
         HolidayCtrl d = new HolidayCtrl();
 
         d.setCountry(cr.getCountry());
-        d.setCtrlPos(cr.getCtrlpos());
+        d.setCtrlPos(cr.getCtrlPos());
         d.setDescription(cr.getDescription());
         d.setHoliday(cr.getHoliday());
         d.setTimestamp(cr.getTimestamp());
@@ -238,31 +264,10 @@ public class DatabaseSync {
 
     /**
      * Convert mysql value record to jpa entity
-     * @param cs
-     * @return
-     */
-    private static Values convert(SysValuesRecord cs) {
-        Values d = new Values();
-
-        d.setTyp(cs.getTyp());
-        d.setId(cs.getId());
-        d.setSort(cs.getSort());
-        d.setDescription(cs.getDescription());
-        d.setP1i(cs.getP1i());
-        d.setP2i(cs.getP2i());
-        d.setP3s(cs.getP3s());
-        d.setP4s(cs.getP4s());
-
-
-        return d;
-    }
-
-    /**
-     * Convert mysql value record to jpa entity
      * @param rs
      * @return
      */
-    private static RoutingLayer convert(SysRoutinglayerRecord rs) {
+    private static RoutingLayer convert(MstRoutinglayerRecord rs) {
         RoutingLayer d = new RoutingLayer();
 
         d.setLayer(rs.getLayer());
@@ -286,7 +291,7 @@ public class DatabaseSync {
         d.setCountry(sr.getCountry());
         d.setZipFrom(sr.getZipfrom());
         d.setZipTo(sr.getZipto());
-        d.setValidCRTR(sr.getValidctrl());
+        d.setValidCRTR(sr.getValidCtrl());
         d.setValidFrom(sr.getValidfrom());
         d.setValidTo(sr.getValidto());
         d.setTimestamp(sr.getTimestamp());
@@ -295,7 +300,7 @@ public class DatabaseSync {
         d.setEtod(sr.getEtod());
         d.setLtop(sr.getLtop());
         d.setTerm(sr.getTerm());
-        d.setSaturdayOK(sr.getSaturdayok());
+        d.setSaturdayOK(sr.getSaturdayOk());
         d.setLtodsa(sr.getLtodsa());
         d.setLtodholiday(sr.getLtodholiday());
         d.setIsland(sr.getIsland());
@@ -303,6 +308,40 @@ public class DatabaseSync {
 
         return d;
     }
+
+    /**
+     * Convert mysql properties record to jpa entity
+     * @param sp
+     * @return
+     */
+    private static Property convert(SysPropertyRecord sp) {
+        Property p = new Property();
+        p.setId(sp.getId());
+
+        p.setStation(sp.getStation());
+
+        p.setDescription(sp.getDescription());
+        p.setValue(sp.getValue());
+        p.setEnabled(sp.getEnabled() != 0);
+        p.setTimestamp(sp.getTimestamp());
+
+        return p;
+    }
+
+    /**
+     * Convert mysql stationsectors record to jpa entity
+     * @param ss
+     * @return
+     */
+    private static StationSector convert(MstStationSectorRecord ss) {
+        StationSector s = new StationSector();
+        s.setStationNr(ss.getStationNr());
+        s.setSector(ss.getSector());
+        s.setRoutingLayer(ss.getRoutingLayer());
+        s.setTimestamp(ss.getTimestamp());
+        return s;
+    }
+
 
     /**
      * Generic updater for entites from jooq to jpa

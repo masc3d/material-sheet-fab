@@ -11,8 +11,8 @@ import org.deku.leo2.rest.entities.ShortDate;
 public class RoutingRequest {
     private Float mWeight;
     private Integer mServices;
-    private Participant mSender;
-    private Participant mConsignee;
+    private requestParticipant mSender;
+    private requestParticipant mConsignee;
     private ShortDate mSendDate;
     private ShortDate mDeliveryDate;
 
@@ -29,34 +29,16 @@ public class RoutingRequest {
     }
 
     @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Deliverydate", allowableValues = "2015-06-02")
-    public ShortDate getDeliverDate() {
+    public ShortDate getDeliveryDate() {
         return mDeliveryDate;
     }
 
-    public void setDeliverDate(ShortDate deliveryDate) {
+    public void setDeliveryDate(ShortDate deliveryDate) {
         mDeliveryDate = deliveryDate;
     }
 
-    @ApiModelProperty(value="Sender", position = 30, required = true)
-    public Participant getSender() {
-        return mSender;
-    }
 
-    public void setSender(Participant sender) {
-        mSender = sender;
-    }
-
-    @ApiModelProperty(value="Consignee", position = 40, required = false)
-    public Participant getConsignee() {
-        return mConsignee;
-    }
-
-    public void setConsignee(Participant consignee) {
-        mConsignee = consignee;
-    }
-
-
-    @ApiModelProperty(value="Sum of DeKu Servicvalues", position = 50, required = false)
+    @ApiModelProperty(value="Sum of DeKu Servicvalues", position = 22, required = false)
     public void setServices(Integer services) {
         mServices = services;
     }
@@ -65,7 +47,7 @@ public class RoutingRequest {
         return mServices;
     }
 
-    @ApiModelProperty(value="Real weight", position = 60, required = false)
+    @ApiModelProperty(value="Real weight", position = 24, required = false)
     public Float getWeight() {
         return mWeight;
     }
@@ -73,5 +55,25 @@ public class RoutingRequest {
     public void setWeight(Float weight) {
         mWeight = weight;
     }
+
+
+    @ApiModelProperty(value="Sender", position = 30, required = false)
+    public requestParticipant getSender() {
+        return mSender;
+    }
+
+    public void setSender(requestParticipant sender) {
+        mSender = sender;
+    }
+
+    @ApiModelProperty(value="Consignee", position = 40, required = false)
+    public requestParticipant getConsignee() {
+        return mConsignee;
+    }
+
+    public void setConsignee(requestParticipant consignee) {
+        mConsignee = consignee;
+    }
+
 
 }

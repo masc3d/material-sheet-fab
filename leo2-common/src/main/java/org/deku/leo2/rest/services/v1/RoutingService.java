@@ -1,8 +1,6 @@
 package org.deku.leo2.rest.services.v1;
 
 import com.wordnik.swagger.annotations.*;
-import org.deku.leo2.rest.entities.ShortDate;
-import org.deku.leo2.rest.entities.v1.Participant;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingRequest;
 //import org.deku.leo2.rest.entities.v1.RoutingVia;

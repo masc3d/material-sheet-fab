@@ -1,7 +1,7 @@
 package org.deku.leo2.node.data.sync;
 
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
-import org.deku.leo2.node.data.entities.*;
+import org.deku.leo2.node.data.entities.master.*;
 import sx.LazyInstance;
 
 import javax.persistence.EntityManagerFactory;

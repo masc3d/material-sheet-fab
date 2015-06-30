@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Logger;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.DataTest;
 import org.deku.leo2.node.data.PersistenceConfiguration;
-import org.deku.leo2.node.data.entities.Route;
+import org.deku.leo2.node.data.entities.master.Route;
 import org.deku.leo2.node.data.sync.EntityConsumer;
 import org.deku.leo2.node.data.sync.EntityPublisher;
 import org.junit.After;

@@ -2,7 +2,6 @@ package org.deku.leo2.rest.entities.v1;
 
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.deku.leo2.rest.entities.ShortDate;
-import org.deku.leo2.rest.entities.ShortTime;
 
 /**
  * Routing service request response
@@ -11,8 +10,8 @@ import org.deku.leo2.rest.entities.ShortTime;
 
 public class Routing {
 
-    private RoutingParticipant mSender = new RoutingParticipant();
-    private RoutingParticipant mConsignee = new RoutingParticipant();
+    private resultParticipant mSender = new resultParticipant();
+    private resultParticipant mConsignee = new resultParticipant();
     private String[] mViaHubs;
     private String mLabelContent = "";
     private String mMessage = "";
@@ -22,7 +21,7 @@ public class Routing {
     public Routing() {
     }
 
-    public Routing(ShortDate sendDate, ShortDate deliveryDate, RoutingParticipant sender, RoutingParticipant consignee, String[] viaHubs,
+    public Routing(ShortDate sendDate, ShortDate deliveryDate, resultParticipant sender, resultParticipant consignee, String[] viaHubs,
                    String labelContent, String message) {
 
         mSender = sender;
@@ -43,7 +42,7 @@ public class Routing {
         mSendDate = sendDate;
     }
 
-    @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Deliverydate", allowableValues = "00:00 - 23:59")
+    @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Deliverydate", allowableValues = "2015-06-01")
     public ShortDate getDeliveryDate() {
         return mDeliveryDate;
     }
@@ -53,20 +52,20 @@ public class Routing {
     }
 
     @ApiModelProperty(position = 30)
-    public RoutingParticipant getSender() {
+    public resultParticipant getSender() {
         return mSender;
     }
 
-    public void setSender(RoutingParticipant sender) {
+    public void setSender(resultParticipant sender) {
         mSender = sender;
     }
 
     @ApiModelProperty(position = 40)
-    public RoutingParticipant getConsignee() {
+    public resultParticipant getConsignee() {
         return mConsignee;
     }
 
-    public void setConsignee(RoutingParticipant consignee) {
+    public void setConsignee(resultParticipant consignee) {
         mConsignee = consignee;
     }
 
@@ -79,7 +78,7 @@ public class Routing {
         mViaHubs = viaHubs;
     }
 
-    @ApiModelProperty(dataType = "string", example = "F,N", position = 60, required = true, value = "Routingstring on Label: \"F,N\"")
+    @ApiModelProperty(dataType = "string", example = "F,N 100", position = 60, required = true, value = "Routingstring on Label: \"F,N 100\"")
     public String getLabelContent() {
         return mLabelContent;
     }

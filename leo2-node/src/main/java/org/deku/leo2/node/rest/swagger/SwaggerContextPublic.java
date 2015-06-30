@@ -29,7 +29,7 @@ public class SwaggerContextPublic implements SwaggerContext {
         Info info = new Info()
                 .title("LEO public webservice")
                 .description("LEO public webservice API")
-                .version("1.0.1")
+                .version("1.0.2")
                 .contact(new Contact()
                         .email("wolfgang.drewelies@derkurier.de"))
                 ;

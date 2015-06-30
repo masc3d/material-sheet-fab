@@ -1,8 +1,8 @@
 package org.deku.leo2.node.data;
 
 import org.deku.leo2.node.DataTest;
-import org.deku.leo2.node.data.entities.Station;
-import org.deku.leo2.node.data.repositories.StationRepository;
+import org.deku.leo2.node.data.entities.master.Station;
+import org.deku.leo2.node.data.repositories.master.StationRepository;
 import org.junit.Test;
 
 import javax.inject.Inject;
