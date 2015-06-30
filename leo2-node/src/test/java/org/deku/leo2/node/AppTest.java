@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AppTest {
     public AppTest() {
-        App.instance().initialize(App.LogConfigurationType.NONE, App.EntitySyncConfigurationType.NONE);
+        App.instance().initialize("");
 
         Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         lRoot.setLevel(Level.INFO);
