@@ -42,7 +42,7 @@ public class RegularEventDispatcher<T extends EventListener> extends EventDispat
 
     @Override
     public void add(T listener) {
-        _listeners.add(new ListenerReference(listener, listener.getClass()));
+        _listeners.add(new ListenerReference(listener, (Class<T>)listener.getClass()));
     }
 
     @Override

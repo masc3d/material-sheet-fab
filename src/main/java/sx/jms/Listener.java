@@ -73,9 +73,9 @@ public abstract class Listener implements Disposable, ExceptionListener, Handler
     /**
      * Add handler delegate for handling messages of specific (object) type
      * Delegate handlers requires a converter to be set.
-     * @param c
-     * @param delegate
-     * @param <T>
+     * @param c Class of object/message to process
+     * @param delegate Handler
+     * @param <T> Type of object/message to process
      */
     public <T> void addDelegate(Class<T> c, Handler<T> delegate) {
         mHandlerDelegates.put(c, delegate);

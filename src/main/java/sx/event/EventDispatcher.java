@@ -20,7 +20,7 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
     /** Listener reference with type information */
     class ListenerReference extends WeakReference<T> {
         private Class mClass;
-        public ListenerReference(T referent, Class c) {
+        public ListenerReference(T referent, Class<T> c) {
             super(referent);
             mClass = c;
         }
