@@ -295,14 +295,14 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         String country = requestRequestParticipant.getCountry();
 
         if (country.equals(null)) {
-            throw new IllegalArgumentException(exeptionPrefix + "empty Country");
+            throw new IllegalArgumentException(exeptionPrefix + "empty country");
         } else
             country = country.toUpperCase();
 
         String zip = requestRequestParticipant.getZip();
 
         if (zip.equals(null)) {
-            throw new IllegalArgumentException(exeptionPrefix + "empty Zipcode");
+            throw new IllegalArgumentException(exeptionPrefix + "empty zipcode");
         } else
             zip = zip.toUpperCase();
 
@@ -315,24 +315,24 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         //       ** forever **
 
         if (rcountry == null) {
-            throw new IllegalArgumentException(exeptionPrefix + "unknown Country");
+            throw new IllegalArgumentException(exeptionPrefix + "unknown country");
         }
 
         if (rcountry.getZipFormat().equals("")) {
-            throw new IllegalArgumentException(exeptionPrefix + "unknown Country");
+            throw new IllegalArgumentException(exeptionPrefix + "unknown country");
         }
 
 
         if (zip.length() < rcountry.getMinLen()) {
-            throw new IllegalArgumentException(exeptionPrefix + "Zipcode to short");
+            throw new IllegalArgumentException(exeptionPrefix + "zipcode too short");
         }
 
         if (rcountry.getRoutingTyp() < 0 || rcountry.getRoutingTyp() > 3) {
-            throw new IllegalArgumentException(exeptionPrefix + "Country not enabled");
+            throw new IllegalArgumentException(exeptionPrefix + "country not enabled");
         }
 
         if (zip.length() > rcountry.getMaxLen()) {
-            throw new IllegalArgumentException(exeptionPrefix + "Zipcode to long");
+            throw new IllegalArgumentException(exeptionPrefix + "zipcode too long");
         }
 
         s2str zRet = parceZip(rcountry.getZipFormat(), zip);
@@ -341,7 +341,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         String zipConform = zRet.s2;
 
         if (zipQuery.equals("")) {
-            throw new IllegalArgumentException(exeptionPrefix + "Zipcode not conform");
+            throw new IllegalArgumentException(exeptionPrefix + "wrong zipcode format");
         }
 
 //        Function<Time, ShortTime> convertTime = (t) -> {
@@ -618,7 +618,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
                     }
                     break;
                 default:
-                    throw new IllegalArgumentException("Zipcode not conform");
+                    throw new IllegalArgumentException("wrong zipcode format");
 
             }
 
