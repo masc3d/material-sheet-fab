@@ -1,11 +1,15 @@
 package org.deku.leo2.messaging.activemq;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.broker.util.RedeliveryPlugin;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.filter.DestinationMapEntry;
+import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.apache.activemq.network.DiscoveryNetworkConnector;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.security.*;
@@ -13,6 +17,9 @@ import org.apache.activemq.transport.TransportServer;
 import org.deku.leo2.messaging.Broker;
 import sx.LazyInstance;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.Queue;
+import javax.jms.Topic;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -40,9 +47,21 @@ public class ActiveMQBroker extends Broker {
     /** External transport servers, eg. servlets */
     List<TransportServer> mExternalTransportServers = new ArrayList<>();
 
+    /** Url for establishing connection to local/embedded broker */
+    private URI mLocalUri;
+
+    /** Connection factory for connecting to the embedded broker */
+    private ConnectionFactory mConnectionFactory;
+
     /** c'tor */
     private ActiveMQBroker() {
         super(NATIVE_TCP_PORT);
+
+        try {
+            mLocalUri = new URI("vm://localhost?create=false");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -51,6 +70,15 @@ public class ActiveMQBroker extends Broker {
      */
     public void addConnector(TransportServer transportServer) throws Exception {
         mExternalTransportServers.add(transportServer);
+    }
+
+    /**
+     * For (performance) testing purposes: override local/embedded connection URI.
+     * Must be called before connection factory is retrieved for the first time.
+     * @param uri
+     */
+    public void setLocalUri(URI uri) {
+        mLocalUri = uri;
     }
 
     /**
@@ -192,6 +220,28 @@ public class ActiveMQBroker extends Broker {
     @Override
     protected boolean isStartedImpl() {
         return mBrokerService != null && mBrokerService.isStarted();
+    }
+
+    @Override
+    public Queue createQueue(String name) {
+        return new ActiveMQQueue(name);
+    }
+
+    @Override
+    public Topic createTopic(String name) { return new ActiveMQTopic(name); }
+
+    @Override
+    public ConnectionFactory getConnectionFactory() {
+        if (mConnectionFactory == null) {
+            PooledConnectionFactory psf = new PooledConnectionFactory();
+            psf.setConnectionFactory(new ActiveMQConnectionFactory(
+                    Broker.USERNAME,
+                    Broker.PASSWORD,
+                    // Explicitly do _not_ create (another) embedded broker on connection, just in case
+                    mLocalUri.toString()));
+            mConnectionFactory = psf;
+        }
+        return mConnectionFactory;
     }
 
     /**

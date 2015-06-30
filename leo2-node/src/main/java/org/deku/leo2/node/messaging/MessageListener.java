@@ -12,26 +12,22 @@ import javax.jms.Session;
 /**
  * Created by masc on 27.06.15.
  */
-public class PeerMessageListener extends SpringJmsListener {
+public class MessageListener extends SpringJmsListener {
     /** Application identity */
     Integer mPeerId;
     MessagingContext mMessagingContext;
-
-    public static String getQueueName(Integer peerId) {
-        return "leo2.node." + peerId.toString();
-    }
 
     /**
      * c'tor
      * @param messagingContext
      */
-    public PeerMessageListener(MessagingContext messagingContext, Integer peerId) {
-        super(messagingContext.getConnectionFactory());
+    public MessageListener(MessagingContext messagingContext, Integer peerId) {
+        super(messagingContext.getBroker().getConnectionFactory());
         mMessagingContext = messagingContext;
     }
 
     @Override
     protected Destination createDestination() {
-        return mMessagingContext.createQueue(getQueueName(mPeerId));
+        return mMessagingContext.getNodeQueue(mPeerId);
     }
 }

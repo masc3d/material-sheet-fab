@@ -17,8 +17,8 @@ import javax.persistence.PersistenceUnit;
 /**
  * Created by masc on 20.06.15.
  */
-@Configuration(App.PROFILE_NODE)
-@Profile( { App.PROFILE_NODE } )
+@Configuration(App.PROFILE_CLIENT_NODE)
+@Profile( { App.PROFILE_CLIENT_NODE} )
 @Lazy(false)
 public class EntitySyncConfiguration {
     private Log mLog = LogFactory.getLog(this.getClass());

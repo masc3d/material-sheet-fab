@@ -25,13 +25,13 @@ public class LogListener extends SpringJmsListener {
     private SimpleMessageConverter mMessageConverter = new SimpleMessageConverter();
 
     public LogListener(MessagingContext messagingContext) {
-        super(messagingContext.getConnectionFactory());
+        super(messagingContext.getBroker().getConnectionFactory());
         mMessagingContext = messagingContext;
     }
 
     @Override
     protected Destination createDestination() {
-        return mMessagingContext.createQueue(LogMessage.LOG_QUEUE_NAME);
+        return mMessagingContext.getCentralLogQueue();
     }
 
     @Override

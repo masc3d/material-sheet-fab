@@ -36,7 +36,7 @@ public class EntityPublisher extends SpringJmsListener {
      * @param entityManagerFactory
      */
     public EntityPublisher(MessagingContext messagingContext, EntityManagerFactory entityManagerFactory) {
-        super(messagingContext.getConnectionFactory());
+        super(messagingContext.getBroker().getConnectionFactory());
         mMessagingContext = messagingContext;
         mEntityManagerFactory = entityManagerFactory;
 
@@ -49,7 +49,7 @@ public class EntityPublisher extends SpringJmsListener {
 
     @Override
     protected Destination createDestination() {
-        return mMessagingContext.createQueue(EntityStateMessage.ENTITY_QUEUE_NAME);
+        return mMessagingContext.getCentralEntitySyncQueue();
     }
 
     @Override

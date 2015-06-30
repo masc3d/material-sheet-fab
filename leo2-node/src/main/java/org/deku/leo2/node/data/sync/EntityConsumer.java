@@ -22,6 +22,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * Entity consumer
  * Created by masc on 18.06.15.
  */
 public class EntityConsumer implements Disposable {
@@ -64,13 +65,13 @@ public class EntityConsumer implements Disposable {
 
                 Timestamp timestamp = er.findMaxTimestamp();
 
-                Connection cn = mMessagingContext.getConnectionFactory().createConnection();
+                Connection cn = mMessagingContext.getBroker().getConnectionFactory().createConnection();
                 cn.start();
                 Session session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
                 Stopwatch sw = Stopwatch.createStarted();
 
-                Queue requestQueue = session.createQueue(EntityStateMessage.ENTITY_QUEUE_NAME);
+                Queue requestQueue = mMessagingContext.getCentralEntitySyncQueue();
                 TemporaryQueue receiveQueue = session.createTemporaryQueue();
 
                 mLog.info(String.format("Requesting entities of type [%s]", entityType.toString()));

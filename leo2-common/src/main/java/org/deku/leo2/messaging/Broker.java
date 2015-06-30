@@ -7,6 +7,9 @@ import sx.event.EventDelegate;
 import sx.event.EventDispatcher;
 import sx.event.EventListener;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.Queue;
+import javax.jms.Topic;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,6 +120,13 @@ public abstract class Broker implements Disposable {
     protected abstract void stopImpl() throws Exception;
 
     protected abstract boolean isStartedImpl();
+
+    /** Create jms message queue */
+    public abstract Queue createQueue(String name);
+    /** Create jms message topic */
+    public abstract Topic createTopic(String name);
+    /** Jms connection factory */
+    public abstract ConnectionFactory getConnectionFactory();
     //endregion
 
     /**

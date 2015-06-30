@@ -9,6 +9,7 @@ import org.deku.leo2.messaging.MessagingContext;
 import sx.LazyInstance;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 import javax.jms.Queue;
 import javax.jms.Topic;
 import java.net.URI;
@@ -22,18 +23,9 @@ public class ActiveMQContext implements MessagingContext {
     /** Singleton instance */
     private static LazyInstance<ActiveMQContext> mContext = new LazyInstance<>(ActiveMQContext::new);
 
-    /** Url for establishing connection to local/embedded broker */
-    private URI mLocalUri;
-
-    /** Connection factory for connecting to the embedded broker */
-    private ConnectionFactory mConnectionFactory;
 
     public ActiveMQContext() {
-        try {
-            mLocalUri = new URI("vm://localhost?create=false");
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
     public static ActiveMQContext instance() {
@@ -45,35 +37,30 @@ public class ActiveMQContext implements MessagingContext {
         return ActiveMQBroker.instance();
     }
 
+
     @Override
-    public Queue createQueue(String name) {
-        return new ActiveMQQueue(name);
+    public Queue getCentralQueue() {
+        return this.getBroker().createQueue("leo2.central");
     }
 
     @Override
-    public Topic createTopic(String name) { return new ActiveMQTopic(name); }
-
-    @Override
-    public ConnectionFactory getConnectionFactory() {
-        if (mConnectionFactory == null) {
-            PooledConnectionFactory psf = new PooledConnectionFactory();
-            psf.setConnectionFactory(new ActiveMQConnectionFactory(
-                    Broker.USERNAME,
-                    Broker.PASSWORD,
-                    // Explicitly do _not_ create (another) embedded broker on connection, just in case
-                    mLocalUri.toString()));
-            mConnectionFactory = psf;
-        }
-        return mConnectionFactory;
+    public Queue getCentralEntitySyncQueue() {
+        return this.getBroker().createQueue("leo2.entity-sync");
     }
 
-    /**
-     * For (performance) testing purposes: override local/embedded connection URI.
-     * Must be called before connection factory is retrieved for the first time.
-     * @param uri
-     */
-    public void setLocalUri(URI uri) {
-        mLocalUri = uri;
+    @Override
+    public Queue getCentralLogQueue() {
+        return this.getBroker().createQueue("leo2.log");
+    }
+
+    @Override
+    public Queue getNodeQueue(Integer id) {
+        return this.getBroker().createQueue("leo2.node." + id.toString());
+    }
+
+    @Override
+    public Topic getNodeNotificationTopic() {
+        return this.getBroker().createTopic("leo2.notifications");
     }
 
 }

@@ -43,8 +43,8 @@ public class App implements
     /** Logger */
     private static Log mLog = LogFactory.getLog(App.class);
 
-    /** Profile name for node specific processes */
-    public static final String PROFILE_NODE = "node";
+    /** Client node profile, activates specific configurations for leo2 client nodes */
+    public static final String PROFILE_CLIENT_NODE = "client-node";
 
     //region Singleton
     private static LazyInstance<App> mInstance = new LazyInstance(App::new);
@@ -103,7 +103,7 @@ public class App implements
         LocalStorage.instance().initialize();
 
         // Initialize logging
-        if (mProfile == PROFILE_NODE) {
+        if (mProfile == PROFILE_CLIENT_NODE) {
             // Setup message log appender
             Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
             LogAppender lAppender = new LogAppender(ActiveMQContext.instance());
@@ -174,7 +174,7 @@ public class App implements
     }
 
     public void initialize() {
-        this.initialize(PROFILE_NODE);
+        this.initialize(PROFILE_CLIENT_NODE);
     }
 
     @Override

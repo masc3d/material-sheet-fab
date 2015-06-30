@@ -102,7 +102,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
-|    +--- org.springframework.data:spring-data-commons:1.10.1.RELEASE -> 1.10.2.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
@@ -381,7 +381,7 @@ default - Configuration for default artifacts.
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
-|    +--- org.springframework.data:spring-data-commons:1.10.1.RELEASE -> 1.10.2.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
@@ -666,7 +666,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
-|    +--- org.springframework.data:spring-data-commons:1.10.1.RELEASE -> 1.10.2.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
@@ -945,7 +945,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
-|    +--- org.springframework.data:spring-data-commons:1.10.1.RELEASE -> 1.10.2.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
@@ -1229,7 +1229,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
-|    +--- org.springframework.data:spring-data-commons:1.10.1.RELEASE -> 1.10.2.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12

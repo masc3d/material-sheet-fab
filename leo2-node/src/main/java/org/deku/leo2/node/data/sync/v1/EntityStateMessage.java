@@ -11,23 +11,32 @@ import java.sql.Timestamp;
  */
 public class EntityStateMessage implements Serializable {
     private static final long serialVersionUID = -3506609875846947166L;
-
-    public static final String ENTITY_QUEUE_NAME = "leo2.entity.v1";
-
     private Class mEntityType;
     private Timestamp mTimestamp;
 
-    public EntityStateMessage() { }
-
+    /**
+     * c'tor
+     * @param entityType
+     * @param timestamp
+     */
     public EntityStateMessage(Class entityType, Timestamp timestamp) {
         mEntityType = entityType;
         mTimestamp = timestamp;
     }
+    public EntityStateMessage() { }
 
+    /**
+     * Entity type this state message refers to
+     * @return
+     */
     public Class getEntityType() {
         return mEntityType;
     }
 
+    /**
+     * Latest entity timestamp
+     * @return
+     */
     public Timestamp getTimestamp() {
         return mTimestamp;
     }
