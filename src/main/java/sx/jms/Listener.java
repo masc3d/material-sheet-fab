@@ -55,10 +55,16 @@ public abstract class Listener implements Disposable, ExceptionListener, Handler
 
     @Override
     public void onMessage(Message message, Session session) throws JMSException {
-        Object messageObject = mConverter.fromMessage(message);
+        Object messageObject = null;
+
+        if (mConverter != null)
+            messageObject = mConverter.fromMessage(message);
 
         Handler handler = null;
-        handler = mHandlerDelegates.getOrDefault(messageObject.getClass(), null);
+
+        if (messageObject != null)
+            handler = mHandlerDelegates.getOrDefault(messageObject.getClass(), null);
+
         if (handler == null) {
             handler = mHandlerDelegates.getOrDefault(Message.class, null);
         }
@@ -68,6 +74,8 @@ public abstract class Listener implements Disposable, ExceptionListener, Handler
                     messageObject.getClass(),
                     Message.class));
         }
+
+        handler.onMessage(messageObject, session);
     }
 
     /**
