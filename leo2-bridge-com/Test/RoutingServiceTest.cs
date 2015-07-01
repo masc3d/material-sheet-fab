@@ -26,7 +26,7 @@ namespace LeoBridgeTest
             
             LeoBridge.Service.RoutingRequest r = new RoutingRequest();
             r.sendDate = "2015-06-01";
-            r.deliverDate = "2015-06-02";
+            r.deliveryDate = "2015-06-02";
             consignee.country = "DE";
             consignee.zip = "80331";
             consignee.timeFrom="10:00";
@@ -45,6 +45,37 @@ namespace LeoBridgeTest
                 Console.WriteLine(String.Format("{0}: {1}", i, result.ToString()));
             }
         }
+        [TestMethod]
+        public void TestRequestPartial()
+        {
+            LeoBridge.Service.participant sender;
+            LeoBridge.Service.participant consignee;
+
+            sender = new LeoBridge.Service.participant();
+            consignee = new LeoBridge.Service.participant();
+
+            LeoBridge.Service.RoutingRequest r = new RoutingRequest();
+            //r.sendDate = "2015-06-01";
+            //r.deliveryDate = "2015-06-02";
+            consignee.country = "DE";
+            consignee.zip = "80331";
+            consignee.timeFrom = "10:00";
+            consignee.timeTo = "12:00";
+            r.consignee = consignee;
+            sender.country = "DE";
+            sender.zip = "80331";
+            sender.timeFrom = "10:00";
+            sender.timeTo = "12:00";
+            r.sender = sender;
+            //r.weight = 0;
+            //r.services = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                RoutingRequestResult result = this.ClientFactory.RoutingService.request(r);
+                Console.WriteLine(String.Format("{0}: {1}", i, result.ToString()));
+            }
+        }
+
 
         
         //[TestMethod]
