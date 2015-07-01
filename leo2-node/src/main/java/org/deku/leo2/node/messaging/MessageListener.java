@@ -23,6 +23,7 @@ public class MessageListener extends SpringJmsListener {
      */
     public MessageListener(MessagingContext messagingContext, Integer peerId) {
         super(messagingContext.getBroker().getConnectionFactory());
+        mPeerId = peerId;
         mMessagingContext = messagingContext;
     }
 

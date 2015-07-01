@@ -21,22 +21,18 @@ import java.net.URISyntaxException;
  */
 public class ActiveMQContext implements MessagingContext {
     /** Singleton instance */
-    private static LazyInstance<ActiveMQContext> mContext = new LazyInstance<>(ActiveMQContext::new);
+    private static final ActiveMQContext mInstance = new ActiveMQContext();
 
-
-    public ActiveMQContext() {
-
-    }
+    private ActiveMQContext() { }
 
     public static ActiveMQContext instance() {
-        return mContext.get();
+        return mInstance;
     }
 
     @Override
     public Broker getBroker() {
         return ActiveMQBroker.instance();
     }
-
 
     @Override
     public Queue getCentralQueue() {

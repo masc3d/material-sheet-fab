@@ -6,8 +6,8 @@ import org.deku.leo2.messaging.Broker;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.App;
-import org.deku.leo2.node.messaging.auth.AuthorizationResponseHandler;
-import org.deku.leo2.node.messaging.auth.v1.AuthorizationResponse;
+import org.deku.leo2.node.messaging.auth.AuthorizationHandler;
+import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
@@ -37,12 +37,17 @@ public class MessageListenerConfiguration {
     public void onInitialize() {
         mLog.info("Initializing peer message listener");
 
+        // Configure and create listener
         mMessageListener = new MessageListener(
                 ActiveMQContext.instance(),
                 0);
-        mMessageListener.addDelegate(AuthorizationResponse.class, new AuthorizationResponseHandler());
+
+        // Add delegatess
+        mMessageListener.addDelegate(AuthorizationMessage.class, new AuthorizationHandler());
 
         ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerListner);
+        if (ActiveMQBroker.instance().isStarted())
+            mMessageListener.start();
     }
 
     @PreDestroy

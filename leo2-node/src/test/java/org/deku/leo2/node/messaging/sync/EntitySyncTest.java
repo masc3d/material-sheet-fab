@@ -37,7 +37,7 @@ public class EntitySyncTest extends DataTest {
         l.setLevel(Level.DEBUG);
 
         // Enforcing tcp connection
-        ActiveMQContext.instance().setLocalUri(new URI("tcp://localhost:61616"));
+        ActiveMQContext.instance().getBroker().setLocalUri(new URI("tcp://localhost:61616"));
         // Starting broker
         ActiveMQContext.instance().getBroker().start();
 
