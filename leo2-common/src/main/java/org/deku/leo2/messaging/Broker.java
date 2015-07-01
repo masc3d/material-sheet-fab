@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import sx.Disposable;
 import sx.event.EventDelegate;
 import sx.event.EventDispatcher;
-import sx.event.EventListener;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Queue;
@@ -102,14 +101,14 @@ public abstract class Broker implements Disposable {
     //region Events
 
     /** Broker event listener interface */
-    public interface Listener extends EventListener {
+    public interface EventListener extends sx.event.EventListener {
         void onStart();
     }
 
     /** Broker event dispatcher/delegate */
-    private EventDispatcher<Listener> mListenerEventDispatcher = EventDispatcher.createThreadSafe();
+    private EventDispatcher<EventListener> mListenerEventDispatcher = EventDispatcher.createThreadSafe();
 
-    public EventDelegate<Listener> getDelegate() {
+    public EventDelegate<EventListener> getDelegate() {
         return mListenerEventDispatcher;
     }
     //endregion
@@ -135,7 +134,7 @@ public abstract class Broker implements Disposable {
      */
     public synchronized final void start() throws Exception {
         this.startImpl();
-        mListenerEventDispatcher.emit(Listener::onStart);
+        mListenerEventDispatcher.emit(EventListener::onStart);
     }
 
     /**

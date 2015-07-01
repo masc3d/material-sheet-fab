@@ -104,12 +104,12 @@ compile - Compile classpath for source set 'main'.
 +--- project :leo2-node
 |    +--- project :sx-common (*)
 |    +--- project :leo2-common (*)
-|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.2.RELEASE
-|    |    +--- org.springframework.data:spring-data-commons:1.9.2.RELEASE
+|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.3.RELEASE
+|    |    +--- org.springframework.data:spring-data-commons:1.9.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.6.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
@@ -123,10 +123,10 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
-|    |    +--- org.aspectj:aspectjrt:1.8.4 -> 1.8.6
-|    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
-|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.9.2.RELEASE (*)
+|    |    +--- org.aspectj:aspectjrt:1.8.6
+|    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
+|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.9.3.RELEASE (*)
 |    +--- org.springframework:spring-web:4.1.6.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
@@ -134,8 +134,8 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter:1.2.4.+ -> 1.2.5.BUILD-SNAPSHOT
 |    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT
-|    |    |    +--- org.springframework:spring-core:4.1.7.BUILD-SNAPSHOT -> 4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-context:4.1.7.BUILD-SNAPSHOT -> 4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-context:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.5.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14 -> 1.15
@@ -164,17 +164,17 @@ compile - Compile classpath for source set 'main'.
 |    |         +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
 |    |         \--- org.springframework:spring-web:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter-undertow:1.2.4.+ -> 1.2.5.BUILD-SNAPSHOT
-|    |    +--- io.undertow:undertow-core:1.1.4.Final
+|    |    +--- io.undertow:undertow-core:1.1.4.Final -> 1.1.7.Final
 |    |    |    +--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    |    +--- org.jboss.xnio:xnio-api:3.3.0.Final
 |    |    |    \--- org.jboss.xnio:xnio-nio:3.3.0.Final
 |    |    |         \--- org.jboss.xnio:xnio-api:3.3.0.Final
-|    |    +--- io.undertow:undertow-servlet:1.1.4.Final
-|    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
+|    |    +--- io.undertow:undertow-servlet:1.1.4.Final -> 1.1.7.Final
+|    |    |    +--- io.undertow:undertow-core:1.1.7.Final (*)
 |    |    |    \--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final
-|    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final
-|    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
-|    |    |    +--- io.undertow:undertow-servlet:1.1.4.Final (*)
+|    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final -> 1.1.7.Final
+|    |    |    +--- io.undertow:undertow-core:1.1.7.Final (*)
+|    |    |    +--- io.undertow:undertow-servlet:1.1.7.Final (*)
 |    |    |    \--- org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final
 |    |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    |    \--- org.glassfish:javax.el:3.0.0
@@ -234,15 +234,15 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- com.mysema.querydsl:querydsl-core:3.4.3 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.4.3
-|    |    \--- com.mysema.querydsl:querydsl-codegen:3.4.3 -> 3.6.4
-|    |         +--- com.mysema.querydsl:querydsl-core:3.6.4 -> 3.4.3 (*)
-|    |         +--- com.mysema.codegen:codegen:0.6.6
+|    |    \--- com.mysema.querydsl:querydsl-codegen:3.4.3 -> 3.6.5
+|    |         +--- com.mysema.querydsl:querydsl-core:3.6.5 -> 3.4.3 (*)
+|    |         +--- com.mysema.codegen:codegen:0.6.7
 |    |         |    +--- com.google.guava:guava:18.0
 |    |         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1 -> 4.4.2
 |    |         \--- javax.inject:javax.inject:1
-|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.4
-|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.4 (*)
-|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.4 -> 3.4.3 (*)
+|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.5
+|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
+|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.5 -> 3.4.3 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- javax.inject:javax.inject:1
 |    +--- com.h2database:h2:1.+ -> 1.4.187
@@ -388,12 +388,12 @@ default - Configuration for default artifacts.
 +--- project :leo2-node
 |    +--- project :sx-common (*)
 |    +--- project :leo2-common (*)
-|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.2.RELEASE
-|    |    +--- org.springframework.data:spring-data-commons:1.9.2.RELEASE
+|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.3.RELEASE
+|    |    +--- org.springframework.data:spring-data-commons:1.9.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.6.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
@@ -407,10 +407,10 @@ default - Configuration for default artifacts.
 |    |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
-|    |    +--- org.aspectj:aspectjrt:1.8.4 -> 1.8.6
-|    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
-|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.9.2.RELEASE (*)
+|    |    +--- org.aspectj:aspectjrt:1.8.6
+|    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
+|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.9.3.RELEASE (*)
 |    +--- org.springframework:spring-web:4.1.6.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
@@ -418,8 +418,8 @@ default - Configuration for default artifacts.
 |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter:1.2.4.+ -> 1.2.5.BUILD-SNAPSHOT
 |    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT
-|    |    |    +--- org.springframework:spring-core:4.1.7.BUILD-SNAPSHOT -> 4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-context:4.1.7.BUILD-SNAPSHOT -> 4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-context:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.5.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14 -> 1.15
@@ -448,17 +448,17 @@ default - Configuration for default artifacts.
 |    |         +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
 |    |         \--- org.springframework:spring-web:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter-undertow:1.2.4.+ -> 1.2.5.BUILD-SNAPSHOT
-|    |    +--- io.undertow:undertow-core:1.1.4.Final
+|    |    +--- io.undertow:undertow-core:1.1.4.Final -> 1.1.7.Final
 |    |    |    +--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    |    +--- org.jboss.xnio:xnio-api:3.3.0.Final
 |    |    |    \--- org.jboss.xnio:xnio-nio:3.3.0.Final
 |    |    |         \--- org.jboss.xnio:xnio-api:3.3.0.Final
-|    |    +--- io.undertow:undertow-servlet:1.1.4.Final
-|    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
+|    |    +--- io.undertow:undertow-servlet:1.1.4.Final -> 1.1.7.Final
+|    |    |    +--- io.undertow:undertow-core:1.1.7.Final (*)
 |    |    |    \--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final
-|    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final
-|    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
-|    |    |    +--- io.undertow:undertow-servlet:1.1.4.Final (*)
+|    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final -> 1.1.7.Final
+|    |    |    +--- io.undertow:undertow-core:1.1.7.Final (*)
+|    |    |    +--- io.undertow:undertow-servlet:1.1.7.Final (*)
 |    |    |    \--- org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final
 |    |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    |    \--- org.glassfish:javax.el:3.0.0
@@ -518,15 +518,15 @@ default - Configuration for default artifacts.
 |    |    +--- com.mysema.querydsl:querydsl-core:3.4.3 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.4.3
-|    |    \--- com.mysema.querydsl:querydsl-codegen:3.4.3 -> 3.6.4
-|    |         +--- com.mysema.querydsl:querydsl-core:3.6.4 -> 3.4.3 (*)
-|    |         +--- com.mysema.codegen:codegen:0.6.6
+|    |    \--- com.mysema.querydsl:querydsl-codegen:3.4.3 -> 3.6.5
+|    |         +--- com.mysema.querydsl:querydsl-core:3.6.5 -> 3.4.3 (*)
+|    |         +--- com.mysema.codegen:codegen:0.6.7
 |    |         |    +--- com.google.guava:guava:18.0
 |    |         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1 -> 4.4.2
 |    |         \--- javax.inject:javax.inject:1
-|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.4
-|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.4 (*)
-|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.4 -> 3.4.3 (*)
+|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.5
+|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
+|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.5 -> 3.4.3 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- javax.inject:javax.inject:1
 |    +--- com.h2database:h2:1.+ -> 1.4.187
@@ -672,12 +672,12 @@ runtime - Runtime classpath for source set 'main'.
 +--- project :leo2-node
 |    +--- project :sx-common (*)
 |    +--- project :leo2-common (*)
-|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.2.RELEASE
-|    |    +--- org.springframework.data:spring-data-commons:1.9.2.RELEASE
+|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.3.RELEASE
+|    |    +--- org.springframework.data:spring-data-commons:1.9.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.6.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
@@ -691,10 +691,10 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
-|    |    +--- org.aspectj:aspectjrt:1.8.4 -> 1.8.6
-|    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
-|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.9.2.RELEASE (*)
+|    |    +--- org.aspectj:aspectjrt:1.8.6
+|    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
+|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.9.3.RELEASE (*)
 |    +--- org.springframework:spring-web:4.1.6.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
@@ -702,8 +702,8 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter:1.2.4.+ -> 1.2.5.BUILD-SNAPSHOT
 |    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT
-|    |    |    +--- org.springframework:spring-core:4.1.7.BUILD-SNAPSHOT -> 4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-context:4.1.7.BUILD-SNAPSHOT -> 4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-context:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.5.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14 -> 1.15
@@ -732,17 +732,17 @@ runtime - Runtime classpath for source set 'main'.
 |    |         +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
 |    |         \--- org.springframework:spring-web:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter-undertow:1.2.4.+ -> 1.2.5.BUILD-SNAPSHOT
-|    |    +--- io.undertow:undertow-core:1.1.4.Final
+|    |    +--- io.undertow:undertow-core:1.1.4.Final -> 1.1.7.Final
 |    |    |    +--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    |    +--- org.jboss.xnio:xnio-api:3.3.0.Final
 |    |    |    \--- org.jboss.xnio:xnio-nio:3.3.0.Final
 |    |    |         \--- org.jboss.xnio:xnio-api:3.3.0.Final
-|    |    +--- io.undertow:undertow-servlet:1.1.4.Final
-|    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
+|    |    +--- io.undertow:undertow-servlet:1.1.4.Final -> 1.1.7.Final
+|    |    |    +--- io.undertow:undertow-core:1.1.7.Final (*)
 |    |    |    \--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final
-|    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final
-|    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
-|    |    |    +--- io.undertow:undertow-servlet:1.1.4.Final (*)
+|    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final -> 1.1.7.Final
+|    |    |    +--- io.undertow:undertow-core:1.1.7.Final (*)
+|    |    |    +--- io.undertow:undertow-servlet:1.1.7.Final (*)
 |    |    |    \--- org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final
 |    |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    |    \--- org.glassfish:javax.el:3.0.0
@@ -802,15 +802,15 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- com.mysema.querydsl:querydsl-core:3.4.3 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.4.3
-|    |    \--- com.mysema.querydsl:querydsl-codegen:3.4.3 -> 3.6.4
-|    |         +--- com.mysema.querydsl:querydsl-core:3.6.4 -> 3.4.3 (*)
-|    |         +--- com.mysema.codegen:codegen:0.6.6
+|    |    \--- com.mysema.querydsl:querydsl-codegen:3.4.3 -> 3.6.5
+|    |         +--- com.mysema.querydsl:querydsl-core:3.6.5 -> 3.4.3 (*)
+|    |         +--- com.mysema.codegen:codegen:0.6.7
 |    |         |    +--- com.google.guava:guava:18.0
 |    |         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1 -> 4.4.2
 |    |         \--- javax.inject:javax.inject:1
-|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.4
-|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.4 (*)
-|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.4 -> 3.4.3 (*)
+|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.5
+|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
+|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.5 -> 3.4.3 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- javax.inject:javax.inject:1
 |    +--- com.h2database:h2:1.+ -> 1.4.187
@@ -956,12 +956,12 @@ testCompile - Compile classpath for source set 'test'.
 +--- project :leo2-node
 |    +--- project :sx-common (*)
 |    +--- project :leo2-common (*)
-|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.2.RELEASE
-|    |    +--- org.springframework.data:spring-data-commons:1.9.2.RELEASE
+|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.3.RELEASE
+|    |    +--- org.springframework.data:spring-data-commons:1.9.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.6.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
@@ -975,10 +975,10 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
-|    |    +--- org.aspectj:aspectjrt:1.8.4 -> 1.8.6
-|    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
-|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.9.2.RELEASE (*)
+|    |    +--- org.aspectj:aspectjrt:1.8.6
+|    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
+|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.9.3.RELEASE (*)
 |    +--- org.springframework:spring-web:4.1.6.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
@@ -986,8 +986,8 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter:1.2.4.+ -> 1.2.5.BUILD-SNAPSHOT
 |    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT
-|    |    |    +--- org.springframework:spring-core:4.1.7.BUILD-SNAPSHOT -> 4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-context:4.1.7.BUILD-SNAPSHOT -> 4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-context:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.5.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14 -> 1.15
@@ -1016,17 +1016,17 @@ testCompile - Compile classpath for source set 'test'.
 |    |         +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
 |    |         \--- org.springframework:spring-web:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter-undertow:1.2.4.+ -> 1.2.5.BUILD-SNAPSHOT
-|    |    +--- io.undertow:undertow-core:1.1.4.Final
+|    |    +--- io.undertow:undertow-core:1.1.4.Final -> 1.1.7.Final
 |    |    |    +--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    |    +--- org.jboss.xnio:xnio-api:3.3.0.Final
 |    |    |    \--- org.jboss.xnio:xnio-nio:3.3.0.Final
 |    |    |         \--- org.jboss.xnio:xnio-api:3.3.0.Final
-|    |    +--- io.undertow:undertow-servlet:1.1.4.Final
-|    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
+|    |    +--- io.undertow:undertow-servlet:1.1.4.Final -> 1.1.7.Final
+|    |    |    +--- io.undertow:undertow-core:1.1.7.Final (*)
 |    |    |    \--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final
-|    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final
-|    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
-|    |    |    +--- io.undertow:undertow-servlet:1.1.4.Final (*)
+|    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final -> 1.1.7.Final
+|    |    |    +--- io.undertow:undertow-core:1.1.7.Final (*)
+|    |    |    +--- io.undertow:undertow-servlet:1.1.7.Final (*)
 |    |    |    \--- org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final
 |    |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    |    \--- org.glassfish:javax.el:3.0.0
@@ -1086,15 +1086,15 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- com.mysema.querydsl:querydsl-core:3.4.3 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.4.3
-|    |    \--- com.mysema.querydsl:querydsl-codegen:3.4.3 -> 3.6.4
-|    |         +--- com.mysema.querydsl:querydsl-core:3.6.4 -> 3.4.3 (*)
-|    |         +--- com.mysema.codegen:codegen:0.6.6
+|    |    \--- com.mysema.querydsl:querydsl-codegen:3.4.3 -> 3.6.5
+|    |         +--- com.mysema.querydsl:querydsl-core:3.6.5 -> 3.4.3 (*)
+|    |         +--- com.mysema.codegen:codegen:0.6.7
 |    |         |    +--- com.google.guava:guava:18.0
 |    |         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1 -> 4.4.2
 |    |         \--- javax.inject:javax.inject:1
-|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.4
-|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.4 (*)
-|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.4 -> 3.4.3 (*)
+|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.5
+|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
+|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.5 -> 3.4.3 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- javax.inject:javax.inject:1
 |    +--- com.h2database:h2:1.+ -> 1.4.187
@@ -1254,12 +1254,12 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- project :leo2-node
 |    +--- project :sx-common (*)
 |    +--- project :leo2-common (*)
-|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.2.RELEASE
-|    |    +--- org.springframework.data:spring-data-commons:1.9.2.RELEASE
+|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.3.RELEASE
+|    |    +--- org.springframework.data:spring-data-commons:1.9.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.6.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
@@ -1273,10 +1273,10 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
-|    |    +--- org.aspectj:aspectjrt:1.8.4 -> 1.8.6
-|    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
-|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.9.2.RELEASE (*)
+|    |    +--- org.aspectj:aspectjrt:1.8.6
+|    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
+|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.9.3.RELEASE (*)
 |    +--- org.springframework:spring-web:4.1.6.+ -> 4.1.6.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
@@ -1284,8 +1284,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter:1.2.4.+ -> 1.2.5.BUILD-SNAPSHOT
 |    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT
-|    |    |    +--- org.springframework:spring-core:4.1.7.BUILD-SNAPSHOT -> 4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-context:4.1.7.BUILD-SNAPSHOT -> 4.1.6.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-context:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
 |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.5.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14 -> 1.15
@@ -1314,17 +1314,17 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |         +--- org.springframework:spring-expression:4.1.6.RELEASE (*)
 |    |         \--- org.springframework:spring-web:4.1.6.RELEASE (*)
 |    +--- org.springframework.boot:spring-boot-starter-undertow:1.2.4.+ -> 1.2.5.BUILD-SNAPSHOT
-|    |    +--- io.undertow:undertow-core:1.1.4.Final
+|    |    +--- io.undertow:undertow-core:1.1.4.Final -> 1.1.7.Final
 |    |    |    +--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    |    +--- org.jboss.xnio:xnio-api:3.3.0.Final
 |    |    |    \--- org.jboss.xnio:xnio-nio:3.3.0.Final
 |    |    |         \--- org.jboss.xnio:xnio-api:3.3.0.Final
-|    |    +--- io.undertow:undertow-servlet:1.1.4.Final
-|    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
+|    |    +--- io.undertow:undertow-servlet:1.1.4.Final -> 1.1.7.Final
+|    |    |    +--- io.undertow:undertow-core:1.1.7.Final (*)
 |    |    |    \--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:1.0.0.Final
-|    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final
-|    |    |    +--- io.undertow:undertow-core:1.1.4.Final (*)
-|    |    |    +--- io.undertow:undertow-servlet:1.1.4.Final (*)
+|    |    +--- io.undertow:undertow-websockets-jsr:1.1.4.Final -> 1.1.7.Final
+|    |    |    +--- io.undertow:undertow-core:1.1.7.Final (*)
+|    |    |    +--- io.undertow:undertow-servlet:1.1.7.Final (*)
 |    |    |    \--- org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final
 |    |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    |    \--- org.glassfish:javax.el:3.0.0
@@ -1384,15 +1384,15 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- com.mysema.querydsl:querydsl-core:3.4.3 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.4.3
-|    |    \--- com.mysema.querydsl:querydsl-codegen:3.4.3 -> 3.6.4
-|    |         +--- com.mysema.querydsl:querydsl-core:3.6.4 -> 3.4.3 (*)
-|    |         +--- com.mysema.codegen:codegen:0.6.6
+|    |    \--- com.mysema.querydsl:querydsl-codegen:3.4.3 -> 3.6.5
+|    |         +--- com.mysema.querydsl:querydsl-core:3.6.5 -> 3.4.3 (*)
+|    |         +--- com.mysema.codegen:codegen:0.6.7
 |    |         |    +--- com.google.guava:guava:18.0
 |    |         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1 -> 4.4.2
 |    |         \--- javax.inject:javax.inject:1
-|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.4
-|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.4 (*)
-|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.4 -> 3.4.3 (*)
+|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.5
+|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
+|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.5 -> 3.4.3 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- javax.inject:javax.inject:1
 |    +--- com.h2database:h2:1.+ -> 1.4.187

@@ -16,11 +16,14 @@ import java.util.concurrent.*;
 public class Authorizer {
     Log mLog = LogFactory.getLog(this.getClass());
 
+    /** Messaging context */
     private MessagingContext mMessagingContext;
+    /** Executor service for authorization task */
     private ExecutorService mExecutorService;
+    /** Authorization task */
     private Runnable mAuthorizationTask;
 
-    private Broker.Listener mBrokerListener = new Broker.Listener() {
+    private Broker.EventListener mBrokerEventListener = new Broker.EventListener() {
         @Override
         public void onStart() {
             if (mAuthorizationTask != null)
@@ -70,7 +73,7 @@ public class Authorizer {
         };
 
         // Register broker event
-        mMessagingContext.getBroker().getDelegate().add(mBrokerListener);
+        mMessagingContext.getBroker().getDelegate().add(mBrokerEventListener);
         if (mMessagingContext.getBroker().isStarted())
             mExecutorService.submit(mAuthorizationTask);
     }

@@ -5,6 +5,7 @@ import org.apache.activemq.transport.http.HttpTransportFactory;
 import org.apache.activemq.transport.http.HttpTunnelServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deku.leo2.messaging.Broker;
 
 import javax.servlet.ServletException;
 import java.net.URI;
@@ -36,7 +37,7 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet {
     }
 
     /** Broker event listener */
-    private class BrokerEventListener implements ActiveMQBroker.Listener {
+    private class BrokerEventListener implements Broker.EventListener {
 
         @Override
         public void onStart() {

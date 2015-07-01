@@ -1,18 +1,13 @@
-package org.deku.leo2.node.messaging;
+package org.deku.leo2.central.messaging;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
-import org.deku.leo2.node.App;
-import org.deku.leo2.node.auth.Identity;
-import org.deku.leo2.node.auth.IdentityConfiguration;
-import org.deku.leo2.node.messaging.auth.AuthorizationMessageHandler;
-import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
+import org.deku.leo2.node.messaging.auth.v1.IdentityMessage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -20,7 +15,6 @@ import javax.annotation.PreDestroy;
 /**
  * Created by masc on 20.06.15.
  */
-@Profile( { App.PROFILE_CLIENT_NODE} )
 @Configuration
 @Lazy(false)
 public class MessageListenerConfiguration {
@@ -39,25 +33,6 @@ public class MessageListenerConfiguration {
     };
 
     /**
-     * Identity event listener
-     */
-    Identity.Listener mIdentityEventListener = new Identity.Listener() {
-        @Override
-        public void onIdUpdated(Identity identity) {
-            startIfReady();
-        }
-    };
-
-    /**
-     * Indicates if message listener is ready to start (prerequisites are met)
-     * @return
-     */
-    private boolean isReadyToStart() {
-        return ActiveMQContext.instance().getBroker().isStarted() &&
-                IdentityConfiguration.instance().getIdentity().getId() != null;
-    }
-
-    /**
      * Start message listener
      */
     private void startIfReady() {
@@ -66,15 +41,12 @@ public class MessageListenerConfiguration {
             mMessageListener = null;
         }
 
-        if (this.isReadyToStart()) {
+        if (ActiveMQContext.instance().getBroker().isStarted()) {
             // Configure and create listener
-            mMessageListener = new MessageListener(
-                    ActiveMQContext.instance(),
-                    IdentityConfiguration.instance().getIdentity());
+            mMessageListener = new MessageListener(ActiveMQContext.instance());
 
             // Add message handler delegatess
-            mMessageListener.addDelegate(AuthorizationMessage.class, new AuthorizationMessageHandler());
-
+            mMessageListener.addDelegate(IdentityMessage.class, new IdentityMessageHandler());
             mMessageListener.start();
         }
     }
@@ -85,7 +57,6 @@ public class MessageListenerConfiguration {
 
         // Register event listeners
         ActiveMQBroker.instance().getDelegate().add(mBrokerEventListener);
-        IdentityConfiguration.instance().getIdentity().getDelegate().add(mIdentityEventListener);
 
         this.startIfReady();
     }

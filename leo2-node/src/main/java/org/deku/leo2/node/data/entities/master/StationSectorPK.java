@@ -7,13 +7,12 @@ import java.io.Serializable;
  * Created by JT on 29.06.15.
  */
 public class StationSectorPK implements Serializable {
-
     private static final long serialVersionUID = -5369887873791810474L;
+
     private int mStationNr;
     private String mSector;
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
+    public StationSectorPK() {
     }
 
     @Id
@@ -34,8 +33,8 @@ public class StationSectorPK implements Serializable {
         mSector = sector;
     }
 
-    public StationSectorPK(Integer stationNr,String sector ) {
-        mStationNr=stationNr;
-        mSector=sector;
+    public StationSectorPK(Integer stationNr, String sector) {
+        mStationNr = stationNr;
+        mSector = sector;
     }
 }

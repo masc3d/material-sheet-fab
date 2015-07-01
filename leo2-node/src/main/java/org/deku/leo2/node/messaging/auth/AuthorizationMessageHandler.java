@@ -10,7 +10,7 @@ import javax.jms.Session;
 /**
  * Created by masc on 30.06.15.
  */
-public class AuthorizationHandler implements Handler<AuthorizationMessage> {
+public class AuthorizationMessageHandler implements Handler<AuthorizationMessage> {
     @Override
     public void onMessage(AuthorizationMessage message, Session session) throws JMSException {
         IdentityConfiguration.instance().getIdentity().setId(message.getId());

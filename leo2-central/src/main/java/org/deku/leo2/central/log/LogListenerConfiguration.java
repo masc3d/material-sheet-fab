@@ -2,6 +2,7 @@ package org.deku.leo2.central.log;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deku.leo2.messaging.Broker;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.messaging.log.LogListener;
@@ -22,10 +23,9 @@ public class LogListenerConfiguration {
     /** Log listener instance */
     LogListener mLogListener;
 
-    private ActiveMQBroker.Listener mBrokerListener = new ActiveMQBroker.Listener() {
+    private Broker.EventListener mBrokerEventListener = new Broker.EventListener() {
         @Override
         public void onStart() {
-            mLog.info("Detected broker start, attaching listeners");
             mLogListener = new LogListener(ActiveMQContext.instance());
             mLogListener.start();
         }
@@ -34,7 +34,7 @@ public class LogListenerConfiguration {
     @PostConstruct
     public void onInitialize() {
         // Register to broker start
-        ActiveMQBroker.instance().getDelegate().add(mBrokerListener);
+        ActiveMQBroker.instance().getDelegate().add(mBrokerEventListener);
     }
 
     @PreDestroy

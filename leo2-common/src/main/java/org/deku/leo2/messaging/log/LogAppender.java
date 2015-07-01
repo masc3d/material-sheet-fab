@@ -37,7 +37,7 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
     /**
      * Broker listener, jms destination is automatically created when broker start is detected
      */
-    Broker.Listener mBrokerListener = new Broker.Listener() {
+    Broker.EventListener mBrokerEventListener = new Broker.EventListener() {
         @Override
         public void onStart() {
             mTemplate.execute(session -> {
@@ -64,9 +64,9 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
         mTemplate = new JmsTemplate(mMessagingContext.getBroker().getConnectionFactory());
         mTemplate.setSessionTransacted(true);
 
-        mMessagingContext.getBroker().getDelegate().add(mBrokerListener);
+        mMessagingContext.getBroker().getDelegate().add(mBrokerEventListener);
         if (mMessagingContext.getBroker().isStarted())
-            mBrokerListener.onStart();
+            mBrokerEventListener.onStart();
     }
 
     /**

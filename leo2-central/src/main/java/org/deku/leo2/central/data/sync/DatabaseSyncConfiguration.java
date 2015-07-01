@@ -35,7 +35,11 @@ public class DatabaseSyncConfiguration {
         mExecutorService = Executors.newSingleThreadScheduledExecutor();
         mExecutorService.scheduleWithFixedDelay(
                 () -> {
-                    mDatabaseSync.sync();
+                    try {
+                        mDatabaseSync.sync();
+                    } catch(Exception e) {
+                        mLog.error(e.getMessage(), e);
+                    }
                 },
                 // Initial delay
                 0,

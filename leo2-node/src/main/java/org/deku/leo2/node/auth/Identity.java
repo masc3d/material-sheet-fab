@@ -92,6 +92,7 @@ public class Identity {
 
             // Calculate digest and format to hex
             id.mKey = BaseEncoding.base16().encode(m.digest()).toLowerCase();
+            id.mSystemInformation = systemInformation;
 
             return id;
         } catch (Exception e) {

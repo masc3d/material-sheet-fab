@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.auth.AUTH;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
+import org.deku.leo2.node.App;
 import org.deku.leo2.node.LocalStorage;
 import sx.LazyInstance;
 
@@ -78,10 +79,13 @@ public class IdentityConfiguration {
 
         mLog.info(identity);
 
-        // Start authorizing process if there's no id yet
-        if (identity.getId() == null) {
-            mAuthorizer = new Authorizer(ActiveMQContext.instance());
-            mAuthorizer.start(identity);
+        // Start authorizer on client nodes
+        if (App.instance().getProfile() == App.PROFILE_CLIENT_NODE) {
+            // Start authorizing process if there's no id yet
+            if (identity.getId() == null) {
+                mAuthorizer = new Authorizer(ActiveMQContext.instance());
+                mAuthorizer.start(identity);
+            }
         }
 
         mIdentity = identity;
