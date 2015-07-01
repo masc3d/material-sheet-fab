@@ -41,7 +41,7 @@ public class EntitySyncConfiguration {
         EntitySync.instance().setEntityManagerFactory(mEntityManagerFactory);
 
         // Start when broker is started
-        ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerListener);
+        ActiveMQBroker.instance().getDelegate().add(mBrokerListener);
         if (ActiveMQBroker.instance().isStarted())
             mBrokerListener.onStart();
     }

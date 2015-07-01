@@ -14,21 +14,21 @@ import javax.jms.Session;
  */
 public class MessageListener extends SpringJmsListener {
     /** Application identity */
-    Integer mPeerId;
+    Identity mIdentity;
     MessagingContext mMessagingContext;
 
     /**
      * c'tor
      * @param messagingContext
      */
-    public MessageListener(MessagingContext messagingContext, Integer peerId) {
+    public MessageListener(MessagingContext messagingContext, Identity identity) {
         super(messagingContext.getBroker().getConnectionFactory());
-        mPeerId = peerId;
+        mIdentity = identity;
         mMessagingContext = messagingContext;
     }
 
     @Override
     protected Destination createDestination() {
-        return mMessagingContext.getNodeQueue(mPeerId);
+        return mMessagingContext.getNodeQueue(mIdentity.getId());
     }
 }

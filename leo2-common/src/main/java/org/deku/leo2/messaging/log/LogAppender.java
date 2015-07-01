@@ -64,7 +64,7 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
         mTemplate = new JmsTemplate(mMessagingContext.getBroker().getConnectionFactory());
         mTemplate.setSessionTransacted(true);
 
-        mMessagingContext.getBroker().getListenerEventDispatcher().add(mBrokerListener);
+        mMessagingContext.getBroker().getDelegate().add(mBrokerListener);
         if (mMessagingContext.getBroker().isStarted())
             mBrokerListener.onStart();
     }

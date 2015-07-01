@@ -3,7 +3,7 @@ package org.deku.leo2.node.messaging.auth.v1;
 import java.io.Serializable;
 
 /**
- * Message sent from node clients to central.
+ * Identity information message sent from node clients to central.
  * Created by masc on 30.06.15.
  */
 public class IdentityMessage implements Serializable {

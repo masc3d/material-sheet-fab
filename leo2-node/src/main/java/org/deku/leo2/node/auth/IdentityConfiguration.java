@@ -23,29 +23,29 @@ public class IdentityConfiguration {
 
     private Log mLog = LogFactory.getLog(this.getClass());
 
-    Identity mIdentity;
-    SystemInformation mSystemInformation;
-
+    /** Authorizer */
     Authorizer mAuthorizer;
 
     /** c'tor */
     private IdentityConfiguration() { }
 
     /**
-     * Node identity
+     * Application wide Node identity
      * @retur
      */
     public Identity getIdentity() {
         return mIdentity;
     }
+    private Identity mIdentity;
 
     /**
-     * System information
+     * Application wide system information
      * @return
      */
     public SystemInformation getSystemInformation() {
         return mSystemInformation;
     }
+    private SystemInformation mSystemInformation;
 
     /**
      * Initialize identity

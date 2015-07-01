@@ -7,6 +7,7 @@ import com.google.common.io.BaseEncoding;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import sx.event.*;
 
 import java.io.*;
 import java.net.*;
@@ -29,6 +30,15 @@ public class Identity {
     /** System information */
     private SystemInformation mSystemInformation;
 
+    //region Events
+    public interface Listener extends sx.event.EventListener {
+        void onIdUpdated(Identity identity);
+    }
+
+    private EventDispatcher<Listener> mEventDispatcher = EventDispatcher.createThreadSafe();
+    public EventDelegate<Listener> getDelegate() { return mEventDispatcher; }
+    //endregion
+
     /**
      * c'tor
      * @param id
@@ -41,11 +51,14 @@ public class Identity {
     }
     private Identity() { }
 
-    public Integer getId() {
+    public synchronized Integer getId() {
         return mId;
     }
 
-    public void setId(Integer id) { mId = id; }
+    public synchronized void setId(Integer id) {
+        mId = id;
+        mEventDispatcher.emit(listener -> listener.onIdUpdated(this));
+    }
 
     public String getKey() {
         return mKey;

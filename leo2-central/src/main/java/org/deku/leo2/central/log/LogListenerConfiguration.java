@@ -34,7 +34,7 @@ public class LogListenerConfiguration {
     @PostConstruct
     public void onInitialize() {
         // Register to broker start
-        ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerListener);
+        ActiveMQBroker.instance().getDelegate().add(mBrokerListener);
     }
 
     @PreDestroy

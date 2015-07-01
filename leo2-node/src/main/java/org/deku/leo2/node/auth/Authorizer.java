@@ -7,10 +7,7 @@ import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.messaging.auth.IdentityServiceClient;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
-import org.joda.time.Interval;
-import sx.LazyInstance;
 
-import javax.jms.JMSException;
 import java.util.concurrent.*;
 
 /**
@@ -41,13 +38,20 @@ public class Authorizer {
      * @param identity Identity to use to authorize
      */
     public void start(Identity identity) {
+        // Define authorization task.
+        // Start will be deferred until the message broker is up.
         mAuthorizationTask = () -> {
             boolean success = false;
             while (!success) {
                 try {
                     IdentityServiceClient isc = new IdentityServiceClient(ActiveMQContext.instance());
+
+                    // Request identitification
                     AuthorizationMessage authorizationMessage = isc.requestId(identity);
+
+                    // Set id based on response
                     identity.setId(authorizationMessage.getId());
+
                 } catch (TimeoutException e) {
                     mLog.error(e.getMessage());
                 } catch (Exception e) {
@@ -65,7 +69,8 @@ public class Authorizer {
             }
         };
 
-        mMessagingContext.getBroker().getListenerEventDispatcher().add(mBrokerListener);
+        // Register broker event
+        mMessagingContext.getBroker().getDelegate().add(mBrokerListener);
         if (mMessagingContext.getBroker().isStarted())
             mExecutorService.submit(mAuthorizationTask);
     }

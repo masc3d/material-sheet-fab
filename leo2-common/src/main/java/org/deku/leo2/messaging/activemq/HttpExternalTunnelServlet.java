@@ -32,7 +32,7 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet {
      */
     public HttpExternalTunnelServlet(URI publicUri) {
         mPublicUri = publicUri;
-        ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerEventListener);
+        ActiveMQBroker.instance().getDelegate().add(mBrokerEventListener);
     }
 
     /** Broker event listener */

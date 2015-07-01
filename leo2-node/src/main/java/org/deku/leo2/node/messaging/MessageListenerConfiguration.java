@@ -6,6 +6,8 @@ import org.deku.leo2.messaging.Broker;
 import org.deku.leo2.messaging.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.App;
+import org.deku.leo2.node.auth.Identity;
+import org.deku.leo2.node.auth.IdentityConfiguration;
 import org.deku.leo2.node.messaging.auth.AuthorizationHandler;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import org.springframework.context.annotation.Configuration;
@@ -26,28 +28,66 @@ public class MessageListenerConfiguration {
 
     MessageListener mMessageListener;
 
-    Broker.Listener mBrokerListner = new ActiveMQBroker.Listener() {
+    /**
+     * Broker event listener
+     */
+    Broker.Listener mBrokerEventListener = new ActiveMQBroker.Listener() {
         @Override
         public void onStart() {
-            mMessageListener.start();
+            startIfReady();
         }
     };
 
+    /**
+     * Identity event listener
+     */
+    Identity.Listener mIdentityEventListener = new Identity.Listener() {
+        @Override
+        public void onIdUpdated(Identity identity) {
+            startIfReady();
+        }
+    };
+
+    /**
+     * Indicates if message listener is ready to start (prerequisites are met)
+     * @return
+     */
+    private boolean isReadyToStart() {
+        return ActiveMQContext.instance().getBroker().isStarted() &&
+                IdentityConfiguration.instance().getIdentity().getId() != null;
+    }
+
+    /**
+     * Start message listener
+     */
+    private void startIfReady() {
+        if (mMessageListener != null) {
+            mMessageListener.dispose();
+            mMessageListener = null;
+        }
+
+        if (this.isReadyToStart()) {
+            // Configure and create listener
+            mMessageListener = new MessageListener(
+                    ActiveMQContext.instance(),
+                    IdentityConfiguration.instance().getIdentity());
+
+            // Add message handler delegatess
+            mMessageListener.addDelegate(AuthorizationMessage.class, new AuthorizationHandler());
+
+            mMessageListener.start();
+        }
+    }
+
     @PostConstruct
     public void onInitialize() {
-        mLog.info("Initializing peer message listener");
+        mLog.info("Initializing node message listener");
 
-        // Configure and create listener
-        mMessageListener = new MessageListener(
-                ActiveMQContext.instance(),
-                0);
+        // Register event listeners
+        ActiveMQBroker.instance().getDelegate().add(mBrokerEventListener);
+        IdentityConfiguration.instance().getIdentity().getDelegate().add(mIdentityEventListener);
 
-        // Add delegatess
-        mMessageListener.addDelegate(AuthorizationMessage.class, new AuthorizationHandler());
-
-        ActiveMQBroker.instance().getListenerEventDispatcher().add(mBrokerListner);
-        if (ActiveMQBroker.instance().isStarted())
-            mMessageListener.start();
+        this.startIfReady();
     }
 
     @PreDestroy

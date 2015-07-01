@@ -109,7 +109,7 @@ public abstract class Broker implements Disposable {
     /** Broker event dispatcher/delegate */
     private EventDispatcher<Listener> mListenerEventDispatcher = EventDispatcher.createThreadSafe();
 
-    public EventDelegate<Listener> getListenerEventDispatcher() {
+    public EventDelegate<Listener> getDelegate() {
         return mListenerEventDispatcher;
     }
     //endregion
