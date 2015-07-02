@@ -1,6 +1,7 @@
 package sx.jms;
 
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.Session;
 
 /**
@@ -8,5 +9,5 @@ import javax.jms.Session;
  * Created by masc on 28.06.15.
  */
 public interface Handler<T> {
-    void onMessage(T message, Session session) throws JMSException;
+    void onMessage(T message, Message jmsMessage, Session session) throws JMSException;
 }
