@@ -17,71 +17,59 @@ namespace LeoBridge.Service
         [OperationContract]
         [WebInvoke(
             RequestFormat = WebMessageFormat.Json,
-            ResponseFormat =  WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json,
             UriTemplate = "/rs/api/v1/routing/request",
             Method = "POST"
             )]
-        RoutingRequestResult request(RoutingRequest r);
+        RoutingRequestResult Request(RoutingRequest r);
     }
 
+    #region RoutingRequest
+    [ComVisible(true)]
+    public interface IRoutingRequest
+    {
+        String SendDate { get; set; }
+        String DeliveryDate { get; set; }
+        Participant Sender { get; set; }
+        Participant Consignee { get; set; }
+        int Services { get; set; }
+        double Weight { get; set; }
+    }
 
-    #region Entities
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.None)]
     [DataContract]
-    public class RoutingRequest : IRoutingrequest
+    public class RoutingRequest : IRoutingRequest
     {
         public RoutingRequest() { }
 
         [DataMember(Name = "sendDate", IsRequired = true)]
-        public String sendDate { get; set; }
+        public String SendDate { get; set; }
         [DataMember]
-        public String deliveryDate { get; set; }
+        public String DeliveryDate { get; set; }
         [DataMember]
-        public participant sender {get;set;}
+        public Participant Sender { get; set; }
         [DataMember]
-        public participant consignee { get; set; }
+        public Participant Consignee { get; set; }
         [DataMember]
-        public int services { get; set; }
+        public int Services { get; set; }
         [DataMember]
-        public double weight {get;set;}
-
+        public double Weight { get; set; }
     }
+    #endregion
 
+    #region RoutingRequestResult
     [ComVisible(true)]
-    public interface IRoutingrequest
+    public interface IRoutingRequestResult
     {
-        String sendDate { get; set; }
-        String deliveryDate { get; set; }
-        participant sender { get; set; }
-        participant consignee { get; set; }
-        int services { get; set; }
-        double weight { get; set; }
+        String SendDate { get; set; }
+        String DeliveryDate { get; set; }
+        RoutingParticipant Sender { get; set; }
+        RoutingParticipant Consignee { get; set; }
+        String[] ViaHubs { get; set; }
+        String LabelContent { get; set; }
+        String Message { get; set; }
     }
-
-    //[ComVisible(true)]
-    //[ClassInterface(ClassInterfaceType.None)]
-    //[DataContract]
-    //public class RoutingRequestResult2
-    //{
-    //    [DataMember(Name = "sendDate", IsRequired = true)]
-    //    public String sendDate;
-    //    [DataMember(Name = "deliveryDate", IsRequired = false)]
-    //    public String deliveryDate;
-    //    [DataMember(Name = "labelContent", IsRequired = false)]
-    //    public String labelContent;
-    //    [DataMember(Name = "message", IsRequired = false)]
-    //    public String message;
-
-    //    public override string ToString()
-    //    {
-    //        return "egal";
-    //    }
-    //}
-
-
-
-
 
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.None)]
@@ -91,69 +79,74 @@ namespace LeoBridge.Service
         public RoutingRequestResult() { }
 
         [DataMember(Name = "sendDate", IsRequired = true)]
-        public String sendDate { get; set; }
+        public String SendDate { get; set; }
 
         [DataMember(Name = "deliveryDate", IsRequired = false)]
-        public String deliveryDate { get; set; }
+        public String DeliveryDate { get; set; }
 
         [DataMember(Name = "sender", IsRequired = false)]
-        public RoutingParticipant sender { get; set; }
+        public RoutingParticipant Sender { get; set; }
 
         [DataMember(Name = "consignee", IsRequired = false)]
-        public RoutingParticipant consignee { get; set; }
+        public RoutingParticipant Consignee { get; set; }
 
         [DataMember(Name = "viaHubs", IsRequired = false)]
-        public String[] viaHubs { get; set; }
+        public String[] ViaHubs { get; set; }
 
         [DataMember(Name = "labelContent", IsRequired = false)]
-        public String labelContent { get; set; }
+        public String LabelContent { get; set; }
 
         [DataMember(Name = "message", IsRequired = false)]
-        public String message { get; set; }
+        public String Message { get; set; }
 
     }
+    #endregion
 
-
-
-
+    #region Participant
+    [ComVisible(true)]
+    public interface IParticipant
+    {
+        string Country { get; set; }
+        string Zip { get; set; }
+        string TimeFrom { get; set; }
+        string TimeTo { get; set; }
+    }
 
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.None)]
     [DataContract]
-    public class participant : IParticipant
+    public class Participant : IParticipant
     {
-        public participant() { }
-        [DataMember(IsRequired = false)]
-        public string country { get; set; }
-        [DataMember(IsRequired = false)]
-        public string zip { get; set; }
-        [DataMember(IsRequired = false)]
-        public string timeFrom { get; set; }
-        [DataMember(IsRequired = false)]
-        public string timeTo { get; set; }
+        public Participant() { }
 
+        [DataMember(IsRequired = false)]
+        public string Country { get; set; }
+        [DataMember(IsRequired = false)]
+        public string Zip { get; set; }
+        [DataMember(IsRequired = false)]
+        public string TimeFrom { get; set; }
+        [DataMember(IsRequired = false)]
+        public string TimeTo { get; set; }
     }
+    #endregion
 
+    #region RoutingParticiapnt
     [ComVisible(true)]
-    public interface IParticipant
-        {
-            string country { get; set; }
-            string zip { get; set; }
-            string timeFrom { get; set; }
-            string timeTo { get; set; }
-    }
-
-    [ComVisible(true)]
-    public interface IRoutingRequestResult
+    public interface IRoutingParticipant
     {
-        String sendDate { get; set; }
-        String deliveryDate { get; set; }
-        RoutingParticipant sender { get; set; }
-        RoutingParticipant consignee { get; set; }
-        String[] viaHubs { get; set; }
-        String labelContent { get; set; }
-        String message { get; set; }
-
+        string Station { get; set; }
+        string Country { get; set; }
+        string ZipCode { get; set; }
+        string Zone { get; set; }
+        string Sector { get; set; }
+        string DayType { get; set; }
+        Boolean Island { get; set; }
+        int Term { get; set; }
+        string EarliestTimeOfDelivery { get; set; }
+        string SaturdayDeliveryUntil { get; set; }
+        string SundayDeliveryUntil { get; set; }
+        string PickupUntil { get; set; }
+        string PartnerManager { get; set; }
     }
 
     [ComVisible(true)]
@@ -164,52 +157,32 @@ namespace LeoBridge.Service
         public RoutingParticipant() { }
 
         [DataMember(IsRequired = false)]
-        public string station { get; set; }
+        public string Station { get; set; }
         [DataMember(IsRequired = false)]
-        public string country { get; set; }
+        public string Country { get; set; }
         [DataMember(IsRequired = false)]
-        public string zipCode { get; set; }
+        public string ZipCode { get; set; }
         [DataMember(IsRequired = false)]
-        public string zone { get; set; }
+        public string Zone { get; set; }
         [DataMember(IsRequired = false)]
-        public string sector { get; set; }
+        public string Sector { get; set; }
         [DataMember(IsRequired = false)]
-        public string dayType { get; set; }
+        public string DayType { get; set; }
         [DataMember(IsRequired = false)]
-        public Boolean island { get; set; }
+        public Boolean Island { get; set; }
         [DataMember(IsRequired = false)]
-        public int term { get; set; }
+        public int Term { get; set; }
         [DataMember(IsRequired = false)]
-        public string earliestTimeOfDelivery { get; set; }
+        public string EarliestTimeOfDelivery { get; set; }
         [DataMember(IsRequired = false)]
-        public string saturdayDeliveryUntil { get; set; }
+        public string SaturdayDeliveryUntil { get; set; }
         [DataMember(IsRequired = false)]
-        public string sundayDeliveryUntil { get; set; }
+        public string SundayDeliveryUntil { get; set; }
         [DataMember(IsRequired = false)]
-        public string pickupUntil { get; set; }
+        public string PickupUntil { get; set; }
         [DataMember(IsRequired = false)]
-        public string partnerManager { get; set; }
+        public string PartnerManager { get; set; }
     }
-
-    [ComVisible(true)]
-    public interface IRoutingParticipant
-     {
-         string station { get; set; }
-         string country { get; set; }
-         string zipCode { get; set; }
-         string zone { get; set; }
-         string sector { get; set; }
-         string dayType { get; set; }
-         Boolean island { get; set; }
-         int term { get; set; }
-         string earliestTimeOfDelivery { get; set; }
-         string saturdayDeliveryUntil { get; set; }
-         string sundayDeliveryUntil { get; set; }
-         string pickupUntil { get; set; }
-         string partnerManager { get; set; }
-         }
-
-
     #endregion
 
     #region Proxy
@@ -217,41 +190,11 @@ namespace LeoBridge.Service
     {
         public RoutingServiceProxy(ChannelFactory<IRoutingService> factory)
             : base(factory) { }
-        public RoutingRequestResult request(RoutingRequest r)
+
+        public RoutingRequestResult Request(RoutingRequest r)
         {
-            try
-            {
-                DateTime dDat = DateTime.Parse(r.sendDate);
-                r.sendDate = dDat.ToString("yyyy-MM-dd");
-            }
-            catch
-            {
-                r.sendDate = System.DateTime.Now.ToString("yyyy-MM-dd");
-            }
-            try
-            {
-                DateTime dDat = DateTime.Parse(r.deliveryDate);
-                r.deliveryDate = dDat.ToString("yyyy-MM-dd");
-            }
-            catch
-            {
-                r.deliveryDate = System.DateTime.Now.ToString("yyyy-MM-dd");
-            }
-            try
-            {
-                return this.ServiceClient.request(r);
-            }
-            catch ( Exception e)
-            {
-                Console.WriteLine("EX [{0}]", e.Message);
-                
-                Exception ex = e;
-
-              throw;
-            }
-
+            return this.ServiceClient.Request(r);
         }
-
     }
     #endregion
 }
