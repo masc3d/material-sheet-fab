@@ -6,18 +6,20 @@ import sx.Disposable;
 
 import javax.jms.*;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Lightweight jms listener abstraction.
  * This is the top level abstract class, only binding a connection factory.
  * Created by masc on 16.04.15.
  */
-public abstract class Listener implements Disposable, ExceptionListener, Handler<Message> {
+public abstract class Listener implements Disposable, ExceptionListener {
     private Log mLog;
+    /** Connection factory */
     private ConnectionFactory mConnectionFactory;
+    /** Object message handler delegates */
     private HashMap<Class, Handler> mHandlerDelegates = new HashMap<Class, Handler>();
-    private Converter mConverter = null;
+    /** Message converter */
+    private MessageConverter mMessageConverter = null;
 
     /**
      * Message handling exception
@@ -45,20 +47,25 @@ public abstract class Listener implements Disposable, ExceptionListener, Handler
         return mConnectionFactory;
     }
 
-    public Converter getConverter() {
-        return mConverter;
+    public MessageConverter getMessageConverter() {
+        return mMessageConverter;
     }
 
-    public void setConverter(Converter converter) {
-        mConverter = converter;
+    public void setMessageConverter(MessageConverter messageConverter) {
+        mMessageConverter = messageConverter;
     }
 
-    @Override
-    public void onMessage(Message message, Session session) throws JMSException {
+    /**
+     * Default message handler with support for object message delegates
+     * @param message
+     * @param session
+     * @throws JMSException
+     */
+    protected void onMessage(Message message, Session session) throws JMSException {
         Object messageObject = null;
 
-        if (mConverter != null)
-            messageObject = mConverter.fromMessage(message);
+        if (mMessageConverter != null)
+            messageObject = mMessageConverter.fromMessage(message);
 
         Handler handler = null;
 
@@ -75,7 +82,7 @@ public abstract class Listener implements Disposable, ExceptionListener, Handler
                     Message.class));
         }
 
-        handler.onMessage(messageObject, session);
+        handler.onMessage(messageObject, message, session);
     }
 
     /**

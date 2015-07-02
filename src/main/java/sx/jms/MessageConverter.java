@@ -10,7 +10,7 @@ import javax.jms.Session;
  * JMS message converter
  * Created by masc on 28.06.15.
  */
-public interface Converter {
+public interface MessageConverter {
     /**
      * Convert a Java object to a JMS Message using the supplied session
      * to create the message object.
