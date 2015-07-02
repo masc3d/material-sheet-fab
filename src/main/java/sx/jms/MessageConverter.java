@@ -1,7 +1,5 @@
 package sx.jms;
 
-import org.springframework.jms.support.converter.MessageConversionException;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
