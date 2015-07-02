@@ -211,7 +211,7 @@ public class ActiveMQBroker extends Broker {
      */
     @Override
     protected void stopImpl() throws Exception {
-        if (mBrokerService != null) {
+        if (mBrokerService != null && mBrokerService.isStarted()) {
             mBrokerService.stop();
             mBrokerService = null;
         }

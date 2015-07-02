@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Lazy;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import javax.swing.text.html.parser.Entity;
 
 /**
  * Created by masc on 20.06.15.
@@ -29,6 +30,11 @@ public class EntitySyncConfiguration {
         @Override
         public void onStart() {
             EntitySync.instance().start();
+        }
+
+        @Override
+        public void onStop() {
+            EntitySync.instance().dispose();
         }
     };
 

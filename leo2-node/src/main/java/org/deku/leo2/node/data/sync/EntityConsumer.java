@@ -57,6 +57,7 @@ public class EntityConsumer implements Disposable {
      */
     public void request(Class entityType) {
         mExecutorService.submit(() -> {
+            TemporaryQueue receiveQueue = null;
             try {
                 mObjectMessageConverter.resetStatistics();
 
@@ -72,7 +73,7 @@ public class EntityConsumer implements Disposable {
                 Stopwatch sw = Stopwatch.createStarted();
 
                 Queue requestQueue = mMessagingContext.getCentralEntitySyncQueue();
-                TemporaryQueue receiveQueue = session.createTemporaryQueue();
+                receiveQueue = session.createTemporaryQueue();
 
                 mLog.info(String.format("Requesting entities of type [%s]", entityType.toString()));
 
@@ -172,6 +173,9 @@ public class EntityConsumer implements Disposable {
                 mLog.error(e.getMessage());
             } catch (Exception e) {
                 mLog.error(e.getMessage(), e);
+            } finally {
+                if (receiveQueue != null)
+                    receiveQueue.delete();
             }
 
             return null;

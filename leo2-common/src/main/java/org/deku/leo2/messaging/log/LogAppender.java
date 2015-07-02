@@ -50,6 +50,11 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
                     5,
                     TimeUnit.SECONDS);
         }
+
+        @Override
+        public void onStop() {
+            dispose();
+        }
     };
 
     /**

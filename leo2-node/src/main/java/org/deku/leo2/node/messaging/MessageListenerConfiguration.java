@@ -36,6 +36,11 @@ public class MessageListenerConfiguration {
         public void onStart() {
             startIfReady();
         }
+
+        @Override
+        public void onStop() {
+            stop();
+        }
     };
 
     /**
@@ -61,10 +66,7 @@ public class MessageListenerConfiguration {
      * Start message listener
      */
     private void startIfReady() {
-        if (mMessageListener != null) {
-            mMessageListener.dispose();
-            mMessageListener = null;
-        }
+        this.stop();
 
         if (this.isReadyToStart()) {
             // Configure and create listener
@@ -76,6 +78,13 @@ public class MessageListenerConfiguration {
             mMessageListener.addDelegate(AuthorizationMessage.class, new AuthorizationMessageHandler());
 
             mMessageListener.start();
+        }
+    }
+
+    private void stop() {
+        if (mMessageListener != null) {
+            mMessageListener.dispose();
+            mMessageListener = null;
         }
     }
 

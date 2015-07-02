@@ -55,6 +55,11 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet {
                 throw new RuntimeException(e);
             }
         }
+
+        @Override
+        public void onStop() {
+
+        }
     }
 
     @Override

@@ -103,6 +103,7 @@ public abstract class Broker implements Disposable {
     /** Broker event listener interface */
     public interface EventListener extends sx.event.EventListener {
         void onStart();
+        void onStop();
     }
 
     /** Broker event dispatcher/delegate */
@@ -142,6 +143,9 @@ public abstract class Broker implements Disposable {
      * @throws Exception
      */
     public synchronized final void stop() throws Exception {
+        if (this.isStarted()) {
+            mListenerEventDispatcher.emit(EventListener::onStop);
+        }
         this.stopImpl();
     }
 

@@ -8,13 +8,14 @@ import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.LocalStorage;
 import org.deku.leo2.node.messaging.auth.IdentityServiceClient;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
+import sx.Disposable;
 
 import java.util.concurrent.*;
 
 /**
  * Created by masc on 01.07.15.
  */
-public class Authorizer {
+public class Authorizer implements Disposable {
     Log mLog = LogFactory.getLog(this.getClass());
 
     /** Messaging context */
@@ -29,6 +30,11 @@ public class Authorizer {
         public void onStart() {
             if (mAuthorizationTask != null)
                 mExecutorService.submit(mAuthorizationTask);
+        }
+
+        @Override
+        public void onStop() {
+            dispose();
         }
     };
 
@@ -84,5 +90,15 @@ public class Authorizer {
         mMessagingContext.getBroker().getDelegate().add(mBrokerEventListener);
         if (mMessagingContext.getBroker().isStarted())
             mExecutorService.submit(mAuthorizationTask);
+    }
+
+    @Override
+    public void dispose() {
+        mExecutorService.shutdown();
+        try {
+            mExecutorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            mLog.error(e.getMessage(), e);
+        }
     }
 }

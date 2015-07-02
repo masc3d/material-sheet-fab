@@ -36,16 +36,18 @@ public class MessageListenerConfiguration {
         public void onStart() {
             startIfReady();
         }
+
+        @Override
+        public void onStop() {
+            stop();
+        }
     };
 
     /**
      * Start message listener
      */
     private void startIfReady() {
-        if (mMessageListener != null) {
-            mMessageListener.dispose();
-            mMessageListener = null;
-        }
+        this.stop();
 
         if (ActiveMQContext.instance().getBroker().isStarted()) {
             // Configure and create listener
@@ -57,6 +59,16 @@ public class MessageListenerConfiguration {
                             mNodeJooqRepository));
 
             mMessageListener.start();
+        }
+    }
+
+    /**
+     * Stop message listener
+     */
+    private void stop() {
+        if (mMessageListener != null) {
+            mMessageListener.dispose();
+            mMessageListener = null;
         }
     }
 

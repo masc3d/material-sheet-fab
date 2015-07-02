@@ -34,6 +34,11 @@ public class EntitySyncConfiguration {
             mLog.info("Detected broker start, initializing entity sync");
             EntitySync.instance().start();
         }
+
+        @Override
+        public void onStop() {
+            EntitySync.instance().stop();
+        }
     };
 
     @PostConstruct

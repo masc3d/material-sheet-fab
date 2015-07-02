@@ -29,6 +29,12 @@ public class LogListenerConfiguration {
             mLogListener = new LogListener(ActiveMQContext.instance());
             mLogListener.start();
         }
+
+        @Override
+        public void onStop() {
+            if (mLogListener != null)
+                mLogListener.stop();
+        }
     };
 
     @PostConstruct
