@@ -1,7 +1,6 @@
 package org.deku.leo2.node.data;
 
 import org.deku.leo2.node.DataTest;
-import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.junit.Test;
 
 import javax.persistence.EntityManagerFactory;

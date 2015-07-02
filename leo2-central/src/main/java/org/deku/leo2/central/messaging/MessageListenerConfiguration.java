@@ -3,12 +3,12 @@ package org.deku.leo2.central.messaging;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.data.repositories.jooq.NodeJooqRepository;
-import sx.jms.embedded.Broker;
-import sx.jms.embedded.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.messaging.auth.v1.IdentityMessage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import sx.jms.embedded.Broker;
+import sx.jms.embedded.activemq.ActiveMQBroker;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

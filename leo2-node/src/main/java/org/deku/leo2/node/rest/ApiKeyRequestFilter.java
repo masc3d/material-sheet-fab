@@ -1,7 +1,5 @@
 package org.deku.leo2.node.rest;
 
-import org.h2.server.web.WebApp;
-
 import javax.inject.Named;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;

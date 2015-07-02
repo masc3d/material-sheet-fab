@@ -2,7 +2,6 @@ package org.deku.leo2.node.auth;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.auth.AUTH;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.App;
 import org.deku.leo2.node.LocalStorage;

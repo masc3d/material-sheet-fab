@@ -7,9 +7,9 @@ import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.data.PersistenceUtil;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
-import sx.jms.converters.DefaultMessageConverter;
 import org.springframework.jms.core.JmsTemplate;
 import sx.Disposable;
+import sx.jms.converters.DefaultMessageConverter;
 
 import javax.jms.*;
 import javax.persistence.EntityManager;
@@ -18,7 +18,10 @@ import java.lang.IllegalStateException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**

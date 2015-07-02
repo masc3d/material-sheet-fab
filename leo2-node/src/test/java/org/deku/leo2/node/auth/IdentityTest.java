@@ -1,6 +1,5 @@
 package org.deku.leo2.node.auth;
 
-import ch.qos.logback.core.util.SystemInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;

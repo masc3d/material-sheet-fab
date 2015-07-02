@@ -4,11 +4,12 @@ import com.google.common.primitives.Ints;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.expr.BooleanExpression;
 import org.deku.leo2.node.data.entities.master.*;
-import org.deku.leo2.node.data.entities.master.RoutingLayer;
 import org.deku.leo2.node.data.repositories.master.*;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.ShortTime;
-import org.deku.leo2.rest.entities.v1.*;
+import org.deku.leo2.rest.entities.v1.DayType;
+import org.deku.leo2.rest.entities.v1.Routing;
+import org.deku.leo2.rest.entities.v1.RoutingRequest;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -18,7 +19,9 @@ import javax.ws.rs.core.MediaType;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by masc on 20.04.15.

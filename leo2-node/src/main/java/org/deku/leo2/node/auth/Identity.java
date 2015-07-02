@@ -1,20 +1,15 @@
 package org.deku.leo2.node.auth;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.io.BaseEncoding;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import sx.event.*;
+import sx.event.EventDelegate;
+import sx.event.EventDispatcher;
 
 import java.io.*;
-import java.net.*;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.Properties;
 
 /**
  * Holds all identity information for a leo2 node including system information

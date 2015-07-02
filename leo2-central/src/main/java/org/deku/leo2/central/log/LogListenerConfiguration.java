@@ -2,12 +2,12 @@ package org.deku.leo2.central.log;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sx.jms.embedded.Broker;
-import sx.jms.embedded.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.messaging.log.LogListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import sx.jms.embedded.Broker;
+import sx.jms.embedded.activemq.ActiveMQBroker;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

@@ -1,6 +1,5 @@
 package org.deku.leo2.node.messaging.auth;
 
-import org.deku.leo2.node.auth.IdentityConfiguration;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import sx.jms.Handler;
 

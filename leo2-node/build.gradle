@@ -1,4 +1,5 @@
 apply plugin: 'application'
+apply plugin: 'scala'
 
 sourceCompatibility = 1.8
 version = '0.1'
@@ -8,6 +9,8 @@ dependencies {
     // leo2 webservice dependencies
     compile project(':sx-common')
     compile project(':leo2-common')
+
+    compile 'org.scala-lang:scala-library:2.11.7'
 
     // spring
     compile 'org.springframework.data:spring-data-jpa:1.8.+'

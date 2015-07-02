@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.log.v1.LogMessage;
-import org.springframework.jms.support.converter.SimpleMessageConverter;
 import sx.jms.Handler;
 import sx.jms.SpringJmsListener;
 import sx.jms.converters.DefaultMessageConverter;

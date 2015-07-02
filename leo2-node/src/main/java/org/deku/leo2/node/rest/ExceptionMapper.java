@@ -1,12 +1,10 @@
 package org.deku.leo2.node.rest;
 
 import com.fasterxml.jackson.core.JsonLocation;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sx.util.Cast;
 
 import javax.inject.Named;
 import javax.ws.rs.WebApplicationException;

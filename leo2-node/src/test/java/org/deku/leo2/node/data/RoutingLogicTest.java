@@ -1,10 +1,7 @@
 package org.deku.leo2.node.data;
 
 import org.deku.leo2.node.DataTest;
-import org.deku.leo2.node.rest.services.v1.RoutingService;
 import org.junit.Test;
-
-import javax.inject.Inject;
 
 /**
  * Created by JT on 15.05.15.

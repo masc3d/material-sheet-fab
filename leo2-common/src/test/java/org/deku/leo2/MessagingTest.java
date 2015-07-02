@@ -2,10 +2,10 @@ package org.deku.leo2;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import sx.jms.embedded.Broker;
-import sx.jms.embedded.activemq.ActiveMQBroker;
 import org.junit.After;
 import org.junit.Before;
+import sx.jms.embedded.Broker;
+import sx.jms.embedded.activemq.ActiveMQBroker;
 
 /**
  * Created by masc on 16.06.15.

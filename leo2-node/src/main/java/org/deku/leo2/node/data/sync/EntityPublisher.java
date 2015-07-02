@@ -6,9 +6,9 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
-import sx.jms.converters.DefaultMessageConverter;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import sx.jms.SpringJmsListener;
+import sx.jms.converters.DefaultMessageConverter;
 
 import javax.jms.*;
 import javax.persistence.EntityManager;

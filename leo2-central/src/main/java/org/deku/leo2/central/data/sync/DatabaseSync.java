@@ -12,7 +12,6 @@ import org.deku.leo2.central.data.entities.jooq.tables.records.*;
 import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
 import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.deku.leo2.node.data.entities.master.*;
-import org.deku.leo2.node.data.entities.master.RoutingLayer;
 import org.deku.leo2.node.data.entities.system.Property;
 import org.deku.leo2.node.data.entities.system.QProperty;
 import org.deku.leo2.node.data.repositories.master.*;

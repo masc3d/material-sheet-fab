@@ -2,14 +2,12 @@ package org.deku.leo2.central.data.sync;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.h2.engine.Database;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;

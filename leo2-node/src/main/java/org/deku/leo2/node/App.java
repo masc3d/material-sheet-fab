@@ -5,7 +5,6 @@ import ch.qos.logback.classic.LoggerContext;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sx.jms.embedded.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.messaging.log.LogAppender;
 import org.deku.leo2.node.auth.IdentityConfiguration;
@@ -21,6 +20,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import sx.Disposable;
 import sx.LazyInstance;
+import sx.jms.embedded.activemq.ActiveMQBroker;
 
 import java.io.File;
 import java.io.IOException;

@@ -2,15 +2,18 @@ package org.deku.leo2.node.auth;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sx.jms.embedded.Broker;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.LocalStorage;
 import org.deku.leo2.node.messaging.auth.IdentityServiceClient;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import sx.Disposable;
+import sx.jms.embedded.Broker;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by masc on 01.07.15.

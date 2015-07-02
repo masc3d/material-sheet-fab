@@ -1,7 +1,7 @@
 package org.deku.leo2.messaging.activemq;
 
-import sx.jms.embedded.Broker;
 import org.deku.leo2.messaging.MessagingContext;
+import sx.jms.embedded.Broker;
 import sx.jms.embedded.activemq.ActiveMQBroker;
 
 import javax.jms.Queue;

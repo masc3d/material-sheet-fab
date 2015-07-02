@@ -3,11 +3,11 @@ package org.deku.leo2.central.data.sync;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.App;
-import sx.jms.embedded.Broker;
-import sx.jms.embedded.activemq.ActiveMQBroker;
 import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import sx.jms.embedded.Broker;
+import sx.jms.embedded.activemq.ActiveMQBroker;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;

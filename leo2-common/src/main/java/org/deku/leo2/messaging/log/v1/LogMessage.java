@@ -1,6 +1,5 @@
 package org.deku.leo2.messaging.log.v1;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import org.slf4j.helpers.MessageFormatter;
 

@@ -1,12 +1,17 @@
 package org.deku.leo2.rest.services.v1;
 
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingRequest;
-//import org.deku.leo2.rest.entities.v1.RoutingVia;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+
+//import org.deku.leo2.rest.entities.v1.RoutingVia;
 
 /**
  * Created by masc on 17.09.14.

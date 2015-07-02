@@ -6,8 +6,8 @@ import org.deku.leo2.central.data.entities.jooq.tables.records.MstNodeRecord;
 import org.deku.leo2.central.data.repositories.jooq.NodeJooqRepository;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import org.deku.leo2.node.messaging.auth.v1.IdentityMessage;
-import sx.jms.MessageConverter;
 import sx.jms.Handler;
+import sx.jms.MessageConverter;
 import sx.jms.converters.DefaultMessageConverter;
 
 import javax.jms.*;

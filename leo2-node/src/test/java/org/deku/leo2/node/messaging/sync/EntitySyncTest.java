@@ -17,7 +17,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import java.net.URI;
 
 /**
  * Created by masc on 18.06.15.

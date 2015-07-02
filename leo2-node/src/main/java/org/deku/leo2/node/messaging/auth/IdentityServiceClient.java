@@ -6,17 +6,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.auth.Identity;
-import org.deku.leo2.node.auth.SystemInformation;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import org.deku.leo2.node.messaging.auth.v1.IdentityMessage;
-import sx.concurrent.Task;
-import sx.concurrent.TaskCallback;
 import sx.jms.converters.DefaultMessageConverter;
 
 import javax.jms.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
 /**
