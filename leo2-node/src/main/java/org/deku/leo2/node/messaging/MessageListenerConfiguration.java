@@ -101,6 +101,7 @@ public class MessageListenerConfiguration {
 
     @PreDestroy
     public void onDestroy() {
-        mMessageListener.stop();
+        if (mMessageListener != null)
+            mMessageListener.stop();
     }
 }

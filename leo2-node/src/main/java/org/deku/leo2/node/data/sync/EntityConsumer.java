@@ -90,8 +90,6 @@ public class EntityConsumer implements Disposable {
                 msg.setJMSReplyTo(receiveQueue);
                 mp.send(msg);
 
-                session.commit();
-
                 // Receive entity update message
                 MessageConsumer mc = session.createConsumer(receiveQueue);
                 msg = mc.receive(RECEIVE_TIMEOUT);

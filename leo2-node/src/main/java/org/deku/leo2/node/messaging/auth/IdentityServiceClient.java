@@ -95,8 +95,6 @@ public class IdentityServiceClient {
         }
         mp.send(message);
 
-        session.commit();
-
         // Receive authorization message (on demand)
         if (receive) {
             MessageConsumer mc = session.createConsumer(receiveQueue);
