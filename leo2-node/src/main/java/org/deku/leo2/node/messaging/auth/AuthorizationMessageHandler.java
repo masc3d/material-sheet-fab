@@ -14,6 +14,6 @@ import javax.jms.Session;
 public class AuthorizationMessageHandler implements Handler<AuthorizationMessage> {
     @Override
     public void onMessage(AuthorizationMessage message, Message jmsMessage, Session session) throws JMSException {
-        IdentityConfiguration.instance().getIdentity().setId(message.getId());
+        // TODO: Push authorization update handling
     }
 }

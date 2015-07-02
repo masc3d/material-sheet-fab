@@ -61,6 +61,7 @@ public class Authorizer {
                         identity.setId(authorizationMessage.getId());
                         identity.store(LocalStorage.instance().getIdentityConfigurationFile());
                     }
+                    success = true;
                 } catch (TimeoutException e) {
                     mLog.error(e.getMessage());
                 } catch (Exception e) {
@@ -76,6 +77,7 @@ public class Authorizer {
                     }
                 }
             }
+            mExecutorService.shutdown();
         };
 
         // Register broker event
