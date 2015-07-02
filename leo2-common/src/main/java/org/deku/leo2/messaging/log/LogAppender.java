@@ -93,6 +93,8 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
 
                 MessageProducer mp = session.createProducer(mMessagingContext.getCentralLogQueue());
                 mp.setDeliveryMode(DeliveryMode.PERSISTENT);
+                // Log messages live a few days before they are purged by the broker
+                mp.setTimeToLive(TimeUnit.DAYS.toMillis(2));
                 mp.setPriority(1);
                 mp.send(mMessageConverter.toMessage(
                         logMessageBuffer.toArray(new LogMessage[0]),

@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by masc on 18.06.15.
@@ -80,6 +81,7 @@ public class EntityPublisher extends SpringJmsListener {
 
         MessageProducer mp = session.createProducer(message.getJMSReplyTo());
         mp.setPriority(1);
+        mp.setTimeToLive(TimeUnit.MINUTES.toMillis(1));
         mp.send(messageConverter.toMessage(euMessage, session));
 
         if (count > 0) {

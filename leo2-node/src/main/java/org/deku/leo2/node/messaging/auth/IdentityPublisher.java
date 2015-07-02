@@ -11,6 +11,7 @@ import org.deku.leo2.node.messaging.auth.v1.IdentityMessage;
 import sx.jms.converters.DefaultMessageConverter;
 
 import javax.jms.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -69,7 +70,7 @@ public class IdentityPublisher {
 
         // Message producer
         MessageProducer mp = session.createProducer(mMessagingContext.getCentralQueue());
-        mp.setTimeToLive(10 * 1000);
+        mp.setTimeToLive(TimeUnit.SECONDS.toMillis(10));
         mp.setPriority(8);
         mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 

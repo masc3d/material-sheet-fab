@@ -87,7 +87,7 @@ public class EntityConsumer implements Disposable {
                 // Send entity state message
                 MessageProducer mp = session.createProducer(requestQueue);
                 mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-                mp.setTimeToLive(5 * 60 * 1000);
+                mp.setTimeToLive(TimeUnit.MINUTES.toMillis(3));
                 Message msg = mObjectMessageConverter.toMessage(
                         new EntityStateMessage(entityType, timestamp),
                         session);

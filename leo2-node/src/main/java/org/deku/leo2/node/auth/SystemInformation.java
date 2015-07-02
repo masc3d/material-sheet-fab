@@ -1,5 +1,6 @@
 package org.deku.leo2.node.auth;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.ArrayUtils;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  * Generic system information
  * Created by masc on 01.07.15.
  */
+@JsonPropertyOrder( { "hardwareAddress", "hostname", "networkAddresses" } )
 public class SystemInformation implements Serializable {
     private static final long serialVersionUID = 1558995436722991648L;
 
