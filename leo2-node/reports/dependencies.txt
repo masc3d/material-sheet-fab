@@ -101,6 +101,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
++--- org.scala-lang:scala-library:2.11.7
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
 |    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -380,6 +381,7 @@ default - Configuration for default artifacts.
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
++--- org.scala-lang:scala-library:2.11.7
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
 |    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -665,6 +667,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
++--- org.scala-lang:scala-library:2.11.7
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
 |    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -944,6 +947,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
++--- org.scala-lang:scala-library:2.11.7
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
 |    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -1228,6 +1232,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
++--- org.scala-lang:scala-library:2.11.7
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
 |    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -1417,4 +1422,5 @@ testRuntime - Runtime classpath for source set 'test'.
 \--- org.springframework:spring-test: -> 4.1.6.RELEASE
      \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 
-(*) - dependencies omitted (listed previously)
+zinc - The Zinc incremental compiler to be used for this Scala project.
+No dependencies

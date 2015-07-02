@@ -1,5 +1,7 @@
 package org.deku.leo2.node.messaging.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
@@ -80,18 +82,26 @@ public class IdentityServiceClient {
         identityMessage.setId(identity.getId());
         identityMessage.setKey(identity.getKey());
         identityMessage.setHardwareAddress(identity.getSystemInformation().getHardwareAddress());
-        // TODO: serialize to json
-        identityMessage.setSystemInfo(identity.getSystemInformation().toString());
 
-        // Convert ands send
+        // Serialize system info to json
+        ObjectMapper jsonMapper = new ObjectMapper();
+        String systemInformationJson;
+        try {
+            systemInformationJson = jsonMapper.writeValueAsString(identity.getSystemInformation());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        identityMessage.setSystemInfo(systemInformationJson);
+
+        // Convert and send
         Message message = mConverter.toMessage(identityMessage, session);
         if (receive) {
             receiveQueue = session.createTemporaryQueue();
             message.setJMSReplyTo(receiveQueue);
         }
+        mp.send(message);
 
-        mp.send(mConverter.toMessage(identityMessage, session));
-
+        // Receive authorization message (on demand)
         if (receive) {
             MessageConsumer mc = session.createConsumer(receiveQueue);
             message = mc.receive(10 * 1000);

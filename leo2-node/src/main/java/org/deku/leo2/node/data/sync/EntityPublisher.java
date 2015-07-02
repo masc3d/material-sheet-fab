@@ -44,7 +44,7 @@ public class EntityPublisher extends SpringJmsListener {
                 DefaultMessageConverter.SerializationType.KRYO,
                 DefaultMessageConverter.CompressionType.GZIP);
 
-        this.setConverter(mMessageConverter);
+        this.setMessageConverter(mMessageConverter);
     }
 
     @Override

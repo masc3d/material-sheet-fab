@@ -30,7 +30,10 @@ import java.util.Properties;
  * Created by masc on 28.08.14.
  */
 @Configuration(PersistenceConfiguration.DB_CENTRAL)
-@ComponentScan(lazyInit = true)
+@ComponentScan(lazyInit = true,
+        // Exclude configuration from component scan (for test run efficiency)
+        excludeFilters =
+                { @ComponentScan.Filter(value = { Configuration.class } )})
 @Import(org.deku.leo2.node.data.PersistenceConfiguration.class)
 @EnableConfigurationProperties
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)

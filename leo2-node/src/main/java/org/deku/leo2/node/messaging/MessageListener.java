@@ -6,9 +6,6 @@ import sx.jms.SpringJmsListener;
 import sx.jms.converters.DefaultMessageConverter;
 
 import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 
 /**
  * Created by masc on 27.06.15.
@@ -25,7 +22,7 @@ public class MessageListener extends SpringJmsListener {
     public MessageListener(MessagingContext messagingContext, Identity identity) {
         super(messagingContext.getBroker().getConnectionFactory());
 
-        this.setConverter(new DefaultMessageConverter(
+        this.setMessageConverter(new DefaultMessageConverter(
                 DefaultMessageConverter.SerializationType.KRYO,
                 DefaultMessageConverter.CompressionType.GZIP));
 

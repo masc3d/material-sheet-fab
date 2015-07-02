@@ -54,9 +54,11 @@ public class IdentityConfiguration {
     public void initialize() {
         Identity identity = null;
 
+        // Collect system information
         mSystemInformation = SystemInformation.create();
         mLog.info(mSystemInformation);
 
+        // Verify and read existing identity file
         File identityFile = LocalStorage.instance().getIdentityConfigurationFile();
         if (identityFile.exists()) {
             try {
@@ -76,16 +78,12 @@ public class IdentityConfiguration {
                 throw new RuntimeException(e);
             }
         }
-
         mLog.info(identity);
 
-        // Start authorizer on client nodes
+        // Start authorizer (on client nodes only)
         if (App.instance().getProfile() == App.PROFILE_CLIENT_NODE) {
-            // Start authorizing process if there's no id yet
-            if (identity.getId() == null) {
-                mAuthorizer = new Authorizer(ActiveMQContext.instance());
-                mAuthorizer.start(identity);
-            }
+            mAuthorizer = new Authorizer(ActiveMQContext.instance());
+            mAuthorizer.start(identity);
         }
 
         mIdentity = identity;

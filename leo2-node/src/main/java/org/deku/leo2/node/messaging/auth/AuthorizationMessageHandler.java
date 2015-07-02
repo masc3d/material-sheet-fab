@@ -5,6 +5,7 @@ import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import sx.jms.Handler;
 
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.Session;
 
 /**
@@ -12,7 +13,7 @@ import javax.jms.Session;
  */
 public class AuthorizationMessageHandler implements Handler<AuthorizationMessage> {
     @Override
-    public void onMessage(AuthorizationMessage message, Session session) throws JMSException {
+    public void onMessage(AuthorizationMessage message, Message jmsMessage, Session session) throws JMSException {
         IdentityConfiguration.instance().getIdentity().setId(message.getId());
     }
 }

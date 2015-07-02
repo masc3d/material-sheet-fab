@@ -45,4 +45,13 @@ public class IdentityMessage implements Serializable {
     public void setSystemInfo(String systemInfo) {
         mSystemInfo = systemInfo;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Identity message node id [%s] key [%s] hw address [%s] system info [%s]",
+                mId,
+                mKey,
+                mHardwareAddress,
+                mSystemInfo);
+    }
 }

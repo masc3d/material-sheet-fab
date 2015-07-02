@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.Broker;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
+import org.deku.leo2.node.LocalStorage;
 import org.deku.leo2.node.messaging.auth.IdentityServiceClient;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 
@@ -49,12 +50,17 @@ public class Authorizer {
                 try {
                     IdentityServiceClient isc = new IdentityServiceClient(ActiveMQContext.instance());
 
-                    // Request identitification
-                    AuthorizationMessage authorizationMessage = isc.requestId(identity);
+                    if (identity.hasId()) {
+                        // Simply publish id
+                        isc.publish(identity);
+                    } else {
+                        // Synchronous request for id
+                        AuthorizationMessage authorizationMessage = isc.requestId(identity);
 
-                    // Set id based on response
-                    identity.setId(authorizationMessage.getId());
-
+                        // Set id based on response and store identity
+                        identity.setId(authorizationMessage.getId());
+                        identity.store(LocalStorage.instance().getIdentityConfigurationFile());
+                    }
                 } catch (TimeoutException e) {
                     mLog.error(e.getMessage());
                 } catch (Exception e) {

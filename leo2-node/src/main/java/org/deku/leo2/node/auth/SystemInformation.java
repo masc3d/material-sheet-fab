@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -19,7 +20,9 @@ import java.util.stream.Collectors;
  * Generic system information
  * Created by masc on 01.07.15.
  */
-public class SystemInformation {
+public class SystemInformation implements Serializable {
+    private static final long serialVersionUID = 1558995436722991648L;
+
     private static Log mLog = LogFactory.getLog(SystemInformation.class);
 
     private String mHostname = null;
