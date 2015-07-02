@@ -64,22 +64,23 @@ public abstract class Listener implements Disposable, ExceptionListener {
     protected void onMessage(Message message, Session session) throws JMSException {
         Object messageObject = null;
 
-        if (mMessageConverter != null)
-            messageObject = mMessageConverter.fromMessage(message);
-
         Handler handler = null;
 
-        if (messageObject != null)
+        if (mMessageConverter != null) {
+            messageObject = mMessageConverter.fromMessage(message);
             handler = mHandlerDelegates.getOrDefault(messageObject.getClass(), null);
-
-        if (handler == null) {
+        }
+        else {
             handler = mHandlerDelegates.getOrDefault(Message.class, null);
         }
 
         if (handler == null) {
-            throw new HandlingException(String.format("No delegate for object type [%s] and no generic delegate for [%s]",
-                    messageObject.getClass(),
-                    Message.class));
+            if (messageObject != null)
+                throw new HandlingException(String.format("No delegate for message object type [%s]",
+                        messageObject.getClass(),
+                        Message.class));
+
+            throw new HandlingException("No message converter nor generic delegate for jms messages");
         }
 
         handler.onMessage(messageObject, message, session);
