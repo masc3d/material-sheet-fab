@@ -1,7 +1,7 @@
 package org.deku.leo2.messaging;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
+import sx.jms.embedded.Broker;
+
 import javax.jms.Queue;
 import javax.jms.Topic;
 

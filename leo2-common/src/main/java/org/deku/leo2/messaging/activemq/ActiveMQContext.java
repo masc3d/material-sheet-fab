@@ -1,19 +1,11 @@
 package org.deku.leo2.messaging.activemq;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.command.ActiveMQQueue;
-import org.apache.activemq.command.ActiveMQTopic;
-import org.apache.activemq.jms.pool.PooledConnectionFactory;
-import org.deku.leo2.messaging.Broker;
+import sx.jms.embedded.Broker;
 import org.deku.leo2.messaging.MessagingContext;
-import sx.LazyInstance;
+import sx.jms.embedded.activemq.ActiveMQBroker;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
 import javax.jms.Queue;
 import javax.jms.Topic;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Messaging context implementation for activemq

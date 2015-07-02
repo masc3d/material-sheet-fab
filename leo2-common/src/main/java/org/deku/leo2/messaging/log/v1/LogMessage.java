@@ -12,9 +12,7 @@ import java.io.Serializable;
 public class LogMessage implements Serializable {
     private static final long serialVersionUID = -8027400236775552276L;
 
-    public static final String LOG_QUEUE_NAME = "leo2.log.v1";
-
-    private Level mLevel;
+    private String mLevel;
     private String mLoggerName;
     private String mThreadName;
     private String mMessage;
@@ -23,7 +21,7 @@ public class LogMessage implements Serializable {
     public LogMessage() {
     }
     public LogMessage(LoggingEvent le) {
-        mLevel = le.getLevel();
+        mLevel = le.getLevel().toString();
         mLoggerName = le.getLoggerName();
         mThreadName = le.getThreadName();
         mMessage = (le.getArgumentArray() != null) ?
@@ -31,7 +29,7 @@ public class LogMessage implements Serializable {
         mTimestamp = le.getTimeStamp();
     }
 
-    public Level getLevel() {
+    public String getLevel() {
         return mLevel;
     }
 

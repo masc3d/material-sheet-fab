@@ -72,52 +72,48 @@ public class IdentityServiceClient {
         Session session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         TemporaryQueue receiveQueue = null;
 
+        // Message producer
+        MessageProducer mp = session.createProducer(mMessagingContext.getCentralQueue());
+        mp.setTimeToLive(10 * 1000);
+        mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+
+        // Setup message
+        IdentityMessage identityMessage = new IdentityMessage();
+        identityMessage.setId(identity.getId());
+        identityMessage.setKey(identity.getKey());
+        identityMessage.setHardwareAddress(identity.getSystemInformation().getHardwareAddress());
+
+        // Serialize system info to json
+        ObjectMapper jsonMapper = new ObjectMapper();
+        String systemInformationJson;
         try {
-            // Message producer
-            MessageProducer mp = session.createProducer(mMessagingContext.getCentralQueue());
-            mp.setTimeToLive(10 * 1000);
-            mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-
-            // Setup message
-            IdentityMessage identityMessage = new IdentityMessage();
-            identityMessage.setId(identity.getId());
-            identityMessage.setKey(identity.getKey());
-            identityMessage.setHardwareAddress(identity.getSystemInformation().getHardwareAddress());
-
-            // Serialize system info to json
-            ObjectMapper jsonMapper = new ObjectMapper();
-            String systemInformationJson;
-            try {
-                systemInformationJson = jsonMapper.writeValueAsString(identity.getSystemInformation());
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-            identityMessage.setSystemInfo(systemInformationJson);
-
-            // Convert and send
-            Message message = mConverter.toMessage(identityMessage, session);
-            if (receive) {
-                receiveQueue = session.createTemporaryQueue();
-                message.setJMSReplyTo(receiveQueue);
-            }
-            mp.send(message);
-
-            // Receive authorization message (on demand)
-            if (receive) {
-                MessageConsumer mc = session.createConsumer(receiveQueue);
-                message = mc.receive(10 * 1000);
-
-                if (message == null)
-                    throw new TimeoutException("Timeout while waiting for authorization response");
-
-                return (AuthorizationMessage)mConverter.fromMessage(message);
-            } else {
-                return null;
-            }
-        } finally {
-            if (receiveQueue != null)
-                receiveQueue.delete();
+            systemInformationJson = jsonMapper.writeValueAsString(identity.getSystemInformation());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
+        identityMessage.setSystemInfo(systemInformationJson);
 
+        // Convert and send
+        Message message = mConverter.toMessage(identityMessage, session);
+        if (receive) {
+            receiveQueue = session.createTemporaryQueue();
+            message.setJMSReplyTo(receiveQueue);
+        }
+        mp.send(message);
+
+        session.commit();
+
+        // Receive authorization message (on demand)
+        if (receive) {
+            MessageConsumer mc = session.createConsumer(receiveQueue);
+            message = mc.receive(10 * 1000);
+
+            if (message == null)
+                throw new TimeoutException("Timeout while waiting for authorization response");
+
+            return (AuthorizationMessage)mConverter.fromMessage(message);
+        } else {
+            return null;
+        }
     }
 }

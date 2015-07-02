@@ -3,8 +3,8 @@ package org.deku.leo2.central.data.sync;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.App;
-import org.deku.leo2.messaging.Broker;
-import org.deku.leo2.messaging.activemq.ActiveMQBroker;
+import sx.jms.embedded.Broker;
+import sx.jms.embedded.activemq.ActiveMQBroker;
 import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Lazy;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import javax.swing.text.html.parser.Entity;
 
 /**
  * Created by masc on 20.06.15.

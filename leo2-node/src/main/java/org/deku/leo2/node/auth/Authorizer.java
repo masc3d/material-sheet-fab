@@ -2,7 +2,7 @@ package org.deku.leo2.node.auth;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.Broker;
+import sx.jms.embedded.Broker;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.LocalStorage;

@@ -2,9 +2,6 @@ package org.deku.leo2.central;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.activemq.ActiveMQBroker;
-import org.deku.leo2.messaging.activemq.ActiveMQContext;
-import org.deku.leo2.messaging.log.LogListener;
 
 /**
  * Created by masc on 30.05.15.

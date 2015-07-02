@@ -2,8 +2,8 @@ package org.deku.leo2.node.messaging;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.Broker;
-import org.deku.leo2.messaging.activemq.ActiveMQBroker;
+import sx.jms.embedded.Broker;
+import sx.jms.embedded.activemq.ActiveMQBroker;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.App;
 import org.deku.leo2.node.auth.Identity;

@@ -5,13 +5,14 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.Broker;
+import sx.jms.MessageConverter;
+import sx.jms.converters.DefaultMessageConverter;
+import sx.jms.embedded.Broker;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.log.v1.LogMessage;
-import org.springframework.jms.core.JmsTemplate;
 import sx.Disposable;
 
-import javax.jms.Queue;
+import javax.jms.*;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,10 +26,8 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
     private Log mLog = LogFactory.getLog(this.getClass());
 
     private MessagingContext mMessagingContext;
-    /** Jms destination queue */
-    private Queue mQueue = null;
-    /** Spring jms communication abstraction */
-    private JmsTemplate mTemplate;
+    /** Message converter */
+    private MessageConverter mMessageConverter;
     /** Log message buffer */
     private ArrayList<LogMessage> mLogMessageBuffer = new ArrayList<>();
     /** Flush scheduler */
@@ -40,10 +39,6 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
     Broker.EventListener mBrokerEventListener = new Broker.EventListener() {
         @Override
         public void onStart() {
-            mTemplate.execute(session -> {
-                mQueue = session.createQueue(LogMessage.LOG_QUEUE_NAME);
-                return null;
-            });
             mScheduledExecutorService.scheduleAtFixedRate(
                     () -> flush(),
                     0,
@@ -64,10 +59,11 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
     public LogAppender(MessagingContext messagingContext) {
         mMessagingContext = messagingContext;
 
-        mScheduledExecutorService = Executors.newScheduledThreadPool(1);
+        mMessageConverter = new DefaultMessageConverter(
+                DefaultMessageConverter.SerializationType.KRYO,
+                DefaultMessageConverter.CompressionType.GZIP);
 
-        mTemplate = new JmsTemplate(mMessagingContext.getBroker().getConnectionFactory());
-        mTemplate.setSessionTransacted(true);
+        mScheduledExecutorService = Executors.newScheduledThreadPool(1);
 
         mMessagingContext.getBroker().getDelegate().add(mBrokerEventListener);
         if (mMessagingContext.getBroker().isStarted())
@@ -88,12 +84,19 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
         if (logMessageBuffer.size() > 0) {
             mLog.trace(String.format("Flushing [%d]", logMessageBuffer.size()));
             try {
-                mTemplate.convertAndSend(mQueue, logMessageBuffer.toArray(new LogMessage[0]));
+                Connection cn = mMessagingContext.getBroker().getConnectionFactory().createConnection();
+                Session session = cn.createSession(true, Session.AUTO_ACKNOWLEDGE);
+
+                MessageProducer mp = session.createProducer(mMessagingContext.getCentralLogQueue());
+                mp.setDeliveryMode(DeliveryMode.PERSISTENT);
+                mp.send(mMessageConverter.toMessage(
+                        logMessageBuffer.toArray(new LogMessage[0]),
+                        session
+                ));
+
+                session.commit();;
             } catch(Exception e) {
-                // TODO: investigate why exceptions go unnoticed silently and are not
-                // caught by global DefaultUncaughtExceptionHandler
                 mLog.error(e.getMessage(), e);
-                throw new RuntimeException(e);
             }
         }
     }

@@ -111,7 +111,7 @@ public class EntityPublisher extends SpringJmsListener {
             eosMsg.setBooleanProperty(EntityUpdateMessage.EOS_PROPERTY, true);
                     mp.send(eosMsg);
         }
-
+        session.commit();
         mLog.info(String.format("Sent %d in %s (%d bytes)", count, sw, messageConverter.getBytesWritten()));
 
         em.close();

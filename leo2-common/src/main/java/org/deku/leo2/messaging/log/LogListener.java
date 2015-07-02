@@ -7,6 +7,7 @@ import org.deku.leo2.messaging.log.v1.LogMessage;
 import org.springframework.jms.support.converter.SimpleMessageConverter;
 import sx.jms.Handler;
 import sx.jms.SpringJmsListener;
+import sx.jms.converters.DefaultMessageConverter;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -20,14 +21,19 @@ import java.time.ZoneId;
  * Leo2 log message listener
  * Created by masc on 16.04.15.
  */
-public class LogListener extends SpringJmsListener implements Handler<LogMessage> {
+public class LogListener extends SpringJmsListener implements Handler<LogMessage[]> {
     private Log mLog = LogFactory.getLog(this.getClass());
     private MessagingContext mMessagingContext;
-    private SimpleMessageConverter mMessageConverter = new SimpleMessageConverter();
 
     public LogListener(MessagingContext messagingContext) {
         super(messagingContext.getBroker().getConnectionFactory());
         mMessagingContext = messagingContext;
+
+        this.setMessageConverter(new DefaultMessageConverter(
+                DefaultMessageConverter.SerializationType.KRYO,
+                DefaultMessageConverter.CompressionType.GZIP));
+
+        this.addDelegate(LogMessage[].class, this);
     }
 
     @Override
@@ -36,8 +42,8 @@ public class LogListener extends SpringJmsListener implements Handler<LogMessage
     }
 
     @Override
-    public void onMessage(LogMessage message, Message jmsMessage, Session session) throws JMSException {
-        mLog.trace(String.format("message id [%s] %s",
+    public void onMessage(LogMessage[] message, Message jmsMessage, Session session) throws JMSException {
+        mLog.info(String.format("message id [%s] %s",
                 jmsMessage.getJMSMessageID(),
                 LocalDateTime.ofInstant(
                         Instant.ofEpochMilli(

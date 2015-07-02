@@ -2,8 +2,8 @@ package org.deku.leo2;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import org.deku.leo2.messaging.Broker;
-import org.deku.leo2.messaging.activemq.ActiveMQBroker;
+import sx.jms.embedded.Broker;
+import sx.jms.embedded.activemq.ActiveMQBroker;
 import org.junit.After;
 import org.junit.Before;
 
@@ -23,7 +23,7 @@ public abstract class MessagingTest {
         Logger root = (Logger) org.slf4j.LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
         Logger lMessaging = (Logger)org.slf4j.LoggerFactory.getLogger("org.deku.leo2.messaging");
-        lMessaging.setLevel(Level.DEBUG);
+        lMessaging.setLevel(Level.TRACE);
 
         // Start broker
         mBroker = ActiveMQBroker.instance();

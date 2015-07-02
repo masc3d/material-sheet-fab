@@ -2,8 +2,8 @@ package org.deku.leo2.node.data.sync;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.Broker;
-import org.deku.leo2.messaging.activemq.ActiveMQBroker;
+import sx.jms.embedded.Broker;
+import sx.jms.embedded.activemq.ActiveMQBroker;
 import org.deku.leo2.node.App;
 import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.springframework.context.annotation.Configuration;

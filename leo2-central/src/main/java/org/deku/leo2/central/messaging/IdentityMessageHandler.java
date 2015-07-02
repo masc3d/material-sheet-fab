@@ -49,6 +49,8 @@ public class IdentityMessageHandler implements Handler<IdentityMessage> {
                 mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
                 mp.setTimeToLive(10 * 1000);
                 mp.send(mMessageConverter.toMessage(am, session));
+
+                session.commit();
             }
         } catch(Exception e) {
             mLog.error(e.getMessage(), e);

@@ -7,7 +7,7 @@ import io.undertow.server.handlers.resource.URLResource;
 import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.activemq.HttpExternalTunnelServlet;
+import sx.jms.embedded.activemq.HttpExternalTunnelServlet;
 import org.deku.leo2.node.App;
 import org.deku.leo2.node.messaging.BrokerConfiguration;
 import org.jboss.resteasy.core.Dispatcher;
