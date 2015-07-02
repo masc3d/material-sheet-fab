@@ -14,8 +14,8 @@ import org.apache.activemq.network.DiscoveryNetworkConnector;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.security.*;
 import org.apache.activemq.transport.TransportServer;
-import sx.jms.embedded.Broker;
 import sx.LazyInstance;
+import sx.jms.embedded.Broker;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Queue;
