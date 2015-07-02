@@ -51,7 +51,11 @@ public class EntityConsumer implements Disposable {
     public EntityConsumer(MessagingContext messagingContext, EntityManagerFactory entityManagerFactory) {
         mMessagingContext = messagingContext;
         mEntityManagerFactory = entityManagerFactory;
-        mExecutorService = Executors.newSingleThreadExecutor();
+        mExecutorService = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r);
+            t.setPriority(Thread.MIN_PRIORITY);
+            return t;
+        });
     }
 
     /**

@@ -36,7 +36,10 @@ public class EntitySync implements Disposable {
     }
 
     public void stop() {
-        mEntityConsumer.dispose();
+        if (mEntityConsumer != null) {
+            mEntityConsumer.dispose();
+            mEntityConsumer = null;
+        }
     }
 
     @Override

@@ -34,9 +34,12 @@ public class IdentityMessageHandler implements Handler<IdentityMessage> {
         try {
             mLog.info(message);
 
-            MstNodeRecord r = mNodeJooqRepository.saveByKey(message.getKey(),
-                    message.getHardwareAddress(),
-                    message.getSystemInfo());
+            MstNodeRecord r = mNodeJooqRepository.findByKeyOrCreateNew(message.getKey());
+
+            r.setHostname(message.getHardwareAddress());
+            r.setKey(message.getKey());
+            r.setSysInfo(message.getSystemInfo());
+            r.store();
 
             Destination replyTo = jmsMessage.getJMSReplyTo();
             if (replyTo != null) {
@@ -48,9 +51,12 @@ public class IdentityMessageHandler implements Handler<IdentityMessage> {
                 MessageProducer mp = session.createProducer(replyTo);
                 mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
                 mp.setTimeToLive(10 * 1000);
+                mp.setPriority(8);
                 mp.send(mMessageConverter.toMessage(am, session));
 
                 session.commit();
+
+                mLog.info(String.format("Sent authorization [%s]", am));
             }
         } catch(Exception e) {
             mLog.error(e.getMessage(), e);

@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by masc on 01.07.15.
  */
-public class IdentityServiceClient {
+public class IdentityPublisher {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     private MessagingContext mMessagingContext;
@@ -28,7 +28,7 @@ public class IdentityServiceClient {
      * c'tor
      * @param messagingContext
      */
-    public IdentityServiceClient(MessagingContext messagingContext) {
+    public IdentityPublisher(MessagingContext messagingContext) {
         mMessagingContext = messagingContext;
     }
 
@@ -63,12 +63,14 @@ public class IdentityServiceClient {
 
         // Connection and session
         Connection cn = mMessagingContext.getBroker().getConnectionFactory().createConnection();
+        cn.start();
         Session session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         TemporaryQueue receiveQueue = null;
 
         // Message producer
         MessageProducer mp = session.createProducer(mMessagingContext.getCentralQueue());
         mp.setTimeToLive(10 * 1000);
+        mp.setPriority(8);
         mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
         // Setup message

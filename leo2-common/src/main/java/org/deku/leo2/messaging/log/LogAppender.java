@@ -88,10 +88,12 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
             mLog.trace(String.format("Flushing [%d]", logMessageBuffer.size()));
             try {
                 Connection cn = mMessagingContext.getBroker().getConnectionFactory().createConnection();
+                cn.start();
                 Session session = cn.createSession(true, Session.AUTO_ACKNOWLEDGE);
 
                 MessageProducer mp = session.createProducer(mMessagingContext.getCentralLogQueue());
                 mp.setDeliveryMode(DeliveryMode.PERSISTENT);
+                mp.setPriority(1);
                 mp.send(mMessageConverter.toMessage(
                         logMessageBuffer.toArray(new LogMessage[0]),
                         session

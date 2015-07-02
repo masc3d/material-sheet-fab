@@ -36,4 +36,12 @@ public class AuthorizationMessage implements Serializable {
     public void setAuthorized(Boolean authorized) {
         mAuthorized = authorized;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Authorization id [%s] key [%s] authorized [%s]",
+                mId,
+                mKey,
+                mAuthorized);
+    }
 }

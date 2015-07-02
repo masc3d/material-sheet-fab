@@ -79,6 +79,7 @@ public class EntityPublisher extends SpringJmsListener {
         mLog.debug(euMessage);
 
         MessageProducer mp = session.createProducer(message.getJMSReplyTo());
+        mp.setPriority(1);
         mp.send(messageConverter.toMessage(euMessage, session));
 
         if (count > 0) {

@@ -20,7 +20,7 @@ public class NodeJooqRepositoryTest extends DataTest {
 
     @Test
     public void testNodeJooqRepository() {
-        MstNodeRecord r = mNodeJooqRepository.saveByKey("test2", "555", "456");
+        MstNodeRecord r = mNodeJooqRepository.findByKeyOrCreateNew("test2", "555", "456");
 
         mLog.info(String.format("Node id [%d]", r.getNodeId()));
     }

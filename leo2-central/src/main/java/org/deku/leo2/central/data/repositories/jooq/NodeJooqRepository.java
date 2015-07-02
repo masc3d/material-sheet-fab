@@ -26,21 +26,13 @@ public class NodeJooqRepository {
     }
 
     /**
-     * Save record by key
+     * Find node record by key or create new one if there's none
      * @param key
-     * @param hardwareAddress
-     * @param systemInfo
      */
-    public MstNodeRecord saveByKey(String key, String hardwareAddress, String systemInfo) {
+    public MstNodeRecord findByKeyOrCreateNew(String key) {
         MstNodeRecord r = this.findByKey(key);
         if (r == null)
             r = mDSLContext.newRecord(Tables.MST_NODE);
-
-        r.setKey(key);
-        r.setHostname(hardwareAddress);
-        r.setSysInfo(systemInfo);
-        r.store();
-
         return r;
     }
 }

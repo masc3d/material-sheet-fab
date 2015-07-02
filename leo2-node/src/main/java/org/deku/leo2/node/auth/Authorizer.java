@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.LocalStorage;
-import org.deku.leo2.node.messaging.auth.IdentityServiceClient;
+import org.deku.leo2.node.messaging.auth.IdentityPublisher;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import sx.Disposable;
 import sx.jms.embedded.Broker;
@@ -55,18 +55,22 @@ public class Authorizer implements Disposable {
         // Start will be deferred until the message broker is up.
         mAuthorizationTask = () -> {
             boolean success = false;
-            while (!success) {
+            while (!success && !mExecutorService.isShutdown()) {
                 try {
-                    IdentityServiceClient isc = new IdentityServiceClient(ActiveMQContext.instance());
+                    IdentityPublisher isc = new IdentityPublisher(ActiveMQContext.instance());
 
                     if (identity.hasId()) {
                         // Simply publish id
+                        mLog.info(String.format("Publishing [%s]", identity));
+
                         isc.publish(identity);
                     } else {
                         // Synchronous request for id
+                        mLog.info(String.format("Request id for [%s]", identity));
                         AuthorizationMessage authorizationMessage = isc.requestId(identity);
 
                         // Set id based on response and store identity
+                        mLog.info(String.format("Received authorization update [%s]", authorizationMessage));
                         identity.setId(authorizationMessage.getId());
                         identity.store(LocalStorage.instance().getIdentityConfigurationFile());
                     }
@@ -97,7 +101,7 @@ public class Authorizer implements Disposable {
 
     @Override
     public void dispose() {
-        mExecutorService.shutdown();
+        mExecutorService.shutdownNow();
         try {
             mExecutorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
