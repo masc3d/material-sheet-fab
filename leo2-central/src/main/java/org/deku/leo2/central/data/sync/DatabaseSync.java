@@ -25,6 +25,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import sx.event.EventDelegate;
+import sx.event.EventDispatcher;
+import sx.event.EventListener;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,6 +43,16 @@ import java.util.stream.StreamSupport;
 @Named
 public class DatabaseSync {
     private static Log mLog = LogFactory.getLog(DatabaseSync.class);
+
+    //region Events
+    public interface EventListener extends sx.event.EventListener {
+        /** Emitted when entities have been updated */
+        void onUpdate(Class entityType, Timestamp currentTimestamp);
+    }
+
+    private EventDispatcher<EventListener> mEventDispatcher = EventDispatcher.createThreadSafe();
+    public EventDelegate<EventListener> getEventDelegate() { return mEventDispatcher; }
+    //endregion
 
     @javax.persistence.PersistenceContext
     EntityManager mEntityManager;
@@ -398,23 +411,28 @@ public class DatabaseSync {
             Iterable<TCentralRecord> source = mGenericJooqRepository.findNewerThan(fTimestamp, sourceTable, sourceTableField);
             log.apply(String.format("Fetched"));
 
-            // Save to embedded
-            //TODO: saving/transaction commit gets very slow when deleting and inserting within the same transaction
-            //destRepository.save((Iterable<TEntity>) source.stream().map(d -> conversionFunction.apply(d))::iterator);
-            // It's also faster to flush and clear in between
-            log.apply("Inserting");
-            mTransaction.execute((ts) -> {
-                int i = 0;
-                for (TEntity r : (Iterable<TEntity>) StreamSupport.stream(source.spliterator(), false).map(d -> conversionFunction.apply(d))::iterator) {
-                    destRepository.save(r);
-                    if (i++ % 100 == 0) {
-                        mEntityManager.flush();
-                        mEntityManager.clear();
+            if (source.iterator().hasNext()) {
+                // Save to embedded
+                //TODO: saving/transaction commit gets very slow when deleting and inserting within the same transaction
+                //destRepository.save((Iterable<TEntity>) source.stream().map(d -> conversionFunction.apply(d))::iterator);
+                // It's also faster to flush and clear in between
+                log.apply("Inserting");
+                mTransaction.execute((ts) -> {
+                    int i = 0;
+                    for (TEntity r : (Iterable<TEntity>) StreamSupport.stream(source.spliterator(), false).map(d -> conversionFunction.apply(d))::iterator) {
+                        destRepository.save(r);
+                        if (i++ % 100 == 0) {
+                            mEntityManager.flush();
+                            mEntityManager.clear();
+                        }
                     }
-                }
-                return null;
-            });
-            log.apply("Inserted");
+                    return null;
+                });
+                log.apply("Inserted");
+
+                // Emit update event
+                mEventDispatcher.emit(e -> e.onUpdate(destQdslEntityPath.getType(), fTimestamp));
+            }
             return null;
         });
         log.apply("Done");
