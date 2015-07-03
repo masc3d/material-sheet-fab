@@ -29,8 +29,9 @@ public class EntityPublisher extends SpringJmsListener {
     private MessagingContext mMessagingContext;
     /** Entity manager factory */
     private EntityManagerFactory mEntityManagerFactory;
-
+    /** Message converter */
     private DefaultMessageConverter mMessageConverter;
+
     /**
      * c'tor
      * @param messagingContext
@@ -40,12 +41,19 @@ public class EntityPublisher extends SpringJmsListener {
         super(messagingContext.getBroker().getConnectionFactory());
         mMessagingContext = messagingContext;
         mEntityManagerFactory = entityManagerFactory;
-
-        mMessageConverter = new DefaultMessageConverter(
-                DefaultMessageConverter.SerializationType.KRYO,
-                DefaultMessageConverter.CompressionType.GZIP);
+        mMessageConverter = this.createMessageConverter();
 
         this.setMessageConverter(mMessageConverter);
+    }
+
+    /**
+     * Create message converter
+     * @return
+     */
+    private DefaultMessageConverter createMessageConverter() {
+        return new DefaultMessageConverter(
+                DefaultMessageConverter.SerializationType.KRYO,
+                DefaultMessageConverter.CompressionType.GZIP);
     }
 
     @Override
@@ -63,7 +71,8 @@ public class EntityPublisher extends SpringJmsListener {
 
         Stopwatch sw = Stopwatch.createStarted();
 
-        DefaultMessageConverter messageConverter = mMessageConverter;
+        // Create new message converter for this session, just for clean statistics sake
+        DefaultMessageConverter messageConverter = this.createMessageConverter();
 
         // Entity state message
         EntityStateMessage esMessage = (EntityStateMessage) messageConverter.fromMessage(message);
