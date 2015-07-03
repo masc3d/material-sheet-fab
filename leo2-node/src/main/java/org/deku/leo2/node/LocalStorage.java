@@ -18,6 +18,8 @@ public class LocalStorage {
     // Files
     private File mApplicationConfigurationFile;
     private File mIdentityConfigurationFile;
+    private File mLogFile;
+    private File mActiveMqDataDirectory;
 
     /**
      * c'tor
@@ -28,6 +30,8 @@ public class LocalStorage {
 
         mApplicationConfigurationFile = new File(this.getHomeDirectory(), "leo2.properties");
         mIdentityConfigurationFile = new File(this.getDataDirectory(), "identity.properties");
+        mLogFile = new File(this.getHomeDirectory(), "leo2.log");
+        mActiveMqDataDirectory = new File(this.getDataDirectory(), "activemq");
     }
 
     /**
@@ -73,5 +77,21 @@ public class LocalStorage {
      */
     public File getIdentityConfigurationFile() {
         return mIdentityConfigurationFile;
+    }
+
+    /**
+     * Local log file
+     * @return
+     */
+    public File getLogFile() {
+        return mLogFile;
+    }
+
+    /**
+     * Local embedded activemq data directory
+     * @return
+     */
+    public File getActiveMqDataDirectory() {
+        return mActiveMqDataDirectory;
     }
 }

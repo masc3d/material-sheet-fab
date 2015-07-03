@@ -65,12 +65,6 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
         mMessageConverter = new DefaultMessageConverter(
                 DefaultMessageConverter.SerializationType.KRYO,
                 DefaultMessageConverter.CompressionType.GZIP);
-
-        mScheduledExecutorService = Executors.newScheduledThreadPool(1);
-
-        mMessagingContext.getBroker().getDelegate().add(mBrokerEventListener);
-        if (mMessagingContext.getBroker().isStarted())
-            mBrokerEventListener.onStart();
     }
 
     /**
@@ -117,21 +111,41 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
     }
 
     @Override
-    public void dispose() {
-        if (mScheduledExecutorService.isShutdown())
-            return;
-
-        this.stop();
-
-        // Immediate flush and subsequent shutdown
-        mScheduledExecutorService.schedule(() -> flush(), 0, TimeUnit.SECONDS);
-        mScheduledExecutorService.shutdown();
-
-        // Wait for termination
-        try {
-            mScheduledExecutorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+    public void start() {
+        if (mScheduledExecutorService != null) {
+            this.stop();
         }
+
+        mScheduledExecutorService = Executors.newScheduledThreadPool(1);
+
+        mMessagingContext.getBroker().getDelegate().add(mBrokerEventListener);
+        if (mMessagingContext.getBroker().isStarted())
+            mBrokerEventListener.onStart();
+
+        super.start();
+    }
+
+    @Override
+    public void stop() {
+        if (mScheduledExecutorService != null) {
+            // Immediate flush and subsequent shutdown
+            mScheduledExecutorService.schedule(() -> flush(), 0, TimeUnit.SECONDS);
+            mScheduledExecutorService.shutdown();
+
+            // Wait for termination
+            try {
+                mScheduledExecutorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            mScheduledExecutorService = null;
+        }
+
+        super.stop();
+    }
+
+    @Override
+    public void dispose() {
+        this.stop();
     }
 }

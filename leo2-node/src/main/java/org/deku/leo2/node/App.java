@@ -2,6 +2,11 @@ package org.deku.leo2.node;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.OutputStreamAppender;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.RollingPolicy;
+import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
+import ch.qos.logback.core.rolling.TriggeringPolicy;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,9 +89,6 @@ public class App implements
     protected App() {
     }
 
-    private Runnable mConfigureLoggingFunc = () -> {
-    };
-
     /**
      * Intialize application
      * @param profile Spring profile name
@@ -103,24 +105,8 @@ public class App implements
         LocalStorage.instance().initialize();
 
         // Initialize logging
-        if (mProfile == PROFILE_CLIENT_NODE) {
-            // Setup message log appender
-            Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-            LogAppender lAppender = new LogAppender(ActiveMQContext.instance());
+        LogConfiguration.instance().initialize();
 
-            mConfigureLoggingFunc = () -> {
-                LoggerContext lContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-                // Configure jms log appender
-                lAppender.setContext(lContext);
-                lAppender.start();
-                lRoot.addAppender(lAppender);
-            };
-            mConfigureLoggingFunc.run();
-            mDisposables.add(() -> {
-                lRoot.detachAppender(lAppender);
-                lAppender.dispose();
-            });
-        }
         mLog.info("Leo2 node initialize");
 
         // Uncaught threaded exception handler
@@ -135,35 +121,36 @@ public class App implements
         // Disable JOOQ logo
         System.setProperty("org.jooq.no-logo", "true");
 
-        // Set additional config file location for spring
-        //region Configuration
-        List<URL> configLocations = new ArrayList<>();
+        //region Spring configuration
+        {
+            // Set additional config file location for spring
+            List<URL> configLocations = new ArrayList<>();
 
-        // Add local home configuration
-        try {
-            configLocations.add(new URL("file:" + LocalStorage.instance().getApplicationConfigurationFile().toString()));
-        } catch (MalformedURLException e) {
-            mLog.error(e.getMessage(), e);
+            // Add local home configuration
+            try {
+                configLocations.add(new URL("file:" + LocalStorage.instance().getApplicationConfigurationFile().toString()));
+            } catch (MalformedURLException e) {
+                mLog.error(e.getMessage(), e);
+            }
+
+            // Add application.properties from all classpaths
+            // TODO: needs refinement, should only read application.properties from specific jars
+            try {
+                configLocations.addAll(Collections.list(Thread.currentThread().getContextClassLoader().getResources("application.properties")));
+            } catch (IOException e) {
+                mLog.error(e.getMessage(), e);
+            }
+
+            System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY,
+                    String.join(",",
+                            Lists.reverse(configLocations)
+                                    .stream()
+                                    .map(u -> u.toString()).toArray(size -> new String[size])));
         }
-
-        // Add application.properties from all classpaths
-        // TODO: needs refinement, should only read application.properties from specific jars
-        try {
-            configLocations.addAll(Collections.list(Thread.currentThread().getContextClassLoader().getResources("application.properties")));
-        } catch (IOException e) {
-            mLog.error(e.getMessage(), e);
-        }
-
-        System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY,
-                String.join(",",
-                        Lists.reverse(configLocations)
-                                .stream()
-                                .map(u -> u.toString()).toArray(size -> new String[size])));
         //endregion
 
         // Basic broker configuration
-        ActiveMQBroker.instance().setDataDirectory(
-                new File(LocalStorage.instance().getHomeDirectory(), "activemq"));
+        ActiveMQBroker.instance().setDataDirectory(LocalStorage.instance().getActiveMqDataDirectory());
 
         Runtime.getRuntime().addShutdownHook(new Thread("App shutdown hook") {
             @Override
@@ -187,9 +174,16 @@ public class App implements
                 mLog.error(e.getMessage(), e);
             }
         }
+
         try {
             ActiveMQBroker.instance().stop();
         } catch (Exception e) {
+            mLog.error(e.getMessage(), e);
+        }
+
+        try {
+            LogConfiguration.instance().dispose();
+        } catch(Exception e) {
             mLog.error(e.getMessage(), e);
         }
     }
@@ -232,7 +226,7 @@ public class App implements
             // Spring resets logging configuration.
             // As we don't want to supply a logging framework specific config file, simply reapplying
             // logging configuration after spring environment has been prepared.
-            mConfigureLoggingFunc.run();
+            LogConfiguration.instance().initialize();
         } else if (event instanceof ApplicationPreparedEvent) {
             // Initialize identity
             IdentityConfiguration.instance().initialize();
