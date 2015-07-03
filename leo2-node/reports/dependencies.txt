@@ -138,13 +138,13 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
 |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 +--- org.springframework.boot:spring-boot-starter:1.2.4.+ -> 1.2.4.RELEASE
-|    +--- org.springframework.boot:spring-boot:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
+|    +--- org.springframework.boot:spring-boot:1.2.4.RELEASE -> 1.2.5.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-context:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
-|    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
-|    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT (*)
+|    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE -> 1.2.5.RELEASE
+|    |    +--- org.springframework.boot:spring-boot:1.2.5.RELEASE (*)
 |    |    \--- org.yaml:snakeyaml:1.14 -> 1.15
-|    +--- org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
+|    +--- org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE -> 1.2.5.RELEASE
 |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.slf4j:jul-to-slf4j:1.7.12
 |    |    |    \--- org.slf4j:slf4j-api:1.7.12
@@ -249,6 +249,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
 |    +--- com.mysema.querydsl:querydsl-apt:3.6.5 (*)
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
++--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 +--- javax.inject:javax.inject:1
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- javax.jmdns:jmdns:3.+ -> 3.4.1
@@ -425,13 +426,13 @@ default - Configuration for default artifacts.
 |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
 |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 +--- org.springframework.boot:spring-boot-starter:1.2.4.+ -> 1.2.4.RELEASE
-|    +--- org.springframework.boot:spring-boot:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
+|    +--- org.springframework.boot:spring-boot:1.2.4.RELEASE -> 1.2.5.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-context:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
-|    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
-|    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT (*)
+|    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE -> 1.2.5.RELEASE
+|    |    +--- org.springframework.boot:spring-boot:1.2.5.RELEASE (*)
 |    |    \--- org.yaml:snakeyaml:1.14 -> 1.15
-|    +--- org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
+|    +--- org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE -> 1.2.5.RELEASE
 |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.slf4j:jul-to-slf4j:1.7.12
 |    |    |    \--- org.slf4j:slf4j-api:1.7.12
@@ -536,6 +537,7 @@ default - Configuration for default artifacts.
 |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
 |    +--- com.mysema.querydsl:querydsl-apt:3.6.5 (*)
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
++--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 +--- javax.inject:javax.inject:1
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- javax.jmdns:jmdns:3.+ -> 3.4.1
@@ -718,13 +720,13 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
 |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 +--- org.springframework.boot:spring-boot-starter:1.2.4.+ -> 1.2.4.RELEASE
-|    +--- org.springframework.boot:spring-boot:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
+|    +--- org.springframework.boot:spring-boot:1.2.4.RELEASE -> 1.2.5.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-context:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
-|    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
-|    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT (*)
+|    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE -> 1.2.5.RELEASE
+|    |    +--- org.springframework.boot:spring-boot:1.2.5.RELEASE (*)
 |    |    \--- org.yaml:snakeyaml:1.14 -> 1.15
-|    +--- org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
+|    +--- org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE -> 1.2.5.RELEASE
 |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.slf4j:jul-to-slf4j:1.7.12
 |    |    |    \--- org.slf4j:slf4j-api:1.7.12
@@ -829,6 +831,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
 |    +--- com.mysema.querydsl:querydsl-apt:3.6.5 (*)
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
++--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 +--- javax.inject:javax.inject:1
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- javax.jmdns:jmdns:3.+ -> 3.4.1
@@ -1005,13 +1008,13 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
 |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 +--- org.springframework.boot:spring-boot-starter:1.2.4.+ -> 1.2.4.RELEASE
-|    +--- org.springframework.boot:spring-boot:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
+|    +--- org.springframework.boot:spring-boot:1.2.4.RELEASE -> 1.2.5.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-context:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
-|    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
-|    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT (*)
+|    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE -> 1.2.5.RELEASE
+|    |    +--- org.springframework.boot:spring-boot:1.2.5.RELEASE (*)
 |    |    \--- org.yaml:snakeyaml:1.14 -> 1.15
-|    +--- org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
+|    +--- org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE -> 1.2.5.RELEASE
 |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.slf4j:jul-to-slf4j:1.7.12
 |    |    |    \--- org.slf4j:slf4j-api:1.7.12
@@ -1116,6 +1119,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
 |    +--- com.mysema.querydsl:querydsl-apt:3.6.5 (*)
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
++--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 +--- javax.inject:javax.inject:1
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- javax.jmdns:jmdns:3.+ -> 3.4.1
@@ -1297,13 +1301,13 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
 |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
 +--- org.springframework.boot:spring-boot-starter:1.2.4.+ -> 1.2.4.RELEASE
-|    +--- org.springframework.boot:spring-boot:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
+|    +--- org.springframework.boot:spring-boot:1.2.4.RELEASE -> 1.2.5.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
 |    |    \--- org.springframework:spring-context:4.1.7.RELEASE -> 4.1.6.RELEASE (*)
-|    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
-|    |    +--- org.springframework.boot:spring-boot:1.2.5.BUILD-SNAPSHOT (*)
+|    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.4.RELEASE -> 1.2.5.RELEASE
+|    |    +--- org.springframework.boot:spring-boot:1.2.5.RELEASE (*)
 |    |    \--- org.yaml:snakeyaml:1.14 -> 1.15
-|    +--- org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE -> 1.2.5.BUILD-SNAPSHOT
+|    +--- org.springframework.boot:spring-boot-starter-logging:1.2.4.RELEASE -> 1.2.5.RELEASE
 |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.slf4j:jul-to-slf4j:1.7.12
 |    |    |    \--- org.slf4j:slf4j-api:1.7.12
@@ -1408,6 +1412,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
 |    +--- com.mysema.querydsl:querydsl-apt:3.6.5 (*)
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
++--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 +--- javax.inject:javax.inject:1
 +--- com.h2database:h2:1.+ -> 1.4.187
 +--- javax.jmdns:jmdns:3.+ -> 3.4.1

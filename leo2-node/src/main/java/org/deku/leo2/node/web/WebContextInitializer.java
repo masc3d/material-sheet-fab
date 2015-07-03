@@ -65,6 +65,7 @@ class WebContextInitializer implements ServletContextInitializer {
         App.instance().setApplicationContext(WebApplicationContextUtils.getWebApplicationContext(servletContext));
 
         //region Setup servlets
+
         // Spring dispatcher servlet (variant 1)
         // requires the following spring boot autoconfigurations:
         // * HttpMessageConvertersAutoConfiguration.class,

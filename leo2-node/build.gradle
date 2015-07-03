@@ -1,5 +1,12 @@
+buildscript {
+    dependencies {
+        classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
+    }
+}
+
 apply plugin: 'application'
 apply plugin: 'scala'
+apply plugin: 'flyway'
 
 sourceCompatibility = 1.8
 version = '0.1'
@@ -51,6 +58,9 @@ dependencies {
     compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
     compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
     compile "com.mysema.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
+
+    // flyway
+    compile "org.flywaydb:flyway-core:$v_flyway"
 
     // JSR-330
     compile 'javax.inject:javax.inject:1'

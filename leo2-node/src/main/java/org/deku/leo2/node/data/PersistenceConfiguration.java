@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.node.LocalStorage;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.flyway.FlywayDataSource;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.AbstractDataSource;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import java.io.File;
 import java.util.Properties;
 
@@ -34,14 +36,10 @@ public class PersistenceConfiguration implements DisposableBean /*, TransactionM
 
     private boolean mShowSql = false;
 
-    @Inject
-    @Qualifier(DB_EMBEDDED)
-    private AbstractDataSource mDataSource;
-
     @Bean
-    @Lazy
+    @FlywayDataSource
     @Qualifier(DB_EMBEDDED)
-    public AbstractDataSource dataSource() {
+    public DataSource dataSource() {
         final boolean IN_MEMORY = false;
 
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -70,7 +68,6 @@ public class PersistenceConfiguration implements DisposableBean /*, TransactionM
     }
 
     //region JPA
-    @Lazy
     @Bean
     @Qualifier(DB_EMBEDDED)
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
@@ -81,7 +78,6 @@ public class PersistenceConfiguration implements DisposableBean /*, TransactionM
         return transactionManager;
     }
 
-    @Lazy
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         // TODO. more robust behaviour when database is down.
@@ -91,17 +87,34 @@ public class PersistenceConfiguration implements DisposableBean /*, TransactionM
         em.setDataSource(dataSource());
         em.setPackagesToScan(PersistenceConfiguration.class.getPackage().getName());
 
+        // Setup specific jpa vendor adaptor
         JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
 
         Properties eclipseLinkProperties = new Properties();
+
+        eclipseLinkProperties.setProperty("eclipselink.target-database", "org.eclipse.persistence.platform.database.H2Platform");
+        // Automatic schema generation from jpa entites
         eclipseLinkProperties.setProperty("javax.persistence.schema-generation.database.action", "create");
         eclipseLinkProperties.setProperty("javax.persistence.schema-generation.create-database-schemas", "true");
-        eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true");
-        eclipseLinkProperties.setProperty("eclipselink.weaving", "false");
-        eclipseLinkProperties.setProperty("eclipselink.target-database", "org.eclipse.persistence.platform.database.H2Platform");
-        eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc");
 
+        //region DDL script generation configuration
+        // TODO: preliminary (demo) code to let eclipselink/jpa generate sql from entites
+        // should be integrated as a build task
+        if (false) {
+            File sqlFile = new File("sql/leo2-ddl.sql");
+            new File(sqlFile.getParent()).mkdirs();
+            eclipseLinkProperties.setProperty("javax.persistence.schema-generation.scripts.action", "create");
+            eclipseLinkProperties.setProperty("javax.persistence.schema-generation.scripts.create-target", sqlFile.toString());
+            eclipseLinkProperties.setProperty("eclipselink.ddlgen-terminate-statements", "true");
+        }
+        //endregion
+
+        // Some master tables may have zero id values
+        eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true");
+
+        eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc");
+        eclipseLinkProperties.setProperty("eclipselink.weaving", "false");
 
         if (mShowSql) {
             // Show SQL

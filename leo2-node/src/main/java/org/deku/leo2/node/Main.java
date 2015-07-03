@@ -5,6 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.node.data.sync.EntitySyncConfiguration;
 import org.deku.leo2.node.messaging.BrokerConfiguration;
 import org.deku.leo2.node.messaging.MessageListenerConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -30,14 +32,25 @@ import javax.servlet.ServletException;
 @Order(Ordered.LOWEST_PRECEDENCE)
 // Auto configuraton is slow. Pulling in configurations manually as needed.
 @Import({
+        /** Setups up embedded web server and servlet container */
         EmbeddedServletContainerAutoConfiguration.class,
+        /** Server properties support */
         ServerPropertiesAutoConfiguration.class,
+        /**
+         * Resteasy configuration. Only used for base setup, not fully autowired
+         * as we currently prefer to setup the classic resteasy servlet manually
+         * @link WebContextInitializer
+         */
         ResteasyAutoConfiguration.class,
+        /** Flyway database migration setup */
+        FlywayAutoConfiguration.class,
 
+        /** Leo2 embedded broker configuration */
         BrokerConfiguration.class,
+        /** Leo2 entity sync configuration */
         EntitySyncConfiguration.class,
-        MessageListenerConfiguration.class
-        //DataSourceAutoConfiguration.class
+        /** Leo2 message listener configuration */
+        MessageListenerConfiguration.class,
 })
 @EnableConfigurationProperties
 public class Main extends SpringBootServletInitializer {

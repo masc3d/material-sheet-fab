@@ -7,8 +7,10 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletContextEvent;
+import javax.ws.rs.core.Configurable;
 
 /**
  * Created by masc on 17.09.14.
@@ -17,18 +19,18 @@ import javax.servlet.ServletContextEvent;
 public class ServletContextListener implements javax.servlet.ServletContextListener {
     Log mLog = LogFactory.getLog(ServletContextListener.class);
 
+    @Inject
+    ConfigurableWebApplicationContext mContext;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         mLog.info("Leo2 node servlet context initalizer");
 
         // Log all bean/names in the context
-        ConfigurableWebApplicationContext wac = (ConfigurableWebApplicationContext)
-                WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
+        ConfigurableListableBeanFactory clbf = mContext.getBeanFactory();
 
-        ConfigurableListableBeanFactory clbf = wac.getBeanFactory();
-
-        mLog.trace(String.format("Registered beans: %d", wac.getBeanDefinitionCount()));
-        for (String beanName : wac.getBeanDefinitionNames()) {
+        mLog.trace(String.format("Registered beans: %d", mContext.getBeanDefinitionCount()));
+        for (String beanName : mContext.getBeanDefinitionNames()) {
             BeanDefinition rbd = clbf.getMergedBeanDefinition(beanName);
             Object s = clbf.getSingleton(beanName);
             mLog.trace(String.format("%s: %s, lazy %s",
