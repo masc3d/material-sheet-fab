@@ -7,6 +7,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultDSLContext;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -18,6 +19,8 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -37,7 +40,7 @@ import java.util.Properties;
 @Import(org.deku.leo2.node.data.PersistenceConfiguration.class)
 @EnableConfigurationProperties
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
-public class PersistenceConfiguration implements DisposableBean {
+public class PersistenceConfiguration {
     public static final String DB_CENTRAL = "db_central";
 
     private Log mLog = LogFactory.getLog(PersistenceConfiguration.class);
@@ -94,8 +97,14 @@ public class PersistenceConfiguration implements DisposableBean {
         return new DefaultDSLContext(mJooqConnectionProvider, SQLDialect.MYSQL);
     }
 
-    @Override
-    public void destroy() throws Exception {
+    @PostConstruct
+    public void onInitialize() {
+        // Disable JOOQ logo
+        System.setProperty("org.jooq.no-logo", "true");
+    }
+
+    @PreDestroy
+    public void onDestroy() throws Exception {
         mLog.info("Cleaning up persistence context");
 
         // Close all JDBC drivers

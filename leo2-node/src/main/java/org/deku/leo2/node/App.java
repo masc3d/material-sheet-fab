@@ -118,9 +118,6 @@ public class App implements
             }
         });
 
-        // Disable JOOQ logo
-        System.setProperty("org.jooq.no-logo", "true");
-
         //region Spring configuration
         {
             // Set additional config file location for spring
