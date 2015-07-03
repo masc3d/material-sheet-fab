@@ -18,11 +18,11 @@ namespace LeoBridgeTest
         [TestMethod]
         public void TestRequest()
         {
-            LeoBridge.Service.Participant sender;
-            LeoBridge.Service.Participant consignee;
+            LeoBridge.Service.RoutingRequestParticipant sender;
+            LeoBridge.Service.RoutingRequestParticipant consignee;
 
-            sender = new LeoBridge.Service.Participant();
-            consignee = new LeoBridge.Service.Participant();
+            sender = new LeoBridge.Service.RoutingRequestParticipant();
+            consignee = new LeoBridge.Service.RoutingRequestParticipant();
             
             LeoBridge.Service.RoutingRequest r = new RoutingRequest();
             r.SendDate = "2015-06-01";
@@ -41,18 +41,18 @@ namespace LeoBridgeTest
             r.Services = 0;
             for (int i = 0; i < 5; i++)
             {
-                RoutingRequestResult result = this.ClientFactory.RoutingService.Request(r);
+                Routing result = this.ClientFactory.RoutingService.Request(r);
                 Console.WriteLine(String.Format("{0}: {1}", i, result.ToString()));
             }
         }
         [TestMethod]
         public void TestRequestPartial()
         {
-            LeoBridge.Service.Participant sender;
-            LeoBridge.Service.Participant consignee;
+            LeoBridge.Service.RoutingRequestParticipant sender;
+            LeoBridge.Service.RoutingRequestParticipant consignee;
 
-            sender = new LeoBridge.Service.Participant();
-            consignee = new LeoBridge.Service.Participant();
+            sender = new LeoBridge.Service.RoutingRequestParticipant();
+            consignee = new LeoBridge.Service.RoutingRequestParticipant();
 
             LeoBridge.Service.RoutingRequest r = new RoutingRequest();
             //r.sendDate = "2015-06-01";
@@ -71,7 +71,7 @@ namespace LeoBridgeTest
             //r.services = 0;
             for (int i = 0; i < 5; i++)
             {
-                RoutingRequestResult result = this.ClientFactory.RoutingService.Request(r);
+                Routing result = this.ClientFactory.RoutingService.Request(r);
                 Console.WriteLine(String.Format("{0}: {1}", i, result.ToString()));
             }
         }
