@@ -42,14 +42,9 @@ public class PersistenceConfiguration implements DisposableBean {
 
     private Log mLog = LogFactory.getLog(PersistenceConfiguration.class);
 
-    @Inject
-    @Qualifier(DB_CENTRAL)
-    private AbstractDataSource mDataSource;
-
     // TODO: tomcat deployment breaks with circular dependency when wither dataSourceCentral()
     // or jooqTransactionAwareDataSourceProxy() are not @Lazy.
     // This works perfectly fine when running standalone.
-    @Lazy
     @Bean
     @Qualifier(DB_CENTRAL)
     @ConfigurationProperties(prefix="datasource.central")
@@ -78,16 +73,15 @@ public class PersistenceConfiguration implements DisposableBean {
     private DataSourceConnectionProvider mJooqConnectionProvider;
 
     // TODO: tomcat breakage without @Lazy. see above (dataSourceCentral())
-    @Lazy
     @Bean
     public TransactionAwareDataSourceProxy jooqTransactionAwareDataSourceProxy() {
-        return new TransactionAwareDataSourceProxy(mDataSource);
+        return new TransactionAwareDataSourceProxy(dataSourceCentral());
     }
 
     @Bean
     @Qualifier(DB_CENTRAL)
     public DataSourceTransactionManager jooqTransactionManager() {
-        return new DataSourceTransactionManager(mDataSource);
+        return new DataSourceTransactionManager(dataSourceCentral());
     }
 
     @Bean
