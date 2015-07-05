@@ -9,7 +9,7 @@ import kotlin.platform.platformStatic
 /**
  * Created by masc on 26.06.15.
  */
-public object LocalStorage {
+object LocalStorage {
 
     // Directories
     /** Local home directory */
@@ -31,7 +31,7 @@ public object LocalStorage {
     /**
      * Initializes local storage, takes care directories exist etc.
      */
-    public fun initialize() {
+    fun initialize() {
         homeDirectory.mkdirs()
         dataDirectory.mkdirs()
     }

@@ -6,18 +6,15 @@ import javax.inject.Named
 
 @Named
 @ConfigurationProperties(prefix = "remote")
-public class RemotePeerSettings {
-    public inner class Broker {
+class RemotePeerSettings {
+    inner class Broker {
 
-        public var nativePort: Int? = null
-        public var httpPath: String? = null
+        var nativePort: Int? = null
+        var httpPath: String? = null
     }
 
-    public var host: String? = null
-    public var httpPort: Int? = null
-    public var httpPath: String? = null
-    public var broker: Broker = Broker()
-
-    public fun test() {
-    }
+    var host: String? = null
+    var httpPort: Int? = null
+    var httpPath: String? = null
+    var broker: Broker = Broker()
 }
