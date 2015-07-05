@@ -1,12 +1,16 @@
 buildscript {
     dependencies {
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+    repositories {
+        mavenCentral()
     }
 }
 
 apply plugin: 'application'
-apply plugin: 'scala'
 apply plugin: 'flyway'
+apply plugin: 'kotlin'
 
 sourceCompatibility = 1.8
 version = '0.1'
@@ -17,7 +21,8 @@ dependencies {
     compile project(':sx-common')
     compile project(':leo2-common')
 
-    compile 'org.scala-lang:scala-library:2.11.7'
+    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
     // spring
     compile 'org.springframework.data:spring-data-jpa:1.8.+'
@@ -130,6 +135,7 @@ sourceSets {
             srcDirs += srcdir_apt
         }
     }
+    main.java.srcDirs += 'src/main/kotlin'
 }
 
 task copyWebapp(type: Copy) {
@@ -138,6 +144,9 @@ task copyWebapp(type: Copy) {
 }
 
 compileJava.dependsOn(copyWebapp)
+repositories {
+    mavenCentral()
+}
 
 // masc20150507. task prototypes
 ////copying all dependencies attached to 'compile' into a specific folder
