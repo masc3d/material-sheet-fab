@@ -112,6 +112,8 @@ compile - Compile classpath for source set 'main'.
 |    +--- project :sx-common (*)
 |    +--- project :leo2-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.613
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.613
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.613
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.3.RELEASE
 |    |    +--- org.springframework.data:spring-data-commons:1.9.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -405,6 +407,8 @@ default - Configuration for default artifacts.
 |    +--- project :sx-common (*)
 |    +--- project :leo2-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.613
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.613
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.613
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.3.RELEASE
 |    |    +--- org.springframework.data:spring-data-commons:1.9.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -698,6 +702,8 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- project :sx-common (*)
 |    +--- project :leo2-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.613
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.613
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.613
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.3.RELEASE
 |    |    +--- org.springframework.data:spring-data-commons:1.9.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -991,6 +997,8 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- project :sx-common (*)
 |    +--- project :leo2-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.613
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.613
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.613
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.3.RELEASE
 |    |    +--- org.springframework.data:spring-data-commons:1.9.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)
@@ -1298,6 +1306,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- project :sx-common (*)
 |    +--- project :leo2-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.613
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.613
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.613
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.7.3.RELEASE
 |    |    +--- org.springframework.data:spring-data-commons:1.9.3.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.6.RELEASE (*)

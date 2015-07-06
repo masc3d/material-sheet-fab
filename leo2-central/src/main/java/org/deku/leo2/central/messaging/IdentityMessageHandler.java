@@ -7,8 +7,8 @@ import org.deku.leo2.central.data.repositories.jooq.NodeJooqRepository;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import org.deku.leo2.node.messaging.auth.v1.IdentityMessage;
 import sx.jms.Handler;
-import sx.jms.MessageConverter;
-import sx.jms.converters.DefaultMessageConverter;
+import sx.jms.Converter;
+import sx.jms.converters.DefaultConverter;
 
 import javax.jms.*;
 
@@ -19,14 +19,14 @@ public class IdentityMessageHandler implements Handler<IdentityMessage> {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     private NodeJooqRepository mNodeJooqRepository;
-    private MessageConverter mMessageConverter;
+    private Converter mConverter;
 
     public IdentityMessageHandler(NodeJooqRepository nodeJooqRepository) {
         mNodeJooqRepository = nodeJooqRepository;
 
-        mMessageConverter = new DefaultMessageConverter(
-                DefaultMessageConverter.SerializationType.KRYO,
-                DefaultMessageConverter.CompressionType.GZIP);
+        mConverter = new DefaultConverter(
+                DefaultConverter.SerializationType.KRYO,
+                DefaultConverter.CompressionType.GZIP);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class IdentityMessageHandler implements Handler<IdentityMessage> {
                 mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
                 mp.setTimeToLive(10 * 1000);
                 mp.setPriority(8);
-                mp.send(mMessageConverter.toMessage(am, session));
+                mp.send(mConverter.toMessage(am, session));
 
                 session.commit();
 

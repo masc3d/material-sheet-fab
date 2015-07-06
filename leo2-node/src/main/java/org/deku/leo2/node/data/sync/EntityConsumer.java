@@ -9,7 +9,7 @@ import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
 import org.springframework.jms.core.JmsTemplate;
 import sx.Disposable;
-import sx.jms.converters.DefaultMessageConverter;
+import sx.jms.converters.DefaultConverter;
 
 import javax.jms.*;
 import javax.persistence.EntityManager;
@@ -38,9 +38,9 @@ public class EntityConsumer implements Disposable {
     private EntityManagerFactory mEntityManagerFactory;
     /** Spring jms communication abstraction */
     private JmsTemplate mTemplate;
-    private DefaultMessageConverter mObjectMessageConverter = new DefaultMessageConverter(
-            DefaultMessageConverter.SerializationType.KRYO,
-            DefaultMessageConverter.CompressionType.GZIP);
+    private DefaultConverter mConverter = new DefaultConverter(
+            DefaultConverter.SerializationType.KRYO,
+            DefaultConverter.CompressionType.GZIP);
 
     ExecutorService mExecutorService;
 
@@ -66,7 +66,7 @@ public class EntityConsumer implements Disposable {
         mExecutorService.submit(() -> {
             TemporaryQueue receiveQueue = null;
             try {
-                mObjectMessageConverter.resetStatistics();
+                mConverter.resetStatistics();
 
                 EntityManager em = mEntityManagerFactory.createEntityManager();
                 EntityRepository er = new EntityRepository(em, entityType);
@@ -88,7 +88,7 @@ public class EntityConsumer implements Disposable {
                 MessageProducer mp = session.createProducer(requestQueue);
                 mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
                 mp.setTimeToLive(TimeUnit.MINUTES.toMillis(3));
-                Message msg = mObjectMessageConverter.toMessage(
+                Message msg = mConverter.toMessage(
                         new EntityStateMessage(entityType, timestamp),
                         session);
                 msg.setJMSReplyTo(receiveQueue);
@@ -99,7 +99,7 @@ public class EntityConsumer implements Disposable {
                 msg = mc.receive(RECEIVE_TIMEOUT);
                 if (msg == null)
                     throw new TimeoutException("Timeout while waiting for entity update message");
-                EntityUpdateMessage euMessage = (EntityUpdateMessage) mObjectMessageConverter.fromMessage(msg);
+                EntityUpdateMessage euMessage = (EntityUpdateMessage) mConverter.fromMessage(msg);
 
                 mLog.debug(euMessage);
                 AtomicLong count = new AtomicLong();
@@ -135,7 +135,7 @@ public class EntityConsumer implements Disposable {
 
                             if (!eos) {
                                 // Deserialize entities
-                                List entities = Arrays.asList((Object[]) mObjectMessageConverter.fromMessage(tMsg));
+                                List entities = Arrays.asList((Object[]) mConverter.fromMessage(tMsg));
 
                                 // TODO: exceptions within transactions behave in a strange way.
                                 // data of transactions that were committed may not be there and h2 may report
@@ -173,7 +173,7 @@ public class EntityConsumer implements Disposable {
                 mLog.trace("Joining transaction threads");
                 executorService.shutdown();
                 executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-                mLog.info(String.format("Received and stored %d in %s (%d bytes)", count.get(), sw.toString(), mObjectMessageConverter.getBytesRead()));
+                mLog.info(String.format("Received and stored %d in %s (%d bytes)", count.get(), sw.toString(), mConverter.getBytesRead()));
 
                 em.close();
             } catch (TimeoutException e) {

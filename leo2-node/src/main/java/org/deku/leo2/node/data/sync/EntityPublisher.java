@@ -7,8 +7,8 @@ import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
 import org.eclipse.persistence.queries.ScrollableCursor;
-import sx.jms.SpringJmsListener;
-import sx.jms.converters.DefaultMessageConverter;
+import sx.jms.listeners.SpringJmsListener;
+import sx.jms.converters.DefaultConverter;
 
 import javax.jms.*;
 import javax.persistence.EntityManager;
@@ -30,7 +30,7 @@ public class EntityPublisher extends SpringJmsListener {
     /** Entity manager factory */
     private EntityManagerFactory mEntityManagerFactory;
     /** Message converter */
-    private DefaultMessageConverter mMessageConverter;
+    private DefaultConverter mConverter;
 
     /**
      * c'tor
@@ -41,19 +41,19 @@ public class EntityPublisher extends SpringJmsListener {
         super(messagingContext.getBroker().getConnectionFactory());
         mMessagingContext = messagingContext;
         mEntityManagerFactory = entityManagerFactory;
-        mMessageConverter = this.createMessageConverter();
+        mConverter = this.createMessageConverter();
 
-        this.setMessageConverter(mMessageConverter);
+        this.setConverter(mConverter);
     }
 
     /**
      * Create message converter
      * @return
      */
-    private DefaultMessageConverter createMessageConverter() {
-        return new DefaultMessageConverter(
-                DefaultMessageConverter.SerializationType.KRYO,
-                DefaultMessageConverter.CompressionType.GZIP);
+    private DefaultConverter createMessageConverter() {
+        return new DefaultConverter(
+                DefaultConverter.SerializationType.KRYO,
+                DefaultConverter.CompressionType.GZIP);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class EntityPublisher extends SpringJmsListener {
         Stopwatch sw = Stopwatch.createStarted();
 
         // Create new message converter for this session, just for clean statistics sake
-        DefaultMessageConverter messageConverter = this.createMessageConverter();
+        DefaultConverter messageConverter = this.createMessageConverter();
 
         // Entity state message
         EntityStateMessage esMessage = (EntityStateMessage) messageConverter.fromMessage(message);
