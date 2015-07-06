@@ -8,7 +8,7 @@ import javax.jms.*;
 import java.util.HashMap;
 
 /**
- * Lightweight jms listener abstraction.
+ * Lightweight jms message listener abstraction.
  * This is the top level abstract class, only binding a connection factory.
  * Created by masc on 16.04.15.
  */
@@ -19,7 +19,7 @@ public abstract class Listener implements Disposable, ExceptionListener {
     /** Object message handler delegates */
     private HashMap<Class, Handler> mHandlerDelegates = new HashMap<Class, Handler>();
     /** Message converter */
-    private MessageConverter mMessageConverter = null;
+    private Converter mConverter = null;
 
     /**
      * Message handling exception
@@ -47,12 +47,12 @@ public abstract class Listener implements Disposable, ExceptionListener {
         return mConnectionFactory;
     }
 
-    public MessageConverter getMessageConverter() {
-        return mMessageConverter;
+    public Converter getConverter() {
+        return mConverter;
     }
 
-    public void setMessageConverter(MessageConverter messageConverter) {
-        mMessageConverter = messageConverter;
+    public void setConverter(Converter converter) {
+        mConverter = converter;
     }
 
     /**
@@ -66,8 +66,8 @@ public abstract class Listener implements Disposable, ExceptionListener {
 
         Handler handler = null;
 
-        if (mMessageConverter != null) {
-            messageObject = mMessageConverter.fromMessage(message);
+        if (mConverter != null) {
+            messageObject = mConverter.fromMessage(message);
             handler = mHandlerDelegates.getOrDefault(messageObject.getClass(), null);
         }
         else {

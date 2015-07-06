@@ -1,4 +1,4 @@
-package sx.jms;
+package sx.jms.listeners;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -6,6 +6,7 @@ import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.util.ErrorHandler;
+import sx.jms.Listener;
 
 import javax.jms.*;
 
