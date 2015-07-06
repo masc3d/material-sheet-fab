@@ -5,7 +5,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
-import sx.jms.MessageConverter;
+import sx.jms.Converter;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -19,7 +19,7 @@ import java.util.zip.GZIPOutputStream;
  * Object message converter
  * Created by masc on 19.06.15.
  */
-public class DefaultMessageConverter implements MessageConverter {
+public class DefaultConverter implements Converter {
     public enum SerializationType {
         JAVA,
         KRYO
@@ -59,7 +59,7 @@ public class DefaultMessageConverter implements MessageConverter {
      * @param serializationType
      * @param compressionType
      */
-    public DefaultMessageConverter(SerializationType serializationType, CompressionType compressionType) {
+    public DefaultConverter(SerializationType serializationType, CompressionType compressionType) {
         mSerializationType = serializationType;
         mCompressionType = compressionType;
 

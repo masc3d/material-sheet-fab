@@ -1,4 +1,6 @@
-package sx.jms;
+package sx.jms.listeners;
+
+import sx.jms.Listener;
 
 import javax.jms.*;
 import java.util.List;
