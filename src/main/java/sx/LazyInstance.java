@@ -1,6 +1,7 @@
 package sx;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -8,9 +9,9 @@ import java.util.function.Supplier;
  * Created by masc on 14.04.15.
  */
 public class LazyInstance<T> {
-    final Object mLock = new Object();
-    Supplier<T> mSupplier;
-    volatile Optional<T> mInstance = null;
+    private final Object mLock = new Object();
+    private Supplier<T> mSupplier;
+    private volatile Optional<T> mInstance = null;
 
     public LazyInstance(Supplier<T> supplier) {
         mSupplier = supplier;
@@ -60,5 +61,22 @@ public class LazyInstance<T> {
             }
         }
         return mInstance.orElse(null);
+    }
+
+    /**
+     * Indicates if instance was set
+     * @return
+     */
+    public boolean isSet() {
+        return mInstance != null;
+    }
+
+    /**
+     * Conditional execution if instance is set
+     * @param action Action to perform
+     */
+    public void ifSet(Action<T> action) {
+        if (this.isSet())
+            action.perform(mInstance.get());
     }
 }

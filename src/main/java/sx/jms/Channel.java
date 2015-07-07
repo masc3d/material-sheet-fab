@@ -1,7 +1,143 @@
 package sx.jms;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import sx.Action;
+import sx.Disposable;
+import sx.Dispose;
+import sx.LazyInstance;
+
+import javax.jms.*;
+import java.util.function.Supplier;
+
 /**
+ * Lightweight messaging channel
  * Created by masc on 06.07.15.
  */
-public class Channel {
+public class Channel implements Disposable {
+    private Log mLog = LogFactory.getLog(this.getClass());
+    private ConnectionFactory mConnectionFactory;
+    private Converter mConverter;
+    private Destination mDestination;
+    private LazyInstance<Connection> mConnection = new LazyInstance<>();
+    private LazyInstance<Session> mSession = new LazyInstance<>();
+    private LazyInstance<MessageConsumer> mConsumer = new LazyInstance<>();
+
+    private int mJmsDeliveryMode;
+    private boolean mJmsSessionTransacted;
+    private int mJmsTtl;
+    private boolean mSessionCreated = false;
+
+    /**
+     * c'tor
+     * @param connectionFactory
+     */
+    public Channel(ConnectionFactory connectionFactory, Destination destination, Converter converter, boolean transacted, int deliveryMode, int ttl) {
+        mConnectionFactory = connectionFactory;
+        mDestination = destination;
+        mConverter = converter;
+        mJmsSessionTransacted = transacted;
+        mJmsDeliveryMode = deliveryMode;
+        mJmsTtl = ttl;
+
+        mConnection.set(() -> {
+            Connection cn = null;
+            try {
+                cn = mConnectionFactory.createConnection();
+                cn.start();
+                return cn;
+            } catch (JMSException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        mSession.set(() -> {
+            try {
+                Session session = mConnection.get().createSession(transacted, deliveryMode);
+                mSessionCreated = true;
+                return session;
+            } catch (JMSException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        mConsumer.set(() -> {
+            try {
+                return mSession.get().createConsumer(mDestination);
+            } catch (JMSException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    /**
+     * Send jms message
+     * @param message Message to send
+     * @param messageConfigurer Callback for customizing the message before sending
+     */
+    public void send(Message message, Action<Message> messageConfigurer) throws JMSException {
+        MessageProducer mp = mSession.get().createProducer(mDestination);
+
+        mp.setDeliveryMode(mJmsDeliveryMode);
+        mp.setTimeToLive(mJmsTtl);
+
+        if (messageConfigurer != null)
+            messageConfigurer.perform(message);
+
+        mp.send(mDestination, message);
+    }
+
+    /**
+     * Send jms message
+     * @param message Message to send
+     */
+    public void send(Message message) throws JMSException {
+        this.send(message, null);
+    }
+
+    /**
+     * Send object as message using converter
+     * @param message
+     */
+    public void send(Object message) throws JMSException {
+        this.send(mConverter.toMessage(message, mSession.get()));
+    }
+
+    public <T> T receive(Class<T> messageType) throws JMSException {
+        return null;
+    }
+
+    /**
+     * Explicitly commit transaction
+     */
+    public void commit() throws JMSException{
+        mSession.get().commit();
+    }
+
+    @Override
+    public void dispose() {
+        mConsumer.ifSet(c -> {
+            try {
+                c.close();
+            } catch (JMSException e) {
+                mLog.error(e.getMessage(), e);
+            }
+        });
+
+        try {
+            this.commit();
+        } catch (JMSException e) {
+            mLog.error(e.getMessage(), e);
+        }
+
+        if (mSessionCreated) {
+            mSession.ifSet(s -> {
+                try {
+                    s.close();
+                } catch (JMSException e) {
+                    mLog.error(e.getMessage(), e);
+                }
+            });
+        }
+    }
 }

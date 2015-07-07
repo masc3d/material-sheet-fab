@@ -1,0 +1,37 @@
+package sx;
+
+/**
+ * Created by masc on 07.07.15.
+ */
+public class Dispose {
+    /**
+     * Customized disposal
+     * @param r Dispose operation
+     */
+    public static void safely(Runnable r, Action<Exception> exceptionHandler) {
+        try {
+            r.run();
+        } catch (Exception e) {
+            if (exceptionHandler != null)
+                exceptionHandler.perform(e);
+        }
+    }
+
+    /**
+     * Safely disposes an instance implementing @link Disposable
+     *
+     * @param d Disposable instance
+     * @param exceptionHandler Optional exception handler
+     */
+    public static void safely(Disposable d, Action<Exception> exceptionHandler) {
+        safely((Runnable) () -> d.dispose(), exceptionHandler);
+    }
+
+    /**
+     * Safely disposes an instance implementing @link Disposable
+     * @param d
+     */
+    public static void safely(Disposable d) {
+        safely(d, null);
+    }
+}
