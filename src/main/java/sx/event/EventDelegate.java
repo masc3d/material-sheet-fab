@@ -5,6 +5,8 @@ package sx.event;
  * Created by masc on 11.08.14.
  */
 public interface EventDelegate<T extends EventListener> {
-    public void add(T listener);
-    public void remove(T listener);
+    /** Add listener to this multicast delegate */
+    void add(T listener);
+    /** Remove listener from this multicast delegate */
+    void remove(T listener);
 }
