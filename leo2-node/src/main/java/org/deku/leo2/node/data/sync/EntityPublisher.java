@@ -4,9 +4,11 @@ import com.google.common.base.Stopwatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
+import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
 import org.eclipse.persistence.queries.ScrollableCursor;
+import sx.jms.Channel;
 import sx.jms.listeners.SpringJmsListener;
 import sx.jms.converters.DefaultConverter;
 
@@ -66,8 +68,18 @@ public class EntityPublisher extends SpringJmsListener {
      * @param entityType
      * @param timestamp
      */
-    public void publish(Class entityType, Timestamp timestamp) {
-        // TODO: publish entity update message
+    public void publish(Class entityType, Timestamp timestamp) throws JMSException {
+        Channel mc = new Channel(
+                ActiveMQContext.instance().getBroker().getConnectionFactory(),
+                ActiveMQContext.instance().getNodeNotificationTopic(),
+                this.createMessageConverter(),
+                false,
+                DeliveryMode.NON_PERSISTENT,
+                TimeUnit.MINUTES.toMillis(5));
+
+        mc.send(new EntityStateMessage(entityType, timestamp));
+
+        mc.close();
     }
 
     @Override
