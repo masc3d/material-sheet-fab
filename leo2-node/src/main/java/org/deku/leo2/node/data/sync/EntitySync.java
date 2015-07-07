@@ -28,6 +28,7 @@ public class EntitySync implements Disposable {
 
     public void start() {
         mEntityConsumer = new EntityConsumer(ActiveMQContext.instance(), mEntityManagerFactory);
+        mEntityConsumer.start();
         mEntityConsumer.request(Station.class);
         mEntityConsumer.request(Country.class);
         mEntityConsumer.request(HolidayCtrl.class);

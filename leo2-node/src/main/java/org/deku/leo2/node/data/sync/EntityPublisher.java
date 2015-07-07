@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * Created by masc on 18.06.15.
@@ -99,6 +100,8 @@ public class EntityPublisher extends SpringJmsListener {
         EntityStateMessage esMessage = (EntityStateMessage) messageConverter.fromMessage(message);
         Class entityType = esMessage.getEntityType();
         Timestamp timestamp = esMessage.getTimestamp();
+        Function<String, String> lfmt = s -> "[" + entityType.getCanonicalName() + "]" + " " + s;
+
 
         EntityManager em = mEntityManagerFactory.createEntityManager();
         EntityRepository er = new EntityRepository(em, entityType);
@@ -120,7 +123,7 @@ public class EntityPublisher extends SpringJmsListener {
 
             final int CHUNK_SIZE = 500;
             ArrayList buffer = new ArrayList(CHUNK_SIZE);
-            mLog.info(String.format("Sending %d of type %s", count, entityType));
+            mLog.info(lfmt.apply(String.format("Sending %d", count)));
             while (true) {
                 Object next = null;
                 if (cursor.hasNext()) {
@@ -145,7 +148,7 @@ public class EntityPublisher extends SpringJmsListener {
                     mp.send(eosMsg);
         }
         session.commit();
-        mLog.info(String.format("Sent %d in %s (%d bytes)", count, sw, messageConverter.getBytesWritten()));
+        mLog.info(lfmt.apply(String.format("Sent %d in %s (%d bytes)", count, sw, messageConverter.getBytesWritten())));
 
         em.close();
     }

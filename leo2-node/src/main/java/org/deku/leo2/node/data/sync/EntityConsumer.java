@@ -8,8 +8,9 @@ import org.deku.leo2.node.data.PersistenceUtil;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
 import org.springframework.jms.core.JmsTemplate;
-import sx.Disposable;
+import sx.jms.Handler;
 import sx.jms.converters.DefaultConverter;
+import sx.jms.listeners.SpringJmsListener;
 
 import javax.jms.*;
 import javax.persistence.EntityManager;
@@ -23,12 +24,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 /**
  * Entity consumer
  * Created by masc on 18.06.15.
  */
-public class EntityConsumer implements Disposable {
+public class EntityConsumer extends SpringJmsListener implements Handler<EntityStateMessage> {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     private static final int RECEIVE_TIMEOUT = 5000;
@@ -49,6 +51,11 @@ public class EntityConsumer implements Disposable {
      * @param messagingContext
      */
     public EntityConsumer(MessagingContext messagingContext, EntityManagerFactory entityManagerFactory) {
+        super(messagingContext.getBroker().getConnectionFactory());
+
+        this.setConverter(mConverter);
+        this.addDelegate(EntityStateMessage.class, this);
+
         mMessagingContext = messagingContext;
         mEntityManagerFactory = entityManagerFactory;
         mExecutorService = Executors.newSingleThreadExecutor(r -> {
@@ -58,12 +65,27 @@ public class EntityConsumer implements Disposable {
         });
     }
 
+    @Override
+    protected Destination createDestination() {
+        // Listen for entity state updates
+        return mMessagingContext.getNodeNotificationTopic();
+    }
+
+    @Override
+    public void onMessage(EntityStateMessage message, Message jmsMessage, Session session) throws JMSException {
+        this.request(message.getEntityType(), message.getTimestamp());
+    }
+
     /**
      * Request entity update
-     * @param entityType
+     * @param entityType Entity type
+     * @param remoteTimestamp Optional remote timestamp, usually provided via notification
      */
-    public void request(Class entityType) {
+    public void request(final Class entityType, final Timestamp remoteTimestamp) {
         mExecutorService.submit(() -> {
+            // Log formatting with entity type
+            Function<String, String> lfmt = s -> "[" + entityType.getCanonicalName() + "]" + " " + s;
+
             TemporaryQueue receiveQueue = null;
             try {
                 mConverter.resetStatistics();
@@ -72,6 +94,10 @@ public class EntityConsumer implements Disposable {
                 EntityRepository er = new EntityRepository(em, entityType);
 
                 Timestamp timestamp = er.findMaxTimestamp();
+                if (timestamp != null && remoteTimestamp != null && !remoteTimestamp.after(timestamp)) {
+                    mLog.debug(lfmt.apply("Entities uptodate"));
+                    return null;
+                }
 
                 Connection cn = mMessagingContext.getBroker().getConnectionFactory().createConnection();
                 cn.start();
@@ -82,7 +108,7 @@ public class EntityConsumer implements Disposable {
                 Queue requestQueue = mMessagingContext.getCentralEntitySyncQueue();
                 receiveQueue = session.createTemporaryQueue();
 
-                mLog.info(String.format("Requesting entities of type [%s]", entityType.toString()));
+                mLog.info(lfmt.apply(String.format("Requesting entities")));
 
                 // Send entity state message
                 MessageProducer mp = session.createProducer(requestQueue);
@@ -101,7 +127,7 @@ public class EntityConsumer implements Disposable {
                     throw new TimeoutException("Timeout while waiting for entity update message");
                 EntityUpdateMessage euMessage = (EntityUpdateMessage) mConverter.fromMessage(msg);
 
-                mLog.debug(euMessage);
+                mLog.debug(lfmt.apply(euMessage.toString()));
                 AtomicLong count = new AtomicLong();
 
                 // Transaction processing thread pool
@@ -111,7 +137,7 @@ public class EntityConsumer implements Disposable {
                 if (euMessage.getAmount() > 0) {
                     PersistenceUtil.transaction(em, () -> {
                         if (!er.hasTimestampAttribute()) {
-                            mLog.debug("No timestamp attribute found -> removing all entities");
+                            mLog.debug(lfmt.apply("No timestamp attribute found -> removing all entities"));
                             er.removeAll();
                         }
 
@@ -143,7 +169,7 @@ public class EntityConsumer implements Disposable {
                                 // Data seems to remain consistent though
 
                                 if (timestamp != null) {
-                                    mLog.trace("Removing existing entities");
+                                    mLog.trace(lfmt.apply("Removing existing entities"));
                                     // If there's already entities, clean out existing first.
                                     // it's much faster than merging everything
                                     for (Object o : entities) {
@@ -170,20 +196,28 @@ public class EntityConsumer implements Disposable {
                     });
 
                 }
-                mLog.trace("Joining transaction threads");
+                mLog.trace(lfmt.apply("Joining transaction threads"));
                 executorService.shutdown();
                 executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-                mLog.info(String.format("Received and stored %d in %s (%d bytes)", count.get(), sw.toString(), mConverter.getBytesRead()));
+                mLog.info(lfmt.apply(String.format("Received and stored %d in %s (%d bytes)", count.get(), sw.toString(), mConverter.getBytesRead())));
 
                 em.close();
             } catch (TimeoutException e) {
-                mLog.error(e.getMessage());
+                mLog.error(lfmt.apply(e.getMessage()));
             } catch (Exception e) {
-                mLog.error(e.getMessage(), e);
+                mLog.error(lfmt.apply(e.getMessage()), e);
             }
 
             return null;
         });
+    }
+
+    /**
+     * Request entity update
+     * @param entityType Entity type
+     */
+    public void request(Class entityType) {
+        this.request(entityType, null);
     }
 
     @Override
@@ -193,5 +227,6 @@ public class EntityConsumer implements Disposable {
             mExecutorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
         }
+        super.dispose();
     }
 }

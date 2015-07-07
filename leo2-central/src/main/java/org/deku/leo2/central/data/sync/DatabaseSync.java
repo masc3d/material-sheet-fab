@@ -379,16 +379,13 @@ public class DatabaseSync {
 
         Stopwatch sw = Stopwatch.createStarted();
 
-        Function<String, Void> log = (m) -> {
-            mLog.info(destQdslEntityPath.getType().getName() + " " + m + " " + sw.toString());
-            return null;
-        };
+        Function<String, String> lfmt = s -> "[" + destQdslEntityPath.getType().getName() + "] " + s + " " + sw.toString();
 
         mEntityManager.setFlushMode(FlushModeType.COMMIT);
 
         if (deleteBeforeUpdate || destQdslEntityPath == null || destQdslTimestampPath == null) {
             mTransaction.execute((ts) -> {
-                log.apply("Deleting");
+                mLog.info(lfmt.apply("Deleting"));
                 destRepository.deleteAllInBatch();
                 mEntityManager.flush();
                 mEntityManager.clear();
@@ -399,7 +396,7 @@ public class DatabaseSync {
         // Get latest timestamp
         Timestamp timestamp = null;
         if (destQdslEntityPath != null && destQdslTimestampPath != null) {
-            log.apply("Timestamp check");
+            mLog.info(lfmt.apply("Timestamp check"));
             timestamp = query.from(destQdslEntityPath).singleResult(destQdslTimestampPath.max());
         }
         final Timestamp fTimestamp = timestamp;
@@ -407,16 +404,16 @@ public class DatabaseSync {
         // Get newer records from central
         // masc20150530. JOOQ cursor requires an explicit transaction
         mTransactionJooq.execute((tsJooq) -> {
-            log.apply("Fetching");
+            mLog.info(lfmt.apply("Fetching"));
             Iterable<TCentralRecord> source = mGenericJooqRepository.findNewerThan(fTimestamp, sourceTable, sourceTableField);
-            log.apply(String.format("Fetched"));
+            mLog.info(lfmt.apply(String.format("Fetched")));
 
             if (source.iterator().hasNext()) {
                 // Save to embedded
                 //TODO: saving/transaction commit gets very slow when deleting and inserting within the same transaction
                 //destRepository.save((Iterable<TEntity>) source.stream().map(d -> conversionFunction.apply(d))::iterator);
                 // It's also faster to flush and clear in between
-                log.apply("Inserting");
+                mLog.info(lfmt.apply("Inserting"));
                 mTransaction.execute((ts) -> {
                     int i = 0;
                     for (TEntity r : (Iterable<TEntity>) StreamSupport.stream(source.spliterator(), false).map(d -> conversionFunction.apply(d))::iterator) {
@@ -428,13 +425,13 @@ public class DatabaseSync {
                     }
                     return null;
                 });
-                log.apply("Inserted");
+                mLog.info(lfmt.apply("Inserted"));
 
                 // Emit update event
                 mEventDispatcher.emit(e -> e.onUpdate(destQdslEntityPath.getType(), fTimestamp));
             }
             return null;
         });
-        log.apply("Done");
+        mLog.info(lfmt.apply("Done"));
     }
 }
