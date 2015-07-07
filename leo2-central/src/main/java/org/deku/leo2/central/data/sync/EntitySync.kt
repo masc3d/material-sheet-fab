@@ -32,15 +32,16 @@ public class EntitySync private constructor() : Disposable {
     /** Entity publisher */
     private var entityPublisher: EntityPublisher by Delegates.notNull()
 
-    /** Database sync event listener */
-    private val databaseSyncEvent = DatabaseSync.EventListener { clazz, timestamp ->
-        this.entityPublisher.publish(clazz, timestamp);
-    };
-
     /** Injected: jpa entity manager factory  */
     public var entityManagerFactory: EntityManagerFactory by Delegates.notNull()
     /** Injected: database sync instance */
     public var databaseSync: DatabaseSync by Delegates.notNull()
+
+    /** Database sync event listener */
+    private val databaseSyncEvent = DatabaseSync.EventListener { clazz, timestamp ->
+        // Publish notification to consumers on databasesync update
+        this.entityPublisher.publish(clazz, timestamp);
+    };
 
     /** Start entity sync */
     public fun start() {
