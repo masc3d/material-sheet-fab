@@ -298,6 +298,8 @@ compile - Compile classpath for source set 'main'.
 |         \--- org.jinq:analysis:1.8.4
 |              +--- org.jinq:jinq-asm-rebased:1.8.4
 |              \--- org.jinq:api:1.8.4
++--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.613
++--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.613 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
 \--- org.jooq:jooq:3.+ -> 3.6.2
 
@@ -593,8 +595,20 @@ default - Configuration for default artifacts.
 |         \--- org.jinq:analysis:1.8.4
 |              +--- org.jinq:jinq-asm-rebased:1.8.4
 |              \--- org.jinq:api:1.8.4
++--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.613
++--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.613 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
 \--- org.jooq:jooq:3.+ -> 3.6.2
+
+kapt
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:0.12.613
+     \--- org.jetbrains.kotlin:kotlin-stdlib:0.12.613
+          \--- org.jetbrains.kotlin:kotlin-runtime:0.12.613
+
+kaptTest
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:0.12.613
+     \--- org.jetbrains.kotlin:kotlin-stdlib:0.12.613
+          \--- org.jetbrains.kotlin:kotlin-runtime:0.12.613
 
 runtime - Runtime classpath for source set 'main'.
 +--- project :sx-common
@@ -888,6 +902,8 @@ runtime - Runtime classpath for source set 'main'.
 |         \--- org.jinq:analysis:1.8.4
 |              +--- org.jinq:jinq-asm-rebased:1.8.4
 |              \--- org.jinq:api:1.8.4
++--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.613
++--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.613 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
 \--- org.jooq:jooq:3.+ -> 3.6.2
 
@@ -1183,6 +1199,8 @@ testCompile - Compile classpath for source set 'test'.
 |         \--- org.jinq:analysis:1.8.4
 |              +--- org.jinq:jinq-asm-rebased:1.8.4
 |              \--- org.jinq:api:1.8.4
++--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.613
++--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.613 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
 +--- org.jooq:jooq:3.+ -> 3.6.2
 +--- junit:junit:4.+ -> 4.12 (*)
@@ -1492,6 +1510,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |         \--- org.jinq:analysis:1.8.4
 |              +--- org.jinq:jinq-asm-rebased:1.8.4
 |              \--- org.jinq:api:1.8.4
++--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.613
++--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.613 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
 +--- org.jooq:jooq:3.+ -> 3.6.2
 +--- junit:junit:4.+ -> 4.12 (*)

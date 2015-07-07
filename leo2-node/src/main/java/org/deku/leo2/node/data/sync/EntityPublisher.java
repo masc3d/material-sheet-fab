@@ -61,6 +61,15 @@ public class EntityPublisher extends SpringJmsListener {
         return mMessagingContext.getCentralEntitySyncQueue();
     }
 
+    /**
+     * Publish entity update notification
+     * @param entityType
+     * @param timestamp
+     */
+    public void publish(Class entityType, Timestamp timestamp) {
+        // TODO: publish entity update message
+    }
+
     @Override
     public void onMessage(Message message, Session session) throws JMSException {
         mLog.debug(String.format("Message id [%s] %s",

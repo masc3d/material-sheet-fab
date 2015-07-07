@@ -55,31 +55,31 @@ public class DatabaseSync {
     //endregion
 
     @javax.persistence.PersistenceContext
-    EntityManager mEntityManager;
+    private EntityManager mEntityManager;
 
-    TransactionTemplate mTransaction;
-    TransactionTemplate mTransactionJooq;
+    // Transaction helpers
+    private TransactionTemplate mTransaction;
+    private TransactionTemplate mTransactionJooq;
 
+    // Repositories
     @Inject
-    GenericJooqRepository mGenericJooqRepository;
+    private GenericJooqRepository mGenericJooqRepository;
     @Inject
-    StationRepository mStationRepository;
+    private StationRepository mStationRepository;
     @Inject
-    CountryRepository mCountryRepository;
+    private CountryRepository mCountryRepository;
     @Inject
-    RouteRepository mRouteRepository;
+    private RouteRepository mRouteRepository;
     @Inject
-    HolidayctrlRepository mHolidayCtrlRepository;
+    private HolidayctrlRepository mHolidayCtrlRepository;
     @Inject
-    SectorRepository mSectorRepository;
+    private SectorRepository mSectorRepository;
     @Inject
-    PropertyRepository mPropertyRepository;
+    private PropertyRepository mPropertyRepository;
     @Inject
-    RoutingLayerRepository mRoutingLayerRepository;
-
+    private RoutingLayerRepository mRoutingLayerRepository;
     @Inject
-    StationSectorRepository mStationSectorRepository;
-
+    private StationSectorRepository mStationSectorRepository;
 
     @Inject
     public DatabaseSync(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) PlatformTransactionManager tx,

@@ -28,18 +28,18 @@ public class EntitySyncConfiguration {
     private Broker.EventListener mBrokerEventListener = new Broker.EventListener() {
         @Override
         public void onStart() {
-            EntitySync.instance().start();
+            EntitySync.it().start();
         }
 
         @Override
         public void onStop() {
-            EntitySync.instance().dispose();
+            EntitySync.it().dispose();
         }
     };
 
     @PostConstruct
     public void onInitialize() {
-        EntitySync.instance().setEntityManagerFactory(mEntityManagerFactory);
+        EntitySync.it().setEntityManagerFactory(mEntityManagerFactory);
 
         // Start when broker is started
         ActiveMQBroker.instance().getDelegate().add(mBrokerEventListener);

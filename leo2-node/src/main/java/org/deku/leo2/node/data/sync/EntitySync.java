@@ -8,7 +8,7 @@ import sx.LazyInstance;
 import javax.persistence.EntityManagerFactory;
 
 /**
- * Supervising sync class
+ * Application/leo2 specific entity sync implementation
  * Created by masc on 19.06.15.
  */
 public class EntitySync implements Disposable {
