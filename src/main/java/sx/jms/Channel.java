@@ -137,7 +137,7 @@ public class Channel implements Disposable, Closeable {
 
     @Override
     public void close() {
-        if (mConsumer.ifSet(c -> {
+        mConsumer.ifSet(c -> {
             try {
                 c.close();
             } catch (JMSException e) {
