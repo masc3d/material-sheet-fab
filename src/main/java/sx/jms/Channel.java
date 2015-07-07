@@ -8,14 +8,17 @@ import sx.Dispose;
 import sx.LazyInstance;
 
 import javax.jms.*;
+import javax.jms.IllegalStateException;
+import java.io.Closeable;
 import java.util.function.Supplier;
 
 /**
  * Lightweight messaging channel
  * Created by masc on 06.07.15.
  */
-public class Channel implements Disposable {
+public class Channel implements Disposable, Closeable {
     private Log mLog = LogFactory.getLog(this.getClass());
+
     private ConnectionFactory mConnectionFactory;
     private Converter mConverter;
     private Destination mDestination;
@@ -25,20 +28,28 @@ public class Channel implements Disposable {
 
     private int mJmsDeliveryMode;
     private boolean mJmsSessionTransacted;
-    private int mJmsTtl;
+    private long mJmsTtl;
+    private Integer mJmsPriority;
     private boolean mSessionCreated = false;
 
     /**
      * c'tor
-     * @param connectionFactory
+     * @param connectionFactory Connection factory used to create session
+     * @param destination Destination for this channel
+     * @param converter Message converter to use
+     * @param transacted Session transacted or not
+     * @param deliveryMode JMS delivery mode
+     * @param ttl JMS message time to live
+     * @param priority JMS message priority
      */
-    public Channel(ConnectionFactory connectionFactory, Destination destination, Converter converter, boolean transacted, int deliveryMode, int ttl) {
+    public Channel(ConnectionFactory connectionFactory, Destination destination, Converter converter, boolean transacted, int deliveryMode, long ttl, Integer priority) {
         mConnectionFactory = connectionFactory;
         mDestination = destination;
         mConverter = converter;
         mJmsSessionTransacted = transacted;
         mJmsDeliveryMode = deliveryMode;
         mJmsTtl = ttl;
+        mJmsPriority = priority;
 
         mConnection.set(() -> {
             Connection cn = null;
@@ -69,6 +80,9 @@ public class Channel implements Disposable {
             }
         });
     }
+    public Channel(ConnectionFactory connectionFactory, Destination destination, Converter converter, boolean transacted, int deliveryMode, long ttl) {
+        this(connectionFactory, destination, converter, transacted, deliveryMode, ttl, null);
+    }
 
     /**
      * Send jms message
@@ -80,6 +94,8 @@ public class Channel implements Disposable {
 
         mp.setDeliveryMode(mJmsDeliveryMode);
         mp.setTimeToLive(mJmsTtl);
+        if (mJmsPriority != null)
+            mp.setPriority(mJmsPriority);
 
         if (messageConfigurer != null)
             messageConfigurer.perform(message);
@@ -100,6 +116,9 @@ public class Channel implements Disposable {
      * @param message
      */
     public void send(Object message) throws JMSException {
+        if (mConverter == null)
+            throw new IllegalStateException("Cannot send object without a message converter");
+
         this.send(mConverter.toMessage(message, mSession.get()));
     }
 
@@ -111,12 +130,14 @@ public class Channel implements Disposable {
      * Explicitly commit transaction
      */
     public void commit() throws JMSException{
-        mSession.get().commit();
+        Session session = mSession.get();
+        if (session.getTransacted())
+            session.commit();
     }
 
     @Override
-    public void dispose() {
-        mConsumer.ifSet(c -> {
+    public void close() {
+        if (mConsumer.ifSet(c -> {
             try {
                 c.close();
             } catch (JMSException e) {
@@ -139,5 +160,18 @@ public class Channel implements Disposable {
                 }
             });
         }
+
+        mConnection.ifSet(c -> {
+            try {
+                c.close();
+            } catch (JMSException e) {
+                mLog.error(e.getMessage(), e);
+            }
+        });
+    }
+
+    @Override
+    public void dispose() {
+        this.close();
     }
 }
