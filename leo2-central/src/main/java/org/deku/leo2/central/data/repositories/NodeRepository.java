@@ -1,4 +1,4 @@
-package org.deku.leo2.central.data.repositories.jooq;
+package org.deku.leo2.central.data.repositories;
 
 import org.deku.leo2.central.data.entities.jooq.Tables;
 import org.deku.leo2.central.data.entities.jooq.tables.MstNode;
@@ -12,7 +12,7 @@ import javax.inject.Named;
  * Created by masc on 02.07.15.
  */
 @Named
-public class NodeJooqRepository {
+public class NodeRepository {
     @Inject
     DSLContext mDSLContext;
 
@@ -23,6 +23,16 @@ public class NodeJooqRepository {
      */
     public MstNodeRecord findByKey(String key) {
         return mDSLContext.fetchOne(MstNode.MST_NODE, Tables.MST_NODE.KEY.eq(key));
+    }
+
+    /**
+     * Check if there's a record for a specific key
+     * @param key
+     * @return
+     */
+    public boolean hasAuthorizedKey(String key) {
+        MstNodeRecord r = this.findByKey(key);
+        return r != null && r.getAuthorized() != 0;
     }
 
     /**

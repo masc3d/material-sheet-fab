@@ -146,6 +146,10 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
 
     @Override
     public void dispose() {
-        this.stop();
+        try {
+            this.stop();
+        } catch(Exception e) {
+            mLog.error(e.getMessage(), e);
+        }
     }
 }

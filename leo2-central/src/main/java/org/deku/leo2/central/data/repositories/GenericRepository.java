@@ -1,4 +1,4 @@
-package org.deku.leo2.central.data.repositories.jooq;
+package org.deku.leo2.central.data.repositories;
 
 import org.jooq.Cursor;
 import org.jooq.DSLContext;
@@ -12,10 +12,11 @@ import javax.inject.Named;
 import java.sql.Timestamp;
 
 /**
+ * Generic central data access methods
  * Created by masc on 17.05.15.
  */
 @Named
-public class GenericJooqRepository {
+public class GenericRepository {
     @Inject
     DSLContext mDSLContext;
 

@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.DataTest;
 import org.deku.leo2.central.data.entities.jooq.tables.records.MstNodeRecord;
-import org.deku.leo2.central.data.repositories.jooq.NodeJooqRepository;
+import org.deku.leo2.central.data.repositories.NodeRepository;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -12,15 +12,15 @@ import javax.inject.Inject;
 /**
  * Created by masc on 02.07.15.
  */
-public class NodeJooqRepositoryTest extends DataTest {
+public class NodeRepositoryTest extends DataTest {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     @Inject
-    NodeJooqRepository mNodeJooqRepository;
+    NodeRepository mNodeRepository;
 
     @Test
     public void testNodeJooqRepository() {
-        MstNodeRecord r = mNodeJooqRepository.findByKeyOrCreateNew("test2", "555", "456");
+        MstNodeRecord r = mNodeRepository.findByKeyOrCreateNew("test2");
 
         mLog.info(String.format("Node id [%d]", r.getNodeId()));
     }

@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.data.entities.jooq.Tables;
 import org.deku.leo2.central.data.entities.jooq.tables.*;
 import org.deku.leo2.central.data.entities.jooq.tables.records.*;
-import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
+import org.deku.leo2.central.data.repositories.GenericRepository;
 import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.deku.leo2.node.data.entities.master.*;
 import org.deku.leo2.node.data.entities.system.Property;
@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import sx.event.EventDelegate;
 import sx.event.EventDispatcher;
-import sx.event.EventListener;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -63,7 +62,7 @@ public class DatabaseSync {
 
     // Repositories
     @Inject
-    private GenericJooqRepository mGenericJooqRepository;
+    private GenericRepository mSyncRepository;
     @Inject
     private StationRepository mStationRepository;
     @Inject
@@ -396,8 +395,8 @@ public class DatabaseSync {
         // Get latest timestamp
         Timestamp timestamp = null;
         if (destQdslEntityPath != null && destQdslTimestampPath != null) {
-            mLog.info(lfmt.apply("Timestamp check"));
             timestamp = query.from(destQdslEntityPath).singleResult(destQdslTimestampPath.max());
+            mLog.info(lfmt.apply(String.format("Current destination timestamp [%s]", timestamp)));
         }
         final Timestamp fTimestamp = timestamp;
 
@@ -405,7 +404,7 @@ public class DatabaseSync {
         // masc20150530. JOOQ cursor requires an explicit transaction
         mTransactionJooq.execute((tsJooq) -> {
             mLog.info(lfmt.apply("Fetching"));
-            Iterable<TCentralRecord> source = mGenericJooqRepository.findNewerThan(fTimestamp, sourceTable, sourceTableField);
+            Iterable<TCentralRecord> source = mSyncRepository.findNewerThan(fTimestamp, sourceTable, sourceTableField);
             mLog.info(lfmt.apply(String.format("Fetched")));
 
             if (source.iterator().hasNext()) {

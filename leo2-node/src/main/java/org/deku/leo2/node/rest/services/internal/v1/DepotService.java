@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.node.data.entities.master.Station;
 import org.deku.leo2.node.data.repositories.master.StationRepository;
-import org.deku.leo2.node.rest.ApiKey;
+import sx.rs.ApiKey;
 import org.deku.leo2.rest.entities.internal.v1.Depot;
 
 import javax.inject.Inject;

@@ -3,7 +3,7 @@ package org.deku.leo2.central.messaging;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.data.entities.jooq.tables.records.MstNodeRecord;
-import org.deku.leo2.central.data.repositories.jooq.NodeJooqRepository;
+import org.deku.leo2.central.data.repositories.NodeRepository;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import org.deku.leo2.node.messaging.auth.v1.IdentityMessage;
 import sx.jms.Handler;
@@ -18,11 +18,11 @@ import javax.jms.*;
 public class IdentityMessageHandler implements Handler<IdentityMessage> {
     private Log mLog = LogFactory.getLog(this.getClass());
 
-    private NodeJooqRepository mNodeJooqRepository;
+    private NodeRepository mNodeRepository;
     private Converter mConverter;
 
-    public IdentityMessageHandler(NodeJooqRepository nodeJooqRepository) {
-        mNodeJooqRepository = nodeJooqRepository;
+    public IdentityMessageHandler(NodeRepository nodeRepository) {
+        mNodeRepository = nodeRepository;
 
         mConverter = new DefaultConverter(
                 DefaultConverter.SerializationType.KRYO,
@@ -34,7 +34,7 @@ public class IdentityMessageHandler implements Handler<IdentityMessage> {
         try {
             mLog.info(message);
 
-            MstNodeRecord r = mNodeJooqRepository.findByKeyOrCreateNew(message.getKey());
+            MstNodeRecord r = mNodeRepository.findByKeyOrCreateNew(message.getKey());
 
             r.setHostname(message.getHardwareAddress());
             r.setKey(message.getKey());

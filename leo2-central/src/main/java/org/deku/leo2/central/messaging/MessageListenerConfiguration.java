@@ -2,7 +2,7 @@ package org.deku.leo2.central.messaging;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.central.data.repositories.jooq.NodeJooqRepository;
+import org.deku.leo2.central.data.repositories.NodeRepository;
 import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.messaging.auth.v1.IdentityMessage;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ public class MessageListenerConfiguration {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     @Inject
-    private NodeJooqRepository mNodeJooqRepository;
+    private NodeRepository mNodeRepository;
 
     /** Central message listener */
     MessageListener mMessageListener;
@@ -56,7 +56,7 @@ public class MessageListenerConfiguration {
             // Add message handler delegatess
             mMessageListener.addDelegate(IdentityMessage.class,
                     new IdentityMessageHandler(
-                            mNodeJooqRepository));
+                            mNodeRepository));
 
             mMessageListener.start();
         }
