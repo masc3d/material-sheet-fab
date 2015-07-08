@@ -17,7 +17,7 @@ dependencies {
     compile "org.eclipse.persistence:javax.persistence:$v_eclipselink"
 
     // swagger for json doc
-    compile 'com.wordnik:swagger-annotations:+'
+    compile "com.wordnik:swagger-annotations:$v_swagger"
     compile "com.fasterxml.jackson.core:jackson-databind:$v_jackson"
 
     // messaging

@@ -78,7 +78,7 @@ dependencies {
     compile "javax.jmdns:jmdns:3.+"
 
     // json doc
-    compile 'com.wordnik:swagger-jaxrs:+'
+    compile "com.wordnik:swagger-jaxrs:$v_swagger"
     compile 'org.javassist:javassist:3.+'
 
     // serialization
