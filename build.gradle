@@ -27,6 +27,9 @@ dependencies {
     // JMS
     provided 'javax.jms:jms-api:1.1-rev-1'
 
+    // JAX-RS
+    compile "javax.ws.rs:javax.ws.rs-api:2.+"
+
     provided "javax.servlet:javax.servlet-api:+"
 
     // ActiveMQ
