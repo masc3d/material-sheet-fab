@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.central.data.entities.jooq.Tables;
 import org.deku.leo2.central.data.entities.jooq.tables.*;
 import org.deku.leo2.central.data.entities.jooq.tables.records.*;
-import org.deku.leo2.central.data.repositories.jooq.GenericJooqRepository;
+import org.deku.leo2.central.data.repositories.GenericRepository;
 import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.deku.leo2.node.data.entities.master.*;
 import org.deku.leo2.node.data.entities.system.Property;
@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import sx.event.EventDelegate;
 import sx.event.EventDispatcher;
-import sx.event.EventListener;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -55,31 +54,31 @@ public class DatabaseSync {
     //endregion
 
     @javax.persistence.PersistenceContext
-    EntityManager mEntityManager;
+    private EntityManager mEntityManager;
 
-    TransactionTemplate mTransaction;
-    TransactionTemplate mTransactionJooq;
+    // Transaction helpers
+    private TransactionTemplate mTransaction;
+    private TransactionTemplate mTransactionJooq;
 
+    // Repositories
     @Inject
-    GenericJooqRepository mGenericJooqRepository;
+    private GenericRepository mSyncRepository;
     @Inject
-    StationRepository mStationRepository;
+    private StationRepository mStationRepository;
     @Inject
-    CountryRepository mCountryRepository;
+    private CountryRepository mCountryRepository;
     @Inject
-    RouteRepository mRouteRepository;
+    private RouteRepository mRouteRepository;
     @Inject
-    HolidayctrlRepository mHolidayCtrlRepository;
+    private HolidayctrlRepository mHolidayCtrlRepository;
     @Inject
-    SectorRepository mSectorRepository;
+    private SectorRepository mSectorRepository;
     @Inject
-    PropertyRepository mPropertyRepository;
+    private PropertyRepository mPropertyRepository;
     @Inject
-    RoutingLayerRepository mRoutingLayerRepository;
-
+    private RoutingLayerRepository mRoutingLayerRepository;
     @Inject
-    StationSectorRepository mStationSectorRepository;
-
+    private StationSectorRepository mStationSectorRepository;
 
     @Inject
     public DatabaseSync(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) PlatformTransactionManager tx,
@@ -379,16 +378,13 @@ public class DatabaseSync {
 
         Stopwatch sw = Stopwatch.createStarted();
 
-        Function<String, Void> log = (m) -> {
-            mLog.info(destQdslEntityPath.getType().getName() + " " + m + " " + sw.toString());
-            return null;
-        };
+        Function<String, String> lfmt = s -> "[" + destQdslEntityPath.getType().getName() + "] " + s + " " + sw.toString();
 
         mEntityManager.setFlushMode(FlushModeType.COMMIT);
 
         if (deleteBeforeUpdate || destQdslEntityPath == null || destQdslTimestampPath == null) {
             mTransaction.execute((ts) -> {
-                log.apply("Deleting");
+                mLog.info(lfmt.apply("Deleting"));
                 destRepository.deleteAllInBatch();
                 mEntityManager.flush();
                 mEntityManager.clear();
@@ -399,24 +395,24 @@ public class DatabaseSync {
         // Get latest timestamp
         Timestamp timestamp = null;
         if (destQdslEntityPath != null && destQdslTimestampPath != null) {
-            log.apply("Timestamp check");
             timestamp = query.from(destQdslEntityPath).singleResult(destQdslTimestampPath.max());
+            mLog.info(lfmt.apply(String.format("Current destination timestamp [%s]", timestamp)));
         }
         final Timestamp fTimestamp = timestamp;
 
         // Get newer records from central
         // masc20150530. JOOQ cursor requires an explicit transaction
         mTransactionJooq.execute((tsJooq) -> {
-            log.apply("Fetching");
-            Iterable<TCentralRecord> source = mGenericJooqRepository.findNewerThan(fTimestamp, sourceTable, sourceTableField);
-            log.apply(String.format("Fetched"));
+            mLog.info(lfmt.apply("Fetching"));
+            Iterable<TCentralRecord> source = mSyncRepository.findNewerThan(fTimestamp, sourceTable, sourceTableField);
+            mLog.info(lfmt.apply(String.format("Fetched")));
 
             if (source.iterator().hasNext()) {
                 // Save to embedded
                 //TODO: saving/transaction commit gets very slow when deleting and inserting within the same transaction
                 //destRepository.save((Iterable<TEntity>) source.stream().map(d -> conversionFunction.apply(d))::iterator);
                 // It's also faster to flush and clear in between
-                log.apply("Inserting");
+                mLog.info(lfmt.apply("Inserting"));
                 mTransaction.execute((ts) -> {
                     int i = 0;
                     for (TEntity r : (Iterable<TEntity>) StreamSupport.stream(source.spliterator(), false).map(d -> conversionFunction.apply(d))::iterator) {
@@ -428,13 +424,13 @@ public class DatabaseSync {
                     }
                     return null;
                 });
-                log.apply("Inserted");
+                mLog.info(lfmt.apply("Inserted"));
 
                 // Emit update event
                 mEventDispatcher.emit(e -> e.onUpdate(destQdslEntityPath.getType(), fTimestamp));
             }
             return null;
         });
-        log.apply("Done");
+        mLog.info(lfmt.apply("Done"));
     }
 }

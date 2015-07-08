@@ -7,9 +7,22 @@ import java.util.*
 import kotlin.platform.platformStatic
 
 /**
+ * Local Storage
  * Created by masc on 26.06.15.
  */
-object LocalStorage {
+class LocalStorage {
+    companion object Singleton {
+        private val instance: LocalStorage = LocalStorage()
+        @platformStatic fun instance() : LocalStorage {
+            return this.instance;
+        }
+    }
+
+    /** c'tor */
+    private constructor () {
+        homeDirectory.mkdirs()
+        dataDirectory.mkdirs()
+    }
 
     // Directories
     /** Local home directory */
@@ -27,16 +40,4 @@ object LocalStorage {
     val logFile: File = File(this.homeDirectory, "leo2.log")
     /** Local embedded activemq data directory */
     val activeMqDataDirectory: File = File(this.dataDirectory, "activemq")
-
-    /**
-     * Initializes local storage, takes care directories exist etc.
-     */
-    fun initialize() {
-        homeDirectory.mkdirs()
-        dataDirectory.mkdirs()
-    }
-
-    @platformStatic fun instance() : LocalStorage {
-        return LocalStorage
-    }
 }

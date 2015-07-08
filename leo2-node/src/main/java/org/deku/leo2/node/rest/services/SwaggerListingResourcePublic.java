@@ -1,6 +1,6 @@
 package org.deku.leo2.node.rest.services;
 
-import org.deku.leo2.node.rest.ApiKey;
+import sx.rs.ApiKey;
 import org.deku.leo2.node.rest.swagger.SwaggerContextPublic;
 import org.deku.leo2.node.rest.swagger.SwaggerListingResource;
 

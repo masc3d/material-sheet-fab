@@ -8,8 +8,8 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.log.v1.LogMessage;
 import sx.Disposable;
-import sx.jms.MessageConverter;
-import sx.jms.converters.DefaultMessageConverter;
+import sx.jms.Converter;
+import sx.jms.converters.DefaultConverter;
 import sx.jms.embedded.Broker;
 
 import javax.jms.Connection;
@@ -30,7 +30,7 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
 
     private MessagingContext mMessagingContext;
     /** Message converter */
-    private MessageConverter mMessageConverter;
+    private Converter mMessageConverter;
     /** Log message buffer */
     private ArrayList<LogMessage> mLogMessageBuffer = new ArrayList<>();
     /** Flush scheduler */
@@ -62,9 +62,9 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
     public LogAppender(MessagingContext messagingContext) {
         mMessagingContext = messagingContext;
 
-        mMessageConverter = new DefaultMessageConverter(
-                DefaultMessageConverter.SerializationType.KRYO,
-                DefaultMessageConverter.CompressionType.GZIP);
+        mMessageConverter = new DefaultConverter(
+                DefaultConverter.SerializationType.KRYO,
+                DefaultConverter.CompressionType.GZIP);
     }
 
     /**
@@ -146,6 +146,10 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
 
     @Override
     public void dispose() {
-        this.stop();
+        try {
+            this.stop();
+        } catch(Exception e) {
+            mLog.error(e.getMessage(), e);
+        }
     }
 }

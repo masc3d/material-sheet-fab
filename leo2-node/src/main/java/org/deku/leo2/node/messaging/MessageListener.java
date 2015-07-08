@@ -2,8 +2,8 @@ package org.deku.leo2.node.messaging;
 
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.auth.Identity;
-import sx.jms.SpringJmsListener;
-import sx.jms.converters.DefaultMessageConverter;
+import sx.jms.listeners.SpringJmsListener;
+import sx.jms.converters.DefaultConverter;
 
 import javax.jms.Destination;
 
@@ -22,9 +22,9 @@ public class MessageListener extends SpringJmsListener {
     public MessageListener(MessagingContext messagingContext, Identity identity) {
         super(messagingContext.getBroker().getConnectionFactory());
 
-        this.setMessageConverter(new DefaultMessageConverter(
-                DefaultMessageConverter.SerializationType.KRYO,
-                DefaultMessageConverter.CompressionType.GZIP));
+        this.setConverter(new DefaultConverter(
+                DefaultConverter.SerializationType.KRYO,
+                DefaultConverter.CompressionType.GZIP));
 
         mIdentity = identity;
         mMessagingContext = messagingContext;

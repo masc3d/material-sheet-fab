@@ -101,9 +101,6 @@ public class App implements
 
         mProfile = profile;
 
-        // Initialize local storage
-        LocalStorage.instance().initialize();
-
         // Initialize logging
         LogConfiguration.instance().initialize();
 

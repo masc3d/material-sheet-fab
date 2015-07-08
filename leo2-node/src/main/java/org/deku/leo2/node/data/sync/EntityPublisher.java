@@ -4,11 +4,13 @@ import com.google.common.base.Stopwatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
+import org.deku.leo2.messaging.activemq.ActiveMQContext;
 import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
 import org.eclipse.persistence.queries.ScrollableCursor;
-import sx.jms.SpringJmsListener;
-import sx.jms.converters.DefaultMessageConverter;
+import sx.jms.Channel;
+import sx.jms.listeners.SpringJmsListener;
+import sx.jms.converters.DefaultConverter;
 
 import javax.jms.*;
 import javax.persistence.EntityManager;
@@ -19,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * Created by masc on 18.06.15.
@@ -30,7 +33,7 @@ public class EntityPublisher extends SpringJmsListener {
     /** Entity manager factory */
     private EntityManagerFactory mEntityManagerFactory;
     /** Message converter */
-    private DefaultMessageConverter mMessageConverter;
+    private DefaultConverter mConverter;
 
     /**
      * c'tor
@@ -41,24 +44,43 @@ public class EntityPublisher extends SpringJmsListener {
         super(messagingContext.getBroker().getConnectionFactory());
         mMessagingContext = messagingContext;
         mEntityManagerFactory = entityManagerFactory;
-        mMessageConverter = this.createMessageConverter();
+        mConverter = this.createMessageConverter();
 
-        this.setMessageConverter(mMessageConverter);
+        this.setConverter(mConverter);
     }
 
     /**
      * Create message converter
      * @return
      */
-    private DefaultMessageConverter createMessageConverter() {
-        return new DefaultMessageConverter(
-                DefaultMessageConverter.SerializationType.KRYO,
-                DefaultMessageConverter.CompressionType.GZIP);
+    private DefaultConverter createMessageConverter() {
+        return new DefaultConverter(
+                DefaultConverter.SerializationType.KRYO,
+                DefaultConverter.CompressionType.GZIP);
     }
 
     @Override
     protected Destination createDestination() {
         return mMessagingContext.getCentralEntitySyncQueue();
+    }
+
+    /**
+     * Publish entity update notification
+     * @param entityType
+     * @param timestamp
+     */
+    public void publish(Class entityType, Timestamp timestamp) throws JMSException {
+        Channel mc = new Channel(
+                ActiveMQContext.instance().getBroker().getConnectionFactory(),
+                ActiveMQContext.instance().getNodeNotificationTopic(),
+                this.createMessageConverter(),
+                false,
+                DeliveryMode.NON_PERSISTENT,
+                TimeUnit.MINUTES.toMillis(5));
+
+        mc.send(new EntityStateMessage(entityType, timestamp));
+
+        mc.close();
     }
 
     @Override
@@ -72,12 +94,14 @@ public class EntityPublisher extends SpringJmsListener {
         Stopwatch sw = Stopwatch.createStarted();
 
         // Create new message converter for this session, just for clean statistics sake
-        DefaultMessageConverter messageConverter = this.createMessageConverter();
+        DefaultConverter messageConverter = this.createMessageConverter();
 
         // Entity state message
         EntityStateMessage esMessage = (EntityStateMessage) messageConverter.fromMessage(message);
         Class entityType = esMessage.getEntityType();
         Timestamp timestamp = esMessage.getTimestamp();
+        Function<String, String> lfmt = s -> "[" + entityType.getCanonicalName() + "]" + " " + s;
+
 
         EntityManager em = mEntityManagerFactory.createEntityManager();
         EntityRepository er = new EntityRepository(em, entityType);
@@ -99,7 +123,7 @@ public class EntityPublisher extends SpringJmsListener {
 
             final int CHUNK_SIZE = 500;
             ArrayList buffer = new ArrayList(CHUNK_SIZE);
-            mLog.info(String.format("Sending %d of type %s", count, entityType));
+            mLog.info(lfmt.apply(String.format("Sending %d", count)));
             while (true) {
                 Object next = null;
                 if (cursor.hasNext()) {
@@ -124,7 +148,7 @@ public class EntityPublisher extends SpringJmsListener {
                     mp.send(eosMsg);
         }
         session.commit();
-        mLog.info(String.format("Sent %d in %s (%d bytes)", count, sw, messageConverter.getBytesWritten()));
+        mLog.info(lfmt.apply(String.format("Sent %d in %s (%d bytes)", count, sw, messageConverter.getBytesWritten())));
 
         em.close();
     }

@@ -1,4 +1,4 @@
-package org.deku.leo2.central.data.repositories.jooq;
+package org.deku.leo2.central.data.repositories;
 
 import org.deku.leo2.central.data.PersistenceConfiguration;
 import org.deku.leo2.central.data.entities.jooq.Tables;
@@ -14,7 +14,7 @@ import java.util.List;
  * Created by masc on 07.05.15.
  */
 @Named
-public class DepotJooqRepository {
+public class DepotRepository {
     @Inject
     DSLContext mDSLContext;
 

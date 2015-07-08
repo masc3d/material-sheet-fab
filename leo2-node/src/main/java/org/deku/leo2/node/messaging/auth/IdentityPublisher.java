@@ -8,7 +8,7 @@ import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.auth.Identity;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import org.deku.leo2.node.messaging.auth.v1.IdentityMessage;
-import sx.jms.converters.DefaultMessageConverter;
+import sx.jms.converters.DefaultConverter;
 
 import javax.jms.*;
 import java.util.concurrent.TimeUnit;
@@ -21,9 +21,9 @@ public class IdentityPublisher {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     private MessagingContext mMessagingContext;
-    DefaultMessageConverter mConverter = new DefaultMessageConverter(
-            DefaultMessageConverter.SerializationType.KRYO,
-            DefaultMessageConverter.CompressionType.GZIP);
+    DefaultConverter mConverter = new DefaultConverter(
+            DefaultConverter.SerializationType.KRYO,
+            DefaultConverter.CompressionType.GZIP);
 
     /**
      * c'tor
@@ -37,19 +37,15 @@ public class IdentityPublisher {
      * Publishes client node idenity to the central system
      * @param identity
      */
-    public void publish(Identity identity) throws JMSException {
-        try {
-            this.sendAndReceive(identity, false);
-        } catch (TimeoutException e) {
-            throw new RuntimeException(e);
-        }
+    public void publish(Identity identity) throws TimeoutException, Exception {
+        this.sendAndReceive(identity, false);
     }
 
     /**
      * Request client node id from central system
      * @param identity
      */
-    public AuthorizationMessage requestId(Identity identity) throws JMSException, TimeoutException {
+    public AuthorizationMessage requestId(Identity identity) throws TimeoutException, Exception {
         return this.sendAndReceive(identity, true);
     }
 
@@ -58,9 +54,10 @@ public class IdentityPublisher {
      * @param identity
      * @param receive
      */
+    @SuppressWarnings("unchecked")
     private AuthorizationMessage sendAndReceive(
             Identity identity,
-            boolean receive) throws JMSException, TimeoutException {
+            boolean receive) throws TimeoutException, Exception {
 
         // Connection and session
         Connection cn = mMessagingContext.getBroker().getConnectionFactory().createConnection();

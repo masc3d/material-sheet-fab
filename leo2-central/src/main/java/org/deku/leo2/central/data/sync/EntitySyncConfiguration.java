@@ -10,6 +10,7 @@ import sx.jms.embedded.Broker;
 import sx.jms.embedded.activemq.ActiveMQBroker;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
@@ -24,22 +25,26 @@ public class EntitySyncConfiguration {
     @PersistenceUnit(name = PersistenceConfiguration.DB_EMBEDDED)
     EntityManagerFactory mEntityManagerFactory;
 
+    @Inject
+    DatabaseSync mDatabaseSync;
+
     /** Broker listener */
     private Broker.EventListener mBrokerEventListener = new Broker.EventListener() {
         @Override
         public void onStart() {
-            EntitySync.instance().start();
+            EntitySync.it().start();
         }
 
         @Override
         public void onStop() {
-            EntitySync.instance().dispose();
+            EntitySync.it().dispose();
         }
     };
 
     @PostConstruct
     public void onInitialize() {
-        EntitySync.instance().setEntityManagerFactory(mEntityManagerFactory);
+        EntitySync.it().setEntityManagerFactory(mEntityManagerFactory);
+        EntitySync.it().setDatabaseSync(mDatabaseSync);
 
         // Start when broker is started
         ActiveMQBroker.instance().getDelegate().add(mBrokerEventListener);

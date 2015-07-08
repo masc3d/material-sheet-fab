@@ -5,8 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.log.v1.LogMessage;
 import sx.jms.Handler;
-import sx.jms.SpringJmsListener;
-import sx.jms.converters.DefaultMessageConverter;
+import sx.jms.listeners.SpringJmsListener;
+import sx.jms.converters.DefaultConverter;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -28,9 +28,9 @@ public class LogListener extends SpringJmsListener implements Handler<LogMessage
         super(messagingContext.getBroker().getConnectionFactory());
         mMessagingContext = messagingContext;
 
-        this.setMessageConverter(new DefaultMessageConverter(
-                DefaultMessageConverter.SerializationType.KRYO,
-                DefaultMessageConverter.CompressionType.GZIP));
+        this.setConverter(new DefaultConverter(
+                DefaultConverter.SerializationType.KRYO,
+                DefaultConverter.CompressionType.GZIP));
 
         this.addDelegate(LogMessage[].class, this);
     }
