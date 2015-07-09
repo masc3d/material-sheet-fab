@@ -87,8 +87,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Vbs\TestRoutingFind.vbs" />
-    <Content Include="Vbs\TestRoutingFindVia.vbs" />
     <Content Include="Vbs\TestSend.vbs" />
     <Content Include="Vbs\TestService.vbs" />
     <Content Include="Vbs\TestViewDepot.vbs" />

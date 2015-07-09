@@ -17,7 +17,7 @@ namespace LeoBridgeTest
             //this.ClientFactory.BaseUri = "http://217.7.24.80/leo2";
 //            this.ClientFactory.BaseUri = "http://217.7.24.80";
            // this.ClientFactory.BaseUri = "http://leoservice.derkurier.de:80";
-            this.ClientFactory.BaseUri = "http://217.7.24.80";
+            this.ClientFactory.BaseUri = "http://192.168.0.215:8080/";
                                           
 
         }

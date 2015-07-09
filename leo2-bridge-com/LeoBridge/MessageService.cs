@@ -16,7 +16,7 @@ namespace LeoBridge
         void SendMessage(Message message);
     }
 
-    #region Entities   
+    #region Entities
     /// <summary>
     /// LeoBridge message interface
     /// </summary>
