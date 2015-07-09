@@ -25,56 +25,59 @@ namespace LeoBridgeTest
             consignee = new LeoBridge.Service.RoutingRequestParticipant();
             
             LeoBridge.Service.RoutingRequest r = new RoutingRequest();
-            r.SendDate = "2015-06-01";
-            r.DeliveryDate = "2015-06-02";
-            consignee.Country = "DE";
+            
+            r.SendDate = "2015-06-05";
+//            r.SetDeliveryDate= "2015-06-02";
+            consignee.Country = "";
             consignee.Zip = "80331";
             consignee.TimeFrom="10:00";
             consignee.TimeTo="12:00";
+            consignee.StationByRequest = "0";
             r.Consignee = consignee;
             sender.Country="DE";
             sender.Zip = "80331";
             sender.TimeFrom = "10:00";
             sender.TimeTo = "12:00";
+            sender.StationByRequest = "0";
             r.Sender = sender;
             r.Weight = 0;
             r.Services = 0;
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 1; i++)
             {
                 Routing result = this.ClientFactory.RoutingService.Request(r);
                 Console.WriteLine(String.Format("{0}: {1}", i, result.ToString()));
             }
         }
-        [TestMethod]
-        public void TestRequestPartial()
-        {
-            LeoBridge.Service.RoutingRequestParticipant sender;
-            LeoBridge.Service.RoutingRequestParticipant consignee;
+        //[TestMethod]
+        //public void TestRequestPartial()
+        //{
+        //    LeoBridge.Service.RoutingRequestParticipant sender;
+        //    LeoBridge.Service.RoutingRequestParticipant consignee;
 
-            sender = new LeoBridge.Service.RoutingRequestParticipant();
-            consignee = new LeoBridge.Service.RoutingRequestParticipant();
+        //    sender = new LeoBridge.Service.RoutingRequestParticipant();
+        //    consignee = new LeoBridge.Service.RoutingRequestParticipant();
 
-            LeoBridge.Service.RoutingRequest r = new RoutingRequest();
-            //r.sendDate = "2015-06-01";
-            //r.deliveryDate = "2015-06-02";
-            consignee.Country = "DE";
-            consignee.Zip = "80331";
-            consignee.TimeFrom = "10:00";
-            consignee.TimeTo = "12:00";
-            r.Consignee = consignee;
-            sender.Country = "DE";
-            sender.Zip = "80331";
-            sender.TimeFrom = "10:00";
-            sender.TimeTo = "12:00";
-            r.Sender = sender;
-            //r.weight = 0;
-            //r.services = 0;
-            for (int i = 0; i < 5; i++)
-            {
-                Routing result = this.ClientFactory.RoutingService.Request(r);
-                Console.WriteLine(String.Format("{0}: {1}", i, result.ToString()));
-            }
-        }
+        //    LeoBridge.Service.RoutingRequest r = new RoutingRequest();
+        //    //r.sendDate = "2015-06-01";
+        //    //r.deliveryDate = "2015-06-02";
+        //    consignee.Country = "DE";
+        //    consignee.Zip = "80331";
+        //    consignee.TimeFrom = "10:00";
+        //    consignee.TimeTo = "12:00";
+        //    r.Consignee = consignee;
+        //    sender.Country = "DE";
+        //    sender.Zip = "80331";
+        //    sender.TimeFrom = "10:00";
+        //    sender.TimeTo = "12:00";
+        //    r.Sender = sender;
+        //    //r.weight = 0;
+        //    //r.services = 0;
+        //    for (int i = 0; i < 1; i++)
+        //    {
+        //        Routing result = this.ClientFactory.RoutingService.Request(r);
+        //        Console.WriteLine(String.Format("{0}: {1}", i, result.ToString()));
+        //    }
+        //}
 
 
         
