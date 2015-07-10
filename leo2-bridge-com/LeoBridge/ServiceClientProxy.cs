@@ -49,26 +49,37 @@ namespace LeoBridge
         }
 
         /// <summary>
-        /// Wraps call to service with appropriate JSON exception handling
+        /// Wraps call to service with appropriate JSON exception handling.
+        /// 
+        /// If the result type parameter implements IErrorContainer, the error result JSON will be unwrapped
+        /// from the WebException and injected into the result instance.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>
         /// <returns></returns>
-        protected T Call<T>(Func<T> a) {
+        protected T Call<T>(Func<T> a) where T : new() {
             try
             {
                 return a();
             } catch(Exception e) {
+                T result = new T();
+                IErrorContainer ec = result as IErrorContainer;
+                // Check if we can embed error inside result, simply throw otherwise
+                if (ec == null)
+                    throw e;
+
+                // Extract error information from response
                 WebException we = (e.InnerException != null) ? e.InnerException as WebException : null;
                 if (we != null)
                 {
                     // Convert json response and http response code to WebFaultException
                     DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(Error));
-                    Error err = (Error)jsonSerializer.ReadObject(we.Response.GetResponseStream());
                     HttpWebResponse hwr = (HttpWebResponse)we.Response;
-                    throw new WebFaultException<Error>(err, hwr.StatusCode);                    
+                    ec.Error = (Error)jsonSerializer.ReadObject(we.Response.GetResponseStream());                    
+                    ec.Error.HttpStatus = (int)hwr.StatusCode;
+                    return result;
                 }
-                throw e;
+                else throw e;                
             }
         }
     }

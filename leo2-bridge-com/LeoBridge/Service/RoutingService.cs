@@ -15,7 +15,6 @@ namespace LeoBridge.Service
     public interface IRoutingService
     {
         [OperationContract]
-        [FaultContract(typeof(Error))]
         [WebInvoke(
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
@@ -172,13 +171,14 @@ namespace LeoBridge.Service
         String[] ViaHubs { get; set; }
         String LabelContent { get; set; }
         String Message { get; set; }
+        Error Error { get; set; }
         String ToString();
     }
 
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.None)]
     [DataContract]
-    public class Routing : IRouting
+    public class Routing : IRouting, IErrorContainer
     {
         public Routing() { }
 
@@ -202,6 +202,8 @@ namespace LeoBridge.Service
 
         [DataMember(Name = "message", IsRequired = false)]
         public String Message { get; set; }
+
+        public Error Error { get; set; }
 
         public override string ToString()
         {

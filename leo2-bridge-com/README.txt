@@ -15,12 +15,18 @@ COM interop
   Putting static GUIDs on classes closes the door to automatic versioning. 
   When omitting the GUID attribute, all exposed classes will have an automatically generated GUID dependent on the assembly version
   so multiple versions of the assembly can be registered and used simultaneously
+* COM visible interfaces may not derive from each other. COM supports this but the C# interop does not
   
 VBS Tests
 =========
 * Won't work for methods returning objects while at the same time taking an object as parameter.
   As VBS only supports variants, not typed params the interop interfaces would have had to be changed
   to object parameters instead of specific types. This is not desirable, thus dropping VBS for all tests in favor of VBA
+  
+VBA Tests
+=========
+* When interfaces change/are added and the component is not re-registered in VBA container, the whole VBA container may stop 
+  responding and crash (as seen with repeated tests of the same version leo-bridge version within Excel 2007)
 
 Deployment
 ==========
