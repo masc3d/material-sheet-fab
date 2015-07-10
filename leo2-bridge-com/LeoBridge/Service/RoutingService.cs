@@ -74,7 +74,6 @@ namespace LeoBridge.Service
     public class RoutingRequest : IRoutingRequest
     {
         public RoutingRequest() { }
-
         [DataMember(Name = "sendDate", IsRequired = true)]
         public String SendDate { get; set; }
         [DataMember(Name = "setDeliveryDate",EmitDefaultValue=false)]
