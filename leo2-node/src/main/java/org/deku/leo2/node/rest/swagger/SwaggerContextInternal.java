@@ -27,8 +27,8 @@ public class SwaggerContextInternal implements SwaggerContext {
 
     public SwaggerContextInternal() {
         Info info = new Info()
-                .title("LEO internal webservice")
-                .description("LEO internal webservice API")
+                .title("LeoZ internal webservice")
+                .description("LeoZ internal webservice API")
                 .version("1.0.1")
                 .contact(new Contact()
                         .email("masc@disappear.de"));

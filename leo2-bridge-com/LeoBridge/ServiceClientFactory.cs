@@ -72,7 +72,9 @@ namespace LeoBridge
             // Create http binding
             _httpBinding = new WebHttpBinding();
             _httpBinding.OpenTimeout = TimeSpan.FromMilliseconds(1000);
-            _httpBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(1000);           
+            _httpBinding.CloseTimeout = TimeSpan.FromMilliseconds(1000);
+            _httpBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(1000);
+            _httpBinding.SendTimeout = TimeSpan.FromMilliseconds(1000);           
         }
     }
 }
