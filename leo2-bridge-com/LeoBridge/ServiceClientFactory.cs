@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Web;
 
 namespace LeoBridge
@@ -23,7 +24,9 @@ namespace LeoBridge
         String _baseUri;
         WebHttpBinding _httpBinding;
         EndpointAddress _endpointAddress;
-        IRoutingService _routingService;
+
+        // Service proxies
+        RoutingServiceProxy _routingServiceProxy;
 
         private ChannelFactory<T> CreateChannelFactory<T>()
         {
@@ -35,10 +38,11 @@ namespace LeoBridge
         public IRoutingService RoutingService
         {
             get
-            {
-                if (_routingService == null)
-                    _routingService = new RoutingServiceProxy(this.CreateChannelFactory<IRoutingService>());
-                return _routingService;
+            {                
+                if (_routingServiceProxy == null)
+                    _routingServiceProxy = new RoutingServiceProxy(this.CreateChannelFactory<IRoutingService>());
+
+                return _routingServiceProxy;
             }
         }
 
@@ -68,13 +72,11 @@ namespace LeoBridge
 
         public ServiceClientFactory()//String baseUri)
         {
-            //_baseUri = baseUri;
-            // Create http binding
-            _httpBinding = new WebHttpBinding();
-            _httpBinding.OpenTimeout = TimeSpan.FromMilliseconds(1000);
-            _httpBinding.CloseTimeout = TimeSpan.FromMilliseconds(1000);
-            _httpBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(1000);
-            _httpBinding.SendTimeout = TimeSpan.FromMilliseconds(1000);           
+            _httpBinding = new WebHttpBinding();            
+            _httpBinding.OpenTimeout = TimeSpan.FromMilliseconds(3000);
+            _httpBinding.CloseTimeout = TimeSpan.FromMilliseconds(3000);
+            _httpBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(3000);
+            _httpBinding.SendTimeout = TimeSpan.FromMilliseconds(3000);           
         }
     }
 }

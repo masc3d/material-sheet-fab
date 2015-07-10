@@ -15,6 +15,7 @@ namespace LeoBridge.Service
     public interface IRoutingService
     {
         [OperationContract]
+        [FaultContract(typeof(Error))]
         [WebInvoke(
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json,
@@ -213,8 +214,6 @@ namespace LeoBridge.Service
                 this.LabelContent,
                 this.Message);
         }
-
-
     }
     #endregion
 
@@ -226,7 +225,7 @@ namespace LeoBridge.Service
 
         public Routing Request(RoutingRequest r)
         {
-            return this.ServiceClient.Request(r);
+            return this.Call<Routing>(() => this.ServiceClient.Request(r) );
         }
     }
     #endregion
