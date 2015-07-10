@@ -61,7 +61,7 @@ namespace LeoBridge.Service
     public interface IRoutingRequest
     {
         String SendDate { get; set; }
-        String SetDeliveryDate { get; set; }
+        String DeliveryDate { get; set; }
         RoutingRequestParticipant Sender { get; set; }
         RoutingRequestParticipant Consignee { get; set; }
         int Services { get; set; }
@@ -77,15 +77,15 @@ namespace LeoBridge.Service
 
         [DataMember(Name = "sendDate", IsRequired = true)]
         public String SendDate { get; set; }
-        [DataMember(Name = "setDeliveryDate",EmitDefaultValue=false)]
-        public String SetDeliveryDate { get; set; }
-        [DataMember(Name = "sender", EmitDefaultValue = false)]
+        [DataMember(Name = "deliveryDate", EmitDefaultValue=false)]
+        public String DeliveryDate { get; set; }
+        [DataMember(Name = "sender")]
         public RoutingRequestParticipant Sender { get; set; }
-        [DataMember(Name = "consignee", EmitDefaultValue = false)]
+        [DataMember(Name = "consignee")]
         public RoutingRequestParticipant Consignee { get; set; }
-        [DataMember(Name = "services", EmitDefaultValue = false)]
+        [DataMember(Name = "services")]
         public int Services { get; set; }
-        [DataMember(Name = "weight", EmitDefaultValue = false)]
+        [DataMember(Name = "weight")]
         public double Weight { get; set; }
     }
     #endregion
@@ -109,6 +109,7 @@ namespace LeoBridge.Service
         string SundayDeliveryUntil { get; set; }
         string PickupUntil { get; set; }
         string PartnerManager { get; set; }
+        string ToString();
     }
 
     [ComVisible(true)]
@@ -130,9 +131,9 @@ namespace LeoBridge.Service
         public string Sector { get; set; }
         [DataMember(Name = "dayType", IsRequired = false, EmitDefaultValue = false)]
         public string DayType { get; set; }
-        [DataMember(Name = "island", IsRequired = false, EmitDefaultValue = false)]
+        [DataMember(Name = "island", IsRequired = false)]
         public Boolean Island { get; set; }
-        [DataMember(Name = "term", IsRequired = false, EmitDefaultValue = false)]
+        [DataMember(Name = "term", IsRequired = false)]
         public int Term { get; set; }
         [DataMember(Name = "earliestTimeOfDelivery", IsRequired = false, EmitDefaultValue = false)]
         public string EarliestTimeOfDelivery { get; set; }
@@ -144,6 +145,19 @@ namespace LeoBridge.Service
         public string PickupUntil { get; set; }
         [DataMember(Name = "partnerManager", IsRequired = false, EmitDefaultValue = false)]
         public string PartnerManager { get; set; }
+
+        public override string ToString()
+        {
+            return String.Format("Station [{0}] Country [{1}] ZipCode [{2}] Zone [{3}] Sector [{4}] Day type [{5}] Island [{6}] Term [{7}]",
+                this.Station,
+                this.Country,
+                this.ZipCode,
+                this.Zone,
+                this.Sector,
+                this.DayType,
+                this.Island,
+                this.Term);
+        }
     }
     #endregion
 
@@ -157,6 +171,7 @@ namespace LeoBridge.Service
         String[] ViaHubs { get; set; }
         String LabelContent { get; set; }
         String Message { get; set; }
+        String ToString();
     }
 
     [ComVisible(true)]
@@ -166,26 +181,39 @@ namespace LeoBridge.Service
     {
         public Routing() { }
 
-        [DataMember(Name = "sendDate", IsRequired = true, EmitDefaultValue = false)]
+        [DataMember(Name = "sendDate", IsRequired = true)]
         public String SendDate { get; set; }
 
-        [DataMember(Name = "deliveryDate", IsRequired = false, EmitDefaultValue = false)]
+        [DataMember(Name = "deliveryDate", IsRequired = false)]
         public String DeliveryDate { get; set; }
 
-        [DataMember(Name = "sender", IsRequired = false, EmitDefaultValue = false)]
+        [DataMember(Name = "sender", IsRequired = false)]
         public RoutingParticipant Sender { get; set; }
 
-        [DataMember(Name = "consignee", IsRequired = false, EmitDefaultValue = false)]
+        [DataMember(Name = "consignee", IsRequired = false)]
         public RoutingParticipant Consignee { get; set; }
 
-        [DataMember(Name = "viaHubs", IsRequired = false, EmitDefaultValue = false)]
+        [DataMember(Name = "viaHubs", IsRequired = false)]
         public String[] ViaHubs { get; set; }
 
-        [DataMember(Name = "labelContent", IsRequired = false, EmitDefaultValue = false)]
+        [DataMember(Name = "labelContent", IsRequired = false)]
         public String LabelContent { get; set; }
 
-        [DataMember(Name = "message", IsRequired = false, EmitDefaultValue = false)]
+        [DataMember(Name = "message", IsRequired = false)]
         public String Message { get; set; }
+
+        public override string ToString()
+        {
+            return String.Format("Send date [{0}] Delivery date [{1}] Sender [{2}] Consignee [{3}] ViaHubs [{4}] Label content [{5}] Message [{6}]",
+                this.SendDate,
+                this.DeliveryDate,
+                this.Sender,
+                this.Consignee,
+                this.ViaHubs,
+                this.LabelContent,
+                this.Message);
+        }
+
 
     }
     #endregion
@@ -198,19 +226,7 @@ namespace LeoBridge.Service
 
         public Routing Request(RoutingRequest r)
         {
-            Routing ret;
-            try
-            {
-                ret = this.ServiceClient.Request(r);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(String.Format("{0}", e));
-                ret = new Routing();
-                ret.Message = "NOK";
-                //throw;
-            }
-            return ret;
+            return this.ServiceClient.Request(r);
         }
     }
     #endregion

@@ -7,7 +7,7 @@ COM interop
 * C# classes must have a parameterless constructor, 
   otherwise they will not be exposed as COM objects (without notice)
 * C# classes may have to implement a referring (ComVisible) interface containing the methods/properties to expose
-	* C# classes can be exposed without implementing a CON interface but _only_ if they don't implement other interfaces (!)
+	* C# classes can be exposed without implementing a COM interface but _only_ if they don't implement other interfaces (!)
 	* If C# classes implement other non-COM interfaces, the COM interface is mandatory
 	  This interface has to be the first in line for classes to implement (!!) 
 	  (eg "class Message : ISerializable, IMessage" will NOT work while "class Mesasge : IMessage, ISerializable" will)
@@ -15,6 +15,12 @@ COM interop
   Putting static GUIDs on classes closes the door to automatic versioning. 
   When omitting the GUID attribute, all exposed classes will have an automatically generated GUID dependent on the assembly version
   so multiple versions of the assembly can be registered and used simultaneously
+  
+VBS Tests
+=========
+* Won't work for methods returning objects while at the same time taking an object as parameter.
+  As VBS only supports variants, not typed params the interop interfaces would have had to be changed
+  to object parameters instead of specific types. This is not desirable, thus dropping VBS for all tests in favor of VBA
 
 Deployment
 ==========
