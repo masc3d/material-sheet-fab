@@ -171,6 +171,7 @@ namespace LeoBridge.Service
         String[] ViaHubs { get; set; }
         String LabelContent { get; set; }
         String Message { get; set; }
+
         Error Error { get; set; }
         String ToString();
     }
@@ -178,7 +179,7 @@ namespace LeoBridge.Service
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.None)]
     [DataContract]
-    public class Routing : IRouting, IErrorContainer
+    public class Routing : ErrorContainer, IRouting
     {
         public Routing() { }
 
@@ -203,8 +204,6 @@ namespace LeoBridge.Service
         [DataMember(Name = "message", IsRequired = false)]
         public String Message { get; set; }
 
-        public Error Error { get; set; }
-
         public override string ToString()
         {
             return String.Format("Send date [{0}] Delivery date [{1}] Sender [{2}] Consignee [{3}] ViaHubs [{4}] Label content [{5}] Message [{6}]",
@@ -220,6 +219,9 @@ namespace LeoBridge.Service
     #endregion
 
     #region Proxy
+    /// <summary>
+    /// COM proxy class for routing service
+    /// </summary>
     public class RoutingServiceProxy : ServiceClientProxy<IRoutingService>, IRoutingService
     {
         public RoutingServiceProxy(ChannelFactory<IRoutingService> factory)

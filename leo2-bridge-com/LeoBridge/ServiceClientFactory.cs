@@ -26,8 +26,27 @@ namespace LeoBridge
         EndpointAddress _endpointAddress;
 
         // Service proxies
-        RoutingServiceProxy _routingServiceProxy;
+        Lazy<IRoutingService> _routingService;
 
+        public ServiceClientFactory()
+        {
+            _httpBinding = new WebHttpBinding();
+            _httpBinding.OpenTimeout = TimeSpan.FromMilliseconds(3000);
+            _httpBinding.CloseTimeout = TimeSpan.FromMilliseconds(3000);
+            _httpBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(3000);
+            _httpBinding.SendTimeout = TimeSpan.FromMilliseconds(3000);           
+
+            // Create service proxies
+            _routingService = new Lazy<IRoutingService>(() => new RoutingServiceProxy(this.CreateChannelFactory<IRoutingService>()));
+        }
+
+        public IRoutingService RoutingService { get { return _routingService.Value; } }
+
+        /// <summary>
+        /// Create channel factory for WCF service
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         private ChannelFactory<T> CreateChannelFactory<T>()
         {
             ChannelFactory<T> factory = new ChannelFactory<T>(_httpBinding, this.EndpointAdress);
@@ -35,17 +54,9 @@ namespace LeoBridge
             return factory;
         }
 
-        public IRoutingService RoutingService
-        {
-            get
-            {                
-                if (_routingServiceProxy == null)
-                    _routingServiceProxy = new RoutingServiceProxy(this.CreateChannelFactory<IRoutingService>());
-
-                return _routingServiceProxy;
-            }
-        }
-
+        /// <summary>
+        /// Webservice endpoint address
+        /// </summary>
         private EndpointAddress EndpointAdress
         {
             get
@@ -68,15 +79,6 @@ namespace LeoBridge
                 _baseUri = value;
                 _endpointAddress = null;
             }
-        }
-
-        public ServiceClientFactory()//String baseUri)
-        {
-            _httpBinding = new WebHttpBinding();            
-            _httpBinding.OpenTimeout = TimeSpan.FromMilliseconds(3000);
-            _httpBinding.CloseTimeout = TimeSpan.FromMilliseconds(3000);
-            _httpBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(3000);
-            _httpBinding.SendTimeout = TimeSpan.FromMilliseconds(3000);           
         }
     }
 }

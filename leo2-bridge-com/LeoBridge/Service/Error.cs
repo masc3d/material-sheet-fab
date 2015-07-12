@@ -34,11 +34,11 @@ namespace LeoBridge.Service
     }
 
     /// <summary>
-    /// Interface which can be optionally used on REST results for embedded error information
-    /// as COM doesn't properly support exceptions
+    /// Interface which can be optionally used on REST results for embedded error information    
     /// </summary>
-    public interface IErrorContainer
+    [Serializable]
+    public abstract class ErrorContainer
     {
-        Error Error { get; set; }
+        public Error Error { get; set; }
     }
 }

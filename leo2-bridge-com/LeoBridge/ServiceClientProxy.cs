@@ -66,18 +66,10 @@ namespace LeoBridge
             catch (Exception e)
             {
                 T result = new T();
-                IErrorContainer ec = result as IErrorContainer;
+                ErrorContainer ec = result as ErrorContainer;
                 // Check if we can embed error inside result, simply throw otherwise
                 if (ec == null)
                     throw e;
-
-                Action<Exception> embedException = (ex) =>
-                {
-                    ec.Error = new Error();
-                    ec.Error.HttpStatus = -1;
-                    ec.Error.Status = -1;
-                    ec.Error.Message = ex.Message;
-                };
 
                 // Extract error information from response
                 WebException we = (e.InnerException != null) ? e.InnerException as WebException : null;
