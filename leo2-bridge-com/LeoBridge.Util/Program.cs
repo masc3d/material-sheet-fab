@@ -248,11 +248,8 @@ namespace LeoBridge.Util
             psi.WorkingDirectory = workingDirectory;
             psi.UseShellExecute = false;
             psi.RedirectStandardOutput = true;
-            psi.RedirectStandardError = true;
 
             Process p = Process.Start(psi);
-            p.StandardOutput.ReadToEnd();
-            p.StandardError.ReadToEnd();
             p.WaitForExit();
             if (p.ExitCode != 0)
                 throw new InvalidOperationException(
