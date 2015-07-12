@@ -83,25 +83,14 @@ namespace LeoBridge
                 WebException we = (e.InnerException != null) ? e.InnerException as WebException : null;
                 if (we != null && we.Response != null)
                 {
-                    try
-                    {
-                        // Convert json response and http response code to WebFaultException
-                        DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(Error));
-                        HttpWebResponse hwr = (HttpWebResponse)we.Response;
-                        ec.Error = (Error)jsonSerializer.ReadObject(we.Response.GetResponseStream());
-                        ec.Error.HttpStatus = (int)hwr.StatusCode;
-                    }
-                    catch (Exception ex)
-                    {
-                        embedException(ex);
-                    }
+                    // Convert json response and http response code to WebFaultException
+                    DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(Error));
+                    HttpWebResponse hwr = (HttpWebResponse)we.Response;
+                    ec.Error = (Error)jsonSerializer.ReadObject(we.Response.GetResponseStream());
+                    ec.Error.HttpStatus = (int)hwr.StatusCode;
+                    return result;
                 }
-                else
-                {
-                    embedException(e);
-                }
-
-                return result;
+                else throw e;
             }
         }
     }
