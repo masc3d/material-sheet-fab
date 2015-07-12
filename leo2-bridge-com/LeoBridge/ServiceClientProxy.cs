@@ -57,29 +57,51 @@ namespace LeoBridge
         /// <typeparam name="T"></typeparam>
         /// <param name="a"></param>
         /// <returns></returns>
-        protected T Call<T>(Func<T> a) where T : new() {
+        protected T Call<T>(Func<T> a) where T : new()
+        {
             try
             {
                 return a();
-            } catch(Exception e) {
+            }
+            catch (Exception e)
+            {
                 T result = new T();
                 IErrorContainer ec = result as IErrorContainer;
                 // Check if we can embed error inside result, simply throw otherwise
                 if (ec == null)
                     throw e;
 
+                Action<Exception> embedException = (ex) =>
+                {
+                    ec.Error = new Error();
+                    ec.Error.HttpStatus = -1;
+                    ec.Error.Status = -1;
+                    ec.Error.Message = ex.Message;
+                };
+
                 // Extract error information from response
                 WebException we = (e.InnerException != null) ? e.InnerException as WebException : null;
-                if (we != null)
+                if (we != null && we.Response != null)
                 {
-                    // Convert json response and http response code to WebFaultException
-                    DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(Error));
-                    HttpWebResponse hwr = (HttpWebResponse)we.Response;
-                    ec.Error = (Error)jsonSerializer.ReadObject(we.Response.GetResponseStream());                    
-                    ec.Error.HttpStatus = (int)hwr.StatusCode;
-                    return result;
+                    try
+                    {
+                        // Convert json response and http response code to WebFaultException
+                        DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(Error));
+                        HttpWebResponse hwr = (HttpWebResponse)we.Response;
+                        ec.Error = (Error)jsonSerializer.ReadObject(we.Response.GetResponseStream());
+                        ec.Error.HttpStatus = (int)hwr.StatusCode;
+                    }
+                    catch (Exception ex)
+                    {
+                        embedException(ex);
+                    }
                 }
-                else throw e;                
+                else
+                {
+                    embedException(e);
+                }
+
+                return result;
             }
         }
     }
