@@ -227,7 +227,14 @@ namespace LeoBridge.Util
                      String.Format("/verbose /codebase /unregister /tlb:{0}-x64.tlb {1}", Path.GetFileNameWithoutExtension(installFile), Path.GetFileName(installFile)),
                      installDirectory);
             }
-             
+            
+            // Perform usage check on all files, eg. the tlb may still be in use
+            foreach (String filename in Directory.GetFiles(installDirectory))
+            {
+                if (IsFileLocked(filename))
+                    throw new InvalidOperationException(String.Format("File [{0}] is still in use", filename));
+            }
+
             if (Directory.Exists(installDirectory))
                 Directory.Delete(installDirectory, true);
 
@@ -257,6 +264,32 @@ namespace LeoBridge.Util
             return Path.Combine(
                 ToolLocationHelper.GetPathToDotNetFramework(TargetDotNetFrameworkVersion.Version40, arch), 
                 "regasm.exe");         
+        }
+
+        /// <summary>
+        /// Check if file is locked/in use
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private static bool IsFileLocked(String fileName)
+        {
+            FileStream stream = null;
+
+            try
+            {
+                stream = new FileInfo(fileName).Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+            }
+
+            return false;
         }
     }
 }
