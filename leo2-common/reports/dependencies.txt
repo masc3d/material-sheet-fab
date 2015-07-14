@@ -95,9 +95,9 @@ compile - Compile classpath for source set 'main'.
 +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
 +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
-+--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc3
-|    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
++--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc4
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc3 -> 2.6.0-rc4
+|    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3 -> 2.6.0-rc4
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.11.1 (*)
 +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.11.1 (*)
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.11.1 (*)
@@ -197,9 +197,9 @@ default - Configuration for default artifacts.
 +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
 +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
-+--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc3
-|    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
++--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc4
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc3 -> 2.6.0-rc4
+|    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3 -> 2.6.0-rc4
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.11.1 (*)
 +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.11.1 (*)
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.11.1 (*)
@@ -299,9 +299,9 @@ runtime - Runtime classpath for source set 'main'.
 +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
 +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
-+--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc3
-|    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
++--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc4
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc3 -> 2.6.0-rc4
+|    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3 -> 2.6.0-rc4
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.11.1 (*)
 +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.11.1 (*)
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.11.1 (*)
@@ -401,9 +401,9 @@ testCompile - Compile classpath for source set 'test'.
 +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
 +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
-+--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc3
-|    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
++--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc4
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc3 -> 2.6.0-rc4
+|    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3 -> 2.6.0-rc4
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.11.1 (*)
 +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.11.1 (*)
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.11.1 (*)
@@ -422,18 +422,18 @@ testCompile - Compile classpath for source set 'test'.
 |         +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |         +--- commons-io:commons-io:2.1
 |         \--- net.jcip:jcip-annotations:1.0
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc3
-|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
-\--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc3
-     +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc3
-     |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
-     |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
-     +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
-     +--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
-     \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc3
-          +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
-          \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc4
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc4
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc4 (*)
+\--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc4
+     +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc4
+     |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc4
+     |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc4 (*)
+     +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc4
+     +--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc4 (*)
+     \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc4
+          +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc4
+          \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc4 (*)
 
 testRuntime - Runtime classpath for source set 'test'.
 +--- project :sx-common
@@ -524,9 +524,9 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
 +--- com.wordnik:swagger-annotations:+ -> 1.5.3-M1
-+--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc3
-|    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
++--- com.fasterxml.jackson.core:jackson-databind:2.+ -> 2.6.0-rc4
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.0-rc3 -> 2.6.0-rc4
+|    \--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3 -> 2.6.0-rc4
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.11.1 (*)
 +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.11.1 (*)
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.11.1 (*)
@@ -545,17 +545,17 @@ testRuntime - Runtime classpath for source set 'test'.
 |         +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |         +--- commons-io:commons-io:2.1
 |         \--- net.jcip:jcip-annotations:1.0
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc3
-|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
-\--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc3
-     +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc3
-     |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
-     |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
-     +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
-     +--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
-     \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc3
-          +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc3
-          \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3 (*)
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.+ -> 2.6.0-rc4
+|    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc4
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc4 (*)
+\--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.+ -> 2.6.0-rc4
+     +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.6.0-rc4
+     |    +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc4
+     |    \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc4 (*)
+     +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc4
+     +--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc4 (*)
+     \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.0-rc4
+          +--- com.fasterxml.jackson.core:jackson-core:2.6.0-rc4
+          \--- com.fasterxml.jackson.core:jackson-databind:2.6.0-rc4 (*)
 
 (*) - dependencies omitted (listed previously)
