@@ -22,6 +22,7 @@ class LocalStorage {
     private constructor () {
         homeDirectory.mkdirs()
         dataDirectory.mkdirs()
+        logDirectory.mkdirs()
     }
 
     // Directories
@@ -29,6 +30,8 @@ class LocalStorage {
     val homeDirectory: File = File(System.getProperty("user.home"), ".leo2")
     /** Local data directory */
     val dataDirectory: File = File(this.homeDirectory, "data")
+    /** Local log directory */
+    val logDirectory: File = File(this.homeDirectory, "log")
     /** Local application configuration file */
     val mConfigurationDirectory: File = File(this.homeDirectory, "leo2.properties")
 
@@ -37,7 +40,7 @@ class LocalStorage {
     /** Local identity configuration file */
     val identityConfigurationFile: File = File(this.dataDirectory, "identity.properties")
     /** Local log file */
-    val logFile: File = File(this.homeDirectory, "leo2.log")
+    val logFile: File = File(this.logDirectory, "leo2.log")
     /** Local embedded activemq data directory */
     val activeMqDataDirectory: File = File(this.dataDirectory, "activemq")
 }
