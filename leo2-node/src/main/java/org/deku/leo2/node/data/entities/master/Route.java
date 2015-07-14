@@ -11,11 +11,14 @@ import java.sql.Timestamp;
  * Created by JT on 11.05.15.
  */
 @Entity
-@Table(name = "mst_route")
-@IdClass(RoutePK.class)
+@Table(name = "mst_route",
+        indexes = {@javax.persistence.Index(
+                columnList = "layer, country, zipFrom, validCrtr, validFrom",
+                unique = true)})
 public class Route implements Serializable {
     private static final long serialVersionUID = 6472457478560400106L;
 
+    private Long id;
     private Integer layer;
     private String country;
     private String zipFrom;
@@ -40,6 +43,16 @@ public class Route implements Serializable {
     }
 
     @Id
+    @GeneratedValue
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Basic
     @Index
     public Integer getLayer() {
         return layer;
@@ -49,7 +62,7 @@ public class Route implements Serializable {
         this.layer = layer;
     }
 
-    @Id
+    @Basic
     public String getCountry() {
         return country;
     }
@@ -58,7 +71,7 @@ public class Route implements Serializable {
         this.country = country;
     }
 
-    @Id
+    @Basic
     public String getZipFrom() {
         return zipFrom;
     }
@@ -76,7 +89,7 @@ public class Route implements Serializable {
         this.zipTo = zipTo;
     }
 
-    @Id
+    @Basic
     public Integer getValidCRTR() {
         return validCRTR;
     }
@@ -104,7 +117,7 @@ public class Route implements Serializable {
     }
 
 
-    @Id
+    @Basic
     public Timestamp getValidFrom() {
         return validFrom;
     }
