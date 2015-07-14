@@ -30,7 +30,7 @@ allprojects {
             v_h2 = "1.+"
             v_hk2 = "2.+"
             v_hibernate = "5.2.+"
-            v_jackson = "2.+"
+            v_jackson = "2.5.+"
             v_javax_servlet = "3.1.+"
             v_javax_persistence = "2.1.+"
             v_javax_ws_rs = "2.0.+"
@@ -43,7 +43,7 @@ allprojects {
             v_mysql = "5.+"
             // Resteasy > 3.0.9 breaks integration with spring-boot.
             // it actually still works fine when spring is initialized via resteasy's SpringContextLoaderListener
-            v_resteasy = "3.0.+"
+            v_resteasy = "3.+"
             v_slf4j = "1.+"
             v_spring = "4.1.6.+"
             v_spring_platform = "1.1.3.BUILD-SNAPSHOT"
