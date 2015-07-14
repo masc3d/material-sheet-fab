@@ -43,7 +43,7 @@ import javax.servlet.ServletException;
          */
         ResteasyAutoConfiguration.class,
         /** Flyway database migration setup */
-        FlywayAutoConfiguration.class,
+        //FlywayAutoConfiguration.class,
 
         /** Leo2 embedded broker configuration */
         BrokerConfiguration.class,
