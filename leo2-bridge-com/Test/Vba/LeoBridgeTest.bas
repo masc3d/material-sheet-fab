@@ -3,15 +3,15 @@ Sub RoutingRequestTest()
     Dim scf As New LeoBridge.ServiceClientFactory
     
     scf.BaseUri = "http://192.168.0.215:8080/"
-    
+
     Dim rq As New LeoBridge.routingRequest
-    
+
     Dim c As New LeoBridge.RoutingRequestParticipant
     Dim s As New LeoBridge.RoutingRequestParticipant
-    
+
     ' Consignee
     c.Country = "DE"
-    c.Zip = "80331"
+    c.Zip = ""
     c.StationByRequest = "0"
     c.TimeFrom = "10:00"
     c.TimeTo = "12:00"
@@ -28,11 +28,11 @@ Sub RoutingRequestTest()
     rq.Services = 0
     Set rq.consignee = c
     Set rq.sender = s
-    
+
     ' Perform
-    Dim result As LeoBridge.Routing
     Set result = scf.RoutingService.request(rq)
-    
+
     MsgBox (result)
-    
+    Exit Sub
+   
 End Sub
