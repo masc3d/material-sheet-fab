@@ -48,26 +48,17 @@ namespace LeoBridge.Util
             return result;
         }
 
-        [Empty, Help]
-        public static void Help(string help)
-        {
-            // this is an empty handler that prints
-            // the automatic help string to the console.
-            Console.WriteLine(help);
-        }
+        /// <summary>
+        /// Directory name of installation dir, used by install/uninstall commands
+        /// </summary>
+        private const String PATH_INSTALLED = "Installed";
 
-        [Global(Description = "Pause/wait for enter on termination")]
-        public static void Pause()
-        {
-            _pauseOnTermination = true;
-        }
-
-        [Global("pause-on-error", Description = "Pause/wait for enter on termination")]
-        public static void PauseOnError()
-        {
-            _pauseOnError = true;
-        }
-
+        #region Package
+        /// <summary>
+        /// Package component
+        /// </summary>
+        /// <param name="assemblyFilename"></param>
+        /// <param name="destinationPath"></param>
         [Verb]
         public static void Package(
             [Aliases("a")]
@@ -134,12 +125,13 @@ namespace LeoBridge.Util
             shortcut.WorkingDirectory = releaseDir;
             shortcut.Save();
         }
+        #endregion
 
+        #region Install
         /// <summary>
-        /// Relative path of installation dir
+        /// Install component
         /// </summary>
-        private const String PATH_INSTALLED = "Installed";
-
+        /// <param name="assemblyFilename"></param>
         [Verb]
         public static void Install(
             [Aliases("a")]
@@ -196,7 +188,13 @@ namespace LeoBridge.Util
                 throw ex;
             }
         }
+        #endregion
 
+        #region Uninstall
+        /// <summary>
+        /// Uninstall component
+        /// </summary>
+        /// <param name="assemblyFilename"></param>
         [Verb]
         public static void Uninstall(
             [Aliases("a")]
@@ -240,7 +238,45 @@ namespace LeoBridge.Util
 
             Console.WriteLine("Uninstalled successfully");
         }
+        #endregion
 
+        /// <summary>
+        /// Command line help
+        /// </summary>
+        /// <param name="help"></param>
+        [Empty, Help]
+        public static void Help(string help)
+        {
+            // this is an empty handler that prints
+            // the automatic help string to the console.
+            Console.WriteLine(help);
+        }
+
+        /// <summary>
+        /// Command line pause switch
+        /// </summary>
+        [Global(Description = "Pause/wait for enter on termination")]
+        public static void Pause()
+        {
+            _pauseOnTermination = true;
+        }
+
+        /// <summary>
+        /// Command line pause on error switch
+        /// </summary>
+        [Global("pause-on-error", Description = "Pause/wait for enter on termination")]
+        public static void PauseOnError()
+        {
+            _pauseOnError = true;
+        }
+
+
+        /// <summary>
+        /// Execute command, redirecting standard output and throwing exception when exit code is non-zero
+        /// </summary>
+        /// <param name="executable">Path to executable</param>
+        /// <param name="arguments">Arguments to pass</param>
+        /// <param name="workingDirectory">Working directory</param>
         private static void Execute(String executable, String arguments, String workingDirectory)
         {
             ProcessStartInfo psi = new ProcessStartInfo(executable, arguments);
@@ -256,6 +292,11 @@ namespace LeoBridge.Util
                     String.Format("Process [{0} {1}] failed with error code {2}", executable, arguments, p.ExitCode));
         }
 
+        /// <summary>
+        /// Determine regasm path for specific architecture
+        /// </summary>
+        /// <param name="arch"></param>
+        /// <returns></returns>
         private static String GetRegAsmPath(DotNetFrameworkArchitecture arch)
         {
             return Path.Combine(
