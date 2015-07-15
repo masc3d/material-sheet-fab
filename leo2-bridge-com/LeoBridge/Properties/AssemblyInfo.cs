@@ -22,6 +22,11 @@ using System.ComponentModel;
 [assembly: Description("Hello")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
+// masc20150715. This GUID is unique for all versions of this component
+// and should not be updated. OLE View displays different versions correctly,
+// however VBA applications may not offer anything but the latest version
+// in their references dialog. Still it's preferrabe to use just one GUID,
+// for the sake of cleaner registry, less maintenance (no need to generate new GUIDs)
 [assembly: Guid("1ABBAA03-EF6B-47F5-AFC2-D83684B2D88B")]
 
 // Version information for an assembly consists of the following four values:
