@@ -22,7 +22,7 @@ using System.ComponentModel;
 [assembly: Description("Hello")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid(AssemblyConstants.Guid)]
+[assembly: Guid("1ABBAA03-EF6B-47F5-AFC2-D83684B2D88B")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -39,7 +39,4 @@ using System.ComponentModel;
 
 static internal class AssemblyConstants {
     internal const string Version = "2.6";
-    // IMPORTANT: when the version is updated a new GUID should be generated
-    // so VBA consumers can distinguish the TLBs
-    internal const string Guid = "341DEB76-F54F-49CA-B7F3-FB3CB36282E8";
 }
