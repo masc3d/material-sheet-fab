@@ -71,7 +71,7 @@ public class LeoBridge implements Disposable, MessageService.Listener {
      * Start leo bridge
      * @throws IOException
      */
-    public void start() throws IOException {
+    public synchronized void start() throws IOException {
         if (mHttpServer == null) {
             mHttpServer = GrizzlyHttpServerFactory.createHttpServer(HOST_URI, new WebserviceResourceConfig());
             // Setup mClient
@@ -90,7 +90,7 @@ public class LeoBridge implements Disposable, MessageService.Listener {
     /**
      * Stop leo bridge
      */
-    public void stop() {
+    public synchronized void stop() {
         if (mHttpServer != null)
             mHttpServer.shutdownNow();
     }
