@@ -5,17 +5,10 @@ buildscript {
 //    }
     dependencies {
 //        classpath ':proguard'
-        classpath 'edu.sc.seis.gradle:launch4j:+'
     }
 }
 
-plugins {
-//    id "edu.sc.seis.macAppBundle" version "2.1.0"
-    id "com.github.johnrengelman.shadow" version "1.2.1"
-}
-
 apply plugin: 'application'
-apply plugin: 'launch4j'
 
 sourceCompatibility = 1.8
 version = '0.1'
@@ -86,27 +79,9 @@ dependencies {
 //    keep 'class com.dooapp.fxform.** { *; }'
 //}
 
-//macAppBundle {
-//    mainClassName = "org.deku.leo2.Main"
-//    //icon = "myIcon.icns"
-//    bundleJRE = true
-//    //javaProperties.put("apple.laf.useScreenMenuBar", "true")
-//    //backgroundImage = "doc/macbackground.png"
-//}
-
-//generateXmlConfig.enabled = false
-
-launch4j {
-    jar = tasks.shadowJar.archivePath
-    launch4jCmd = new File(projectDir, "libs/launch4j/launch4j").toString()
-    mainClassName = "org.deku.leo2.Main"
-    icon = new File(projectDir, "images/DEKU.icon.ico").toString()
-    println System.properties.get("java.home")
-    bundledJrePath = "jre6"
-}
-tasks.createExe.dependsOn(shadowJar)
-
+// DEBUG: Print all shadow jar properties
 // println shadowJar.properties.sort{it}.collect{it}.join('\n')
+// println shadowJar.properties.archivePath
 
 // Add resources (like .fxml files) from souce path.
 // Non-standard, but nicer to keep .fxml files together with classes

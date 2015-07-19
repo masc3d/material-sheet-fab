@@ -8,6 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/leo2-boot" />
             <option value="$PROJECT_DIR$/leo2-central" />
             <option value="$PROJECT_DIR$/leo2-common" />
             <option value="$PROJECT_DIR$/leo2-node" />

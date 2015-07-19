@@ -1,0 +1,49 @@
+buildscript {
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+        classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
+        classpath "com.github.jengelman.gradle.plugins:shadow:+"
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+version '0.1'
+sourceCompatibility = 1.8
+mainClassName = "org.deku.leo2.boot.Main"
+
+task packagerDeploy << {
+    def packagerDir = new File(project.buildDir, 'packager')
+    def srcDir = new File(project.buildDir, 'libs')
+    packagerDir.mkdirs()
+
+    // Dump shadowjar properties
+    // shadowJar.properties.each { println "$it.key -> $it.value" }
+
+    exec {
+        commandLine "javapackager",
+                "-deploy",
+                "-native",
+                "-outdir", "${packagerDir}",
+                "-outfile", "${project.name}",
+                "-srcdir", "${shadowJar.destinationDir}",
+                "-srcfiles", "${shadowJar.archiveName}",
+                "-appclass", "${mainClassName}"
+    }
+}
+tasks.packagerDeploy.group = "packager"
+tasks.packagerDeploy.dependsOn(tasks.shadowJar)
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+// javapackager examples:
+//  javapackager -deploy -native -outdir dist -outfile test -srcdir . -srcfiles leo2-ui-0.1-all.jar -appclass org.deku.leo2.Main
+// /cygdrive/c/Users/n3/Downloads/jdk-8u51-windows-i586/bin/javapackager.exe -deploy -native -Bruntime="C:\Users\n3\Downloads\Java\jre-8u51-windows-i586\jre1.8.0_51" -outdir dist -outfile test -srcdir . -srcfiles leo2-ui-0.1-all.jar -appclass org.deku.leo2.Main
