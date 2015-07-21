@@ -102,7 +102,7 @@ public class SystemInformation implements Serializable {
                 // Hostname. getHostName()/getCanonicalHostName() as it does connection check/DNS resolve
                 // and may be slow in some scenarios (eg. windows). toString() is good enough and
                 // returns hostname without connection check/lookup
-                hostname = localhost.toString();
+                hostname = localhost.getHostName();
 
                 // Find network interface addresses
                 ipv4 = findIpv4Address(networkInterface);
