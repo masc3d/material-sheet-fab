@@ -24,7 +24,7 @@ public class IdentityConfiguration {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     /** Authorizer */
-    Authorizer mAuthorizer;
+    private Authorizer mAuthorizer;
 
     /** c'tor */
     private IdentityConfiguration() { }
@@ -54,21 +54,21 @@ public class IdentityConfiguration {
         Identity identity = null;
 
         // Collect system information
-        mSystemInformation = SystemInformation.create();
-        mLog.info(mSystemInformation);
+        SystemInformation systemInformation = SystemInformation.create();
+        mLog.info(systemInformation);
 
         // Verify and read existing identity file
         File identityFile = LocalStorage.instance().getIdentityConfigurationFile();
         if (identityFile.exists()) {
             try {
-                identity = Identity.createFromFile(mSystemInformation, identityFile);
+                identity = Identity.createFromFile(systemInformation, identityFile);
             } catch (Exception e) {
                 mLog.error(e.getMessage(), e);
             }
         }
         // Create identity if it doesn't exist or could not be read/parsed
         if (identity == null) {
-            identity = Identity.create(mSystemInformation);
+            identity = Identity.create(systemInformation);
 
             // Store updates/created identity
             try {
@@ -85,6 +85,7 @@ public class IdentityConfiguration {
             mAuthorizer.start(identity);
         }
 
+        mSystemInformation = systemInformation;
         mIdentity = identity;
     }
 }

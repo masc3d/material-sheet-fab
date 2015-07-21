@@ -99,8 +99,10 @@ public class SystemInformation implements Serializable {
                 // Format hardware address
                 hardwareAddress = String.join(":", (Iterable) hwAddressParts.stream().map(c -> String.format("%02x", c))::iterator);
 
-                // Hostname
-                hostname = localhost.getCanonicalHostName();
+                // Hostname. getHostName()/getCanonicalHostName() as it does connection check/DNS resolve
+                // and may be slow in some scenarios (eg. windows). toString() is good enough and
+                // returns hostname without connection check/lookup
+                hostname = localhost.toString();
 
                 // Find network interface addresses
                 ipv4 = findIpv4Address(networkInterface);
