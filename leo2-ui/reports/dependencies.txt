@@ -567,6 +567,9 @@ runtime - Runtime classpath for source set 'main'.
 \--- org.controlsfx:controlsfx:8.+ -> 8.40.9
      \--- org.controlsfx:openjfx-dialogs:1.0.3
 
+shadow
+No dependencies
+
 testCompile - Compile classpath for source set 'test'.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0

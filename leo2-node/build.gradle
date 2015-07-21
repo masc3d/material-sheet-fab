@@ -149,6 +149,34 @@ repositories {
     mavenCentral()
 }
 
+task packagerDeploy << {
+    def java_home = org.gradle.internal.jvm.Jvm.current().javaHome
+
+    def packagerDir = new File(project.buildDir, 'packager')
+    packagerDir.mkdirs()
+
+    // Dump jar/shadow properties
+    //jar.properties.each { println "$it.key -> $it.value" }
+
+    def title = "LeoZ Node"
+
+    exec {
+        commandLine "${java_home}/bin/javapackager",
+                "-deploy",
+                "-native", "image",
+                "-title", "${title}",
+                "-description", "${title}",
+                "-name", "${project.name}",
+                "-outdir", "${packagerDir}",
+                "-outfile", "${project.name}",
+                "-srcdir", "${jar.destinationDir}",
+                "-srcfiles", "${jar.archiveName}",
+                "-appclass", "org.springframework.boot.loader.JarLauncher"
+    }
+}
+tasks.packagerDeploy.group = "packager"
+tasks.packagerDeploy.dependsOn(tasks.bootRepackage)
+
 // masc20150507. task prototypes
 ////copying all dependencies attached to 'compile' into a specific folder
 //task copyAllDependencies(type: Copy) {

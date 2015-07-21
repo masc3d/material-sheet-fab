@@ -21,13 +21,15 @@ mainClassName = "org.deku.leo2.boot.Main"
 task packagerDeploy << {
     def packagerDir = new File(project.buildDir, 'packager')
     def srcDir = new File(project.buildDir, 'libs')
+    def java_home = org.gradle.internal.jvm.Jvm.current().javaHome
+
     packagerDir.mkdirs()
 
     // Dump shadowjar properties
     // shadowJar.properties.each { println "$it.key -> $it.value" }
 
     exec {
-        commandLine "javapackager",
+        commandLine "${java_home}/bin/javapackager",
                 "-deploy",
                 "-native",
                 "-outdir", "${packagerDir}",

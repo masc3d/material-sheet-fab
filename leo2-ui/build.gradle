@@ -5,10 +5,12 @@ buildscript {
 //    }
     dependencies {
 //        classpath ':proguard'
+        classpath "com.github.jengelman.gradle.plugins:shadow:+"
     }
 }
 
 apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = 1.8
 version = '0.1'
@@ -86,3 +88,27 @@ dependencies {
 // Add resources (like .fxml files) from souce path.
 // Non-standard, but nicer to keep .fxml files together with classes
 // sourceSets.main.resources.srcDir 'src/main/java'
+
+task packagerDeploy << {
+    def packagerDir = new File(project.buildDir, 'packager')
+    def srcDir = new File(project.buildDir, 'libs')
+    def java_home = org.gradle.internal.jvm.Jvm.current().javaHome
+
+    packagerDir.mkdirs()
+
+    // Dump shadowjar properties
+    // shadowJar.properties.each { println "$it.key -> $it.value" }
+
+    exec {
+        commandLine "${java_home}/bin/javapackager",
+                "-deploy",
+                "-native",
+                "-outdir", "${packagerDir}",
+                "-outfile", "${project.name}",
+                "-srcdir", "${shadowJar.destinationDir}",
+                "-srcfiles", "${shadowJar.archiveName}",
+                "-appclass", "${mainClassName}"
+    }
+}
+tasks.packagerDeploy.group = "packager"
+tasks.packagerDeploy.dependsOn(tasks.shadowJar)
