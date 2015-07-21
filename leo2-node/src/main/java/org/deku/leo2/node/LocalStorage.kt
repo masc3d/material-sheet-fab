@@ -1,5 +1,9 @@
 package org.deku.leo2.node
 
+import com.google.common.base.Strings
+import org.apache.commons.lang3.SystemUtils
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import sx.LazyInstance
 
 import java.io.File
@@ -11,6 +15,8 @@ import kotlin.platform.platformStatic
  * Created by masc on 26.06.15.
  */
 class LocalStorage {
+    private var log: Log = LogFactory.getLog(this.javaClass)
+
     companion object Singleton {
         private val instance: LocalStorage = LocalStorage()
         @platformStatic fun instance() : LocalStorage {
@@ -20,6 +26,30 @@ class LocalStorage {
 
     /** c'tor */
     private constructor () {
+        // Initialize directories
+        var basePath: String
+        var baseDirectory: String
+        if (SystemUtils.IS_OS_WINDOWS) {
+            basePath = System.getenv("ALLUSERSPROFILE")
+            baseDirectory = "LeoZ"
+        } else {
+            basePath = System.getProperty("user.home")
+            baseDirectory = ".leoZ"
+        }
+
+        if (Strings.isNullOrEmpty(basePath))
+            throw UnsupportedOperationException("Basepath is empty");
+
+        homeDirectory = File(basePath, baseDirectory)
+        log.info("Home directory [${homeDirectory}]")
+        logDirectory = File(this.homeDirectory, "log");
+        dataDirectory = File(this.homeDirectory, "data")
+
+        applicationConfigurationFile = File(this.homeDirectory, "leo2.properties")
+        identityConfigurationFile = File(this.dataDirectory, "identity.properties")
+        logFile = File(this.logDirectory, "leo2.log")
+        activeMqDataDirectory = File(this.dataDirectory, "activemq")
+
         homeDirectory.mkdirs()
         dataDirectory.mkdirs()
         logDirectory.mkdirs()
@@ -27,20 +57,19 @@ class LocalStorage {
 
     // Directories
     /** Local home directory */
-    val homeDirectory: File = File(System.getProperty("user.home"), ".leo2")
+    val homeDirectory: File;
     /** Local data directory */
-    val dataDirectory: File = File(this.homeDirectory, "data")
+    val dataDirectory: File
     /** Local log directory */
-    val logDirectory: File = File(this.homeDirectory, "log")
-    /** Local application configuration file */
-    val mConfigurationDirectory: File = File(this.homeDirectory, "leo2.properties")
+    val logDirectory: File
+    /** Local embedded activemq data directory */
+    val activeMqDataDirectory: File
 
     // Files
-    val applicationConfigurationFile: File = File(this.homeDirectory, "leo2.properties")
+    /** Local application configuration file */
+    val applicationConfigurationFile: File
     /** Local identity configuration file */
-    val identityConfigurationFile: File = File(this.dataDirectory, "identity.properties")
+    val identityConfigurationFile: File
     /** Local log file */
-    val logFile: File = File(this.logDirectory, "leo2.log")
-    /** Local embedded activemq data directory */
-    val activeMqDataDirectory: File = File(this.dataDirectory, "activemq")
+    val logFile: File
 }
