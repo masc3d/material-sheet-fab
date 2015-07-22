@@ -15,6 +15,7 @@ import org.deku.leo2.messaging.log.LogAppender;
 import org.deku.leo2.node.auth.IdentityConfiguration;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -34,6 +35,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -149,6 +153,7 @@ public class App implements
         Runtime.getRuntime().addShutdownHook(new Thread("App shutdown hook") {
             @Override
             public void run() {
+                mLog.info("Shutdown hook initiated");
                 App.instance().dispose();
             }
         });
@@ -194,7 +199,8 @@ public class App implements
 
         mIsShuttingDown = true;
         mLog.info("Shutting down");
-        System.exit(exitCode);
+        SpringApplication.exit(mSpringApplicationContext, () -> exitCode);
+        App.instance().dispose();
     }
 
     public void shutdown() {
@@ -210,7 +216,6 @@ public class App implements
         return mSpringApplicationContext;
     }
 
-
     @Override
     public final void onApplicationEvent(ApplicationEvent event) {
         mLog.trace(String.format("Spring application event: %s",
@@ -224,8 +229,6 @@ public class App implements
         } else if (event instanceof ApplicationPreparedEvent) {
             // Initialize identity
             IdentityConfiguration.instance().initialize();
-
-            //endregion
         } else if (event instanceof EmbeddedServletContainerInitializedEvent) {
             // Post spring initialization
         }

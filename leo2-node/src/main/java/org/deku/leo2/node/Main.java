@@ -23,8 +23,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 /**
- * Spring boot main class.
- *
+ * Application main entry point
  * Created by masc on 28.05.15.
  */
 @Configuration("node.MainSpringBoot")
@@ -53,8 +52,8 @@ import javax.servlet.ServletException;
         MessageListenerConfiguration.class,
 })
 @EnableConfigurationProperties
-public class Main extends SpringBootServletInitializer {
-    private Log mLog = LogFactory.getLog(Main.class);
+public class Main  {
+    private static Log mLog = LogFactory.getLog(Main.class);
 
     /**
      * Standalone startup
@@ -66,6 +65,7 @@ public class Main extends SpringBootServletInitializer {
     }
 
     protected static void run(Class c, String[] args) throws Exception {
+        mLog.info(String.format("Main arguments [%s]", String.join(", ", args)));
         App.instance().initialize();
 
         new SpringApplicationBuilder()
@@ -76,28 +76,9 @@ public class Main extends SpringBootServletInitializer {
     }
 
     /**
-     * Tomcat/servlet container startup
-     * @param container
-     * @throws ServletException
+     * Stop application
      */
-    @Override
-    public void onStartup(ServletContext container) throws ServletException {
-        mLog.info("leo2.node.main.onStartup");
-        super.onStartup(container);
-    }
-
-    /**
-     * Tomcat/servlet container context setup
-     * @param builder
-     * @return
-     */
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        mLog.info("leo2.node.main.configure");
-        App.instance().initialize();
-        return builder
-                .sources(Main.class)
-                .profiles(App.instance().getProfile())
-                .listeners(App.instance());
+    public static void stop(String args[]) {
+        App.instance().shutdown();
     }
 }

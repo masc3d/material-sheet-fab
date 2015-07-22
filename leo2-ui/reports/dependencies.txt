@@ -111,7 +111,7 @@ compile - Compile classpath for source set 'main'.
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
-+--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.CR1
++--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.Final
 |    +--- javax.validation:validation-api:1.1.0.Final
 |    +--- org.jboss.logging:jboss-logging:3.2.1.Final -> 3.3.0.Final
 |    \--- com.fasterxml:classmate:1.1.0
@@ -298,7 +298,7 @@ default - Configuration for default artifacts.
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
-+--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.CR1
++--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.Final
 |    +--- javax.validation:validation-api:1.1.0.Final
 |    +--- org.jboss.logging:jboss-logging:3.2.1.Final -> 3.3.0.Final
 |    \--- com.fasterxml:classmate:1.1.0
@@ -485,7 +485,7 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
-+--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.CR1
++--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.Final
 |    +--- javax.validation:validation-api:1.1.0.Final
 |    +--- org.jboss.logging:jboss-logging:3.2.1.Final -> 3.3.0.Final
 |    \--- com.fasterxml:classmate:1.1.0
@@ -675,7 +675,7 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
-+--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.CR1
++--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.Final
 |    +--- javax.validation:validation-api:1.1.0.Final
 |    +--- org.jboss.logging:jboss-logging:3.2.1.Final -> 3.3.0.Final
 |    \--- com.fasterxml:classmate:1.1.0
@@ -863,7 +863,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
-+--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.CR1
++--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.Final
 |    +--- javax.validation:validation-api:1.1.0.Final
 |    +--- org.jboss.logging:jboss-logging:3.2.1.Final -> 3.3.0.Final
 |    \--- com.fasterxml:classmate:1.1.0
