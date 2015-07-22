@@ -36,23 +36,22 @@ class LocalStorage {
             basePath = System.getProperty("user.home")
             baseDirectory = ".leoZ"
         }
-
         if (Strings.isNullOrEmpty(basePath))
             throw UnsupportedOperationException("Basepath is empty");
 
-        homeDirectory = File(basePath, baseDirectory)
-        log.info("Home directory [${homeDirectory}]")
-        logDirectory = File(this.homeDirectory, "log");
-        dataDirectory = File(this.homeDirectory, "data")
+        this.homeDirectory = File(basePath, baseDirectory)
+        this.log.info("Home directory [${homeDirectory}]")
+        this.logDirectory = File(this.homeDirectory, "log");
+        this.dataDirectory = File(this.homeDirectory, "data")
 
-        applicationConfigurationFile = File(this.homeDirectory, "leo2.properties")
-        identityConfigurationFile = File(this.dataDirectory, "identity.properties")
-        logFile = File(this.logDirectory, "leo2.log")
-        activeMqDataDirectory = File(this.dataDirectory, "activemq")
+        this.applicationConfigurationFile = File(this.homeDirectory, "leo2.properties")
+        this.identityConfigurationFile = File(this.dataDirectory, "identity.properties")
+        this.logFile = File(this.logDirectory, "leo2.log")
+        this.activeMqDataDirectory = File(this.dataDirectory, "activemq")
 
-        homeDirectory.mkdirs()
-        dataDirectory.mkdirs()
-        logDirectory.mkdirs()
+        this.homeDirectory.mkdirs()
+        this.dataDirectory.mkdirs()
+        this.logDirectory.mkdirs()
     }
 
     // Directories
