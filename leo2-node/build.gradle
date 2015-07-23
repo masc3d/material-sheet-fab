@@ -26,8 +26,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
     // spring
-    compile 'org.springframework.data:spring-data-jpa:1.8.+'
-    compile "org.springframework.data:spring-data-commons:1.10.+"
+    compile "org.springframework.data:spring-data-jpa:$v_spring_data_jpa"
+    compile "org.springframework.data:spring-data-commons:$v_spring_data_commons"
     compile "org.springframework:spring-web:$v_spring"
     //compile "org.springframework:spring-aspects"
     // spring boot
