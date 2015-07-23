@@ -14,12 +14,12 @@ public class PackagerTask extends DefaultTask {
     // Optional properties, reasonable defaults
     String packageDescription
     String packageName = project.name
-    String outFile = project.name
-    String appClass = project.mainClassName
+    String mainClassName = project.mainClassName
 
     // Mandatory properties
     String title
-    String srcDir
+    /** List of files/full paths of jars to include */
+    def jars
 
     @TaskAction
     def packagerDeploy() {
@@ -34,8 +34,17 @@ public class PackagerTask extends DefaultTask {
         println "JRE home [${jre_home}]"
 
         def packagerDir = new File(project.buildDir, 'packager')
+        def packagerLibsDir = new File(packagerDir, 'libs')
         packagerDir.mkdirs()
+        packagerLibsDir.mkdirs()
 
+        println "Gathering jars"
+        project.copy {
+            from jars
+            into packagerLibsDir
+        }
+
+        println "Building package"
         project.exec {
             commandLine "${jdk_home}/bin/javapackager",
                     "-deploy",
@@ -44,9 +53,9 @@ public class PackagerTask extends DefaultTask {
                     "-description", this.packageDescription,
                     "-name", this.packageName,
                     "-outdir", packagerDir,
-                    "-outfile", this.outFile,
-                    "-srcdir", this.srcDir,
-                    "-appclass", this.appClass,
+                    "-outfile", project.name,
+                    "-srcdir", packagerLibsDir,
+                    "-appclass", this.mainClassName,
                     "-Bruntime=${jre_home}"
         }
     }

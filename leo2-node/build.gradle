@@ -108,6 +108,15 @@ run {
     standardInput = System.in
 }
 
+jar {
+    manifest {
+        attributes (
+            'Main-Class': mainClassName,
+                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
+        )
+    }
+}
+
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
@@ -136,46 +145,24 @@ sourceSets {
             srcDirs += srcdir_apt
         }
     }
+    // Support for optionally playinc kotlin sources into separate directory
     main.java.srcDirs += 'src/main/kotlin'
 }
 
+// Copy webapp content into classpath prior to compilation
 task copyWebapp(type: Copy) {
     from 'src/main/webapp'
     into 'build/classes/main/webapp'
 }
-
 compileJava.dependsOn(copyWebapp)
-repositories {
-    mavenCentral()
+
+// Packager task
+task packagerDeploy(type: org.deku.gradle.PackagerTask) {
+    title = "LeoZ Node"
+    jars = configurations.compile.files + [ jar.archivePath ]
 }
+tasks.packagerDeploy.dependsOn(tasks.jar)
 
-task packagerDeploy << {
-    def java_home = org.gradle.internal.jvm.Jvm.current().javaHome
-
-    def packagerDir = new File(project.buildDir, 'packager')
-    packagerDir.mkdirs()
-
-    // Dump jar/shadow properties
-    //jar.properties.each { println "$it.key -> $it.value" }
-
-    def title = "LeoZ Node"
-
-    exec {
-        commandLine "${java_home}/bin/javapackager",
-                "-deploy",
-                "-native", "image",
-                "-title", "${title}",
-                "-description", "${title}",
-                "-name", "${project.name}",
-                "-outdir", "${packagerDir}",
-                "-outfile", "${project.name}",
-                "-srcdir", "${jar.destinationDir}",
-                "-srcfiles", "${jar.archiveName}",
-                "-appclass", "org.springframework.boot.loader.JarLauncher"
-    }
-}
-tasks.packagerDeploy.group = "packager"
-tasks.packagerDeploy.dependsOn(tasks.bootRepackage)
 
 // masc20150507. task prototypes
 ////copying all dependencies attached to 'compile' into a specific folder
