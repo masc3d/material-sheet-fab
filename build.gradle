@@ -48,11 +48,11 @@ allprojects {
             // it actually still works fine when spring is initialized via resteasy's SpringContextLoaderListener
             v_resteasy = "3.+"
             v_slf4j = "1.+"
-            v_spring = "4.1.6.+"
+            v_spring = "4.1.7.+"
             v_spring_data_jpa = "1.8.+"
             v_spring_data_commons = "1.10.+"
             v_spring_platform = "1.1.3.BUILD-SNAPSHOT"
-            v_springboot = "1.2.4.+"
+            v_springboot = "1.2.5.+"
             v_springboot_dep_plugin = "+"
             v_swagger = "+"
         }
