@@ -1,3 +1,5 @@
+apply plugin: 'groovy'
+
 version = '0.1'
 
 buildscript {
@@ -19,6 +21,7 @@ buildscript {
     }
 }
 
+// Common configuration for all projects, eg. version varws
 allprojects {
     buildscript {
         // Global variables
@@ -54,6 +57,8 @@ allprojects {
     }
 }
 
+// For multi-project builds, Spring boot plugin needs to be configured
+// before each subproject's dependency management is in place.
 project(':leo2-node') {
     apply plugin: 'spring-boot'
 
@@ -99,6 +104,7 @@ project(':leo2-ui') {
     }
 }
 
+// Common configuration for subprojects
 subprojects {
     apply plugin: 'java'
     apply plugin: 'project-report'
@@ -187,7 +193,10 @@ subprojects {
     }
 }
 
-// copy intelllij data sources into place. this change will not be visible until IDE is restarted
+// Data(base) sources in intellij contain hashes which are updated every time the IDE updates
+// To avoid having a vcs change to reset every time, this configuration was moved to a separate file
+// which is copied on each gradle run. Implies that _when_ datasources are updated (rare) the
+// config file below needs to be updated manually.
 task copyIntellijDataSources(type: Copy) {
     def ideaWorkspaceDir = '.idea'
     def dataSourcesPresetFile = 'dataSources.preset.xml'
