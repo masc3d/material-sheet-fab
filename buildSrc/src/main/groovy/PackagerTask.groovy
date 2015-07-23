@@ -15,11 +15,13 @@ public class PackagerTask extends DefaultTask {
     String packageDescription
     String packageName = project.name
     String mainClassName = project.mainClassName
+    /** Full path to main jar */
+    String mainJar
+    /** List of files/full paths of jars to include. Defaults to the project's configurations.compile.files */
+    def jars = project.configurations.compile.files
 
     // Mandatory properties
     String title
-    /** List of files/full paths of jars to include */
-    def jars
 
     @TaskAction
     def packagerDeploy() {
@@ -35,12 +37,17 @@ public class PackagerTask extends DefaultTask {
 
         def packagerDir = new File(project.buildDir, 'packager')
         def packagerLibsDir = new File(packagerDir, 'libs')
+        if (!packagerDir.deleteDir())
+            throw new IOException("Could not remove packager dir");
         packagerDir.mkdirs()
         packagerLibsDir.mkdirs()
 
         println "Gathering jars"
+        def sourceJars = jars.collect()
+        if (this.mainJar)
+            sourceJars += this.mainJar
         project.copy {
-            from jars
+            from sourceJars
             into packagerLibsDir
         }
 
@@ -56,7 +63,8 @@ public class PackagerTask extends DefaultTask {
                     "-outfile", project.name,
                     "-srcdir", packagerLibsDir,
                     "-appclass", this.mainClassName,
-                    "-Bruntime=${jre_home}"
+                    "-Bruntime=${jre_home}",
+                    (this.mainJar) ? "-BmainJar=${new File(this.mainJar).getName()}" : ""
         }
     }
 }

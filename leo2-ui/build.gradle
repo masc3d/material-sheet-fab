@@ -89,26 +89,17 @@ dependencies {
 // Non-standard, but nicer to keep .fxml files together with classes
 // sourceSets.main.resources.srcDir 'src/main/java'
 
-task packagerDeploy << {
-    def packagerDir = new File(project.buildDir, 'packager')
-    def srcDir = new File(project.buildDir, 'libs')
-    def java_home = org.gradle.internal.jvm.Jvm.current().javaHome
-
-    packagerDir.mkdirs()
-
-    // Dump shadowjar properties
-    // shadowJar.properties.each { println "$it.key -> $it.value" }
-
-    exec {
-        commandLine "${java_home}/bin/javapackager",
-                "-deploy",
-                "-native",
-                "-outdir", "${packagerDir}",
-                "-outfile", "${project.name}",
-                "-srcdir", "${shadowJar.destinationDir}",
-                "-srcfiles", "${shadowJar.archiveName}",
-                "-appclass", "${mainClassName}"
+jar {
+    manifest {
+        attributes (
+                'Main-Class': mainClassName,
+                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
+        )
     }
 }
-tasks.packagerDeploy.group = "packager"
-tasks.packagerDeploy.dependsOn(tasks.shadowJar)
+
+task packagerDeploy(type: org.deku.gradle.PackagerTask) {
+    title = "LeoZ UI"
+    mainJar = jar.archivePath
+}
+tasks.packagerDeploy.dependsOn(tasks.jar)

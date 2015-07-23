@@ -159,7 +159,7 @@ compileJava.dependsOn(copyWebapp)
 // Packager task
 task packagerDeploy(type: org.deku.gradle.PackagerTask) {
     title = "LeoZ Node"
-    jars = configurations.compile.files + [ jar.archivePath ]
+    mainJar = jar.archivePath
 }
 tasks.packagerDeploy.dependsOn(tasks.jar)
 
