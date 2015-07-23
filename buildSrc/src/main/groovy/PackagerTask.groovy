@@ -19,6 +19,8 @@ public class PackagerTask extends DefaultTask {
     String mainJar
     /** List of files/full paths of jars to include. Defaults to the project's configurations.compile.files */
     def jars = project.configurations.compile.files
+    /** Jvm runtime options */
+    def jvmOptions
 
     // Mandatory properties
     String title
@@ -64,7 +66,8 @@ public class PackagerTask extends DefaultTask {
                     "-srcdir", packagerLibsDir,
                     "-appclass", this.mainClassName,
                     "-Bruntime=${jre_home}",
-                    (this.mainJar) ? "-BmainJar=${new File(this.mainJar).getName()}" : ""
+                    (this.mainJar) ? "-BmainJar=${new File(this.mainJar).getName()}" : "",
+                    (this.jvmOptions) ? "-BjvmOptions=${this.jvmOptions}" : ""
         }
     }
 }

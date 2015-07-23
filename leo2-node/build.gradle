@@ -160,6 +160,7 @@ compileJava.dependsOn(copyWebapp)
 task packagerDeploy(type: org.deku.gradle.PackagerTask) {
     title = "LeoZ Node"
     mainJar = jar.archivePath
+    jvmOptions = "-XX:+UseCompressedOops"
 }
 tasks.packagerDeploy.dependsOn(tasks.jar)
 
