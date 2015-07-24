@@ -1,7 +1,6 @@
 buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
-        classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
     }
     repositories {
         mavenCentral()
