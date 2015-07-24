@@ -34,7 +34,7 @@ class LogConfiguration : Disposable {
     private var fileAppender: RollingFileAppender<ILoggingEvent>
 
     /** Enable support for jms log appender */
-    public var jmsAppenderEnabled: Boolean = true
+    public var jmsAppenderEnabled: Boolean = false
 
     /**
      * c'tor
