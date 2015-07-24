@@ -60,6 +60,16 @@ run {
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
+jar {
+    manifest {
+        attributes (
+                'Main-Class': mainClassName,
+                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
+        )
+    }
+}
+
+
 // Location for generated sources
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
@@ -96,12 +106,13 @@ jooq {
 }
 tasks.generateJooq.outputs.upToDateWhen { false }
 
-task copyWebapp(type: Copy) {
-    from 'src/main/webapp'
-    into 'build/classes/main/webapp'
+// Packager task
+task packagerDeploy(type: org.deku.gradle.PackagerTask) {
+    title = "LeoZ Central"
+    mainJar = jar.archivePath
+    jvmOptions = "-XX:+UseCompressedOops"
 }
-
-compileJava.dependsOn(copyWebapp)
+tasks.packagerDeploy.dependsOn(tasks.jar)
 
 // masc20150507. task prototypes
 ////copying all dependencies attached to 'compile' into a specific folder
