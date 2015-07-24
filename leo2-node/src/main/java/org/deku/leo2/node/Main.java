@@ -5,22 +5,16 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.node.data.sync.EntitySyncConfiguration;
 import org.deku.leo2.node.messaging.BrokerConfiguration;
 import org.deku.leo2.node.messaging.MessageListenerConfiguration;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.boot.resteasy.autoconfigure.ResteasyAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 /**
  * Application main entry point
@@ -66,8 +60,36 @@ public class Main  {
 
     protected static void run(Class c, String[] args) throws Exception {
         mLog.info(String.format("Main arguments [%s]", String.join(", ", args)));
-        App.instance().initialize();
 
+        // Support for command line parameters, setup commands
+        if (args != null && args.length > 0) {
+            String command = args[0].toLowerCase().trim();
+
+            Runnable rCommand = null;
+            if (command.contentEquals("install")) {
+                rCommand = () -> Setup.instance().install();
+            } else if(command.contentEquals("uninstall")) {
+                rCommand = () -> Setup.instance().uninstall();
+            }
+
+            if (rCommand != null) {
+                try {
+                    LogConfiguration.instance().initialize();
+                    rCommand.run();
+                }
+                catch(Exception e) {
+                    mLog.error(e.getMessage(), e);
+                    throw e;
+                }
+                finally {
+                    LogConfiguration.instance().dispose();
+                }
+                System.exit(0);
+            }
+        }
+
+        // Initialize and start application
+        App.instance().initialize();
         new SpringApplicationBuilder()
                 .sources(c)
                 .profiles(App.instance().getProfile())
