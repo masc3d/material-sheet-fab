@@ -83,7 +83,7 @@ public class App implements
      * Intialize application
      * @param profile Spring profile name
      */
-    public void initialize(String profile) {
+    protected void initialize(String profile) {
 
         if (mIsInitialized)
             throw new IllegalStateException("Application already initialized");
@@ -92,7 +92,10 @@ public class App implements
         mProfile = profile;
 
         // Initialize logging
-        LogConfiguration.instance().initialize(true);
+        if (mProfile == PROFILE_CLIENT_NODE) {
+            LogConfiguration.instance().setJmsAppenderEnabled(true);
+        }
+        LogConfiguration.instance().initialize();
 
         mLog.info("Leo2 node initialize");
 
@@ -211,7 +214,7 @@ public class App implements
             // Spring resets logging configuration.
             // As we don't want to supply a logging framework specific config file, simply reapplying
             // logging configuration after spring environment has been prepared.
-            LogConfiguration.instance().initialize(true);
+            LogConfiguration.instance().initialize();
         } else if (event instanceof ApplicationPreparedEvent) {
             // Initialize identity
             IdentityConfiguration.instance().initialize();

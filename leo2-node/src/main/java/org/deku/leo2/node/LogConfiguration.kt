@@ -30,9 +30,11 @@ class LogConfiguration : Disposable {
 
     private var rootLogger: Logger
     private var loggerContext: LoggerContext
-
     private var jmsLogAppender: LogAppender? = null
     private var fileAppender: RollingFileAppender<ILoggingEvent>
+
+    /** Enable support for jms log appender */
+    public var jmsAppenderEnabled: Boolean = true
 
     /**
      * c'tor
@@ -63,32 +65,26 @@ class LogConfiguration : Disposable {
         this.fileAppender.setRollingPolicy(rollingPolicy)
         this.fileAppender.setTriggeringPolicy(rollingPolicy)
         // endregion
-
-        // Jms appender
-        if (App.instance().getProfile() === App.PROFILE_CLIENT_NODE) {
-            // Setup message log appender
-            this.jmsLogAppender = LogAppender(ActiveMQContext.instance())
-            this.jmsLogAppender!!.setContext(loggerContext)
-        }
     }
 
     /**
      * Initialize logging
-     * @param withJmsAppender Initialize jms appender (defaults to true)
      */
-    public fun initialize(withJmsAppender: Boolean = true) {
+    public fun initialize() {
         // Initialize file appender
         this.fileAppender.start()
         this.rootLogger.addAppender(this.fileAppender)
 
-        // Initialize jms appender
-        if (this.jmsLogAppender != null) {
+        if (this.jmsAppenderEnabled) {
+            // Initialize jms appender
+            if (this.jmsLogAppender == null) {
+                // Setup message log appender
+                this.jmsLogAppender = LogAppender(ActiveMQContext.instance())
+                this.jmsLogAppender!!.setContext(loggerContext)
+            }
             this.jmsLogAppender!!.start()
             this.rootLogger.addAppender(this.jmsLogAppender)
         }
-    }
-    public fun initialize() {
-        this.initialize(withJmsAppender = true)
     }
 
     /**
