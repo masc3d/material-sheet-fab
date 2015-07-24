@@ -2,8 +2,8 @@ package org.deku.leo2.node.messaging;
 
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.node.auth.Identity;
-import sx.jms.listeners.SpringJmsListener;
 import sx.jms.converters.DefaultConverter;
+import sx.jms.listeners.SpringJmsListener;
 
 import javax.jms.Destination;
 

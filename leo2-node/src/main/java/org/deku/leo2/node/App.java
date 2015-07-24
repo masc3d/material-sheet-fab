@@ -1,19 +1,9 @@
 package org.deku.leo2.node;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.OutputStreamAppender;
-import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.RollingPolicy;
-import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
-import ch.qos.logback.core.rolling.TriggeringPolicy;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leo2.messaging.activemq.ActiveMQContext;
-import org.deku.leo2.messaging.log.LogAppender;
 import org.deku.leo2.node.auth.IdentityConfiguration;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileApplicationListener;
@@ -28,16 +18,12 @@ import sx.Disposable;
 import sx.LazyInstance;
 import sx.jms.embedded.activemq.ActiveMQBroker;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -106,7 +92,7 @@ public class App implements
         mProfile = profile;
 
         // Initialize logging
-        LogConfiguration.instance().initialize();
+        LogConfiguration.instance().initialize(true);
 
         mLog.info("Leo2 node initialize");
 
@@ -225,7 +211,7 @@ public class App implements
             // Spring resets logging configuration.
             // As we don't want to supply a logging framework specific config file, simply reapplying
             // logging configuration after spring environment has been prepared.
-            LogConfiguration.instance().initialize();
+            LogConfiguration.instance().initialize(true);
         } else if (event instanceof ApplicationPreparedEvent) {
             // Initialize identity
             IdentityConfiguration.instance().initialize();

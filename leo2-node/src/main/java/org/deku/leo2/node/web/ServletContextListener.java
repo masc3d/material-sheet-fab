@@ -5,12 +5,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletContextEvent;
-import javax.ws.rs.core.Configurable;
 
 /**
  * Created by masc on 17.09.14.

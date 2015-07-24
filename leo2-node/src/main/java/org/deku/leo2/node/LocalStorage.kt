@@ -4,10 +4,7 @@ import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import sx.LazyInstance
-
 import java.io.File
-import java.util.*
 import kotlin.platform.platformStatic
 
 /**

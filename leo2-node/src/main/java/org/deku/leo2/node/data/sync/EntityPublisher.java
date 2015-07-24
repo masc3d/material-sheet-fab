@@ -9,8 +9,8 @@ import org.deku.leo2.node.data.sync.v1.EntityStateMessage;
 import org.deku.leo2.node.data.sync.v1.EntityUpdateMessage;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import sx.jms.Channel;
-import sx.jms.listeners.SpringJmsListener;
 import sx.jms.converters.DefaultConverter;
+import sx.jms.listeners.SpringJmsListener;
 
 import javax.jms.*;
 import javax.persistence.EntityManager;

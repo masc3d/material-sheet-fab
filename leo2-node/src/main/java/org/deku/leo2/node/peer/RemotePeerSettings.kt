@@ -1,6 +1,5 @@
 package org.deku.leo2.node.peer
 
-import org.deku.leo2.node.LocalStorage
 import org.springframework.boot.context.properties.ConfigurationProperties
 import javax.inject.Named
 

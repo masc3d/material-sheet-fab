@@ -1,7 +1,7 @@
 package org.deku.leo2.node.rest.services.internal.v1;
 
-import sx.rs.ApiKey;
 import org.deku.leo2.rest.entities.internal.v1.TestEntry;
+import sx.rs.ApiKey;
 
 import javax.inject.Named;
 import javax.ws.rs.Path;

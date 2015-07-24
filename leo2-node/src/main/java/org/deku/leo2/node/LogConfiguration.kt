@@ -78,16 +78,17 @@ class LogConfiguration : Disposable {
      */
     public fun initialize(withJmsAppender: Boolean = true) {
         // Initialize file appender
-        if (this.fileAppender != null) {
-            this.fileAppender.start()
-            this.rootLogger.addAppender(this.fileAppender)
-        }
+        this.fileAppender.start()
+        this.rootLogger.addAppender(this.fileAppender)
 
         // Initialize jms appender
         if (this.jmsLogAppender != null) {
             this.jmsLogAppender!!.start()
             this.rootLogger.addAppender(this.jmsLogAppender)
         }
+    }
+    public fun initialize() {
+        this.initialize(withJmsAppender = true)
     }
 
     /**

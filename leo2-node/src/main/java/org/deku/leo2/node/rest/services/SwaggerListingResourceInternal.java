@@ -1,8 +1,8 @@
 package org.deku.leo2.node.rest.services;
 
-import sx.rs.ApiKey;
 import org.deku.leo2.node.rest.swagger.SwaggerContextInternal;
 import org.deku.leo2.node.rest.swagger.SwaggerListingResource;
+import sx.rs.ApiKey;
 
 import javax.inject.Named;
 import javax.ws.rs.Path;
