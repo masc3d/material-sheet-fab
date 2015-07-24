@@ -98,7 +98,7 @@ jar {
     }
 }
 
-task packagerDeploy(type: org.deku.gradle.PackagerTask) {
+task packagerDeploy(type: org.deku.gradle.PackagerDeployTask) {
     title = "LeoZ UI"
     mainJar = jar.archivePath
 }

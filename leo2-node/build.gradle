@@ -157,12 +157,16 @@ task copyWebapp(type: Copy) {
 compileJava.dependsOn(copyWebapp)
 
 // Packager task
-task packagerDeploy(type: org.deku.gradle.PackagerTask) {
+task packagerDeploy(type: org.deku.gradle.PackagerDeployTask) {
     title = "LeoZ Node"
     mainJar = jar.archivePath
     jvmOptions = "-XX:+UseCompressedOops"
 }
 tasks.packagerDeploy.dependsOn(tasks.jar)
+
+task packagerReleaseJars(type: org.deku.gradle.PackagerReleaseJarsTask) {
+
+}
 
 
 // masc20150507. task prototypes

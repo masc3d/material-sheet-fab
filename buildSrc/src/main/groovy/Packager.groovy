@@ -3,27 +3,30 @@ package org.deku.gradle
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
+import java.nio.file.Paths
+
+abstract class PackagerTask extends DefaultTask {
+    def String group = "packager"
+    def packagerBaseDir = new File(project.buildDir, 'packager')
+}
+
 /**
  * Java packager task
  * Created by masc on 22.07.15.
  */
-public class PackagerTask extends DefaultTask {
-    // Task properties
-    String group = "packager"
-
-    // Optional properties, reasonable defaults
-    String packageDescription
-    String packageName = project.name
-    String mainClassName = project.mainClassName
+public class PackagerDeployTask extends PackagerTask {
+    def String packageDescription
+    def String packageName = project.name
+    def String mainClassName = project.mainClassName
     /** Full path to main jar */
-    String mainJar
+    def String mainJar
     /** List of files/full paths of jars to include. Defaults to the project's configurations.compile.files */
     def jars = project.configurations.compile.files
     /** Jvm runtime options */
     def jvmOptions
 
     // Mandatory properties
-    String title
+    def String title
 
     @TaskAction
     def packagerDeploy() {
@@ -37,11 +40,10 @@ public class PackagerTask extends DefaultTask {
         println "JDK home [${jdk_home}]"
         println "JRE home [${jre_home}]"
 
-        def packagerDir = new File(project.buildDir, 'packager')
-        def packagerLibsDir = new File(packagerDir, 'libs')
-        if (!packagerDir.deleteDir())
+        def packagerLibsDir = new File(packagerBaseDir, 'libs')
+        if (!packagerBaseDir.deleteDir())
             throw new IOException("Could not remove packager dir");
-        packagerDir.mkdirs()
+        packagerBaseDir.mkdirs()
         packagerLibsDir.mkdirs()
 
         println "Gathering jars"
@@ -61,13 +63,34 @@ public class PackagerTask extends DefaultTask {
                     "-title", this.title,
                     "-description", this.packageDescription,
                     "-name", this.packageName,
-                    "-outdir", packagerDir,
+                    "-outdir", packagerBaseDir,
                     "-outfile", project.name,
                     "-srcdir", packagerLibsDir,
                     "-appclass", this.mainClassName,
                     "-Bruntime=${jre_home}",
                     (this.mainJar) ? "-BmainJar=${new File(this.mainJar).getName()}" : "",
                     (this.jvmOptions) ? "-BjvmOptions=${this.jvmOptions}" : ""
+        }
+    }
+}
+
+abstract class PackagerReleaseTask extends PackagerTask {
+    def releaseBasePath = new File(this.packagerBaseDir, "release")
+    def bundlePath = Paths.get(this.packagerBaseDir.toString()).resolve("bundles").resolve(project.name)
+}
+
+public class PackagerReleaseJarsTask extends PackagerReleaseTask {
+
+    @TaskAction
+    def packagerReleaseJars() {
+        println "Bundle path [${this.bundlePath}]"
+        println "Release base path [${this.releaseBasePath}]"
+
+        this.releaseBasePath.mkdirs()
+
+        project.copy {
+            from this.bundlePath.toFile()
+            into this.releaseBasePath
         }
     }
 }
