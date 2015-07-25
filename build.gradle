@@ -37,6 +37,7 @@ allprojects {
             v_javax_ws_rs = "2.0.+"
             v_jersey = "2.+"
             v_jetty = "9.2.+"
+            v_jgit = "4.+"
             v_jooq = "3.+"
             v_junit = "4.+"
             v_kryo = "3.+"
@@ -45,6 +46,7 @@ allprojects {
             // Resteasy > 3.0.9 breaks integration with spring-boot.
             // it actually still works fine when spring is initialized via resteasy's SpringContextLoaderListener
             v_resteasy = "3.+"
+            v_scala = "2.11.+"
             v_slf4j = "1.+"
             v_spring = "4.1.7.+"
             v_spring_data_jpa = "1.8.+"
@@ -171,6 +173,10 @@ subprojects {
                     details.useVersion v_hibernate
                 } else if (details.requested.group.startsWith('org.glassfish.jersey')) {
                     details.useVersion v_jersey
+                } else if (details.requested.group == 'org.scala-lang') {
+                    details.useVersion v_scala
+                } else if (details.requested.group == 'org.eclipse.jgit') {
+                    details.useVersion v_jgit
                 }
             }
 

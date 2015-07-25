@@ -39,6 +39,8 @@ dependencies {
     // spring
     compile("org.springframework:spring-jms:$v_spring")
 
+    compile "org.eclipse.jgit:org.eclipse.jgit:+"
+
     testCompile group: 'junit', name: 'junit', version: v_junit
 
     // webservice client libraries for test cases

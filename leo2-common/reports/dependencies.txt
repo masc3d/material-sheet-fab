@@ -106,7 +106,12 @@ compile - Compile classpath for source set 'main'.
 +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
 +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-\--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
++--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
+\--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
+     +--- com.jcraft:jsch:0.1.51
+     +--- com.googlecode.javaewah:JavaEWAH:0.7.9
+     +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
+     \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 
 default - Configuration for default artifacts.
 +--- project :sx-common
@@ -208,7 +213,12 @@ default - Configuration for default artifacts.
 +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
 +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-\--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
++--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
+\--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
+     +--- com.jcraft:jsch:0.1.51
+     +--- com.googlecode.javaewah:JavaEWAH:0.7.9
+     +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
+     \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 
 runtime - Runtime classpath for source set 'main'.
 +--- project :sx-common
@@ -310,7 +320,12 @@ runtime - Runtime classpath for source set 'main'.
 +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
 +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-\--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
++--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
+\--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
+     +--- com.jcraft:jsch:0.1.51
+     +--- com.googlecode.javaewah:JavaEWAH:0.7.9
+     +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
+     \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 
 testCompile - Compile classpath for source set 'test'.
 +--- project :sx-common
@@ -413,6 +428,11 @@ testCompile - Compile classpath for source set 'test'.
 +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
++--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
+|    +--- com.jcraft:jsch:0.1.51
+|    +--- com.googlecode.javaewah:JavaEWAH:0.7.9
+|    +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
+|    \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- junit:junit:4.+ -> 4.12 (*)
 +--- org.jboss.resteasy:resteasy-client:3.+ -> 3.0.11.Final
 |    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final
@@ -536,6 +556,11 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
++--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
+|    +--- com.jcraft:jsch:0.1.51
+|    +--- com.googlecode.javaewah:JavaEWAH:0.7.9
+|    +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
+|    \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- junit:junit:4.+ -> 4.12 (*)
 +--- org.jboss.resteasy:resteasy-client:3.+ -> 3.0.11.Final
 |    \--- org.jboss.resteasy:resteasy-jaxrs:3.0.11.Final
