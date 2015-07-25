@@ -111,8 +111,8 @@ run {
 jar {
     manifest {
         attributes (
-            'Main-Class': mainClassName,
-                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
+                'Main-Class': mainClassName,
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
         )
     }
 }

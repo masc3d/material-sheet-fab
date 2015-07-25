@@ -10,7 +10,7 @@ buildscript {
     repositories {
         jcenter()
         maven { url 'http://repo.spring.io/snapshot' }
-        maven { url 'http://repo.spring.io/plugins-release' }
+        maven { url 'http://repo.spring.io/plugins-snapshot' }
         mavenCentral()
     }
 
@@ -42,6 +42,7 @@ allprojects {
             v_javax_ws_rs = "2.0.+"
             v_jersey = "2.+"
             v_jetty = "9.2.+"
+            v_jgit = "4.+"
             v_jooq = "3.+"
             v_junit = "4.+"
             v_kryo = "3.+"
@@ -50,6 +51,7 @@ allprojects {
             // Resteasy > 3.0.9 breaks integration with spring-boot.
             // it actually still works fine when spring is initialized via resteasy's SpringContextLoaderListener
             v_resteasy = "3.+"
+            v_scala = "2.11.+"
             v_slf4j = "1.+"
             v_spring = "4.1.7.+"
             v_spring_data_jpa = "1.8.+"
@@ -152,51 +154,83 @@ subprojects {
             // Force overrides for newer versions of (transitive) dependencies for all projects consistently
             // Version overrides
             resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                // Spring
+                if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                    details.useVersion v_jackson
+                } else
+                if (details.requested.group == 'com.google.guava') {
+                    details.useVersion v_guava
+                } else
+                if (details.requested.group == 'com.mysema.querydsl') {
+                    details.useVersion v_querydsl
+                } else
+                if (details.requested.group == 'javax.activation') {
+                    details.useVersion '1.+'
+                }
+                if (details.requested.group == 'javax.servlet') {
+                    details.useVersion v_javax_servlet
+                } else
+                if (details.requested.group == 'junit') {
+                    details.useVersion '4.+'
+                } else
+                if (details.requested.group == 'org.apache.activemq') {
+                    details.useVersion v_activemq
+                } else
+                if (details.requested.group == 'org.apache.httpcomponents') {
+                    details.useVersion '4.+'
+                } else
+                if (details.requested.group == 'org.eclipse.jgit') {
+                    details.useVersion v_jgit
+                } else
+                if (details.requested.group.startsWith('org.glassfish.jersey')) {
+                    details.useVersion v_jersey
+                } else
+                if (details.requested.group == 'org.hamcrest') {
+                    details.useVersion '1.+'
+                } else
+                if (details.requested.group == 'org.hibernate') {
+                    details.useVersion v_hibernate
+                } else
+                if (details.requested.group == 'org.javassist') {
+                    details.useVersion '3.+'
+                } else
+                if (details.requested.group == 'org.scala-lang') {
+                    details.useVersion v_scala
+                } else
+                if (details.requested.group == 'org.slf4j') {
+                    details.useVersion v_slf4j
+                } else
                 if (details.requested.group == 'org.springframework') {
                     details.useVersion v_spring
-                // Jackson
-                } else if (details.requested.group.startsWith('com.fasterxml.jackson')) {
-                    details.useVersion v_jackson
-                } else if (details.requested.group == 'org.slf4j') {
-                    details.useVersion v_slf4j
-                } else if (details.requested.group == 'org.apache.activemq') {
-                    details.useVersion v_activemq
-                } else if (details.requested.group == 'com.google.guava') {
-                    details.useVersion v_guava
-                } else if (details.requested.group == 'javax.servlet') {
-                    details.useVersion v_javax_servlet
-                } else if (details.requested.group == 'org.hamcrest') {
+                } else
+                if (details.requested.group == "org.springframework.data") {
+                    if (details.requested.name == 'spring-data-commons') {
+                        details.useVersion v_spring_data_commons
+                    } else if (details.requested.name == 'spring-data-jpa') {
+                        details.useVersion v_spring_data_jpa
+                    }
+                } else
+                if (details.requested.group == 'org.xerial.snappy') {
                     details.useVersion '1.+'
-                } else if (details.requested.group == 'org.javassist') {
-                    details.useVersion '3.+'
-                } else if (details.requested.group == 'org.yaml') {
+                } else
+                if (details.requested.group == 'org.yaml') {
                     details.useVersion '1.+'
-                } else if (details.requested.group == 'org.hibernate') {
-                    details.useVersion v_hibernate
-                } else if (details.requested.group.startsWith('org.glassfish.jersey')) {
-                    details.useVersion v_jersey
                 }
             }
 
-            force "com.mysema.querydsl:querydsl-codegen:$v_querydsl"
-
-            // Apache common
+            force "commons-codec:commons-codec:1.+"
+            force "commons-io:commons-io:2.+"
             force "commons-logging:commons-logging:1.+"
-            force "org.apache.httpcomponents:httpclient:4.+"
-
-            // Hawt
-            force "org.fusesource.hawtdispatch:hawtdispatch-transport:1.+"
-            force "org.fusesource.hawtbuf:hawtbuf:1.+"
-
             force "com.google.guava:guava:$v_guava"
             force "com.thoughtworks.xstream:xstream:1.+"
-
+            force "org.fusesource.hawtdispatch:hawtdispatch-transport:1.+"
+            force "org.fusesource.hawtbuf:hawtbuf:1.+"
             force "org.jboss.logging:jboss-logging:3.+"
             force "org.jboss.logging:jboss-logging-annotations:1.+"
         }
     }
 }
+
+
 
 // Data(base) sources in intellij contain hashes which are updated every time the IDE updates
 // To avoid having a vcs change to reset every time, this configuration was moved to a separate file
