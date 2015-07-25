@@ -8,7 +8,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 abstract class PackagerTask extends DefaultTask {
-    protected def String group = "packager"
+    def String group = "packager"
     protected def packagerBaseDir = Paths.get(project.buildDir.toURI()).resolve('packager')
 }
 
