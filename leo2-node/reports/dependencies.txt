@@ -48,10 +48,10 @@ compile - Compile classpath for source set 'main'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.11.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.3.6
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.3.3 -> 4.4.1
-|    |    |    +--- commons-logging:commons-logging:1.1.3 -> 1.2
-|    |    |    \--- commons-codec:commons-codec:1.6 -> 1.10
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- commons-logging:commons-logging:1.2
+|    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
@@ -83,7 +83,7 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
 |    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2-RC3
-|    \--- junit:junit:4.+ -> 4.11
+|    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
 |    +--- project :sx-common (*)
@@ -106,13 +106,13 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
 |    \--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
 |         +--- com.jcraft:jsch:0.1.51 -> 0.1.52
 |         +--- com.googlecode.javaewah:JavaEWAH:0.7.9
-|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.3.6 (*)
+|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
 |         \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1218
 +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1218
@@ -199,7 +199,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1 -> 1.1.1
-|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1 -> 2.4
 |    \--- net.jcip:jcip-annotations:1.0
 +--- org.jboss.resteasy:resteasy-spring:3.+ -> 3.0.11.Final
@@ -251,7 +251,7 @@ compile - Compile classpath for source set 'main'.
 |         +--- com.mysema.querydsl:querydsl-core:3.6.5 (*)
 |         +--- com.mysema.codegen:codegen:0.6.7
 |         |    +--- com.google.guava:guava:18.0
-|         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1 -> 4.4.2
+|         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1
 |         \--- javax.inject:javax.inject:1
 +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.5
 |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
@@ -345,10 +345,10 @@ default - Configuration for default artifacts.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.11.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.3.6
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.3.3 -> 4.4.1
-|    |    |    +--- commons-logging:commons-logging:1.1.3 -> 1.2
-|    |    |    \--- commons-codec:commons-codec:1.6 -> 1.10
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- commons-logging:commons-logging:1.2
+|    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
@@ -380,7 +380,7 @@ default - Configuration for default artifacts.
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
 |    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2-RC3
-|    \--- junit:junit:4.+ -> 4.11
+|    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
 |    +--- project :sx-common (*)
@@ -403,13 +403,13 @@ default - Configuration for default artifacts.
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
 |    \--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
 |         +--- com.jcraft:jsch:0.1.51 -> 0.1.52
 |         +--- com.googlecode.javaewah:JavaEWAH:0.7.9
-|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.3.6 (*)
+|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
 |         \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1218
 +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1218
@@ -496,7 +496,7 @@ default - Configuration for default artifacts.
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1 -> 1.1.1
-|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1 -> 2.4
 |    \--- net.jcip:jcip-annotations:1.0
 +--- org.jboss.resteasy:resteasy-spring:3.+ -> 3.0.11.Final
@@ -548,7 +548,7 @@ default - Configuration for default artifacts.
 |         +--- com.mysema.querydsl:querydsl-core:3.6.5 (*)
 |         +--- com.mysema.codegen:codegen:0.6.7
 |         |    +--- com.google.guava:guava:18.0
-|         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1 -> 4.4.2
+|         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1
 |         \--- javax.inject:javax.inject:1
 +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.5
 |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
@@ -663,10 +663,10 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.11.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.3.6
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.3.3 -> 4.4.1
-|    |    |    +--- commons-logging:commons-logging:1.1.3 -> 1.2
-|    |    |    \--- commons-codec:commons-codec:1.6 -> 1.10
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- commons-logging:commons-logging:1.2
+|    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
@@ -698,7 +698,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
 |    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2-RC3
-|    \--- junit:junit:4.+ -> 4.11
+|    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
 |    +--- project :sx-common (*)
@@ -721,13 +721,13 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
 |    \--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
 |         +--- com.jcraft:jsch:0.1.51 -> 0.1.52
 |         +--- com.googlecode.javaewah:JavaEWAH:0.7.9
-|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.3.6 (*)
+|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
 |         \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1218
 +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1218
@@ -814,7 +814,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1 -> 1.1.1
-|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1 -> 2.4
 |    \--- net.jcip:jcip-annotations:1.0
 +--- org.jboss.resteasy:resteasy-spring:3.+ -> 3.0.11.Final
@@ -866,7 +866,7 @@ runtime - Runtime classpath for source set 'main'.
 |         +--- com.mysema.querydsl:querydsl-core:3.6.5 (*)
 |         +--- com.mysema.codegen:codegen:0.6.7
 |         |    +--- com.google.guava:guava:18.0
-|         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1 -> 4.4.2
+|         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1
 |         \--- javax.inject:javax.inject:1
 +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.5
 |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
@@ -960,10 +960,10 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.11.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.3.6
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.3.3 -> 4.4.1
-|    |    |    +--- commons-logging:commons-logging:1.1.3 -> 1.2
-|    |    |    \--- commons-codec:commons-codec:1.6 -> 1.10
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- commons-logging:commons-logging:1.2
+|    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
@@ -1018,13 +1018,13 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
 |    \--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
 |         +--- com.jcraft:jsch:0.1.51 -> 0.1.52
 |         +--- com.googlecode.javaewah:JavaEWAH:0.7.9
-|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.3.6 (*)
+|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
 |         \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1218
 +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1218
@@ -1111,7 +1111,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1 -> 1.1.1
-|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1 -> 2.4
 |    \--- net.jcip:jcip-annotations:1.0
 +--- org.jboss.resteasy:resteasy-spring:3.+ -> 3.0.11.Final
@@ -1163,7 +1163,7 @@ testCompile - Compile classpath for source set 'test'.
 |         +--- com.mysema.querydsl:querydsl-core:3.6.5 (*)
 |         +--- com.mysema.codegen:codegen:0.6.7
 |         |    +--- com.google.guava:guava:18.0
-|         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1 -> 4.4.2
+|         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1
 |         \--- javax.inject:javax.inject:1
 +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.5
 |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
@@ -1262,10 +1262,10 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.11.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.3.6
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.3.3 -> 4.4.1
-|    |    |    +--- commons-logging:commons-logging:1.1.3 -> 1.2
-|    |    |    \--- commons-codec:commons-codec:1.6 -> 1.10
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- commons-logging:commons-logging:1.2
+|    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
@@ -1320,13 +1320,13 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
 |    \--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
 |         +--- com.jcraft:jsch:0.1.51 -> 0.1.52
 |         +--- com.googlecode.javaewah:JavaEWAH:0.7.9
-|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.3.6 (*)
+|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
 |         \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1218
 +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1218
@@ -1413,7 +1413,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.jboss.resteasy:jaxrs-api:3.0.11.Final
 |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    +--- javax.activation:activation:1.1 -> 1.1.1
-|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.2.6 -> 4.5 (*)
 |    +--- commons-io:commons-io:2.1 -> 2.4
 |    \--- net.jcip:jcip-annotations:1.0
 +--- org.jboss.resteasy:resteasy-spring:3.+ -> 3.0.11.Final
@@ -1465,7 +1465,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |         +--- com.mysema.querydsl:querydsl-core:3.6.5 (*)
 |         +--- com.mysema.codegen:codegen:0.6.7
 |         |    +--- com.google.guava:guava:18.0
-|         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1 -> 4.4.2
+|         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1
 |         \--- javax.inject:javax.inject:1
 +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.5
 |    +--- com.mysema.querydsl:querydsl-codegen:3.6.5 (*)
