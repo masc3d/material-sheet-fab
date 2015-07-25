@@ -5,20 +5,14 @@ buildscript {
 //    }
     dependencies {
 //        classpath ':proguard'
-        classpath "com.github.jengelman.gradle.plugins:shadow:+"
     }
 }
 
 apply plugin: 'application'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = 1.8
 version = '0.1'
 mainClassName = "org.deku.leo2.Main"
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     compile project(':sx-common')
@@ -87,7 +81,7 @@ dependencies {
 
 // Add resources (like .fxml files) from souce path.
 // Non-standard, but nicer to keep .fxml files together with classes
-// sourceSets.main.resources.srcDir 'src/main/java'
+sourceSets.main.resources.srcDir 'src/main/java'
 
 jar {
     manifest {

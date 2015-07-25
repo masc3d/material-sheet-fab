@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
-        classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
+//        classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
     }
     repositories {
         mavenCentral()
@@ -10,7 +10,7 @@ buildscript {
 
 apply plugin: 'kotlin'
 apply plugin: 'application'
-apply plugin: 'flyway'
+//apply plugin: 'flyway'
 
 sourceCompatibility = 1.8
 version = '0.1'

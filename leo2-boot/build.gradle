@@ -32,7 +32,3 @@ task packagerDeploy(type: org.deku.gradle.PackagerDeployTask) {
     title = "LeoZ Boot"
 }
 tasks.packagerDeploy.dependsOn(tasks.jar)
-
-// javapackager examples:
-//  javapackager -deploy -native -outdir dist -outfile test -srcdir . -srcfiles leo2-ui-0.1-all.jar -appclass org.deku.leo2.Main
-// /cygdrive/c/Users/n3/Downloads/jdk-8u51-windows-i586/bin/javapackager.exe -deploy -native -Bruntime="C:\Users\n3\Downloads\Java\jre-8u51-windows-i586\jre1.8.0_51" -outdir dist -outfile test -srcdir . -srcfiles leo2-ui-0.1-all.jar -appclass org.deku.leo2.Main

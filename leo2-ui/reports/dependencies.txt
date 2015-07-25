@@ -48,42 +48,42 @@ compile - Compile classpath for source set 'main'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.11.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.3.6
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.3.3 -> 4.4.1
-|    |    |    +--- commons-logging:commons-logging:1.1.3 -> 1.2
-|    |    |    \--- commons-codec:commons-codec:1.6 -> 1.10
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- commons-logging:commons-logging:1.2
+|    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
-|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.7.RELEASE
+|    |    +--- org.springframework:spring-aop:4.1.7.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
-|    |    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE
+|    |    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE
 |    |    |    |         \--- commons-logging:commons-logging:1.2
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-context:4.1.6.RELEASE
-|    |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
-|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-messaging:4.1.6.RELEASE
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
-|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.7.RELEASE
+|    |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    |    \--- org.springframework:spring-expression:4.1.7.RELEASE
+|    |    |         \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-messaging:4.1.7.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-context:4.1.7.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    \--- org.springframework:spring-tx:4.1.7.RELEASE
+|    |         +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |         \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 |    +--- com.esotericsoftware:kryo:3.+ -> 3.0.2
 |    |    +--- com.esotericsoftware:reflectasm:1.10.1
 |    |    |    \--- org.ow2.asm:asm:5.0.3
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
-|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.1.6
-|    \--- junit:junit:4.+ -> 4.11
+|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2-RC3
+|    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
 |    +--- project :sx-common (*)
@@ -106,9 +106,14 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-|    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
+|    \--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
+|         +--- com.jcraft:jsch:0.1.51
+|         +--- com.googlecode.javaewah:JavaEWAH:0.7.9
+|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
+|         \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.Final
@@ -122,14 +127,16 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- javax.annotation:javax.annotation-api:1.2
 |    |    +--- org.glassfish.jersey.bundles.repackaged:jersey-guava:2.19
 |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25
+|    |    |    +--- javax.inject:javax.inject:1
 |    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25
+|    |    |    |    \--- javax.inject:javax.inject:1
 |    |    |    \--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b25
 |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b25
 |    |    +--- org.glassfish.hk2:hk2-locator:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25 (*)
-|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25
+|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25 (*)
 |    |    |    \--- org.javassist:javassist:3.18.1-GA -> 3.20.0-GA
 |    |    \--- org.glassfish.hk2:osgi-resource-locator:1.0.1
 |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25 (*)
@@ -235,42 +242,42 @@ default - Configuration for default artifacts.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.11.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.3.6
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.3.3 -> 4.4.1
-|    |    |    +--- commons-logging:commons-logging:1.1.3 -> 1.2
-|    |    |    \--- commons-codec:commons-codec:1.6 -> 1.10
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- commons-logging:commons-logging:1.2
+|    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
-|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.7.RELEASE
+|    |    +--- org.springframework:spring-aop:4.1.7.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
-|    |    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE
+|    |    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE
 |    |    |    |         \--- commons-logging:commons-logging:1.2
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-context:4.1.6.RELEASE
-|    |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
-|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-messaging:4.1.6.RELEASE
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
-|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.7.RELEASE
+|    |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    |    \--- org.springframework:spring-expression:4.1.7.RELEASE
+|    |    |         \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-messaging:4.1.7.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-context:4.1.7.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    \--- org.springframework:spring-tx:4.1.7.RELEASE
+|    |         +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |         \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 |    +--- com.esotericsoftware:kryo:3.+ -> 3.0.2
 |    |    +--- com.esotericsoftware:reflectasm:1.10.1
 |    |    |    \--- org.ow2.asm:asm:5.0.3
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
-|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.1.6
-|    \--- junit:junit:4.+ -> 4.11
+|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2-RC3
+|    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
 |    +--- project :sx-common (*)
@@ -293,9 +300,14 @@ default - Configuration for default artifacts.
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-|    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
+|    \--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
+|         +--- com.jcraft:jsch:0.1.51
+|         +--- com.googlecode.javaewah:JavaEWAH:0.7.9
+|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
+|         \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.Final
@@ -309,14 +321,16 @@ default - Configuration for default artifacts.
 |    |    +--- javax.annotation:javax.annotation-api:1.2
 |    |    +--- org.glassfish.jersey.bundles.repackaged:jersey-guava:2.19
 |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25
+|    |    |    +--- javax.inject:javax.inject:1
 |    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25
+|    |    |    |    \--- javax.inject:javax.inject:1
 |    |    |    \--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b25
 |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b25
 |    |    +--- org.glassfish.hk2:hk2-locator:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25 (*)
-|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25
+|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25 (*)
 |    |    |    \--- org.javassist:javassist:3.18.1-GA -> 3.20.0-GA
 |    |    \--- org.glassfish.hk2:osgi-resource-locator:1.0.1
 |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25 (*)
@@ -422,42 +436,42 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.11.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.3.6
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.3.3 -> 4.4.1
-|    |    |    +--- commons-logging:commons-logging:1.1.3 -> 1.2
-|    |    |    \--- commons-codec:commons-codec:1.6 -> 1.10
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- commons-logging:commons-logging:1.2
+|    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
-|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.7.RELEASE
+|    |    +--- org.springframework:spring-aop:4.1.7.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
-|    |    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE
+|    |    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE
 |    |    |    |         \--- commons-logging:commons-logging:1.2
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-context:4.1.6.RELEASE
-|    |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
-|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-messaging:4.1.6.RELEASE
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
-|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.7.RELEASE
+|    |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    |    \--- org.springframework:spring-expression:4.1.7.RELEASE
+|    |    |         \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-messaging:4.1.7.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-context:4.1.7.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    \--- org.springframework:spring-tx:4.1.7.RELEASE
+|    |         +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |         \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 |    +--- com.esotericsoftware:kryo:3.+ -> 3.0.2
 |    |    +--- com.esotericsoftware:reflectasm:1.10.1
 |    |    |    \--- org.ow2.asm:asm:5.0.3
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
-|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.1.6
-|    \--- junit:junit:4.+ -> 4.11
+|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2-RC3
+|    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
 |    +--- project :sx-common (*)
@@ -480,9 +494,14 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-|    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
+|    \--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
+|         +--- com.jcraft:jsch:0.1.51
+|         +--- com.googlecode.javaewah:JavaEWAH:0.7.9
+|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
+|         \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.Final
@@ -496,14 +515,16 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- javax.annotation:javax.annotation-api:1.2
 |    |    +--- org.glassfish.jersey.bundles.repackaged:jersey-guava:2.19
 |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25
+|    |    |    +--- javax.inject:javax.inject:1
 |    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25
+|    |    |    |    \--- javax.inject:javax.inject:1
 |    |    |    \--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b25
 |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b25
 |    |    +--- org.glassfish.hk2:hk2-locator:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25 (*)
-|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25
+|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25 (*)
 |    |    |    \--- org.javassist:javassist:3.18.1-GA -> 3.20.0-GA
 |    |    \--- org.glassfish.hk2:osgi-resource-locator:1.0.1
 |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25 (*)
@@ -567,9 +588,6 @@ runtime - Runtime classpath for source set 'main'.
 \--- org.controlsfx:controlsfx:8.+ -> 8.40.9
      \--- org.controlsfx:openjfx-dialogs:1.0.3
 
-shadow
-No dependencies
-
 testCompile - Compile classpath for source set 'test'.
 +--- project :sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
@@ -612,41 +630,41 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.11.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.3.6
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.3.3 -> 4.4.1
-|    |    |    +--- commons-logging:commons-logging:1.1.3 -> 1.2
-|    |    |    \--- commons-codec:commons-codec:1.6 -> 1.10
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- commons-logging:commons-logging:1.2
+|    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
-|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.7.RELEASE
+|    |    +--- org.springframework:spring-aop:4.1.7.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
-|    |    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE
+|    |    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE
 |    |    |    |         \--- commons-logging:commons-logging:1.2
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-context:4.1.6.RELEASE
-|    |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
-|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-messaging:4.1.6.RELEASE
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
-|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.7.RELEASE
+|    |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    |    \--- org.springframework:spring-expression:4.1.7.RELEASE
+|    |    |         \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-messaging:4.1.7.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-context:4.1.7.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    \--- org.springframework:spring-tx:4.1.7.RELEASE
+|    |         +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |         \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 |    +--- com.esotericsoftware:kryo:3.+ -> 3.0.2
 |    |    +--- com.esotericsoftware:reflectasm:1.10.1
 |    |    |    \--- org.ow2.asm:asm:5.0.3
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
-|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.1.6
+|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2-RC3
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
@@ -670,9 +688,14 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-|    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
+|    \--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
+|         +--- com.jcraft:jsch:0.1.51
+|         +--- com.googlecode.javaewah:JavaEWAH:0.7.9
+|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
+|         \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.Final
@@ -686,14 +709,16 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- javax.annotation:javax.annotation-api:1.2
 |    |    +--- org.glassfish.jersey.bundles.repackaged:jersey-guava:2.19
 |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25
+|    |    |    +--- javax.inject:javax.inject:1
 |    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25
+|    |    |    |    \--- javax.inject:javax.inject:1
 |    |    |    \--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b25
 |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b25
 |    |    +--- org.glassfish.hk2:hk2-locator:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25 (*)
-|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25
+|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25 (*)
 |    |    |    \--- org.javassist:javassist:3.18.1-GA -> 3.20.0-GA
 |    |    \--- org.glassfish.hk2:osgi-resource-locator:1.0.1
 |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25 (*)
@@ -800,41 +825,41 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.11.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.3.6
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.3.3 -> 4.4.1
-|    |    |    +--- commons-logging:commons-logging:1.1.3 -> 1.2
-|    |    |    \--- commons-codec:commons-codec:1.6 -> 1.10
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- commons-logging:commons-logging:1.2
+|    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.springframework:spring-jms:4.+ -> 4.1.6.RELEASE
-|    |    +--- org.springframework:spring-aop:4.1.6.RELEASE
+|    +--- org.springframework:spring-jms:4.+ -> 4.1.7.RELEASE
+|    |    +--- org.springframework:spring-aop:4.1.7.RELEASE
 |    |    |    +--- aopalliance:aopalliance:1.0
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE
-|    |    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE
+|    |    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE
 |    |    |    |         \--- commons-logging:commons-logging:1.2
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-context:4.1.6.RELEASE
-|    |    |    +--- org.springframework:spring-aop:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-expression:4.1.6.RELEASE
-|    |    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    +--- org.springframework:spring-messaging:4.1.6.RELEASE
-|    |    |    +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |    |    +--- org.springframework:spring-context:4.1.6.RELEASE (*)
-|    |    |    \--- org.springframework:spring-core:4.1.6.RELEASE (*)
-|    |    \--- org.springframework:spring-tx:4.1.6.RELEASE
-|    |         +--- org.springframework:spring-beans:4.1.6.RELEASE (*)
-|    |         \--- org.springframework:spring-core:4.1.6.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-context:4.1.7.RELEASE
+|    |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    |    \--- org.springframework:spring-expression:4.1.7.RELEASE
+|    |    |         \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    +--- org.springframework:spring-messaging:4.1.7.RELEASE
+|    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |    |    +--- org.springframework:spring-context:4.1.7.RELEASE (*)
+|    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
+|    |    \--- org.springframework:spring-tx:4.1.7.RELEASE
+|    |         +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
+|    |         \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 |    +--- com.esotericsoftware:kryo:3.+ -> 3.0.2
 |    |    +--- com.esotericsoftware:reflectasm:1.10.1
 |    |    |    \--- org.ow2.asm:asm:5.0.3
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
-|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.1.6
+|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2-RC3
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- project :leo2-common
@@ -858,9 +883,14 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.11.1 (*)
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1 (*)
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.3.6 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-|    \--- org.springframework:spring-jms:4.1.6.+ -> 4.1.6.RELEASE (*)
+|    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE (*)
+|    \--- org.eclipse.jgit:org.eclipse.jgit:+ -> 4.0.1.201506240215-r
+|         +--- com.jcraft:jsch:0.1.51
+|         +--- com.googlecode.javaewah:JavaEWAH:0.7.9
+|         +--- org.apache.httpcomponents:httpclient:4.1.3 -> 4.5 (*)
+|         \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.0.Final
@@ -874,14 +904,16 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- javax.annotation:javax.annotation-api:1.2
 |    |    +--- org.glassfish.jersey.bundles.repackaged:jersey-guava:2.19
 |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25
+|    |    |    +--- javax.inject:javax.inject:1
 |    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25
+|    |    |    |    \--- javax.inject:javax.inject:1
 |    |    |    \--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b25
 |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b25
 |    |    +--- org.glassfish.hk2:hk2-locator:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b25
 |    |    |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25 (*)
-|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25
+|    |    |    +--- org.glassfish.hk2:hk2-utils:2.4.0-b25 (*)
 |    |    |    \--- org.javassist:javassist:3.18.1-GA -> 3.20.0-GA
 |    |    \--- org.glassfish.hk2:osgi-resource-locator:1.0.1
 |    +--- org.glassfish.hk2:hk2-api:2.4.0-b25 (*)
