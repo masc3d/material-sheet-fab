@@ -30,7 +30,6 @@ jar {
 
 task packagerDeploy(type: org.deku.gradle.PackagerDeployTask) {
     title = "LeoZ Boot"
-    mainJar = jar.archivePath
 }
 tasks.packagerDeploy.dependsOn(tasks.jar)
 

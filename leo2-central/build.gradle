@@ -109,7 +109,6 @@ tasks.generateJooq.outputs.upToDateWhen { false }
 // Packager task
 task packagerDeploy(type: org.deku.gradle.PackagerDeployTask) {
     title = "LeoZ Central"
-    mainJar = jar.archivePath
     jvmOptions = "-XX:+UseCompressedOops"
 }
 tasks.packagerDeploy.dependsOn(tasks.jar)

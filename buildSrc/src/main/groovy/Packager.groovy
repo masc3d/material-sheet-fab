@@ -1,13 +1,15 @@
 package org.deku.gradle
 
+import org.apache.commons.io.FileUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
+import java.nio.file.Files
 import java.nio.file.Paths
 
 abstract class PackagerTask extends DefaultTask {
-    def String group = "packager"
-    def packagerBaseDir = new File(project.buildDir, 'packager')
+    protected def String group = "packager"
+    protected def packagerBaseDir = Paths.get(project.buildDir.toURI()).resolve('packager')
 }
 
 /**
@@ -15,13 +17,14 @@ abstract class PackagerTask extends DefaultTask {
  * Created by masc on 22.07.15.
  */
 public class PackagerDeployTask extends PackagerTask {
-    def String packageDescription
-    def String packageName = project.name
-    def String mainClassName = project.mainClassName
     /** Full path to main jar */
-    def String mainJar
+    protected def String mainJar = project.tasks.jar.archivePath
+    protected def String mainClassName = project.mainClassName
     /** List of files/full paths of jars to include. Defaults to the project's configurations.compile.files */
-    def jars = project.configurations.compile.files
+    protected def jars = project.configurations.compile.files + [ this.mainJar ]
+
+    def String packageName = project.name
+    def String packageDescription
     /** Jvm runtime options */
     def jvmOptions
 
@@ -40,19 +43,18 @@ public class PackagerDeployTask extends PackagerTask {
         println "JDK home [${jdk_home}]"
         println "JRE home [${jre_home}]"
 
-        def packagerLibsDir = new File(packagerBaseDir, 'libs')
-        if (!packagerBaseDir.deleteDir())
-            throw new IOException("Could not remove packager dir");
-        packagerBaseDir.mkdirs()
-        packagerLibsDir.mkdirs()
+        Files.createDirectories(packagerBaseDir)
 
         println "Gathering jars"
-        def sourceJars = jars.collect()
-        if (this.mainJar)
-            sourceJars += this.mainJar
+        // Create libs dir for gathering
+        def packagerLibsDir = this.packagerBaseDir.resolve('libs')
+        if (!packagerBaseDir.toFile().deleteDir())
+            throw new IOException("Could not remove packager dir");
+        Files.createDirectories(packagerLibsDir)
+        // Copy
         project.copy {
-            from sourceJars
-            into packagerLibsDir
+            from this.jars
+            into packagerLibsDir.toFile()
         }
 
         println "Building package"
@@ -75,22 +77,47 @@ public class PackagerDeployTask extends PackagerTask {
 }
 
 abstract class PackagerReleaseTask extends PackagerTask {
-    def releaseBasePath = new File(this.packagerBaseDir, "release")
-    def bundlePath = Paths.get(this.packagerBaseDir.toString()).resolve("bundles").resolve(project.name)
+    protected def bundlePath = this.packagerBaseDir.resolve('bundles').resolve(project.name)
+
+    def releaseBasePath = this.packagerBaseDir.resolve('release')
 }
 
-public class PackagerReleaseJarsTask extends PackagerReleaseTask {
-
+public class PackagerReleaseAllTask extends PackagerReleaseTask {
     @TaskAction
-    def packagerReleaseJars() {
+    def packagerReleaseAll() {
         println "Bundle path [${this.bundlePath}]"
         println "Release base path [${this.releaseBasePath}]"
 
-        this.releaseBasePath.mkdirs()
+        if (!this.releaseBasePath.toFile().deleteDir())
+            throw new IOException("Could not remove release base dir");
+        Files.createDirectories(this.releaseBasePath)
 
+        println "Copying bundle"
         project.copy {
             from this.bundlePath.toFile()
-            into this.releaseBasePath
+            into this.releaseBasePath.toFile()
+        }
+    }
+}
+
+public class PackagerReleaseJarsTask extends PackagerReleaseTask {
+    @TaskAction
+    def packagerReleaseJars() {
+        println "Release base path [${this.releaseBasePath}]"
+
+        def jarDestinationPath = this.releaseBasePath.resolve('app')
+        println "Jar destination path [${jarDestinationPath}]"
+
+        // Remove all jar files
+        println "Removing all jars from [${jarDestinationPath}]"
+        Files.walk(jarDestinationPath, 0)
+                .filter( { it -> it.toString().endsWith(".jar") } )
+                .each { Files.delete(it) }
+
+        println "Gathering jars"
+        project.copy {
+            from project.configurations.compile.files + [ project.tasks.jar.archivePath ]
+            into jarDestinationPath.toFile()
         }
     }
 }
