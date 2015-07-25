@@ -28,7 +28,7 @@ jar {
     }
 }
 
-task packagerDeploy(type: org.deku.gradle.PackagerDeployTask) {
+task packagerBundle(type: org.deku.gradle.PackagerBundleTask) {
     title = "LeoZ Boot"
 }
-tasks.packagerDeploy.dependsOn(tasks.jar)
+tasks.packagerBundle.dependsOn(tasks.jar)

@@ -107,11 +107,11 @@ jooq {
 tasks.generateJooq.outputs.upToDateWhen { false }
 
 // Packager task
-task packagerDeploy(type: org.deku.gradle.PackagerDeployTask) {
+task packagerBundle(type: org.deku.gradle.PackagerBundleTask) {
     title = "LeoZ Central"
     jvmOptions = "-XX:+UseCompressedOops"
 }
-tasks.packagerDeploy.dependsOn(tasks.jar)
+tasks.packagerBundle.dependsOn(tasks.jar)
 
 // masc20150507. task prototypes
 ////copying all dependencies attached to 'compile' into a specific folder

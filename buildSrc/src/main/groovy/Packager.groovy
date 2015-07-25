@@ -7,16 +7,27 @@ import org.gradle.api.tasks.TaskAction
 import java.nio.file.Files
 import java.nio.file.Paths
 
+/**
+ * Base class for all packager tasks
+ */
 abstract class PackagerTask extends DefaultTask {
     def String group = "packager"
     protected def packagerBaseDir = Paths.get(project.buildDir.toURI()).resolve('packager')
 }
 
 /**
+ * Base class for all packager release tasks
+ */
+abstract class PackagerReleaseTask extends PackagerTask {
+    protected def bundlePath = this.packagerBaseDir.resolve('bundles').resolve(project.name)
+    def releaseBasePath = this.packagerBaseDir.resolve('release')
+}
+
+/**
  * Java packager task
  * Created by masc on 22.07.15.
  */
-public class PackagerDeployTask extends PackagerTask {
+public class PackagerBundleTask extends PackagerTask {
     /** Full path to main jar */
     protected def String mainJar = project.tasks.jar.archivePath
     protected def String mainClassName = project.mainClassName
@@ -76,13 +87,7 @@ public class PackagerDeployTask extends PackagerTask {
     }
 }
 
-abstract class PackagerReleaseTask extends PackagerTask {
-    protected def bundlePath = this.packagerBaseDir.resolve('bundles').resolve(project.name)
-
-    def releaseBasePath = this.packagerBaseDir.resolve('release')
-}
-
-public class PackagerReleaseAllTask extends PackagerReleaseTask {
+public class PackagerReleaseBundleTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleaseAll() {
         println "Bundle path [${this.bundlePath}]"
