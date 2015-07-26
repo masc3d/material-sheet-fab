@@ -164,11 +164,13 @@ task packagerBundle(type: org.deku.gradle.PackagerBundleTask) {
 tasks.packagerBundle.dependsOn(tasks.jar)
 
 task packagerReleaseBundle(type: org.deku.gradle.PackagerReleaseBundleTask) {
+    releaseBasePath = g_release_path.resolve("${project.name}-${g_arch_identifier}")
 }
 
 task packagerReleaseJars(type: org.deku.gradle.PackagerReleaseJarsTask) {
-
+    releaseBasePath = g_release_path.resolve("${project.name}-${g_arch_identifier}")
 }
+
 // masc20150507. task prototypes
 ////copying all dependencies attached to 'compile' into a specific folder
 //task copyAllDependencies(type: Copy) {

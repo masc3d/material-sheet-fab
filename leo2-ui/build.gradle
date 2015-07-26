@@ -75,10 +75,6 @@ dependencies {
 //    keep 'class com.dooapp.fxform.** { *; }'
 //}
 
-// DEBUG: Print all shadow jar properties
-// println shadowJar.properties.sort{it}.collect{it}.join('\n')
-// println shadowJar.properties.archivePath
-
 // Add resources (like .fxml files) from souce path.
 // Non-standard, but nicer to keep .fxml files together with classes
 sourceSets.main.resources.srcDir 'src/main/java'
@@ -87,7 +83,7 @@ jar {
     manifest {
         attributes (
                 'Main-Class': mainClassName,
-                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
         )
     }
 }

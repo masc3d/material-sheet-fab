@@ -1,5 +1,7 @@
 import org.gradle.logging.ShowStacktrace
 
+import java.nio.file.Paths
+
 version = '0.1'
 
 buildscript {
@@ -9,9 +11,6 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
-    }
-
-    dependencies {
     }
 }
 
@@ -23,6 +22,7 @@ allprojects {
     buildscript {
         // Global variables
         ext {
+            // Versions
             v_activemq = "5.+"
             v_eclipselink = "2.+"
             v_flyway = "3.+"
@@ -52,6 +52,10 @@ allprojects {
             v_spring_data_commons = "1.10.+"
             v_springboot = "1.2.5.+"
             v_swagger = "+"
+
+            // LeoZ release path, relative to root project
+            g_arch_identifier = org.deku.gradle.PackagerUtils.archIdentifier()
+            g_release_path = Paths.get(project.rootDir.toString()).parent.resolve("leo2-release")
         }
     }
 }
@@ -64,7 +68,7 @@ subprojects {
     // Reporting setup
     tasks.compileJava.dependsOn(tasks.dependencyReport)
     tasks.compileJava.dependsOn(tasks.htmlDependencyReport)
-    projectReportDirName = '../../reports'
+    projectReportDirName = new File(project.projectDir, 'reports').toString()
 
     // Global repositories
     repositories {
