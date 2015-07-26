@@ -67,7 +67,6 @@ abstract class PackagerTask extends DefaultTask {
  */
 abstract class PackagerReleaseTask extends PackagerTask {
     // Common locations
-    protected def bundlePath = this.packagerArchDir.resolve('bundles').resolve(project.name)
     protected def releaseBasePath = this.packagerBaseDir.resolve('release').resolve(PackagerUtils.archIdentifier())
 
     protected def createReleasePath() {
@@ -159,9 +158,15 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
 
         def releasePath = this.createReleasePath()
 
-        println "Bundle path [${this.bundlePath}]"
+        def bundlePath = this.packagerArchDir.resolve('bundles').resolve(
+                SystemUtils.IS_OS_MAC_OSX ? "" : project.name)
+
+        println "Bundle path [${bundlePath}]"
         println "Release base path [${this.releaseBasePath}]"
         println "Release path [${releasePath}]"
+
+        if (!Files.exists(bundlePath))
+            throw new IOException("Bundle path [${bundlePath}] doesn't exist")
 
         if (!Files.exists(releasePath))
             Files.createDirectories(releasePath)
@@ -183,7 +188,7 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
 
         println "Copying bundle"
         project.copy {
-            from this.bundlePath.toFile()
+            from bundlePath.toFile()
             into releasePath.toFile()
         }
     }
@@ -236,9 +241,13 @@ class PackagerUtils {
             throw IllegalStateException("Unsupported platform");
 
         switch (SystemUtils.OS_ARCH) {
-            case "amd64": prefix += "64"; break;
+            // 64bit
+            case "amd64":
+            case "x86_64": prefix += "64"; break;
+            // 32bit
             case "x86": prefix += "32"; break;
-            default: throw IllegalStateException("Unsupported architecture");
+            // Unsupported
+            default: throw IllegalStateException("Unsupported architecture [${SystemUtils.OS_ARCH}]");
         }
 
         return prefix
