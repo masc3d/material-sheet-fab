@@ -10,6 +10,7 @@ buildscript {
 
 apply plugin: 'kotlin'
 apply plugin: 'application'
+apply plugin: org.deku.gradle.PackagerPlugin
 //apply plugin: 'flyway'
 
 sourceCompatibility = 1.8
@@ -156,20 +157,12 @@ task copyWebapp(type: Copy) {
 }
 compileJava.dependsOn(copyWebapp)
 
-// Packager task
-task packagerBundle(type: org.deku.gradle.PackagerBundleTask) {
+packager {
     title = "LeoZ Node"
-    jvmOptions = "-XX:+UseCompressedOops"
-}
-tasks.packagerBundle.dependsOn(tasks.jar)
-
-task packagerReleaseBundle(type: org.deku.gradle.PackagerReleaseBundleTask) {
-    releaseBasePath = g_release_path.resolve("${project.name}-${g_arch_identifier}")
+    releaseBasePath = g_release_path.toFile()
 }
 
-task packagerReleaseJars(type: org.deku.gradle.PackagerReleaseJarsTask) {
-    releaseBasePath = g_release_path.resolve("${project.name}-${g_arch_identifier}")
-}
+// Packager task
 
 // masc20150507. task prototypes
 ////copying all dependencies attached to 'compile' into a specific folder

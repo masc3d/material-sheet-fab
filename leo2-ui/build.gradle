@@ -9,6 +9,7 @@ buildscript {
 }
 
 apply plugin: 'application'
+apply plugin: org.deku.gradle.PackagerPlugin
 
 sourceCompatibility = 1.8
 version = '0.1'
@@ -88,7 +89,7 @@ jar {
     }
 }
 
-task packagerBundle(type: org.deku.gradle.PackagerBundleTask) {
+packager {
     title = "LeoZ UI"
+    releaseBasePath = g_release_path.toFile()
 }
-tasks.packagerBundle.dependsOn(tasks.jar)

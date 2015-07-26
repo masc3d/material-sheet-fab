@@ -10,6 +10,7 @@ buildscript {
 apply plugin: 'kotlin'
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: org.deku.gradle.PackagerPlugin
 
 version '0.1'
 sourceCompatibility = 1.8
@@ -28,7 +29,7 @@ jar {
     }
 }
 
-task packagerBundle(type: org.deku.gradle.PackagerBundleTask) {
+packager {
     title = "LeoZ Boot"
+    releaseBasePath = g_release_path.toFile()
 }
-tasks.packagerBundle.dependsOn(tasks.jar)
