@@ -29,13 +29,20 @@ class Setup {
      * Bin os/arch subdiretory name
      */
     private fun binArchDirectoryName(): String {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            when(SystemUtils.OS_ARCH) {
-                "amd64" -> return "win64"
-                "x86" -> return "win32"
-            }
+        var prefix: String
+
+        when {
+            SystemUtils.IS_OS_WINDOWS -> prefix = "win"
+            SystemUtils.IS_OS_LINUX -> prefix = "linux"
+            SystemUtils.IS_OS_MAC_OSX -> prefix = "osx"
+            else -> throw IllegalStateException("Unsupported platform")
         }
-        throw IllegalStateException("Unsupported architecture");
+        when (SystemUtils.OS_ARCH) {
+            "amd64" -> prefix += "64"
+            "x86" -> prefix += "32"
+            else -> throw IllegalStateException("Unsupported architecture")
+        }
+        return prefix
     }
 
     private constructor() {
