@@ -159,8 +159,7 @@ class Setup {
     public fun start() {
         log.info("Starting service")
 
-        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
-                "//ES/LeoZ")
+        var pb: ProcessBuilder = ProcessBuilder("net", "start", "LeoZ")
         this.execute(pb)
 
         log.info("Started sucessfully")
@@ -172,8 +171,7 @@ class Setup {
     public fun stop() {
         log.info("Stopping service")
 
-        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
-                "//SS/LeoZ")
+        var pb: ProcessBuilder = ProcessBuilder("net", "stop", "LeoZ")
         this.execute(pb)
 
         log.info("Stopped successfully")
