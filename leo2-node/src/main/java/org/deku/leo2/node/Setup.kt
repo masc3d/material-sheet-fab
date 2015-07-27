@@ -1,8 +1,10 @@
 package org.deku.leo2.node
 
+import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import sx.io.ProcessStreamReader
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.platform.platformStatic
@@ -26,6 +28,12 @@ class Setup {
     private var codeSourcePath: Path
     private var leozsvcPath: Path
 
+    /**
+     * Process exception
+     */
+    public class ProcessException(errorCode: Int) : Exception("Process failed with error code [${errorCode}]") {
+        var errorCode = errorCode
+    }
 
     /**
      * Bin os/arch subdiretory name
@@ -61,6 +69,29 @@ class Setup {
 
         leozsvcPath = this.binPath.resolve("leozsvc.exe")
         log.info("Setup base path [${basePath}] bin path [${binPath}]")
+    }
+
+    /**
+     * Execute command
+     */
+    private fun execute(pb: ProcessBuilder) {
+        // Execute
+        var p: Process = pb.start();
+        var pr: ProcessStreamReader = ProcessStreamReader(p)
+        var errorCode = p.waitFor();
+
+        // Evaluate/log output
+        var output = pr.getOutput()
+        var error = pr.getError()
+        if (!Strings.isNullOrEmpty(output))
+            log.info(output)
+        if (!Strings.isNullOrEmpty(error))
+            log.error(error)
+
+        // Evaluate error/throw
+        if (errorCode != 0) {
+            throw ProcessException(errorCode)
+        }
     }
 
     /**
@@ -103,11 +134,8 @@ class Setup {
                 "--StopClass=${mainClass.getCanonicalName()}",
                 "--StopMethod=stop",
                 "--Classpath=${classPath}")
-
         // log.info(java.lang.String.join(" ", pb.command()))
-
-        var p: Process = pb.start();
-        p.waitFor();
+        this.execute(pb)
 
         log.info("Installed successfully")
     }
@@ -117,11 +145,11 @@ class Setup {
      */
     public fun uninstall() {
         log.info("Uninstalling service")
+
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//DS/LeoZ")
+        this.execute(pb)
 
-        var p: Process = pb.start();
-        p.waitFor()
         log.info("Uninstalled successfully")
     }
 
@@ -130,11 +158,11 @@ class Setup {
      */
     public fun start() {
         log.info("Starting service")
+
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//ES/LeoZ")
+        this.execute(pb)
 
-        var p: Process = pb.start();
-        p.waitFor()
         log.info("Started sucessfully")
     }
 
@@ -143,11 +171,11 @@ class Setup {
      */
     public fun stop() {
         log.info("Stopping service")
+
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//SS/LeoZ")
+        this.execute(pb)
 
-        var p: Process = pb.start();
-        p.waitFor()
         log.info("Stopped successfully")
     }
 }
