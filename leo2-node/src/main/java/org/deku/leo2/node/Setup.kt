@@ -67,7 +67,7 @@ class Setup {
     /**
      * Installs node as a system service
      */
-    public fun install() {
+    public fun install(serviceName: String, mainClass: Class<Any>) {
         // Command example
         // C:\Users\n3\Projects\leo2-release\leo2-node-win64\bin\leozsvc.exe
         // IS/LeoZ
@@ -85,9 +85,11 @@ class Setup {
         // --StopMethod=stop
         // --Classpath=C:\Users\n3\Projects\leo2-release\leo2-node-win64\app\leo2-node-0.1.jar
 
+        var classPath = Paths.get(mainClass.getProtectionDomain().getCodeSource().getLocation().toURI())
+
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//IS/LeoZ",
-                "--DisplayName=LeoZ Service",
+                "--DisplayName=${serviceName}",
                 "--Install=${this.leozsvcPath}",
                 "--Startup=auto",
                 "--LogPath=${LocalStorage.instance().logDirectory}",
@@ -95,11 +97,11 @@ class Setup {
                 "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
                 "--StartMode=jvm",
                 "--StopMode=jvm",
-                "--StartClass=org.deku.leo2.node.Main",
+                "--StartClass=${mainClass.getCanonicalName()}",
                 "--StartMethod=main",
-                "--StopClass=org.deku.leo2.node.Main",
+                "--StopClass=${mainClass.getCanonicalName()}",
                 "--StopMethod=stop",
-                "--Classpath=${codeSourcePath}")
+                "--Classpath=${classPath}")
 
         // log.info(java.lang.String.join(" ", pb.command()))
 

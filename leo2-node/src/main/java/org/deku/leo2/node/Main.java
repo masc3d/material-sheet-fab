@@ -67,7 +67,7 @@ public class Main  {
 
             Runnable rCommand = null;
             switch(command) {
-                case "install": rCommand = () -> Setup.instance().install(); break;
+                case "install": rCommand = () -> Setup.instance().install("LeoZ Service", c); break;
                 case "uninstall": rCommand = () -> Setup.instance().uninstall(); break;
                 case "start": rCommand = () -> Setup.instance().start(); break;
                 case "stop": rCommand = () -> Setup.instance().stop(); break;
