@@ -24,6 +24,8 @@ class Setup {
     private var basePath: Path
     private var binPath: Path
     private var codeSourcePath: Path
+    private var leozsvcPath: Path
+
 
     /**
      * Bin os/arch subdiretory name
@@ -57,6 +59,7 @@ class Setup {
             this.binPath = this.basePath.resolve("bin").resolve(binArchDirectoryName())
         }
 
+        leozsvcPath = this.binPath.resolve("leozsvc.exe")
         log.info("Base path [${basePath}]")
         log.info("Bin path [${binPath}]")
     }
@@ -65,31 +68,75 @@ class Setup {
      * Installs node as a system service
      */
     public fun install() {
-        var leozsvcPath = this.binPath.resolve("leozsvc.exe")
+        // Command example
+        // C:\Users\n3\Projects\leo2-release\leo2-node-win64\bin\leozsvc.exe
+        // IS/LeoZ
+        // --DisplayName="LeoZ Service"
+        // --Install=C:\Users\n3\Projects\leo2-release\leo2-node-win64\bin\leozsvc.exe
+        // --Startup=auto
+        // --LogPath=C:\ProgramData\LeoZ\log
+        // --LogPrefix=leozsvc
+        // --Jvm="C:\Users\n3\Projects\leo2-release\leo2-node-win64\runtime\bin\server\jvm.dll"
+        // --StartMode=jvm
+        // --StopMode=jvm
+        // --StartClass=org.deku.leo2.node.Main
+        // --StartMethod=main
+        // --StopClass=org.deku.leo2.node.Main
+        // --StopMethod=stop
+        // --Classpath=C:\Users\n3\Projects\leo2-release\leo2-node-win64\app\leo2-node-0.1.jar
 
-        var pb: ProcessBuilder = ProcessBuilder(leozsvcPath.toString(),
+        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//IS/LeoZ",
                 "--DisplayName=LeoZ Service",
-                "--Install=${leozsvcPath}",
+                "--Install=${this.leozsvcPath}",
                 "--Startup=auto",
                 "--LogPath=${LocalStorage.instance().logDirectory}",
                 "--LogPrefix=leozsvc",
                 "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
                 "--StartMode=jvm",
                 "--StopMode=jvm",
+                "--StartClass=org.deku.leo2.node.Main",
+                "--StartMethod=main",
                 "--StopClass=org.deku.leo2.node.Main",
                 "--StopMethod=stop",
                 "--Classpath=${codeSourcePath}")
 
-        log.info(java.lang.String.join(", ", pb.command()))
+        // log.info(java.lang.String.join(" ", pb.command()))
 
-        // C:\Users\n3\Projects\leo2\leo2-node\bin\win64\prunsrv.exe //IS/LeoZ --DisplayName="LeoZ Service" --Install=C:\Users\n3\Projects\leo2\leo2-node\bin\win64\prunsrv.exe --Jvm=C:\Users\n3\Projects\leo2\leo2-node\build\packager\bundles\leo2-node\runtime\bin\server\jvm.dll --StartMode=jvm --StopMode=jvm --Classpath=C:\Users\n3\Projects\leo2\leo2-node\build\packager\bundles\leo2-node\app\leo2-node-0.1.jar --StartClass=org.springframework.boot.loader.JarLauncher
+        var p: Process = pb.start();
+        p.waitFor();
     }
 
     /**
      * Uninstalls node system service
      */
     public fun uninstall() {
+        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
+                "//DS/LeoZ")
 
+        var p: Process = pb.start();
+        p.waitFor()
+    }
+
+    /**
+     * Start
+     */
+    public fun start() {
+        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
+                "//ES/LeoZ")
+
+        var p: Process = pb.start();
+        p.waitFor()
+    }
+
+    /**
+     * Stop
+     */
+    public fun stop() {
+        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
+                "//SS/LeoZ")
+
+        var p: Process = pb.start();
+        p.waitFor()
     }
 }

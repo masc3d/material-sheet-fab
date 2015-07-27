@@ -66,10 +66,11 @@ public class Main  {
             String command = args[0].toLowerCase().trim();
 
             Runnable rCommand = null;
-            if (command.contentEquals("install")) {
-                rCommand = () -> Setup.instance().install();
-            } else if(command.contentEquals("uninstall")) {
-                rCommand = () -> Setup.instance().uninstall();
+            switch(command) {
+                case "install": rCommand = () -> Setup.instance().install(); break;
+                case "uninstall": rCommand = () -> Setup.instance().uninstall(); break;
+                case "start": rCommand = () -> Setup.instance().start(); break;
+                case "stop": rCommand = () -> Setup.instance().stop(); break;
             }
 
             if (rCommand != null) {
