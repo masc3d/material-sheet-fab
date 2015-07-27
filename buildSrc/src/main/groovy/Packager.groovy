@@ -60,6 +60,30 @@ abstract class PackagerTask extends DefaultTask {
     // Common locations
     protected def packagerBaseDir = Paths.get(project.buildDir.toURI()).resolve('packager')
     protected def packagerArchDir = packagerBaseDir.resolve(PackagerUtils.archIdentifier())
+
+    /**
+     * Collection of all project jars (main jar + dependencies)
+     * @return Project jars
+     */
+    protected def Set<File> getProjectJars() {
+        return project.configurations.compile.files + [project.tasks.jar.archivePath]
+    }
+
+    /**
+     * Project main jar
+     * @return
+     */
+    protected def File getMainJar() {
+        return project.tasks.jar.archivePath
+    }
+
+    /**
+     * Main jar main class
+     * @return
+     */
+    protected def String getMainClassName() {
+        return project.mainClassName
+    }
 }
 
 /**
@@ -86,10 +110,6 @@ class PackagerBundleTask extends PackagerTask {
     /** Jvm runtime options */
     def jvmOptions
 
-    public PackagerBundleTask() {
-        //jars = project.configurations.compile.files + [this.mainJar]
-    }
-
     @TaskAction
     def packagerDeploy() {
         if (!this.configuration.title)
@@ -101,9 +121,9 @@ class PackagerBundleTask extends PackagerTask {
         if (!this.packageDescription)
             this.packageDescription = this.configuration.title
 
-        def mainJar = project.tasks.jar.archivePath
-        def mainClassName = project.mainClassName
-        def jars = project.configurations.compile.files + [mainJar]
+        def mainJar = this.getMainJar()
+        def mainClassName = this.getMainClassName();
+        def jars = this.getProjectJars()
 
         // JDK/JRE
         def jvm = org.gradle.internal.jvm.Jvm.current()
@@ -221,7 +241,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 
         println "Gathering jars"
         project.copy {
-            from project.configurations.compile.files + [project.tasks.jar.archivePath]
+            from this.getProjectJars()
             into jarDestinationPath.toFile()
         }
     }

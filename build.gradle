@@ -66,8 +66,14 @@ subprojects {
     apply plugin: 'project-report'
 
     // Reporting setup
-    tasks.compileJava.dependsOn(tasks.dependencyReport)
-    tasks.compileJava.dependsOn(tasks.htmlDependencyReport)
+    // Dependency report depends on classes but only if compilation actually took place (not uptodate)
+    tasks.classes.dependsOn(tasks.dependencyReport)
+    tasks.classes.dependsOn(tasks.htmlDependencyReport)
+    tasks.dependencyReport.mustRunAfter(tasks.compileJava)
+    tasks.htmlDependencyReport.mustRunAfter(tasks.compileJava)
+    tasks.dependencyReport.onlyIf { tasks.compileJava.didWork }
+    tasks.htmlDependencyReport.onlyIf { tasks.compileJava.didWork }
+
     projectReportDirName = new File(project.projectDir, 'reports').toString()
 
     // Global repositories
@@ -169,6 +175,7 @@ subprojects {
             force "commons-io:commons-io:2.+"
             force "commons-logging:commons-logging:1.+"
             force "com.google.guava:guava:$v_guava"
+            force "com.esotericsoftware:kryo:$v_kryo"
             force "com.thoughtworks.xstream:xstream:1.+"
             force "org.fusesource.hawtdispatch:hawtdispatch-transport:1.+"
             force "org.fusesource.hawtbuf:hawtbuf:1.+"
