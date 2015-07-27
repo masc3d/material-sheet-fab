@@ -1,6 +1,5 @@
 package org.deku.gradle
 
-import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.SystemUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
@@ -8,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -91,10 +91,10 @@ abstract class PackagerTask extends DefaultTask {
  */
 abstract class PackagerReleaseTask extends PackagerTask {
     // Common locations
-    protected def releaseBasePath = this.packagerBaseDir.resolve('release').resolve(PackagerUtils.archIdentifier())
+    protected def Path releaseBasePath = this.packagerBaseDir.resolve('release').resolve(PackagerUtils.archIdentifier())
 
-    protected def createReleasePath() {
-        return this.releaseBasePath.resolve("${project.name}-${PackagerUtils.archIdentifier()}")
+    def getReleasePath(Path basePath) {
+        return basePath.resolve("${project.name}-${PackagerUtils.archIdentifier()}")
     }
 }
 
@@ -176,7 +176,7 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
         if (this.configuration.releaseBasePath)
             this.releaseBasePath = Paths.get(this.configuration.releaseBasePath.toURI())
 
-        def releasePath = this.createReleasePath()
+        def releasePath = this.getReleasePath(this.releaseBasePath)
 
         def bundlePath = this.packagerArchDir.resolve('bundles').resolve(
                 SystemUtils.IS_OS_MAC_OSX ? "" : project.name)
@@ -223,7 +223,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
         if (this.configuration.releaseBasePath)
             this.releaseBasePath = Paths.get(this.configuration.releaseBasePath.toURI())
 
-        def releasePath = this.createReleasePath()
+        def releasePath = this.getReleasePath(this.releaseBasePath)
         def jarDestinationPath = releasePath.resolve('app')
 
         println "Release base path [${this.releaseBasePath}]"

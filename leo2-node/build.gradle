@@ -1,3 +1,5 @@
+import java.nio.file.*;
+
 buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
@@ -71,6 +73,10 @@ dependencies {
 
     // JSR-330
     compile 'javax.inject:javax.inject:1'
+
+    // JNA
+//    compile "net.java.dev.jna:jna:$v_jna"
+//    compile "net.java.dev.jna:jna-platform:$v_jna"
 
     // databases
     compile "com.h2database:h2:$v_h2"
@@ -161,6 +167,29 @@ packager {
     title = "LeoZ Node"
     releaseBasePath = g_release_path.toFile()
 }
+
+/**
+ * Copy binary files to release dir
+ * @return
+ */
+def copyBin() {
+    def srcDir = Paths.get(project.projectDir.toURI()).resolve('bin').resolve(g_arch_identifier).toFile()
+    def dstDir = tasks.packagerReleaseBundle.getReleasePath(g_release_path).resolve('bin').toFile()
+
+    println "Copying binaries [${srcDir}] -> [${dstDir}] "
+
+    if (dstDir.exists())
+        dstDir.deleteDir()
+
+    copy {
+        from srcDir
+        into dstDir
+    }
+}
+
+// Add copyBin to packager tasks
+tasks.packagerReleaseBundle.doLast { copyBin() }
+tasks.packagerReleaseJars.doLast { copyBin() }
 
 // Packager task
 

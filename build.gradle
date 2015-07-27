@@ -37,6 +37,7 @@ allprojects {
             v_jersey = "2.+"
             v_jetty = "9.2.+"
             v_jgit = "4.+"
+            v_jna = "4.+"
             v_jooq = "3.+"
             v_junit = "4.+"
             v_kryo = "3.+"
