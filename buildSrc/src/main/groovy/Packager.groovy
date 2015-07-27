@@ -132,19 +132,23 @@ class PackagerBundleTask extends PackagerTask {
         println "JDK home [${jdk_home}]"
         println "JRE home [${jre_home}]"
 
-        println "Gathering jars"
-        // Create libs dir for gathering
-        def packagerLibsDir = this.packagerArchDir.resolve('libs')
         if (!this.packagerBaseDir.toFile().deleteDir())
             throw new IOException("Could not remove packager dir");
+
+        def packagerLibsDir = this.packagerArchDir.resolve('libs')
+
+        println "Gathering jars -> [${packagerLibsDir}]"
+
+        // Create libs dir for gathering
         Files.createDirectories(packagerLibsDir)
+
         // Copy
         project.copy {
             from jars
             into packagerLibsDir.toFile()
         }
 
-        println "Building package"
+        println "Creating bundle -> [${this.packagerArchDir}]"
         project.exec {
             environment JAVA_HOME: jdk_home
             commandLine "${jdk_home}/bin/javapackager",
@@ -181,10 +185,6 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
         def bundlePath = this.packagerArchDir.resolve('bundles').resolve(
                 SystemUtils.IS_OS_MAC_OSX ? "" : project.name)
 
-        println "Bundle path [${bundlePath}]"
-        println "Release base path [${this.releaseBasePath}]"
-        println "Release path [${releasePath}]"
-
         if (!Files.exists(bundlePath))
             throw new IOException("Bundle path [${bundlePath}] doesn't exist")
 
@@ -206,7 +206,7 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
             }
         }
 
-        println "Copying bundle"
+        println "Copying bundle [${bundlePath}] -> [${releasePath}]"
         project.copy {
             from bundlePath.toFile()
             into releasePath.toFile()
@@ -239,7 +239,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
                 .filter({ it -> it.toString().toLowerCase().endsWith(".jar") })
                 .each { Files.delete(it) }
 
-        println "Gathering jars"
+        println "Copying jars -> [${jarDestinationPath}]"
         project.copy {
             from this.getProjectJars()
             into jarDestinationPath.toFile()

@@ -60,8 +60,7 @@ class Setup {
         }
 
         leozsvcPath = this.binPath.resolve("leozsvc.exe")
-        log.info("Base path [${basePath}]")
-        log.info("Bin path [${binPath}]")
+        log.info("Setup base path [${basePath}] bin path [${binPath}]")
     }
 
     /**
@@ -85,6 +84,8 @@ class Setup {
         // --StopMethod=stop
         // --Classpath=C:\Users\n3\Projects\leo2-release\leo2-node-win64\app\leo2-node-0.1.jar
 
+        log.info("Installing service")
+
         var classPath = Paths.get(mainClass.getProtectionDomain().getCodeSource().getLocation().toURI())
 
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
@@ -107,38 +108,46 @@ class Setup {
 
         var p: Process = pb.start();
         p.waitFor();
+
+        log.info("Installed successfully")
     }
 
     /**
      * Uninstalls node system service
      */
     public fun uninstall() {
+        log.info("Uninstalling service")
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//DS/LeoZ")
 
         var p: Process = pb.start();
         p.waitFor()
+        log.info("Uninstalled successfully")
     }
 
     /**
      * Start
      */
     public fun start() {
+        log.info("Starting service")
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//ES/LeoZ")
 
         var p: Process = pb.start();
         p.waitFor()
+        log.info("Started sucessfully")
     }
 
     /**
      * Stop
      */
     public fun stop() {
+        log.info("Stopping service")
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//SS/LeoZ")
 
         var p: Process = pb.start();
         p.waitFor()
+        log.info("Stopped successfully")
     }
 }
