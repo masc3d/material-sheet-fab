@@ -1,13 +1,13 @@
 
 ------------------------------------------------------------
-Project :leo2-common
+Project :libraries:leo2-common
 ------------------------------------------------------------
 
 archives - Configuration for archive artifacts.
 No dependencies
 
 compile - Compile classpath for source set 'main'.
-+--- project :sx-common
++--- project :libraries:sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -114,7 +114,7 @@ compile - Compile classpath for source set 'main'.
      \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 
 default - Configuration for default artifacts.
-+--- project :sx-common
++--- project :libraries:sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -221,7 +221,7 @@ default - Configuration for default artifacts.
      \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 
 runtime - Runtime classpath for source set 'main'.
-+--- project :sx-common
++--- project :libraries:sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -328,7 +328,7 @@ runtime - Runtime classpath for source set 'main'.
      \--- org.slf4j:slf4j-api:1.7.2 -> 1.7.12
 
 testCompile - Compile classpath for source set 'test'.
-+--- project :sx-common
++--- project :libraries:sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -456,7 +456,7 @@ testCompile - Compile classpath for source set 'test'.
           \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
 
 testRuntime - Runtime classpath for source set 'test'.
-+--- project :sx-common
++--- project :libraries:sx-common
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1

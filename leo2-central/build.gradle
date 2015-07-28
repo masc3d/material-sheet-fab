@@ -29,8 +29,8 @@ mainClassName = "org.deku.leo2.central.Main"
 
 dependencies {
     // leo2 webservice dependencies
-    compile project(':sx-common')
-    compile project(':leo2-common')
+    compile project(':libraries:sx-common')
+    compile project(':libraries:leo2-common')
     compile project(':leo2-node')
 
     // Kotlin
@@ -50,7 +50,7 @@ dependencies {
     testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
     testCompile "org.springframework.boot:spring-boot-starter-test:$v_springboot"
 
-    testCompile project(':sx-common')
+    testCompile project(':libraries:sx-common')
 }
 
 run {

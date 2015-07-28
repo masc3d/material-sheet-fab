@@ -16,8 +16,8 @@ version = '0.1'
 mainClassName = "org.deku.leo2.Main"
 
 dependencies {
-    compile project(':sx-common')
-    compile project(':leo2-common')
+    compile project(':libraries:sx-common')
+    compile project(':libraries:leo2-common')
 
     // JSR-303 bean validation
     compile 'org.glassfish.web:el-impl:2.+'
