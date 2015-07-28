@@ -122,6 +122,7 @@ class Setup {
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//IS/LeoZ",
                 "--DisplayName=${serviceName}",
+                "--Description=LeoZ node system service",
                 "--Install=${this.leozsvcPath}",
                 "--Startup=auto",
                 "--LogPath=${LocalStorage.instance().logDirectory}",
