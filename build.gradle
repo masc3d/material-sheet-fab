@@ -125,7 +125,7 @@ subprojects {
                     details.useVersion v_javax_servlet
                 } else
                 if (details.requested.group == 'junit') {
-                    details.useVersion '4.+'
+                    details.useVersion v_junit
                 } else
                 if (details.requested.group == 'org.apache.activemq') {
                     details.useVersion v_activemq
@@ -175,6 +175,9 @@ subprojects {
             force "commons-codec:commons-codec:1.+"
             force "commons-io:commons-io:2.+"
             force "commons-logging:commons-logging:1.+"
+            force "commons-lang:commons-lang:2.+"
+            force "commons-collections:commons-collections:3.+"
+            force "commons-httpclient:commons-httpclient:3.+"
             force "com.google.guava:guava:$v_guava"
             force "com.esotericsoftware:kryo:$v_kryo"
             force "com.thoughtworks.xstream:xstream:1.+"

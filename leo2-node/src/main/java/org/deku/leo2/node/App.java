@@ -144,6 +144,7 @@ public class App implements
             public void run() {
                 mLog.info("Shutdown hook initiated");
                 App.instance().dispose();
+                mLog.info("Shutdown hook completed");
             }
         });
     }
@@ -207,7 +208,7 @@ public class App implements
 
     @Override
     public final void onApplicationEvent(ApplicationEvent event) {
-        mLog.trace(String.format("Spring application event: %s",
+        mLog.info(String.format("Spring application event: %s",
                 event.getClass().getSimpleName()));
 
         if (event instanceof ApplicationEnvironmentPreparedEvent) {

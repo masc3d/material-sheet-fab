@@ -37,10 +37,10 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.fusesource.mqtt-client:mqtt-client:1.10
-|    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.20 -> 1.21
-|    |    |    |    \--- org.fusesource.hawtdispatch:hawtdispatch:1.21
+|    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.20 -> 1.22
+|    |    |    |    \--- org.fusesource.hawtdispatch:hawtdispatch:1.22
 |    |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.10 -> 1.11
-|    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 (*)
+|    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 -> 1.22 (*)
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1
@@ -342,10 +342,10 @@ default - Configuration for default artifacts.
 |    |    +--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.fusesource.mqtt-client:mqtt-client:1.10
-|    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.20 -> 1.21
-|    |    |    |    \--- org.fusesource.hawtdispatch:hawtdispatch:1.21
+|    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.20 -> 1.22
+|    |    |    |    \--- org.fusesource.hawtdispatch:hawtdispatch:1.22
 |    |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.10 -> 1.11
-|    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 (*)
+|    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 -> 1.22 (*)
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1
@@ -657,10 +657,10 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.fusesource.mqtt-client:mqtt-client:1.10
-|    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.20 -> 1.21
-|    |    |    |    \--- org.fusesource.hawtdispatch:hawtdispatch:1.21
+|    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.20 -> 1.22
+|    |    |    |    \--- org.fusesource.hawtdispatch:hawtdispatch:1.22
 |    |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.10 -> 1.11
-|    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 (*)
+|    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 -> 1.22 (*)
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1
@@ -962,10 +962,10 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.fusesource.mqtt-client:mqtt-client:1.10
-|    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.20 -> 1.21
-|    |    |    |    \--- org.fusesource.hawtdispatch:hawtdispatch:1.21
+|    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.20 -> 1.22
+|    |    |    |    \--- org.fusesource.hawtdispatch:hawtdispatch:1.22
 |    |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.10 -> 1.11
-|    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 (*)
+|    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 -> 1.22 (*)
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1
@@ -1281,10 +1281,10 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.apache.activemq:activemq-broker:5.11.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.fusesource.mqtt-client:mqtt-client:1.10
-|    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.20 -> 1.21
-|    |    |    |    \--- org.fusesource.hawtdispatch:hawtdispatch:1.21
+|    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.20 -> 1.22
+|    |    |    |    \--- org.fusesource.hawtdispatch:hawtdispatch:1.22
 |    |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.10 -> 1.11
-|    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 (*)
+|    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 -> 1.22 (*)
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.apache.activemq:activemq-http:5.+ -> 5.11.1
