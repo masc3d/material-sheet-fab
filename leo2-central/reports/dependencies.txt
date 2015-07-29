@@ -120,12 +120,12 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1218
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1218
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1218
-|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
-|    |    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
+|    |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
@@ -139,10 +139,10 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
-|    |    +--- org.aspectj:aspectjrt:1.8.5
-|    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
-|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.2.BUILD-SNAPSHOT (*)
+|    |    +--- org.aspectj:aspectjrt:1.8.6
+|    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
+|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.3.BUILD-SNAPSHOT (*)
 |    +--- org.springframework:spring-web:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
@@ -425,12 +425,12 @@ default - Configuration for default artifacts.
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1218
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1218
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1218
-|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
-|    |    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
+|    |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
@@ -444,10 +444,10 @@ default - Configuration for default artifacts.
 |    |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
-|    |    +--- org.aspectj:aspectjrt:1.8.5
-|    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
-|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.2.BUILD-SNAPSHOT (*)
+|    |    +--- org.aspectj:aspectjrt:1.8.6
+|    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
+|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.3.BUILD-SNAPSHOT (*)
 |    +--- org.springframework:spring-web:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
@@ -740,12 +740,12 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1218
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1218
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1218
-|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
-|    |    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
+|    |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
@@ -759,10 +759,10 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
-|    |    +--- org.aspectj:aspectjrt:1.8.5
-|    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
-|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.2.BUILD-SNAPSHOT (*)
+|    |    +--- org.aspectj:aspectjrt:1.8.6
+|    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
+|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.3.BUILD-SNAPSHOT (*)
 |    +--- org.springframework:spring-web:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
@@ -1045,12 +1045,12 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1218
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1218
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1218
-|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
-|    |    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
+|    |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
@@ -1064,10 +1064,10 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
-|    |    +--- org.aspectj:aspectjrt:1.8.5
-|    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
-|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.2.BUILD-SNAPSHOT (*)
+|    |    +--- org.aspectj:aspectjrt:1.8.6
+|    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
+|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.3.BUILD-SNAPSHOT (*)
 |    +--- org.springframework:spring-web:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
@@ -1364,12 +1364,12 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1218
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1218
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1218
-|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.2.BUILD-SNAPSHOT
-|    |    +--- org.springframework.data:spring-data-commons:1.10.2.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
+|    |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
@@ -1383,10 +1383,10 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.springframework:spring-tx:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
-|    |    +--- org.aspectj:aspectjrt:1.8.5
-|    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.10 -> 1.7.12 (*)
-|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.2.BUILD-SNAPSHOT (*)
+|    |    +--- org.aspectj:aspectjrt:1.8.6
+|    |    +--- org.slf4j:slf4j-api:1.7.12
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 (*)
+|    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.3.BUILD-SNAPSHOT (*)
 |    +--- org.springframework:spring-web:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)

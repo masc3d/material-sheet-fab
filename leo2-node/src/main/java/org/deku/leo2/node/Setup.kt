@@ -1,12 +1,15 @@
 package org.deku.leo2.node
 
+import com.google.common.base.StandardSystemProperty
 import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.slf4j.Logger
 import sx.io.ProcessStreamReader
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util
 import kotlin.platform.platformStatic
 
 /**
@@ -83,14 +86,30 @@ class Setup {
         // Evaluate/log output
         var output = pr.getOutput()
         var error = pr.getError()
-        if (!Strings.isNullOrEmpty(output))
-            log.info(output)
-        if (!Strings.isNullOrEmpty(error))
-            log.error(error)
+        this.logProcessOutput(output)
+        this.logProcessOutput(error, isError = true)
 
         // Evaluate error/throw
         if (errorCode != 0) {
             throw ProcessException(errorCode)
+        }
+    }
+
+    /**
+     * Logs process output line by line, skipping blank lines
+     */
+    private fun logProcessOutput(output: String, isError: Boolean = false) {
+        if (!Strings.isNullOrEmpty(output)) {
+            var lines = output.split(StandardSystemProperty.LINE_SEPARATOR.value())
+            log.info("Lines [${lines.count()}]")
+            for (line in lines) {
+                var tLine = line.trim()
+                if (tLine.length() > 0)
+                    if (isError)
+                        log.error(tLine)
+                    else
+                        log.info(tLine)
+            }
         }
     }
 
