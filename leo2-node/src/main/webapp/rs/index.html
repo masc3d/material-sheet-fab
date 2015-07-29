@@ -83,38 +83,51 @@
 <!-- masc20150508. leaving css themes unchanges, overloading styles here for customizations -->
 <!-- keeping all our changes here will simplify future merges of swagger-ui -->
 <style>
+    body {
+        background: linear-gradient(#CECECE, white);
+        background-repeat: no-repeat;
+        background-size: 100% 450px
+    }
+
     .swagger-section #header {
-        background: linear-gradient(gray, white);
-        padding: 24px 0px 24px 0px;
+        background: transparent;
+        padding: 12px 0px 12px 0px;
+        border-top-color: #FFB601;
+        border-top-width: 3px;
+        border-top-style: solid;
         border-bottom-width: 1px;
-        border-bottom-color: lightgray;
+        border-bottom-color: #aaaaaa;
         border-bottom-style: solid;
     }
 
+    .swagger-section #header .swagger-ui-wrap {
+        line-height: 79px;
+    }
+
     .swagger-section #header a#logo {
-        font-size: 1.5em;
-        font-weight: bold;
-        text-decoration: none;
-        background: url(images/deku_logo_256px.png) no-repeat left center;
-        background-size: 54%;
-        padding: 28px 54px 24px 150px;
-        color: black;
+        display: inline-block;
+        vertical-align: middle;
+        background: url(images/logo.png) no-repeat left center;
+        background-size: 100%;
+        width: 223px;
+        height: 79px;
+        padding: 0px 0px 0px 0px;
     }
 
     .swagger-section #header div#title {
-        display: block;
-        clear: none;
-        float: left;
-        width: 200px;
+        font-size: 1.5em;
+        font-weight: bold;
+        display: inline;
+        vertical-align: middle;
     }
 </style>
 
 <body class="swagger-section">
 <div id='header'>
     <div class="swagger-ui-wrap">
-        <a id="logo" href="http://derkurier.de">LeoZ</a>
+        <a id="logo" href="http://derkurier.de"></a>
+        <div id="title">LeoZ</div>
         <form id='api_selector'>
-            <!--<div id='title'>LEO2</div>-->
             <!--<div class='input'><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"/></div>-->
             <div class='input'><input placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
             <!--<iv class='input'><a id="explore" href="#">Explore</a></div>-->
