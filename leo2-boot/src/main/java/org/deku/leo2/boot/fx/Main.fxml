@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="365.0" prefWidth="482.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ButtonBar layoutX="40.0" layoutY="76.0" prefHeight="40.0" prefWidth="200.0" />
+      <ProgressBar layoutX="21.0" layoutY="67.0" prefHeight="18.0" prefWidth="502.0" progress="0.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0" />
+      <TextArea layoutX="21.0" layoutY="96.0" prefHeight="279.0" prefWidth="513.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="93.0" />
+   </children>
+</AnchorPane>
