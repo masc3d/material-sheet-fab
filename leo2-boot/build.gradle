@@ -14,7 +14,7 @@ apply plugin: org.deku.gradle.PackagerPlugin
 
 version '0.1'
 sourceCompatibility = 1.8
-mainClassName = "org.deku.leo2.boot.Main"
+mainClassName = "org.deku.leo2.boot.Application"
 
 dependencies {
     // Kotlin
