@@ -5,6 +5,10 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.stage.Stage
 
+fun main(args: Array<String>) {
+    javafx.application.Application.launch(javaClass<Application>())
+}
+
 /**
  * Created by n3 on 29-Jul-15.
  */
