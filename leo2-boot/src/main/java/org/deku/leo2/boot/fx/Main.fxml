@@ -10,8 +10,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 
-
-<VBox prefHeight="426.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="426.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.boot.fx.MainController">
    <children>
       <AnchorPane maxWidth="1.7976931348623157E308">
          <children>
@@ -25,12 +24,12 @@
             <Insets bottom="12.0" />
          </VBox.margin>
       </AnchorPane>
-      <ProgressBar maxWidth="1.7976931348623157E308" progress="0.0">
+      <ProgressBar fx:id="uxProgressBar" maxWidth="1.7976931348623157E308" progress="0.0">
          <VBox.margin>
             <Insets bottom="12.0" />
          </VBox.margin>
       </ProgressBar>
-      <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
+      <TextArea fx:id="uxTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
    </children>
    <padding>
       <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />

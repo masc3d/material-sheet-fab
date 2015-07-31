@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="leo2-boot" type="Application" factoryName="Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
@@ -12,9 +13,6 @@
     <option name="PASS_PARENT_ENVS" value="true" />
     <module name="leo2-boot" />
     <envs />
-    <method>
-      <option name="Make" enabled="false" />
-      <option name="Gradle.BeforeRunTask" enabled="true" tasks="classes" externalProjectPath="$PROJECT_DIR$/leo2-boot" vmOptions="" scriptParameters="" />
-    </method>
+    <method />
   </configuration>
 </component>

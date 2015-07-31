@@ -21,8 +21,15 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
+    // Logging
+    compile 'commons-logging:commons-logging:+'
+    compile "ch.qos.logback:logback-classic:+"
+    compile "org.slf4j:jcl-over-slf4j:+"
+
     compile "org.jfxtras:jfxtras-all:8.+"
     compile "com.dooapp.fxform2:core:8.+"
+
+    compile "org.eclipse.jgit:org.eclipse.jgit:$v_jgit"
 
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
