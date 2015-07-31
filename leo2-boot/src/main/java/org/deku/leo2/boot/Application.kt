@@ -13,8 +13,8 @@ class Application : javafx.application.Application() {
 
     override fun start(primaryStage: Stage) {
         val root = FXMLLoader.load<Parent>(this.javaClass.getResource("fx/Main.fxml"))
-        primaryStage.setTitle("Hello World")
-        primaryStage.setScene(Scene(root, 300.0, 275.0))
+        primaryStage.setTitle("LeoZ Boot")
+        primaryStage.setScene(Scene(root, 600.0, 275.0))
         primaryStage.show()
     }
 
