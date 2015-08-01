@@ -49,6 +49,7 @@ packager {
     title = "LeoZ Boot"
     releaseBasePath = g_release_path.toFile()
     osxIcon = Paths.get(project.rootDir.toURI()).resolve('images').resolve('DEKU.icon.icns').toFile()
+    windowsIcon = Paths.get(project.rootDir.toURI()).resolve('images').resolve('DEKU.icon.ico').toFile()
 }
 
 // Add resources (like .fxml files) from souce path.

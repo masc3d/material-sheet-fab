@@ -129,6 +129,7 @@ class PackagerBundleTask extends PackagerTask {
         def mainClassName = this.getMainClassName();
         def jars = this.getProjectJars()
         def osxIcon = this.configuration.osxIcon
+        def windowsIcon = this.configuration.windowsIcon
 
         // JDK/JRE
         def jvm = org.gradle.internal.jvm.Jvm.current()
@@ -168,6 +169,7 @@ class PackagerBundleTask extends PackagerTask {
                     "-appclass", mainClassName,
                     "-Bruntime=${jre_home}",
                     (SystemUtils.IS_OS_MAC_OSX && osxIcon) ? "-Bicon=${osxIcon}" : "",
+                    (SystemUtils.IS_OS_WINDOWS && windowsIcon) ? "-Bicon=${windowsIcon}" : "",
                     (mainJar) ? "-BmainJar=${mainJar.getName()}" : "",
                     (this.jvmOptions) ? "-BjvmOptions=${this.jvmOptions}" : ""
 
