@@ -32,7 +32,8 @@ class MainController : Initializable {
         var log: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 
         thread(priority = 5) {
-            var max = 20000
+            Thread.sleep(1000);
+            var max = 2000
             for (i in 1..max) {
                 log.info("Hello ${i}")
                 uxProgressBar!!.setProgress(i.toDouble() / max)

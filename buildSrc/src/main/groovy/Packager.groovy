@@ -16,6 +16,10 @@ import java.nio.file.Paths
 class PackagerPluginExtension {
     def String title
     def File releaseBasePath
+    /** Path to .icns file */
+    def File osxIcon
+    /** Path to .ico file */
+    def File windowsIcon
 }
 
 /**
@@ -124,6 +128,7 @@ class PackagerBundleTask extends PackagerTask {
         def mainJar = this.getMainJar()
         def mainClassName = this.getMainClassName();
         def jars = this.getProjectJars()
+        def osxIcon = this.configuration.osxIcon
 
         // JDK/JRE
         def jvm = org.gradle.internal.jvm.Jvm.current()
@@ -162,6 +167,7 @@ class PackagerBundleTask extends PackagerTask {
                     "-srcdir", packagerLibsDir,
                     "-appclass", mainClassName,
                     "-Bruntime=${jre_home}",
+                    (SystemUtils.IS_OS_MAC_OSX && osxIcon) ? "-Bicon=${osxIcon}" : "",
                     (mainJar) ? "-BmainJar=${mainJar.getName()}" : "",
                     (this.jvmOptions) ? "-BjvmOptions=${this.jvmOptions}" : ""
 

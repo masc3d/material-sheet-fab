@@ -3,6 +3,7 @@ package org.deku.leo2.boot
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
+import javafx.scene.image.Image
 import javafx.stage.Stage
 
 fun main(args: Array<String>) {
@@ -19,6 +20,10 @@ class Application : javafx.application.Application() {
         val root = FXMLLoader.load<Parent>(this.javaClass.getResource("fx/Main.fxml"))
         primaryStage.setTitle("LeoZ Boot")
         primaryStage.setScene(Scene(root, 600.0, 275.0))
+
+        var img = this.javaClass.getResourceAsStream("/DEKU.icon.256px.png")
+        primaryStage.getIcons().add(Image(img))
+
         primaryStage.show()
     }
 
