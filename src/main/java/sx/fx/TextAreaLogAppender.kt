@@ -1,4 +1,4 @@
-package org.deku.leo2.boot.fx
+package sx.fx
 
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 
  * @author Russell Shingleton @oclc.org>
  */
-public class TextAreaLogAppender(val textArea: TextArea) : AppenderBase<ILoggingEvent>() {
+class TextAreaLogAppender(val textArea: TextArea) : AppenderBase<ILoggingEvent>() {
     private var patternLayout: PatternLayout = PatternLayout()
     private var lines: Int = 0
     private var buffer: StringBuilder = StringBuilder()
