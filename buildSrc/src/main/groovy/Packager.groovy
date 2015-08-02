@@ -11,48 +11,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
- * Plugin extension class, used for configuration within build.gradle
- */
-class PackagerPluginExtension {
-    def String title
-    def File releaseBasePath
-    /** Path to .icns file */
-    def File osxIcon
-    /** Path to .ico file */
-    def File windowsIcon
-}
-
-/**
- * Packager plugin
- */
-class PackagerPlugin implements Plugin<Project> {
-    void apply(Project project) {
-        // Add configuration extensino
-        def config = new PackagerPluginExtension()
-        project.extensions.packager = config
-
-        // Bundle task
-        project.tasks.create('packagerBundle', PackagerBundleTask) {
-            configuration = config
-            jvmOptions = "-XX:+UseCompressedOops"
-        }
-        project.tasks.packagerBundle.dependsOn(project.tasks.jar)
-
-        // Release bundle task
-        project.tasks.create('packagerReleaseBundle', PackagerReleaseBundleTask) {
-            configuration = config
-        }
-        project.tasks.packagerReleaseBundle.dependsOn(project.tasks.packagerBundle)
-
-        // Release jars task
-        project.tasks.create('packagerReleaseJars', PackagerReleaseJarsTask) {
-            configuration = config
-        }
-        project.tasks.packagerReleaseJars.dependsOn(project.tasks.jar)
-    }
-}
-
-/**
  * Base class for all packager tasks
  */
 abstract class PackagerTask extends DefaultTask {
@@ -252,32 +210,5 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
             from this.getProjectJars()
             into jarDestinationPath.toFile()
         }
-    }
-}
-
-/**
- * Common packager utils
- */
-class PackagerUtils {
-    public static String archIdentifier() {
-        String prefix = SystemUtils.IS_OS_WINDOWS ? "win"
-                : SystemUtils.IS_OS_LINUX ? "linux"
-                : SystemUtils.IS_OS_MAC_OSX ? "osx"
-                : null;
-
-        if (!prefix)
-            throw IllegalStateException("Unsupported platform");
-
-        switch (SystemUtils.OS_ARCH) {
-            // 64bit
-            case "amd64":
-            case "x86_64": prefix += "64"; break;
-            // 32bit
-            case "x86": prefix += "32"; break;
-            // Unsupported
-            default: throw IllegalStateException("Unsupported architecture [${SystemUtils.OS_ARCH}]");
-        }
-
-        return prefix
     }
 }
