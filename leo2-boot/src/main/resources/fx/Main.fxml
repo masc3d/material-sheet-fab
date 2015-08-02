@@ -29,7 +29,7 @@
             <Insets bottom="12.0" />
          </VBox.margin>
       </ProgressBar>
-      <TextArea fx:id="uxTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
+      <TextArea fx:id="uxTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-text-fill: gray;" VBox.vgrow="ALWAYS" />
    </children>
    <padding>
       <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />

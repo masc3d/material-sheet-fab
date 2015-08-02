@@ -6,6 +6,8 @@ import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.ProgressBar
 import javafx.scene.control.TextArea
+import javafx.scene.text.TextFlow
+import org.deku.leo2.boot.LogConfiguration
 import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.*
@@ -23,11 +25,7 @@ class MainController : Initializable {
     var logAppender: TextAreaLogAppender? = null
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
-        logAppender = TextAreaLogAppender(uxTextArea as TextArea)
-        logAppender!!.setContext(LogConfiguration.context)
-        logAppender!!.start()
-
-        LogConfiguration.rootLogger.addAppender(logAppender)
+        LogConfiguration.addAppender(TextAreaLogAppender(uxTextArea as TextArea))
 
         var log: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 

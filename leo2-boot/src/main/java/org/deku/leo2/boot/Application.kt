@@ -17,11 +17,11 @@ class Application : javafx.application.Application() {
     throws(Exception::class)
 
     override fun start(primaryStage: Stage) {
-        val root = FXMLLoader.load<Parent>(this.javaClass.getResource("fx/Main.fxml"))
+        val root = FXMLLoader.load<Parent>(this.javaClass.getResource("/fx/Main.fxml"))
         primaryStage.setTitle("LeoZ Boot")
         primaryStage.setScene(Scene(root, 600.0, 275.0))
 
-        var img = this.javaClass.getResourceAsStream("/DEKU.icon.256px.png")
+        var img = this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")
         primaryStage.getIcons().add(Image(img))
 
         primaryStage.show()
