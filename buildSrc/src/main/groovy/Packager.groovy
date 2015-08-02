@@ -125,11 +125,19 @@ class PackagerBundleTask extends PackagerTask {
                     "-outfile", project.name,
                     "-srcdir", packagerLibsDir,
                     "-appclass", mainClassName,
-                    "-Bruntime=${jre_home}",
-                    (SystemUtils.IS_OS_MAC_OSX && osxIcon) ? "-Bicon=${osxIcon}" : "",
-                    (SystemUtils.IS_OS_WINDOWS && windowsIcon) ? "-Bicon=${windowsIcon}" : "",
-                    (mainJar) ? "-BmainJar=${mainJar.getName()}" : "",
-                    (this.jvmOptions) ? "-BjvmOptions=${this.jvmOptions}" : ""
+                    "-Bruntime=${jre_home}"
+
+            if (SystemUtils.IS_OS_MAC_OSX && osxIcon)
+                commandLine += "-Bicon=${osxIcon}"
+
+            if (SystemUtils.IS_OS_WINDOWS && windowsIcon)
+                commandLine += "-Bicon=${windowsIcon}"
+
+            if (mainJar)
+                commandLine += "-BmainJar=${mainJar.getName()}"
+
+            if (this.jvmOptions)
+                commandLine += "-BjvmOptions=${this.jvmOptions}"
 
             // Debug: print command line
             // println String.join(" ", commandLine)
