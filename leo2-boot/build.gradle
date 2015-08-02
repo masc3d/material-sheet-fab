@@ -10,7 +10,6 @@ buildscript {
 }
 
 apply plugin: 'kotlin'
-apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: org.deku.gradle.PackagerPlugin
 
@@ -22,6 +21,8 @@ dependencies {
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+
+    compile 'javax.inject:javax.inject:1'
 
     // Logging
     compile 'commons-logging:commons-logging:+'

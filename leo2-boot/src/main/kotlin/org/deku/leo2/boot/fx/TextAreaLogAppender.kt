@@ -16,6 +16,11 @@ import org.slf4j.LoggerFactory
  */
 public class TextAreaLogAppender(val textArea: TextArea) : AppenderBase<ILoggingEvent>() {
     private var patternLayout: PatternLayout = PatternLayout()
+    private var lines: Int = 0
+    private var buffer: StringBuilder = StringBuilder()
+
+    /** Maximum number of lines */
+    var maxLines: Int = 500
 
     init {
         //this.patternLayout.setPattern("%-5level [%thread]: %message%n")
@@ -30,22 +35,25 @@ public class TextAreaLogAppender(val textArea: TextArea) : AppenderBase<ILogging
     override fun append(loggingEvent: ILoggingEvent) {
         val message = this.patternLayout.doLayout(loggingEvent)
 
+        synchronized(this.buffer) {
+            buffer.append(message)
+            this.lines++
+
+            if (this.lines > this.maxLines) {
+                // Truncate first line
+                var crlfIndex = buffer.indexOf("\n")
+                if (crlfIndex > 0)
+                    buffer.delete(0, crlfIndex + 1)
+                this.lines--
+            }
+        }
+
         // Append formatted message to text area using the Thread.
         try {
             Platform.runLater({
                 try {
-                    if (textArea != null) {
-                        if (textArea.getText().length() == 0) {
-                            textArea.setText(message)
-                        } else {
-                            textArea.insertText(textArea.getText().length(), message)
-
-                            if (textArea.getLength() > 10000)
-                                textArea.setText(textArea.getText().substring(textArea.getLength() - 10000))
-
-                            textArea.setScrollTop(Double.MAX_VALUE);
-                        }
-                    }
+                    this.textArea.setText(this.buffer.toString())
+                    this.textArea.setScrollTop(Double.MAX_VALUE);
                 } catch (e: Exception) {
                     // Ignore exceptions
                 }
