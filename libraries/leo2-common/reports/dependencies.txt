@@ -8,8 +8,16 @@ No dependencies
 
 compile - Compile classpath for source set 'main'.
 +--- project :libraries:sx-common
+|    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.3
+|    |    +--- ch.qos.logback:logback-core:1.1.3
+|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
+|    |    \--- org.slf4j:slf4j-api:1.7.12
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- javax.jms:jms-api:1.1-rev-1
 |    +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
@@ -86,11 +94,8 @@ compile - Compile classpath for source set 'main'.
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.3
-|    +--- ch.qos.logback:logback-core:1.1.3
-|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
-|    \--- org.slf4j:slf4j-api:1.7.12
++--- ch.qos.logback:logback-classic:+ -> 1.1.3 (*)
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12 (*)
 +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
@@ -115,8 +120,16 @@ compile - Compile classpath for source set 'main'.
 
 default - Configuration for default artifacts.
 +--- project :libraries:sx-common
+|    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.3
+|    |    +--- ch.qos.logback:logback-core:1.1.3
+|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
+|    |    \--- org.slf4j:slf4j-api:1.7.12
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- javax.jms:jms-api:1.1-rev-1
 |    +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
@@ -193,11 +206,8 @@ default - Configuration for default artifacts.
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.3
-|    +--- ch.qos.logback:logback-core:1.1.3
-|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
-|    \--- org.slf4j:slf4j-api:1.7.12
++--- ch.qos.logback:logback-classic:+ -> 1.1.3 (*)
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12 (*)
 +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
@@ -222,8 +232,16 @@ default - Configuration for default artifacts.
 
 runtime - Runtime classpath for source set 'main'.
 +--- project :libraries:sx-common
+|    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.3
+|    |    +--- ch.qos.logback:logback-core:1.1.3
+|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
+|    |    \--- org.slf4j:slf4j-api:1.7.12
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- javax.jms:jms-api:1.1-rev-1
 |    +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
@@ -300,11 +318,8 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.3
-|    +--- ch.qos.logback:logback-core:1.1.3
-|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
-|    \--- org.slf4j:slf4j-api:1.7.12
++--- ch.qos.logback:logback-classic:+ -> 1.1.3 (*)
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12 (*)
 +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
@@ -329,8 +344,16 @@ runtime - Runtime classpath for source set 'main'.
 
 testCompile - Compile classpath for source set 'test'.
 +--- project :libraries:sx-common
+|    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.3
+|    |    +--- ch.qos.logback:logback-core:1.1.3
+|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
+|    |    \--- org.slf4j:slf4j-api:1.7.12
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- javax.jms:jms-api:1.1-rev-1
 |    +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
@@ -407,11 +430,8 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.3
-|    +--- ch.qos.logback:logback-core:1.1.3
-|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
-|    \--- org.slf4j:slf4j-api:1.7.12
++--- ch.qos.logback:logback-classic:+ -> 1.1.3 (*)
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12 (*)
 +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0
@@ -457,8 +477,16 @@ testCompile - Compile classpath for source set 'test'.
 
 testRuntime - Runtime classpath for source set 'test'.
 +--- project :libraries:sx-common
+|    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.3
+|    |    +--- ch.qos.logback:logback-core:1.1.3
+|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
+|    |    \--- org.slf4j:slf4j-api:1.7.12
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    +--- javax.jms:jms-api:1.1-rev-1
 |    +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
@@ -535,11 +563,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- junit:junit:4.+ -> 4.12
 |         \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.3
-|    +--- ch.qos.logback:logback-core:1.1.3
-|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
-|    \--- org.slf4j:slf4j-api:1.7.12
++--- ch.qos.logback:logback-classic:+ -> 1.1.3 (*)
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12 (*)
 +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 +--- org.eclipse.persistence:javax.persistence:2.+ -> 2.1.0

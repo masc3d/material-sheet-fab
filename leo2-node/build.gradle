@@ -166,6 +166,8 @@ compileJava.dependsOn(copyWebapp)
 packager {
     title = "LeoZ Node"
     releaseBasePath = g_release_path.toFile()
+    osxIcon = g_osx_icon
+    windowsIcon = g_windows_icon
 }
 
 /**
