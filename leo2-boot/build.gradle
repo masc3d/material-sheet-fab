@@ -18,6 +18,8 @@ sourceCompatibility = 1.8
 mainClassName = "org.deku.leo2.boot.BootPackage"
 
 dependencies {
+    compile project(':libraries:sx-common')
+
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"

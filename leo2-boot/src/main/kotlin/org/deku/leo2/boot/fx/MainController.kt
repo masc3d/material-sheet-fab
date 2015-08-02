@@ -9,6 +9,7 @@ import javafx.scene.control.TextArea
 import javafx.scene.text.TextFlow
 import org.deku.leo2.boot.LogConfiguration
 import org.slf4j.LoggerFactory
+import sx.fx.TextAreaLogAppender
 import java.net.URL
 import java.util.*
 import kotlin.concurrent.thread
