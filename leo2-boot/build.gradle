@@ -22,8 +22,6 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
-    compile 'javax.inject:javax.inject:1'
-
     // Logging
     compile 'commons-logging:commons-logging:+'
     compile "ch.qos.logback:logback-classic:+"

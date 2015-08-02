@@ -11,7 +11,6 @@ import org.deku.leo2.boot.LogConfiguration
 import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.*
-import javax.inject.Inject
 import kotlin.concurrent.thread
 
 /**
