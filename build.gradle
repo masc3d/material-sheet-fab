@@ -1,4 +1,14 @@
+buildscript {
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+
 apply plugin: 'java'
+apply plugin: 'kotlin'
 
 sourceCompatibility = 1.8
 version = '1.0'
@@ -21,8 +31,14 @@ sourceSets {
 }
 
 dependencies {
+    // Kotlin
+    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+
     compile 'com.google.guava:guava:18.+'
     compile 'commons-logging:commons-logging:1.+'
+    compile "ch.qos.logback:logback-classic:+"
+    compile "org.slf4j:jcl-over-slf4j:+"
 
     // JMS
     provided 'javax.jms:jms-api:1.1-rev-1'
