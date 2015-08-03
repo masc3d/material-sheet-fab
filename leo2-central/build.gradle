@@ -72,7 +72,6 @@ jar {
     }
 }
 
-
 // Location for generated sources
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
@@ -121,19 +120,17 @@ packager {
  * Task copying binaries from node
  */
 task copyBinFromNode(type: Copy) {
-    from new File(project(':leo2-node').projectDir, 'bin')
+    from project(':leo2-node').binDir()
     into new File(project.projectDir, 'bin')
 }
 tasks.classes.dependsOn copyBinFromNode
-
 
 /**
  * Copy binary files to release dir
  * @return
  */
 def releaseBin() {
-    def srcDir = Paths.get(project.projectDir.toURI())
-            .resolve('bin')
+    def srcDir = Paths.get(project.binDir().toURI())
             .resolve(g_arch_identifier)
             .toFile()
 
