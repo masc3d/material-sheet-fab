@@ -118,12 +118,28 @@ packager {
 }
 
 /**
+ * Task copying binaries from node
+ */
+task copyBinFromNode(type: Copy) {
+    from new File(project(':leo2-node').projectDir, 'bin')
+    into new File(project.projectDir, 'bin')
+}
+tasks.classes.dependsOn copyBinFromNode
+
+
+/**
  * Copy binary files to release dir
  * @return
  */
-def copyBin() {
-    def srcDir = Paths.get(project.projectDir.toURI()).resolve('bin').resolve(g_arch_identifier).toFile()
-    def dstDir = tasks.packagerReleaseBundle.getReleasePath(g_release_path).resolve('bin').toFile()
+def releaseBin() {
+    def srcDir = Paths.get(project.projectDir.toURI())
+            .resolve('bin')
+            .resolve(g_arch_identifier)
+            .toFile()
+
+    def dstDir = tasks.packagerReleaseBundle.getReleasePath(g_release_path)
+            .resolve('bin')
+            .toFile()
 
     println "Copying binaries [${srcDir}] -> [${dstDir}] "
 
@@ -135,10 +151,9 @@ def copyBin() {
         into dstDir
     }
 }
-
-// Add copyBin to packager tasks
-tasks.packagerReleaseBundle.doLast { copyBin() }
-tasks.packagerReleaseJars.doLast { copyBin() }
+// Execute copyBin after packager tasks
+tasks.packagerReleaseBundle.doLast { releaseBin() }
+tasks.packagerReleaseJars.doLast { releaseBin() }
 
 // masc20150507. task prototypes
 ////copying all dependencies attached to 'compile' into a specific folder
