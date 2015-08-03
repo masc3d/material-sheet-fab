@@ -32,3 +32,4 @@ leo2-common/activemq-data
 *.ldb
 leo2-boot/reports/dependencies/
 libraries/leo2-common/reports/
+leo2-central/bin/
