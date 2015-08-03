@@ -5,6 +5,12 @@ import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import java.io.File
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.attribute.*
+import java.util.*
 import kotlin.platform.platformStatic
 
 /**
@@ -16,7 +22,7 @@ class LocalStorage {
 
     companion object Singleton {
         private val instance: LocalStorage = LocalStorage()
-        @platformStatic fun instance() : LocalStorage {
+        @platformStatic fun instance(): LocalStorage {
             return this.instance;
         }
     }
@@ -46,7 +52,25 @@ class LocalStorage {
         this.logFile = File(this.logDirectory, "leo2.log")
         this.activeMqDataDirectory = File(this.dataDirectory, "activemq")
 
+        var homeExists = this.homeDirectory.exists()
         this.homeDirectory.mkdirs()
+        // Set permissions if the directory was created
+        if (!homeExists) {
+            if (SystemUtils.IS_OS_WINDOWS) {
+                var fav = Files.getFileAttributeView(Paths.get(this.homeDirectory.toURI()), javaClass<AclFileAttributeView>())
+
+                var fs = FileSystems.getDefault()
+                var ups: UserPrincipalLookupService = fs.getUserPrincipalLookupService()
+                var gp = ups.lookupPrincipalByGroupName("Users")
+
+                var aclb = AclEntry.newBuilder()
+                EnumSet.allOf(javaClass<AclEntryPermission>())
+                aclb.setPermissions(EnumSet.allOf(javaClass<AclEntryPermission>()))
+                aclb.setPrincipal(gp)
+                aclb.setType(AclEntryType.ALLOW)
+                fav.setAcl(Collections.singletonList(aclb.build()))
+            }
+        }
         this.dataDirectory.mkdirs()
         this.logDirectory.mkdirs()
     }
