@@ -57,16 +57,19 @@ class LocalStorage {
         // Set permissions if the directory was created
         if (!homeExists) {
             if (SystemUtils.IS_OS_WINDOWS) {
+                // Get file attribute view
                 var fav = Files.getFileAttributeView(Paths.get(this.homeDirectory.toURI()), javaClass<AclFileAttributeView>())
 
+                // Lookup principal
                 var fs = FileSystems.getDefault()
                 var ups: UserPrincipalLookupService = fs.getUserPrincipalLookupService()
                 var gp = ups.lookupPrincipalByGroupName("Users")
 
+                // Set ACL
                 var aclb = AclEntry.newBuilder()
-                EnumSet.allOf(javaClass<AclEntryPermission>())
                 aclb.setPermissions(EnumSet.allOf(javaClass<AclEntryPermission>()))
                 aclb.setPrincipal(gp)
+                aclb.setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT)
                 aclb.setType(AclEntryType.ALLOW)
                 fav.setAcl(Collections.singletonList(aclb.build()))
             }
