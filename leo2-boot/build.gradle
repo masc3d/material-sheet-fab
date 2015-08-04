@@ -41,7 +41,8 @@ jar {
     manifest {
         attributes (
                 'Main-Class': mainClassName,
-                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'SplashScreen-Image': 'images/DEKU.splash.png'
         )
     }
 }
