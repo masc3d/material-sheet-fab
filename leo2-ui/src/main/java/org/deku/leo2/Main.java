@@ -3,6 +3,7 @@ package org.deku.leo2;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -180,7 +181,8 @@ public class Main extends Application {
 
         // Main scene
         Scene scene = new Scene(this.getMainPane(), 1600, 800);
-        primaryStage.setTitle("leo2");
+        primaryStage.setTitle("LeoZ UI");
+        primaryStage.getIcons().add(new Image(this.getClass().getResourceAsStream("/images/DEKU.icon.256px.png")));
         primaryStage.setScene(scene);
         primaryStage.show();
 
