@@ -7,6 +7,7 @@
 #### Required software ####
 * [Sourcetree](https://www.atlassian.com/software/sourcetree)
 * [Idea Intellij Ultimate](https://www.jetbrains.com/idea/) (v14, ultimate edition)
+* [JavaFX Scene Builder](http://gluonhq.com/open-source/scene-builder/)
 
 #### Get up and running ####
 * Clone GIT repository using URL [ssh://git@bitbucket.org/masc3d/leo2](ssh://git@bitbucket.org/masc3d/leo2])
