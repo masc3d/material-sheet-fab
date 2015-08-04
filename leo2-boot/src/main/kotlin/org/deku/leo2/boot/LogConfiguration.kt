@@ -5,7 +5,6 @@ import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
 import javafx.scene.control.TextArea
-import org.deku.leo2.boot.fx.TextAreaLogAppender
 import org.slf4j.LoggerFactory
 
 /**
