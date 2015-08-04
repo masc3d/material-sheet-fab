@@ -68,6 +68,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'project-report'
 
+    project.metaClass.binDir = { new File(project.projectDir, 'bin') }
+
     // Reporting setup
     // Dependency report depends on classes but only if compilation actually took place (not uptodate)
     tasks.classes.dependsOn(tasks.dependencyReport)
@@ -209,5 +211,4 @@ task copyIntellijDataSources(type: Copy) {
         }
 }
 tasks.copyIntellijDataSources.execute()
-
 

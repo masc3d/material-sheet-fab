@@ -175,8 +175,13 @@ packager {
  * @return
  */
 def copyBin() {
-    def srcDir = Paths.get(project.projectDir.toURI()).resolve('bin').resolve(g_arch_identifier).toFile()
-    def dstDir = tasks.packagerReleaseBundle.getReleasePath(g_release_path).resolve('bin').toFile()
+    def srcDir = Paths.get(project.binDir().toURI())
+            .resolve(g_arch_identifier)
+            .toFile()
+
+    def dstDir = tasks.packagerReleaseBundle.getReleasePath(g_release_path)
+            .resolve('bin')
+            .toFile()
 
     println "Copying binaries [${srcDir}] -> [${dstDir}] "
 
