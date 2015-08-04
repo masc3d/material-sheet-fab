@@ -5,6 +5,14 @@
     -fx-padding: 10;
 }
 
+.leo2-menu-pane {
+    -fx-padding: 0;
+}
+
+.leo2-menu-pane Button {
+    -fx-background-color: white;
+}
+
 .leo2-error {
     -fx-border-color: red;
     -fx-border-width: 2;
@@ -31,7 +39,7 @@
 }
 
 .leo2-title {
-    -fx-font-size: 38;
+    -fx-font-size: 28;
     -fx-font-family: 'Futura Condensed Medium';
 }
 
