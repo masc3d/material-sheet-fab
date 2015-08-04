@@ -92,6 +92,7 @@ public class Main  {
         // Initialize and start application
         App.instance().initialize();
         new SpringApplicationBuilder()
+                .showBanner(false)
                 .sources(c)
                 .profiles(App.instance().getProfile())
                 .listeners(App.instance())
