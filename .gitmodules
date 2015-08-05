@@ -25,3 +25,6 @@
 [submodule "leo2-bridge-com/Libraries/CLAP"]
 	path = leo2-bridge-com/Libraries/CLAP
 	url = https://github.com/masc3d/CLAP.git
+[submodule "libraries/zsync4j"]
+	path = libraries/zsync4j
+	url = git@github.com:masc3d/zsync4j.git
