@@ -46,61 +46,68 @@ import org.springframework.core.annotation.Order;
         MessageListenerConfiguration.class,
 })
 @EnableConfigurationProperties
-public class Main  {
+public class Main {
     private static Log mLog = LogFactory.getLog(Main.class);
 
     /**
      * Standalone startup
+     *
      * @param args
      * @throws Exception
      */
     public static void main(String[] args) {
+        Main.run(Main.class, args);
+    }
+
+    protected static void run(Class c, String[] args) {
         try {
-            Main.run(Main.class, args);
-        } catch(Exception e) {
+            mLog.info(String.format("Main arguments [%s]", String.join(", ", args)));
+
+            // Support for command line parameters, setup commands
+            if (args != null && args.length > 0) {
+                String command = args[0].toLowerCase().trim();
+
+                Runnable rCommand = null;
+                switch (command) {
+                    case "install":
+                        rCommand = () -> Setup.instance().install("LeoZ Service", c);
+                        break;
+                    case "uninstall":
+                        rCommand = () -> Setup.instance().uninstall();
+                        break;
+                    case "start":
+                        rCommand = () -> Setup.instance().start();
+                        break;
+                    case "stop":
+                        rCommand = () -> Setup.instance().stop();
+                        break;
+                }
+
+                if (rCommand != null) {
+                    try {
+                        LogConfiguration.instance().initialize();
+                        rCommand.run();
+                    } catch (Exception e) {
+                        mLog.error(e.getMessage(), e);
+                        throw e;
+                    } finally {
+                        LogConfiguration.instance().dispose();
+                    }
+                    System.exit(0);
+                }
+            }
+
+            // Initialize and start application
+            App.instance().initialize();
+            new SpringApplicationBuilder()
+                    .showBanner(false)
+                    .sources(c)
+                    .profiles(App.instance().getProfile())
+                    .listeners(App.instance())
+                    .run(args);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-     }
-
-    protected static void run(Class c, String[] args) throws Exception {
-        mLog.info(String.format("Main arguments [%s]", String.join(", ", args)));
-
-        // Support for command line parameters, setup commands
-        if (args != null && args.length > 0) {
-            String command = args[0].toLowerCase().trim();
-
-            Runnable rCommand = null;
-            switch(command) {
-                case "install": rCommand = () -> Setup.instance().install("LeoZ Service", c); break;
-                case "uninstall": rCommand = () -> Setup.instance().uninstall(); break;
-                case "start": rCommand = () -> Setup.instance().start(); break;
-                case "stop": rCommand = () -> Setup.instance().stop(); break;
-            }
-
-            if (rCommand != null) {
-                try {
-                    LogConfiguration.instance().initialize();
-                    rCommand.run();
-                }
-                catch(Exception e) {
-                    mLog.error(e.getMessage(), e);
-                    throw e;
-                }
-                finally {
-                    LogConfiguration.instance().dispose();
-                }
-                System.exit(0);
-            }
-        }
-
-        // Initialize and start application
-        App.instance().initialize();
-        new SpringApplicationBuilder()
-                .showBanner(false)
-                .sources(c)
-                .profiles(App.instance().getProfile())
-                .listeners(App.instance())
-                .run(args);
     }
 
     /**
