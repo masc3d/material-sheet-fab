@@ -37,7 +37,9 @@ public class EntitySyncConfiguration {
 
         @Override
         public void onStop() {
-            EntitySync.instance().stop();
+            mLog.info("Disposing entity sync");
+            EntitySync.instance().dispose();
+            mLog.info("Disposed entity sync");
         }
     };
 

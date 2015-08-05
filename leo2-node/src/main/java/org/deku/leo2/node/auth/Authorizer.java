@@ -37,7 +37,9 @@ public class Authorizer implements Disposable {
 
         @Override
         public void onStop() {
+            mLog.info("Disposing authorizer");
             dispose();
+            mLog.info("Disposed authorizer");
         }
     };
 
