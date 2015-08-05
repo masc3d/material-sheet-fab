@@ -189,7 +189,8 @@ public class App implements
 
         mIsShuttingDown = true;
         mLog.info("Shutting down");
-        SpringApplication.exit(mSpringApplicationContext, () -> exitCode);
+        if (mSpringApplicationContext != null)
+            SpringApplication.exit(mSpringApplicationContext, () -> exitCode);
         App.instance().dispose();
     }
 

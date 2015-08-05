@@ -54,9 +54,13 @@ public class Main  {
      * @param args
      * @throws Exception
      */
-    public static void main(String[] args) throws Exception {
-        Main.run(Main.class, args);
-    }
+    public static void main(String[] args) {
+        try {
+            Main.run(Main.class, args);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+     }
 
     protected static void run(Class c, String[] args) throws Exception {
         mLog.info(String.format("Main arguments [%s]", String.join(", ", args)));

@@ -63,7 +63,7 @@ class LocalStorage {
                 // Lookup principal
                 var fs = FileSystems.getDefault()
                 var ups: UserPrincipalLookupService = fs.getUserPrincipalLookupService()
-                var gp = ups.lookupPrincipalByGroupName("Users")
+                var gp = ups.lookupPrincipalByGroupName("Everyone")
 
                 // Set ACL
                 var aclb = AclEntry.newBuilder()
