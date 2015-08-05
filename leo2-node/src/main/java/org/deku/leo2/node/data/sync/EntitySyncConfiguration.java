@@ -7,6 +7,7 @@ import org.deku.leo2.node.data.PersistenceConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
+import sx.Dispose;
 import sx.jms.embedded.Broker;
 import sx.jms.embedded.activemq.ActiveMQBroker;
 
@@ -37,9 +38,7 @@ public class EntitySyncConfiguration {
 
         @Override
         public void onStop() {
-            mLog.info("Disposing entity sync");
-            EntitySync.instance().dispose();
-            mLog.info("Disposed entity sync");
+            Dispose.safely(EntitySync.instance());
         }
     };
 

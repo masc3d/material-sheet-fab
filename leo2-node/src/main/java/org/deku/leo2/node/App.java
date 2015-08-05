@@ -1,5 +1,6 @@
 package org.deku.leo2.node;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +16,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import sx.Disposable;
+import sx.Dispose;
 import sx.LazyInstance;
 import sx.jms.embedded.activemq.ActiveMQBroker;
 
@@ -96,6 +98,7 @@ public class App implements
             LogConfiguration.instance().setJmsAppenderEnabled(true);
         }
         LogConfiguration.instance().initialize();
+        mDisposables.add(LogConfiguration.instance());
 
         mLog.info("Leo2 node initialize");
 
@@ -138,6 +141,7 @@ public class App implements
 
         // Basic broker configuration
         ActiveMQBroker.instance().setDataDirectory(LocalStorage.instance().getActiveMqDataDirectory());
+        mDisposables.add(ActiveMQBroker.instance());
 
         Runtime.getRuntime().addShutdownHook(new Thread("App shutdown hook") {
             @Override
@@ -155,25 +159,8 @@ public class App implements
 
     @Override
     public void dispose() {
-        for (Disposable d : new ArrayList<Disposable>(mDisposables)) {
-            try {
-                mLog.info(String.format("Disposing %s", d.getClass().getName()));
-                d.dispose();
-            } catch (Exception e) {
-                mLog.error(e.getMessage(), e);
-            }
-        }
-
-        try {
-            ActiveMQBroker.instance().stop();
-        } catch (Exception e) {
-            mLog.error(e.getMessage(), e);
-        }
-
-        try {
-            LogConfiguration.instance().dispose();
-        } catch(Exception e) {
-            mLog.error(e.getMessage(), e);
+        for (Disposable d : Lists.reverse(new ArrayList<Disposable>(mDisposables))) {
+            Dispose.safely(d);
         }
     }
 

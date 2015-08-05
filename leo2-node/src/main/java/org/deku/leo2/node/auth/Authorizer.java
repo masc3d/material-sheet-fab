@@ -8,6 +8,7 @@ import org.deku.leo2.node.LocalStorage;
 import org.deku.leo2.node.messaging.auth.IdentityPublisher;
 import org.deku.leo2.node.messaging.auth.v1.AuthorizationMessage;
 import sx.Disposable;
+import sx.Dispose;
 import sx.jms.embedded.Broker;
 
 import java.util.concurrent.ExecutorService;
@@ -37,9 +38,7 @@ public class Authorizer implements Disposable {
 
         @Override
         public void onStop() {
-            mLog.info("Disposing authorizer");
-            dispose();
-            mLog.info("Disposed authorizer");
+            Dispose.safely(Authorizer.this);
         }
     };
 
@@ -57,7 +56,7 @@ public class Authorizer implements Disposable {
         // Start will be deferred until the message broker is up.
         mAuthorizationTask = () -> {
             boolean success = false;
-            while (!success && !mExecutorService.isShutdown()) {
+            while (true) {
                 try {
                     IdentityPublisher isc = new IdentityPublisher(ActiveMQContext.instance());
 
@@ -83,9 +82,14 @@ public class Authorizer implements Disposable {
                     mLog.error(e.getMessage(), e);
                 }
 
-                if (!success) {
+                if (success)
+                    break;
+                else {
+                    if (mExecutorService.isShutdown())
+                        break;
+
+                    // Retry delay
                     try {
-                        // Sleep until retry
                         TimeUnit.MINUTES.sleep(1);
                     } catch (InterruptedException e1) {
                         mLog.error(e1.getMessage(), e1);
