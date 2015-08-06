@@ -33,3 +33,7 @@ leo2-common/activemq-data
 leo2-boot/reports/dependencies/
 libraries/leo2-common/reports/
 leo2-central/bin/
+leoz-central/reports/dependencies
+leoz-node/reports/dependencies
+leoz-ui/reports/dependencies
+libraries/leoz-common/reports/dependencies
