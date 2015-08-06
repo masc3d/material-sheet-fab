@@ -27,4 +27,4 @@
 	url = https://github.com/masc3d/CLAP.git
 [submodule "libraries/zsync4j"]
 	path = libraries/zsync4j
-	url = git@github.com:masc3d/zsync4j.git
+url=https://github.com/masc3d/zsync4j.git
