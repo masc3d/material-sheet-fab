@@ -37,6 +37,7 @@ namespace LeoBridge.Service
     /// Interface which can be optionally used on REST results for embedded error information    
     /// </summary>
     [Serializable]
+    [DataContract]
     public abstract class ErrorContainer
     {
         public Error Error { get; set; }
