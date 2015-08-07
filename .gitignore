@@ -9,8 +9,8 @@ build
 dataSources.local.xml
 dataSources.xml
 leoz-boot/reports/dependencies/
-leoz-bridge-com/Release*
-leoz-bridge-com/packages/
+leo2-bridge-com/Release*
+leo2-bridge-com/packages/
 leoz-central/bin/
 leoz-central/generated
 leoz-central/reports/dependencies
