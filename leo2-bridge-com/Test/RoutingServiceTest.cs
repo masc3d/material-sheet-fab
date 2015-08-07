@@ -28,18 +28,18 @@ namespace LeoBridgeTest
             LeoBridge.Service.RoutingRequest r = new RoutingRequest();
 
             r.SendDate = "2015-06-05";
-            r.DeliveryDate = "2015-06-02";
-            consignee.Country = "DE";
-            consignee.Zip = "";
+            r.DesiredDeliveryDate = "2015-06-02";
+            consignee.Country = "DE2";
+            consignee.Zip = "123";
             consignee.TimeFrom = "10:00";
             consignee.TimeTo = "12:00";
-            consignee.StationByRequest = "0";
+            consignee.DesiredStation = "0";
             r.Consignee = consignee;
             sender.Country = "DE";
             sender.Zip = "80331";
             sender.TimeFrom = "10:00";
             sender.TimeTo = "12:00";
-            sender.StationByRequest = "0";
+            sender.DesiredStation = "0";
             r.Sender = sender;
             r.Weight = 5;
             r.Services = 0;

@@ -34,7 +34,7 @@ namespace LeoBridge.Service
         string Zip { get; set; }
         string TimeFrom { get; set; }
         string TimeTo { get; set; }
-        string StationByRequest { get; set; }
+        string DesiredStation { get; set; }
     }
 
     [ComVisible(true)]
@@ -52,8 +52,8 @@ namespace LeoBridge.Service
         public string TimeFrom { get; set; }
         [DataMember(Name = "timeTo", IsRequired = false, EmitDefaultValue = false)]
         public string TimeTo { get; set; }
-        [DataMember(Name = "stationByRequest", IsRequired = false, EmitDefaultValue = false)]
-        public string StationByRequest { get; set; }
+        [DataMember(Name = "desireStation", IsRequired = false, EmitDefaultValue = false)]
+        public string DesiredStation { get; set; }
     }
     #endregion
 
@@ -61,7 +61,7 @@ namespace LeoBridge.Service
     public interface IRoutingRequest
     {
         String SendDate { get; set; }
-        String DeliveryDate { get; set; }
+        String DesiredDeliveryDate { get; set; }
         RoutingRequestParticipant Sender { get; set; }
         RoutingRequestParticipant Consignee { get; set; }
         int Services { get; set; }
@@ -77,8 +77,8 @@ namespace LeoBridge.Service
 
         [DataMember(Name = "sendDate", IsRequired = true)]
         public String SendDate { get; set; }
-        [DataMember(Name = "deliveryDate", EmitDefaultValue=false)]
-        public String DeliveryDate { get; set; }
+        [DataMember(Name = "desireDeliveryDate", EmitDefaultValue=false)]
+        public String DesiredDeliveryDate { get; set; }
         [DataMember(Name = "sender")]
         public RoutingRequestParticipant Sender { get; set; }
         [DataMember(Name = "consignee")]
