@@ -1,5 +1,6 @@
 package org.deku.leo2.node.rest.services.v1;
 
+import com.google.common.base.Strings;
 import com.google.common.primitives.Ints;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.expr.BooleanExpression;
@@ -240,7 +241,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         }
 
 
-        ShortDate mDeliveryDate = routingRequest.getDeliveryDate();
+        ShortDate mDeliveryDate = routingRequest.getDesireDeliveryDate();
 //        List<String> mPossibleConigneeSectors = new ArrayList<>();
 
         Iterable<Routing.Participant> mRoutingParticipantConsignee = queryRoute(mDeliveryDate, routingRequest.getConsignee(), layer, ctrlTransportUnit, "Consignee: ");
@@ -255,12 +256,18 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         String[] mViaHubs = {"NST", "N1"};
 
         rWSRouting.setSendDate(sendDate);
-        rWSRouting.setDeliveryDate(mDeliveryDate);
+        rWSRouting.setDesireDeliveryDate(mDeliveryDate);
 
         rWSRouting.setSender(routingParticipantSender.iterator().next());
         rWSRouting.setConsignee(mRoutingParticipantConsignee.iterator().next());
         rWSRouting.setViaHubs(mViaHubs);
-        rWSRouting.setLabelContent("NST " + com.google.common.base.Strings.padEnd(mRoutingParticipantConsignee.iterator().next().getStation().toString(), 3, '0')   );
+        rWSRouting.setLabelContent("NST " +
+                Strings.padEnd(
+                        mRoutingParticipantConsignee
+                                .iterator()
+                                .next()
+                                .getStation()
+                                .toString(), 3, '0'));
         rWSRouting.setMessage("OK");
 
         return rWSRouting;
@@ -639,7 +646,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
     }
 
     private DayType getDayType(LocalDate javaDate, String Country, String Holidayctrl) {
-        DayType daytype = DayType.WorkDay;
+        DayType daytype = DayType.Workday;
 
         DayOfWeek javaday = javaDate.getDayOfWeek();
 
@@ -666,7 +673,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
         do
             javaDate = javaDate.plusDays(1);
-        while (!getDayType(javaDate, Country, Holidayctrl).equals(DayType.WorkDay));
+        while (!getDayType(javaDate, Country, Holidayctrl).equals(DayType.Workday));
 
         return new ShortDate(javaDate.toString());
     }
