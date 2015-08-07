@@ -5,7 +5,7 @@ package org.deku.leo2.rest.entities.v1;
  */
 public enum DayType {
 //    unknown(0),
-    WorkDay("WorkDay"),
+    Workday("Workday"),
     Saturday("Saturday"),
     Sunday("Sunday"),
     Holiday("Holiday"),

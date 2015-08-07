@@ -13,14 +13,14 @@ public class RoutingRequest {
      * Sender or consignee attributes
      * Created by masc on 23.06.15.
      */
-    @ApiModel(value = "RequestParticipant", description = "Request RequestParticipant. Delivery or consignee")
+    @ApiModel(value = "RequestParticipant", description = "Request Participant. Delivery or consignee")
     public static class RequestParticipant {
         //private ShortDate mDate;
         private String mTimeFrom;
         private String mTimeTo;
         private String mCountry;
         private String mZip;
-        private String mStationByRequest;
+        private String mDesireStation;
 
         public RequestParticipant() {
         }
@@ -52,7 +52,7 @@ public class RoutingRequest {
         }
 
 
-        @ApiModelProperty(dataType = "string", example = "09:00", position = 40, required = true, value = "Time window (from)", allowableValues = "00:00 - 23:59")
+        @ApiModelProperty(dataType = "string", example = "09:00", position = 40, required = false, value = "Time window (from)", allowableValues = "00:00 - 23:59")
         public String getTimeFrom() {
             return mTimeFrom;
         }
@@ -61,7 +61,7 @@ public class RoutingRequest {
             mTimeFrom = timefrom;
         }
 
-        @ApiModelProperty(dataType = "string", example = "12:00", position = 50, required = true, value = "Time window (to)", allowableValues = "00:00 - 23:59")
+        @ApiModelProperty(dataType = "string", example = "12:00", position = 50, required = false, value = "Time window (to)", allowableValues = "00:00 - 23:59")
         public String getTimeTo() {
             return mTimeTo;
         }
@@ -70,13 +70,13 @@ public class RoutingRequest {
             mTimeTo = timeto;
         }
 
-        @ApiModelProperty(dataType = "string", example = "020", position = 60, required = true, value = "Stationnumber", allowableValues = "010 - 999")
-        public String getStationByRequest() {
-            return mStationByRequest;
+        @ApiModelProperty(dataType = "string", example = "020", position = 60, required = false, value = "Desire Stationnumber", allowableValues = "010 - 999")
+        public String getDesireStation() {
+            return mDesireStation;
         }
 
-        public void setStationByRequest(String stationByRequest) {
-            mStationByRequest = stationByRequest;
+        public void setDesireStation(String desireStation) {
+            mDesireStation = desireStation;
         }
     }
 
@@ -85,7 +85,7 @@ public class RoutingRequest {
     private RequestParticipant mSender;
     private RequestParticipant mConsignee;
     private ShortDate mSendDate;
-    private ShortDate mDeliveryDate;
+    private ShortDate mDesireDeliveryDate;
 
     public RoutingRequest() {
     }
@@ -100,13 +100,13 @@ public class RoutingRequest {
         mSendDate = sendDate;
     }
 
-    @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Deliverydate", allowableValues = "2015-06-02")
-    public ShortDate getDeliveryDate() {
-        return mDeliveryDate;
+    @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Desire Deliverydate", allowableValues = "2015-06-02")
+    public ShortDate getDesireDeliveryDate() {
+        return mDesireDeliveryDate;
     }
 
-    public void setDeliveryDate(ShortDate deliveryDate) {
-        mDeliveryDate = deliveryDate;
+    public void setDesireDeliveryDate(ShortDate desireDeliveryDate) {
+        mDesireDeliveryDate = desireDeliveryDate;
     }
 
 

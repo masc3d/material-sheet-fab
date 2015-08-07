@@ -4,6 +4,8 @@ import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.ShortTime;
+import java.time.LocalDate;
+
 
 /**
  * Routing service request response
@@ -21,8 +23,8 @@ public class Routing {
         private String mZone = "";
         private ShortTime mEarliestTimeOfDelivery = new ShortTime();
         private Integer mStation = 0;
-        //private DayType mDayType = DayType.WorkDay;
-        private String mDayType = DayType.WorkDay.toString();
+        //private DayType mDayType = DayType.Workday;
+        private String mDayType = DayType.Workday.toString();
         private Boolean mIsland = false;
         //private ShortDate mDelieveryDay = new ShortDate();
         //private ShortDate mPreviousDeliveryDay = new ShortDate();
@@ -33,6 +35,27 @@ public class Routing {
         private ShortTime mPickupUntil = new ShortTime();
         private String mPartnerManager = "";
         private String mCountry = "";
+
+        private LocalDate mDate;
+        private String mMessage="";
+
+        @ApiModelProperty(hidden = true)
+        public LocalDate getDate() {
+            return mDate;
+        }
+
+        public void setDate(LocalDate date) {
+            this.mDate = date;
+        }
+
+        @ApiModelProperty(hidden = true)
+        public String getMessage() {
+            return mMessage;
+        }
+
+        public void setMessage(String message) {
+            mMessage = message;
+        }
 
 
         public Participant() {
@@ -103,7 +126,7 @@ public class Routing {
             mSector = sector;
         }
 
-        @ApiModelProperty(dataType = "string", example = "WorkDay", position = 60, required = true, value = "Type of Day")
+        @ApiModelProperty(dataType = "string", example = "Workday", position = 60, required = true, value = "Type of Day")
         public String getDayType() {
             return mDayType;
         }
@@ -235,7 +258,7 @@ public class Routing {
         return mDeliveryDate;
     }
 
-    public void setDeliveryDate(ShortDate deliveryDate) {
+    public void setDesireDeliveryDate(ShortDate deliveryDate) {
         mDeliveryDate = deliveryDate;
     }
 
