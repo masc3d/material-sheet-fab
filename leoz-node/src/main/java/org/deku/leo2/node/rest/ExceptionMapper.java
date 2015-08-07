@@ -60,7 +60,8 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
             String locationMessage = String.join(".", (Iterable)jm.getPath().stream().map(p -> p.getFieldName())::iterator);
 
             result = new ExceptionResult(Response.Status.NOT_FOUND.getStatusCode(),
-                    String.format("JSON mapping error [%s]: %s", locationMessage, jm.getCause().getMessage()));
+                    String.format("JSON mapping error [%s]: %s", locationMessage,
+                            (jm.getCause() != null) ? jm.getCause().getMessage() : "unknown"));
             //endregion
         } else if (e instanceof JsonProcessingException) {
             //region JsonProcessingException
