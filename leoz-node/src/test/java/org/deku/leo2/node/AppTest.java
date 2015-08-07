@@ -8,9 +8,11 @@ import org.slf4j.LoggerFactory;
  * Created by masc on 18.06.15.
  */
 public class AppTest {
-    public AppTest() {
+    static {
         App.instance().initialize("");
+    }
 
+    public AppTest() {
         Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         lRoot.setLevel(Level.INFO);
     }

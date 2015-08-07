@@ -23,10 +23,12 @@ import javax.servlet.ServletContext;
         PersistenceConfiguration.class
 }, initializers = ConfigFileApplicationContextInitializer.class)
 public class DataTest {
-    public DataTest() {
+    static {
         App.inject(App::new);
         App.instance().initialize();
+    }
 
+    public DataTest() {
         Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         lRoot.setLevel(Level.INFO);
     }
