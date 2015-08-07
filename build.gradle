@@ -56,7 +56,7 @@ allprojects {
 
             // LeoZ release path, relative to root project
             g_arch_identifier = org.deku.gradle.PackagerUtils.archIdentifier()
-            g_release_path = Paths.get(project.rootDir.toString()).parent.resolve("leo2-release")
+            g_release_path = Paths.get(project.rootDir.toString()).parent.resolve("leoz-release")
             g_osx_icon = Paths.get(project.rootDir.toURI()).resolve('images').resolve('DEKU.icon.icns').toFile()
             g_windows_icon = Paths.get(project.rootDir.toURI()).resolve('images').resolve('DEKU.icon.ico').toFile()
         }
@@ -189,6 +189,7 @@ subprojects {
             force "org.fusesource.hawtbuf:hawtbuf:1.+"
             force "org.jboss.logging:jboss-logging:3.+"
             force "org.jboss.logging:jboss-logging-annotations:1.+"
+            force "com.jcraft:jsch:+"
         }
     }
 }

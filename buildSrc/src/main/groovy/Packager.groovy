@@ -56,7 +56,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
     protected def Path releaseBasePath = this.packagerBaseDir.resolve('release').resolve(PackagerUtils.archIdentifier())
 
     def getReleasePath(Path basePath) {
-        return basePath.resolve("${project.name}-${PackagerUtils.archIdentifier()}")
+        return basePath.resolve(project.name).resolve(PackagerUtils.archIdentifier())
     }
 }
 

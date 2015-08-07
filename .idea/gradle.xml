@@ -9,13 +9,13 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
-            <option value="$PROJECT_DIR$/leo2-boot" />
-            <option value="$PROJECT_DIR$/leo2-central" />
-            <option value="$PROJECT_DIR$/leo2-node" />
-            <option value="$PROJECT_DIR$/leo2-ui" />
+            <option value="$PROJECT_DIR$/leoz-boot" />
+            <option value="$PROJECT_DIR$/leoz-central" />
+            <option value="$PROJECT_DIR$/leoz-node" />
+            <option value="$PROJECT_DIR$/leoz-ui" />
             <option value="$PROJECT_DIR$/libraries" />
-            <option value="$PROJECT_DIR$/libraries/leo2-common" />
-            <option value="$PROJECT_DIR$/libraries/leo2-node-data" />
+            <option value="$PROJECT_DIR$/libraries/leoz-common" />
+            <option value="$PROJECT_DIR$/libraries/leoz-node-data" />
             <option value="$PROJECT_DIR$/libraries/sx-common" />
           </set>
         </option>
