@@ -70,7 +70,7 @@ class Setup {
             this.binPath = this.basePath.resolve("bin").resolve(binArchDirectoryName())
         }
 
-        leozsvcPath = this.binPath.resolve("leozsvc.exe")
+        leozsvcPath = this.binPath.resolve("leoz-svc.exe")
         log.info("Setup base path [${basePath}] bin path [${binPath}]")
     }
 
