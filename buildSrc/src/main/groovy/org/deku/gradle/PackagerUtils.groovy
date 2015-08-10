@@ -8,7 +8,7 @@ import org.apache.commons.lang3.SystemUtils
 /**
  * Common packager utils
  */
-public class PackagerUtils {
+class PackagerUtils {
     public static String archIdentifier() {
         String prefix = SystemUtils.IS_OS_WINDOWS ? "win"
                 : SystemUtils.IS_OS_LINUX ? "linux"

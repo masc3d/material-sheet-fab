@@ -2,8 +2,6 @@ package org.deku.gradle
 
 import org.apache.commons.lang3.SystemUtils
 import org.gradle.api.DefaultTask
-import org.gradle.api.Plugin
-import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
 import java.nio.file.Files
@@ -56,7 +54,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
     protected def Path releaseBasePath = this.packagerBaseDir.resolve('release').resolve(PackagerUtils.archIdentifier())
 
     def getReleasePath(Path basePath) {
-        return basePath.resolve(project.name).resolve(PackagerUtils.archIdentifier())
+        return basePath.resolve(project.name).resolve(PackagerUtils..archIdentifier())
     }
 }
 
