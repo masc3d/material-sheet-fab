@@ -9,11 +9,12 @@ import org.slf4j.LoggerFactory;
  */
 public class AppTest {
     static {
+        Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        lRoot.setLevel(Level.INFO);
+
         App.instance().initialize("");
     }
 
     public AppTest() {
-        Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        lRoot.setLevel(Level.INFO);
     }
 }
