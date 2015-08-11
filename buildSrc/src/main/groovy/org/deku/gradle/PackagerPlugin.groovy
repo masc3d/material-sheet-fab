@@ -3,14 +3,22 @@ package org.deku.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import java.nio.file.Path
+import java.nio.file.Paths
+
 /**
  * Created by n3 on 02-Aug-15.
  */
 /**
- * Plugin extension class, used for configuration within build.gradle
+ * Plugin extension class, used for extension within build.gradle
  */
 class PackagerPluginExtension {
     def String title
+
+    // Common locations
+    def File packagerBaseDir
+    def File packagerArchDir
+
     def File releaseBasePath
     /** Path to .icns file */
     def File osxIcon
@@ -23,26 +31,33 @@ class PackagerPluginExtension {
  */
 class PackagerPlugin implements Plugin<Project> {
     void apply(Project project) {
-        // Add configuration extensino
-        def config = new PackagerPluginExtension()
-        project.extensions.packager = config
+        // Add extension extensino
+        def ext = new PackagerPluginExtension()
+        ext.packagerBaseDir = new File(project.buildDir, 'packager')
+        ext.packagerArchDir = new File(ext.packagerBaseDir, PackagerUtils.archIdentifier())
+        ext.releaseBasePath = Paths.get(ext.packagerBaseDir.toURI())
+                .resolve('release')
+                .resolve(PackagerUtils.archIdentifier())
+                .toFile()
+
+        project.extensions.packager = ext
 
         // Bundle task
         project.tasks.create('packagerBundle', PackagerBundleTask) {
-            configuration = config
+            extension = ext
             jvmOptions = "-XX:+UseCompressedOops"
         }
         project.tasks.packagerBundle.dependsOn(project.tasks.jar)
 
         // Release bundle task
         project.tasks.create('packagerReleaseBundle', PackagerReleaseBundleTask) {
-            configuration = config
+            extension = ext
         }
         project.tasks.packagerReleaseBundle.dependsOn(project.tasks.packagerBundle)
 
         // Release jars task
         project.tasks.create('packagerReleaseJars', PackagerReleaseJarsTask) {
-            configuration = config
+            extension = ext
         }
         project.tasks.packagerReleaseJars.dependsOn(project.tasks.jar)
     }
