@@ -3,6 +3,5 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libraries/sx-common" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/libraries/zsync4j" vcs="Git" />
   </component>
 </project>
