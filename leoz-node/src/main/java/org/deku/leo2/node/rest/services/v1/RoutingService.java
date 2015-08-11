@@ -209,6 +209,10 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             throw new IllegalArgumentException("Send Date is required");
         }
 
+        if (routingRequest.getSender() == null && routingRequest.getConsignee() == null) {
+            throw new IllegalArgumentException("Sender or Consignee required");
+        }
+
 
 // Unit CTRLs
 
@@ -259,7 +263,8 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             if (routingParticipantSender.iterator().next().getMessage().equals(""))
                 rWSRouting.setSender(routingParticipantSender.iterator().next());
             routingParticipantSender.iterator().next().setMessage(null);
-        }
+        } else
+            rWSRouting.setSender(null);
 
 
         Iterable<Routing.Participant> routingParticipantConsignee = null;
@@ -276,7 +281,8 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             }
             routingParticipantConsignee.iterator().next().setDate(null);
             routingParticipantConsignee.iterator().next().setMessage(null);
-        }
+        } else
+            rWSRouting.setConsignee(null);
 
 
         String[] mViaHubs = {""};// {"NST", "N1"};
@@ -333,20 +339,22 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
 
         if (country == null) {
-            Routing.Participant ret = new Routing.Participant();
-            ret.setMessage("empty country");
-            resultParticipants.add(ret);
-            return resultParticipants;
+            throw new IllegalArgumentException(exeptionPrefix + "empty country");
+//            Routing.Participant ret = new Routing.Participant();
+//            ret.setMessage("empty country");
+//            resultParticipants.add(ret);
+//            return resultParticipants;
         } else
             country = country.toUpperCase();
 
         String zip = requestRequestParticipant.getZip();
 
         if (zip == null) {
-            Routing.Participant ret = new Routing.Participant();
-            ret.setMessage("empty zipcode");
-            resultParticipants.add(ret);
-            return resultParticipants;
+            throw new IllegalArgumentException(exeptionPrefix + "empty zipcode");
+//            Routing.Participant ret = new Routing.Participant();
+//            ret.setMessage("empty zipcode");
+//            resultParticipants.add(ret);
+//            return resultParticipants;
         } else
             zip = zip.toUpperCase();
 
@@ -359,38 +367,43 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         //       ** forever **
 
         if (rcountry == null) {
-            Routing.Participant ret = new Routing.Participant();
-            ret.setMessage("unknown country");
-            resultParticipants.add(ret);
-            return resultParticipants;
+            throw new IllegalArgumentException(exeptionPrefix + "unknown country");
+//            Routing.Participant ret = new Routing.Participant();
+//            ret.setMessage("unknown country");
+//            resultParticipants.add(ret);
+//            return resultParticipants;
         }
 
         if (rcountry.getZipFormat().equals("")) {
-            Routing.Participant ret = new Routing.Participant();
-            ret.setMessage("unknown country");
-            resultParticipants.add(ret);
-            return resultParticipants;
+            throw new IllegalArgumentException(exeptionPrefix + "unknown country");
+//            Routing.Participant ret = new Routing.Participant();
+//            ret.setMessage("unknown country");
+//            resultParticipants.add(ret);
+//            return resultParticipants;
         }
 
 
         if (zip.length() < rcountry.getMinLen()) {
-            Routing.Participant ret = new Routing.Participant();
-            ret.setMessage("zipcode too short");
-            resultParticipants.add(ret);
-            return resultParticipants;
+            throw new IllegalArgumentException(exeptionPrefix + "zipcode too short");
+//            Routing.Participant ret = new Routing.Participant();
+//            ret.setMessage("zipcode too short");
+//            resultParticipants.add(ret);
+//            return resultParticipants;
         }
 
         if (rcountry.getRoutingTyp() < 0 || rcountry.getRoutingTyp() > 3) {
-            Routing.Participant ret = new Routing.Participant();
-            ret.setMessage("country not enabled");
-            resultParticipants.add(ret);
+            throw new IllegalArgumentException(exeptionPrefix + "country not enabled");
+//            Routing.Participant ret = new Routing.Participant();
+//            ret.setMessage("country not enabled");
+//            resultParticipants.add(ret);
         }
 
         if (zip.length() > rcountry.getMaxLen()) {
-            Routing.Participant ret = new Routing.Participant();
-            ret.setMessage("zipcode too long");
-            resultParticipants.add(ret);
-            return resultParticipants;
+            throw new IllegalArgumentException(exeptionPrefix + "zipcode too long");
+//            Routing.Participant ret = new Routing.Participant();
+//            ret.setMessage("zipcode too long");
+//            resultParticipants.add(ret);
+//            return resultParticipants;
         }
 
         s2str zRet = parceZip(rcountry.getZipFormat(), zip);
@@ -399,10 +412,11 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         String zipConform = zRet.s2;
 
         if (zipQuery.equals("")) {
-            Routing.Participant ret = new Routing.Participant();
-            ret.setMessage("wrong zipcode format");
-            resultParticipants.add(ret);
-            return resultParticipants;
+            throw new IllegalArgumentException(exeptionPrefix + "wrong zipcode format");
+//            Routing.Participant ret = new Routing.Participant();
+//            ret.setMessage("wrong zipcode format");
+//            resultParticipants.add(ret);
+//            return resultParticipants;
         }
 
 //        Function<Time, ShortTime> convertTime = (t) -> {
@@ -420,7 +434,6 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 //TODO verbessern ?
         Iterator<RoutingLayer> l = routingLayers.iterator();
         while (l.hasNext()) {
-
             RoutingLayer routingLayer = l.next();
             Routing.Participant resultParticipantLayer = queryRouteLayer(sendDelivery, requestRequestParticipant, zipQuery, validdate, sendDate, setDeliveryDate, routingLayer, ctrl, exeptionPrefix);
 
@@ -550,7 +563,9 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
 //        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere);
 
-        if (rRouten.iterator().hasNext()) {
+        if (!rRouten.iterator().hasNext())
+            throw new IllegalArgumentException(exeptionPrefix + "no Route found");
+        else {
             Route routeFound = rRouten.iterator().next();
 //TODO Sector aus stationsector
 
@@ -566,7 +581,10 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             LocalDate deliveryDate;
             mqueryRouteLayer.setTerm(routeFound.getTerm());
             if (sendDelivery == "S") {
-                mqueryRouteLayer.setDate(getNextDeliveryDay(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl()));
+//                mqueryRouteLayer.setDayType(getDayType(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl()).toString());
+//TODO nächsten Linientag ermitteln
+                mqueryRouteLayer.setDate(sendDate);
+//                mqueryRouteLayer.setDate(getNextDeliveryDay(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl()));
 //                if (date.equals(null))
 //                    date = getNextDeliveryDay(date, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl());
 
@@ -620,16 +638,20 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         String csZipFormat = "";
         String csZip = "";
         String csZipConform = "";
+        String csNew = "";
 
         int cCount = 0;
 
         boolean validZip = true;
         //zipCalcEnd:
 
-        while (j < zip.length() && validZip) {
-            csZip = cZip[i];
+        while (j < zipFormat.length() && validZip) {
+            if (i + 1 > cZip.length)
+                csZip = "";
+            else
+                csZip = cZip[i];
             csZipFormat = cZipFormat[j];
-
+            csNew = "";
             switch (csZipFormat) {
                 case "w":
                     if (csZip.equals(" "))
@@ -652,23 +674,23 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
                     } else {
                         i++;
                         j++;
-                        csZipConform = csZip;
+                        csNew = csZip;
                     }
                     break;
                 case "A":
                     if (csZip == "") {
-                        csZipConform = "";
+                        csNew = "";
                         zipQuery = "";
                     } else if (csZip == " ") {
-                        zipConform = "";
-                        zipQuery = "";
-                    } else if (Ints.tryParse(csZip) > 0 || csZip.equals("0")) {
-                        zipConform = "";
-                        zipQuery = "";
+                        validZip = false;
+                        break;
+                    } else if (Ints.tryParse(csZip) != null) {
+                        validZip = false;
+                        break;
                     } else {
                         i++;
                         j++;
-                        csZipConform = csZip;
+                        csNew = csZip;
                     }
                     break;
                 case "L":
@@ -677,7 +699,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
                     else if (csZip.contains("abcdefghijklmnopqrstuvwxyz0123456789 ")) {
                         i++;
                         j++;
-                        csZipConform = csZip;
+                        csNew = csZip;
                     } else {
                         zipConform = "";
                     }
@@ -691,30 +713,29 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
                     }
                     i++;
                     j++;
-                    csZipConform = csZip;
+                    csNew = csZip;
                     break;
                 case "-":
                     if (csZip.equals("-")) {
                         i++;
                         j++;
-                        csZipConform = csZip;
+                        csNew = csZip;
                     } else if (Ints.tryParse(csZip) == null) {
-                        csZipConform = "";
+                        csNew = "";
                     } else {
                         i++;
                         j = j + 2;
-                        csZipConform = "-" + csZip;
+                        csNew = "-" + csZip;
                     }
                     break;
                 default:
-                    throw new IllegalArgumentException("wrong zipcode format");
-
+                    throw new IllegalArgumentException("wrong zipcode formatdescription");
             }
 
 
-            zipConform = zipConform + csZipConform;
+            zipConform = zipConform + csNew;
             if (cCount == 0)
-                zipQuery = zipQuery + csZipConform;
+                zipQuery = zipQuery + csNew;
 
             if (!validZip)
                 zipQuery = "";
