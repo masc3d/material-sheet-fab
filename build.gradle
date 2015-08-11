@@ -103,6 +103,10 @@ subprojects {
         }
     }
 
+    jar {
+        entryCompression ZipEntryCompression.STORED
+    }
+
     // Global dependency resolution
     configurations.all {
         resolutionStrategy {
