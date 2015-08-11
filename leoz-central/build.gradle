@@ -1,3 +1,5 @@
+import org.apache.commons.lang3.SystemUtils
+
 import java.nio.file.Paths
 
 // Gradle dependencies/plugins
@@ -111,7 +113,7 @@ tasks.generateJooq.outputs.upToDateWhen { false }
 // Packager task
 packager {
     title = "LeoZ Boot"
-    releaseBasePath = g_release_path.toFile()
+    releaseBasePath = g_release_path
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
 }
@@ -125,18 +127,26 @@ task copyBinFromNode(type: Copy) {
 }
 tasks.classes.dependsOn copyBinFromNode
 
+// TODO: centralize releaseBin (into packager)
 /**
  * Copy binary files to release dir
  * @return
  */
 def releaseBin() {
-    def srcDir = Paths.get(project.binDir().toURI())
-            .resolve(g_arch_identifier)
-            .toFile()
+    def srcDir = new File(project.binDir(), g_arch_identifier)
 
-    def dstDir = tasks.packagerReleaseBundle.getReleasePath(g_release_path)
-            .resolve('bin')
-            .toFile()
+    def File archReleasePath = tasks.packagerReleaseBundle.buildReleasePath(g_release_path)
+    def dstDir
+
+    if (SystemUtils.IS_OS_MAC_OSX) {
+        dstDir = Paths.get(archReleasePath.toURI())
+                .resolve("${project.name}.app")
+                .resolve('Contents')
+                .resolve('bin')
+                .toFile()
+    } else {
+        dstDir = new File(archReleasePath, 'bin')
+    }
 
     println "Copying binaries [${srcDir}] -> [${dstDir}] "
 

@@ -56,9 +56,21 @@ allprojects {
 
             // LeoZ release path, relative to root project
             g_arch_identifier = org.deku.gradle.PackagerUtils.archIdentifier()
-            g_release_path = Paths.get(project.rootDir.toString()).parent.resolve("leoz-release")
-            g_osx_icon = Paths.get(project.rootDir.toURI()).resolve('images').resolve('DEKU.icon.icns').toFile()
-            g_windows_icon = Paths.get(project.rootDir.toURI()).resolve('images').resolve('DEKU.icon.ico').toFile()
+
+            g_release_path = Paths.get(project.rootDir.toURI())
+                    .parent
+                    .resolve("leoz-release")
+                    .toFile()
+
+            g_osx_icon = Paths.get(project.rootDir.toURI())
+                    .resolve('images')
+                    .resolve('DEKU.icon.icns')
+                    .toFile()
+
+            g_windows_icon = Paths.get(project.rootDir.toURI())
+                    .resolve('images')
+                    .resolve('DEKU.icon.ico')
+                    .toFile()
         }
     }
 }
