@@ -1,6 +1,15 @@
 package org.deku.gradle
 
 import org.apache.commons.lang3.SystemUtils
+import org.eclipse.jgit.api.AddCommand
+import org.eclipse.jgit.api.CommitCommand
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.api.ListTagCommand
+import org.eclipse.jgit.api.Status
+import org.eclipse.jgit.api.StatusCommand
+import org.eclipse.jgit.api.TagCommand
+import org.eclipse.jgit.lib.Ref
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -46,6 +55,11 @@ abstract class PackagerTask extends DefaultTask {
  * Base class for all packager release tasks
  */
 abstract class PackagerReleaseTask extends PackagerTask {
+    /**
+     * Builds a release path based on project name and arch identitier
+     * @param basePath
+     * @return
+     */
     def File buildReleasePath(File basePath) {
         return Paths.get(basePath.toURI())
                 .resolve(project.name)
@@ -222,3 +236,42 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
         }
     }
 }
+
+/**
+ * Release push task for tagging and pushing a version to remote release repo
+ */
+class PackagerReleasePushTask extends PackagerReleaseTask {
+    @TaskAction
+    def packagerReleasePushTask() {
+        def repo = FileRepositoryBuilder.create(new File(this.buildReleasePath(this.extension.releaseBasePath), ".git"))
+
+        println "Pushing release ${project.name}-${project.version}"
+
+        println "Determining repo status"
+        def sc = new StatusCommand(repo)
+        Status status = sc.call()
+        if (status.untracked.isEmpty())
+            throw new IllegalStateException("No untracked changes")
+
+        println "Checking tags"
+        def lt = new ListTagCommand(repo)
+        List<Ref> refs = lt.call()
+        refs.each { println it }
+
+        println "Adding changes to index"
+        def ac = new AddCommand(repo)
+        ac.addFilepattern(".")
+        ac.call()
+
+        println "Committing changes"
+        def cc = new CommitCommand(repo)
+        cc.message = project.version
+        cc.call()
+
+        println "Creating tag ${project.version}"
+        def tc = new TagCommand(repo)
+        tc.name = project.version
+        tc.call()
+    }
+}
+
