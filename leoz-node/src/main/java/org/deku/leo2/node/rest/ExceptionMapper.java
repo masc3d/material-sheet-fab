@@ -25,12 +25,18 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
      * Represents webservice result on exception
      */
     static class ExceptionResult {
-        private int mStatus;
+        private Integer mStatus;
+        private Integer mCode;
         private String mMessage;
 
-        public ExceptionResult(int status, String message) {
+        public ExceptionResult(int status, Integer code, String message) {
             mStatus = status;
+            mCode = code;
             mMessage = message;
+        }
+
+        public ExceptionResult(int status, String message) {
+            this(status, null, message);
         }
 
         public ExceptionResult(int status, Exception e) {
@@ -44,12 +50,19 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
         public String getMessage() {
             return mMessage;
         }
+
+        public Integer getCode() {
+            return mCode;
+        }
     }
 
     @Override
     public javax.ws.rs.core.Response toResponse(Exception e) {
         ExceptionResult result;
-        if (e instanceof WebApplicationException) {
+        if (e instanceof ServiceException) {
+            ServiceException se = (ServiceException) e;
+            result = new ExceptionResult(se.getResponse().getStatus(), se.getErrorCode().ordinal(), se.getMessage());
+        } else if (e instanceof WebApplicationException) {
             //region WebApplicationException
             WebApplicationException we = (WebApplicationException) e;
             result = new ExceptionResult(we.getResponse().getStatus(), we);
