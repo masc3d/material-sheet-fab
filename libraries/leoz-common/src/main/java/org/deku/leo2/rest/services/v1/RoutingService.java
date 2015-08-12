@@ -1,8 +1,6 @@
 package org.deku.leo2.rest.services.v1;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.*;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingRequest;
 
@@ -10,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 //import org.deku.leo2.rest.entities.v1.RoutingVia;
 
@@ -20,8 +19,23 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Routing operations")
 public interface RoutingService {
+    /**
+     * Routing service specific error codes
+     */
+    public enum ErrorCode {
+        ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER(1000);
+
+        private int mValue;
+        private ErrorCode(int value) {
+            mValue = value;
+        }
+    }
+
     @POST
     @Path("/request")
     @ApiOperation(value = "Determ routing and via")
+    @ApiResponses( {
+            @ApiResponse(code = 400, message = "Bad request/parameter", response = Error.class)
+    })
     Routing request(@ApiParam(value = "Routing request") RoutingRequest routingRequest);
 }

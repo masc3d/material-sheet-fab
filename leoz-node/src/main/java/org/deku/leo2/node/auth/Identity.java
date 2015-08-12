@@ -3,8 +3,6 @@ package org.deku.leo2.node.auth;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
-import org.deku.leo2.node.rest.ServiceException;
-import org.deku.leo2.node.rest.services.ErrorCodes;
 import sx.event.EventDelegate;
 import sx.event.EventDispatcher;
 
@@ -38,7 +36,7 @@ public class Identity {
      */
     private Identity(Integer id, String key, SystemInformation systemInformation) {
         if (Strings.isNullOrEmpty(key))
-            throw new ServiceException(ErrorCodes.restErrorCodes.MISSING_PARAMETER , "Key cannot be null");
+            throw new IllegalArgumentException("Key cannot be null");
 
         mId = id;
         mKey = key;

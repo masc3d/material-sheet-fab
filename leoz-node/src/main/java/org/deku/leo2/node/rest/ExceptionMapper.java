@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deku.leo2.rest.entities.v1.Error;
 
 import javax.inject.Named;
 import javax.ws.rs.WebApplicationException;
@@ -21,61 +22,30 @@ import java.util.Optional;
 public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exception> {
     Log mLog = LogFactory.getLog(this.getClass());
 
-    /**
-     * Represents webservice result on exception
-     */
-    static class ExceptionResult {
-        private Integer mStatus;
-        private Integer mCode;
-        private String mMessage;
-
-        public ExceptionResult(int status, Integer code, String message) {
-            mStatus = status;
-            mCode = code;
-            mMessage = message;
-        }
-
-        public ExceptionResult(int status, String message) {
-            this(status, null, message);
-        }
-
-        public ExceptionResult(int status, Exception e) {
-            this(status, e.getMessage());
-        }
-
-        public Integer getStatus() {
-            return mStatus;
-        }
-
-        public String getMessage() {
-            return mMessage;
-        }
-
-        public Integer getCode() {
-            return mCode;
-        }
-    }
-
     @Override
     public javax.ws.rs.core.Response toResponse(Exception e) {
-        ExceptionResult result;
+        Error result;
+
         if (e instanceof ServiceException) {
             ServiceException se = (ServiceException) e;
-            result = new ExceptionResult(se.getResponse().getStatus(), se.getErrorCode().ordinal(), se.getMessage());
+            result = new Error(se.getResponse().getStatus(), se.getErrorCode().ordinal(), se.getMessage());
+
         } else if (e instanceof WebApplicationException) {
             //region WebApplicationException
             WebApplicationException we = (WebApplicationException) e;
-            result = new ExceptionResult(we.getResponse().getStatus(), we);
+            result = new Error(we.getResponse().getStatus(), we);
             //endregion
+
         } else if (e instanceof JsonMappingException) {
             //region JsonMappingException
             JsonMappingException jm = (JsonMappingException) e;
             String locationMessage = String.join(".", (Iterable)jm.getPath().stream().map(p -> p.getFieldName())::iterator);
 
-            result = new ExceptionResult(Response.Status.NOT_FOUND.getStatusCode(),
+            result = new Error(Response.Status.BAD_REQUEST.getStatusCode(),
                     String.format("JSON mapping error [%s]: %s", locationMessage,
                             (jm.getCause() != null) ? jm.getCause().getMessage() : "unknown"));
             //endregion
+
         } else if (e instanceof JsonProcessingException) {
             //region JsonProcessingException
             JsonProcessingException je = (JsonProcessingException) e;
@@ -86,13 +56,14 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
                 locationMessage = Optional.of(String.format(" in line %d column %d", jl.getLineNr(), jl.getColumnNr()));
             }
 
-            result = new ExceptionResult(Response.Status.NOT_FOUND.getStatusCode(),
+            result = new Error(Response.Status.BAD_REQUEST.getStatusCode(),
                     String.format("JSON processing error%s: %s",
                             locationMessage.orElse(""),
                             je.getOriginalMessage()));
             //endregion
+
         } else {
-            result = new ExceptionResult(Response.Status.NOT_FOUND.getStatusCode(), e);
+            result = new Error(Response.Status.BAD_REQUEST.getStatusCode(), e);
         }
 
         return Response
