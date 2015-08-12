@@ -10,16 +10,19 @@ import java.util.List;
 
 /**
  * Multicast event dispatcher abstract and factory.
- * <p/>
+ * <p>
  * This class is supposed to be used by observable classes, which can in turn expose instance(s) via EventDelegate interface for consumer to add listeners.
  * Created by masc on 11.08.14.
  */
 public abstract class EventDispatcher<T extends EventListener> implements EventDelegate<T> {
     private Log mLog = LogFactory.getLog(this.getClass());
 
-    /** Listener reference with type information */
+    /**
+     * Listener reference with type information
+     */
     class ListenerReference extends WeakReference<T> {
         private Class mClass;
+
         public ListenerReference(T referent, Class<T> c) {
             super(referent);
             mClass = c;
@@ -48,18 +51,21 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
      * @param listener
      */
     public abstract void add(T listener);
+
     /**
      * Remove listener
      *
      * @param listener
      */
     public abstract void remove(T listener);
+
     /**
      * Remove weak references from listeners, used for cleaning out garbage collected/invalid rfs
      *
      * @param listeners
      */
     protected abstract void remove(List<ListenerReference> listeners);
+
     /**
      * Get copy of listener references
      */
@@ -86,16 +92,16 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
         }
 
         // Remove invalid refs
-            if (invalidRefs != null) {
-                for (ListenerReference ir : invalidRefs) {
-                    mLog.info(String.format("Removing gc'ed listener %s (%s)",
-                            ir.getListenerClass(),
-                            String.join(",",
-                                    (Iterable)Lists.newArrayList(ir.getListenerClass().getInterfaces()).stream().map(c -> c.toString())::iterator
-                            )));
-                }
-                this.remove(invalidRefs);
+        if (invalidRefs != null) {
+            for (ListenerReference ir : invalidRefs) {
+                mLog.info(String.format("Removing gc'ed listener %s (%s)",
+                        ir.getListenerClass(),
+                        String.join(",",
+                                (Iterable) Lists.newArrayList(ir.getListenerClass().getInterfaces()).stream().map(c -> c.toString())::iterator
+                        )));
             }
+            this.remove(invalidRefs);
+        }
     }
 
     /**
