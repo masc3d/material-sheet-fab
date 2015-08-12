@@ -3,8 +3,11 @@ package org.deku.leo2.node.rest.services.v1;
 import com.google.common.primitives.Ints;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.expr.BooleanExpression;
+import com.wordnik.swagger.models.Response;
 import org.deku.leo2.node.data.entities.master.*;
 import org.deku.leo2.node.data.repositories.master.*;
+import org.deku.leo2.node.rest.ServiceException;
+import org.deku.leo2.node.rest.services.ErrorCodes;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.ShortTime;
 import org.deku.leo2.rest.entities.v1.DayType;
@@ -22,6 +25,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 
 /**
  * Created by masc on 20.04.15.
@@ -206,11 +210,11 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
             weight = routingRequest.getWeight();
 
         if (routingRequest.getSendDate() == null) {
-            throw new IllegalArgumentException("Send Date is required");
+            throw new ServiceException(ErrorCodes.restErrorCodes.MISSING_PARAMETER , "Send Date is required");
         }
 
         if (routingRequest.getSender() == null && routingRequest.getConsignee() == null) {
-            throw new IllegalArgumentException("Sender or Consignee required");
+            throw new ServiceException(ErrorCodes.restErrorCodes.MISSING_PARAMETER , "Sender or Consignee required");
         }
 
 
@@ -339,7 +343,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
 
         if (country == null) {
-            throw new IllegalArgumentException(exeptionPrefix + "empty country");
+            throw new ServiceException(ErrorCodes.restErrorCodes.MISSING_PARAMETER , exeptionPrefix + "empty country");
 //            Routing.Participant ret = new Routing.Participant();
 //            ret.setMessage("empty country");
 //            resultParticipants.add(ret);
@@ -350,7 +354,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         String zip = requestRequestParticipant.getZip();
 
         if (zip == null) {
-            throw new IllegalArgumentException(exeptionPrefix + "empty zipcode");
+            throw new ServiceException(ErrorCodes.restErrorCodes.MISSING_PARAMETER , exeptionPrefix + "empty zipcode");
 //            Routing.Participant ret = new Routing.Participant();
 //            ret.setMessage("empty zipcode");
 //            resultParticipants.add(ret);
@@ -367,7 +371,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         //       ** forever **
 
         if (rcountry == null) {
-            throw new IllegalArgumentException(exeptionPrefix + "unknown country");
+            throw new ServiceException(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE, exeptionPrefix + "unknown country");
 //            Routing.Participant ret = new Routing.Participant();
 //            ret.setMessage("unknown country");
 //            resultParticipants.add(ret);
@@ -375,7 +379,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         }
 
         if (rcountry.getZipFormat().equals("")) {
-            throw new IllegalArgumentException(exeptionPrefix + "unknown country");
+            throw new ServiceException(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE , exeptionPrefix + "unknown country");
 //            Routing.Participant ret = new Routing.Participant();
 //            ret.setMessage("unknown country");
 //            resultParticipants.add(ret);
@@ -384,7 +388,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 
 
         if (zip.length() < rcountry.getMinLen()) {
-            throw new IllegalArgumentException(exeptionPrefix + "zipcode too short");
+            throw new ServiceException(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE , exeptionPrefix + "zipcode too short");
 //            Routing.Participant ret = new Routing.Participant();
 //            ret.setMessage("zipcode too short");
 //            resultParticipants.add(ret);
@@ -392,14 +396,14 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         }
 
         if (rcountry.getRoutingTyp() < 0 || rcountry.getRoutingTyp() > 3) {
-            throw new IllegalArgumentException(exeptionPrefix + "country not enabled");
+            throw new ServiceException(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE , exeptionPrefix + "country not enabled");
 //            Routing.Participant ret = new Routing.Participant();
 //            ret.setMessage("country not enabled");
 //            resultParticipants.add(ret);
         }
 
         if (zip.length() > rcountry.getMaxLen()) {
-            throw new IllegalArgumentException(exeptionPrefix + "zipcode too long");
+            throw new ServiceException(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE , exeptionPrefix + "zipcode too long");
 //            Routing.Participant ret = new Routing.Participant();
 //            ret.setMessage("zipcode too long");
 //            resultParticipants.add(ret);
@@ -412,7 +416,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
         String zipConform = zRet.s2;
 
         if (zipQuery.equals("")) {
-            throw new IllegalArgumentException(exeptionPrefix + "wrong zipcode format");
+            throw new ServiceException(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE , exeptionPrefix + "wrong zipcode format");
 //            Routing.Participant ret = new Routing.Participant();
 //            ret.setMessage("wrong zipcode format");
 //            resultParticipants.add(ret);
@@ -564,7 +568,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
 //        Iterable<Route> rRouten = mRouteRepository.findAll(rWhere);
 
         if (!rRouten.iterator().hasNext())
-            throw new IllegalArgumentException(exeptionPrefix + "no Route found");
+            throw new ServiceException(ErrorCodes.restErrorCodes.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, exeptionPrefix + "no Route found");
         else {
             Route routeFound = rRouten.iterator().next();
 //TODO Sector aus stationsector
@@ -729,7 +733,7 @@ public class RoutingService implements org.deku.leo2.rest.services.v1.RoutingSer
                     }
                     break;
                 default:
-                    throw new IllegalArgumentException("wrong zipcode formatdescription");
+                    throw new ServiceException(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE , "wrong zipcode formatdescription");
             }
 
 

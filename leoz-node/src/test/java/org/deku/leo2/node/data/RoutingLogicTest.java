@@ -2,6 +2,8 @@ package org.deku.leo2.node.data;
 
 
 import org.deku.leo2.node.DataTest;
+import org.deku.leo2.node.rest.ServiceException;
+import org.deku.leo2.node.rest.services.ErrorCodes;
 import org.deku.leo2.node.rest.services.v1.RoutingService;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.v1.Routing;
@@ -27,8 +29,8 @@ public class RoutingLogicTest extends DataTest {
         try {
             RoutingRequest request = new RoutingRequest();
             Routing r = mRoutingService.request(request);
-        } catch (Exception e) {
-            Assert.assertEquals("Send Date is required", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals(ErrorCodes.restErrorCodes.MISSING_PARAMETER , e.getErrorCode());
         }
     }
 
@@ -38,8 +40,8 @@ public class RoutingLogicTest extends DataTest {
             RoutingRequest request = new RoutingRequest();
             request.setSendDate(new ShortDate("2015-08-01"));
             Routing r = mRoutingService.request(request);
-        } catch (Exception e) {
-            Assert.assertEquals("Sender or Consignee required", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals(ErrorCodes.restErrorCodes.MISSING_PARAMETER, e.getErrorCode());
         }
     }
 
@@ -52,8 +54,8 @@ public class RoutingLogicTest extends DataTest {
             rp.setZip("64850");
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
-        } catch (Exception e) {
-            Assert.assertEquals("Sender: empty country", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals(ErrorCodes.restErrorCodes.MISSING_PARAMETER, e.getErrorCode());
         }
 
     }
@@ -67,8 +69,8 @@ public class RoutingLogicTest extends DataTest {
             rp.setCountry("DE");
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
-        } catch (Exception e) {
-            Assert.assertEquals("Sender: empty zipcode", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals(ErrorCodes.restErrorCodes.MISSING_PARAMETER, e.getErrorCode());
         }
 
     }
@@ -83,8 +85,8 @@ public class RoutingLogicTest extends DataTest {
             rp.setZip("64850");
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
-        } catch (Exception e) {
-            Assert.assertEquals("Sender: unknown country", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE, e.getErrorCode());
         }
 
     }
@@ -100,8 +102,8 @@ public class RoutingLogicTest extends DataTest {
             rp.setZip("6485");
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
-        } catch (Exception e) {
-            Assert.assertEquals("Sender: zipcode too short", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE, e.getErrorCode());
         }
     }
 
@@ -115,8 +117,8 @@ public class RoutingLogicTest extends DataTest {
             rp.setZip("A4850");
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
-        } catch (Exception e) {
-            Assert.assertEquals("Sender: wrong zipcode format", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE, e.getErrorCode());
         }
     }
 
@@ -129,8 +131,8 @@ public class RoutingLogicTest extends DataTest {
             rp.setCountry("AT");
             request.setConsignee(rp);
             Routing r = mRoutingService.request(request);
-        } catch (Exception e) {
-            Assert.assertEquals("Consignee: empty zipcode", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals(ErrorCodes.restErrorCodes.MISSING_PARAMETER, e.getErrorCode());
         }
     }
 
@@ -147,8 +149,8 @@ public class RoutingLogicTest extends DataTest {
             Assert.assertEquals(null, r.getConsignee());
             Assert.assertEquals(r.getSender().getStation(), "514");
             Assert.assertEquals(r.getSender().getZipCode(), "10-010");
-        } catch (Exception e) {
-            Assert.assertEquals("", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals("", e.getErrorCode());
         }
     }
 // Daten sind noch falsch
@@ -166,7 +168,7 @@ public class RoutingLogicTest extends DataTest {
 //            Assert.assertEquals(r.getSender().getStation(), "523");
 //            Assert.assertEquals(r.getSender().getZipCode(), "ab10 6");
 //        } catch (Exception e) {
-//            Assert.assertEquals("", e.getMessage());
+//            Assert.assertEquals("", e.getErrorCode());
 //        }
 //    }
 
@@ -190,8 +192,8 @@ public class RoutingLogicTest extends DataTest {
             Assert.assertEquals(r.getSender().getStation(), "280");
             Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
             Assert.assertEquals(r.getLabelContent(), "363");
-        } catch (Exception e) {
-            Assert.assertEquals("", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals("", e.getErrorCode());
         }
     }
 
@@ -215,8 +217,8 @@ public class RoutingLogicTest extends DataTest {
             Assert.assertEquals(r.getSender().getStation(), "280");
             Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
             Assert.assertEquals(r.getLabelContent(), "363");
-        } catch (Exception e) {
-            Assert.assertEquals("Consignee: no Route found", e.getMessage());
+        } catch (ServiceException e) {
+            Assert.assertEquals(ErrorCodes.restErrorCodes.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.getErrorCode());
         }
     }
 }

@@ -12,6 +12,7 @@ public class ServiceException extends WebApplicationException {
 
     /**
      * c'tor
+     *
      * @param message
      * @param cause
      * @param status
@@ -23,11 +24,11 @@ public class ServiceException extends WebApplicationException {
     }
 
     public ServiceException(Enum code) {
-        this(code, code.toString(), null, Response.Status.NOT_FOUND);
+        this(code, code.toString(), null, Response.Status.BAD_REQUEST);
     }
 
     public ServiceException(Enum code, String message) {
-        this(code, message, null, Response.Status.NOT_FOUND);
+        this(code, message, null, Response.Status.BAD_REQUEST);
     }
 
     public Enum getErrorCode() {
