@@ -123,15 +123,6 @@ run {
     standardInput = System.in
 }
 
-jar {
-    manifest {
-        attributes (
-                'Main-Class': mainClassName,
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
-        )
-    }
-}
-
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
@@ -184,9 +175,9 @@ packager {
  * @return
  */
 def releaseBin() {
-    def srcDir = new File(project.binDir(), g_arch_identifier)
+    def srcDir = new File(g_bin_path, g_arch_identifier)
 
-    def File archReleasePath = tasks.packagerReleaseBundle.buildReleasePath(g_release_path)
+    def File archReleasePath = tasks.packagerReleaseBundle.buildReleaseArchPath(g_release_path)
     def dstDir
 
     if (SystemUtils.IS_OS_MAC_OSX) {

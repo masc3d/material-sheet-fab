@@ -80,15 +80,6 @@ dependencies {
 // Non-standard, but nicer to keep .fxml files together with classes
 sourceSets.main.resources.srcDir 'src/main/java'
 
-jar {
-    manifest {
-        attributes (
-                'Main-Class': mainClassName,
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
-        )
-    }
-}
-
 packager {
     title = "LeoZ UI"
     releaseBasePath = g_release_path

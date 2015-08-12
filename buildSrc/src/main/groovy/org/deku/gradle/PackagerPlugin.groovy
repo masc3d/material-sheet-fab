@@ -7,23 +7,40 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
- * Created by n3 on 02-Aug-15.
- */
-/**
  * Plugin extension class, used for extension within build.gradle
  */
 class PackagerPluginExtension {
     def String title
 
-    // Common locations
+    /** Packager base directory */
     def File packagerBaseDir
-    def File packagerArchDir
 
+    /** Release directory base path */
     def File releaseBasePath
     /** Path to .icns file */
     def File osxIcon
     /** Path to .ico file */
     def File windowsIcon
+
+    /** Map of source -> (relative) destination directories to copy to bundle release directory */
+    def supplementalDirs(LinkedHashMap<File, File> dirs) {
+        mSupplementalDirs = dirs
+    }
+
+    /** Map of source dirs containing arch subdirs -> (relative) destination directories to copy to bundle release directory */
+    def supplementalArchDirs(LinkedHashMap<File, File> dirs) {
+        mSupplementalArchDirs = dirs
+    }
+
+    private def LinkedHashMap<File, File> mSupplementalDirs
+    public LinkedHashMap<File, File> getSupplementalDirs() {
+        return mSupplementalDirs
+    }
+
+    private def LinkedHashMap<File, File> mSupplementalArchDirs
+    public LinkedHashMap<File, File> getSupplementalArchDirs() {
+        return mSupplementalArchDirs
+    }
 }
 
 /**
@@ -34,10 +51,8 @@ class PackagerPlugin implements Plugin<Project> {
         // Add extension extensino
         def ext = new PackagerPluginExtension()
         ext.packagerBaseDir = new File(project.buildDir, 'packager')
-        ext.packagerArchDir = new File(ext.packagerBaseDir, PackagerUtils.archIdentifier())
         ext.releaseBasePath = Paths.get(ext.packagerBaseDir.toURI())
                 .resolve('release')
-                .resolve(PackagerUtils.archIdentifier())
                 .toFile()
 
         project.extensions.packager = ext

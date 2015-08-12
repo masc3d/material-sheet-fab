@@ -3,7 +3,6 @@ package org.deku.gradle
 import org.apache.commons.lang3.SystemUtils
 import org.eclipse.jgit.api.AddCommand
 import org.eclipse.jgit.api.CommitCommand
-import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListTagCommand
 import org.eclipse.jgit.api.Status
 import org.eclipse.jgit.api.StatusCommand
@@ -14,7 +13,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -49,6 +47,14 @@ abstract class PackagerTask extends DefaultTask {
     protected def String getMainClassName() {
         return project.mainClassName
     }
+
+    /**
+     * Build packager platform/arch path for current system
+     * @return
+     */
+    protected def File buildPackagerArchDir() {
+        return new File(this.extension.packagerBaseDir, PackagerUtils.currentPlatformArch().toString())
+    }
 }
 
 /**
@@ -56,15 +62,64 @@ abstract class PackagerTask extends DefaultTask {
  */
 abstract class PackagerReleaseTask extends PackagerTask {
     /**
-     * Builds a release path based on project name and arch identitier
+     * Build release path based on project name
      * @param basePath
      * @return
      */
     def File buildReleasePath(File basePath) {
-        return Paths.get(basePath.toURI())
-                .resolve(project.name)
-                .resolve(PackagerUtils.archIdentifier())
-                .toFile()
+        return new File(basePath, project.name)
+    }
+
+    /**
+     * Builds a release path for current project and platform/arch
+     * @param basePath Release base path
+     * @return
+     */
+    def File buildReleaseArchPath(File basePath) {
+        return this.buildReleaseArchPath(basePath, PackagerUtils.currentPlatformArch())
+    }
+
+    /**
+     * Builds a release path for current project and specific platform/arch
+     * @param basePath Release base path
+     * @param platformArch Platform/arch
+     * @return
+     */
+    def File buildReleaseArchPath(File basePath, PlatformArch platformArch) {
+        return new File(this.buildReleasePath(basePath), platformArch.toString())
+    }
+
+    /**
+     * Builds jar destination path for specific platform/arch
+     * @param basePath
+     * @return
+     */
+    def File buildReleaseJarPath(File basePath, PlatformArch platformArch) {
+        def File jarDestinationPath
+
+        def File releaseArchPath = this.buildReleaseArchPath(basePath, platformArch)
+
+        // Add path to jars within packager release bundle
+        if (platformArch.platform == Platform.OSX) {
+            jarDestinationPath = Paths.get(releaseArchPath.toURI())
+                    .resolve(project.name + '.app')
+                    .resolve('Contents')
+                    .resolve('Java')
+                    .toFile()
+        } else {
+            jarDestinationPath = new File(releaseArchPath, 'app')
+        }
+        return jarDestinationPath
+    }
+
+    protected def copySupplementalDirs(PlatformArch platformArch) {
+        this.extension.getSupplementalDirs().each {
+            it -> println it.key
+        }
+    }
+
+    protected def copySupplementalArchDirs(PlatformArch platformArch) {
+        this.extension.getSupplementalArchDirs().each { it -> println it.key }
     }
 }
 
@@ -90,6 +145,8 @@ class PackagerBundleTask extends PackagerTask {
         if (!this.packageDescription)
             this.packageDescription = this.extension.title
 
+        def packagerArchDir = this.buildPackagerArchDir()
+
         def mainJar = this.getMainJar()
         def mainClassName = this.getMainClassName();
         def jars = this.getProjectJars()
@@ -106,7 +163,7 @@ class PackagerBundleTask extends PackagerTask {
         if (!this.extension.packagerBaseDir.deleteDir())
             throw new IOException("Could not remove packager dir");
 
-        def packagerLibsDir = new File(this.extension.packagerArchDir, 'libs')
+        def packagerLibsDir = new File(packagerArchDir, 'libs')
 
         println "Gathering jars -> [${packagerLibsDir}]"
 
@@ -119,7 +176,7 @@ class PackagerBundleTask extends PackagerTask {
             into packagerLibsDir
         }
 
-        println "Creating bundle -> [${this.extension.packagerArchDir}]"
+        println "Creating bundle -> [${packagerArchDir}]"
         project.exec {
             environment JAVA_HOME: jdk_home
             commandLine "${jdk_home}/bin/javapackager",
@@ -128,7 +185,7 @@ class PackagerBundleTask extends PackagerTask {
                     "-title", this.extension.title,
                     "-description", this.packageDescription,
                     "-name", this.packageName,
-                    "-outdir", this.extension.packagerArchDir,
+                    "-outdir", packagerArchDir,
                     "-outfile", project.name,
                     "-srcdir", packagerLibsDir,
                     "-appclass", mainClassName,
@@ -159,9 +216,11 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleaseAll() {
         def releaseBasePath = this.extension.releaseBasePath
-        def releasePath = this.buildReleasePath(releaseBasePath)
+        def releasePath = this.buildReleaseArchPath(releaseBasePath)
 
-        def bundlePath = Paths.get(this.extension.packagerArchDir.toURI())
+        def packagerArchDir = this.buildPackagerArchDir()
+
+        def bundlePath = Paths.get(packagerArchDir.toURI())
                 .resolve('bundles')
                 .resolve(SystemUtils.IS_OS_MAC_OSX ? "" : project.name)
                 .toFile()
@@ -203,36 +262,42 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
     def packagerReleaseJars() {
         def releaseBasePath = this.extension.releaseBasePath
         def releasePath = this.buildReleasePath(releaseBasePath)
-        def jarDestinationPath
 
-        // Add path to jars within packager release bundle
-        if (SystemUtils.IS_OS_MAC_OSX) {
-            jarDestinationPath = Paths.get(releasePath.toURI())
-                    .resolve(project.name + '.app')
-                    .resolve('Contents')
-                    .resolve('Java')
-                    .toFile()
-        } else {
-            jarDestinationPath = new File(releasePath, 'app')
-        }
+        // Release jars for all architectures which are present within the release path for this project
+        Files.walk(Paths.get(releasePath.toURI()), 1)
+                .filter({ !it.toString().equals(releasePath.toString()) && it.toFile().isDirectory() })
+                .each {
+            // Arch
+            def File releaseArchPath = it.toFile()
+            def PlatformArch platformArch = PlatformArch.parse(releaseArchPath.name)
 
-        println "Release base path [${releaseBasePath}]"
-        println "Release path [${releasePath}]"
-        println "Jar destination path [${jarDestinationPath}]"
+            println "Releasing jars and binaries for [${platformArch}]"
 
-        if (!jarDestinationPath.exists())
-            throw new IOException("Release jar destination path [${jarDestinationPath}] doesn't exist")
+            def jarDestinationPath = this.buildReleaseJarPath(
+                    releaseBasePath,
+                    platformArch
+            )
 
-        // Remove jar files from jar destination path
-        println "Removing all jars from [${jarDestinationPath}]"
-        Files.walk(Paths.get(jarDestinationPath.toURI()), 0)
-                .filter({ it -> it.toString().toLowerCase().endsWith(".jar") })
-                .each { Files.delete(it) }
+            println "Jar destination path [${jarDestinationPath}]"
 
-        println "Copying jars -> [${jarDestinationPath}]"
-        project.copy {
-            from this.getProjectJars()
-            into jarDestinationPath
+            if (!jarDestinationPath.exists())
+                throw new IOException("Release jar destination path [${jarDestinationPath}] doesn't exist")
+
+            // Remove jar files from jar destination path
+            println "Removing all jars from [${jarDestinationPath}]"
+            Files.walk(Paths.get(jarDestinationPath.toURI()), 0)
+                    .filter({ it2 -> it2.toString().toLowerCase().endsWith(".jar") })
+                    .each { Files.delete(i2t) }
+
+            println "Copying jars -> [${jarDestinationPath}]"
+            project.copy {
+                from this.getProjectJars()
+                into jarDestinationPath
+            }
+
+            // TODO: add support for copying supplementals
+//            this.copySupplementalDirs()
+//            this.copySupplementalArchDirs()
         }
     }
 }
@@ -243,7 +308,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 class PackagerReleasePushTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePushTask() {
-        def repo = FileRepositoryBuilder.create(new File(this.buildReleasePath(this.extension.releaseBasePath), ".git"))
+        def repo = FileRepositoryBuilder.create(new File(this.buildReleaseArchPath(this.extension.releaseBasePath), ".git"))
 
         println "Pushing release ${project.name}-${project.version}"
 

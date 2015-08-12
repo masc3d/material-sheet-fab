@@ -62,6 +62,8 @@ allprojects {
                     .resolve("leoz-release")
                     .toFile()
 
+            g_bin_path = new File(project.rootDir, 'bin')
+
             g_osx_icon = Paths.get(project.rootDir.toURI())
                     .resolve('images')
                     .resolve('DEKU.icon.icns')
@@ -79,8 +81,6 @@ allprojects {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'project-report'
-
-    project.metaClass.binDir = { new File(project.projectDir, 'bin') }
 
     // Reporting setup
     // Dependency report depends on classes but only if compilation actually took place (not uptodate)
@@ -115,8 +115,18 @@ subprojects {
         }
     }
 
+    // Global jar configuration
     jar {
         entryCompression ZipEntryCompression.STORED
+
+        if (hasProperty("mainClassName")) {
+            manifest {
+                attributes (
+                        'Main-Class': mainClassName,
+                        'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
+                )
+            }
+        }
     }
 
     // Global dependency resolution

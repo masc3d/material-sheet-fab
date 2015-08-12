@@ -65,15 +65,6 @@ run {
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
-jar {
-    manifest {
-        attributes (
-                'Main-Class': mainClassName,
-                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
-        )
-    }
-}
-
 // Location for generated sources
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
@@ -112,20 +103,14 @@ tasks.generateJooq.outputs.upToDateWhen { false }
 
 // Packager task
 packager {
-    title = "LeoZ Boot"
+    title = "LeoZ Central"
     releaseBasePath = g_release_path
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
+    supplementalArchDirs(
+            (g_bin_path): new File('bin')
+    )
 }
-
-/**
- * Task copying binaries from node
- */
-task copyBinFromNode(type: Copy) {
-    from project(':leoz-node').binDir()
-    into new File(project.projectDir, 'bin')
-}
-tasks.classes.dependsOn copyBinFromNode
 
 // TODO: centralize releaseBin (into packager)
 /**
@@ -133,9 +118,9 @@ tasks.classes.dependsOn copyBinFromNode
  * @return
  */
 def releaseBin() {
-    def srcDir = new File(project.binDir(), g_arch_identifier)
+    def srcDir = new File(g_bin_path, g_arch_identifier)
 
-    def File archReleasePath = tasks.packagerReleaseBundle.buildReleasePath(g_release_path)
+    def File archReleasePath = tasks.packagerReleaseBundle.buildReleaseArchPath(g_release_path)
     def dstDir
 
     if (SystemUtils.IS_OS_MAC_OSX) {
