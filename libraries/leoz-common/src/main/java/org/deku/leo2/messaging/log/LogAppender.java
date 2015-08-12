@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leo2.messaging.MessagingContext;
 import org.deku.leo2.messaging.log.v1.LogMessage;
 import sx.Disposable;
+import sx.Dispose;
 import sx.jms.Converter;
 import sx.jms.converters.DefaultConverter;
 import sx.jms.embedded.Broker;
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * Log appender sending log messages via jms
  * Created by masc on 11.06.15.
  */
-public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposable {
+public class LogAppender extends AppenderBase<ILoggingEvent> implements Disposable {
     private Log mLog = LogFactory.getLog(this.getClass());
 
     private MessagingContext mMessagingContext;
@@ -51,7 +52,7 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
 
         @Override
         public void onStop() {
-            dispose();
+            Dispose.safely(LogAppender.this);
         }
     };
 
@@ -111,7 +112,7 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
     }
 
     @Override
-    public void start() {
+    public synchronized void start() {
         if (mScheduledExecutorService != null) {
             this.stop();
         }
@@ -126,20 +127,29 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements  Disposa
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
         if (mScheduledExecutorService != null) {
             // Immediate flush and subsequent shutdown
-            mScheduledExecutorService.schedule(() -> flush(), 0, TimeUnit.SECONDS);
-            mScheduledExecutorService.shutdown();
+            mScheduledExecutorService.shutdownNow();
 
             // Wait for termination
             try {
                 mScheduledExecutorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                mLog.error(e.getMessage(), e);
             }
             mScheduledExecutorService = null;
         }
+
+        // Final flush
+        try {
+            if (mMessagingContext.getBroker().isStarted())
+                this.flush();
+        } catch(Exception e) {
+            mLog.error(e.getMessage(), e);
+        }
+
+        mMessagingContext.getBroker().getDelegate().remove(mBrokerEventListener);
 
         super.stop();
     }
