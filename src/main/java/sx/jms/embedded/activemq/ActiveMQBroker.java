@@ -42,7 +42,7 @@ public class ActiveMQBroker extends Broker {
     private static final int NATIVE_TCP_PORT = 61616;
 
     /** Native broker service */
-    private BrokerService mBrokerService;
+    private volatile BrokerService mBrokerService;
 
     /** External transport servers, eg. servlets */
     List<TransportServer> mExternalTransportServers = new ArrayList<>();
@@ -219,7 +219,8 @@ public class ActiveMQBroker extends Broker {
 
     @Override
     protected boolean isStartedImpl() {
-        return mBrokerService != null && mBrokerService.isStarted();
+        BrokerService brokerService = mBrokerService;
+        return brokerService != null && brokerService.isStarted();
     }
 
     @Override

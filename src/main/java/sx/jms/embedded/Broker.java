@@ -149,7 +149,7 @@ public abstract class Broker implements Disposable {
         this.stopImpl();
     }
 
-    public synchronized boolean isStarted() {
+    public boolean isStarted() {
         return this.isStartedImpl();
     }
 
