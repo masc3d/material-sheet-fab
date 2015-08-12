@@ -3,11 +3,11 @@ package org.deku.leo2.node.data;
 
 import org.deku.leo2.node.DataTest;
 import org.deku.leo2.node.rest.ServiceException;
-import org.deku.leo2.node.rest.services.ErrorCodes;
 import org.deku.leo2.node.rest.services.v1.RoutingService;
 import org.deku.leo2.rest.entities.ShortDate;
 import org.deku.leo2.rest.entities.v1.Routing;
 import org.deku.leo2.rest.entities.v1.RoutingRequest;
+import org.deku.leo2.rest.services.ServiceErrorCode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.annotation.Import;
@@ -30,7 +30,7 @@ public class RoutingLogicTest extends DataTest {
             RoutingRequest request = new RoutingRequest();
             Routing r = mRoutingService.request(request);
         } catch (ServiceException e) {
-            Assert.assertEquals(ErrorCodes.restErrorCodes.MISSING_PARAMETER , e.getErrorCode());
+            Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER , e.getErrorCode());
         }
     }
 
@@ -41,7 +41,7 @@ public class RoutingLogicTest extends DataTest {
             request.setSendDate(new ShortDate("2015-08-01"));
             Routing r = mRoutingService.request(request);
         } catch (ServiceException e) {
-            Assert.assertEquals(ErrorCodes.restErrorCodes.MISSING_PARAMETER, e.getErrorCode());
+            Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.getErrorCode());
         }
     }
 
@@ -55,7 +55,7 @@ public class RoutingLogicTest extends DataTest {
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
         } catch (ServiceException e) {
-            Assert.assertEquals(ErrorCodes.restErrorCodes.MISSING_PARAMETER, e.getErrorCode());
+            Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.getErrorCode());
         }
 
     }
@@ -70,7 +70,7 @@ public class RoutingLogicTest extends DataTest {
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
         } catch (ServiceException e) {
-            Assert.assertEquals(ErrorCodes.restErrorCodes.MISSING_PARAMETER, e.getErrorCode());
+            Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.getErrorCode());
         }
 
     }
@@ -86,7 +86,7 @@ public class RoutingLogicTest extends DataTest {
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
         } catch (ServiceException e) {
-            Assert.assertEquals(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE, e.getErrorCode());
+            Assert.assertEquals(ServiceErrorCode.WRONG_PARAMETER_VALUE, e.getErrorCode());
         }
 
     }
@@ -103,7 +103,7 @@ public class RoutingLogicTest extends DataTest {
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
         } catch (ServiceException e) {
-            Assert.assertEquals(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE, e.getErrorCode());
+            Assert.assertEquals(ServiceErrorCode.WRONG_PARAMETER_VALUE, e.getErrorCode());
         }
     }
 
@@ -118,7 +118,7 @@ public class RoutingLogicTest extends DataTest {
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
         } catch (ServiceException e) {
-            Assert.assertEquals(ErrorCodes.restErrorCodes.WRONG_PARAMETER_VALUE, e.getErrorCode());
+            Assert.assertEquals(ServiceErrorCode.WRONG_PARAMETER_VALUE, e.getErrorCode());
         }
     }
 
@@ -132,7 +132,7 @@ public class RoutingLogicTest extends DataTest {
             request.setConsignee(rp);
             Routing r = mRoutingService.request(request);
         } catch (ServiceException e) {
-            Assert.assertEquals(ErrorCodes.restErrorCodes.MISSING_PARAMETER, e.getErrorCode());
+            Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.getErrorCode());
         }
     }
 
@@ -218,7 +218,7 @@ public class RoutingLogicTest extends DataTest {
             Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
             Assert.assertEquals(r.getLabelContent(), "363");
         } catch (ServiceException e) {
-            Assert.assertEquals(ErrorCodes.restErrorCodes.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.getErrorCode());
+            Assert.assertEquals(org.deku.leo2.rest.services.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.getErrorCode());
         }
     }
 }
