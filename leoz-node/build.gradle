@@ -123,6 +123,15 @@ run {
     standardInput = System.in
 }
 
+jar {
+    manifest {
+        attributes (
+                'Main-Class': mainClassName,
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
+        )
+    }
+}
+
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)

@@ -118,15 +118,6 @@ subprojects {
     // Global jar configuration
     jar {
         entryCompression ZipEntryCompression.STORED
-
-        if (hasProperty("mainClassName")) {
-            manifest {
-                attributes (
-                        'Main-Class': mainClassName,
-                        'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
-                )
-            }
-        }
     }
 
     // Global dependency resolution
