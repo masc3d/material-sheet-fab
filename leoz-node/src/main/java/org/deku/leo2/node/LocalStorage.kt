@@ -47,9 +47,9 @@ class LocalStorage {
         this.logDirectory = File(this.homeDirectory, "log");
         this.dataDirectory = File(this.homeDirectory, "data")
 
-        this.applicationConfigurationFile = File(this.homeDirectory, "leo2.properties")
+        this.applicationConfigurationFile = File(this.homeDirectory, "leoz.properties")
         this.identityConfigurationFile = File(this.dataDirectory, "identity.properties")
-        this.logFile = File(this.logDirectory, "leo2.log")
+        this.logFile = File(this.logDirectory, "leoz.log")
         this.activeMqDataDirectory = File(this.dataDirectory, "activemq")
 
         var homeExists = this.homeDirectory.exists()
