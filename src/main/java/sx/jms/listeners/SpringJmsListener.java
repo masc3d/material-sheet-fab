@@ -48,7 +48,7 @@ public abstract class SpringJmsListener extends Listener implements ErrorHandler
      * Start listener
      */
     @Override
-    public void start() {
+    public synchronized void start() {
         mLog.info(String.format("Starting %s", this.getClass().getSimpleName()));
         if (mListenerContainer == null) {
             mDestination = this.createDestination();
@@ -74,9 +74,12 @@ public abstract class SpringJmsListener extends Listener implements ErrorHandler
      * Stop listener
      */
     @Override
-    public void stop() {
-        mLog.info(String.format("Stopping %s", this.getClass().getSimpleName()));
-        mListenerContainer.shutdown();
+    public synchronized void stop() {
+        if (mListenerContainer != null) {
+            mLog.info(String.format("Stopping %s", this.getClass().getSimpleName()));
+            mListenerContainer.shutdown();
+            mListenerContainer = null;
+        }
     }
 
     @Override
