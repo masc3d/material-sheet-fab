@@ -55,17 +55,16 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
     override fun request(routingRequest: RoutingRequest): Routing {
         val rWSRouting = Routing()
 
-        if (routingRequest.getSendDate() == null) {
+        if (routingRequest.sendDate == null)
             throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "Send Date is required")
-        }
 
-        if (routingRequest.getSender() == null && routingRequest.getConsignee() == null) {
+        if (routingRequest.sender == null && routingRequest.consignee == null)
             throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "Sender or Consignee required")
-        }
 
-        val services: Int = routingRequest.getServices() ?: 0
+        val services: Int = routingRequest.services ?: 0
+
         // TODO REAL oder Volumen ???
-        val weight: Double = routingRequest.getWeight()?.toDouble() ?: 0.0
+        val weight: Double = routingRequest.weight?.toDouble() ?: 0.0
 
         // Unit CTRLs
         var ctrlTransportUnit: Int = 1
@@ -88,20 +87,20 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
 
         //TODO rWereLayer bitmaske suchen
 
-        val sendDate = routingRequest.getSendDate().getLocalDate()
+        val sendDate = routingRequest.sendDate?.getLocalDate()
         val routingValidDate = sendDate
-        var desiredDeliveryDate: LocalDate? = routingRequest.getDesiredDeliveryDate()?.getLocalDate()
+        var desiredDeliveryDate: LocalDate? = routingRequest.desiredDeliveryDate?.getLocalDate()
 
         var deliveryDate: LocalDate? = null
 
         var senderParticipant: Routing.Participant? = null
         val possibleSenderSectors = ArrayList<String>()
-        if (routingRequest.getSender() != null) {
+        if (routingRequest.sender != null) {
             var senderParticipants = queryRoute("S",
                     routingValidDate,
                     sendDate,
                     desiredDeliveryDate,
-                    routingRequest.getSender(),
+                    routingRequest.sender,
                     layer,
                     ctrlTransportUnit,
                     "Sender: ")
@@ -122,12 +121,12 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
 
 
         var consigneeParticipant: Routing.Participant? = null;
-        if (routingRequest.getConsignee() != null) {
+        if (routingRequest.consignee != null) {
             var consigneeParticipants = queryRoute("D",
                     routingValidDate,
                     sendDate,
                     desiredDeliveryDate,
-                    routingRequest.getConsignee(),
+                    routingRequest.consignee,
                     layer,
                     ctrlTransportUnit,
                     "Consignee: ")
@@ -167,10 +166,10 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
      * Query route
      */
     private fun queryRoute(sendDelivery: String,
-                           validDate: LocalDate,
-                           sendDate: LocalDate,
+                           validDate: LocalDate?,
+                           sendDate: LocalDate?,
                            desiredDeliveryDate: LocalDate?,
-                           requestParticipant: RoutingRequest.RequestParticipant,
+                           requestParticipant: RoutingRequest.RequestParticipant?,
                            routingLayers: Iterable<RoutingLayer>,
                            ctrl: Int,
                            exeptionPrefix: String)
@@ -178,10 +177,10 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
 
         val resultParticipants = ArrayList<Routing.Participant>()
 
-        var country: String = requestParticipant.getCountry()?.toUpperCase()
+        var country: String = requestParticipant?.country?.toUpperCase()
                 ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, exeptionPrefix + "empty country")
 
-        var zip: String = requestParticipant.getZip()?.toUpperCase()
+        var zip: String = requestParticipant?.zip?.toUpperCase()
                 ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, exeptionPrefix + "empty zipcode")
 
         val rcountry = mCountryRepository!!.findOne(country)
@@ -229,10 +228,10 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
      * Query route layer
      */
     private fun queryRouteLayer(sendDelivery: String,
-                                requestParticipant: RoutingRequest.RequestParticipant,
+                                requestParticipant: RoutingRequest.RequestParticipant?,
                                 queryZipCode: String,
-                                validDate: LocalDate,
-                                sendDate: LocalDate,
+                                validDate: LocalDate?,
+                                sendDate: LocalDate?,
                                 desiredDeliveryDate: LocalDate?,
                                 routingLayer: RoutingLayer,
                                 ctrl: Int,
@@ -256,7 +255,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
 
         val rRoutes = mRouteRepository!!.findAll(QRoute.route.layer
                 .eq(routingLayer.getLayer())
-                .and(QRoute.route.country.eq(requestParticipant.getCountry().toUpperCase()))
+                .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
                 .and(QRoute.route.zipFrom.loe(queryZipCode))
                 .and(QRoute.route.zipTo.goe(queryZipCode))
                 .and(QRoute.route.validFrom.before(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
@@ -299,7 +298,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
         participant.setDayType(
                 this.getDayType(
                         participant.getDate(),
-                        requestParticipant.getCountry().toUpperCase(),
+                        requestParticipant?.country?.toUpperCase(),
                         rRoute.getHolidayCtrl()
                 ).toString())
 
@@ -319,8 +318,8 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
     /**
      * Get day type
      */
-    private fun getDayType(date: LocalDate, country: String, holidayCtrl: String): DayType {
-        var daytype = when (date.getDayOfWeek()) {
+    private fun getDayType(date: LocalDate?, country: String?, holidayCtrl: String): DayType {
+        var daytype = when (date?.getDayOfWeek()) {
             DayOfWeek.SUNDAY -> DayType.Sunday
             DayOfWeek.SATURDAY -> DayType.Saturday
             else -> DayType.Workday
@@ -344,7 +343,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
     /**
      * Get next delivery day
      */
-    private fun getNextDeliveryDay(date: LocalDate, country: String, holidayCtrl: String): LocalDate {
+    private fun getNextDeliveryDay(date: LocalDate?, country: String, holidayCtrl: String): LocalDate? {
         var date = date
 
         var workDaysRequired: Int = 1
@@ -353,7 +352,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
 
         var workDays: Int = 0
         do {
-            date = date.plusDays(1)
+            date = date?.plusDays(1)
             if (getDayType(date, country, holidayCtrl) == DayType.Workday)
                 workDays++
         } while (workDays < workDaysRequired)
