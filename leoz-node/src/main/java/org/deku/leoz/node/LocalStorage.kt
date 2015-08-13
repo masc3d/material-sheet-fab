@@ -34,10 +34,10 @@ class LocalStorage {
         var baseDirectory: String
         if (SystemUtils.IS_OS_WINDOWS) {
             basePath = System.getenv("ALLUSERSPROFILE")
-            baseDirectory = "LeoZ"
+            baseDirectory = "Leoz"
         } else {
             basePath = System.getProperty("user.home")
-            baseDirectory = ".leoZ"
+            baseDirectory = ".leoz"
         }
         if (Strings.isNullOrEmpty(basePath))
             throw UnsupportedOperationException("Basepath is empty");
