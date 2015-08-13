@@ -145,7 +145,7 @@ class Setup {
                 "--Install=${this.leozsvcPath}",
                 "--Startup=auto",
                 "--LogPath=${LocalStorage.instance().logDirectory}",
-                "--LogPrefix=leozsvc",
+                "--LogPrefix=leoz-svc",
                 "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
                 "--StartMode=jvm",
                 "--StopMode=jvm",
