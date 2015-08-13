@@ -12,10 +12,17 @@ import javax.jms.Topic;
  * Created by masc on 16.04.15.
  */
 public class ActiveMQContext implements MessagingContext {
+    public final static String USERNAME = "leoz";
+    public final static String PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC";
+    public final static String GROUPNAME = "leoz";
+
     /** Singleton instance */
     private static final ActiveMQContext mInstance = new ActiveMQContext();
 
-    private ActiveMQContext() { }
+    private ActiveMQContext() {
+        // Configure broker authentication
+        this.getBroker().setUser(new Broker.User(USERNAME, PASSWORD, GROUPNAME));
+    }
 
     public static ActiveMQContext instance() {
         return mInstance;
@@ -50,5 +57,4 @@ public class ActiveMQContext implements MessagingContext {
     public Topic getNodeNotificationTopic() {
         return this.getBroker().createTopic("leoz.notifications");
     }
-
 }
