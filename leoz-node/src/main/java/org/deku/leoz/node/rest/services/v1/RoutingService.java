@@ -246,17 +246,17 @@ public class RoutingService implements org.deku.leoz.rest.services.v1.RoutingSer
 
         LocalDate sendDate = LocalDate.parse(routingRequest.getSendDate().toString());
         LocalDate routingValidDate = sendDate;
-        LocalDate desireDeliveryDate = null;
+        LocalDate desiredDeliveryDate = null;
 
-        if (routingRequest.getDesireDeliveryDate() != null)
-            desireDeliveryDate = LocalDate.parse(routingRequest.getDesireDeliveryDate().toString());
+        if (routingRequest.getDesiredDeliveryDate() != null)
+            desiredDeliveryDate = LocalDate.parse(routingRequest.getDesiredDeliveryDate().toString());
         LocalDate deliveryDate = null;
 
 //        ShortDate sendDate = routingRequest.getSendDate();
         List<String> possibleSenderSectors = new ArrayList<>();
         Iterable<Routing.Participant> routingParticipantSender = null;
         if (routingRequest.getSender() != null) {
-            routingParticipantSender = queryRoute("S", routingValidDate, sendDate, desireDeliveryDate, routingRequest.getSender(), layer, ctrlTransportUnit, "Sender: ");
+            routingParticipantSender = queryRoute("S", routingValidDate, sendDate, desiredDeliveryDate, routingRequest.getSender(), layer, ctrlTransportUnit, "Sender: ");
             Iterator<Routing.Participant> s = routingParticipantSender.iterator();
             while (s.hasNext()) {
                 if (!possibleSenderSectors.contains(s)) {
@@ -266,13 +266,14 @@ public class RoutingService implements org.deku.leoz.rest.services.v1.RoutingSer
             if (routingParticipantSender.iterator().next().getMessage().equals(""))
                 rWSRouting.setSender(routingParticipantSender.iterator().next());
             routingParticipantSender.iterator().next().setMessage(null);
+            routingParticipantSender.iterator().next().setDate(null);
         } else
             rWSRouting.setSender(null);
 
 
         Iterable<Routing.Participant> routingParticipantConsignee = null;
         if (routingRequest.getConsignee() != null) {
-            routingParticipantConsignee = queryRoute("D", routingValidDate, sendDate, desireDeliveryDate, routingRequest.getConsignee(), layer, ctrlTransportUnit, "Consignee: ");
+            routingParticipantConsignee = queryRoute("D", routingValidDate, sendDate, desiredDeliveryDate, routingRequest.getConsignee(), layer, ctrlTransportUnit, "Consignee: ");
             Iterator<Routing.Participant> c = routingParticipantConsignee.iterator();
             while (c.hasNext()) {
                 if (!possibleSenderSectors.contains(c))
@@ -292,7 +293,7 @@ public class RoutingService implements org.deku.leoz.rest.services.v1.RoutingSer
 
         rWSRouting.setSendDate(new ShortDate(sendDate));
         if (deliveryDate != null)
-            rWSRouting.setDesireDeliveryDate(new ShortDate(deliveryDate));
+            rWSRouting.setDesiredDeliveryDate(new ShortDate(deliveryDate));
 
         String labelContent = "";
         if (routingRequest.getConsignee() != null)
@@ -491,7 +492,7 @@ public class RoutingService implements org.deku.leoz.rest.services.v1.RoutingSer
                                                 String queryZipCode,
                                                 LocalDate validDate,
                                                 LocalDate sendDate,
-                                                LocalDate desireDeliveryDate,
+                                                LocalDate desiredDeliveryDate,
                                                 RoutingLayer routingLayer,
                                                 Integer ctrl,
                                                 String exeptionPrefix) {
@@ -573,6 +574,9 @@ public class RoutingService implements org.deku.leoz.rest.services.v1.RoutingSer
 //TODO Sector aus stationsector
 
             Station rStation = mStationRepository.findOne(routeFound.getStation());
+            if (rStation==null)
+                throw new ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE , exeptionPrefix + "Route Station not found");
+
             mqueryRouteLayer.setSector(rStation.getSector());
             mqueryRouteLayer.setCountry(routeFound.getCountry());
             mqueryRouteLayer.setZipCode(queryZipCode);
@@ -593,16 +597,18 @@ public class RoutingService implements org.deku.leoz.rest.services.v1.RoutingSer
 
             }
             if (sendDelivery == "D") {
-                if (desireDeliveryDate == null)
+                if (desiredDeliveryDate == null)
                     deliveryDate = getNextDeliveryDay(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl());
                 else
-                    deliveryDate = desireDeliveryDate;
+                    deliveryDate = desiredDeliveryDate;
                 mqueryRouteLayer.setDate(deliveryDate);
 
             }
             mqueryRouteLayer.setDayType(getDayType(mqueryRouteLayer.getDate(), requestParticipant.getCountry().toUpperCase(), routeFound.getHolidayCtrl()).toString());
 
             mqueryRouteLayer.setStation(routeFound.getStation());
+        //    mqueryRouteLayer.setStation(com.google.common.base.Strings.padEnd(routeFound.getStation().toString(), 3, '0'));
+
             mqueryRouteLayer.setZone(routeFound.getArea());
             mqueryRouteLayer.setIsland(routeFound.getIsland() != 0);
             mqueryRouteLayer.setEarliestTimeOfDelivery(sqlTimeToShortTime(routeFound.getEtod()));

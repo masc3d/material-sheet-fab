@@ -83,7 +83,7 @@ public class Routing {
 //: "020""
         @ApiModelProperty(dataType = "string", example = "020", position = 10, required = true, value = "Stationnumber", allowableValues = "010 - 999")
         public String getStation() {
-            return com.google.common.base.Strings.padEnd(mStation.toString(), 3, '0');
+            return com.google.common.base.Strings.padStart(mStation.toString(), 3, '0');
         }
 
         public void setStation(Integer station) {
@@ -258,7 +258,7 @@ public class Routing {
         return mDeliveryDate;
     }
 
-    public void setDesireDeliveryDate(ShortDate deliveryDate) {
+    public void setDesiredDeliveryDate(ShortDate deliveryDate) {
         mDeliveryDate = deliveryDate;
     }
 

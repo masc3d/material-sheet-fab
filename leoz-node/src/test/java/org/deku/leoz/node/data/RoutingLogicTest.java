@@ -220,4 +220,77 @@ public class RoutingLogicTest extends DataTest {
             Assert.assertEquals(org.deku.leoz.rest.services.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.getErrorCode());
         }
     }
+    @Test
+    public void testRouting13() {
+        try {
+            RoutingRequest request = new RoutingRequest();
+            request.setSendDate(new ShortDate("2015-08-01"));
+            RoutingRequest.RequestParticipant rps = new RoutingRequest.RequestParticipant();
+            rps.setCountry("DE");
+            rps.setZip("01067");
+            request.setSender(rps);
+            RoutingRequest.RequestParticipant rpc = new RoutingRequest.RequestParticipant();
+            rpc.setCountry("DE");
+            rpc.setZip("01108");
+            request.setConsignee(rpc);
+
+            Routing r = mRoutingService.request(request);
+            Assert.assertEquals(r.getConsignee().getStation(), "412");
+            Assert.assertEquals(r.getSender().getDayType(), "Saturday");
+            Assert.assertEquals(r.getSender().getStation(), "412");
+            Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
+            Assert.assertEquals(r.getLabelContent(), "412");
+        } catch (ServiceException e) {
+            Assert.assertEquals(org.deku.leoz.rest.services.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.getErrorCode());
+        }
+    }
+    @Test
+    public void testRouting14() {
+        try {
+            RoutingRequest request = new RoutingRequest();
+            request.setSendDate(new ShortDate("2015-08-01"));
+            RoutingRequest.RequestParticipant rps = new RoutingRequest.RequestParticipant();
+            rps.setCountry("DE");
+            rps.setZip("20095");
+            request.setSender(rps);
+            RoutingRequest.RequestParticipant rpc = new RoutingRequest.RequestParticipant();
+            rpc.setCountry("DE");
+            rpc.setZip("20148");
+            request.setConsignee(rpc);
+
+            Routing r = mRoutingService.request(request);
+            Assert.assertEquals(r.getConsignee().getStation(), "020");
+            Assert.assertEquals(r.getSender().getDayType(), "Saturday");
+            Assert.assertEquals(r.getSender().getStation(), "020");
+            Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
+            Assert.assertEquals(r.getLabelContent(), "020");
+        } catch (ServiceException e) {
+            Assert.assertEquals(org.deku.leoz.rest.services.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.getErrorCode());
+        }
+    }
+    @Test
+    public void testRouting15() {
+        try {
+            RoutingRequest request = new RoutingRequest();
+            request.setSendDate(new ShortDate("2015-08-01"));
+            RoutingRequest.RequestParticipant rps = new RoutingRequest.RequestParticipant();
+            rps.setCountry("DE");
+            rps.setZip("20095");
+            request.setSender(rps);
+            RoutingRequest.RequestParticipant rpc = new RoutingRequest.RequestParticipant();
+            rpc.setCountry("DE");
+            rpc.setZip("44623");
+            request.setConsignee(rpc);
+
+            Routing r = mRoutingService.request(request);
+            Assert.assertEquals(r.getConsignee().getStation(), "020");
+            Assert.assertEquals(r.getSender().getDayType(), "Saturday");
+            Assert.assertEquals(r.getSender().getStation(), "020");
+            Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
+            Assert.assertEquals(r.getLabelContent(), "020");
+        } catch (ServiceException e) {
+            Assert.assertEquals(ServiceErrorCode.WRONG_PARAMETER_VALUE, e.getErrorCode());
+        }
+    }
+
 }

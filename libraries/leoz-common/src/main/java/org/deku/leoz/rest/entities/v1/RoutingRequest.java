@@ -20,7 +20,7 @@ public class RoutingRequest {
         private String mTimeTo;
         private String mCountry;
         private String mZip;
-        private String mDesireStation;
+        private String mDesiredStation;
 
         public RequestParticipant() {
         }
@@ -70,13 +70,13 @@ public class RoutingRequest {
             mTimeTo = timeto;
         }
 
-        @ApiModelProperty(dataType = "string", example = "020", position = 60, required = false, value = "Desire Stationnumber", allowableValues = "010 - 999")
-        public String getDesireStation() {
-            return mDesireStation;
+        @ApiModelProperty(dataType = "string", example = "020", position = 60, required = false, value = "Desired Stationnumber", allowableValues = "010 - 999")
+        public String getDesiredStation() {
+            return mDesiredStation;
         }
 
-        public void setDesireStation(String desireStation) {
-            mDesireStation = desireStation;
+        public void setDesiredStation(String desiredStation) {
+            mDesiredStation = desiredStation;
         }
     }
 
@@ -85,7 +85,7 @@ public class RoutingRequest {
     private RequestParticipant mSender;
     private RequestParticipant mConsignee;
     private ShortDate mSendDate;
-    private ShortDate mDesireDeliveryDate;
+    private ShortDate mDesiredDeliveryDate;
 
     public RoutingRequest() {
     }
@@ -100,13 +100,13 @@ public class RoutingRequest {
         mSendDate = sendDate;
     }
 
-    @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Desire Deliverydate", allowableValues = "2015-06-02")
-    public ShortDate getDesireDeliveryDate() {
-        return mDesireDeliveryDate;
+    @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Desired Deliverydate", allowableValues = "2015-06-02")
+    public ShortDate getDesiredDeliveryDate() {
+        return mDesiredDeliveryDate;
     }
 
-    public void setDesireDeliveryDate(ShortDate desireDeliveryDate) {
-        mDesireDeliveryDate = desireDeliveryDate;
+    public void setDesiredDeliveryDate(ShortDate desiredDeliveryDate) {
+        mDesiredDeliveryDate = desiredDeliveryDate;
     }
 
 
