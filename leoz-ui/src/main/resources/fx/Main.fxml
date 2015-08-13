@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?><?import javafx.scene.control.ProgressIndicator?><?import javafx.scene.layout.*?><?import javafx.scene.text.Font?>
-<AnchorPane stylesheets="@../css/leo2.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leo2.fx.MainController">
+<AnchorPane stylesheets="@../css/leoz.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leoz.fx.MainController">
     <children>
         <GridPane prefHeight="722.0" prefWidth="1071.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <columnConstraints>
@@ -14,16 +14,16 @@
                 <RowConstraints vgrow="NEVER" />
             </rowConstraints>
             <children>
-                <AnchorPane styleClass="leo2-top-pane">
+                <AnchorPane styleClass="leoz-top-pane">
                     <children>
-                        <Pane styleClass="leo2-logo" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="10.0" />
+                        <Pane styleClass="leoz-logo" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="10.0" />
                     </children>
                 </AnchorPane>
-                <HBox styleClass="leo2-top-pane" GridPane.columnIndex="1">
+                <HBox styleClass="leoz-top-pane" GridPane.columnIndex="1">
                     <children>
                         <AnchorPane id="title" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" HBox.hgrow="ALWAYS">
                             <children>
-                                <Label fx:id="mTitle" layoutX="14.0" layoutY="6.0" styleClass="leo2-title" text="Title" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="6.0">
+                                <Label fx:id="mTitle" layoutX="14.0" layoutY="6.0" styleClass="leoz-title" text="Title" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="6.0">
                            <font>
                               <Font size="20.0" />
                            </font>
@@ -37,13 +37,13 @@
                         </AnchorPane>
                     </children>
                 </HBox>
-            <BorderPane styleClass="leo2-pane" GridPane.rowIndex="1" VBox.vgrow="ALWAYS">
+            <BorderPane styleClass="leoz-pane" GridPane.rowIndex="1" VBox.vgrow="ALWAYS">
                <center>
                         <fx:include fx:id="mSidebar" source="components/Sidebar.fxml" />
                </center>
             </BorderPane>
-                <AnchorPane id="content" fx:id="mContentPaneContainer" minHeight="0.0" minWidth="0.0" styleClass="leo2-content-pane" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS" />
-                <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" styleClass="leo2-bottom-pane" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+                <AnchorPane id="content" fx:id="mContentPaneContainer" minHeight="0.0" minWidth="0.0" styleClass="leoz-content-pane" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS" />
+                <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" styleClass="leoz-bottom-pane" GridPane.columnSpan="2" GridPane.rowIndex="2" />
             </children>
         </GridPane>
     </children>

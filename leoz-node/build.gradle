@@ -19,10 +19,10 @@ apply plugin: org.deku.gradle.PackagerPlugin
 
 sourceCompatibility = 1.8
 version = '0.1'
-mainClassName = "org.deku.leo2.node.Main"
+mainClassName = "org.deku.leoz.node.Main"
 
 dependencies {
-    // leo2 webservice dependencies
+    // leoz webservice dependencies
     compile project(':libraries:sx-common')
     compile project(':libraries:leoz-common')
 

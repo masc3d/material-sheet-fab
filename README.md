@@ -10,7 +10,7 @@
 * [JavaFX Scene Builder](http://gluonhq.com/open-source/scene-builder/)
 
 #### Get up and running ####
-* Clone GIT repository using URL [ssh://git@bitbucket.org/masc3d/leo2](ssh://git@bitbucket.org/masc3d/leo2])
+* Clone GIT repository using URL [ssh://git@bitbucket.org/masc3d/leoz](ssh://git@bitbucket.org/masc3d/leoz])
 * Open project directory with IntelliJ
 
 ### VM ###

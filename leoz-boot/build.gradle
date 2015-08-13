@@ -16,7 +16,7 @@ apply plugin: PackagerPlugin
 
 version '0.1'
 sourceCompatibility = 1.8
-mainClassName = "org.deku.leo2.boot.BootPackage"
+mainClassName = "org.deku.leoz.boot.BootPackage"
 
 dependencies {
     compile project(':libraries:sx-common')

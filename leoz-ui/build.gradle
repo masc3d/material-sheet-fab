@@ -13,7 +13,7 @@ apply plugin: org.deku.gradle.PackagerPlugin
 
 sourceCompatibility = 1.8
 version = '0.1'
-mainClassName = "org.deku.leo2.Main"
+mainClassName = "org.deku.leoz.Main"
 
 dependencies {
     compile project(':libraries:sx-common')
@@ -81,7 +81,7 @@ jar {
 //    dontobfuscate
 //    dontoptimize
 //
-//    keep 'class org.deku.leo2.** { *; }'
+//    keep 'class org.deku.leoz.** { *; }'
 //    keep 'class com.dooapp.fxform.** { *; }'
 //}
 

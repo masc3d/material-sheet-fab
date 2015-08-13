@@ -1,0 +1,28 @@
+package org.deku.leoz.rest.v1;
+
+import org.deku.leoz.rest.WebserviceTest;
+import org.deku.leoz.rest.entities.internal.v1.TestEntry;
+import org.deku.leoz.rest.services.internal.v1.TestService;
+import org.junit.Ignore;
+import org.junit.Test;
+
+public class TestServiceTest extends WebserviceTest {
+    @Test
+    public void testGet() throws Exception {
+
+    }
+
+    @Test
+    @Ignore
+    public void testGetPerformance() throws Exception {
+        TestService ts = this.getService(TestService.class);
+
+        for (int i = 0; i < 20; i++) {
+            TestEntry[] entries = ts.get();
+
+            for (TestEntry e : entries) {
+                System.out.println(String.format("%d %s", i, e.toString()));
+            }
+        }
+    }
+}

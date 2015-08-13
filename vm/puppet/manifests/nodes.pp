@@ -4,14 +4,14 @@ node leo2-base {
 	include leo2::java
 }
 
-# leo2 developer configuration
+# leoz developer configuration
 node leo2-dev inherits leo2-base {
   class { leo2::tomcat:
   	debug => true 
   }
 }
 
-# leo2 productive configuration
+# leoz productive configuration
 node leo2-prod inherits leo2-base {
 	include leo2::tomcat
 }

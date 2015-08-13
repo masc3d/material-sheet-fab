@@ -242,7 +242,7 @@ compile - Compile classpath for source set 'main'.
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 +--- javax.inject:javax.inject:1
-+--- com.h2database:h2:1.+ -> 1.4.187
++--- com.h2database:h2:1.+ -> 1.4.188
 +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 -> 2.5.4
@@ -529,7 +529,7 @@ default - Configuration for default artifacts.
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 +--- javax.inject:javax.inject:1
-+--- com.h2database:h2:1.+ -> 1.4.187
++--- com.h2database:h2:1.+ -> 1.4.188
 +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 -> 2.5.4
@@ -837,7 +837,7 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 +--- javax.inject:javax.inject:1
-+--- com.h2database:h2:1.+ -> 1.4.187
++--- com.h2database:h2:1.+ -> 1.4.188
 +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 -> 2.5.4
@@ -1124,7 +1124,7 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 +--- javax.inject:javax.inject:1
-+--- com.h2database:h2:1.+ -> 1.4.187
++--- com.h2database:h2:1.+ -> 1.4.188
 +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 -> 2.5.4
@@ -1417,7 +1417,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 +--- javax.inject:javax.inject:1
-+--- com.h2database:h2:1.+ -> 1.4.187
++--- com.h2database:h2:1.+ -> 1.4.188
 +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 +--- com.wordnik:swagger-jaxrs:+ -> 1.5.3-M1
 |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 -> 2.5.4
