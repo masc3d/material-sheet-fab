@@ -17,9 +17,6 @@ import java.util.List;
  * Created by masc on 01.06.15.
  */
 public abstract class Broker implements Disposable {
-    public final static String USERNAME = "leo2";
-    public final static String PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC";
-
     /** Log */
     protected Log mLog = LogFactory.getLog(this.getClass());
 
@@ -39,6 +36,33 @@ public abstract class Broker implements Disposable {
         @Override
         public String toString() {
             return mTransportType;
+        }
+    }
+
+    /**
+     * Broker user
+     */
+    public static class User {
+        private String mUserName;
+        private String mPassword;
+        private String mGroupName;
+
+        public User(String userName, String password, String groupName) {
+            mUserName = userName;
+            mPassword = password;
+            mGroupName = groupName;
+        }
+
+        public String getUserName() {
+            return mUserName;
+        }
+
+        public String getPassword() {
+            return mPassword;
+        }
+
+        public String getGroupName() {
+            return mGroupName;
         }
     }
 
@@ -87,6 +111,8 @@ public abstract class Broker implements Disposable {
     private Integer mNativeTcpPort;
     /** Peer brokers */
     private List<PeerBroker> mPeerBrokers = new ArrayList<>();
+    /*+ Broker users */
+    private User mUser;
     /** Data directory for store */
     private File mDataDirectory;
 
@@ -189,6 +215,16 @@ public abstract class Broker implements Disposable {
 
     public List<PeerBroker> getPeerBrokers() {
         return mPeerBrokers;
+    }
+
+    /**
+     * Add broker user
+     * @param user
+     */
+    public void setUser(User user) { mUser = user; }
+
+    public User getUser() {
+        return mUser;
     }
 
     @Override

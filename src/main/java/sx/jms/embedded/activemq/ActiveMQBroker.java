@@ -18,6 +18,7 @@ import sx.LazyInstance;
 import sx.jms.embedded.Broker;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.IllegalStateException;
 import javax.jms.Queue;
 import javax.jms.Topic;
 import java.net.URI;
@@ -89,6 +90,9 @@ public class ActiveMQBroker extends Broker {
     protected void startImpl() throws Exception {
         this.stop();
 
+        if (this.getUser() == null)
+            throw new IllegalStateException("Broker user not set");
+
         // Broker initialization
         mBrokerService = new BrokerService();
         mBrokerService.setDataDirectoryFile(this.getDataDirectory());
@@ -110,8 +114,8 @@ public class ActiveMQBroker extends Broker {
         for (PeerBroker pb : this.getPeerBrokers()) {
             URI hostUrl = createUri(pb, false);
             NetworkConnector nc = new DiscoveryNetworkConnector(URI.create(String.format("static:(%s)", hostUrl)));
-            nc.setUserName(USERNAME);
-            nc.setPassword(PASSWORD);
+            nc.setUserName(this.getUser().getUserName());
+            nc.setPassword(this.getUser().getPassword());
             nc.setDuplex(true);
             mBrokerService.addNetworkConnector(nc);
         }
@@ -127,8 +131,7 @@ public class ActiveMQBroker extends Broker {
 
         // Users
         List<AuthenticationUser> users = new ArrayList<>();
-        String GROUP_LEO = "leo2";
-        users.add(new AuthenticationUser(USERNAME, PASSWORD, GROUP_LEO));
+        users.add(new AuthenticationUser(this.getUser().getUserName(), this.getUser().getPassword(), this.getUser().getGroupName()));
         pAuth.setUsers(users);
 
         brokerPlugins.add(pAuth);
@@ -137,36 +140,37 @@ public class ActiveMQBroker extends Broker {
         //region Authorizations
         List<DestinationMapEntry> authzEntries = new ArrayList<>();
 
-        AuthorizationEntry pAuthzEntry = new AuthorizationEntry();
+        String group = this.getUser().getGroupName();
 
+        AuthorizationEntry pAuthzEntry;
         // Leo group, all access
         pAuthzEntry = new AuthorizationEntry();
         pAuthzEntry.setTopic(">");
-        pAuthzEntry.setAdmin(GROUP_LEO);
-        pAuthzEntry.setRead(GROUP_LEO);
-        pAuthzEntry.setWrite(GROUP_LEO);
+        pAuthzEntry.setAdmin(group);
+        pAuthzEntry.setRead(group);
+        pAuthzEntry.setWrite(group);
         authzEntries.add(pAuthzEntry);
 
         pAuthzEntry = new AuthorizationEntry();
         pAuthzEntry.setQueue(">");
-        pAuthzEntry.setAdmin(GROUP_LEO);
-        pAuthzEntry.setRead(GROUP_LEO);
-        pAuthzEntry.setWrite(GROUP_LEO);
+        pAuthzEntry.setAdmin(group);
+        pAuthzEntry.setRead(group);
+        pAuthzEntry.setWrite(group);
         authzEntries.add(pAuthzEntry);
 
         // Leo group, all access to temp destinations
         pAuthzEntry = new TempDestinationAuthorizationEntry();
         pAuthzEntry.setTopic(">");
-        pAuthzEntry.setAdmin(GROUP_LEO);
-        pAuthzEntry.setRead(GROUP_LEO);
-        pAuthzEntry.setWrite(GROUP_LEO);
+        pAuthzEntry.setAdmin(group);
+        pAuthzEntry.setRead(group);
+        pAuthzEntry.setWrite(group);
         authzEntries.add(pAuthzEntry);
 
         pAuthzEntry = new TempDestinationAuthorizationEntry();
         pAuthzEntry.setQueue(">");
-        pAuthzEntry.setAdmin(GROUP_LEO);
-        pAuthzEntry.setRead(GROUP_LEO);
-        pAuthzEntry.setWrite(GROUP_LEO);
+        pAuthzEntry.setAdmin(group);
+        pAuthzEntry.setRead(group);
+        pAuthzEntry.setWrite(group);
         authzEntries.add(pAuthzEntry);
 
         // Create authorization map from entries
@@ -236,8 +240,8 @@ public class ActiveMQBroker extends Broker {
         if (mConnectionFactory == null) {
             PooledConnectionFactory psf = new PooledConnectionFactory();
             psf.setConnectionFactory(new ActiveMQConnectionFactory(
-                    Broker.USERNAME,
-                    Broker.PASSWORD,
+                    this.getUser().getUserName(),
+                    this.getUser().getPassword(),
                     // Explicitly do _not_ create (another) embedded broker on connection, just in case
                     mLocalUri.toString()));
             mConnectionFactory = psf;
