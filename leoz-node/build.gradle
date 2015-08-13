@@ -161,7 +161,14 @@ sourceSets {
         }
     }
     // Support for optionally playinc kotlin sources into separate directory
-    main.java.srcDirs += 'src/main/kotlin'
+    main {
+        java {
+            srcDirs += 'src/main/kotlin'
+        }
+        kotlin  {
+            srcDirs += srcdir_apt
+        }
+    }
 }
 
 // Copy webapp content into classpath prior to compilation
