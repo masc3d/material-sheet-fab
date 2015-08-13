@@ -1,6 +1,7 @@
 package org.deku.leoz.node.rest.services.v1
 
 import com.google.common.base.Strings
+import com.google.common.collect.Iterables
 import com.google.common.primitives.Ints
 import com.mysema.query.jpa.impl.JPAQuery
 import com.mysema.query.types.expr.BooleanExpression
@@ -46,10 +47,6 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
     var mRoutingLayerRepository: RoutingLayerRepository? = null
     @Inject
     var mStationRepository: StationRepository? = null
-
-    public constructor() {
-
-    }
 
     /**
      * Request routing
@@ -235,114 +232,107 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
                                 queryZipCode: String,
                                 validDate: LocalDate,
                                 sendDate: LocalDate,
-                                desireDeliveryDate: LocalDate?,
+                                desiredDeliveryDate: LocalDate?,
                                 routingLayer: RoutingLayer,
                                 ctrl: Int,
                                 exeptionPrefix: String)
             : Routing.Participant {
 
-        val mqueryRouteLayer = Routing.Participant()
+        val participant = Routing.Participant()
 
         // TODO Join
-        //        JPAQuery qJPARote = new JPAQuery();
-        //        QStation qStation = QStation.station;
-        //        qJPARote.from(qRoute).leftJoin(qStation);
+        //        val query = JPAQuery()
+        //        query.from(QRoute.route)
+        //                .innerJoin(QStation.station).where(
+        //                QRoute.route.layer
+        //                        .eq(routingLayer.getLayer())
+        //                        .and(QRoute.route.country.eq(requestParticipant.getCountry().toUpperCase()))
+        //                        .and(QRoute.route.zipFrom.loe(queryZipCode))
+        //                        .and(QRoute.route.zipTo.goe(queryZipCode))
+        //                        .and(QRoute.route.validFrom.before(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
+        //                        .and(QRoute.route.validTo.after(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
+        //        )
 
-        val qJPARote = JPAQuery()
-        val qRoute = QRoute.route
-        val qStation = QStation.station
-        qJPARote.from(qRoute).innerJoin(qStation)
-        var rWhere: BooleanExpression? = null
-
-        rWhere = qRoute.layer
+        val rRoutes = mRouteRepository!!.findAll(QRoute.route.layer
                 .eq(routingLayer.getLayer())
-                .and(qRoute.country.eq(requestParticipant.getCountry().toUpperCase()))
-                .and(qRoute.zipFrom.loe(queryZipCode))
-                .and(qRoute.zipTo.goe(queryZipCode))
-                .and(qRoute.validFrom.before(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
-                .and(qRoute.validTo.after(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
+                .and(QRoute.route.country.eq(requestParticipant.getCountry().toUpperCase()))
+                .and(QRoute.route.zipFrom.loe(queryZipCode))
+                .and(QRoute.route.zipTo.goe(queryZipCode))
+                .and(QRoute.route.validFrom.before(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
+                .and(QRoute.route.validTo.after(Timestamp.valueOf(validDate.toString() + " 00:00:00"))))
 
-        qJPARote.where(rWhere)
-        val rRouten = mRouteRepository!!.findAll(rWhere)
-
-        if (!rRouten.iterator().hasNext())
+        if (Iterables.isEmpty(rRoutes))
             throw ServiceException(RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, exeptionPrefix + "no Route found")
-        else {
-            val routeFound = rRouten.iterator().next()
-            //TODO Sector aus stationsector
 
-            val rStation = mStationRepository!!.findOne(routeFound.getStation())
+        val rRoute = rRoutes.first()
 
-            if (rStation == null)
-                throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "Route Station not found");
+        //TODO Sector aus stationsector
 
-            mqueryRouteLayer.setSector(rStation.getSector())
-            mqueryRouteLayer.setCountry(routeFound.getCountry())
-            mqueryRouteLayer.setZipCode(queryZipCode)
-            //            mqueryRouteLayer.setPartnerManager(rStation.getP);
-            //        mqueryRouteLayer.setDayType(getDayType(LocalDate.parse(date.toString()), mCountry, mRoutingParticipantLayer.routeFound.getHolidayCtrl()));
-            //mqueryRouteLayer.setDayType(getDayType(LocalDate.from(sqlDate.toLocalDateTime()), requestRequestParticipant.getCountry().toUpperCase(), routeFound.getHolidayCtrl()).toString());
+        val rStation = mStationRepository!!.findOne(rRoute.getStation())
 
+        if (rStation == null)
+            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "Route Station not found");
 
-            val deliveryDate: LocalDate
-            mqueryRouteLayer.setTerm(routeFound.getTerm())
-            if (sendDelivery === "S") {
+        participant.setSector(rStation.getSector())
+        participant.setCountry(rRoute.getCountry())
+        participant.setZipCode(queryZipCode)
+        participant.setTerm(rRoute.getTerm())
+
+        when(sendDelivery) {
+            "S" -> {
                 //                mqueryRouteLayer.setDayType(getDayType(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl()).toString());
                 //TODO nächsten Linientag ermitteln
-                mqueryRouteLayer.setDate(sendDate)
+                participant.setDate(sendDate)
                 //                mqueryRouteLayer.setDate(getNextDeliveryDay(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl()));
                 //                if (date.equals(null))
                 //                    date = getNextDeliveryDay(date, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl());
-
             }
-            if (sendDelivery === "D") {
-                if (desireDeliveryDate == null)
-                    deliveryDate = getNextDeliveryDay(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl())
-                else
-                    deliveryDate = desireDeliveryDate
-                mqueryRouteLayer.setDate(deliveryDate)
+            "D" -> {
+                var deliveryDate = desiredDeliveryDate
+                        ?: getNextDeliveryDay(sendDate, participant.getCountry(), rRoute.getHolidayCtrl())
 
+                participant.setDate(deliveryDate)
             }
-            mqueryRouteLayer.setDayType(getDayType(mqueryRouteLayer.getDate(), requestParticipant.getCountry().toUpperCase(), routeFound.getHolidayCtrl()).toString())
-
-            mqueryRouteLayer.setStation(routeFound.getStation())
-            mqueryRouteLayer.setZone(routeFound.getArea())
-            mqueryRouteLayer.setIsland(routeFound.getIsland() !== 0)
-            mqueryRouteLayer.setEarliestTimeOfDelivery(sqlTimeToShortTime(routeFound.getEtod()))
-            mqueryRouteLayer.setEarliestTimeOfDelivery(ShortTime(routeFound.getEtod().toString()))
-            //        if (zipConform != null)
-            //            mqueryRouteLayer.setZipCode(zipConform);
-            mqueryRouteLayer.setTerm(routeFound.getTerm())
-            if (routeFound.getLtodsa() != null)
-                mqueryRouteLayer.setSundayDeliveryUntil(ShortTime(routeFound.getLtodsa().toString()))
-            //        mqueryRouteLayer.setDelieveryDay(getNextDeliveryDay(LocalDate.parse(date.toString()), mCountry, routeFound.getHolidayCtrl()));
         }
-        return mqueryRouteLayer
+
+        participant.setDayType(
+                this.getDayType(
+                        participant.getDate(),
+                        requestParticipant.getCountry().toUpperCase(),
+                        rRoute.getHolidayCtrl()
+                ).toString())
+
+        participant.setStation(rRoute.getStation())
+        participant.setZone(rRoute.getArea())
+        participant.setIsland(rRoute.getIsland() !== 0)
+        participant.setEarliestTimeOfDelivery(sqlTimeToShortTime(rRoute.getEtod()))
+        participant.setEarliestTimeOfDelivery(ShortTime(rRoute.getEtod().toString()))
+        participant.setTerm(rRoute.getTerm())
+        if (rRoute.getLtodsa() != null)
+            participant.setSundayDeliveryUntil(ShortTime(rRoute.getLtodsa().toString()))
+
+        return participant
     }
 
 
     /**
      * Get day type
      */
-    private fun getDayType(date: LocalDate, Country: String, Holidayctrl: String): DayType {
-        var daytype = DayType.Workday
+    private fun getDayType(date: LocalDate, country: String, holidayCtrl: String): DayType {
+        var daytype = when (date.getDayOfWeek()) {
+            DayOfWeek.SUNDAY -> DayType.Sunday
+            DayOfWeek.SATURDAY -> DayType.Saturday
+            else -> DayType.Workday
+        }
 
-        //        DayOfWeek javaday = date.getDayOfWeek();
-        val day = date.getDayOfWeek()
+        val rHolidayCtrl = mHolidayctrlRepostitory!!.findOne(
+                HolidayCtrlPK(java.sql.Timestamp.valueOf(date.toString() + " 00:00:00"), country))
 
-        if (day === DayOfWeek.SUNDAY)
-            daytype = DayType.Sunday
-        if (day === DayOfWeek.SATURDAY)
-            daytype = DayType.Saturday
-
-
-        val rholidayctrl = mHolidayctrlRepostitory!!.findOne(HolidayCtrlPK(java.sql.Timestamp.valueOf(date.toString() + " 00:00:00"), Country))
-
-        if (rholidayctrl != null) {
-            if (rholidayctrl.getCtrlPos() === -1)
+        if (rHolidayCtrl != null) {
+            if (rHolidayCtrl.getCtrlPos() === -1)
                 daytype = DayType.Holiday
-            else if (rholidayctrl.getCtrlPos() > 0) {
-                if (Holidayctrl.substring(rholidayctrl.getCtrlPos()!!, rholidayctrl.getCtrlPos()!!) === "J")
+            else if (rHolidayCtrl.getCtrlPos() > 0) {
+                if (holidayCtrl.substring(rHolidayCtrl.getCtrlPos()!!, rHolidayCtrl.getCtrlPos()!!) === "J")
                     daytype = DayType.RegionalHoliday
             }
         }
