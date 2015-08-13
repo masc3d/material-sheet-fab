@@ -94,9 +94,10 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
 
         var deliveryDate: LocalDate? = null
 
+        var senderParticipant: Routing.Participant? = null
         val possibleSenderSectors = ArrayList<String>()
         if (routingRequest.getSender() != null) {
-            var routingParticipantSender = queryRoute("S",
+            var senderParticipants = queryRoute("S",
                     routingValidDate,
                     sendDate,
                     desiredDeliveryDate,
@@ -105,23 +106,24 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
                     ctrlTransportUnit,
                     "Sender: ")
 
-            val s = routingParticipantSender.iterator()
-            while (s.hasNext()) {
-                if (!possibleSenderSectors.contains(s)) {
-                    possibleSenderSectors.add(s.next().getSector())
-                }
+            for (s in senderParticipants) {
+                if (!possibleSenderSectors.contains(s))
+                    possibleSenderSectors.add(s.getSector())
             }
-            if (routingParticipantSender.iterator().next().getMessage() == "")
-                rWSRouting.setSender(routingParticipantSender.iterator().next())
-            routingParticipantSender.iterator().next().setDate(null)
-            routingParticipantSender.iterator().next().setMessage(null)
+
+            senderParticipant = senderParticipants.first()
+            if (Strings.isNullOrEmpty(senderParticipant.getMessage()))
+                rWSRouting.setSender(senderParticipant)
+
+            senderParticipant.setDate(null)
+            senderParticipant.setMessage(null)
         } else
             rWSRouting.setSender(null)
 
 
-        var routingParticipantConsignee: Iterable<Routing.Participant>? = null
+        var consigneeParticipant: Routing.Participant? = null;
         if (routingRequest.getConsignee() != null) {
-            routingParticipantConsignee = queryRoute("D",
+            var consigneeParticipants = queryRoute("D",
                     routingValidDate,
                     sendDate,
                     desiredDeliveryDate,
@@ -130,31 +132,30 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
                     ctrlTransportUnit,
                     "Consignee: ")
 
-            val c = routingParticipantConsignee.iterator()
-            while (c.hasNext()) {
+            for (c in consigneeParticipants) {
                 if (!possibleSenderSectors.contains(c))
-                    possibleSenderSectors.add(c.next().getSector())
+                    possibleSenderSectors.add(c.getSector())
             }
-            if (routingParticipantConsignee.iterator().next().getMessage() == "") {
-                rWSRouting.setConsignee(routingParticipantConsignee.iterator().next())
-                deliveryDate = routingParticipantConsignee.iterator().next().getDate()
+
+            consigneeParticipant = consigneeParticipants.first()
+            if (Strings.isNullOrEmpty(consigneeParticipant.getMessage())) {
+                rWSRouting.setConsignee(consigneeParticipant)
+                deliveryDate = consigneeParticipant.getDate()
             }
-            routingParticipantConsignee.iterator().next().setDate(null)
-            routingParticipantConsignee.iterator().next().setMessage(null)
+            consigneeParticipant.setDate(null)
+            consigneeParticipant.setMessage(null)
         } else
             rWSRouting.setConsignee(null)
 
 
-        val viaHubs = arrayOf("")// {"NST", "N1"};
+        val viaHubs = arrayOf("") // {"NST", "N1"};
 
         rWSRouting.setSendDate(ShortDate(sendDate))
         if (deliveryDate != null)
             rWSRouting.setDesiredDeliveryDate(ShortDate(deliveryDate))
 
-        var labelContent = ""
-        if (routingRequest.getConsignee() != null)
-            labelContent += com.google.common.base.Strings.padEnd(routingParticipantConsignee!!.iterator().next().getStation().toString(), 3, '0')
-        rWSRouting.setLabelContent(labelContent)
+        if (consigneeParticipant != null)
+            rWSRouting.setLabelContent(Strings.padEnd(consigneeParticipant.getStation().toString(), 3, '0'))
 
         rWSRouting.setViaHubs(viaHubs)
         rWSRouting.setMessage("OK")
@@ -205,7 +206,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
 
         //TODO verbessern ?
         for (routingLayer in routingLayers) {
-            val resultParticipantLayer = queryRouteLayer(sendDelivery,
+            val participant = queryRouteLayer(sendDelivery,
                     requestParticipant,
                     parsedZip.query,
                     validDate,
@@ -215,9 +216,9 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
                     ctrl,
                     exeptionPrefix)
 
-            if (resultParticipantLayer.getStation() != "0") {
-                resultParticipantLayer.setZipCode(parsedZip.conform)
-                resultParticipants.add(resultParticipantLayer)
+            if (participant.getStation() != "0") {
+                participant.setZipCode(parsedZip.conform)
+                resultParticipants.add(participant)
             }
         }
 
@@ -329,10 +330,10 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
                 HolidayCtrlPK(java.sql.Timestamp.valueOf(date.toString() + " 00:00:00"), country))
 
         if (rHolidayCtrl != null) {
-            if (rHolidayCtrl.getCtrlPos() === -1)
+            if (rHolidayCtrl.getCtrlPos() == -1)
                 daytype = DayType.Holiday
             else if (rHolidayCtrl.getCtrlPos() > 0) {
-                if (holidayCtrl.substring(rHolidayCtrl.getCtrlPos()!!, rHolidayCtrl.getCtrlPos()!!) === "J")
+                if (holidayCtrl.charAt(rHolidayCtrl.getCtrlPos()) == 'J')
                     daytype = DayType.RegionalHoliday
             }
         }
@@ -343,27 +344,26 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
     /**
      * Get next delivery day
      */
-    private fun getNextDeliveryDay(date: LocalDate, Country: String, Holidayctrl: String): LocalDate {
+    private fun getNextDeliveryDay(date: LocalDate, country: String, holidayCtrl: String): LocalDate {
         var date = date
-        var forDeliveryNecessaryWorkdays: Int = 1
-        if (getDayType(date, Country, Holidayctrl) != DayType.Workday)
-            forDeliveryNecessaryWorkdays = 2
 
-        var wokdays: Int = 0
+        var workDaysRequired: Int = 1
+        if (this.getDayType(date, country, holidayCtrl) != DayType.Workday)
+            workDaysRequired = 2
+
+        var workDays: Int = 0
         do {
             date = date.plusDays(1)
-            if (getDayType(date, Country, Holidayctrl) == DayType.Workday)
-                wokdays++
-        } while (wokdays < forDeliveryNecessaryWorkdays)
+            if (getDayType(date, country, holidayCtrl) == DayType.Workday)
+                workDays++
+        } while (workDays < workDaysRequired)
 
         return date
     }
 
     companion object {
         public fun sqlTimeToShortTime(time: java.sql.Time?): ShortTime? {
-            if (time == null)
-                return null
-            return ShortTime(time.toString())
+            return if (time != null) ShortTime(time.toString()) else null
         }
     }
 }
