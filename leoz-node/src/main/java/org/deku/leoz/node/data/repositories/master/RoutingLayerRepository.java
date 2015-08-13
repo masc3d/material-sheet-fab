@@ -7,7 +7,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 /**
  * Created by JT on 23.06.15.
  */
-public interface RoutingLayerRepository extends JpaRepository<RoutingLayer,Integer>,QueryDslPredicateExecutor
+public interface RoutingLayerRepository extends JpaRepository<RoutingLayer,Integer>, QueryDslPredicateExecutor<RoutingLayer>
 {
 }
 

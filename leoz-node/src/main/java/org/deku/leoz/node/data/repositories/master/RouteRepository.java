@@ -8,5 +8,5 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 /**
  * Created by masc on 16.05.15.
  */
-public interface RouteRepository extends JpaRepository<Route, Long>, QueryDslPredicateExecutor, RouteRepositoryCustom {
+public interface RouteRepository extends JpaRepository<Route, Long>, QueryDslPredicateExecutor<Route>, RouteRepositoryCustom {
 }

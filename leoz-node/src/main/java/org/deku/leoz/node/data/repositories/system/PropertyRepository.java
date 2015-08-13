@@ -9,6 +9,6 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 /**
  * Created by JT on 29.06.15.
  */
-public interface PropertyRepository extends JpaRepository<Property,PropertyPK>, QueryDslPredicateExecutor  {
+public interface PropertyRepository extends JpaRepository<Property,PropertyPK>, QueryDslPredicateExecutor<Property>  {
 
 }

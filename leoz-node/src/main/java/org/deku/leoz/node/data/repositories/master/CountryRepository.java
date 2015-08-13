@@ -8,6 +8,6 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 /**
  * Created by JT on 11.05.15.
  */
-public interface CountryRepository extends JpaRepository<Country, String>, QueryDslPredicateExecutor, CountryRepositoryCustom {
+public interface CountryRepository extends JpaRepository<Country, String>, QueryDslPredicateExecutor<Country>, CountryRepositoryCustom {
 }
 

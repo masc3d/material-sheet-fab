@@ -8,5 +8,5 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 /**
  * Created by masc on 30.04.15.
  */
-public interface StationRepository extends JpaRepository<Station, Integer>, QueryDslPredicateExecutor, StationRepositoryCustom {
+public interface StationRepository extends JpaRepository<Station, Integer>, QueryDslPredicateExecutor<Station>, StationRepositoryCustom {
 }
