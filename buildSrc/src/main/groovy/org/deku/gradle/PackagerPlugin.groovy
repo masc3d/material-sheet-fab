@@ -58,29 +58,29 @@ class PackagerPlugin implements Plugin<Project> {
         project.extensions.packager = ext
 
         // Bundle task
-        project.tasks.create('packagerBundle', PackagerBundleTask) {
+        project.tasks.create('buildBundle', PackagerBundleTask) {
             extension = ext
             jvmOptions = "-XX:+UseCompressedOops"
         }
-        project.tasks.packagerBundle.dependsOn(project.tasks.jar)
+        project.tasks.buildBundle.dependsOn(project.tasks.jar)
 
         // Release bundle task
-        project.tasks.create('packagerReleaseBundle', PackagerReleaseBundleTask) {
+        project.tasks.create('releaseBundle', PackagerReleaseBundleTask) {
             extension = ext
         }
-        project.tasks.packagerReleaseBundle.dependsOn(project.tasks.packagerBundle)
+        project.tasks.releaseBundle.dependsOn(project.tasks.buildBundle)
 
         // Release jars task
-        project.tasks.create('packagerReleaseJars', PackagerReleaseJarsTask) {
+        project.tasks.create('releaseJars', PackagerReleaseJarsTask) {
             extension = ext
         }
-        project.tasks.packagerReleaseJars.dependsOn(project.tasks.jar)
+        project.tasks.releaseJars.dependsOn(project.tasks.jar)
 
         // Release push task
-        project.tasks.create('packagerReleasePush', PackagerReleasePushTask) {
+        project.tasks.create('releasePush', PackagerReleasePushTask) {
             extension = ext
         }
-        project.tasks.packagerReleasePush.dependsOn(project.tasks.packagerReleaseJars)
+        project.tasks.releasePush.dependsOn(project.tasks.releaseJars)
     }
 }
 

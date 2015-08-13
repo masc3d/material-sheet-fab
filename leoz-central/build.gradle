@@ -129,7 +129,7 @@ packager {
 def releaseBin() {
     def srcDir = new File(g_bin_path, g_arch_identifier)
 
-    def File archReleasePath = tasks.packagerReleaseBundle.buildReleaseArchPath(g_release_path)
+    def File archReleasePath = tasks.releaseBundle.buildReleaseArchPath(g_release_path)
     def dstDir
 
     if (SystemUtils.IS_OS_MAC_OSX) {
@@ -153,8 +153,8 @@ def releaseBin() {
     }
 }
 // Execute copyBin after packager tasks
-tasks.packagerReleaseBundle.doLast { releaseBin() }
-tasks.packagerReleaseJars.doLast { releaseBin() }
+tasks.releaseBundle.doLast { releaseBin() }
+tasks.releaseJars.doLast { releaseBin() }
 
 // masc20150507. task prototypes
 ////copying all dependencies attached to 'compile' into a specific folder
