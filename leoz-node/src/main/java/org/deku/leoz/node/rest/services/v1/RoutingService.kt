@@ -198,7 +198,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         if (zip.length() > rcountry.getMaxLen())
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} zipcode too long")
 
-        val parsedZip = ParsedZip.parseZip(rcountry.getZipFormat(), zip)
+        val parsedZip = ParsedZip(zip = zip, zipFormat = rcountry.getZipFormat())
 
         if (Strings.isNullOrEmpty(parsedZip.query))
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} wrong zipcode format")
@@ -278,7 +278,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         participant.zipCode = queryZipCode
         participant.term = rRoute.getTerm()
 
-        when(sendDelivery) {
+        when (sendDelivery) {
             "S" -> {
                 //                mqueryRouteLayer.setDayType(getDayType(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl()).toString());
                 //TODO nächsten Linientag ermitteln
@@ -368,21 +368,19 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
         return d
     }
-}
 
-/**
- * Parsed zip
- */
-class ParsedZip(var query: String, var conform: String) {
-    companion object {
-        /**
-         * Parse zip
-         */
-        public fun parseZip(zipFormat: String, zip: String): ParsedZip {
+    /**
+     * Parsed zip
+     */
+    private class ParsedZip(val zip: String, val zipFormat: String) {
+        val query: String
+        val conform: String
+
+        init {
             var zipQuery = ""
             var zipConform = ""
-            val cZipFormat = zipFormat
-            val cZip = zip
+            val cZipFormat = this.zipFormat
+            val cZip = this.zip
 
             var i = 0
             var k = 0
@@ -394,7 +392,7 @@ class ParsedZip(var query: String, var conform: String) {
 
             var validZip = true
 
-            while (k < zipFormat.length() && validZip) {
+            while (k < this.zipFormat.length() && validZip) {
                 if (i + 1 > cZip.length())
                     csZip = ""
                 else
@@ -474,7 +472,8 @@ class ParsedZip(var query: String, var conform: String) {
 
             }
 
-            return ParsedZip(zipQuery, zipConform)
+            this.query = zipQuery
+            this.conform = zipConform
         }
     }
 }
