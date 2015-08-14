@@ -53,7 +53,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
      * @param routingRequest Routing request
      */
     override fun request(routingRequest: RoutingRequest): Routing {
-        val rWSRouting = Routing()
+        val routing = Routing()
 
         if (routingRequest.sendDate == null)
             throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "Send date is required")
@@ -112,12 +112,12 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
             senderParticipant = senderParticipants.first()
             if (Strings.isNullOrEmpty(senderParticipant.message))
-                rWSRouting.sender = senderParticipant
+                routing.sender = senderParticipant
 
             senderParticipant.date = null
             senderParticipant.message = null
         } else
-            rWSRouting.sender = null
+            routing.sender = null
 
 
         var consigneeParticipant: Routing.Participant? = null;
@@ -138,28 +138,28 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
             consigneeParticipant = consigneeParticipants.first()
             if (Strings.isNullOrEmpty(consigneeParticipant.message)) {
-                rWSRouting.consignee = consigneeParticipant
+                routing.consignee = consigneeParticipant
                 deliveryDate = consigneeParticipant.date
             }
             consigneeParticipant.date = null
             consigneeParticipant.message = null
         } else
-            rWSRouting.consignee = null
+            routing.consignee = null
 
 
         val viaHubs = arrayOf("") // {"NST", "N1"};
 
-        rWSRouting.sendDate = ShortDate(sendDate)
+        routing.sendDate = ShortDate(sendDate)
         if (deliveryDate != null)
-            rWSRouting.deliveryDate = ShortDate(deliveryDate)
+            routing.deliveryDate = ShortDate(deliveryDate)
 
         if (consigneeParticipant != null)
-            rWSRouting.labelContent = consigneeParticipant.stationFormatted ?: ""
+            routing.labelContent = consigneeParticipant.stationFormatted ?: ""
 
-        rWSRouting.viaHubs = viaHubs
-        rWSRouting.message = "OK"
+        routing.viaHubs = viaHubs
+        routing.message = "OK"
 
-        return rWSRouting
+        return routing
     }
 
     /**
