@@ -56,7 +56,7 @@ public class Authorizer implements Disposable {
         // Start will be deferred until the message broker is up.
         mAuthorizationTask = () -> {
             boolean success = false;
-            while (true) {
+            while (!success && !mExecutorService.isShutdown()) {
                 try {
                     IdentityPublisher isc = new IdentityPublisher(ActiveMQContext.instance());
 
