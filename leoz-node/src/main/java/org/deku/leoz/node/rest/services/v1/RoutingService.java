@@ -294,7 +294,7 @@ public class RoutingService implements org.deku.leoz.rest.services.v1.RoutingSer
 
         rWSRouting.setSendDate(new ShortDate(sendDate));
         if (deliveryDate != null)
-            rWSRouting.setDesiredDeliveryDate(new ShortDate(deliveryDate));
+            rWSRouting.setDeliveryDate(new ShortDate(deliveryDate));
 
         String labelContent = "";
         if (routingRequest.getConsignee() != null)
