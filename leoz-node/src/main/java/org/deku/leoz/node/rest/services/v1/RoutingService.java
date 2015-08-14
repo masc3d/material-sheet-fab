@@ -13,6 +13,7 @@ import org.deku.leoz.rest.entities.v1.Routing;
 import org.deku.leoz.rest.entities.v1.RoutingRequest;
 import org.deku.leoz.rest.services.ServiceErrorCode;
 import org.springframework.stereotype.Component;
+import sx.rs.ApiKey;
 
 import javax.inject.Inject;
 import javax.ws.rs.Path;
@@ -30,7 +31,7 @@ import java.util.List;
  * Created by masc on 20.04.15.
  */
 @Component
-@Path("v1/routing")
+//@Path("v1/routing")
 @Produces(MediaType.APPLICATION_JSON)
 public class RoutingService implements org.deku.leoz.rest.services.v1.RoutingService {
     @Inject
