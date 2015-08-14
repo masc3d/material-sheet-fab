@@ -150,12 +150,8 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         val viaHubs = arrayOf("") // {"NST", "N1"};
 
         routing.sendDate = ShortDate(sendDate)
-        if (deliveryDate != null)
-            routing.deliveryDate = ShortDate(deliveryDate)
-
-        if (consigneeParticipant != null)
-            routing.labelContent = consigneeParticipant.stationFormatted ?: ""
-
+        routing.deliveryDate = if (deliveryDate != null) ShortDate(deliveryDate) else null
+        routing.labelContent = if (consigneeParticipant != null) consigneeParticipant.stationFormatted ?: "" else ""
         routing.viaHubs = viaHubs
         routing.message = "OK"
 
