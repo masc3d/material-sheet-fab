@@ -100,7 +100,7 @@ class Setup {
      */
     private fun logProcessOutput(output: String, isError: Boolean = false) {
         if (!Strings.isNullOrEmpty(output)) {
-            var lines = output.split(StandardSystemProperty.LINE_SEPARATOR.value())
+            var lines = output.splitBy(StandardSystemProperty.LINE_SEPARATOR.value())
             log.info("Lines [${lines.count()}]")
             for (line in lines) {
                 var tLine = line.trim()
