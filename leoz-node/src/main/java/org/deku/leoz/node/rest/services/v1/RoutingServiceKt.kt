@@ -56,10 +56,10 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
         val rWSRouting = Routing()
 
         if (routingRequest.sendDate == null)
-            throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "Send Date is required")
+            throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "Send date is required")
 
         if (routingRequest.sender == null && routingRequest.consignee == null)
-            throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "Sender or Consignee required")
+            throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "Sender or consignee required")
 
         val services: Int = routingRequest.services ?: 0
 
@@ -172,36 +172,36 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
                            requestParticipant: RoutingRequest.RequestParticipant?,
                            routingLayers: Iterable<RoutingLayer>,
                            ctrl: Int,
-                           exeptionPrefix: String)
+                           errorPrefix: String)
             : List<Routing.Participant> {
 
         val resultParticipants = ArrayList<Routing.Participant>()
 
         var country: String = requestParticipant?.country?.toUpperCase()
-                ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, exeptionPrefix + "empty country")
+                ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "${errorPrefix} empty country")
 
         var zip: String = requestParticipant?.zip?.toUpperCase()
-                ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, exeptionPrefix + "empty zipcode")
+                ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "${errorPrefix} empty zipcode")
 
         val rcountry = countryRepository!!.findOne(country)
-                ?: throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "unknown country")
+                ?: throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} unknown country")
 
         if (Strings.isNullOrEmpty(rcountry.getZipFormat()))
-            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "unknown country")
+            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} unknown country")
 
         if (zip.length() < rcountry.getMinLen())
-            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "zipcode too short")
+            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} zipcode too short")
 
         if (rcountry.getRoutingTyp() < 0 || rcountry.getRoutingTyp() > 3)
-            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "country not enabled")
+            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} country not enabled")
 
         if (zip.length() > rcountry.getMaxLen())
-            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "zipcode too long")
+            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} zipcode too long")
 
         val parsedZip = ParsedZip.parseZip(rcountry.getZipFormat(), zip)
 
         if (Strings.isNullOrEmpty(parsedZip.query))
-            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "wrong zipcode format")
+            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} wrong zipcode format")
 
         //TODO verbessern ?
         for (routingLayer in routingLayers) {
@@ -213,7 +213,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
                     desiredDeliveryDate,
                     routingLayer,
                     ctrl,
-                    exeptionPrefix)
+                    errorPrefix)
 
             if (participant.station != 0) {
                 participant.zipCode = parsedZip.conform
@@ -235,7 +235,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
                                 desiredDeliveryDate: LocalDate?,
                                 routingLayer: RoutingLayer,
                                 ctrl: Int,
-                                exeptionPrefix: String)
+                                errorPrefix: String)
             : Routing.Participant {
 
         val participant = Routing.Participant()
@@ -262,7 +262,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
                 .and(QRoute.route.validTo.after(Timestamp.valueOf(validDate.toString() + " 00:00:00"))))
 
         if (Iterables.isEmpty(rRoutes))
-            throw ServiceException(RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, exeptionPrefix + "no Route found")
+            throw ServiceException(RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
 
         val rRoute = rRoutes.first()
 
@@ -271,7 +271,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
         val rStation = stationRepository!!.findOne(rRoute.getStation())
 
         if (rStation == null)
-            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "Route Station not found");
+            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} Route Station not found");
 
         participant.sector = rStation.getSector()
         participant.country = rRoute.getCountry()
