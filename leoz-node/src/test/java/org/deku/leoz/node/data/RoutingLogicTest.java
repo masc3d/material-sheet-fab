@@ -1,10 +1,8 @@
 package org.deku.leoz.node.data;
 
-
 import org.deku.leoz.node.DataTest;
 import org.deku.leoz.node.rest.ServiceException;
 import org.deku.leoz.node.rest.services.v1.RoutingService;
-import org.deku.leoz.node.rest.services.v1.RoutingServiceKt;
 import org.deku.leoz.rest.entities.ShortDate;
 import org.deku.leoz.rest.entities.v1.Routing;
 import org.deku.leoz.rest.entities.v1.RoutingRequest;
@@ -19,10 +17,10 @@ import javax.inject.Inject;
  * Created by JT on 15.05.15.
  */
 @ContextConfiguration(classes = {
-        RoutingService.class, RoutingServiceKt.class})
+        RoutingService.class})
 public class RoutingLogicTest extends DataTest {
     @Inject
-    RoutingServiceKt mRoutingService;
+    RoutingService mRoutingService;
 
     @Test
     public void testRouting01() {

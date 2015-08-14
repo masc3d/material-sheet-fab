@@ -36,7 +36,7 @@ Named
 ApiKey(false)
 Path("v1/routing")
 Produces(MediaType.APPLICATION_JSON)
-public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
+public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     @Inject
     var countryRepository: CountryRepository? = null
     @Inject
@@ -253,13 +253,13 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
         //                        .and(QRoute.route.validTo.after(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
         //        )
 
-        val rRoutes = routeRepository!!.findAll(QRoute.route.layer
-                .eq(routingLayer.getLayer())
-                .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
-                .and(QRoute.route.zipFrom.loe(queryZipCode))
-                .and(QRoute.route.zipTo.goe(queryZipCode))
-                .and(QRoute.route.validFrom.before(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
-                .and(QRoute.route.validTo.after(Timestamp.valueOf(validDate.toString() + " 00:00:00"))))
+        val rRoutes = routeRepository!!.findAll(
+                QRoute.route.layer.eq(routingLayer.getLayer())
+                        .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
+                        .and(QRoute.route.zipFrom.loe(queryZipCode))
+                        .and(QRoute.route.zipTo.goe(queryZipCode))
+                        .and(QRoute.route.validFrom.before(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
+                        .and(QRoute.route.validTo.after(Timestamp.valueOf(validDate.toString() + " 00:00:00"))))
 
         if (Iterables.isEmpty(rRoutes))
             throw ServiceException(RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
