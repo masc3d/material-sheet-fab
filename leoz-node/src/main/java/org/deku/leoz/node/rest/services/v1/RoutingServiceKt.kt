@@ -38,15 +38,15 @@ Path("v1/routing")
 Produces(MediaType.APPLICATION_JSON)
 public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
     @Inject
-    var mCountryRepository: CountryRepository? = null
+    var countryRepository: CountryRepository? = null
     @Inject
-    var mRouteRepository: RouteRepository? = null
+    var routeRepository: RouteRepository? = null
     @Inject
-    var mHolidayctrlRepostitory: HolidayctrlRepository? = null
+    var holidayctrlRepostitory: HolidayctrlRepository? = null
     @Inject
-    var mRoutingLayerRepository: RoutingLayerRepository? = null
+    var routingLayerRepository: RoutingLayerRepository? = null
     @Inject
-    var mStationRepository: StationRepository? = null
+    var stationRepository: StationRepository? = null
 
     /**
      * Request routing
@@ -82,7 +82,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
         //TODO
         ctrlTransportUnit = 23
 
-        val layer = mRoutingLayerRepository!!.findAll(
+        val layer = routingLayerRepository!!.findAll(
                 QRoutingLayer.routingLayer.services.eq(ctrlTransportUnit))
 
         //TODO rWereLayer bitmaske suchen
@@ -183,7 +183,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
         var zip: String = requestParticipant?.zip?.toUpperCase()
                 ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, exeptionPrefix + "empty zipcode")
 
-        val rcountry = mCountryRepository!!.findOne(country)
+        val rcountry = countryRepository!!.findOne(country)
                 ?: throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "unknown country")
 
         if (Strings.isNullOrEmpty(rcountry.getZipFormat()))
@@ -253,7 +253,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
         //                        .and(QRoute.route.validTo.after(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
         //        )
 
-        val rRoutes = mRouteRepository!!.findAll(QRoute.route.layer
+        val rRoutes = routeRepository!!.findAll(QRoute.route.layer
                 .eq(routingLayer.getLayer())
                 .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
                 .and(QRoute.route.zipFrom.loe(queryZipCode))
@@ -268,7 +268,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
 
         //TODO Sector aus stationsector
 
-        val rStation = mStationRepository!!.findOne(rRoute.getStation())
+        val rStation = stationRepository!!.findOne(rRoute.getStation())
 
         if (rStation == null)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "Route Station not found");
@@ -325,7 +325,7 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
             else -> DayType.Workday
         }
 
-        val rHolidayCtrl = mHolidayctrlRepostitory!!.findOne(
+        val rHolidayCtrl = holidayctrlRepostitory!!.findOne(
                 HolidayCtrlPK(java.sql.Timestamp.valueOf(date.toString() + " 00:00:00"), country))
 
         if (rHolidayCtrl != null) {
