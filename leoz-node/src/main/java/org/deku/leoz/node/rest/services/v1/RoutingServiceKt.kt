@@ -107,17 +107,17 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
 
             for (s in senderParticipants) {
                 if (!possibleSenderSectors.contains(s))
-                    possibleSenderSectors.add(s.getSector())
+                    possibleSenderSectors.add(s.sector)
             }
 
             senderParticipant = senderParticipants.first()
-            if (Strings.isNullOrEmpty(senderParticipant.getMessage()))
-                rWSRouting.setSender(senderParticipant)
+            if (Strings.isNullOrEmpty(senderParticipant.message))
+                rWSRouting.sender = senderParticipant
 
-            senderParticipant.setDate(null)
-            senderParticipant.setMessage(null)
+            senderParticipant.date = null
+            senderParticipant.message = null
         } else
-            rWSRouting.setSender(null)
+            rWSRouting.sender = null
 
 
         var consigneeParticipant: Routing.Participant? = null;
@@ -133,31 +133,31 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
 
             for (c in consigneeParticipants) {
                 if (!possibleSenderSectors.contains(c))
-                    possibleSenderSectors.add(c.getSector())
+                    possibleSenderSectors.add(c.sector)
             }
 
             consigneeParticipant = consigneeParticipants.first()
-            if (Strings.isNullOrEmpty(consigneeParticipant.getMessage())) {
-                rWSRouting.setConsignee(consigneeParticipant)
-                deliveryDate = consigneeParticipant.getDate()
+            if (Strings.isNullOrEmpty(consigneeParticipant.message)) {
+                rWSRouting.consignee = consigneeParticipant
+                deliveryDate = consigneeParticipant.date
             }
-            consigneeParticipant.setDate(null)
-            consigneeParticipant.setMessage(null)
+            consigneeParticipant.date = null
+            consigneeParticipant.message = null
         } else
-            rWSRouting.setConsignee(null)
+            rWSRouting.consignee = null
 
 
         val viaHubs = arrayOf("") // {"NST", "N1"};
 
-        rWSRouting.setSendDate(ShortDate(sendDate))
+        rWSRouting.sendDate = ShortDate(sendDate)
         if (deliveryDate != null)
-            rWSRouting.setDesiredDeliveryDate(ShortDate(deliveryDate))
+            rWSRouting.deliveryDate = ShortDate(deliveryDate)
 
         if (consigneeParticipant != null)
-            rWSRouting.setLabelContent(Strings.padEnd(consigneeParticipant.getStation().toString(), 3, '0'))
+            rWSRouting.labelContent = consigneeParticipant.stationFormatted ?: ""
 
-        rWSRouting.setViaHubs(viaHubs)
-        rWSRouting.setMessage("OK")
+        rWSRouting.viaHubs = viaHubs
+        rWSRouting.message = "OK"
 
         return rWSRouting
     }
@@ -215,8 +215,8 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
                     ctrl,
                     exeptionPrefix)
 
-            if (participant.getStation() != "0") {
-                participant.setZipCode(parsedZip.conform)
+            if (participant.station != 0) {
+                participant.zipCode = parsedZip.conform
                 resultParticipants.add(participant)
             }
         }
@@ -273,43 +273,43 @@ public class RoutingServiceKt : org.deku.leoz.rest.services.v1.RoutingService {
         if (rStation == null)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, exeptionPrefix + "Route Station not found");
 
-        participant.setSector(rStation.getSector())
-        participant.setCountry(rRoute.getCountry())
-        participant.setZipCode(queryZipCode)
-        participant.setTerm(rRoute.getTerm())
+        participant.sector = rStation.getSector()
+        participant.country = rRoute.getCountry()
+        participant.zipCode = queryZipCode
+        participant.term = rRoute.getTerm()
 
         when(sendDelivery) {
             "S" -> {
                 //                mqueryRouteLayer.setDayType(getDayType(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl()).toString());
                 //TODO nächsten Linientag ermitteln
-                participant.setDate(sendDate)
+                participant.date = sendDate
                 //                mqueryRouteLayer.setDate(getNextDeliveryDay(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl()));
                 //                if (date.equals(null))
                 //                    date = getNextDeliveryDay(date, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl());
             }
             "D" -> {
                 var deliveryDate = desiredDeliveryDate
-                        ?: getNextDeliveryDay(sendDate, participant.getCountry(), rRoute.getHolidayCtrl())
+                        ?: getNextDeliveryDay(sendDate, participant.country, rRoute.getHolidayCtrl())
 
-                participant.setDate(deliveryDate)
+                participant.date = deliveryDate
             }
         }
 
-        participant.setDayType(
+        participant.dayType =
                 this.getDayType(
-                        participant.getDate(),
+                        participant.date,
                         requestParticipant?.country?.toUpperCase(),
                         rRoute.getHolidayCtrl()
-                ).toString())
+                ).toString()
 
-        participant.setStation(rRoute.getStation())
-        participant.setZone(rRoute.getArea())
-        participant.setIsland(rRoute.getIsland() !== 0)
-        participant.setEarliestTimeOfDelivery(sqlTimeToShortTime(rRoute.getEtod()))
-        participant.setEarliestTimeOfDelivery(ShortTime(rRoute.getEtod().toString()))
-        participant.setTerm(rRoute.getTerm())
+        participant.station = rRoute.getStation()
+        participant.zone = rRoute.getArea()
+        participant.island = (rRoute.getIsland() != 0)
+        participant.earliestTimeOfDelivery = sqlTimeToShortTime(rRoute.getEtod())
+        participant.earliestTimeOfDelivery = ShortTime(rRoute.getEtod().toString())
+        participant.term = rRoute.getTerm()
         if (rRoute.getLtodsa() != null)
-            participant.setSundayDeliveryUntil(ShortTime(rRoute.getLtodsa().toString()))
+            participant.sundayDeliveryUntil = ShortTime(rRoute.getLtodsa().toString())
 
         return participant
     }
