@@ -70,6 +70,8 @@ dependencies {
     compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
     compile "com.mysema.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
 
+    kapt "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa"
+
     // flyway
     compile "org.flywaydb:flyway-core:$v_flyway"
 
@@ -115,6 +117,10 @@ dependencies {
     testCompile "org.springframework:spring-test"
 
     testCompile project(':libraries:sx-common')
+}
+
+kapt {
+    generateStubs = true
 }
 
 run {
