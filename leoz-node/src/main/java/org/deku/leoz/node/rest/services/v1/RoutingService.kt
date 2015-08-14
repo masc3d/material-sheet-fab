@@ -32,10 +32,10 @@ import javax.inject.Inject
 /**
  * Created by masc on 23.07.14.
  */
-Named
-ApiKey(false)
-Path("v1/routing")
-Produces(MediaType.APPLICATION_JSON)
+@Named
+@ApiKey(false)
+@Path("v1/routing")
+@Produces(MediaType.APPLICATION_JSON)
 public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     @Inject
     var countryRepository: CountryRepository? = null
