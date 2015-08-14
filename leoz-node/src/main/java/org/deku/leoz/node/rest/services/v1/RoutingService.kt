@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables
 import com.google.common.primitives.Ints
 import com.mysema.query.jpa.impl.JPAQuery
 import com.mysema.query.types.expr.BooleanExpression
+import org.apache.commons.lang3.time.DateUtils
 import org.deku.leoz.node.data.entities.master.*
 import org.deku.leoz.node.data.repositories.master.*
 import org.deku.leoz.node.rest.ServiceException
@@ -19,8 +20,7 @@ import org.deku.leoz.rest.services.v1
 import org.deku.leoz.rest.services.v1.RoutingService
 import sx.rs.ApiKey
 import java.sql.Timestamp
-import java.time.DayOfWeek
-import java.time.LocalDate
+import java.time.*
 
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -93,7 +93,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
         var deliveryDate: LocalDate? = null
 
-        var senderParticipant: Routing.Participant? = null
+        var senderParticipant: Routing.Participant?
         val possibleSenderSectors = ArrayList<String>()
         if (routingRequest.sender != null) {
             var senderParticipants = queryRoute("S",
@@ -249,8 +249,8 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         //                        .and(QRoute.route.country.eq(requestParticipant.getCountry().toUpperCase()))
         //                        .and(QRoute.route.zipFrom.loe(queryZipCode))
         //                        .and(QRoute.route.zipTo.goe(queryZipCode))
-        //                        .and(QRoute.route.validFrom.before(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
-        //                        .and(QRoute.route.validTo.after(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
+        //                        .and(QRoute.route.validFrom.before(validDate?.toTimestamp()))
+        //                        .and(QRoute.route.validTo.after(validDate?.toTimestamp()))
         //        )
 
         val rRoutes = routeRepository!!.findAll(
@@ -258,8 +258,8 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
                         .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
                         .and(QRoute.route.zipFrom.loe(queryZipCode))
                         .and(QRoute.route.zipTo.goe(queryZipCode))
-                        .and(QRoute.route.validFrom.before(Timestamp.valueOf(validDate.toString() + " 00:00:00")))
-                        .and(QRoute.route.validTo.after(Timestamp.valueOf(validDate.toString() + " 00:00:00"))))
+                        .and(QRoute.route.validFrom.before(validDate?.toTimestamp()))
+                        .and(QRoute.route.validTo.after(validDate?.toTimestamp())))
 
         if (Iterables.isEmpty(rRoutes))
             throw ServiceException(RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
@@ -305,8 +305,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         participant.station = rRoute.getStation()
         participant.zone = rRoute.getArea()
         participant.island = (rRoute.getIsland() != 0)
-        participant.earliestTimeOfDelivery = sqlTimeToShortTime(rRoute.getEtod())
-        participant.earliestTimeOfDelivery = ShortTime(rRoute.getEtod().toString())
+        participant.earliestTimeOfDelivery = rRoute.getEtod().toShortTime()
         participant.term = rRoute.getTerm()
         if (rRoute.getLtodsa() != null)
             participant.sundayDeliveryUntil = ShortTime(rRoute.getLtodsa().toString())
@@ -314,6 +313,17 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         return participant
     }
 
+    // Extensions for local date
+    fun LocalDate.toTimestamp(): Timestamp {
+        return Timestamp.from(
+                this.atStartOfDay(ZoneId.systemDefault())
+                        .toInstant())
+    }
+
+    // Extensions for java.sql.Time
+    fun java.sql.Time.toShortTime(): ShortTime {
+        return ShortTime(this.toString())
+    }
 
     /**
      * Get day type
@@ -325,8 +335,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
             else -> DayType.Workday
         }
 
-        val rHolidayCtrl = holidayctrlRepostitory!!.findOne(
-                HolidayCtrlPK(java.sql.Timestamp.valueOf(date.toString() + " 00:00:00"), country))
+        val rHolidayCtrl = holidayctrlRepostitory!!.findOne(HolidayCtrlPK(date?.toTimestamp(), country))
 
         if (rHolidayCtrl != null) {
             if (rHolidayCtrl.getCtrlPos() == -1)
@@ -344,26 +353,20 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
      * Get next delivery day
      */
     private fun getNextDeliveryDay(date: LocalDate?, country: String, holidayCtrl: String): LocalDate? {
-        var date = date
+        var d = date
 
         var workDaysRequired: Int = 1
-        if (this.getDayType(date, country, holidayCtrl) != DayType.Workday)
+        if (this.getDayType(d, country, holidayCtrl) != DayType.Workday)
             workDaysRequired = 2
 
         var workDays: Int = 0
         do {
-            date = date?.plusDays(1)
-            if (getDayType(date, country, holidayCtrl) == DayType.Workday)
+            d = d?.plusDays(1)
+            if (getDayType(d, country, holidayCtrl) == DayType.Workday)
                 workDays++
         } while (workDays < workDaysRequired)
 
-        return date
-    }
-
-    companion object {
-        public fun sqlTimeToShortTime(time: java.sql.Time?): ShortTime? {
-            return if (time != null) ShortTime(time.toString()) else null
-        }
+        return d
     }
 }
 
@@ -383,9 +386,9 @@ class ParsedZip(var query: String, var conform: String) {
 
             var i = 0
             var k = 0
-            var csZipFormat = ""
-            var csZip = ""
-            var csNew = ""
+            var csZipFormat: String
+            var csZip: String
+            var csNew: String
 
             var cCount = 0
 
