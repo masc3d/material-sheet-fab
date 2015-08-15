@@ -6,7 +6,7 @@ import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.slf4j.Logger
-import sx.io.ProcessStreamReader
+import sx.ProcessExecutor
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util
@@ -82,25 +82,26 @@ class Setup {
         var error = StringBuffer()
 
         // Execute
-        var p: Process = pb.start();
-        var pr: ProcessStreamReader = ProcessStreamReader(p, object : ProcessStreamReader.Handler {
+        var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
             override fun onError(o: String?) {
-                output.append(o  + StandardSystemProperty.LINE_SEPARATOR.value())
+                output.append(o + StandardSystemProperty.LINE_SEPARATOR.value())
             }
 
             override fun onOutput(o: String?) {
                 error.append(o + StandardSystemProperty.LINE_SEPARATOR.value())
             }
         })
-        var errorCode = p.waitFor();
 
-        // Evaluate/log output
-        this.logProcessOutput(output.toString())
-        this.logProcessOutput(error.toString(), isError = true)
-
-        // Evaluate error/throw
-        if (errorCode != 0) {
-            throw ProcessException(errorCode)
+        try {
+            pe.start()
+            pe.waitFor();
+        }
+        finally {
+            // Evaluate/log output
+            if (output.length() > 0)
+                this.logProcessOutput(output.toString())
+            if (error.length() > 0)
+                this.logProcessOutput(error.toString(), isError = true)
         }
     }
 
