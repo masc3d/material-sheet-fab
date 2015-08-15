@@ -1,7 +1,12 @@
 package sx.io;
 
 import com.google.common.base.StandardSystemProperty;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import sx.Action;
 import sx.Disposable;
+import sx.event.EventDelegate;
+import sx.event.EventDispatcher;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,34 +19,48 @@ import java.util.ArrayList;
  * Threaded stream reader for processes
  */
 public class ProcessStreamReader implements Disposable {
-    private Process mProcess;
-    private StreamCollector mOutputCollector;
-    private StreamCollector mErrorCollector;
+    private Log mLog = LogFactory.getLog(this.getClass());
 
-    private class StreamCollector extends Thread {
+    private Process mProcess;
+    private Handler mHandler;
+    private StreamReaderThread mOutputReaderThread;
+    private StreamReaderThread mErrorReaderThread;
+
+    public interface Handler {
+        void onOutput(String output);
+        void onError(String output);
+    }
+
+    /**
+     * Stream reader thread
+     */
+    private class StreamReaderThread extends Thread {
         InputStream mStream;
         BufferedReader mReader;
-        StringBuffer mBuffer = new StringBuffer();
+        Action<String> mAction;
 
-        public StreamCollector(InputStream is) {
+        /**
+         * c'tor
+         * @param is Stream to read from
+         * @param action Action to perform on each line
+         */
+        public StreamReaderThread(InputStream is, Action<String> action) {
             mStream = is;
             mReader = new BufferedReader(new InputStreamReader(mStream));
+            mAction = action;
         }
 
         @Override
         public void run() {
             try {
                 String line;
-                String crlf = StandardSystemProperty.LINE_SEPARATOR.value();
                 while( (line = mReader.readLine()) != null ) {
-                    mBuffer.append(line + crlf);
+                    mAction.perform(line);
                 }
             } catch (Exception ex) {
+                if (!(ex instanceof  InterruptedException))
+                    mLog.error(ex.getMessage(), ex);
             }
-        }
-
-        public String getContent() {
-            return mBuffer.toString();
         }
     }
 
@@ -49,49 +68,35 @@ public class ProcessStreamReader implements Disposable {
      * c'tor
      * @param process
      */
-    public ProcessStreamReader(Process process) {
+    public ProcessStreamReader(Process process, Handler handler) {
         mProcess = process;
-        mOutputCollector = new StreamCollector(process.getInputStream());
-        mErrorCollector = new StreamCollector(process.getErrorStream());
-        mOutputCollector.start();
-        mErrorCollector.start();
-    }
-
-    /**
-     * Get output
-     * @return
-     */
-    public String getOutput() {
-        return mOutputCollector.getContent();
-    }
-
-    /**
-     * Get error output
-     * @return
-     */
-    public String getError() {
-        return mErrorCollector.getContent();
+        mHandler = handler;
+        mOutputReaderThread = new StreamReaderThread(process.getInputStream(), (x) -> mHandler.onOutput(x));
+        mErrorReaderThread = new StreamReaderThread(process.getErrorStream(), (x) -> mHandler.onError(x));
+        mOutputReaderThread.start();
+        mErrorReaderThread.start();
     }
 
     @Override
     public void dispose() {
-        if (mOutputCollector != null) {
-            mOutputCollector.interrupt();
+        if (mOutputReaderThread != null) {
+            mOutputReaderThread.interrupt();
             try {
-                mOutputCollector.join();
+                mOutputReaderThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            mOutputCollector = null;
+            mOutputReaderThread= null;
         }
-        if (mErrorCollector != null) {
-            mErrorCollector.interrupt();
+
+        if (mErrorReaderThread != null) {
+            mErrorReaderThread.interrupt();
             try {
-                mErrorCollector.join();
+                mErrorReaderThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            mErrorCollector = null;
+            mErrorReaderThread = null;
         }
     }
 }
