@@ -13,9 +13,9 @@
             <option value="$PROJECT_DIR$/leoz-central" />
             <option value="$PROJECT_DIR$/leoz-node" />
             <option value="$PROJECT_DIR$/leoz-ui" />
-            <option value="$PROJECT_DIR$/libraries" />
-            <option value="$PROJECT_DIR$/libraries/leoz-common" />
-            <option value="$PROJECT_DIR$/libraries/sx-common" />
+            <option value="$PROJECT_DIR$/libs" />
+            <option value="$PROJECT_DIR$/libs/leoz-common" />
+            <option value="$PROJECT_DIR$/libs/sx-common" />
           </set>
         </option>
       </GradleProjectSettings>

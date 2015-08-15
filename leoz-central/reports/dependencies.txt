@@ -7,7 +7,7 @@ archives - Configuration for archive artifacts.
 No dependencies
 
 compile - Compile classpath for source set 'main'.
-+--- project :libraries:sx-common
++--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
@@ -19,8 +19,8 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
 |    |    \--- org.slf4j:slf4j-api:1.7.12
 |    \--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
-+--- project :libraries:leoz-common
-|    +--- project :libraries:sx-common (*)
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
@@ -101,8 +101,8 @@ compile - Compile classpath for source set 'main'.
 |              +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |              \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 +--- project :leoz-node
-|    +--- project :libraries:sx-common (*)
-|    +--- project :libraries:leoz-common (*)
+|    +--- project :libs:sx-common (*)
+|    +--- project :libs:leoz-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
@@ -304,7 +304,7 @@ compile - Compile classpath for source set 'main'.
 \--- org.jooq:jooq:3.+ -> 3.6.2
 
 default - Configuration for default artifacts.
-+--- project :libraries:sx-common
++--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
@@ -316,8 +316,8 @@ default - Configuration for default artifacts.
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
 |    |    \--- org.slf4j:slf4j-api:1.7.12
 |    \--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
-+--- project :libraries:leoz-common
-|    +--- project :libraries:sx-common (*)
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
@@ -398,8 +398,8 @@ default - Configuration for default artifacts.
 |              +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |              \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 +--- project :leoz-node
-|    +--- project :libraries:sx-common (*)
-|    +--- project :libraries:leoz-common (*)
+|    +--- project :libs:sx-common (*)
+|    +--- project :libs:leoz-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
@@ -611,7 +611,7 @@ kaptTest
           \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
 
 runtime - Runtime classpath for source set 'main'.
-+--- project :libraries:sx-common
++--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
@@ -623,8 +623,8 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
 |    |    \--- org.slf4j:slf4j-api:1.7.12
 |    \--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
-+--- project :libraries:leoz-common
-|    +--- project :libraries:sx-common (*)
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
@@ -705,8 +705,8 @@ runtime - Runtime classpath for source set 'main'.
 |              +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |              \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 +--- project :leoz-node
-|    +--- project :libraries:sx-common (*)
-|    +--- project :libraries:leoz-common (*)
+|    +--- project :libs:sx-common (*)
+|    +--- project :libs:leoz-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
@@ -908,7 +908,7 @@ runtime - Runtime classpath for source set 'main'.
 \--- org.jooq:jooq:3.+ -> 3.6.2
 
 testCompile - Compile classpath for source set 'test'.
-+--- project :libraries:sx-common
++--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
@@ -920,8 +920,8 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
 |    |    \--- org.slf4j:slf4j-api:1.7.12
 |    \--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
-+--- project :libraries:leoz-common
-|    +--- project :libraries:sx-common (*)
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
@@ -1002,8 +1002,8 @@ testCompile - Compile classpath for source set 'test'.
 |              +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |              \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 +--- project :leoz-node
-|    +--- project :libraries:sx-common (*)
-|    +--- project :libraries:leoz-common (*)
+|    +--- project :libs:sx-common (*)
+|    +--- project :libs:leoz-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
@@ -1220,7 +1220,7 @@ testCompile - Compile classpath for source set 'test'.
           \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 
 testRuntime - Runtime classpath for source set 'test'.
-+--- project :libraries:sx-common
++--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
@@ -1232,8 +1232,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
 |    |    \--- org.slf4j:slf4j-api:1.7.12
 |    \--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
-+--- project :libraries:leoz-common
-|    +--- project :libraries:sx-common (*)
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
@@ -1314,8 +1314,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |              +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |              \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 +--- project :leoz-node
-|    +--- project :libraries:sx-common (*)
-|    +--- project :libraries:leoz-common (*)
+|    +--- project :libs:sx-common (*)
+|    +--- project :libs:leoz-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT

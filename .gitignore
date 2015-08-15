@@ -39,3 +39,5 @@ leoz-node/build
 leoz-ui/build
 libraries/leoz-common/build
 buildSrc/src/import
+libs/leoz-common/build
+libs/leoz-common/reports/dependencies

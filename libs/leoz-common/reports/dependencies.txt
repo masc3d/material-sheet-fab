@@ -1,13 +1,13 @@
 
 ------------------------------------------------------------
-Project :libraries:leoz-common
+Project :libs:leoz-common
 ------------------------------------------------------------
 
 archives - Configuration for archive artifacts.
 No dependencies
 
 compile - Compile classpath for source set 'main'.
-+--- project :libraries:sx-common
++--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
@@ -100,7 +100,7 @@ compile - Compile classpath for source set 'main'.
           \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 
 default - Configuration for default artifacts.
-+--- project :libraries:sx-common
++--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
@@ -203,7 +203,7 @@ kaptTest
           \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
 
 runtime - Runtime classpath for source set 'main'.
-+--- project :libraries:sx-common
++--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
@@ -296,7 +296,7 @@ runtime - Runtime classpath for source set 'main'.
           \--- org.springframework:spring-core:4.1.7.RELEASE (*)
 
 testCompile - Compile classpath for source set 'test'.
-+--- project :libraries:sx-common
++--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230
@@ -411,7 +411,7 @@ testCompile - Compile classpath for source set 'test'.
           \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
 
 testRuntime - Runtime classpath for source set 'test'.
-+--- project :libraries:sx-common
++--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230
 |    |    \--- org.jetbrains.kotlin:kotlin-runtime:0.12.1230

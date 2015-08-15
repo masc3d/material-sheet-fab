@@ -23,8 +23,8 @@ mainClassName = "org.deku.leoz.node.Main"
 
 dependencies {
     // leoz webservice dependencies
-    compile project(':libraries:sx-common')
-    compile project(':libraries:leoz-common')
+    compile project(':libs:sx-common')
+    compile project(':libs:leoz-common')
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
@@ -116,7 +116,7 @@ dependencies {
     testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
     testCompile "org.springframework:spring-test"
 
-    testCompile project(':libraries:sx-common')
+    testCompile project(':libs:sx-common')
 }
 
 kapt {

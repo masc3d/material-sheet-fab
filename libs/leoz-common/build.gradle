@@ -10,7 +10,7 @@ version = '1.0'
 apply plugin: 'kotlin'
 
 dependencies {
-    compile project(':libraries:sx-common')
+    compile project(':libs:sx-common')
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"

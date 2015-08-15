@@ -16,8 +16,8 @@ version = '0.1'
 mainClassName = "org.deku.leoz.Main"
 
 dependencies {
-    compile project(':libraries:sx-common')
-    compile project(':libraries:leoz-common')
+    compile project(':libs:sx-common')
+    compile project(':libs:leoz-common')
 
     // JSR-303 bean validation
     compile 'org.glassfish.web:el-impl:2.+'

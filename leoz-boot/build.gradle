@@ -19,7 +19,7 @@ sourceCompatibility = 1.8
 mainClassName = "org.deku.leoz.boot.BootPackage"
 
 dependencies {
-    compile project(':libraries:sx-common')
+    compile project(':libs:sx-common')
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"

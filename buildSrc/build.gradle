@@ -41,7 +41,7 @@ sourceSets {
 
 // Copy classes task
 task copyClasses(type: Sync) {
-    from '../libraries/leoz-common/src/main/java'
+    from '../libs/leoz-common/src/main/java'
     into srcdir_import
     include '**/build/**'
     includeEmptyDirs = false
