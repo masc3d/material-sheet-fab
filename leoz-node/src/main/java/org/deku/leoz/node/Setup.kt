@@ -117,23 +117,6 @@ class Setup {
      * Installs node as a system service
      */
     public fun install(serviceName: String, mainClass: Class<Any>) {
-        // Command example
-        // C:\Users\n3\Projects\leoz-release\leoz-node-win64\bin\leozsvc.exe
-        // IS/LeoZ
-        // --DisplayName="LeoZ Service"
-        // --Install=C:\Users\n3\Projects\leoz-release\leoz-node-win64\bin\leozsvc.exe
-        // --Startup=auto
-        // --LogPath=C:\ProgramData\LeoZ\log
-        // --LogPrefix=leozsvc
-        // --Jvm="C:\Users\n3\Projects\leoz-release\leoz-node-win64\runtime\bin\server\jvm.dll"
-        // --StartMode=jvm
-        // --StopMode=jvm
-        // --StartClass=org.deku.leoz.node.Main
-        // --StartMethod=main
-        // --StopClass=org.deku.leoz.node.Main
-        // --StopMethod=stop
-        // --Classpath=C:\Users\n3\Projects\leoz-release\leoz-node-win64\app\leoz-node-0.1.jar
-
         log.info("Installing service")
 
         var classPath = Paths.get(mainClass.getProtectionDomain().getCodeSource().getLocation().toURI())
@@ -154,7 +137,8 @@ class Setup {
                 "--StopClass=${mainClass.getCanonicalName()}",
                 "--StopMethod=stop",
                 "--Classpath=${classPath}")
-        // log.info(java.lang.String.join(" ", pb.command()))
+
+        log.trace("Command ${java.lang.String.join(" ", pb.command())}")
         this.execute(pb)
 
         log.info("Installed successfully")
