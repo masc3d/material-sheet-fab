@@ -78,16 +78,25 @@ class Setup {
      * Execute command
      */
     private fun execute(pb: ProcessBuilder) {
+        var output = StringBuffer()
+        var error = StringBuffer()
+
         // Execute
         var p: Process = pb.start();
-        var pr: ProcessStreamReader = ProcessStreamReader(p)
+        var pr: ProcessStreamReader = ProcessStreamReader(p, object : ProcessStreamReader.Handler {
+            override fun onError(o: String?) {
+                output.append(o  + StandardSystemProperty.LINE_SEPARATOR.value())
+            }
+
+            override fun onOutput(o: String?) {
+                error.append(o + StandardSystemProperty.LINE_SEPARATOR.value())
+            }
+        })
         var errorCode = p.waitFor();
 
         // Evaluate/log output
-        var output = pr.getOutput()
-        var error = pr.getError()
-        this.logProcessOutput(output)
-        this.logProcessOutput(error, isError = true)
+        this.logProcessOutput(output.toString())
+        this.logProcessOutput(error.toString(), isError = true)
 
         // Evaluate error/throw
         if (errorCode != 0) {
