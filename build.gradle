@@ -1,3 +1,4 @@
+import org.deku.leoz.build.PlatformArch
 import org.gradle.logging.ShowStacktrace
 
 import java.nio.file.Paths
@@ -24,6 +25,7 @@ allprojects {
         ext {
             // Versions
             v_activemq = "5.+"
+            v_commons_lang = "3.+"
             v_eclipselink = "2.+"
             v_flyway = "3.+"
             v_guava = "18.+"
@@ -55,7 +57,7 @@ allprojects {
             v_swagger = "+"
 
             // LeoZ release path, relative to root project
-            g_arch_identifier = org.deku.gradle.PackagerUtils.currentPlatformArch().toString()
+            g_arch_identifier = PlatformArch.current().toString()
 
             g_release_path = Paths.get(project.rootDir.toURI())
                     .parent
@@ -202,6 +204,7 @@ subprojects {
             force "com.google.guava:guava:$v_guava"
             force "com.esotericsoftware:kryo:$v_kryo"
             force "com.thoughtworks.xstream:xstream:1.+"
+            force "org.apache.commons:commons-lang3:$v_commons_lang"
             force "org.fusesource.hawtdispatch:hawtdispatch-transport:1.+"
             force "org.fusesource.hawtbuf:hawtbuf:1.+"
             force "org.jboss.logging:jboss-logging:3.+"

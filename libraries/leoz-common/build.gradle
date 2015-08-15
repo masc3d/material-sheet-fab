@@ -18,6 +18,7 @@ dependencies {
 
     // logging
     compile 'commons-logging:commons-logging:+'
+    compile "org.apache.commons:commons-lang3:$v_commons_lang"
     compile "ch.qos.logback:logback-classic:+"
     compile "org.slf4j:jcl-over-slf4j:+"
 

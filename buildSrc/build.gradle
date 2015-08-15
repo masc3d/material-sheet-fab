@@ -1,9 +1,58 @@
+buildscript {
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:+"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
 repositories {
     jcenter()
     mavenCentral()
 }
 
 dependencies {
+    // Kotlin
+    compile "org.jetbrains.kotlin:kotlin-runtime:+"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:+"
+
     compile "org.apache.commons:commons-lang3:3.+"
     compile "org.eclipse.jgit:org.eclipse.jgit:4.+"
 }
+
+def srcdir_import = file("$projectDir/src/import/java")
+
+sourceSets {
+    main {
+        java {
+            srcDirs += srcdir_import
+        }
+        kotlin  {
+            srcDirs += srcdir_import
+        }
+    }
+}
+
+
+// Copy classes task
+task copyClasses(type: Copy) {
+    from '../libraries/leoz-common/src/main/java'
+    into srcdir_import
+    include '**/build/**'
+    includeEmptyDirs = false
+}
+
+// TODO: clean out files in import dir which were removed from source
+//def tree = fileTree(srcdir_import)
+//tree.each { println it }
+//copyClasses.inputs.files.each { println it }
+
+// Copy classes before compilation
+compileJava.dependsOn(copyClasses)
+compileKotlin.dependsOn(copyClasses)
+

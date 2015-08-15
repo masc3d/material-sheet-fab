@@ -1,6 +1,7 @@
 package org.deku.gradle
 
 import org.apache.commons.lang3.SystemUtils
+import org.deku.leoz.build.PlatformArch
 import org.eclipse.jgit.api.AddCommand
 import org.eclipse.jgit.api.CommitCommand
 import org.eclipse.jgit.api.ListTagCommand
@@ -53,7 +54,7 @@ abstract class PackagerTask extends DefaultTask {
      * @return
      */
     protected def File buildPackagerArchDir() {
-        return new File(this.extension.packagerBaseDir, PackagerUtils.currentPlatformArch().toString())
+        return new File(this.extension.packagerBaseDir, PlatformArch.current().toString())
     }
 }
 
@@ -76,7 +77,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
      * @return
      */
     def File buildReleaseArchPath(File basePath) {
-        return this.buildReleaseArchPath(basePath, PackagerUtils.currentPlatformArch())
+        return this.buildReleaseArchPath(basePath, PlatformArch.current())
     }
 
     /**

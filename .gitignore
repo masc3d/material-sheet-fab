@@ -5,7 +5,6 @@
 .gradle
 .idea/libraries
 /bin/
-build
 dataSources.local.xml
 dataSources.xml
 leoz-boot/reports/dependencies/
@@ -33,3 +32,10 @@ modules.xml
 out
 vm/.vagrant
 workspace.xml
+buildSrc/build
+leoz-boot/build
+leoz-central/build
+leoz-node/build
+leoz-ui/build
+libraries/leoz-common/build
+buildSrc/src/import
