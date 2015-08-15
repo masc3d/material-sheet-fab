@@ -5,6 +5,7 @@ import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.build.PlatformArch
 import org.slf4j.Logger
 import sx.ProcessExecutor
 import java.nio.file.Path
@@ -31,33 +32,6 @@ class Setup {
     private var codeSourcePath: Path
     private var leozsvcPath: Path
 
-    /**
-     * Process exception
-     */
-    public class ProcessException(errorCode: Int) : Exception("Process failed with error code [${errorCode}]") {
-        var errorCode = errorCode
-    }
-
-    /**
-     * Bin os/arch subdiretory name
-     */
-    private fun binArchDirectoryName(): String {
-        var prefix: String
-
-        when {
-            SystemUtils.IS_OS_WINDOWS -> prefix = "win"
-            SystemUtils.IS_OS_LINUX -> prefix = "linux"
-            SystemUtils.IS_OS_MAC_OSX -> prefix = "osx"
-            else -> throw IllegalStateException("Unsupported platform")
-        }
-        when (SystemUtils.OS_ARCH) {
-            "amd64" -> prefix += "64"
-            "x86" -> prefix += "32"
-            else -> throw IllegalStateException("Unsupported architecture")
-        }
-        return prefix
-    }
-
     private constructor() {
         this.codeSourcePath = Paths.get(this.javaClass.getProtectionDomain().getCodeSource().getLocation().toURI())
         if (this.codeSourcePath.toString().endsWith(".jar")) {
@@ -67,7 +41,7 @@ class Setup {
         } else {
             // Assume running from ide, working dir plus arch bin path
             this.basePath =  Paths.get("").toAbsolutePath()
-            this.binPath = this.basePath.resolve("bin").resolve(binArchDirectoryName())
+            this.binPath = this.basePath.resolve("bin").resolve(PlatformArch.current().toString())
         }
 
         leozsvcPath = this.binPath.resolve("leoz-svc.exe")
