@@ -40,17 +40,12 @@ sourceSets {
 
 
 // Copy classes task
-task copyClasses(type: Copy) {
+task copyClasses(type: Sync) {
     from '../libraries/leoz-common/src/main/java'
     into srcdir_import
     include '**/build/**'
     includeEmptyDirs = false
 }
-
-// TODO: clean out files in import dir which were removed from source
-//def tree = fileTree(srcdir_import)
-//tree.each { println it }
-//copyClasses.inputs.files.each { println it }
 
 // Copy classes before compilation
 compileJava.dependsOn(copyClasses)
