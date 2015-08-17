@@ -7,15 +7,19 @@ import sx.ProcessExecutor
 import java.io.BufferedWriter
 import java.io.File
 import java.io.OutputStreamWriter
+import java.lang
 import java.net.URI
 import java.net.URL
 import java.util.*
+import kotlin.text.Regex
 
 /**
  * Created by masc on 15.08.15.
  */
 public class RsyncClient(path: File) : Rsync(path) {
-    val log = LogFactory.getLog(this.javaClass)
+    companion object {
+        val log = LogFactory.getLog(RsyncClient.javaClass)
+    }
 
     var source: URI? = null
     var destination: URI? = null
@@ -24,12 +28,58 @@ public class RsyncClient(path: File) : Rsync(path) {
     var verbose: Boolean = true
     var progress: Boolean = true
     var partial: Boolean = true
+    var wholeFile: Boolean = false
     /** Compression level, 0 (none) - 9 (max) */
     var compression: Int = 0
 
     var password: String = ""
 
-    public fun run() {
+    public class Result(val files: List<File>) {
+
+    }
+
+    /**
+     * File entry record
+     * @param line Line to parse
+     */
+    private data class FileRecord(val flags: String, val path: String) {
+        companion object {
+            /** Output format for rsync */
+            val OutputFormat = ">>> %i %n %L"
+
+            public fun tryParse(line: String): FileRecord? {
+                var re = Regex("^>>> (.{12}) (.*)$")
+                var mr = re.match(line) ?: return null
+                return FileRecord(
+                        flags = mr.groups[1]?.value ?: "",
+                        path = mr.groups[2]?.value ?: "")
+            }
+        }
+
+        init {
+        }
+
+        public val isDirectory: Boolean
+            get() = this.flags[1] == 'd'
+    }
+
+    /**
+     * Progress record
+     * @param line Line to parse
+     */
+    private data class ProgressRecord(val bytes: Int, val percentage: Int) {
+        companion object {
+            public fun tryParse(line: String): ProgressRecord? {
+                var re = Regex("^([0-9,]+)[\\s]+([0-9]+)%[\\s]+([^\\s]+).*$")
+                var mr = re.match(line) ?: return null
+                return ProgressRecord(
+                        bytes = mr.groups[1]?.value?.replace(",", "")?.toInt() ?: 0,
+                        percentage = mr.groups[2]?.value?.toInt() ?: 0)
+            }
+        }
+    }
+
+    public fun sync(): Result {
         if (this.source == null || this.destination == null)
             throw IllegalArgumentException("Source and destination are mandatory")
 
@@ -43,6 +93,7 @@ public class RsyncClient(path: File) : Rsync(path) {
         if (this.archive) command.add("-a")
         if (this.verbose) command.add("-v")
         if (this.partial) command.add("--partial")
+        command.add(if (partial) "--whole-file" else "--no-whole-file")
         if (this.compression > 0) {
             command.add("-zz")
             command.add("--compress-level=${this.compression}")
@@ -50,7 +101,7 @@ public class RsyncClient(path: File) : Rsync(path) {
         if (infoFlags.size() > 0)
             command.add("--info=${java.lang.String.join(",", infoFlags)}")
 
-        command.add("--out-format=>>> %i %n %L")
+        command.add("--out-format=${FileRecord.OutputFormat}")
 
         command.add(this.source.toString())
         command.add(this.destination.toString())
@@ -60,6 +111,7 @@ public class RsyncClient(path: File) : Rsync(path) {
 
         var output = StringBuffer()
         var error = StringBuffer()
+        var files = ArrayList<File>()
 
         // Execute
         var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
@@ -68,6 +120,19 @@ public class RsyncClient(path: File) : Rsync(path) {
                 if (line == null || line.length() == 0)
                     return
 
+                var fr = FileRecord.tryParse(line)
+                if (fr != null) {
+                    log.info(fr)
+                    if (!fr.isDirectory)
+                        files.add(File(fr.path))
+                    return
+                }
+
+                var pr = ProgressRecord.tryParse(line)
+                if (pr != null) {
+                    log.info(pr)
+                    return
+                }
                 output.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
                 log.info(line)
             }
@@ -94,12 +159,14 @@ public class RsyncClient(path: File) : Rsync(path) {
         try {
             pe.waitFor()
         } catch(e: Exception) {
-            this.log.error(e.getMessage(), e)
+            log.error(e.getMessage(), e)
         }
 
 //        if (output.length() > 0)
 //            log.info(output.toString())
 //        if (error.length() > 0)
 //            log.error(error.toString())
+
+        return Result(files)
     }
 }
