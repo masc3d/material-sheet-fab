@@ -16,6 +16,6 @@ class RsyncClientTest : RsyncTest() {
         rsyncClient.destination = URI(".")
         rsyncClient.password = "leoz"
         rsyncClient.compression = 9
-        rsyncClient.run()
+        rsyncClient.sync()
     }
 }
