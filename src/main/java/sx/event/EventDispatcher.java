@@ -1,5 +1,6 @@
 package sx.event;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -97,15 +98,12 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
             for (ListenerReference ir : invalidRefs) {
                 mLog.info(String.format("Removing gc'ed listener %s (%s)",
                         ir.getListenerClass(),
-                        String.join(",",
-                                (Iterable) Lists.newArrayList(ir.getListenerClass().getInterfaces())
-                                        .stream()
-                                        .map(new Function<Class, Object>() {
-                                                 @Override
-                                                 public Object apply(Class aClass) { return aClass.toString(); }
-                                             }
-                                        ).iterator()
-                        )));
+                        Joiner.on(",").join(Lists.transform(Lists.newArrayList(ir.getListenerClass().getInterfaces()), new com.google.common.base.Function<Class, String>() {
+                            @Override
+                            public String apply(Class input) {
+                                return input.toString();
+                            }
+                        }))));
             }
             this.remove(invalidRefs);
         }
