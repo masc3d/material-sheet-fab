@@ -34,35 +34,35 @@ public class Channel
  * @param priority JMS message priority
  */
 @jvmOverloads constructor(
-        private val mConnectionFactory: ConnectionFactory,
-        private val mDestination: Destination,
-        private val mConverter: Converter?,
-        private val mJmsSessionTransacted: Boolean,
-        private val mJmsDeliveryMode: Int,
-        private val mJmsTtl: Long,
-        private val mJmsPriority: Int? = null) : Disposable, Closeable {
+        private val connectionFactory: ConnectionFactory,
+        private val destination: Destination,
+        private val converter: Converter?,
+        private val jmsSessionTransacted: Boolean,
+        private val jmsDeliveryMode: Int,
+        private val jmsTtl: Long,
+        private val jmsPriority: Int? = null) : Disposable, Closeable {
 
-    private val mLog = LogFactory.getLog(this.javaClass)
-    private val mConnection = LazyInstance<Connection>()
-    private val mSession = LazyInstance<Session>()
-    private val mConsumer = LazyInstance<MessageConsumer>()
-    private var mSessionCreated = false
+    private val log = LogFactory.getLog(this.javaClass)
+    private val connection = LazyInstance<Connection>()
+    private val session = LazyInstance<Session>()
+    private val consumer = LazyInstance<MessageConsumer>()
+    private var sessionCreated = false
 
     init {
-        mConnection.set( fun (): Connection {
-            var cn = mConnectionFactory.createConnection()
+        connection.set( fun (): Connection {
+            var cn = connectionFactory.createConnection()
             cn!!.start()
             return cn
         } )
 
-        mSession.set( fun (): Session {
-            val session = mConnection.get().createSession(this.mJmsSessionTransacted, this.mJmsDeliveryMode)
-            mSessionCreated = true
+        session.set( fun (): Session {
+            val session = connection.get().createSession(this.jmsSessionTransacted, this.jmsDeliveryMode)
+            sessionCreated = true
             return session
         })
 
-        mConsumer.set( fun(): MessageConsumer {
-            return mSession.get().createConsumer(mDestination)
+        consumer.set( fun(): MessageConsumer {
+            return session.get().createConsumer(destination)
         })
     }
 
@@ -74,16 +74,16 @@ public class Channel
      */
     throws(JMSException::class)
     public fun send(message: Message, messageConfigurer: Action<Message>?) {
-        val mp = mSession.get().createProducer(mDestination)
+        val mp = session.get().createProducer(destination)
 
-        mp.setDeliveryMode(mJmsDeliveryMode)
-        mp.setTimeToLive(mJmsTtl)
-        if (mJmsPriority != null)
-            mp.setPriority(mJmsPriority)
+        mp.setDeliveryMode(jmsDeliveryMode)
+        mp.setTimeToLive(jmsTtl)
+        if (jmsPriority != null)
+            mp.setPriority(jmsPriority)
 
         messageConfigurer?.perform(message)
 
-        mp.send(mDestination, message)
+        mp.send(destination, message)
     }
 
     /**
@@ -101,10 +101,10 @@ public class Channel
      */
     throws(JMSException::class)
     public fun send(message: Any) {
-        if (mConverter == null)
+        if (converter == null)
             throw IllegalStateException("Cannot send object without a message converter")
 
-        this.send(mConverter.toMessage(message, mSession.get()))
+        this.send(converter.toMessage(message, session.get()))
     }
 
     throws(JMSException::class)
@@ -117,42 +117,42 @@ public class Channel
      */
     throws(JMSException::class)
     public fun commit() {
-        val session = mSession.get()
+        val session = session.get()
         if (session.getTransacted())
             session.commit()
     }
 
     override fun close() {
-        mConsumer.ifSet( { c ->
+        consumer.ifSet( { c ->
             try {
                 c.close()
             } catch (e: JMSException) {
-                mLog.error(e.getMessage(), e)
+                log.error(e.getMessage(), e)
             }
         })
 
         try {
             this.commit()
         } catch (e: JMSException) {
-            mLog.error(e.getMessage(), e)
+            log.error(e.getMessage(), e)
         }
 
 
-        if (mSessionCreated) {
-            mSession.ifSet( { s ->
+        if (sessionCreated) {
+            session.ifSet( { s ->
                 try {
                     s.close()
                 } catch (e: JMSException) {
-                    mLog.error(e.getMessage(), e)
+                    log.error(e.getMessage(), e)
                 }
             })
         }
 
-        mConnection.ifSet( { c ->
+        connection.ifSet( { c ->
             try {
                 c.close()
             } catch (e: JMSException) {
-                mLog.error(e.getMessage(), e)
+                log.error(e.getMessage(), e)
             }
         })
     }
