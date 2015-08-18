@@ -102,8 +102,18 @@ public class ProcessExecutor implements Disposable {
 
         mProcess = mProcessBuilder.start();
         if (mStreamHandler != null) {
-            mOutputReaderThread = new StreamReaderThread(mProcess.getInputStream(), (x) -> mStreamHandler.onOutput(x));
-            mErrorReaderThread = new StreamReaderThread(mProcess.getErrorStream(), (x) -> mStreamHandler.onError(x));
+            mOutputReaderThread = new StreamReaderThread(mProcess.getInputStream(), new Action<String>() {
+                @Override
+                public void perform(String it) {
+                    mStreamHandler.onOutput(it);
+                }
+            });
+            mErrorReaderThread = new StreamReaderThread(mProcess.getErrorStream(), new Action<String>() {
+                @Override
+                public void perform(String it) {
+                    mStreamHandler.onError(it);
+                }
+            });
             mOutputReaderThread.start();
             mErrorReaderThread.start();
         }

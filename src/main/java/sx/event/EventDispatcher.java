@@ -7,10 +7,11 @@ import org.apache.commons.logging.LogFactory;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Multicast event dispatcher abstract and factory.
- * <p>
+ * <p/>
  * This class is supposed to be used by observable classes, which can in turn expose instance(s) via EventDelegate interface for consumer to add listeners.
  * Created by masc on 11.08.14.
  */
@@ -97,7 +98,13 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
                 mLog.info(String.format("Removing gc'ed listener %s (%s)",
                         ir.getListenerClass(),
                         String.join(",",
-                                (Iterable) Lists.newArrayList(ir.getListenerClass().getInterfaces()).stream().map(c -> c.toString())::iterator
+                                (Iterable) Lists.newArrayList(ir.getListenerClass().getInterfaces())
+                                        .stream()
+                                        .map(new Function<Class, Object>() {
+                                                 @Override
+                                                 public Object apply(Class aClass) { return aClass.toString(); }
+                                             }
+                                        ).iterator()
                         )));
             }
             this.remove(invalidRefs);

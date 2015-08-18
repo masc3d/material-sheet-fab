@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:+"
     }
     repositories {
         mavenCentral()
@@ -10,7 +10,9 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'kotlin'
 
-sourceCompatibility = 1.8
+// masc20150818., Keep source compatibility 1.7 for android support
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 version = '1.0'
 
 ext {
@@ -32,8 +34,8 @@ configurations {
 
 dependencies {
     // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+    compile "org.jetbrains.kotlin:kotlin-runtime:+"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:+"
 
     compile 'com.google.guava:guava:18.+'
     compile 'commons-logging:commons-logging:1.+'

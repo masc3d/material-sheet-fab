@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Broker implementation for activemq
@@ -32,7 +33,12 @@ import java.util.List;
  */
 public class ActiveMQBroker extends Broker {
     //region Singleton
-    private static LazyInstance<ActiveMQBroker> mInstance = new LazyInstance<>(ActiveMQBroker::new);
+    private static LazyInstance<ActiveMQBroker> mInstance = new LazyInstance(new Supplier() {
+        @Override
+        public Object get() {
+            return new ActiveMQBroker();
+        }
+    });
 
     public static ActiveMQBroker instance() {
         return mInstance.get();
@@ -124,13 +130,13 @@ public class ActiveMQBroker extends Broker {
         }
 
         // Broker plugins
-        List<BrokerPlugin> brokerPlugins = new ArrayList<>();
+        List<BrokerPlugin> brokerPlugins = new ArrayList();
 
         //region Authentication
         SimpleAuthenticationPlugin pAuth = new SimpleAuthenticationPlugin();
 
         // Users
-        List<AuthenticationUser> users = new ArrayList<>();
+        List<AuthenticationUser> users = new ArrayList();
         users.add(new AuthenticationUser(this.getUser().getUserName(), this.getUser().getPassword(), this.getUser().getGroupName()));
         pAuth.setUsers(users);
 
@@ -138,7 +144,7 @@ public class ActiveMQBroker extends Broker {
         //endregion
 
         //region Authorizations
-        List<DestinationMapEntry> authzEntries = new ArrayList<>();
+        List<DestinationMapEntry> authzEntries = new ArrayList();
 
         String group = this.getUser().getGroupName();
 
