@@ -13,6 +13,7 @@ import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.apache.activemq.network.DiscoveryNetworkConnector;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.security.*;
+import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter;
 import org.apache.activemq.transport.TransportServer;
 import sx.LazyInstance;
 import sx.jms.embedded.Broker;
@@ -212,7 +213,17 @@ public class ActiveMQBroker extends Broker {
         brokerPlugins.add(pRedelivery);
 
         mBrokerService.setPlugins(brokerPlugins.toArray(new BrokerPlugin[0]));
-        mBrokerService.start();
+
+        try {
+            mBrokerService.start();
+        } catch(Exception e) {
+            try {
+                mBrokerService.stop();
+            } catch(Exception e2) {
+                mLog.error(e2.getMessage(), e2);
+            }
+            throw e;
+        }
     }
 
     /**
