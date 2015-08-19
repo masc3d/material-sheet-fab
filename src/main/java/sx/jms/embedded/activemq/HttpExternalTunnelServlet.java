@@ -78,11 +78,14 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet {
 
             // Start broker threaded to improve startup time
             ExecutorService exec = Executors.newSingleThreadExecutor();
-            exec.execute(() -> {
-                try {
-                    ActiveMQBroker.instance().start();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+            exec.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ActiveMQBroker.instance().start();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             });
         } catch (Exception e) {

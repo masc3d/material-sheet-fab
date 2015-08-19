@@ -72,22 +72,25 @@ public abstract class SimpleListener extends Listener {
             MessageConsumer mc = mSession.createConsumer(d);
 
             // Wrap message callback, adding jms transaction support
-            mc.setMessageListener( (message) -> {
-                boolean transacted = false;
-                try {
-                    transacted = mSession.getTransacted();
-                    SimpleListener.this.onMessage(message, mSession);
-                    if (mSession.getTransacted())
-                        mSession.commit();
-                } catch(Exception e) {
-                    // TODO: verify if exception is routed to onException handler when not caught here
-                    this.getLog().error(e.getMessage(), e);
+            mc.setMessageListener(new MessageListener() {
+                @Override
+                public void onMessage(Message message) {
+                    boolean transacted = false;
+                    try {
+                        transacted = mSession.getTransacted();
+                        SimpleListener.this.onMessage(message, mSession);
+                        if (mSession.getTransacted())
+                            mSession.commit();
+                    } catch(Exception e) {
+                        // TODO: verify if exception is routed to onException handler when not caught here
+                        getLog().error(e.getMessage(), e);
 
-                    if (transacted) {
-                        try {
-                            mSession.rollback();
-                        } catch (JMSException e1) {
-                            this.getLog().error(e.getMessage(), e);
+                        if (transacted) {
+                            try {
+                                mSession.rollback();
+                            } catch (JMSException e1) {
+                                getLog().error(e.getMessage(), e);
+                            }
                         }
                     }
                 }

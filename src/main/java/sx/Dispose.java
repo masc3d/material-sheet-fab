@@ -14,7 +14,7 @@ public class Dispose {
      * Customized disposal
      * @param r Dispose operation
      */
-    public static void safely(Runnable r, Action<Exception> exceptionHandler) {
+    public static void safely(final Runnable r, final Action<Exception> exceptionHandler) {
         try {
             r.run();
         } catch (Exception e) {
@@ -28,14 +28,21 @@ public class Dispose {
      * @param d Disposable instance
      * @param exceptionHandler Optional exception handler
      */
-    public static void safely(Disposable d, Action<Exception> exceptionHandler) {
+    public static void safely(final Disposable d, final Action<Exception> exceptionHandler) {
         mLog.info(String.format("Disposing [%s]", d.getClass().getName()));
         Stopwatch sw = Stopwatch.createStarted();
-        safely((Runnable) () -> d.dispose(), (e) -> {
-            mLog.error(e.getMessage(), e);
-            exceptionHandler.perform(e);
-        }
-        );
+        safely(new Runnable() {
+            @Override
+            public void run() {
+                d.dispose();
+            }
+        }, new Action<Exception>() {
+            @Override
+            public void perform(Exception e) {
+                mLog.error(e.getMessage(), e);
+                exceptionHandler.perform(e);
+            }
+        });
         mLog.info(String.format("Disposed [%s] in [%s]", d.getClass().getName(), sw.toString()));
     }
 
@@ -43,7 +50,7 @@ public class Dispose {
      * Safely disposes an instance implementing @link Disposable, logging timing and errors
      * @param d
      */
-    public static void safely(Disposable d) {
+    public static void safely(final Disposable d) {
         safely(d, null);
     }
 }
