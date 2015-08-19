@@ -171,6 +171,9 @@ subprojects {
                 if (details.requested.group == 'org.javassist') {
                     details.useVersion '3.+'
                 } else
+                if (details.requested.group == 'org.jboss.resteasy') {
+                    details.useVersion v_resteasy
+                } else
                 if (details.requested.group == 'org.scala-lang') {
                     details.useVersion v_scala
                 } else
