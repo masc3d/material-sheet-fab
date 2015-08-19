@@ -110,7 +110,7 @@ public abstract class Broker implements Disposable {
     /** Native tcp port for this broker to listen to */
     private Integer mNativeTcpPort;
     /** Peer brokers */
-    private List<PeerBroker> mPeerBrokers = new ArrayList<>();
+    private List<PeerBroker> mPeerBrokers = new ArrayList();
     /*+ Broker users */
     private User mUser;
     /** Data directory for store */
@@ -161,7 +161,12 @@ public abstract class Broker implements Disposable {
      */
     public synchronized final void start() throws Exception {
         this.startImpl();
-        mListenerEventDispatcher.emit(EventListener::onStart);
+        mListenerEventDispatcher.emit(new EventDispatcher.Runnable<EventListener>() {
+            @Override
+            public void run(EventListener listener) {
+                listener.onStart();
+            }
+        });
     }
 
     /**
@@ -170,7 +175,12 @@ public abstract class Broker implements Disposable {
      */
     public synchronized final void stop() throws Exception {
         if (this.isStarted()) {
-            mListenerEventDispatcher.emit(EventListener::onStop);
+            mListenerEventDispatcher.emit(new EventDispatcher.Runnable<EventListener>() {
+                @Override
+                public void run(EventListener listener) {
+                    listener.onStop();
+                }
+            });
         }
         this.stopImpl();
     }
