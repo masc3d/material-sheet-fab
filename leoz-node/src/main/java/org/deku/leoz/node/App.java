@@ -106,7 +106,7 @@ public class App implements
             @Override
             public void uncaughtException(Thread t, Throwable e) {
                 mLog.error(e.getMessage(), e);
-                App.this.shutdown(-1);
+                System.exit(-1);
             }
         });
 
