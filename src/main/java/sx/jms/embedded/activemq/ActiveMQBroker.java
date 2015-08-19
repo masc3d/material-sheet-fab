@@ -22,10 +22,12 @@ import javax.jms.ConnectionFactory;
 import javax.jms.IllegalStateException;
 import javax.jms.Queue;
 import javax.jms.Topic;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /**
@@ -108,6 +110,9 @@ public class ActiveMQBroker extends Broker {
         // Disabling activemq's integrated  shutdown hook, favoring consumer side ordered shutdown
         mBrokerService.setUseShutdownHook(false);
 
+        // Persistence setup
+        KahaDBPersistenceAdapter pa = (KahaDBPersistenceAdapter)mBrokerService.getPersistenceAdapter();
+        pa.setCheckForCorruptJournalFiles(true);
 
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect
