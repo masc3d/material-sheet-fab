@@ -27,7 +27,7 @@ dependencies {
     compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
 
     // persistence
-    compile "org.eclipse.persistence:javax.persistence:$v_eclipselink"
+    compile "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
 
     // swagger for json doc
     compile "com.wordnik:swagger-annotations:$v_swagger"
