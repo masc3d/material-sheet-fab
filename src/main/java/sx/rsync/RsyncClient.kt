@@ -43,6 +43,8 @@ public class RsyncClient(path: File) : Rsync(path) {
     var progress: Boolean = true
     var partial: Boolean = true
     var wholeFile: Boolean = false
+    var skipBasedOnChecksum: Boolean = true
+    var fuzzy: Boolean = true
     /** Compression level, 0 (none) - 9 (max) */
     var compression: Int = 0
 
@@ -111,6 +113,8 @@ public class RsyncClient(path: File) : Rsync(path) {
 
         if (this.progress) infoFlags.add("progress2")
 
+        if (this.skipBasedOnChecksum) command.add("-c")
+        if (this.fuzzy) command.add("-y")
         if (this.archive) command.add("-a")
         if (this.verbose) command.add("-v")
         if (this.partial) command.add("--partial")
@@ -175,7 +179,7 @@ public class RsyncClient(path: File) : Rsync(path) {
         pe.start()
 
         // Write password to standard input
-        if (this.password.length() > 0 && pe.getProcess().isAlive()) {
+        if (pe.getProcess().isAlive()) {
             var os = OutputStreamWriter(pe.getProcess().getOutputStream())
             os.write(this.password + StandardSystemProperty.LINE_SEPARATOR.value())
             os.flush()
