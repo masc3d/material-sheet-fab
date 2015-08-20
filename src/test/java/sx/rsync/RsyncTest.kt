@@ -23,6 +23,6 @@ abstract class RsyncTest {
 
         this.rsyncExecutablePath = rsyncExecutablePath.toFile()
 
-        log.info(this.rsyncExecutablePath)
+        log.info("Rsync executable path [${this.rsyncExecutablePath}]")
     }
 }
