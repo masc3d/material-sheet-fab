@@ -21,8 +21,22 @@ public class RsyncClient(path: File) : Rsync(path) {
         val log = LogFactory.getLog(RsyncClient.javaClass)
     }
 
+    /**
+     * Removes file scheme from URI
+     */
+    private fun URI.removeFileScheme(): URI {
+        return if (this.getScheme() == "file") URI(this.getPath()) else this
+    }
+
     var source: URI? = null
+        set(value) {
+            $source = value?.removeFileScheme()
+        }
+
     var destination: URI? = null
+        set(value) {
+            $destination = value?.removeFileScheme()
+        }
 
     var archive: Boolean = true
     var verbose: Boolean = true
@@ -79,7 +93,14 @@ public class RsyncClient(path: File) : Rsync(path) {
         }
     }
 
-    public fun sync(): Result {
+    /**
+     * Synchronize
+     * @return Sync result
+     */
+    public fun sync(
+            fileRecordCallback: (fr: FileRecord) -> Unit = {},
+            progressRecordCallback: (pr: ProgressRecord) -> Unit = {})
+            : Result {
         if (this.source == null || this.destination == null)
             throw IllegalArgumentException("Source and destination are mandatory")
 
@@ -89,7 +110,7 @@ public class RsyncClient(path: File) : Rsync(path) {
         command.add(this.path.toString())
 
         if (this.progress) infoFlags.add("progress2")
-        
+
         if (this.archive) command.add("-a")
         if (this.verbose) command.add("-v")
         if (this.partial) command.add("--partial")
@@ -122,7 +143,8 @@ public class RsyncClient(path: File) : Rsync(path) {
 
                 var fr = FileRecord.tryParse(line)
                 if (fr != null) {
-                    log.info(fr)
+                    fileRecordCallback(fr)
+                    log.trace(fr)
                     if (!fr.isDirectory)
                         files.add(File(fr.path))
                     return
@@ -130,11 +152,12 @@ public class RsyncClient(path: File) : Rsync(path) {
 
                 var pr = ProgressRecord.tryParse(line)
                 if (pr != null) {
-                    log.info(pr)
+                    progressRecordCallback(pr)
+                    log.trace(pr)
                     return
                 }
                 output.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
-                log.info(line)
+                log.trace(line)
             }
 
             override fun onError(o: String?) {
@@ -152,9 +175,11 @@ public class RsyncClient(path: File) : Rsync(path) {
         pe.start()
 
         // Write password to standard input
-        var os = OutputStreamWriter(pe.getProcess().getOutputStream())
-        os.write(this.password + StandardSystemProperty.LINE_SEPARATOR.value())
-        os.flush()
+        if (this.password.length() > 0 && pe.getProcess().isAlive()) {
+            var os = OutputStreamWriter(pe.getProcess().getOutputStream())
+            os.write(this.password + StandardSystemProperty.LINE_SEPARATOR.value())
+            os.flush()
+        }
 
         try {
             pe.waitFor()
@@ -162,10 +187,10 @@ public class RsyncClient(path: File) : Rsync(path) {
             log.error(e.getMessage(), e)
         }
 
-//        if (output.length() > 0)
-//            log.info(output.toString())
-//        if (error.length() > 0)
-//            log.error(error.toString())
+        //        if (output.length() > 0)
+        //            log.info(output.toString())
+        //        if (error.length() > 0)
+        //            log.error(error.toString())
 
         return Result(files)
     }
