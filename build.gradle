@@ -39,6 +39,7 @@ dependencies {
 
     compile 'com.google.guava:guava:18.+'
     compile 'commons-logging:commons-logging:1.+'
+    compile 'org.apache.commons:commons-lang3:+'
     compile "ch.qos.logback:logback-classic:+"
     compile "org.slf4j:jcl-over-slf4j:+"
 

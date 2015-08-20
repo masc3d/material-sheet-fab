@@ -2,6 +2,7 @@ package sx.rsync
 
 import com.google.common.base.StandardSystemProperty
 import com.google.common.base.Strings
+import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
 import sx.ProcessExecutor
 import java.io.BufferedWriter
@@ -25,18 +26,25 @@ public class RsyncClient(path: File) : Rsync(path) {
      * Removes file scheme from URI
      */
     private fun URI.removeFileScheme(): URI {
-        return if (this.getScheme() == "file") URI(this.getPath()) else this
+        return if (this.isFile()) URI(this.getPath()) else this
+    }
+
+    private fun URI.isFile(): Boolean {
+        return this.getScheme() == "file"
+    }
+
+    private fun URI.toRsyncPath(): String {
+        var path: String
+
+        if (SystemUtils.IS_OS_WINDOWS)
+            // Return cygwin path on windows systems
+            return if (this.isFile()) "/cygdrive${this.getPath().replace(":", "")}" else this.toString()
+        else
+            return if (this.isFile()) File(this).getAbsolutePath() else this.toString()
     }
 
     var source: URI? = null
-        set(value) {
-            $source = value?.removeFileScheme()
-        }
-
     var destination: URI? = null
-        set(value) {
-            $destination = value?.removeFileScheme()
-        }
 
     var archive: Boolean = true
     var verbose: Boolean = true
@@ -64,7 +72,8 @@ public class RsyncClient(path: File) : Rsync(path) {
             val OutputFormat = ">>> %i %n %L"
 
             public fun tryParse(line: String): FileRecord? {
-                var re = Regex("^>>> (.{12}) (.*)$")
+                // Flag field length is 12 on osx (linux?) and 11 on windows.
+                var re = Regex("^>>> (.{11,12}) (.*)$")
                 var mr = re.match(line) ?: return null
                 return FileRecord(
                         flags = mr.groups[1]?.value ?: "",
@@ -128,8 +137,8 @@ public class RsyncClient(path: File) : Rsync(path) {
 
         command.add("--out-format=${FileRecord.OutputFormat}")
 
-        command.add(this.source.toString())
-        command.add(this.destination.toString())
+        command.add(this.source!!.toRsyncPath())
+        command.add(this.destination!!.toRsyncPath())
 
         log.trace("Command ${java.lang.String.join(" ", command)}")
         var pb: ProcessBuilder = ProcessBuilder(command)
