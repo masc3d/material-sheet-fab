@@ -18,6 +18,19 @@
             <option value="$PROJECT_DIR$/libs/sx-common" />
           </set>
         </option>
+        <option name="myModules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/buildSrc" />
+            <option value="$PROJECT_DIR$/leoz-boot" />
+            <option value="$PROJECT_DIR$/leoz-central" />
+            <option value="$PROJECT_DIR$/leoz-node" />
+            <option value="$PROJECT_DIR$/leoz-ui" />
+            <option value="$PROJECT_DIR$/libs" />
+            <option value="$PROJECT_DIR$/libs/leoz-common" />
+            <option value="$PROJECT_DIR$/libs/sx-common" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>

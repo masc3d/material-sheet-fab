@@ -23,6 +23,7 @@ dependencies {
 
     compile "org.apache.commons:commons-lang3:3.+"
     compile "org.eclipse.jgit:org.eclipse.jgit:4.+"
+    compile 'com.google.guava:guava:18.+'
 }
 
 def srcdir_import = file("$projectDir/src/import/java")
@@ -39,12 +40,14 @@ sourceSets {
 }
 
 
-// Copy classes task
-task copyClasses(type: Sync) {
-    from '../libs/leoz-common/src/main/java'
-    into srcdir_import
-    include '**/build/**'
-    includeEmptyDirs = false
+// Task for importing classes from other projects
+task copyClasses(type: Task) {
+    project.sync {
+        from '../libs/leoz-common/src/main/java', '../libs/sx-common/src/main/java'
+        into srcdir_import
+        include '**/build/**', '**/rsync/**', '**/ProcessExecutor*', '**/Disposable*/', '**/Action*/'
+        includeEmptyDirs = false
+    }
 }
 
 // Copy classes before compilation

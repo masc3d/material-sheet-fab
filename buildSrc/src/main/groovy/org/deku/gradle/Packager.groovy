@@ -1,6 +1,7 @@
 package org.deku.gradle
 
 import org.apache.commons.lang3.SystemUtils
+import org.deku.leoz.build.Platform
 import org.deku.leoz.build.PlatformArch
 import org.eclipse.jgit.api.AddCommand
 import org.eclipse.jgit.api.CommitCommand
@@ -12,6 +13,7 @@ import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import sx.rsync.RsyncClient
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -72,12 +74,12 @@ abstract class PackagerReleaseTask extends PackagerTask {
     }
 
     /**
-     * Builds a release path for current project and platform/arch
-     * @param basePath Release base path
+     * Builds a release path for current project anad version
+     * @param basePath
      * @return
      */
-    def File buildReleaseArchPath(File basePath) {
-        return this.buildReleaseArchPath(basePath, PlatformArch.current())
+    def File buildReleaseVersionPath(File basePath) {
+        return new File(this.buildReleasePath(basePath), project.version)
     }
 
     /**
@@ -87,7 +89,16 @@ abstract class PackagerReleaseTask extends PackagerTask {
      * @return
      */
     def File buildReleaseArchPath(File basePath, PlatformArch platformArch) {
-        return new File(this.buildReleasePath(basePath), platformArch.toString())
+        return new File(this.buildReleaseVersionPath(basePath), platformArch.toString())
+    }
+
+    /**
+     * Builds a release path for current project and platform/arch
+     * @param basePath Release base path
+     * @return
+     */
+    def File buildReleaseArchPath(File basePath) {
+        return this.buildReleaseArchPath(basePath, PlatformArch.current())
     }
 
     /**
@@ -262,7 +273,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleaseJars() {
         def releaseBasePath = this.extension.releaseBasePath
-        def releasePath = this.buildReleasePath(releaseBasePath)
+        def releasePath = this.buildReleaseVersionPath(releaseBasePath)
 
         // Release jars for all architectures which are present within the release path for this project
         Files.walk(Paths.get(releasePath.toURI()), 1)
@@ -309,35 +320,23 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 class PackagerReleasePushTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePushTask() {
-        def repo = FileRepositoryBuilder.create(new File(this.buildReleaseArchPath(this.extension.releaseBasePath), ".git"))
 
-        println "Pushing release ${project.name}-${project.version}"
+        def src = this.buildReleaseVersionPath(this.extension.releaseBasePath).toURI()
+        def dst = new URI("rsync", "leoz", "syntronix.de", -1, "/leoz/${project.name}/${project.version}", null, null)
 
-        println "Determining repo status"
-        def sc = new StatusCommand(repo)
-        Status status = sc.call()
-        if (status.untracked.isEmpty())
-            throw new IllegalStateException("No untracked changes")
+        println "Release push source [${src}] -> [${dst}]"
 
-        println "Checking tags"
-        def lt = new ListTagCommand(repo)
-        List<Ref> refs = lt.call()
-        refs.each { println it }
+        RsyncClient rc = new RsyncClient(Paths.get(project.rootDir.toURI())
+                .resolve("bin")
+                .resolve(PlatformArch.current().toString())
+                .resolve("leoz-rsync")
+                .toFile());
 
-        println "Adding changes to index"
-        def ac = new AddCommand(repo)
-        ac.addFilepattern(".")
-        ac.call()
-
-        println "Committing changes"
-        def cc = new CommitCommand(repo)
-        cc.message = project.version
-        cc.call()
-
-        println "Creating tag ${project.version}"
-        def tc = new TagCommand(repo)
-        tc.name = project.version
-        tc.call()
+        rc.source = src
+        rc.destination = dst
+        rc.password = "leoz"
+        rc.compression = 9
+        rc.sync( { fr -> println "Syncing [${fr.path}]" }, {} )
     }
 }
 
