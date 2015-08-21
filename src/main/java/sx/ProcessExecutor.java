@@ -100,7 +100,10 @@ public class ProcessExecutor implements Disposable {
         if (mProcess != null)
             throw new IllegalStateException("Process already started");
 
+        // Start process
         mProcess = mProcessBuilder.start();
+
+        // Add stream handlers
         if (mStreamHandler != null) {
             mOutputReaderThread = new StreamReaderThread(mProcess.getInputStream(), new Action<String>() {
                 @Override
@@ -136,17 +139,37 @@ public class ProcessExecutor implements Disposable {
         if (mProcess == null)
             throw new IllegalStateException("Process not started");
 
-        // Wait for process to terminate
-        int returnCode = mProcess.waitFor();
+        Thread shutdownHook = new Thread("ProcessExecutor shutdown hook") {
+            @Override
+            public void run() {
+                mLog.warn(String.format("Terminating process [%s]", mProcessBuilder.command().get(0)));
+                if (mProcess.isAlive())
+                    mProcess.destroy();
+            }
+        };
 
-        // Wait for stream reader threads to terminate
-        if (mOutputReaderThread != null) {
-            mOutputReaderThread.join();
-            mOutputReaderThread = null;
-        }
-        if (mErrorReaderThread != null) {
-            mErrorReaderThread.join();
-            mErrorReaderThread = null;
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+        int returnCode = -1;
+        try {
+            returnCode = mProcess.waitFor();
+        } finally {
+            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+
+            if (mProcess.isAlive()) {
+                mLog.info("destroying");
+                mProcess.destroy();
+            }
+
+            // Wait for stream reader threads to terminate
+            if (mOutputReaderThread != null) {
+                mOutputReaderThread.join();
+                mOutputReaderThread = null;
+            }
+            if (mErrorReaderThread != null) {
+                mErrorReaderThread.join();
+                mErrorReaderThread = null;
+            }
         }
 
         if (returnCode != 0)
@@ -156,14 +179,8 @@ public class ProcessExecutor implements Disposable {
     @Override
     public void dispose() {
         if (mProcess != null && mProcess.isAlive()) {
-            mProcess.destroyForcibly();
-            try {
-                mProcess.waitFor();
-            } catch (InterruptedException e) {
-                mLog.error(e.getMessage(), e);
-            }
+            mProcess.destroy();
         }
-
         mProcess = null;
 
         if (mOutputReaderThread != null) {
