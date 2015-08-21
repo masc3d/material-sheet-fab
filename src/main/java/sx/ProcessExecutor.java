@@ -157,7 +157,6 @@ public class ProcessExecutor implements Disposable {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
 
             if (mProcess.isAlive()) {
-                mLog.info("destroying");
                 mProcess.destroy();
             }
 
