@@ -35,10 +35,37 @@ public class ProcessExecutor implements Disposable {
     private StreamHandler mStreamHandler;
     private StreamReaderThread mOutputReaderThread;
     private StreamReaderThread mErrorReaderThread;
+    private MonitorThread mMonitorThread;
 
     public interface StreamHandler {
         void onOutput(String output);
         void onError(String output);
+    }
+
+    private class MonitorThread extends Thread {
+        @Override
+        public void run() {
+            Thread shutdownHook = new Thread("ProcessExecutor shutdown hook") {
+                @Override
+                public void run() {
+                    if (mProcess.isAlive()) {
+                        mLog.warn(String.format("Terminating process [%s]", mProcessBuilder.command().get(0)));
+                        mProcess.destroy();
+                    }
+                }
+            };
+
+            Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+            try {
+                mProcess.waitFor();
+            } catch (InterruptedException e) {
+                mLog.error(e.getMessage(), e);
+            } finally {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+                shutdownHook.run();
+            }
+        }
     }
 
     /**
@@ -102,6 +129,8 @@ public class ProcessExecutor implements Disposable {
 
         // Start process
         mProcess = mProcessBuilder.start();
+        mMonitorThread = new MonitorThread();
+        mMonitorThread.start();
 
         // Add stream handlers
         if (mStreamHandler != null) {
@@ -139,23 +168,10 @@ public class ProcessExecutor implements Disposable {
         if (mProcess == null)
             throw new IllegalStateException("Process not started");
 
-        Thread shutdownHook = new Thread("ProcessExecutor shutdown hook") {
-            @Override
-            public void run() {
-                mLog.warn(String.format("Terminating process [%s]", mProcessBuilder.command().get(0)));
-                if (mProcess.isAlive())
-                    mProcess.destroy();
-            }
-        };
-
-        Runtime.getRuntime().addShutdownHook(shutdownHook);
-
         int returnCode = -1;
         try {
             returnCode = mProcess.waitFor();
         } finally {
-            Runtime.getRuntime().removeShutdownHook(shutdownHook);
-
             if (mProcess.isAlive()) {
                 mProcess.destroy();
             }
