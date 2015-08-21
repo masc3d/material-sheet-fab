@@ -178,7 +178,6 @@ public class RsyncClient(path: File) : Rsync(path) {
             }
 
             override fun onError(o: String?) {
-                println("meh")
                 var line = o?.trim()
                 if (line == null || line.length() == 0)
                     return
