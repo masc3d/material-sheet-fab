@@ -111,6 +111,7 @@ public class RsyncClient(path: File) : Rsync(path) {
         var command = ArrayList<String>()
         var infoFlags = ArrayList<String>()
 
+        // Prepare command
         command.add(this.path.toString())
 
         if (this.verbose) command.add("-v")
@@ -138,13 +139,19 @@ public class RsyncClient(path: File) : Rsync(path) {
         command.add(this.destination!!.toRsyncPath())
 
         log.trace("Command ${java.lang.String.join(" ", command)}")
+
+        // Prepare process builder
         var pb: ProcessBuilder = ProcessBuilder(command)
 
+        // Set password via env var
+        pb.environment().put("RSYNC_PASSWORD", this.password);
+
+        // Execute
         var output = StringBuffer()
         var error = StringBuffer()
         var files = ArrayList<File>()
 
-        // Execute
+        var process: Process? = null
         var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
             override fun onOutput(o: String?) {
                 var line = o?.trim()
@@ -171,10 +178,9 @@ public class RsyncClient(path: File) : Rsync(path) {
             }
 
             override fun onError(o: String?) {
+                println("meh")
                 var line = o?.trim()
                 if (line == null || line.length() == 0)
-                    return
-                if (line.startsWith("Password:"))
                     return
 
                 error.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
@@ -183,24 +189,13 @@ public class RsyncClient(path: File) : Rsync(path) {
         })
 
         pe.start()
-
-        // Write password to standard input
-        if (pe.getProcess().isAlive()) {
-            var os = OutputStreamWriter(pe.getProcess().getOutputStream())
-            os.write(this.password + StandardSystemProperty.LINE_SEPARATOR.value())
-            os.flush()
-        }
+        process = pe.getProcess()
 
         try {
             pe.waitFor()
         } catch(e: Exception) {
             log.error(e.getMessage(), e)
         }
-
-        //        if (output.length() > 0)
-        //            log.info(output.toString())
-        //        if (error.length() > 0)
-        //            log.error(error.toString())
 
         return Result(files)
     }
