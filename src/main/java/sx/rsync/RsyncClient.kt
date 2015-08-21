@@ -22,20 +22,11 @@ public class RsyncClient(path: File) : Rsync(path) {
         val log = LogFactory.getLog(RsyncClient.javaClass)
     }
 
-    /**
-     * Removes file scheme from URI
-     */
-    private fun URI.removeFileScheme(): URI {
-        return if (this.isFile()) URI(this.getPath()) else this
-    }
-
     private fun URI.isFile(): Boolean {
         return this.getScheme() == "file"
     }
 
     private fun URI.toRsyncPath(): String {
-        var path: String
-
         if (SystemUtils.IS_OS_WINDOWS)
             // Return cygwin path on windows systems
             return if (this.isFile()) "/cygdrive${this.getPath().replace(":", "")}" else this.toString()
@@ -53,6 +44,8 @@ public class RsyncClient(path: File) : Rsync(path) {
     var wholeFile: Boolean = false
     var skipBasedOnChecksum: Boolean = true
     var fuzzy: Boolean = true
+    var preserveExecutability = true
+    var preserveAcls = true
     /** Compression level, 0 (none) - 9 (max) */
     var compression: Int = 0
 
@@ -120,18 +113,22 @@ public class RsyncClient(path: File) : Rsync(path) {
 
         command.add(this.path.toString())
 
-        if (this.progress) infoFlags.add("progress2")
-
+        if (this.verbose) command.add("-v")
+        if (this.archive) command.add("-a")
+        if (this.preserveExecutability) command.add("-E")
+        if (this.preserveAcls) command.add("-A")
         if (this.skipBasedOnChecksum) command.add("-c")
         if (this.fuzzy) command.add("-y")
-        if (this.archive) command.add("-a")
-        if (this.verbose) command.add("-v")
         if (this.partial) command.add("--partial")
         command.add(if (partial) "--whole-file" else "--no-whole-file")
         if (this.compression > 0) {
             command.add("-zz")
             command.add("--compress-level=${this.compression}")
         }
+
+        // Info flags
+        if (this.progress) infoFlags.add("progress2")
+
         if (infoFlags.size() > 0)
             command.add("--info=${java.lang.String.join(",", infoFlags)}")
 
