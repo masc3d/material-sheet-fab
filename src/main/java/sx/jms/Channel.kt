@@ -107,10 +107,11 @@ public class Channel
         this.send(converter.toMessage(message, session.get()))
     }
 
-    throws(JMSException::class)
-    public fun <T> receive(messageType: Class<T>): T {
-        return null
-    }
+    // TODO: add receive support
+//    throws(JMSException::class)
+//    public fun <T> receive(messageType: Class<T>): T {
+//        return null
+//    }
 
     /**
      * Explicitly commit transaction
