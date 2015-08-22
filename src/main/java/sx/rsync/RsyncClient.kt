@@ -148,6 +148,57 @@ public class RsyncClient(path: File) : Rsync(path) {
     }
 
     /**
+     * List destination directory
+     */
+    public fun list() {
+        if (this.destination == null)
+            throw IllegalArgumentException("Destination is mandatory")
+
+        var command = ArrayList<String>()
+
+        command.add(this.rsyncExecutablePath.toString())
+        command.add("--list-only")
+        command.add(this.destination.toString())
+
+        var pb = ProcessBuilder(command)
+
+        // Set password via env var
+        pb.environment().put("RSYNC_PASSWORD", this.password);
+
+        // Execute
+        var output = StringBuffer()
+        var error = StringBuffer()
+        var files = ArrayList<File>()
+
+        var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
+            override fun onOutput(output: String?) {
+                var line = output?.trim()
+                if (line == null || line.length() == 0)
+                    return
+
+                log.info(line)
+            }
+
+            override fun onError(output: String?) {
+                var line = output?.trim()
+                if (line == null || line.length() == 0)
+                    return
+
+                error.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
+                log.error(line)
+            }
+        })
+
+        pe.start()
+
+        try {
+            pe.waitFor()
+        } catch(e: Exception) {
+            log.error(e.getMessage(), e)
+        }
+    }
+
+    /**
      * Synchronize
      * @return Sync result
      */
@@ -155,6 +206,7 @@ public class RsyncClient(path: File) : Rsync(path) {
             fileRecordCallback: (fr: FileRecord) -> Unit = {},
             progressRecordCallback: (pr: ProgressRecord) -> Unit = {})
             : Result {
+
         if (this.source == null || this.destination == null)
             throw IllegalArgumentException("Source and destination are mandatory")
 
@@ -162,7 +214,7 @@ public class RsyncClient(path: File) : Rsync(path) {
         var infoFlags = ArrayList<String>()
 
         // Prepare command
-        command.add(this.path.toString())
+        command.add(this.rsyncExecutablePath.toString())
 
         if (this.verbose) command.add("-v")
         if (this.archive) command.add("-a")
