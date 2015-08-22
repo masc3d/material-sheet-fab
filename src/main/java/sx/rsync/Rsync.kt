@@ -8,5 +8,5 @@ import java.net.URL
 /**
  * Created by masc on 15.08.15.
  */
-public open class Rsync(val path: File) {
+public open class Rsync(val rsyncExecutablePath: File) {
 }
