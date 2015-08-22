@@ -1,5 +1,6 @@
 package sx.rsync
 
+import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import java.io.File
@@ -18,7 +19,7 @@ abstract class RsyncTest {
                 .getParent()
                 .getParent()
                 .resolve("bin")
-                .resolve("osx64")
+                .resolve(when { SystemUtils.IS_OS_WINDOWS -> "win64" else -> "osx64" })
                 .resolve("leoz-rsync")
 
         this.rsyncExecutablePath = rsyncExecutablePath.toFile()
