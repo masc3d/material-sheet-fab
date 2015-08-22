@@ -11,6 +11,10 @@ import java.io.OutputStreamWriter
 import java.lang
 import java.net.URI
 import java.net.URL
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.*
 import kotlin.text.Regex
 
@@ -22,34 +26,80 @@ public class RsyncClient(path: File) : Rsync(path) {
         val log = LogFactory.getLog(RsyncClient.javaClass)
     }
 
-    private fun URI.isFile(): Boolean {
-        return this.getScheme() == "file"
-    }
+    /**
+     * Rsync URI
+     * @param uri File or rsync URI
+     * @param includeDir Indicates if final path component/directory should be included (implies traling slash if false)
+     */
+    public class URI(uri: java.net.URI, val includeDir: Boolean = false) {
+        val uri: java.net.URI
 
-    private fun URI.toRsyncPath(): String {
-        if (SystemUtils.IS_OS_WINDOWS)
+        init {
+            // Make sure URI has trailing slash (or not) according to flag
+            if (includeDir) {
+                this.uri = if (uri.getPath().endsWith('/')) java.net.URI(uri.toString().trimEnd('/')) else uri
+            } else {
+                this.uri = if (!uri.getPath().endsWith('/')) java.net.URI(uri.toString() + '/') else uri
+            }
+        }
+
+        constructor(path: java.nio.file.Path, includeDir: Boolean = false) : this(path.toUri(), includeDir) {
+        }
+
+        constructor(uri: String, includeDir: Boolean = false) : this(java.net.URI(uri), includeDir) {
+        }
+
+        constructor(file: File, includeDir: Boolean = false) : this(file.toURI(), includeDir) {
+        }
+
+        // Extension methods for java.net.URI
+        private fun java.net.URI.isFile(): Boolean {
+            return this.getScheme() == "file"
+        }
+
+        override fun toString(): String {
+            if (!this.uri.isFile())
+                return this.uri.toString()
+
+            var rsyncPath: String
+            if (SystemUtils.IS_OS_WINDOWS)
             // Return cygwin path on windows systems
-            return if (this.isFile()) "/cygdrive${this.getPath().replace(":", "")}" else this.toString()
-        else
-            return if (this.isFile()) File(this).getAbsolutePath() else this.toString()
+                rsyncPath = "/cygdrive${this.uri.getPath().replace(":", "")}"
+            else
+                rsyncPath = Paths.get(this.uri).toAbsolutePath().toString()
+
+            if (this.uri.getPath().endsWith('/'))
+                rsyncPath += FileSystems.getDefault().getSeparator()
+
+            return rsyncPath
+        }
     }
 
-    var source: URI? = null
-    var destination: URI? = null
+    var source: RsyncClient.URI? = null
+    var destination: RsyncClient.URI? = null
+
+    /** Remote source/destination password */
+    var password: String = ""
 
     var archive: Boolean = true
     var verbose: Boolean = true
     var progress: Boolean = true
     var partial: Boolean = true
     var wholeFile: Boolean = false
+    /** Skip files based on checksum, not on timestamp/size */
     var skipBasedOnChecksum: Boolean = true
+    /** Fuzzy matching of compare/copy dests */
     var fuzzy: Boolean = true
+    /** Preserve executable flag of files */
     var preserveExecutability = true
+    /** Preserve acl permissions */
     var preserveAcls = true
     /** Compression level, 0 (none) - 9 (max) */
     var compression: Int = 0
-
-    var password: String = ""
+    /** Relative paths */
+    var relativePaths: Boolean = false
+    /** Delete destination files */
+    var delete: Boolean = false
 
     public class Result(val files: List<File>) {
 
@@ -120,6 +170,8 @@ public class RsyncClient(path: File) : Rsync(path) {
         if (this.preserveAcls) command.add("-A")
         if (this.skipBasedOnChecksum) command.add("-c")
         if (this.fuzzy) command.add("-y")
+        if (this.relativePaths) command.add("-R")
+        if (this.delete) command.add("--delete")
         if (this.partial) command.add("--partial")
         command.add(if (partial) "--whole-file" else "--no-whole-file")
         if (this.compression > 0) {
@@ -135,9 +187,10 @@ public class RsyncClient(path: File) : Rsync(path) {
 
         command.add("--out-format=${FileRecord.OutputFormat}")
 
-        command.add(this.source!!.toRsyncPath())
-        command.add(this.destination!!.toRsyncPath())
+        command.add(this.source!!.toString())
+        command.add(this.destination!!.toString())
 
+        println("${java.lang.String.join(" ", command)}")
         log.trace("Command ${java.lang.String.join(" ", command)}")
 
         // Prepare process builder
@@ -151,7 +204,6 @@ public class RsyncClient(path: File) : Rsync(path) {
         var error = StringBuffer()
         var files = ArrayList<File>()
 
-        var process: Process? = null
         var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
             override fun onOutput(o: String?) {
                 var line = o?.trim()
@@ -188,7 +240,6 @@ public class RsyncClient(path: File) : Rsync(path) {
         })
 
         pe.start()
-        process = pe.getProcess()
 
         try {
             pe.waitFor()
