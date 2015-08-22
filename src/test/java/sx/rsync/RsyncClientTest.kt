@@ -13,11 +13,13 @@ class RsyncClientTest : RsyncTest() {
     @Test
     fun testClient() {
         val rsyncClient = RsyncClient(this.rsyncExecutablePath)
-        rsyncClient.source = URI("rsync://leoz@syntronix.de/leoz/test")
-        var path = Paths.get("").toAbsolutePath().getParent().getParent().getParent().resolve("leoz-release").resolve("test")
-        rsyncClient.destination = path.toUri()
+        rsyncClient.source = RsyncClient.URI("rsync://leoz@syntronix.de/leoz/test")
+        var path = Paths.get("").toAbsolutePath().getParent().getParent().getParent().resolve("leoz-release")
+
+        rsyncClient.destination = RsyncClient.URI(path)
         rsyncClient.password = "leoz"
         rsyncClient.compression = 9
+        rsyncClient.delete = true
         rsyncClient.sync({ fr -> this.log.info(fr) }, {})
     }
 }
