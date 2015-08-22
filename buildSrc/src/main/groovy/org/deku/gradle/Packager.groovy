@@ -74,22 +74,13 @@ abstract class PackagerReleaseTask extends PackagerTask {
     }
 
     /**
-     * Builds a release path for current project anad version
-     * @param basePath
-     * @return
-     */
-    def File buildReleaseVersionPath(File basePath) {
-        return new File(this.buildReleasePath(basePath), project.version)
-    }
-
-    /**
      * Builds a release path for current project and specific platform/arch
      * @param basePath Release base path
      * @param platformArch Platform/arch
      * @return
      */
     def File buildReleaseArchPath(File basePath, PlatformArch platformArch) {
-        return new File(this.buildReleaseVersionPath(basePath), platformArch.toString())
+        return new File(this.buildReleasePath(basePath), platformArch.toString())
     }
 
     /**
@@ -122,6 +113,18 @@ abstract class PackagerReleaseTask extends PackagerTask {
             jarDestinationPath = new File(releaseArchPath, 'app')
         }
         return jarDestinationPath
+    }
+
+    /**
+     * Create rsync client
+     * @return
+     */
+    protected def RsyncClient createRsyncClient() {
+        return new RsyncClient(Paths.get(project.rootDir.toURI())
+                .resolve("bin")
+                .resolve(PlatformArch.current().toString())
+                .resolve("leoz-rsync")
+                .toFile());
     }
 
     protected def copySupplementalDirs(PlatformArch platformArch) {
@@ -273,7 +276,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleaseJars() {
         def releaseBasePath = this.extension.releaseBasePath
-        def releasePath = this.buildReleaseVersionPath(releaseBasePath)
+        def releasePath = this.buildReleasePath(releaseBasePath)
 
         // Release jars for all architectures which are present within the release path for this project
         Files.walk(Paths.get(releasePath.toURI()), 1)
@@ -321,16 +324,12 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePushTask() {
 
-        def src = this.buildReleaseVersionPath(this.extension.releaseBasePath).toURI()
-        def dst = new URI("rsync", "leoz", "syntronix.de", -1, "/leoz/${project.name}/${project.version}", null, null)
+        def src = new RsyncClient.URI(this.buildReleasePath(this.extension.releaseBasePath), false)
+        def dst = new RsyncClient.URI(new URI("rsync", "leoz", "syntronix.de", -1, "/leoz/${project.name}/${project.version}/", null, null), false)
 
         println "Release push source [${src}] -> [${dst}]"
 
-        RsyncClient rc = new RsyncClient(Paths.get(project.rootDir.toURI())
-                .resolve("bin")
-                .resolve(PlatformArch.current().toString())
-                .resolve("leoz-rsync")
-                .toFile());
+        RsyncClient rc = this.createRsyncClient();
 
         rc.source = src
         rc.destination = dst

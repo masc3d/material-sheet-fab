@@ -29,14 +29,8 @@ dependencies {
 def srcdir_import = file("$projectDir/src/import/java")
 
 sourceSets {
-    main {
-        java {
-            srcDirs += srcdir_import
-        }
-        kotlin  {
-            srcDirs += srcdir_import
-        }
-    }
+    main.java.srcDirs += srcdir_import
+    main.java.srcDirs += 'src/main/kotlin'
 }
 
 
