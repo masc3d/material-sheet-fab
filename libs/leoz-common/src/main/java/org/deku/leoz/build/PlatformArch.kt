@@ -8,31 +8,6 @@ import kotlin.platform.platformStatic
 import kotlin.text.Regex
 
 /**
- * Platform types
- */
-public enum class Platform(val platform: String) {
-    OSX("osx"),
-    WINDOWS("win"),
-    LINUX("linux");
-
-    override fun toString(): String {
-        return this.platform
-    }
-}
-
-/**
- * Cpu architecture types
- */
-public enum class CpuArch(val cpuArch: String) {
-    X86("32"),
-    X64("64");
-
-    override fun toString(): String {
-        return this.cpuArch
-    }
-}
-
-/**
  * Platform/architecture
  */
 public class PlatformArch(val platform: Platform, val cpuArch: CpuArch) {

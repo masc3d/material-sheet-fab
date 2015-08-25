@@ -1,7 +1,9 @@
 package org.deku.gradle
 
+import org.deku.leoz.build.PlatformArch
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import sx.rsync.Rsync
 
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -81,6 +83,13 @@ class PackagerPlugin implements Plugin<Project> {
             extension = ext
         }
         project.tasks.releasePush.dependsOn(project.tasks.releaseJars)
+
+        // Initialize rsync
+        Rsync.executablePath = Paths.get(project.rootDir.toURI())
+                .resolve("bin")
+                .resolve(PlatformArch.current().toString())
+                .resolve("leoz-rsync")
+                .toFile();
     }
 }
 

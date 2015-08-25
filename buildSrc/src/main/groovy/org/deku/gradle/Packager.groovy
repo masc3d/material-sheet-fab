@@ -1,6 +1,9 @@
 package org.deku.gradle
 
 import org.apache.commons.lang3.SystemUtils
+import org.deku.leoz.build.Artifact
+import org.deku.leoz.build.ArtifactRepository
+import org.deku.leoz.build.ArtifactRepositoryConfiguration
 import org.deku.leoz.build.Platform
 import org.deku.leoz.build.PlatformArch
 import org.eclipse.jgit.api.AddCommand
@@ -12,11 +15,16 @@ import org.eclipse.jgit.api.TagCommand
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.gradle.api.DefaultTask
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.internal.slf4j.OutputEventListenerBackedLogger
 import sx.rsync.RsyncClient
 
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.logging.ConsoleHandler
+import java.util.logging.Handler
+import java.util.logging.Logger
 
 /**
  * Base class for all packager tasks
@@ -113,18 +121,6 @@ abstract class PackagerReleaseTask extends PackagerTask {
             jarDestinationPath = new File(releaseArchPath, 'app')
         }
         return jarDestinationPath
-    }
-
-    /**
-     * Create rsync client
-     * @return
-     */
-    protected def RsyncClient createRsyncClient() {
-        return new RsyncClient(Paths.get(project.rootDir.toURI())
-                .resolve("bin")
-                .resolve(PlatformArch.current().toString())
-                .resolve("leoz-rsync")
-                .toFile());
     }
 
     protected def copySupplementalDirs(PlatformArch platformArch) {
@@ -323,19 +319,14 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 class PackagerReleasePushTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePushTask() {
+        ArtifactRepository ar = ArtifactRepositoryConfiguration.INSTANCE$.stagingRepository(project.name)
 
-        def src = new RsyncClient.URI(this.buildReleasePath(this.extension.releaseBasePath), false)
-        def dst = new RsyncClient.URI(new URI("rsync", "leoz", "syntronix.de", -1, "/leoz/${project.name}/${project.version}/", null, null), false)
-
-        println "Release push source [${src}] -> [${dst}]"
-
-        RsyncClient rc = this.createRsyncClient();
-
-        rc.source = src
-        rc.destination = dst
-        rc.password = "leoz"
-        rc.compression = 9
-        rc.sync( { fr -> println "Syncing [${fr.path}]" }, {} )
+        ar.upload(
+                this.buildReleasePath(this.extension.releaseBasePath),
+                Artifact.Version.OBJECT$.parse(project.version),
+                { s, d -> println("Synchronizing [${s}] -> [${d}]") },
+                { f -> println("Uploading [${f.path}]") }
+        )
     }
 }
 
