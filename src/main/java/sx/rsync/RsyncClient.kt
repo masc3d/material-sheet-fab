@@ -15,13 +15,14 @@ import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.text.Regex
 
 /**
  * Created by masc on 15.08.15.
  */
-public class RsyncClient(path: File) : Rsync(path) {
+public class RsyncClient() {
     companion object {
         val log = LogFactory.getLog(RsyncClient.javaClass)
     }
@@ -43,18 +44,33 @@ public class RsyncClient(path: File) : Rsync(path) {
             }
         }
 
-        constructor(path: java.nio.file.Path, includeDir: Boolean = false) : this(path.toUri(), includeDir) {
-        }
+        /**
+         * @param path Local path
+         */
+        constructor(path: java.nio.file.Path, includeDir: Boolean = false) : this(path.toUri(), includeDir) { }
 
-        constructor(uri: String, includeDir: Boolean = false) : this(java.net.URI(uri), includeDir) {
-        }
+        /**
+         * @param uri URI string
+         */
+        constructor(uri: String, includeDir: Boolean = false) : this(java.net.URI(uri), includeDir) { }
 
-        constructor(file: File, includeDir: Boolean = false) : this(file.toURI(), includeDir) {
-        }
+        /**
+         * @param file Local file
+         */
+        constructor(file: File, includeDir: Boolean = false) : this(file.toURI(), includeDir) { }
 
         // Extension methods for java.net.URI
         private fun java.net.URI.isFile(): Boolean {
             return this.getScheme() == "file"
+        }
+
+        /**
+         * Resolve path
+         */
+        public fun resolve(str: String): URI {
+            return RsyncClient.URI(
+                    uri = if (uri.getPath().endsWith('/')) uri.resolve(str) else java.net.URI(uri.toString() + "/" + str),
+                    includeDir = this.includeDir)
         }
 
         override fun toString(): String {
@@ -109,18 +125,22 @@ public class RsyncClient(path: File) : Rsync(path) {
      * File entry record
      * @param line Line to parse
      */
-    private data class FileRecord(val flags: String, val path: String) {
+    public data class FileRecord(val flags: String, val path: String) {
         companion object {
             /** Output format for rsync */
             val OutputFormat = ">>> %i %n %L"
 
+            /**
+             * Try to parse file record line
+             * @return FileRecord or null if it couldn't be parsed
+             */
             public fun tryParse(line: String): FileRecord? {
                 // Flag field length is 12 on osx (linux?) and 11 on windows.
                 var re = Regex("^>>> (.{11,12}) (.*)$")
                 var mr = re.match(line) ?: return null
                 return FileRecord(
-                        flags = mr.groups[1]?.value ?: "",
-                        path = mr.groups[2]?.value ?: "")
+                        flags = mr.groups[1]!!.value,
+                        path = mr.groups[2]!!.value)
             }
         }
 
@@ -135,28 +155,63 @@ public class RsyncClient(path: File) : Rsync(path) {
      * Progress record
      * @param line Line to parse
      */
-    private data class ProgressRecord(val bytes: Int, val percentage: Int) {
+    public data class ProgressRecord(val bytes: Int, val percentage: Int) {
         companion object {
+            /**
+             * Try to parse progress record line
+             * @return ProgressRecord or null if it couldn't be parsed
+             */
             public fun tryParse(line: String): ProgressRecord? {
                 var re = Regex("^([0-9,]+)[\\s]+([0-9]+)%[\\s]+([^\\s]+).*$")
                 var mr = re.match(line) ?: return null
                 return ProgressRecord(
-                        bytes = mr.groups[1]?.value?.replace(",", "")?.toInt() ?: 0,
-                        percentage = mr.groups[2]?.value?.toInt() ?: 0)
+                        bytes = mr.groups[1]!!.value.replace(",", "").toInt(),
+                        percentage = mr.groups[2]!!.value.toInt())
             }
         }
+    }
+
+    public data class ListRecord(val flags: String, val size: Int, val timestamp: LocalDateTime, val filename: String) {
+        companion object {
+            /**
+             * Try to parse list record line
+             * @return ListRecord or null if it couldn't be parsed
+             */
+            public fun tryParse(line: String): ListRecord? {
+                // Example: drwxr-xr-x             10 2015/08/22 11:19:10 0.1
+                var re = Regex("^([^\\s]{10})[\\s]+([0-9,]+)[\\s]+([0-9]{4})/([0-9]{2})/([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2}) ([^\\s]+)$")
+                var mr = re.match(line) ?: return null
+
+                return ListRecord(
+                        flags = mr.groups[1]!!.value,
+                        size = mr.groups[2]!!.value.replace(",", "").toInt(),
+                        timestamp = LocalDateTime.of(
+                                mr.groups[3]!!.value.toInt(),
+                                mr.groups[4]!!.value.toInt(),
+                                mr.groups[5]!!.value.toInt(),
+                                mr.groups[6]!!.value.toInt(),
+                                mr.groups[7]!!.value.toInt(),
+                                mr.groups[8]!!.value.toInt()),
+                        filename = mr.groups[9]!!.value)
+            }
+        }
+
+        public val isDirectory: Boolean
+            get() = this.flags[0] == 'd'
     }
 
     /**
      * List destination directory
      */
-    public fun list() {
+    public fun list(): List<ListRecord> {
         if (this.destination == null)
             throw IllegalArgumentException("Destination is mandatory")
 
+        var result = ArrayList<ListRecord>()
+
         var command = ArrayList<String>()
 
-        command.add(this.rsyncExecutablePath.toString())
+        command.add(Rsync.executablePath.toString())
         command.add("--list-only")
         command.add(this.destination.toString())
 
@@ -166,9 +221,7 @@ public class RsyncClient(path: File) : Rsync(path) {
         pb.environment().put("RSYNC_PASSWORD", this.password);
 
         // Execute
-        var output = StringBuffer()
         var error = StringBuffer()
-        var files = ArrayList<File>()
 
         var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
             override fun onOutput(output: String?) {
@@ -176,7 +229,13 @@ public class RsyncClient(path: File) : Rsync(path) {
                 if (line == null || line.length() == 0)
                     return
 
-                log.info(line)
+                var lr = ListRecord.tryParse(line)
+                if (lr != null) {
+                    result.add(lr)
+                    return
+                }
+
+                log.trace(line)
             }
 
             override fun onError(output: String?) {
@@ -196,6 +255,8 @@ public class RsyncClient(path: File) : Rsync(path) {
         } catch(e: Exception) {
             log.error(e.getMessage(), e)
         }
+
+        return result
     }
 
     /**
@@ -214,7 +275,7 @@ public class RsyncClient(path: File) : Rsync(path) {
         var infoFlags = ArrayList<String>()
 
         // Prepare command
-        command.add(this.rsyncExecutablePath.toString())
+        command.add(Rsync.executablePath.toString())
 
         if (this.verbose) command.add("-v")
         if (this.archive) command.add("-a")
@@ -242,7 +303,6 @@ public class RsyncClient(path: File) : Rsync(path) {
         command.add(this.source!!.toString())
         command.add(this.destination!!.toString())
 
-        println("${java.lang.String.join(" ", command)}")
         log.trace("Command ${java.lang.String.join(" ", command)}")
 
         // Prepare process builder
@@ -252,7 +312,6 @@ public class RsyncClient(path: File) : Rsync(path) {
         pb.environment().put("RSYNC_PASSWORD", this.password);
 
         // Execute
-        var output = StringBuffer()
         var error = StringBuffer()
         var files = ArrayList<File>()
 
@@ -277,7 +336,6 @@ public class RsyncClient(path: File) : Rsync(path) {
                     log.trace(pr)
                     return
                 }
-                output.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
                 log.trace(line)
             }
 

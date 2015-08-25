@@ -11,19 +11,18 @@ import java.nio.file.Paths
  */
 abstract class RsyncTest {
     protected val log: Log = LogFactory.getLog(this.javaClass)
-    var rsyncExecutablePath: File
 
     init {
-        val rsyncExecutablePath = Paths.get("")
+        Rsync.executablePath =
+                Paths.get("")
                 .toAbsolutePath()
                 .getParent()
                 .getParent()
                 .resolve("bin")
                 .resolve(when { SystemUtils.IS_OS_WINDOWS -> "win64" else -> "osx64" })
                 .resolve("leoz-rsync")
+                        .toFile()
 
-        this.rsyncExecutablePath = rsyncExecutablePath.toFile()
-
-        log.info("Rsync executable path [${this.rsyncExecutablePath}]")
+        log.info("Rsync executable path [${Rsync.executablePath}]")
     }
 }
