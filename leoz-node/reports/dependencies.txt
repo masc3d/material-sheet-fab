@@ -79,8 +79,6 @@ compile - Compile classpath for source set 'main'.
 |    |         \--- xpp3:xpp3_min:1.1.4c
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-|    +--- org.apache.maven:maven-artifact:+ -> 3.3.3
-|    |    \--- org.codehaus.plexus:plexus-utils:3.0.20
 |    \--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |         +--- org.springframework:spring-aop:4.1.7.RELEASE
 |         |    +--- aopalliance:aopalliance:1.0
@@ -372,8 +370,6 @@ default - Configuration for default artifacts.
 |    |         \--- xpp3:xpp3_min:1.1.4c
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-|    +--- org.apache.maven:maven-artifact:+ -> 3.3.3
-|    |    \--- org.codehaus.plexus:plexus-utils:3.0.20
 |    \--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |         +--- org.springframework:spring-aop:4.1.7.RELEASE
 |         |    +--- aopalliance:aopalliance:1.0
@@ -697,8 +693,6 @@ runtime - Runtime classpath for source set 'main'.
 |    |         \--- xpp3:xpp3_min:1.1.4c
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-|    +--- org.apache.maven:maven-artifact:+ -> 3.3.3
-|    |    \--- org.codehaus.plexus:plexus-utils:3.0.20
 |    \--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |         +--- org.springframework:spring-aop:4.1.7.RELEASE
 |         |    +--- aopalliance:aopalliance:1.0
@@ -990,8 +984,6 @@ testCompile - Compile classpath for source set 'test'.
 |    |         \--- xpp3:xpp3_min:1.1.4c
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-|    +--- org.apache.maven:maven-artifact:+ -> 3.3.3
-|    |    \--- org.codehaus.plexus:plexus-utils:3.0.20
 |    \--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |         +--- org.springframework:spring-aop:4.1.7.RELEASE
 |         |    +--- aopalliance:aopalliance:1.0
@@ -1289,8 +1281,6 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |         \--- xpp3:xpp3_min:1.1.4c
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
-|    +--- org.apache.maven:maven-artifact:+ -> 3.3.3
-|    |    \--- org.codehaus.plexus:plexus-utils:3.0.20
 |    \--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |         +--- org.springframework:spring-aop:4.1.7.RELEASE
 |         |    +--- aopalliance:aopalliance:1.0

@@ -28,7 +28,7 @@ public data class Artifact(val type:Artifact.Type, val version: Artifact.Version
      * Artifact version
      * Created by masc on 24.08.15.
      */
-    public data class Version(val components: List<Int>, val suffix: String) {
+    public data class Version(val components: List<Int>, val suffix: String) : Comparable<Version> {
         public companion object {
             public fun parse(version: String): Version {
                 // Determine end of numeric components
@@ -46,7 +46,8 @@ public data class Artifact(val type:Artifact.Type, val version: Artifact.Version
                 // Parse components to ints
                 val components: List<Int> = if (end > 0)
                     version.substring(0, end).split('.').map( { s -> s.toInt() } )
-                else ArrayList<Int>()
+                else
+                    ArrayList<Int>()
 
                 if (components.size() == 0)
                     throw IllegalArgumentException("Empty version string [${version}]")
@@ -59,8 +60,31 @@ public data class Artifact(val type:Artifact.Type, val version: Artifact.Version
             }
         }
 
+        override fun compareTo(other: Version): Int {
+            val tSize = this.components.size()
+            val oSize = other.components.size()
+
+            val less = if (tSize < oSize) this else other
+
+            // Compare version components
+            for (i in 0..less.components.size() - 1) {
+                val c = this.components[i].compareTo(other.components[i])
+                if (c != 0)
+                    return c
+            }
+
+            // Revert to suffix comparison if version components were equal and both have the same amount of components
+            if (tSize == oSize) {
+                return this.suffix.compareTo(other.suffix)
+            }
+
+            // Otherwise the version with more components wins
+            return if (tSize > oSize) 1 else -1
+        }
+
         override fun toString(): String {
-            return this.components.joinToString(".") + this.suffix
+            return this.components.joinToString(".") +
+                    if (this.suffix.length() > 0) "-" + suffix else ""
         }
     }
 }

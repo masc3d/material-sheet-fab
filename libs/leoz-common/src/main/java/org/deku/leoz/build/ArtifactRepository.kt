@@ -3,6 +3,7 @@ package org.deku.leoz.build
 import org.apache.commons.logging.LogFactory
 import sx.rsync.RsyncClient
 import java.io.File
+import java.net.URI
 import java.util.*
 
 /**
@@ -67,9 +68,17 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
             throw IllegalArgumentException("Version is mandatory")
         }
 
+        // Take the two most recent versions for comparison during sync
+        var comparisonDestinationUris = this.list()
+                .sortDescending()
+                .filter( { v -> v.compareTo(version) != 0 } )
+                .take(2)
+                .map( { v -> URI("../").resolve(v.toString()) } )
+
         var rc = this.createRsyncClient()
         rc.source = RsyncClient.URI(srcPath)
         rc.destination = this.rsyncArtifactUri.resolve(version.toString())
+        rc.copyDestinations = comparisonDestinationUris
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
         syncStartCallback(rc.source, rc.destination)
