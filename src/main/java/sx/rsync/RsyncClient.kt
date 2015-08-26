@@ -116,11 +116,16 @@ public class RsyncClient() {
     var relativePaths: Boolean = false
     /** Delete destination files */
     var delete: Boolean = false
+    /** List of relative destination paths to compare against */
+    var comparisonDestinations: List<java.net.URI> = ArrayList()
+    /** List of relative destination paths to compare against and copy from (to minimize files to transfer) */
+    var copyDestinations: List<java.net.URI> = ArrayList()
 
     public class Result(val files: List<File>) {
 
     }
 
+    //region Records
     /**
      * File entry record
      * @param line Line to parse
@@ -199,6 +204,7 @@ public class RsyncClient() {
         public val isDirectory: Boolean
             get() = this.flags[0] == 'd'
     }
+    //endregion
 
     /**
      * List destination directory
@@ -290,6 +296,14 @@ public class RsyncClient() {
         if (this.compression > 0) {
             command.add("-zz")
             command.add("--compress-level=${this.compression}")
+        }
+        for (url in this.comparisonDestinations) {
+            command.add("--compare-dest")
+            command.add(url.toString())
+        }
+        for (url in this.copyDestinations) {
+            command.add("--copy-dest")
+            command.add(url.toString())
         }
 
         // Info flags
