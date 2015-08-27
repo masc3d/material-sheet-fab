@@ -189,42 +189,10 @@ packager {
     releaseBasePath = g_release_path
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
+    supplementalPlatformDirs(
+            (g_bin_path): new File('bin')
+    )
 }
-
-// TODO: centralize releaseBin (into packager)
-/**
- * Copy binary files to release dir
- * @return
- */
-def releaseBin() {
-    def srcDir = new File(g_bin_path, g_arch_identifier)
-
-    def File archReleasePath = tasks.releaseBundle.buildReleaseArchPath(g_release_path)
-    def dstDir
-
-    if (SystemUtils.IS_OS_MAC_OSX) {
-        dstDir = Paths.get(archReleasePath.toURI())
-                .resolve("${project.name}.app")
-                .resolve('Contents')
-                .resolve('bin')
-                .toFile()
-    } else {
-        dstDir = new File(archReleasePath, 'bin')
-    }
-
-    println "Copying binaries [${srcDir}] -> [${dstDir}] "
-
-    if (dstDir.exists())
-        dstDir.deleteDir()
-
-    copy {
-        from srcDir
-        into dstDir
-    }
-}
-// Execute copyBin after packager tasks
-tasks.releaseBundle.doLast { releaseBin() }
-tasks.releaseJars.doLast { releaseBin() }
 
 // Packager task
 

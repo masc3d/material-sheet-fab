@@ -5,7 +5,6 @@ import org.gradle.api.Project
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 
-import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -30,8 +29,8 @@ class PackagerPluginExtension {
     }
 
     /** Map of source dirs containing arch subdirs -> (relative) destination directories to copy to bundle release directory */
-    def supplementalArchDirs(LinkedHashMap<File, File> dirs) {
-        mSupplementalArchDirs = dirs
+    def supplementalPlatformDirs(LinkedHashMap<File, File> dirs) {
+        mSupplementalPlatformDirs = dirs
     }
 
     private def LinkedHashMap<File, File> mSupplementalDirs
@@ -39,9 +38,9 @@ class PackagerPluginExtension {
         return mSupplementalDirs
     }
 
-    private def LinkedHashMap<File, File> mSupplementalArchDirs
-    public LinkedHashMap<File, File> getSupplementalArchDirs() {
-        return mSupplementalArchDirs
+    private def LinkedHashMap<File, File> mSupplementalPlatformDirs
+    public LinkedHashMap<File, File> getSupplementalPlatformDirs() {
+        return mSupplementalPlatformDirs
     }
 }
 

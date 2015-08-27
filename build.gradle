@@ -57,7 +57,7 @@ allprojects {
             v_swagger = "+"
 
             // LeoZ release path, relative to root project
-            g_arch_identifier = PlatformId.current().toString()
+            g_platform_identifier = PlatformId.current().toString()
 
             g_release_path = Paths.get(project.rootDir.toURI())
                     .parent
