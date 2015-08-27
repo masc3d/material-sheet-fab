@@ -4,6 +4,7 @@ import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.build.Artifact
 import org.deku.leoz.build.ArtifactRepository
 import org.deku.leoz.build.ArtifactRepositoryFactory
+import org.deku.leoz.build.Manifest
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import sx.platform.OperatingSystem
@@ -307,6 +308,9 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
 
         this.copySupplementalDirs(PlatformId.current())
         this.copySupplementalPlatformDirs(PlatformId.current())
+
+        Manifest.create(releasePath)
+                .save(new FileOutputStream(new File(releasePath, 'manifest.xml')))
     }
 }
 
@@ -363,7 +367,7 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
 
         ar.upload(
                 this.getReleasePath(),
-                Artifact.Version.OBJECT$.parse(project.version),
+                Artifact.Version.parse(project.version),
                 { s, d -> println("Synchronizing [${s}] -> [${d}]") },
                 { f -> println("Uploading [${f.path}]") }
         )

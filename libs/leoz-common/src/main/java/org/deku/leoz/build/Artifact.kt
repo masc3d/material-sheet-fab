@@ -2,6 +2,7 @@ package org.deku.leoz.build
 
 import java.util
 import java.util.*
+import kotlin.platform.platformStatic
 import kotlin.text.Regex
 
 /**
@@ -30,7 +31,7 @@ public data class Artifact(val type:Artifact.Type, val version: Artifact.Version
      */
     public data class Version(val components: List<Int>, val suffix: String) : Comparable<Version> {
         public companion object {
-            public fun parse(version: String): Version {
+            @platformStatic public fun parse(version: String): Version {
                 // Determine end of numeric components
                 var end = version.indexOfFirst( { c -> !c.isDigit() && c != '.' } )
 
