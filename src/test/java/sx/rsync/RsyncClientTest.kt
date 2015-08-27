@@ -10,7 +10,7 @@ import java.nio.file.Paths
  * Created by masc on 15.08.15.
  */
 @Ignore
-class RsyncClientTest : RsyncTest() {
+class RsyncClientTest {
 
     @Test
     fun testSync() {
@@ -22,7 +22,7 @@ class RsyncClientTest : RsyncTest() {
         rsyncClient.password = "leoz"
         rsyncClient.compression = 9
         rsyncClient.delete = true
-        rsyncClient.sync({ fr -> this.log.info(fr) }, {})
+        rsyncClient.sync({ fr -> println(fr) }, {})
     }
 
     @Test
