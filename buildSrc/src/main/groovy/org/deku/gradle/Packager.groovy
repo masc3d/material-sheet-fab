@@ -64,7 +64,7 @@ abstract class PackagerTask extends DefaultTask {
      * @return
      */
     protected def File buildPackagerArchDir() {
-        return new File(this.extension.packagerBaseDir, PlatformArch.current().toString())
+        return new File(this.extension.packagerBaseDir, PlatformId.current().toString())
     }
 }
 
@@ -84,11 +84,11 @@ abstract class PackagerReleaseTask extends PackagerTask {
     /**
      * Builds a release path for current project and specific platform/arch
      * @param basePath Release base path
-     * @param platformArch Platform/arch
+     * @param platformId Platform/arch
      * @return
      */
-    def File buildReleaseArchPath(File basePath, PlatformId platformArch) {
-        return new File(this.buildReleasePath(basePath), platformArch.toString())
+    def File buildReleaseArchPath(File basePath, PlatformId platformId) {
+        return new File(this.buildReleasePath(basePath), platformId.toString())
     }
 
     /**
@@ -123,13 +123,13 @@ abstract class PackagerReleaseTask extends PackagerTask {
         return jarDestinationPath
     }
 
-    protected def copySupplementalDirs(PlatformId platformArch) {
+    protected def copySupplementalDirs(PlatformId platformId) {
         this.extension.getSupplementalDirs().each {
             it -> println it.key
         }
     }
 
-    protected def copySupplementalArchDirs(PlatformId platformArch) {
+    protected def copySupplementalArchDirs(PlatformId platformId) {
         this.extension.getSupplementalArchDirs().each { it -> println it.key }
     }
 }
@@ -280,13 +280,13 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
                 .each {
             // Arch
             def File releaseArchPath = it.toFile()
-            def PlatformId platformArch = PlatformId.parse(releaseArchPath.name)
+            def PlatformId platformId = PlatformId.parse(releaseArchPath.name)
 
-            println "Releasing jars and binaries for [${platformArch}]"
+            println "Releasing jars and binaries for [${platformId}]"
 
             def jarDestinationPath = this.buildReleaseJarPath(
                     releaseBasePath,
-                    platformArch
+                    platformId
             )
 
             println "Jar destination path [${jarDestinationPath}]"
