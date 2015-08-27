@@ -1,6 +1,7 @@
 package sx.rsync
 
 import com.google.common.base.StandardSystemProperty
+import org.apache.commons.logging.LogFactory
 import sx.ProcessExecutor
 import sx.platform.PlatformId
 import java.io.File
@@ -13,6 +14,8 @@ import java.nio.file.Paths
  */
 public open class Rsync() {
     companion object {
+        val log = LogFactory.getLog(Rsync.javaClass)
+
         /** Path to rsync executable.
          * When not set explicitly, getter tries auto detect by scanning current and parent directories for
          * relative path 'bin/<platformid>' */
@@ -27,9 +30,13 @@ public open class Rsync() {
                 var path = Paths.get("").toAbsolutePath()
                 do {
                     var binPath = path.resolve(binRelPath)
-                    if (binPath.toFile().exists()) {
-                        $executablePath = binPath.resolve("sx-rsync").toFile()
-                        return $executablePath
+                    try {
+                        if (binPath.toFile().exists()) {
+                            $executablePath = binPath.resolve("sx-rsync").toFile()
+                            return $executablePath
+                        }
+                    } catch(e: Exception) {
+                        log.warn(e.getMessage(), e)
                     }
                     path = path.getParent()
                 } while(path != null)
