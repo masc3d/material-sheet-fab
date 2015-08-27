@@ -33,12 +33,12 @@ class PackagerPluginExtension {
         mSupplementalPlatformDirs = dirs
     }
 
-    private def LinkedHashMap<File, File> mSupplementalDirs
+    private def LinkedHashMap<File, File> mSupplementalDirs = new LinkedHashMap<>()
     public LinkedHashMap<File, File> getSupplementalDirs() {
         return mSupplementalDirs
     }
 
-    private def LinkedHashMap<File, File> mSupplementalPlatformDirs
+    private def LinkedHashMap<File, File> mSupplementalPlatformDirs = new LinkedHashMap<>()
     public LinkedHashMap<File, File> getSupplementalPlatformDirs() {
         return mSupplementalPlatformDirs
     }
@@ -84,10 +84,10 @@ class PackagerPlugin implements Plugin<Project> {
         project.tasks.releasePush.dependsOn(project.tasks.releaseJars)
 
         // Initialize rsync
-        Rsync.executablePath = Paths.get(project.rootDir.toURI())
+        Rsync.executablePath = Paths.get(project.project(':libs:sx-common').projectDir.toURI())
                 .resolve("bin")
                 .resolve(PlatformId.current().toString())
-                .resolve("leoz-rsync")
+                .resolve("sx-rsync")
                 .toFile();
     }
 }

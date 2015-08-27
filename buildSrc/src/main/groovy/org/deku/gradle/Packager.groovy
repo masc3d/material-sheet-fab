@@ -86,6 +86,26 @@ abstract class PackagerReleaseTask extends PackagerTask {
     }
 
     /**
+     * Gets a release supplmental path
+     * @param platformId Platform
+     * @param relativePath Relative sub path
+     * @return
+     */
+    protected def getReleaseSupplementalPath(PlatformId platformId, File relativePath) {
+        def dst
+        if (SystemUtils.IS_OS_MAC_OSX) {
+            dst = Paths.get(this.getReleasePlatformPath(platformId).toURI())
+                    .resolve("${project.name}.app")
+                    .resolve('Contents')
+                    .resolve(relativePath.toString())
+                    .toFile()
+        } else {
+            dst = new File(this.getReleaseSupplementalPath(platformId), relativePath.toString())
+        }
+        return dst
+    }
+
+    /**
      * Builds jar destination path for specific platform/arch
      * @param basePath
      * @return
@@ -108,29 +128,48 @@ abstract class PackagerReleaseTask extends PackagerTask {
         return jarDestinationPath
     }
 
+    /**
+     * Copy plain plain supplemental dirs
+     * @param platformId
+     * @return
+     */
     protected def copySupplementalDirs(PlatformId platformId) {
         this.extension.getSupplementalDirs().each {
             it -> println it.key
         }
     }
 
+    /**
+     * Copy platform specific supplemental dirs
+     * @param platformId
+     * @return
+     */
     protected def copySupplementalPlatformDirs(PlatformId platformId) {
+        def dstDirs = (this.extension.getSupplementalPlatformDirs().values() + this.extension.getSupplementalDirs().values())
+
+        dstDirs.each { it ->
+            def path = this.getReleaseSupplementalPath(platformId, it)
+            if (path.exists())
+                path.deleteDir()
+        }
+
+        this.extension.getSupplementalDirs().each { it ->
+            def src = it.key
+            def dst = this.getReleaseSupplementalPath(platformId, it.value)
+
+            println "Copying supplemental dir [${src}] -> [${dst}]"
+            project.copy {
+                from src
+                into dst
+            }
+        }
+
         this.extension.getSupplementalPlatformDirs().each { it ->
             def src = new File(it.key, PlatformId.current().toString())
+            def dst = this.getReleaseSupplementalPath(platformId, it.value)
 
-            def dst
-            if (SystemUtils.IS_OS_MAC_OSX) {
-                dst = Paths.get(this.getReleasePlatformPath().toURI())
-                        .resolve("${project.name}.app")
-                        .resolve('Contents')
-                        .resolve(it.value.toString())
-                        .toFile()
-            } else {
-                dst = new File(this.getReleasePlatformPath(), it.value.toString())
-            }
-
-            println "Synchronizing supplemental platform dir [${src}] -> [${dst}]"
-            project.sync {
+            println "Copying supplemental platform dir [${src}] -> [${dst}]"
+            project.copy {
                 from src
                 into dst
             }
@@ -266,8 +305,8 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
             into releasePath
         }
 
-        this.copySupplementalDirs()
-        this.copySupplementalPlatformDirs()
+        this.copySupplementalDirs(PlatformId.current())
+        this.copySupplementalPlatformDirs(PlatformId.current())
     }
 }
 
@@ -308,8 +347,8 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
                 into jarDestinationPath
             }
 
-            this.copySupplementalDirs()
-            this.copySupplementalPlatformDirs()
+            this.copySupplementalDirs(platformId)
+            this.copySupplementalPlatformDirs(platformId)
         }
     }
 }

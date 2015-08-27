@@ -15,9 +15,11 @@ public object RsyncConfiguration {
                 .toAbsolutePath()
                 .getParent()
                 .getParent()
+                .resolve("libs")
+                .resolve("sx-common")
                 .resolve("bin")
                 .resolve(when { SystemUtils.IS_OS_WINDOWS -> "win64" else -> "osx64" })
-                .resolve("leoz-rsync")
+                .resolve("sx-rsync")
                 .toFile()
     }
 

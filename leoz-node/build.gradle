@@ -190,7 +190,8 @@ packager {
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
     supplementalPlatformDirs(
-            (g_bin_path): new File('bin')
+            (g_bin_path): new File('bin'),
+            (new File(project(':libs:sx-common').rootDir, 'bin')): new File('bin')
     )
 }
 
