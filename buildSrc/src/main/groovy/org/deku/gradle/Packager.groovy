@@ -3,9 +3,7 @@ package org.deku.gradle
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.build.Artifact
 import org.deku.leoz.build.ArtifactRepository
-import org.deku.leoz.build.ArtifactRepositoryConfiguration
-import org.deku.leoz.build.Platform
-import org.deku.leoz.build.PlatformArch
+import org.deku.leoz.build.ArtifactRepositoryFactory
 import org.eclipse.jgit.api.AddCommand
 import org.eclipse.jgit.api.CommitCommand
 import org.eclipse.jgit.api.ListTagCommand
@@ -18,6 +16,8 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.internal.slf4j.OutputEventListenerBackedLogger
+import sx.platform.OperatingSystem
+import sx.platform.PlatformId
 import sx.rsync.RsyncClient
 
 import java.nio.file.Files
@@ -87,7 +87,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
      * @param platformArch Platform/arch
      * @return
      */
-    def File buildReleaseArchPath(File basePath, PlatformArch platformArch) {
+    def File buildReleaseArchPath(File basePath, PlatformId platformArch) {
         return new File(this.buildReleasePath(basePath), platformArch.toString())
     }
 
@@ -97,7 +97,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
      * @return
      */
     def File buildReleaseArchPath(File basePath) {
-        return this.buildReleaseArchPath(basePath, PlatformArch.current())
+        return this.buildReleaseArchPath(basePath, PlatformId.current())
     }
 
     /**
@@ -105,13 +105,13 @@ abstract class PackagerReleaseTask extends PackagerTask {
      * @param basePath
      * @return
      */
-    def File buildReleaseJarPath(File basePath, PlatformArch platformArch) {
+    def File buildReleaseJarPath(File basePath, PlatformId platformId) {
         def File jarDestinationPath
 
-        def File releaseArchPath = this.buildReleaseArchPath(basePath, platformArch)
+        def File releaseArchPath = this.buildReleaseArchPath(basePath, platformId)
 
         // Add path to jars within packager release bundle
-        if (platformArch.platform == Platform.OSX) {
+        if (platformId.operatingSystem == OperatingSystem.OSX) {
             jarDestinationPath = Paths.get(releaseArchPath.toURI())
                     .resolve(project.name + '.app')
                     .resolve('Contents')
@@ -123,13 +123,13 @@ abstract class PackagerReleaseTask extends PackagerTask {
         return jarDestinationPath
     }
 
-    protected def copySupplementalDirs(PlatformArch platformArch) {
+    protected def copySupplementalDirs(PlatformId platformArch) {
         this.extension.getSupplementalDirs().each {
             it -> println it.key
         }
     }
 
-    protected def copySupplementalArchDirs(PlatformArch platformArch) {
+    protected def copySupplementalArchDirs(PlatformId platformArch) {
         this.extension.getSupplementalArchDirs().each { it -> println it.key }
     }
 }
@@ -280,7 +280,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
                 .each {
             // Arch
             def File releaseArchPath = it.toFile()
-            def PlatformArch platformArch = PlatformArch.parse(releaseArchPath.name)
+            def PlatformId platformArch = PlatformId.parse(releaseArchPath.name)
 
             println "Releasing jars and binaries for [${platformArch}]"
 
@@ -319,7 +319,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 class PackagerReleasePushTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePushTask() {
-        ArtifactRepository ar = ArtifactRepositoryConfiguration.INSTANCE$.stagingRepository(project.name)
+        ArtifactRepository ar = ArtifactRepositoryFactory.INSTANCE$.stagingRepository(project.name)
 
         ar.upload(
                 this.buildReleasePath(this.extension.releaseBasePath),

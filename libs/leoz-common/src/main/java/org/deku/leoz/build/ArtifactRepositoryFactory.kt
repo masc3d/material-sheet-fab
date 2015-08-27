@@ -5,7 +5,7 @@ import sx.rsync.RsyncClient
 /**
  * Created by masc on 22.08.15.
  */
-public object ArtifactRepositoryConfiguration {
+public object ArtifactRepositoryFactory {
     private var stagingRsyncModuleUri = RsyncClient.URI("rsync://leoz@syntronix.de/leoz")
     private var stagingRsyncModulePassword = "leoz"
 

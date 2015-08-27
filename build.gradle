@@ -1,4 +1,4 @@
-import org.deku.leoz.build.PlatformArch
+import sx.platform.PlatformId
 import org.gradle.logging.ShowStacktrace
 
 import java.nio.file.Paths
@@ -57,7 +57,7 @@ allprojects {
             v_swagger = "+"
 
             // LeoZ release path, relative to root project
-            g_arch_identifier = PlatformArch.current().toString()
+            g_arch_identifier = PlatformId.current().toString()
 
             g_release_path = Paths.get(project.rootDir.toURI())
                     .parent

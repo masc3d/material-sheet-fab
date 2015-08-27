@@ -5,7 +5,7 @@ import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.build.PlatformArch
+import sx.platform.PlatformId
 import org.slf4j.Logger
 import sx.ProcessExecutor
 import java.nio.file.Path
@@ -41,7 +41,7 @@ class Setup {
         } else {
             // Assume running from ide, working dir plus arch bin path
             this.basePath =  Paths.get("").toAbsolutePath()
-            this.binPath = this.basePath.resolve("bin").resolve(PlatformArch.current().toString())
+            this.binPath = this.basePath.resolve("bin").resolve(PlatformId.current().toString())
         }
 
         leozsvcPath = this.binPath.resolve("leoz-svc.exe")
