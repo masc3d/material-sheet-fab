@@ -4,7 +4,6 @@ import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.build.Artifact
 import org.deku.leoz.build.ArtifactRepository
 import org.deku.leoz.build.ArtifactRepositoryFactory
-import org.deku.leoz.build.Manifest
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import sx.platform.OperatingSystem
@@ -311,7 +310,7 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
 
         def manifestFile = new File(releasePath, 'manifest.xml')
         println "Creating manifest [${manifestFile}]"
-        Manifest.create(releasePath)
+        Artifact.Manifest.create(releasePath, Artifact.Version.parse(project.version))
                 .save(new FileOutputStream(manifestFile))
     }
 }
