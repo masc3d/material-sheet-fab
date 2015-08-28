@@ -100,7 +100,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
                     .resolve(relativePath.toString())
                     .toFile()
         } else {
-            dst = new File(this.getReleaseSupplementalPath(platformId), relativePath.toString())
+            dst = new File(this.getReleasePlatformPath(platformId), relativePath.toString())
         }
         return dst
     }
