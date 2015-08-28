@@ -21,6 +21,13 @@ public class ArtifactRepositoryTest {
     val rsyncUri = RsyncClient.URI("rsync://leoz@syntronix.de/leoz")
     val rsyncPw = "leoz"
 
+    val artifactPath = Paths.get("").toAbsolutePath()
+            .getParent()
+            .getParent()
+            .getParent()
+            .resolve("leoz-release")
+            .resolve("leoz-boot")
+
     init {
         var logger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger
         logger.setLevel(Level.TRACE)
@@ -39,23 +46,37 @@ public class ArtifactRepositoryTest {
     public fun testUpload() {
         var ar = ArtifactRepository(Artifact.Type.LEOZ_BOOT, rsyncUri, rsyncPw)
 
-        var path = Paths.get("").toAbsolutePath().getParent().getParent().getParent().resolve("leoz-release").resolve("leoz-boot").toFile()
-
-        ar.upload(path, Artifact.Version.parse("0.1"))
+        ar.upload(artifactPath.toFile(), Artifact.Version.parse("0.1"))
     }
 
     @Test
     public fun testDownload() {
         var ar = ArtifactRepository(Artifact.Type.LEOZ_BOOT, rsyncUri, rsyncPw)
 
-        var path = Paths.get("").toAbsolutePath()
-                .getParent()
-                .getParent()
-                .getParent()
-                .resolve("leoz-release")
-                .resolve("leoz-boot")
+        var path = artifactPath
                 .resolve(PlatformId.current().toString()).toFile()
 
         ar.download(Artifact.Version.parse("0.1"), PlatformId.current(), path)
+    }
+
+    @Test
+    public fun testCreate() {
+        var path = artifactPath.resolve(PlatformId.current().toString())
+
+        Artifact.create(path.toFile(), Artifact.Type.LEOZ_BOOT.toString(), Artifact.Version.parse("0.1"))
+    }
+
+    @Test
+    public fun testLoad() {
+        var path = artifactPath.resolve(PlatformId.current().toString())
+
+        Artifact.load(path.toFile())
+    }
+
+    @Test
+    public fun testVerify() {
+        var path = artifactPath.resolve(PlatformId.current().toString())
+
+        Artifact.load(path.toFile()).verify()
     }
 }

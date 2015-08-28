@@ -70,6 +70,8 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
             throw IllegalArgumentException("Version is mandatory")
         }
 
+        // TODO: verify this is an artifact version folder (having only platform ids as subfolder)
+
         // Take the two most recent versions for comparison during sync
         var comparisonDestinationUris = this.list()
                 .sortDescending()

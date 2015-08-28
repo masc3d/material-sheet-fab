@@ -69,7 +69,7 @@ public data class Artifact(
     @XmlElement
     public data class FileEntry(
             @XmlAttribute
-            val uri: URI? = null,
+            val uriPath: String? = null,
             @XmlAttribute
             val md5: String = "") {}
 
@@ -95,11 +95,13 @@ public data class Artifact(
             val fileEntries = ArrayList<FileEntry>()
 
             // Walk artifact directory and calculate md5 for each regular file
-            var nPath = Paths.get(path.toURI())
+            var pathUri= path.toURI()
+            var nPath = Paths.get(pathUri)
             Files.walk(nPath).forEach { p ->
                 if (java.nio.file.Files.isRegularFile(p)) {
                     fileEntries.add(FileEntry(
-                            uri = Paths.get(URI("file:/")).resolve(nPath.relativize(p)).toUri(),
+                            // Store relative path, simply cutting at root path length, including the slash
+                            uriPath = p.toUri().toString().substring(pathUri.toString().length() + 2),
                             md5 = this.hashFile(p.toFile())))
                 }
             }
@@ -146,10 +148,10 @@ public data class Artifact(
         val nPath = Paths.get(this.path!!.toURI())
 
         // Hashed check list to verify left-overs
-        var checkList = this.fileEntries.toMap({ s -> s.uri }) as HashMap
+        var checkList = this.fileEntries.toMap({ s -> s.uriPath }) as HashMap
 
-        for (entry in this.fileEntries) {
-            val path = nPath.resolve(Paths.get(URI("file:/")).relativize(Paths.get(entry.uri)))
+        for (entry in this.fileEntries.asSequence().filter { e -> !e.uriPath!!.equals(MANIFEST_FILENAME) }) {
+            val path = Paths.get(nPath.toUri().resolve(entry.uriPath))
             if (!Files.exists(path))
                 throw VerificationException("File [${path} does not exist")
 
@@ -157,7 +159,7 @@ public data class Artifact(
             if (!entry.md5.equals(md5))
                 throw VerificationException("File [${path}] has invalid md5 [${md5}] expected [${entry.md5}]")
 
-            checkList.remove(entry.uri)
+            checkList.remove(entry.uriPath)
         }
 
         if (checkList.size() > 0) {
