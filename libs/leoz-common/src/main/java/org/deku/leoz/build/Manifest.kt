@@ -63,7 +63,7 @@ public class Manifest(
             Files.walk(nioArtifactPath).forEach { p ->
                 if (java.nio.file.Files.isRegularFile(p)) {
                     fileEntries.add(FileEntry(
-                            uri = nioArtifactPath.relativize(p).toUri(),
+                            uri = Paths.get(URI("file:/")).resolve(nioArtifactPath.relativize(p)).toUri(),
                             md5 = this.hashFile(p.toFile())))
                 }
             }
@@ -103,7 +103,7 @@ public class Manifest(
         var checkList = this.fileEntries.toMap( { s -> s.uri } ) as HashMap
 
         for (entry in this.fileEntries) {
-            val path = nPath.resolve(Paths.get(entry.uri))
+            val path = nPath.resolve(Paths.get(URI("file:/")).relativize(Paths.get(entry.uri)))
             if (!Files.exists(path))
                 throw VerificationException("File [${path} does not exist")
 

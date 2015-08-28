@@ -6,6 +6,7 @@ import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.RsyncConfiguration
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import sx.platform.PlatformId
 import sx.rsync.RsyncClient
 import java.io.File
 import java.net.URI
@@ -38,6 +39,21 @@ public class ArtifactRepositoryTest {
 
         var path = Paths.get("").toAbsolutePath().getParent().getParent().getParent().resolve("leoz-release").resolve("leoz-boot").toFile()
 
-        ar.upload(path, Artifact.Version.parse("0.3"))
+        ar.upload(path, Artifact.Version.parse("0.1"))
+    }
+
+    @Test
+    public fun testDownload() {
+        var ar = ArtifactRepository(Artifact.Type.LEOZ_BOOT, rsyncUri, rsyncPw)
+
+        var path = Paths.get("").toAbsolutePath()
+                .getParent()
+                .getParent()
+                .getParent()
+                .resolve("leoz-release")
+                .resolve("leoz-boot")
+                .resolve(PlatformId.current().toString()).toFile()
+
+        ar.download(Artifact.Version.parse("0.1"), PlatformId.current(), path)
     }
 }

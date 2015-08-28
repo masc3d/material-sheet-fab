@@ -1,8 +1,10 @@
 package org.deku.leoz.build
 
 import org.apache.commons.logging.LogFactory
+import sx.platform.PlatformId
 import sx.rsync.RsyncClient
 import java.io.File
+import java.io.FileInputStream
 import java.net.URI
 import java.util.*
 
@@ -93,12 +95,16 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
      * Download artifact version from remote repository
      * @param destPath Local destination path
      */
-    public fun download(version: Artifact.Version, destPath: File) {
-        var rc = RsyncClient()
-        rc.source = this.rsyncArtifactUri.resolve(version.toString())
+    public fun download(version: Artifact.Version, platformId: PlatformId, destPath: File) {
+        var rc = this.createRsyncClient()
+        rc.source = this.rsyncArtifactUri.resolve(version.toString()).resolve(platformId.toString())
         rc.destination = RsyncClient.URI(destPath)
 
         log.info("Downloading [${rc.source}] -> [${rc.destination}]")
         rc.sync( { r -> log.info("Downloading ${r.path}") } )
+
+        log.info("Verifying artifact")
+        Manifest.load(FileInputStream(File(destPath, "manifest.xml")))
+                .verifyFiles(destPath)
     }
 }

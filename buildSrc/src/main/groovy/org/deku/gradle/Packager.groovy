@@ -309,8 +309,10 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
         this.copySupplementalDirs(PlatformId.current())
         this.copySupplementalPlatformDirs(PlatformId.current())
 
+        def manifestFile = new File(releasePath, 'manifest.xml')
+        println "Creating manifest [${manifestFile}]"
         Manifest.create(releasePath)
-                .save(new FileOutputStream(new File(releasePath, 'manifest.xml')))
+                .save(new FileOutputStream(manifestFile))
     }
 }
 
