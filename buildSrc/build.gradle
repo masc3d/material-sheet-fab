@@ -35,16 +35,18 @@ sourceSets {
 
 
 // Task for importing classes from other projects
-task copyClasses(type: Task) {
-    project.sync {
-        from '../libs/leoz-common/src/main/java', '../libs/sx-common/src/main/java'
-        into srcdir_import
-        include '**/build/**', '**/rsync/**', '**/ProcessExecutor*', '**/Disposable*/', '**/Action*/', '**/Rsync*/', '**/platform/**'
-        includeEmptyDirs = false
-    }
+task syncClasses(type: Sync) {
+    from '../libs/leoz-common/src/main/java', '../libs/sx-common/src/main/java'
+    into srcdir_import
+    include '**/build/**', '**/rsync/**', '**/ProcessExecutor*', '**/Disposable*/', '**/Action*/', '**/Rsync*/', '**/platform/**'
+    includeEmptyDirs = false
+}
+
+// Clean build directory if class sync task performed action
+tasks.syncClasses.doLast {
+    new File(project.projectDir, 'build').deleteDir()
 }
 
 // Copy classes before compilation
-compileJava.dependsOn(copyClasses)
-compileKotlin.dependsOn(copyClasses)
-
+compileJava.dependsOn(syncClasses)
+compileKotlin.dependsOn(syncClasses)
