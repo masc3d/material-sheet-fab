@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.RsyncConfiguration
+import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.platform.PlatformId
@@ -15,6 +16,7 @@ import java.nio.file.Paths
 /**
  * Created by masc on 24.08.15.
  */
+@Ignore
 public class ArtifactRepositoryTest {
     val rsyncUri = RsyncClient.URI("rsync://leoz@syntronix.de/leoz")
     val rsyncPw = "leoz"

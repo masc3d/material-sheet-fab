@@ -3,10 +3,7 @@ package org.deku.leoz.build
 import com.google.common.hash.Hashing
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
-import java.io.File
-import java.io.InputStream
-import java.io.OutputStream
-import java.io.Serializable
+import java.io.*
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -22,10 +19,35 @@ import kotlin.platform.platformStatic
 import kotlin.text.Regex
 
 /**
- * Leoz artifact test
+ * Represents a leoz artifact and its manifest at the same time
  * Created by masc on 22.08.15.
  */
-public data class Artifact(val type:Artifact.Type, val version: Artifact.Version) {
+@XmlRootElement
+public data class Artifact(
+        /** Path of artifact */
+        path: File? = null,
+        /** Name */
+        @XmlAttribute
+        public val name: String? = null,
+        /** Version */
+        @XmlAttribute
+        @XmlJavaTypeAdapter(javaClass<Artifact.Version.XmlAdapter>())
+        public val version: Artifact.Version? = null,
+        @XmlElement(name = "file")
+        /** File entries */
+        public val fileEntries: List<Artifact.FileEntry> = ArrayList(),
+        /** Java version */
+        @XmlAttribute
+        public val javaVersion: String = SystemUtils.JAVA_VERSION) : Serializable {
+
+    private val log = LogFactory.getLog(this.javaClass)
+
+    public var path: File? = null
+        private set
+
+    init {
+        this.path = path
+    }
 
     /**
      * Leoz artifact type
@@ -42,20 +64,127 @@ public data class Artifact(val type:Artifact.Type, val version: Artifact.Version
     }
 
     /**
+     * Manifest file entry
+     */
+    @XmlElement
+    public data class FileEntry(
+            @XmlAttribute
+            val uri: URI? = null,
+            @XmlAttribute
+            val md5: String = "") {}
+
+    /**
+     * Verification exception
+     */
+    public class VerificationException(message: String) : Exception(message) {}
+
+    /**
+     * Static methods
+     */
+    companion object {
+        val MANIFEST_FILENAME = "manifest.xml"
+
+        fun hashFile(file: File): String {
+            return com.google.common.io.Files.hash(file, Hashing.md5()).toString()
+        }
+
+        /**
+         * Create artifact instance and stores manifest within artifact path
+         */
+        @platformStatic public fun create(path: File, name: String, version: Version): Artifact {
+            val fileEntries = ArrayList<FileEntry>()
+
+            // Walk artifact directory and calculate md5 for each regular file
+            var nPath = Paths.get(path.toURI())
+            Files.walk(nPath).forEach { p ->
+                if (java.nio.file.Files.isRegularFile(p)) {
+                    fileEntries.add(FileEntry(
+                            uri = Paths.get(URI("file:/")).resolve(nPath.relativize(p)).toUri(),
+                            md5 = this.hashFile(p.toFile())))
+                }
+            }
+
+            // Create artifact instance
+            var artifact = Artifact(path, name, version, fileEntries)
+
+            // Serialize artifact to manifest
+            var context = JAXBContext.newInstance(javaClass<Artifact>())
+            var m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+            var os = FileOutputStream(File(path, MANIFEST_FILENAME)).buffered()
+            try {
+                m.marshal(artifact, os)
+            } finally {
+                os.close()
+            }
+
+            return artifact
+        }
+
+        /**
+         * Load artifact from manifest/path
+         * @param artifactPath Artifact path
+         */
+        @platformStatic public fun load(artifactPath: File): Artifact {
+            var context = JAXBContext.newInstance(javaClass<Artifact>())
+            var m = context.createUnmarshaller();
+            var inputStream = FileInputStream(File(artifactPath, MANIFEST_FILENAME)).buffered()
+            try {
+                var artifact = m.unmarshal(inputStream) as Artifact
+                artifact.path = artifactPath
+                return artifact
+            } finally {
+                inputStream.close()
+            }
+        }
+    }
+
+    /**
+     * Verify manifest against files in a path
+     */
+    public fun verify() {
+        val nPath = Paths.get(this.path!!.toURI())
+
+        // Hashed check list to verify left-overs
+        var checkList = this.fileEntries.toMap({ s -> s.uri }) as HashMap
+
+        for (entry in this.fileEntries) {
+            val path = nPath.resolve(Paths.get(URI("file:/")).relativize(Paths.get(entry.uri)))
+            if (!Files.exists(path))
+                throw VerificationException("File [${path} does not exist")
+
+            val md5 = Artifact.hashFile(path.toFile())
+            if (!entry.md5.equals(md5))
+                throw VerificationException("File [${path}] has invalid md5 [${md5}] expected [${entry.md5}]")
+
+            checkList.remove(entry.uri)
+        }
+
+        if (checkList.size() > 0) {
+            this.log.warn("Excess files detected during manifest creation [${checkList.keySet().joinToString(",")}")
+        }
+    }
+
+    /**
      * Artifact version
      * Created by masc on 24.08.15.
      */
     public data class Version(val components: List<Int>, val suffix: String) : Comparable<Version>, Serializable {
         /** Adapter for xml serialization */
         class XmlAdapter : javax.xml.bind.annotation.adapters.XmlAdapter<String, Version>() {
-            override fun marshal(v: Version?): String? { return v.toString() }
-            override fun unmarshal(v: String?): Version? { return if (v == null) null else Version.parse(v) }
+            override fun marshal(v: Version?): String? {
+                return v.toString()
+            }
+
+            override fun unmarshal(v: String?): Version? {
+                return if (v == null) null else Version.parse(v)
+            }
         }
 
         public companion object {
             @platformStatic public fun parse(version: String): Version {
                 // Determine end of numeric components
-                var end = version.indexOfFirst( { c -> !c.isDigit() && c != '.' } )
+                var end = version.indexOfFirst({ c -> !c.isDigit() && c != '.' })
 
                 var suffix: String
                 if (end < 0) {
@@ -68,7 +197,7 @@ public data class Artifact(val type:Artifact.Type, val version: Artifact.Version
 
                 // Parse components to ints
                 val components: List<Int> = if (end > 0)
-                    version.substring(0, end).split('.').map( { s -> s.toInt() } )
+                    version.substring(0, end).split('.').map({ s -> s.toInt() })
                 else
                     ArrayList<Int>()
 
@@ -79,7 +208,11 @@ public data class Artifact(val type:Artifact.Type, val version: Artifact.Version
             }
 
             public fun tryParse(version: String): Version? {
-                return try { this.parse(version) } catch(e: Exception) { null }
+                return try {
+                    this.parse(version)
+                } catch(e: Exception) {
+                    null
+                }
             }
         }
 
@@ -111,111 +244,6 @@ public data class Artifact(val type:Artifact.Type, val version: Artifact.Version
         override fun toString(): String {
             return this.components.joinToString(".") +
                     if (this.suffix.length() > 0) "-" + suffix else ""
-        }
-    }
-
-    /**
-     * Leoz artifact manifest
-     * Created by masc on 25.08.15.
-     */
-    @XmlRootElement
-    public class Manifest(
-            @XmlAttribute
-            @XmlJavaTypeAdapter(javaClass<Version.XmlAdapter>())
-            public val version: Version? = null,
-            @XmlElement(name="file")
-            /** File entries */
-            public val fileEntries: List<Manifest.FileEntry> = ArrayList(),
-            /** Java version */
-            @XmlAttribute
-            public val javaVersion: String = SystemUtils.JAVA_VERSION) : Serializable {
-
-        val log = LogFactory.getLog(this.javaClass)
-        /**
-         * Manifest file entry
-         */
-        @XmlElement
-        public data class FileEntry(
-                @XmlAttribute
-                val uri: URI? = null,
-                @XmlAttribute
-                val md5: String = "") { }
-
-        /**
-         * Verification exception
-         */
-        public class VerificationException(message: String) : Exception(message) { }
-
-        companion object {
-            fun hashFile(file: File): String {
-                return com.google.common.io.Files.hash(file, Hashing.md5()).toString()
-            }
-
-            /**
-             * Create artifact manifest from path
-             */
-            @platformStatic public fun create(artifactPath: File, version: Version): Manifest {
-                val fileEntries = ArrayList<FileEntry>()
-
-                // Walk artifact directory and calculate md5 for each regular file
-                var nioArtifactPath = Paths.get(artifactPath.toURI())
-                Files.walk(nioArtifactPath).forEach { p ->
-                    if (java.nio.file.Files.isRegularFile(p)) {
-                        fileEntries.add(FileEntry(
-                                uri = Paths.get(URI("file:/")).resolve(nioArtifactPath.relativize(p)).toUri(),
-                                md5 = this.hashFile(p.toFile())))
-                    }
-                }
-
-                return Manifest(version, fileEntries)
-            }
-
-            /**
-             * Load manifest from file
-             */
-            @platformStatic public fun load(inputStream: InputStream): Manifest {
-                var context = JAXBContext.newInstance(javaClass<Manifest>())
-                var m = context.createUnmarshaller();
-                return m.unmarshal(inputStream) as Manifest
-            }
-        }
-
-
-        /**
-         * Save manifest
-         * @param os Output stream to save to
-         */
-        public fun save(os: OutputStream) {
-            var context = JAXBContext.newInstance(javaClass<Manifest>())
-            var m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-            m.marshal(this, os);
-        }
-
-        /**
-         * Verify manifest against files in a path
-         */
-        public fun verifyFiles(artifactPath: File) {
-            val nPath = Paths.get(artifactPath.toURI())
-
-            // Hashed check list to verify left-overs
-            var checkList = this.fileEntries.toMap( { s -> s.uri } ) as HashMap
-
-            for (entry in this.fileEntries) {
-                val path = nPath.resolve(Paths.get(URI("file:/")).relativize(Paths.get(entry.uri)))
-                if (!Files.exists(path))
-                    throw VerificationException("File [${path} does not exist")
-
-                val md5 = Manifest.hashFile(path.toFile())
-                if (!entry.md5.equals(md5))
-                    throw VerificationException("File [${path}] has invalid md5 [${md5}] expected [${entry.md5}]")
-
-                checkList.remove(entry.uri)
-            }
-
-            if (checkList.size() > 0) {
-                this.log.warn("Excess files detected during manifest creation [${checkList.keySet().joinToString(",")}")
-            }
         }
     }
 }

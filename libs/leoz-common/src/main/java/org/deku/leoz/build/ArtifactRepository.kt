@@ -104,7 +104,7 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
         rc.sync( { r -> log.info("Downloading ${r.path}") } )
 
         log.info("Verifying artifact")
-        Artifact.Manifest.load(FileInputStream(File(destPath, "manifest.xml")).buffered())
-                .verifyFiles(destPath)
+        Artifact.load(destPath)
+                .verify()
     }
 }
