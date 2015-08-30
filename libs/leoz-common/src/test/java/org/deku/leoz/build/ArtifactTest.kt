@@ -1,6 +1,7 @@
 package org.deku.leoz.build
 
 import org.junit.Test
+import sx.platform.PlatformId
 
 /**
  * Created by masc on 24.08.15.
@@ -29,5 +30,27 @@ public class ArtifactTest {
 
         for (v in l.sort())
             println(v)
+    }
+
+
+    @Test
+    public fun testCreate() {
+        var path = ArtifactConfiguration.path.resolve(PlatformId.current().toString())
+
+        Artifact.create(path.toFile(), Artifact.Type.LEOZ_BOOT.toString(), Artifact.Version.parse("0.1"))
+    }
+
+    @Test
+    public fun testLoad() {
+        var path = ArtifactConfiguration.path.resolve(PlatformId.current().toString())
+
+        Artifact.load(path.toFile())
+    }
+
+    @Test
+    public fun testVerify() {
+        var path = ArtifactConfiguration.path.resolve(PlatformId.current().toString())
+
+        Artifact.load(path.toFile()).verify()
     }
 }

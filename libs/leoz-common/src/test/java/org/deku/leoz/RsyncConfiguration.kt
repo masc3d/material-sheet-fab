@@ -10,7 +10,7 @@ import java.nio.file.Paths
  * Created by masc on 24.08.15.
  */
 public object RsyncConfiguration {
-    init {
+    public fun initialize() {
         Rsync.executablePath = Paths.get("")
                 .toAbsolutePath()
                 .getParent()
@@ -21,8 +21,5 @@ public object RsyncConfiguration {
                 .resolve(when { SystemUtils.IS_OS_WINDOWS -> "win64" else -> "osx64" })
                 .resolve("sx-rsync")
                 .toFile()
-    }
-
-    public fun initialize() {
     }
 }
