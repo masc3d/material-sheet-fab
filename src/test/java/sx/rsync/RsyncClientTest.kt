@@ -15,10 +15,10 @@ class RsyncClientTest {
     @Test
     fun testSync() {
         val rsyncClient = RsyncClient()
-        rsyncClient.source = RsyncClient.URI("rsync://leoz@syntronix.de/leoz/test")
+        rsyncClient.source = Rsync.URI("rsync://leoz@syntronix.de/leoz/test")
         var path = Paths.get("").toAbsolutePath().getParent().getParent().getParent().resolve("leoz-release")
 
-        rsyncClient.destination = RsyncClient.URI(path)
+        rsyncClient.destination = Rsync.URI(path)
         rsyncClient.password = "leoz"
         rsyncClient.compression = 9
         rsyncClient.delete = true
@@ -28,7 +28,7 @@ class RsyncClientTest {
     @Test
     fun testList() {
         val rsyncClient = RsyncClient()
-        rsyncClient.destination = RsyncClient.URI("rsync://leoz@syntronix.de/leoz/leoz-ui")
+        rsyncClient.destination = Rsync.URI("rsync://leoz@syntronix.de/leoz/leoz-ui")
 
         rsyncClient.password = "leoz"
         var result = rsyncClient.list()
