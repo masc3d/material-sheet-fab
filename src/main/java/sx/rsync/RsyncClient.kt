@@ -27,72 +27,8 @@ public class RsyncClient() {
         val log = LogFactory.getLog(RsyncClient.javaClass)
     }
 
-    /**
-     * Rsync URI
-     * @param uri File or rsync URI
-     * @param includeDir Indicates if final path component/directory should be included (implies traling slash if false)
-     */
-    public class URI(uri: java.net.URI, val includeDir: Boolean = false) {
-        val uri: java.net.URI
-
-        init {
-            // Make sure URI has trailing slash (or not) according to flag
-            if (includeDir) {
-                this.uri = if (uri.getPath().endsWith('/')) java.net.URI(uri.toString().trimEnd('/')) else uri
-            } else {
-                this.uri = if (!uri.getPath().endsWith('/')) java.net.URI(uri.toString() + '/') else uri
-            }
-        }
-
-        /**
-         * @param path Local path
-         */
-        constructor(path: java.nio.file.Path, includeDir: Boolean = false) : this(path.toUri(), includeDir) { }
-
-        /**
-         * @param uri URI string
-         */
-        constructor(uri: String, includeDir: Boolean = false) : this(java.net.URI(uri), includeDir) { }
-
-        /**
-         * @param file Local file
-         */
-        constructor(file: File, includeDir: Boolean = false) : this(file.toURI(), includeDir) { }
-
-        // Extension methods for java.net.URI
-        private fun java.net.URI.isFile(): Boolean {
-            return this.getScheme() == "file"
-        }
-
-        /**
-         * Resolve path
-         */
-        public fun resolve(str: String): URI {
-            return RsyncClient.URI(
-                    uri = if (uri.getPath().endsWith('/')) uri.resolve(str) else java.net.URI(uri.toString() + "/" + str),
-                    includeDir = this.includeDir)
-        }
-
-        override fun toString(): String {
-            if (!this.uri.isFile())
-                return this.uri.toString()
-
-            var rsyncPath: String
-            if (SystemUtils.IS_OS_WINDOWS)
-            // Return cygwin path on windows systems
-                rsyncPath = "/cygdrive${this.uri.getPath().replace(":", "")}"
-            else
-                rsyncPath = Paths.get(this.uri).toAbsolutePath().toString()
-
-            if (this.uri.getPath().endsWith('/'))
-                rsyncPath += FileSystems.getDefault().getSeparator()
-
-            return rsyncPath
-        }
-    }
-
-    var source: RsyncClient.URI? = null
-    var destination: RsyncClient.URI? = null
+    var source: Rsync.URI? = null
+    var destination: Rsync.URI? = null
 
     /** Remote source/destination password */
     var password: String = ""
@@ -311,13 +247,12 @@ public class RsyncClient() {
         pb.environment().put("RSYNC_PASSWORD", this.password);
 
         // Execute
-        var error = StringBuffer()
         var files = ArrayList<File>()
 
         var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
-            override fun onOutput(o: String): Boolean {
-                if (super.onOutput(o)) {
-                    var fr = FileRecord.tryParse(o)
+            override fun onOutput(output: String): Boolean {
+                if (super.onOutput(output)) {
+                    var fr = FileRecord.tryParse(output)
                     if (fr != null) {
                         fileRecordCallback(fr)
                         log.trace(fr)
@@ -326,7 +261,7 @@ public class RsyncClient() {
                         return false
                     }
 
-                    var pr = ProgressRecord.tryParse(o)
+                    var pr = ProgressRecord.tryParse(output)
                     if (pr != null) {
                         progressRecordCallback(pr)
                         log.trace(pr)
