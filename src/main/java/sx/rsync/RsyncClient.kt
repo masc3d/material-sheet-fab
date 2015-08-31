@@ -226,31 +226,16 @@ public class RsyncClient() {
         // Set password via env var
         pb.environment().put("RSYNC_PASSWORD", this.password);
 
-        // Execute
-        var error = StringBuffer()
-
-        var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
-            override fun onOutput(output: String) {
-                var line = output.trim()
-                if (line.length() == 0)
-                    return
-
-                var lr = ListRecord.tryParse(line)
-                if (lr != null) {
-                    result.add(lr)
-                    return
-                }
-
-                log.trace(line)
-            }
-
-            override fun onError(output: String) {
-                var line = output.trim()
-                if (line.length() == 0)
-                    return
-
-                error.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
-                log.error(line)
+        var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
+            override fun onOutput(output: String): Boolean {
+                if (super.onOutput(output)) {
+                    var lr = ListRecord.tryParse(output)
+                    if (lr != null) {
+                        result.add(lr)
+                    }
+                    return true
+                } else
+                    return false
             }
         })
 
@@ -269,7 +254,7 @@ public class RsyncClient() {
      * Synchronize
      * @return Sync result
      */
-    public fun sync(
+    @jvmOverloads public fun sync(
             fileRecordCallback: (fr: FileRecord) -> Unit = {},
             progressRecordCallback: (pr: ProgressRecord) -> Unit = {})
             : Result {
@@ -329,37 +314,27 @@ public class RsyncClient() {
         var error = StringBuffer()
         var files = ArrayList<File>()
 
-        var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
-            override fun onOutput(o: String) {
-                var line = o.trim()
-                if (line.length() == 0)
-                    return
+        var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
+            override fun onOutput(o: String): Boolean {
+                if (super.onOutput(o)) {
+                    var fr = FileRecord.tryParse(o)
+                    if (fr != null) {
+                        fileRecordCallback(fr)
+                        log.trace(fr)
+                        if (!fr.isDirectory)
+                            files.add(File(fr.path))
+                        return false
+                    }
 
-                var fr = FileRecord.tryParse(line)
-                if (fr != null) {
-                    fileRecordCallback(fr)
-                    log.trace(fr)
-                    if (!fr.isDirectory)
-                        files.add(File(fr.path))
-                    return
+                    var pr = ProgressRecord.tryParse(o)
+                    if (pr != null) {
+                        progressRecordCallback(pr)
+                        log.trace(pr)
+                        return false
+                    }
+                    return true
                 }
-
-                var pr = ProgressRecord.tryParse(line)
-                if (pr != null) {
-                    progressRecordCallback(pr)
-                    log.trace(pr)
-                    return
-                }
-                log.trace(line)
-            }
-
-            override fun onError(o: String) {
-                var line = o.trim()
-                if (line.length() == 0)
-                    return
-
-                error.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
-                log.error(line)
+                return false
             }
         })
 
