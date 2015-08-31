@@ -1,5 +1,6 @@
 package sx
 
+import com.google.common.base.StandardSystemProperty
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
@@ -12,11 +13,12 @@ import java.util.logging.StreamHandler
 /**
  * Process executor with threaded stream reading support
  * @param processBuilder Process builder
- * @param streamHandler Stream handler implementation
+ * @param outputHandler Stream handler implementation
  */
 public class ProcessExecutor @jvmOverloads constructor(
         private val processBuilder: ProcessBuilder,
-        private val streamHandler: ProcessExecutor.StreamHandler? = null) : Disposable {
+        private val outputHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler(),
+        private val errorHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler()) : Disposable {
 
     private val log = LogFactory.getLog(this.javaClass)
     public var process: Process? = null
@@ -34,19 +36,30 @@ public class ProcessExecutor @jvmOverloads constructor(
      * Stream handler interface
      */
     public interface StreamHandler {
-        public fun onOutput(output: String)
-        public fun onError(output: String)
+        /**
+         * Called for each line of output.
+         * @return true if output was successfully processed, false otherwise
+         */
+        public fun onOutput(output: String): Boolean
     }
 
     /**
      * Default stream handler, collecting both error and output
      */
-    public inner class DefaultStreamHandler : StreamHandler {
+    public open class DefaultStreamHandler @jvmOverloads constructor(
+            public val trim: Boolean = false,
+            public val omitEmptyLines: Boolean = false,
+            public val collectBuffer: StringBuffer? = null
+    ) : StreamHandler {
+        override fun onOutput(output: String): Boolean {
+            val line = if (trim) output.trim() else output
+            if (line.length() == 0)
+                return false
 
-        override fun onOutput(output: String) {
-        }
+            if (collectBuffer != null)
+                collectBuffer.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
 
-        override fun onError(output: String) {
+            return true
         }
     }
 
@@ -84,7 +97,7 @@ public class ProcessExecutor @jvmOverloads constructor(
      */
     private inner class StreamReaderThread(
             var stream: InputStream,
-            var action: Action<String>) : Thread() {
+            var action: StreamHandler) : Thread() {
 
         var reader: BufferedReader
 
@@ -96,7 +109,7 @@ public class ProcessExecutor @jvmOverloads constructor(
             try {
                 var line: String? = null
                 while ( { line = reader.readLine(); line }() != null) {
-                    action.perform(line)
+                    action.onOutput(line!!)
                 }
             } catch (ex: Exception) {
                 if (ex !is InterruptedException)
@@ -120,20 +133,12 @@ public class ProcessExecutor @jvmOverloads constructor(
         monitorThread!!.start()
 
         // Add stream handlers
-        if (streamHandler != null) {
-            outputReaderThread = StreamReaderThread(process!!.getInputStream(), object : Action<String> {
-                override fun perform(it: String) {
-                    streamHandler.onOutput(it)
-                }
-            })
-            errorReaderThread = StreamReaderThread(process!!.getErrorStream(), object : Action<String> {
-                override fun perform(it: String) {
-                    streamHandler.onError(it)
-                }
-            })
-            outputReaderThread!!.start()
-            errorReaderThread!!.start()
-        }
+        outputReaderThread = StreamReaderThread(process!!.getInputStream(), outputHandler)
+
+        errorReaderThread = StreamReaderThread(process!!.getErrorStream(), errorHandler)
+
+        outputReaderThread!!.start()
+        errorReaderThread!!.start()
     }
 
     /**
