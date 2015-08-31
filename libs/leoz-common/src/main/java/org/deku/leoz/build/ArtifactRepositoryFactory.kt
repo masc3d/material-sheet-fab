@@ -1,12 +1,13 @@
 package org.deku.leoz.build
 
+import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 
 /**
  * Created by masc on 22.08.15.
  */
 public object ArtifactRepositoryFactory {
-    private var stagingRsyncModuleUri = RsyncClient.URI("rsync://leoz@syntronix.de/leoz")
+    private var stagingRsyncModuleUri = Rsync.URI("rsync://leoz@syntronix.de/leoz")
     private var stagingRsyncModulePassword = "leoz"
 
     public fun stagingRepository(artifactType: Artifact.Type): ArtifactRepository {

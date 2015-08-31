@@ -31,7 +31,7 @@ public data class Artifact(
         public val name: String? = null,
         /** Version */
         @XmlAttribute
-        @XmlJavaTypeAdapter(javaClass<Artifact.Version.XmlAdapter>())
+        @XmlJavaTypeAdapter(Artifact.Version.XmlAdapter::class)
         public val version: Artifact.Version? = null,
         @XmlElement(name = "file")
         /** File entries */

@@ -56,15 +56,9 @@ class Setup {
         var error = StringBuffer()
 
         // Execute
-        var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
-            override fun onError(o: String?) {
-                output.append(o + StandardSystemProperty.LINE_SEPARATOR.value())
-            }
-
-            override fun onOutput(o: String?) {
-                error.append(o + StandardSystemProperty.LINE_SEPARATOR.value())
-            }
-        })
+        var pe: ProcessExecutor = ProcessExecutor(pb,
+                outputHandler = ProcessExecutor.DefaultStreamHandler(collectBuffer = output),
+                errorHandler = ProcessExecutor.DefaultStreamHandler(collectBuffer = error))
 
         try {
             pe.start()

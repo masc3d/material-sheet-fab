@@ -2,6 +2,7 @@ package org.deku.leoz.build
 
 import org.apache.commons.logging.LogFactory
 import sx.platform.PlatformId
+import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import java.io.File
 import java.io.FileInputStream
@@ -14,10 +15,10 @@ import java.util.*
  * @param rsyncModuleUri The base rsync module uri. The expected directory structur is $artifact-name/$version/$platform
  * Created by masc on 24.08.15.
  */
-public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: RsyncClient.URI, val rsyncPassword: String) {
+public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsync.URI, val rsyncPassword: String) {
     val log = LogFactory.getLog(this.javaClass)
 
-    val rsyncArtifactUri: RsyncClient.URI
+    val rsyncArtifactUri: Rsync.URI
 
     init {
         rsyncArtifactUri = rsyncModuleUri.resolve(type.toString())
@@ -63,7 +64,7 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
      */
     public fun upload(srcPath: File,
                       version: Artifact.Version? = null,
-                      syncStartCallback: (src: RsyncClient.URI?, dst:RsyncClient.URI?) -> Unit = { s,d -> },
+                      syncStartCallback: (src: Rsync.URI?, dst:Rsync.URI?) -> Unit = { s, d -> },
                       fileRecordCallback: (fr: RsyncClient.FileRecord) -> Unit = { } ) {
         if (version == null) {
             // TODO: read version from manifest
@@ -80,7 +81,7 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
                 .map( { v -> URI("../").resolve(v.toString()) } )
 
         var rc = this.createRsyncClient()
-        rc.source = RsyncClient.URI(srcPath)
+        rc.source = Rsync.URI(srcPath)
         rc.destination = this.rsyncArtifactUri.resolve(version.toString())
         rc.copyDestinations = comparisonDestinationUris
 
@@ -100,7 +101,7 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
     public fun download(version: Artifact.Version, platformId: PlatformId, destPath: File) {
         var rc = this.createRsyncClient()
         rc.source = this.rsyncArtifactUri.resolve(version.toString()).resolve(platformId.toString())
-        rc.destination = RsyncClient.URI(destPath)
+        rc.destination = Rsync.URI(destPath)
 
         log.info("Downloading [${rc.source}] -> [${rc.destination}]")
         rc.sync( { r -> log.info("Downloading ${r.path}") } )
