@@ -230,9 +230,9 @@ public class RsyncClient() {
         var error = StringBuffer()
 
         var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
-            override fun onOutput(output: String?) {
-                var line = output?.trim()
-                if (line == null || line.length() == 0)
+            override fun onOutput(output: String) {
+                var line = output.trim()
+                if (line.length() == 0)
                     return
 
                 var lr = ListRecord.tryParse(line)
@@ -244,9 +244,9 @@ public class RsyncClient() {
                 log.trace(line)
             }
 
-            override fun onError(output: String?) {
-                var line = output?.trim()
-                if (line == null || line.length() == 0)
+            override fun onError(output: String) {
+                var line = output.trim()
+                if (line.length() == 0)
                     return
 
                 error.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
@@ -330,9 +330,9 @@ public class RsyncClient() {
         var files = ArrayList<File>()
 
         var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.StreamHandler {
-            override fun onOutput(o: String?) {
-                var line = o?.trim()
-                if (line == null || line.length() == 0)
+            override fun onOutput(o: String) {
+                var line = o.trim()
+                if (line.length() == 0)
                     return
 
                 var fr = FileRecord.tryParse(line)
@@ -353,9 +353,9 @@ public class RsyncClient() {
                 log.trace(line)
             }
 
-            override fun onError(o: String?) {
-                var line = o?.trim()
-                if (line == null || line.length() == 0)
+            override fun onError(o: String) {
+                var line = o.trim()
+                if (line.length() == 0)
                     return
 
                 error.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
