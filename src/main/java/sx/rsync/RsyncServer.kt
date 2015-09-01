@@ -16,7 +16,6 @@ public class RsyncServer() : Rsync(), Disposable {
     /** Config directory (where generated configuraiton is stored) */
     var configurationFilePath: File by Delegates.notNull()
 
-
     /**
      * Rsync server configuration
      */
@@ -64,6 +63,23 @@ public class RsyncServer() : Rsync(), Disposable {
             ini.store(os)
         }
 
+        /**
+         * Save secrets file
+         * @param file File to save to
+         */
+        public fun saveSecrets(file: File) {
+            var os = FileOutputStream(file).buffered()
+            try {
+                this.saveSecrets(os)
+            } finally {
+                os.close()
+            }
+        }
+
+        /**
+         * Save secrets to output stream
+         * @param os Output stream
+         */
         public fun saveSecrets(os: OutputStream) {
             var ow = PrintWriter(os)
 
@@ -77,6 +93,9 @@ public class RsyncServer() : Rsync(), Disposable {
         }
     }
 
+    /**
+     * Start rsync daemon
+     */
     public @synchronized fun start() {
         val command = ArrayList<String>()
 
@@ -88,6 +107,9 @@ public class RsyncServer() : Rsync(), Disposable {
         this.processExecutor?.start()
     }
 
+    /**
+     * Stop rsync daemon
+     */
     public @synchronized fun stop() {
         if (this.processExecutor != null) {
             this.processExecutor?.dispose()
