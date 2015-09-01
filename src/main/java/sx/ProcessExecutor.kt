@@ -52,10 +52,14 @@ public class ProcessExecutor @jvmOverloads constructor(
             public val collectBuffer: StringBuffer? = null
     ) : StreamHandler {
         override fun onOutput(output: String): Boolean {
-            val line = if (trim) output.trim() else output
-            if (line.length() == 0)
+            // Optionally trim
+            val line = if (this.trim) output.trim() else output
+
+            // Optionally omit empty lines
+            if (this.omitEmptyLines && line.length() == 0)
                 return false
 
+            // Optionally collect output
             if (collectBuffer != null)
                 collectBuffer.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
 

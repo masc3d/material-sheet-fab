@@ -2,6 +2,7 @@ package sx.rsync
 
 import org.junit.Test
 import java.io.File
+import java.nio.file.Paths
 
 /**
  * Created by masc on 01.09.15.
@@ -26,5 +27,11 @@ public class RsyncServerTest {
 
         println("SECRETS:")
         config.saveSecrets(System.out)
+    }
+
+    @Test
+    public fun testServer() {
+        var path = Paths.get("").toAbsolutePath().getParent().getParent().getParent().resolve("leoz-release")
+
     }
 }
