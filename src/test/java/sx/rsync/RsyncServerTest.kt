@@ -10,12 +10,15 @@ public class RsyncServerTest {
     @Test
     public fun testSaveConfiguration() {
         var config = RsyncServer.Configuration()
+        config.useChroot = true
 
-        var module = RsyncServer.Configuration.Module("leoz", File("").getAbsoluteFile())
+        // Users
+        var user = Rsync.User("leoz", "testtest")
 
-        var user = RsyncServer.Configuration.User("leoz", "testtest")
-        module.permissions.put(user, RsyncServer.Configuration.Permission.READWRITE)
 
+        // modules
+        var module = Rsync.Module("leoz", File("").getAbsoluteFile())
+        module.permissions.put(user, Rsync.Permission.READWRITE)
         config.modules.add(module)
 
         println("CONFIG:")

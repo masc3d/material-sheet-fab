@@ -16,48 +16,15 @@ public class RsyncServer() : Rsync(), Disposable {
     /** Config directory (where generated configuraiton is stored) */
     var configurationFilePath: File by Delegates.notNull()
 
+
     /**
      * Rsync server configuration
      */
     public class Configuration {
-        public enum class Permission(val permission: String) {
-            READONLY("ro"),
-            READWRITE("rw"),
-            DENY("deny");
 
-            override fun toString(): String {
-                return this.permission
-            }
-        }
-
-        /** Rsync server module, equivalent to a shared folder */
-        public data class Module(
-                /** Module name */
-                var name: String,
-                /** The shared folder this module refers to */
-                val path: File) {
-
-            /**
-             * Permissions for this module
-             */
-            public val permissions: HashMap<Principal, Permission> = HashMap()
-        }
-
-        public open class Principal(val name: String)
-
-        /** Rsync user */
-        public class User(
-                name: String,
-                val password: String) : Principal(name) {
-
-            override fun toString(): String {
-                return this.name
-            }
-        }
-
-        public val useChroot: Boolean = true
+        public var useChroot: Boolean = true
         /** Rsync modules */
-        public val modules: ArrayList<Module> = ArrayList<Module>()
+        public val modules: ArrayList<Rsync.Module> = ArrayList<Rsync.Module>()
 
         /**
          * Save configuration file
@@ -102,7 +69,7 @@ public class RsyncServer() : Rsync(), Disposable {
 
             var users =  this.modules.asSequence()
                     .flatMap { m -> m.permissions.keySet().asSequence() }
-                    .filterIsInstance<User>()
+                    .filterIsInstance<Rsync.User>()
                     .distinct()
                     .forEach { u -> ow.println("${u.name}:${u.password}") }
 

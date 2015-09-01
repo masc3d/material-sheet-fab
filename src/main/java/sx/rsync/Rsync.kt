@@ -10,6 +10,7 @@ import java.net.URL
 import java.nio.file.FileSystems
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
 
 /**
  * Created by masc on 15.08.15.
@@ -112,6 +113,41 @@ public open class Rsync() {
                 rsyncPath += FileSystems.getDefault().getSeparator()
 
             return rsyncPath
+        }
+    }
+
+    public enum class Permission(val permission: String) {
+        READONLY("ro"),
+        READWRITE("rw"),
+        DENY("deny");
+
+        override fun toString(): String {
+            return this.permission
+        }
+    }
+
+    /** Rsync server module, equivalent to a shared folder */
+    public class Module(
+            /** Module name */
+            var name: String,
+            /** The shared folder this module refers to */
+            val path: File) {
+
+        /**
+         * Permissions for this module
+         */
+        public val permissions: HashMap<Principal, Permission> = HashMap()
+    }
+
+    public open class Principal(val name: String)
+
+    /** Rsync user */
+    public class User(
+            name: String,
+            val password: String) : Principal(name) {
+
+        override fun toString(): String {
+            return this.name
         }
     }
 }
