@@ -49,6 +49,8 @@ dependencies {
     // JAX-RS
     compile "javax.ws.rs:javax.ws.rs-api:2.+"
 
+    compile 'org.ini4j:ini4j:+'
+
     provided "javax.servlet:javax.servlet-api:+"
 
     // ActiveMQ
