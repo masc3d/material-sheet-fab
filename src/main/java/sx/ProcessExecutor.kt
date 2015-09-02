@@ -38,9 +38,8 @@ public class ProcessExecutor @jvmOverloads constructor(
     public interface StreamHandler {
         /**
          * Called for each line of output.
-         * @return true if output was successfully processed, false otherwise
          */
-        public fun onOutput(output: String): Boolean
+        fun onOutput(output: String)
     }
 
     /**
@@ -51,20 +50,25 @@ public class ProcessExecutor @jvmOverloads constructor(
             public val omitEmptyLines: Boolean = false,
             public val collectBuffer: StringBuffer? = null
     ) : StreamHandler {
-        override fun onOutput(output: String): Boolean {
+        override fun onOutput(output: String) {
             // Optionally trim
-            val line = if (this.trim) output.trim() else output
+            val processedOutput = if (this.trim) output.trim() else output
 
             // Optionally omit empty lines
-            if (this.omitEmptyLines && line.length() == 0)
-                return false
+            if (this.omitEmptyLines && processedOutput.length() == 0)
+                return
+
+            this.onProcessedOutput(processedOutput)
 
             // Optionally collect output
             if (collectBuffer != null)
-                collectBuffer.append(line + StandardSystemProperty.LINE_SEPARATOR.value())
-
-            return true
+                collectBuffer.append(processedOutput + StandardSystemProperty.LINE_SEPARATOR.value())
         }
+
+        /**
+         * Derived classes can override this for handling processed output
+         */
+        protected open fun onProcessedOutput(output: String) { }
     }
 
     /**
@@ -83,13 +87,17 @@ public class ProcessExecutor @jvmOverloads constructor(
 
             Runtime.getRuntime().addShutdownHook(shutdownHook)
 
+            var exception: Exception? = null
             try {
-                process!!.waitFor()
+                var exitCode = process!!.waitFor()
+                if (exitCode != 0)
+                    exception = ProcessException(exitCode)
             } catch (e: InterruptedException) {
                 log.error(e.getMessage(), e)
             } finally {
                 Runtime.getRuntime().removeShutdownHook(shutdownHook)
                 shutdownHook.run()
+                this@ProcessExecutor.onTermination(exception)
             }
         }
     }
@@ -121,6 +129,9 @@ public class ProcessExecutor @jvmOverloads constructor(
             }
         }
     }
+
+    /** Termination callback */
+    public var onTermination: (exception: Exception?) -> Unit = { }
 
     /**
      * Start process
