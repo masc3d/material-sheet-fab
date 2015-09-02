@@ -27,6 +27,9 @@ public class ProcessExecutor @jvmOverloads constructor(
     private var errorReaderThread: StreamReaderThread? = null
     private var monitorThread: MonitorThread? = null
 
+    /** Indicates if process is stopping gracefully */
+    private @volatile var stopping = false
+
     /**
      * Process exception
      */
@@ -66,7 +69,7 @@ public class ProcessExecutor @jvmOverloads constructor(
         }
 
         /**
-         * Derived classes can override this for handling processed output
+         * Derived classes can override this method for handling processed output
          */
         protected open fun onProcessedOutput(output: String) { }
     }
@@ -90,7 +93,9 @@ public class ProcessExecutor @jvmOverloads constructor(
             var exception: Exception? = null
             try {
                 var exitCode = process!!.waitFor()
-                if (exitCode != 0)
+                // Don't throw process exception if exit oode was non zero while the process was being
+                // stopped/destroyed. (observed especially on windows)
+                if (exitCode != 0 && !stopping)
                     exception = ProcessException(exitCode)
             } catch (e: InterruptedException) {
                 log.error(e.getMessage(), e)
@@ -135,10 +140,8 @@ public class ProcessExecutor @jvmOverloads constructor(
 
     /**
      * Start process
-     * @throws IOException
      */
-    @throws(IOException::class)
-    public fun start() {
+    public @synchronized fun start() {
         if (process != null)
             throw IllegalStateException("Process already started")
 
@@ -162,8 +165,8 @@ public class ProcessExecutor @jvmOverloads constructor(
      * *
      * @throws InterruptedException
      */
-    throws(InterruptedException::class, ProcessException::class)
-    public fun waitFor() {
+    @throws(InterruptedException::class, ProcessException::class)
+    public @synchronized fun waitFor() {
         if (process == null)
             throw IllegalStateException("Process not started")
 
@@ -171,51 +174,56 @@ public class ProcessExecutor @jvmOverloads constructor(
         try {
             returnCode = process!!.waitFor()
         } finally {
-            if (process!!.isAlive()) {
-                process!!.destroy()
-            }
-
-            // Wait for stream reader threads to terminate
-            if (outputReaderThread != null) {
-                outputReaderThread!!.join()
-                outputReaderThread = null
-            }
-            if (errorReaderThread != null) {
-                errorReaderThread!!.join()
-                errorReaderThread = null
-            }
+            this.stop()
         }
 
         if (returnCode != 0)
             throw ProcessException(returnCode)
     }
 
-    override fun dispose() {
+    /**
+     * Stop/destroy process
+     */
+    public @synchronized fun stop() {
+        this.stopping = true
+
         if (process != null && process!!.isAlive()) {
             process!!.destroy()
         }
-        process = null
 
+        // Wait for stream reader threads to terminate
         if (outputReaderThread != null) {
-            outputReaderThread!!.interrupt()
             try {
                 outputReaderThread!!.join()
             } catch (e: InterruptedException) {
-                log.error(e.getMessage(), e)
+                log.warn(e.getMessage(), e)
             }
-
             outputReaderThread = null
         }
-
         if (errorReaderThread != null) {
-            errorReaderThread!!.interrupt()
             try {
                 errorReaderThread!!.join()
             } catch (e: InterruptedException) {
-                log.error(e.getMessage(), e)
+                log.warn(e.getMessage(), e)
             }
-
             errorReaderThread = null
         }
+
+        // Wait for monitor thread to terminate
+        if (monitorThread != null) {
+            try {
+                monitorThread!!.join()
+            } catch(e: InterruptedException) {
+                log.warn(e.getMessage(), e)
+            }
+            monitorThread = null
+        }
+
+        process = null
+        this.stopping = false
+    }
+
+    override fun dispose() {
+        this.stop()
     }
 }

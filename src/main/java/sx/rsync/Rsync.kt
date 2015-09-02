@@ -8,8 +8,10 @@ import sx.platform.PlatformId
 import java.io.File
 import java.net.URL
 import java.nio.file.FileSystems
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.attribute.*
 import java.util.*
 
 /**
@@ -19,6 +21,7 @@ public open class Rsync() {
     companion object {
         val log = LogFactory.getLog(Rsync.javaClass)
 
+        private val executableFilename = "sx-rsync" + if (SystemUtils.IS_OS_WINDOWS) ".exe" else ""
 
         /** Path to rsync executable.
          * When not set explicitly, getter tries auto detect by scanning current and parent directories for
@@ -29,14 +32,14 @@ public open class Rsync() {
                     return $executablePath
 
                 // Search for executable in current and all parent paths
-                var binRelPath = Paths.get("bin").resolve(PlatformId.current().toString())
+                var binRelPath = Paths.get("bin").resolve(PlatformId.current().toString()).resolve(executableFilename)
 
                 var path = Paths.get("").toAbsolutePath()
                 do {
-                    var binPath = path.resolve(binRelPath)
+                    val binPath = path.resolve(binRelPath)
                     try {
-                        if (binPath.toFile().exists()) {
-                            $executablePath = binPath.resolve("sx-rsync").toFile()
+                        if (Files.exists(binPath)) {
+                            $executablePath = binPath.toFile()
                             return $executablePath
                         }
                     } catch(e: Exception) {
