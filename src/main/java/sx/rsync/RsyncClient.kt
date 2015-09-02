@@ -162,18 +162,17 @@ public class RsyncClient() {
         // Set password via env var
         pb.environment().put("RSYNC_PASSWORD", this.password);
 
-        var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
-            override fun onOutput(output: String): Boolean {
-                if (super.onOutput(output)) {
-                    var lr = ListRecord.tryParse(output)
-                    if (lr != null) {
-                        result.add(lr)
+        val error = StringBuffer()
+        var pe: ProcessExecutor = ProcessExecutor(pb,
+                object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
+                    override fun onProcessedOutput(output: String) {
+                        var lr = ListRecord.tryParse(output)
+                        if (lr != null) {
+                            result.add(lr)
+                        }
                     }
-                    return true
-                } else
-                    return false
-            }
-        })
+                },
+                ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectBuffer = error))
 
         pe.start()
 
@@ -181,6 +180,7 @@ public class RsyncClient() {
             pe.waitFor()
         } catch(e: Exception) {
             log.error(e.getMessage(), e)
+            if (error.length() > 0) log.error(error.toString())
         }
 
         return result
@@ -238,8 +238,6 @@ public class RsyncClient() {
         command.add(this.source!!.toString())
         command.add(this.destination!!.toString())
 
-        log.trace("Command ${java.lang.String.join(" ", command)}")
-
         // Prepare process builder
         var pb: ProcessBuilder = ProcessBuilder(command)
 
@@ -248,30 +246,29 @@ public class RsyncClient() {
 
         // Execute
         var files = ArrayList<File>()
+        val error = StringBuffer()
 
-        var pe: ProcessExecutor = ProcessExecutor(pb, object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
-            override fun onOutput(output: String): Boolean {
-                if (super.onOutput(output)) {
-                    var fr = FileRecord.tryParse(output)
-                    if (fr != null) {
-                        fileRecordCallback(fr)
-                        log.trace(fr)
-                        if (!fr.isDirectory)
-                            files.add(File(fr.path))
-                        return false
-                    }
+        var pe: ProcessExecutor = ProcessExecutor(pb,
+                object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
+                    override fun onProcessedOutput(output: String) {
+                        var fr = FileRecord.tryParse(output)
+                        if (fr != null) {
+                            fileRecordCallback(fr)
+                            log.trace(fr)
+                            if (!fr.isDirectory)
+                                files.add(File(fr.path))
+                            return
+                        }
 
-                    var pr = ProgressRecord.tryParse(output)
-                    if (pr != null) {
-                        progressRecordCallback(pr)
-                        log.trace(pr)
-                        return false
+                        var pr = ProgressRecord.tryParse(output)
+                        if (pr != null) {
+                            progressRecordCallback(pr)
+                            log.trace(pr)
+                            return
+                        }
                     }
-                    return true
-                }
-                return false
-            }
-        })
+                },
+                ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectBuffer = error))
 
         pe.start()
 
@@ -279,6 +276,7 @@ public class RsyncClient() {
             pe.waitFor()
         } catch(e: Exception) {
             log.error(e.getMessage(), e)
+            if (error.length() > 0) log.error(e.toString())
         }
 
         return Result(files)

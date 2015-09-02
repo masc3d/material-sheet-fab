@@ -52,14 +52,14 @@ public open class Rsync() {
     /**
      * Rsync URI
      * @param uri File or rsync URI
-     * @param includeDir Indicates if final path component/directory should be included (implies traling slash if false)
+     * @param asDirectory Indicates if final path component/directory should be included (implies traling slash if true)
      */
-    public class URI(uri: java.net.URI, val includeDir: Boolean = false) {
+    public class URI(uri: java.net.URI, val asDirectory: Boolean = true) {
         val uri: java.net.URI
 
         init {
             // Make sure URI has trailing slash (or not) according to flag
-            if (includeDir) {
+            if (!asDirectory) {
                 this.uri = if (uri.getPath().endsWith('/')) java.net.URI(uri.toString().trimEnd('/')) else uri
             } else {
                 this.uri = if (!uri.getPath().endsWith('/')) java.net.URI(uri.toString() + '/') else uri
@@ -69,19 +69,19 @@ public open class Rsync() {
         /**
          * @param path Local path
          */
-        constructor(path: java.nio.file.Path, includeDir: Boolean = false) : this(path.toUri(), includeDir) {
+        constructor(path: java.nio.file.Path, asDirectory: Boolean = true) : this(path.toUri(), asDirectory) {
         }
 
         /**
          * @param uri URI string
          */
-        constructor(uri: String, includeDir: Boolean = false) : this(java.net.URI(uri), includeDir) {
+        constructor(uri: String, asDirectory: Boolean = true) : this(java.net.URI(uri), asDirectory) {
         }
 
         /**
          * @param file Local file
          */
-        constructor(file: File, includeDir: Boolean = false) : this(file.toURI(), includeDir) {
+        constructor(file: File, asDirectory: Boolean = true) : this(file.toURI(), asDirectory) {
         }
 
         // Extension methods for java.net.URI
@@ -95,7 +95,7 @@ public open class Rsync() {
         public fun resolve(str: String): Rsync.URI {
             return Rsync.URI(
                     uri = if (uri.getPath().endsWith('/')) uri.resolve(str) else java.net.URI(uri.toString() + "/" + str),
-                    includeDir = this.includeDir)
+                    asDirectory = this.asDirectory)
         }
 
         override fun toString(): String {
@@ -133,9 +133,9 @@ public open class Rsync() {
             /** The shared folder this module refers to */
             val path: File) {
 
-        /**
-         * Permissions for this module
-         */
+        /** Secrets file. */
+        public var secretsFile: File? = null
+        /** Permissions for this module */
         public val permissions: HashMap<Principal, Permission> = HashMap()
     }
 
