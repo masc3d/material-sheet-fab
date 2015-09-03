@@ -64,10 +64,26 @@ public open class Rsync() {
          */
         private fun makeExecutable(executable: File) {
             Files.walk(Paths.get(executable.toURI()).getParent(), 1)
-                    .filter { p -> Files.isRegularFile(p) && (p.endsWith(".exe") || p.endsWith(".dll")) }
+                    .filter { p ->
+                        val filename = p.toString().toLowerCase()
+                        Files.isRegularFile(p) && (filename.endsWith(".exe") || filename.endsWith(".dll")) }
                     .forEach { p ->
-                        log.debug("Setting executable bit for [${p}]")
-                        p.toFile().setExecutable(true)
+                        log.debug("Setting executable permission for [${p}]")
+                        // Get file attribute view
+                        var fav = Files.getFileAttributeView(p, javaClass<AclFileAttributeView>())
+
+                        var oldAcls = fav.getAcl()
+                        var newAcls = ArrayList<AclEntry>()
+                        for (acl in oldAcls) {
+                            // Add executable permission
+                            var perms = acl.permissions()
+                            perms.add(AclEntryPermission.EXECUTE)
+                            // Build new acl from old one with updated permissions
+                            var aclb = AclEntry.newBuilder(acl)
+                            aclb.setPermissions(perms)
+                            newAcls.add(aclb.build())
+                        }
+                        fav.setAcl(newAcls)
                     }
         }
 
