@@ -13,6 +13,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.attribute.*
 import java.util.*
+import kotlin.properties.Delegates
 
 /**
  * Created by masc on 15.08.15.
@@ -21,34 +22,73 @@ public open class Rsync() {
     companion object {
         val log = LogFactory.getLog(Rsync.javaClass)
 
-        private val executableFilename = "sx-rsync" + if (SystemUtils.IS_OS_WINDOWS) ".exe" else ""
+        /** Rsync executable base filename */
+        public var executableBaseFilename: String = "sx-rsync"
+        /** Rsync executable file name */
+        public val executableFilename: String by Delegates.lazy {
+            this.executableBaseFilename + if (SystemUtils.IS_OS_WINDOWS) ".exe" else ""
+        }
 
-        /** Path to rsync executable.
-         * When not set explicitly, getter tries auto detect by scanning current and parent directories for
-         * relative path 'bin/<platformid>' */
-        public var executablePath: File? = null
-            get() {
-                if ($executablePath != null)
-                    return $executablePath
+        /**
+         * Find rsync executabe
+         */
+        private fun findExecutable(): File? {
+            // Search for executable in current and parent paths
+            var binPlatformRelPath = Paths.get("bin")
+                    .resolve(PlatformId.current().toString())
+                    .resolve(executableFilename)
 
-                // Search for executable in current and all parent paths
-                var binRelPath = Paths.get("bin").resolve(PlatformId.current().toString()).resolve(executableFilename)
+            var binRelPath = Paths.get("bin")
+                    .resolve(executableFilename)
 
-                var path = Paths.get("").toAbsolutePath()
-                do {
-                    val binPath = path.resolve(binRelPath)
-                    try {
-                        if (Files.exists(binPath)) {
-                            $executablePath = binPath.toFile()
-                            return $executablePath
-                        }
-                    } catch(e: Exception) {
-                        log.warn(e.getMessage(), e)
+            var path = Paths.get("").toAbsolutePath()
+            do {
+                var binPath: Path
+
+                binPath = path.resolve(binPlatformRelPath)
+                if (Files.exists(binPath))
+                    return binPath.toFile()
+
+                binPath = path.resolve(binRelPath)
+                if (Files.exists(binPath))
+                    return binPath.toFile()
+
+                path = path.getParent()
+            } while (path != null)
+
+            return null
+        }
+
+        /**
+         * Ensures the executable and libraries within the executable file's path have the executable bit set
+         */
+        private fun makeExecutable(executable: File) {
+            Files.walk(Paths.get(executable.toURI()).getParent(), 1)
+                    .filter { p -> Files.isRegularFile(p) && (p.endsWith(".exe") || p.endsWith(".dll")) }
+                    .forEach { p ->
+                        log.debug("Setting executable bit for [${p}]")
+                        p.toFile().setExecutable(true)
                     }
-                    path = path.getParent()
-                } while (path != null)
+        }
 
-                throw IllegalStateException("Could not find sx-rsync executable")
+        /**
+         * Path to rsync executable.
+         * When not set explicitly, tries to detect/find executable automatically within current and parent paths
+         * */
+        public var executableFile: File? = null
+            @synchronized get() {
+                if ($executableFile == null) {
+                    log.debug("Searching for rsync executable [${this.executableFilename}]")
+                    $executableFile = this.findExecutable()
+                    if ($executableFile == null)
+                        throw IllegalStateException("Could not find rsync executable [${this.executableFilename}]")
+
+                    log.debug("Found rsync executable [${$executableFile}]")
+
+                    this.makeExecutable($executableFile!!)
+                }
+
+                return $executableFile
             }
     }
 
@@ -119,6 +159,9 @@ public open class Rsync() {
         }
     }
 
+    /**
+     * Rsync server module permission
+     */
     public enum class Permission(val permission: String) {
         READONLY("ro"),
         READWRITE("rw"),
@@ -129,7 +172,9 @@ public open class Rsync() {
         }
     }
 
-    /** Rsync server module, equivalent to a shared folder */
+    /**
+     * Rsync server module, equivalent to a shared folder
+     * */
     public class Module(
             /** Module name */
             var name: String,
@@ -142,9 +187,14 @@ public open class Rsync() {
         public val permissions: HashMap<Principal, Permission> = HashMap()
     }
 
+    /**
+     * Rsync principal, base class for users and groups
+     */
     public open class Principal(val name: String)
 
-    /** Rsync user */
+    /**
+     * Rsync user
+     * */
     public class User(
             name: String,
             val password: String) : Principal(name) {

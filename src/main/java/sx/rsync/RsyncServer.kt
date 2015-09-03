@@ -151,7 +151,7 @@ public class RsyncServer(
 
         val command = ArrayList<String>()
 
-        command.add(Rsync.executablePath.toString())
+        command.add(Rsync.executableFile.toString())
         command.add("--daemon")
         command.add("--no-detach")
         command.add("--config")

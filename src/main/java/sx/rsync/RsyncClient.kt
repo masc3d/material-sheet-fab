@@ -153,7 +153,7 @@ public class RsyncClient() {
 
         var command = ArrayList<String>()
 
-        command.add(Rsync.executablePath.toString())
+        command.add(Rsync.executableFile.toString())
         command.add("--list-only")
         command.add(this.destination.toString())
 
@@ -202,7 +202,7 @@ public class RsyncClient() {
         var infoFlags = ArrayList<String>()
 
         // Prepare command
-        command.add(Rsync.executablePath.toString())
+        command.add(Rsync.executableFile.toString())
 
         if (this.verbose) command.add("-v")
         if (this.archive) command.add("-a")
