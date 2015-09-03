@@ -84,7 +84,7 @@ class PackagerPlugin implements Plugin<Project> {
         project.tasks.releasePush.dependsOn(project.tasks.releaseJars)
 
         // Initialize rsync
-        Rsync.executablePath = Paths.get(project.project(':libs:sx-common').projectDir.toURI())
+        Rsync.executableFile = Paths.get(project.project(':libs:sx-common').projectDir.toURI())
                 .resolve("bin")
                 .resolve(PlatformId.current().toString())
                 .resolve("sx-rsync")

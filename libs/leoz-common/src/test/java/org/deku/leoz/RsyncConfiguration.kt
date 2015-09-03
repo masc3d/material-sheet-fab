@@ -11,7 +11,7 @@ import java.nio.file.Paths
  */
 public object RsyncConfiguration {
     public fun initialize() {
-        Rsync.executablePath = Paths.get("")
+        Rsync.executableFile = Paths.get("")
                 .toAbsolutePath()
                 .getParent()
                 .getParent()
