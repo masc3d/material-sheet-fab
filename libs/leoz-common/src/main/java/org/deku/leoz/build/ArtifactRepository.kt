@@ -68,14 +68,19 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
                       fileRecordCallback: (fr: RsyncClient.FileRecord) -> Unit = { } ) {
         if (version == null) {
             // TODO: read version from manifest
+            // TODO: perform sanity checks, verify if versions of all platform folders are consistent
             throw IllegalArgumentException("Version is mandatory")
         }
 
         // TODO: verify this is an artifact version folder (having only platform ids as subfolder)
 
+        var remoteVersions = this.list()
+
+        if (remoteVersions.contains(version))
+            throw IllegalArgumentException("Version already exists remotely")
+
         // Take the two most recent versions for comparison during sync
-        var comparisonDestinationUris = this.list()
-                .sortDescending()
+        var comparisonDestinationUris = remoteVersions.sortDescending()
                 .filter( { v -> v.compareTo(version) != 0 } )
                 .take(2)
                 .map( { v -> URI("../").resolve(v.toString()) } )
