@@ -60,30 +60,43 @@ public open class Rsync() {
         }
 
         /**
-         * Ensures the executable and libraries within the executable file's path have the executable bit set
+         * Ensures all binaries within path have the executable bit/permission set
+         * @param path Path
          */
-        private fun makeExecutable(executable: File) {
-            Files.walk(Paths.get(executable.toURI()).getParent(), 1)
+        private fun setExecutablePermissions(path: File) {
+            Files.walk(Paths.get(path.toURI()), 1)
                     .filter { p ->
                         val filename = p.toString().toLowerCase()
-                        Files.isRegularFile(p) && (filename.endsWith(".exe") || filename.endsWith(".dll")) }
+                        Files.isRegularFile(p) && (!filename.contains('.') || filename.endsWith(".exe") || filename.endsWith(".dll")) }
                     .forEach { p ->
-                        log.debug("Setting executable permission for [${p}]")
                         // Get file attribute view
                         var fav = Files.getFileAttributeView(p, javaClass<AclFileAttributeView>())
 
-                        var oldAcls = fav.getAcl()
-                        var newAcls = ArrayList<AclEntry>()
-                        for (acl in oldAcls) {
-                            // Add executable permission
-                            var perms = acl.permissions()
-                            perms.add(AclEntryPermission.EXECUTE)
-                            // Build new acl from old one with updated permissions
-                            var aclb = AclEntry.newBuilder(acl)
-                            aclb.setPermissions(perms)
-                            newAcls.add(aclb.build())
+                        if (fav != null) {
+                            log.debug("Verifying executable permission for [${p}]")
+
+                            var oldAcls = fav.getAcl()
+                            var newAcls = ArrayList<AclEntry>()
+                            var update = false
+                            for (acl in oldAcls) {
+                                // Add executable permission if it's not there yet
+                                var perms = acl.permissions()
+                                if (!perms.contains(AclEntryPermission.EXECUTE)) {
+                                    perms.add(AclEntryPermission.EXECUTE)
+                                    // Build new acl from old one with updated permissions
+                                    var aclb = AclEntry.newBuilder(acl)
+                                    aclb.setPermissions(perms)
+                                    newAcls.add(aclb.build())
+                                    update = true
+                                } else {
+                                    newAcls.add(acl)
+                                }
+                            }
+                            if (update) {
+                                log.debug("Adding permission to execute to [${p}]")
+                                fav.setAcl(newAcls)
+                            }
                         }
-                        fav.setAcl(newAcls)
                     }
         }
 
@@ -101,7 +114,7 @@ public open class Rsync() {
 
                     log.debug("Found rsync executable [${$executableFile}]")
 
-                    this.makeExecutable($executableFile!!)
+                    this.setExecutablePermissions($executableFile!!.getParentFile())
                 }
 
                 return $executableFile
