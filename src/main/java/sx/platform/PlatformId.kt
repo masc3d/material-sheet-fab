@@ -13,6 +13,16 @@ import kotlin.text.Regex
  * Platform/architecture
  */
 public class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuArch) {
+    /** Adapter for xml serialization */
+    class XmlAdapter : javax.xml.bind.annotation.adapters.XmlAdapter<String, PlatformId>() {
+        override fun marshal(p: PlatformId?): String? {
+            return p.toString()
+        }
+
+        override fun unmarshal(v: String?): PlatformId? {
+            return if (v == null) null else PlatformId.parse(v)
+        }
+    }
 
     companion object {
         @platformStatic public fun parse(identifier: String): PlatformId {
