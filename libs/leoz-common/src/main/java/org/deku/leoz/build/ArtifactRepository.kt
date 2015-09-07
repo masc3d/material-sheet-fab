@@ -7,7 +7,13 @@ import sx.rsync.RsyncClient
 import java.io.File
 import java.io.FileInputStream
 import java.net.URI
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
+import java.util.function.BiPredicate
+import java.util.function.IntSupplier
 
 /**
  * Provices access to a remote rsync artifact repository
@@ -41,15 +47,18 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
     public fun list(): List<Artifact.Version> {
         // Get remote list
         var rc = this.createRsyncClient()
-        rc.destination =  this.rsyncArtifactUri
+        rc.destination = this.rsyncArtifactUri
 
         var lr = rc.list()
 
         // Parse entries to versions
         var result = ArrayList<Artifact.Version>()
         lr.forEach { l ->
-            try { if (l.filename != ".") result.add(Artifact.Version.parse(l.filename)) }
-            catch(e: Exception) { this.log.warn("Could not parse artifact version [${l.filename}]") }
+            try {
+                if (l.filename != ".") result.add(Artifact.Version.parse(l.filename))
+            } catch(e: Exception) {
+                this.log.warn("Could not parse artifact version [${l.filename}]")
+            }
         }
 
         return result
@@ -58,34 +67,37 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
     /**
      * Upload artifact version to remote repository
      * @param srcPath Local source path
-     * @param version Artifact version this local artifact copy refers to
      * @param syncStartCallback Optional callback providing details about synchronization before start
      * @param fileRecordCallback Optional callback providing details during sync/upload process
      */
     public fun upload(srcPath: File,
-                      version: Artifact.Version? = null,
-                      syncStartCallback: (src: Rsync.URI?, dst:Rsync.URI?) -> Unit = { s, d -> },
-                      fileRecordCallback: (fr: RsyncClient.FileRecord) -> Unit = { } ) {
-        if (version == null) {
-            // TODO: read version from manifest
-            // TODO: perform sanity checks, verify if versions of all platform folders are consistent
-            throw IllegalArgumentException("Version is mandatory")
-        }
+                      syncStartCallback: (src: Rsync.URI?, dst: Rsync.URI?) -> Unit = { s, d -> },
+                      fileRecordCallback: (fr: RsyncClient.FileRecord) -> Unit = { }) {
+        val nSrcPath = Paths.get(srcPath.toURI())
 
-        // TODO: verify this is an artifact version folder (having only platform ids as subfolder)
+        // Verify this is an artifact version folder (having only platform ids as subfolder)
+        val artifacts = ArrayList<Artifact>()
+        Files.find(nSrcPath, 1, BiPredicate { p, b -> !p.equals(nSrcPath)&& !p.getFileName().toString().startsWith(".") })
+                .forEach { p ->
+                    artifacts.add(Artifact.load(p.toFile()))
+                }
 
-        var remoteVersions = this.list()
+        if (artifacts.isEmpty())
+            throw IllegalStateException("No artifacts found in path")
+
+        val version = artifacts.get(0).version!!
+        val remoteVersions = this.list()
 
         if (remoteVersions.contains(version))
-            throw IllegalArgumentException("Version already exists remotely")
+            throw IllegalArgumentException("Version [${version}] already exists remotely")
 
         // Take the two most recent versions for comparison during sync
-        var comparisonDestinationUris = remoteVersions.sortDescending()
-                .filter( { v -> v.compareTo(version) != 0 } )
+        val comparisonDestinationUris = remoteVersions.sortDescending()
+                .filter({ v -> v.compareTo(version) != 0 })
                 .take(2)
-                .map( { v -> URI("../").resolve(v.toString()) } )
+                .map({ v -> URI("../").resolve(v.toString()) })
 
-        var rc = this.createRsyncClient()
+        val rc = this.createRsyncClient()
         rc.source = Rsync.URI(srcPath)
         rc.destination = this.rsyncArtifactUri.resolve(version.toString())
         rc.copyDestinations = comparisonDestinationUris
@@ -93,10 +105,10 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
         syncStartCallback(rc.source, rc.destination)
 
-        rc.sync( { r ->
+        rc.sync({ r ->
             log.info("Uploading ${r.path}")
             fileRecordCallback(r)
-        } )
+        })
     }
 
     /**
@@ -109,7 +121,7 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
         rc.destination = Rsync.URI(destPath)
 
         log.info("Downloading [${rc.source}] -> [${rc.destination}]")
-        rc.sync( { r -> log.info("Downloading ${r.path}") } )
+        rc.sync({ r -> log.info("Downloading ${r.path}") })
 
         log.info("Verifying artifact")
         Artifact.load(destPath)

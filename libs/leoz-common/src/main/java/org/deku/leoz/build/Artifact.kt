@@ -3,6 +3,7 @@ package org.deku.leoz.build
 import com.google.common.hash.Hashing
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
+import sx.platform.PlatformId
 import java.io.*
 import java.net.URI
 import java.nio.file.Files
@@ -16,10 +17,11 @@ import javax.xml.bind.annotation.XmlElement
 import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
 import kotlin.platform.platformStatic
+import kotlin.properties.Delegates
 import kotlin.text.Regex
 
 /**
- * Represents a leoz artifact and its manifest at the same time
+ * Represents a local/physical leoz artifact and its manifest at the same time
  * Created by masc on 22.08.15.
  */
 @XmlRootElement
@@ -33,6 +35,9 @@ public data class Artifact(
         @XmlAttribute
         @XmlJavaTypeAdapter(Artifact.Version.XmlAdapter::class)
         public val version: Artifact.Version? = null,
+        @XmlAttribute
+        @XmlJavaTypeAdapter(PlatformId.XmlAdapter::class)
+        public val platformId: PlatformId? = null,
         @XmlElement(name = "file")
         /** File entries */
         public val fileEntries: List<Artifact.FileEntry> = ArrayList(),
@@ -90,9 +95,14 @@ public data class Artifact(
 
         /**
          * Create artifact instance and stores manifest within artifact path
+         * @param path Path of artifact. The name of the folder must be a parsable platform id (eg. osx64)
+         * @param name Name of the artifact to create
+         * @param version Version of the artifact
          */
         @platformStatic public fun create(path: File, name: String, version: Version): Artifact {
             val fileEntries = ArrayList<FileEntry>()
+
+            var platformId = PlatformId.parse(path.getName())
 
             // Walk artifact directory and calculate md5 for each regular file
             var pathUri= path.toURI()
@@ -107,7 +117,7 @@ public data class Artifact(
             }
 
             // Create artifact instance
-            var artifact = Artifact(path, name, version, fileEntries)
+            var artifact = Artifact(path, name, version, platformId, fileEntries)
 
             // Serialize artifact to manifest
             var context = JAXBContext.newInstance(javaClass<Artifact>())

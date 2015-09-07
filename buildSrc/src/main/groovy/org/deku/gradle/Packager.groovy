@@ -269,7 +269,7 @@ class PackagerBundleTask extends PackagerTask {
 class PackagerReleaseBundleTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleaseAll() {
-        def releasePath = this.getReleasePlatformPath()
+        def releasePlatformPath = this.getReleasePlatformPath()
 
         def packagerPlatformDir = this.getPackagerPlatformDir()
 
@@ -281,12 +281,12 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
         if (!bundlePath.exists())
             throw new IOException("Bundle path [${bundlePath}] doesn't exist")
 
-        if (!releasePath.exists())
-            releasePath.mkdirs()
+        if (!releasePlatformPath.exists())
+            releasePlatformPath.mkdirs()
         else {
             // Remove content of release dir, preserving metadata directories (eg. .git)
-            Files.walk(Paths.get(releasePath.toURI()), 1)
-                    .filter({ it -> !it.equals(releasePath) && !it.getFileName().toString().equalsIgnoreCase(".git") })
+            Files.walk(Paths.get(releasePlatformPath.toURI()), 1)
+                    .filter({ it -> !it.equals(releasePlatformPath) && !it.getFileName().toString().equalsIgnoreCase(".git") })
                     .each {
                 File f = it.toFile()
                 boolean success
@@ -299,17 +299,17 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
             }
         }
 
-        println "Copying bundle [${bundlePath}] -> [${releasePath}]"
+        println "Copying bundle [${bundlePath}] -> [${releasePlatformPath}]"
         project.copy {
             from bundlePath
-            into releasePath
+            into releasePlatformPath
         }
 
         this.copySupplementalDirs(PlatformId.current())
         this.copySupplementalPlatformDirs(PlatformId.current())
 
         println "Creating artifact/manifest"
-        Artifact.create(releasePath, project.name, Artifact.Version.parse(project.version))
+        Artifact.create(releasePlatformPath, project.name, Artifact.Version.parse(project.version))
     }
 }
 
@@ -352,6 +352,9 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 
             this.copySupplementalDirs(platformId)
             this.copySupplementalPlatformDirs(platformId)
+
+            println "Creating artifact/manifest"
+            Artifact.create(releasePlatformPath, project.name, Artifact.Version.parse(project.version))
         }
     }
 }
@@ -366,7 +369,6 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
 
         ar.upload(
                 this.getReleasePath(),
-                Artifact.Version.parse(project.version),
                 { s, d -> println("Synchronizing [${s}] -> [${d}]") },
                 { f -> println("Uploading [${f.path}]") }
         )
