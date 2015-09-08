@@ -72,7 +72,7 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.apache.activemq:activemq-mqtt:5.12.0 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1 -> 4.4.2
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
@@ -298,8 +298,8 @@ compile - Compile classpath for source set 'main'.
 |    |         +--- org.jinq:jinq-asm-rebased:1.8.4
 |    |         \--- org.jinq:api:1.8.4
 |    +--- com.jcraft:jsch:+ -> 0.1.53
-|    \--- org.apache.sshd:sshd-core:+ -> 0.14.1-atlassian-01
-|         \--- org.slf4j:slf4j-api:1.6.4 -> 1.7.12
+|    \--- org.apache.sshd:sshd-core:+ -> 1.0.0
+|         \--- org.slf4j:slf4j-api:1.7.12
 +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
@@ -371,7 +371,7 @@ default - Configuration for default artifacts.
 |    |    +--- org.apache.activemq:activemq-mqtt:5.12.0 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1 -> 4.4.2
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
@@ -597,8 +597,8 @@ default - Configuration for default artifacts.
 |    |         +--- org.jinq:jinq-asm-rebased:1.8.4
 |    |         \--- org.jinq:api:1.8.4
 |    +--- com.jcraft:jsch:+ -> 0.1.53
-|    \--- org.apache.sshd:sshd-core:+ -> 0.14.1-atlassian-01
-|         \--- org.slf4j:slf4j-api:1.6.4 -> 1.7.12
+|    \--- org.apache.sshd:sshd-core:+ -> 1.0.0
+|         \--- org.slf4j:slf4j-api:1.7.12
 +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
@@ -680,7 +680,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.apache.activemq:activemq-mqtt:5.12.0 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1 -> 4.4.2
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
@@ -906,8 +906,8 @@ runtime - Runtime classpath for source set 'main'.
 |    |         +--- org.jinq:jinq-asm-rebased:1.8.4
 |    |         \--- org.jinq:api:1.8.4
 |    +--- com.jcraft:jsch:+ -> 0.1.53
-|    \--- org.apache.sshd:sshd-core:+ -> 0.14.1-atlassian-01
-|         \--- org.slf4j:slf4j-api:1.6.4 -> 1.7.12
+|    \--- org.apache.sshd:sshd-core:+ -> 1.0.0
+|         \--- org.slf4j:slf4j-api:1.7.12
 +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
@@ -979,7 +979,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.apache.activemq:activemq-mqtt:5.12.0 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1 -> 4.4.2
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
@@ -1205,8 +1205,8 @@ testCompile - Compile classpath for source set 'test'.
 |    |         +--- org.jinq:jinq-asm-rebased:1.8.4
 |    |         \--- org.jinq:api:1.8.4
 |    +--- com.jcraft:jsch:+ -> 0.1.53
-|    \--- org.apache.sshd:sshd-core:+ -> 0.14.1-atlassian-01
-|         \--- org.slf4j:slf4j-api:1.6.4 -> 1.7.12
+|    \--- org.apache.sshd:sshd-core:+ -> 1.0.0
+|         \--- org.slf4j:slf4j-api:1.7.12
 +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
@@ -1293,7 +1293,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.apache.activemq:activemq-mqtt:5.12.0 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
 |    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1 -> 4.4.2
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
@@ -1519,8 +1519,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |         +--- org.jinq:jinq-asm-rebased:1.8.4
 |    |         \--- org.jinq:api:1.8.4
 |    +--- com.jcraft:jsch:+ -> 0.1.53
-|    \--- org.apache.sshd:sshd-core:+ -> 0.14.1-atlassian-01
-|         \--- org.slf4j:slf4j-api:1.6.4 -> 1.7.12
+|    \--- org.apache.sshd:sshd-core:+ -> 1.0.0
+|         \--- org.slf4j:slf4j-api:1.7.12
 +--- org.jetbrains.kotlin:kotlin-runtime:+ -> 0.12.1230
 +--- org.jetbrains.kotlin:kotlin-stdlib:+ -> 0.12.1230 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36

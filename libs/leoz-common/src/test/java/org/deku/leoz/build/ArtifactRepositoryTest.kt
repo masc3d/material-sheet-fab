@@ -28,13 +28,24 @@ public class ArtifactRepositoryTest {
 
     @Test
     public fun testList() {
-        var versions = ArtifactConfiguration.repository.list()
+        var versions = ArtifactConfiguration.repository.listVersions()
         versions.forEach { println(it) }
     }
 
     @Test
+    public fun testListPlatforms() {
+        var platforms = ArtifactConfiguration.repository.listPlatforms(Artifact.Version.parse("0.1"))
+        platforms.forEach { println(it) }
+    }
+
+    @Test
     public fun testUpload() {
-        ArtifactConfiguration.repository.upload(ArtifactConfiguration.path.toFile(), Artifact.Version.parse("0.1"))
+        ArtifactConfiguration.repository.upload(ArtifactConfiguration.path.toFile())
+    }
+
+    @Test
+    public fun testUploadPlatform() {
+        ArtifactConfiguration.repository.upload(ArtifactConfiguration.path.resolve("osx64").toFile(), PlatformId.parse("osx64"))
     }
 
     @Test
