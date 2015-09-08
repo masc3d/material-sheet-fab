@@ -28,7 +28,7 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
     val rsyncArtifactUri: Rsync.URI
 
     init {
-        rsyncArtifactUri = rsyncModuleUri.resolve(type.toString())
+        rsyncArtifactUri = rsyncModuleUri.resolve(type)
     }
 
     /**
@@ -71,7 +71,7 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
      */
     public fun listPlatforms(version: Artifact.Version): List<PlatformId> {
         val rc = this.createRsyncClient()
-        rc.destination = this.rsyncArtifactUri.resolve(version.toString())
+        rc.destination = this.rsyncArtifactUri.resolve(version)
 
         return rc.list().asSequence()
                 .filter { l -> !l.filename.startsWith(".") }
@@ -119,11 +119,11 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
         val comparisonDestinationUris = remoteVersions.sortDescending()
                 .filter({ v -> v.compareTo(version) != 0 })
                 .take(2)
-                .map({ v -> Rsync.URI("../").resolve(v.toString()) })
+                .map({ v -> Rsync.URI("../").resolve(v) })
 
         val rc = this.createRsyncClient()
         rc.source = Rsync.URI(srcPath)
-        rc.destination = this.rsyncArtifactUri.resolve(version.toString())
+        rc.destination = this.rsyncArtifactUri.resolve(version)
         rc.copyDestinations = comparisonDestinationUris
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
@@ -158,11 +158,11 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
         val comparisonDestinationUris = remoteVersions.sortDescending()
                 .filter({ v -> v.compareTo(artifact.version!!) != 0 })
                 .take(2)
-                .map({ v -> Rsync.URI("../../").resolve(v.toString()).resolve(platform.toString()) })
+                .map({ v -> Rsync.URI("../../").resolve(v, platform) })
 
         val rc = this.createRsyncClient()
         rc.source = Rsync.URI(srcPath)
-        rc.destination = this.rsyncArtifactUri.resolve(artifact.version!!.toString()).resolve(platform.toString())
+        rc.destination = this.rsyncArtifactUri.resolve(artifact.version!!, platform)
         rc.copyDestinations = comparisonDestinationUris
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
@@ -182,7 +182,7 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
      */
     public @jvmOverloads fun download(version: Artifact.Version, platformId: PlatformId, destPath: File, verify: Boolean = false) {
         val rc = this.createRsyncClient()
-        rc.source = this.rsyncArtifactUri.resolve(version.toString()).resolve(platformId.toString())
+        rc.source = this.rsyncArtifactUri.resolve(version, platformId)
         rc.destination = Rsync.URI(destPath)
 
         log.info("Downloading [${rc.source}] -> [${rc.destination}]")
@@ -202,7 +202,7 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
      */
     public @jvmOverloads fun download(version: Artifact.Version, destPath: File, verify: Boolean = false) {
         val rc = this.createRsyncClient()
-        rc.source = this.rsyncArtifactUri.resolve(version.toString())
+        rc.source = this.rsyncArtifactUri.resolve(version)
         rc.destination = Rsync.URI(destPath)
 
         log.info("Downloading [${rc.source}] -> [${rc.destination}]")
