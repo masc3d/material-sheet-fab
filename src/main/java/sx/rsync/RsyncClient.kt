@@ -53,9 +53,11 @@ public class RsyncClient() {
     /** Delete destination files */
     var delete: Boolean = false
     /** List of relative destination paths to compare against */
-    var comparisonDestinations: List<java.net.URI> = ArrayList()
+    var comparisonDestinations: List<Rsync.URI> = ArrayList()
     /** List of relative destination paths to compare against and copy from (to minimize files to transfer) */
-    var copyDestinations: List<java.net.URI> = ArrayList()
+    var copyDestinations: List<Rsync.URI> = ArrayList()
+    /** Use relative paths */
+    var relative: Boolean = false
 
     public class Result(val files: List<File>) {
 
@@ -179,8 +181,8 @@ public class RsyncClient() {
         try {
             pe.waitFor()
         } catch(e: Exception) {
-            log.error(e.getMessage(), e)
             if (error.length() > 0) log.error(error.toString())
+            throw e
         }
 
         return result
@@ -213,6 +215,7 @@ public class RsyncClient() {
         if (this.relativePaths) command.add("-R")
         if (this.delete) command.add("--delete")
         if (this.partial) command.add("--partial")
+        if (this.relative) command.add("--relative")
         command.add(if (partial) "--whole-file" else "--no-whole-file")
         if (this.compression > 0) {
             command.add("-zz")
@@ -237,6 +240,8 @@ public class RsyncClient() {
 
         command.add(this.source!!.toString())
         command.add(this.destination!!.toString())
+
+        log.debug(command.joinToString(" "))
 
         // Prepare process builder
         var pb: ProcessBuilder = ProcessBuilder(command)
@@ -275,8 +280,8 @@ public class RsyncClient() {
         try {
             pe.waitFor()
         } catch(e: Exception) {
-            log.error(e.getMessage(), e)
-            if (error.length() > 0) log.error(e.toString())
+            if (error.length() > 0) log.error(error.toString())
+            throw e
         }
 
         return Result(files)
