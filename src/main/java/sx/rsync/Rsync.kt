@@ -164,9 +164,10 @@ public open class Rsync() {
         /**
          * Resolve path
          */
-        public fun resolve(str: String): Rsync.URI {
+        public fun resolve(vararg str: Any): Rsync.URI {
+            val path = str.joinToString("/")
             return Rsync.URI(
-                    uri = if (uri.getPath().endsWith('/')) uri.resolve(str) else java.net.URI(uri.toString() + "/" + str),
+                    uri = if (uri.getPath().endsWith('/')) uri.resolve(path) else java.net.URI(uri.toString() + "/" + path),
                     asDirectory = this.asDirectory)
         }
 
