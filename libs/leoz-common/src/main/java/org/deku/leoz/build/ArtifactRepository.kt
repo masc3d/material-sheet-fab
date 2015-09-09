@@ -22,13 +22,13 @@ import java.util.function.IntSupplier
  * @param rsyncModuleUri The base rsync module uri. The expected directory structur is $artifact-name/$version/$platform
  * Created by masc on 24.08.15.
  */
-public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsync.URI, val rsyncPassword: String) {
+public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyncPassword: String) {
     val log = LogFactory.getLog(this.javaClass)
 
     val rsyncArtifactUri: Rsync.URI
 
     init {
-        rsyncArtifactUri = rsyncModuleUri.resolve(type)
+        rsyncArtifactUri = rsyncModuleUri.resolve(name)
     }
 
     /**
@@ -92,12 +92,12 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
     /**
      * Upload artifact version to remote repository
      * @param srcPath Local source path
-     * @param syncStartCallback Optional callback providing details about synchronization before start
-     * @param fileRecordCallback Optional callback providing details during sync/upload process
+     * @param onStart Optional callback providing details about synchronization before start
+     * @param onFile Optional callback providing details during sync/upload process
      */
     public @jvmOverloads fun upload(srcPath: File,
-                                    syncStartCallback: (src: Rsync.URI?, dst: Rsync.URI?) -> Unit = { s, d -> },
-                                    fileRecordCallback: (fr: RsyncClient.FileRecord) -> Unit = { }) {
+                                    onStart: (src: Rsync.URI?, dst: Rsync.URI?) -> Unit = { s, d -> },
+                                    onFile: (fr: RsyncClient.FileRecord) -> Unit = { }) {
         val nSrcPath = Paths.get(srcPath.toURI())
 
         // Verify this is an artifact version folder (having only platform ids as subfolder)
@@ -127,11 +127,11 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
         rc.copyDestinations = comparisonDestinationUris
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
-        syncStartCallback(rc.source, rc.destination)
+        onStart(rc.source, rc.destination)
 
         rc.sync({ r ->
             log.info("Uploading ${r.path}")
-            fileRecordCallback(r)
+            onFile(r)
         })
     }
 
@@ -139,13 +139,13 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
      * Upload artifact version/platform to remote repository
      * @param srcPath Local source path
      * @param platform Platform id
-     * @param syncStartCallback Optional callback providing details about synchronization before start
-     * @param fileRecordCallback Optional callback providing details during sync/upload process
+     * @param onStart Optional callback providing details about synchronization before start
+     * @param onFile Optional callback providing details during sync/upload process
      */
     public fun upload(srcPath: File,
                       platform: PlatformId,
-                      syncStartCallback: (src: Rsync.URI?, dst: Rsync.URI?) -> Unit = { s, d -> },
-                      fileRecordCallback: (fr: RsyncClient.FileRecord) -> Unit = { }) {
+                      onStart: (src: Rsync.URI?, dst: Rsync.URI?) -> Unit = { s, d -> },
+                      onFile: (fr: RsyncClient.FileRecord) -> Unit = { }) {
         val artifact = Artifact.load(srcPath)
 
         val remoteVersions = this.listVersions()
@@ -166,11 +166,11 @@ public class ArtifactRepository(val type: Artifact.Type, val rsyncModuleUri: Rsy
         rc.copyDestinations = comparisonDestinationUris
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
-        syncStartCallback(rc.source, rc.destination)
+        onStart(rc.source, rc.destination)
 
         rc.sync({ r ->
             log.info("Uploading ${r.path}")
-            fileRecordCallback(r)
+            onFile(r)
         })
     }
 

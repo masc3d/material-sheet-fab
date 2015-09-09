@@ -18,5 +18,5 @@ public object ArtifactConfiguration {
             .resolve("leoz-release")
             .resolve("leoz-boot")
 
-    val repository = ArtifactRepository(Artifact.Type.LEOZ_BOOT, rsyncUri, rsyncPw)
+    val repository = ArtifactRepository(Artifacts.LEOZ_BOOT, rsyncUri, rsyncPw)
 }

@@ -55,20 +55,6 @@ public data class Artifact(
     }
 
     /**
-     * Leoz artifact type
-     */
-    public enum class Type(val artifactType: String) {
-        LEOZ_CENTRAL("leoz-central"),
-        LEOZ_NODE("leoz-node"),
-        LEOZ_UI("leoz-ui"),
-        LEOZ_BOOT("leoz-boot");
-
-        override fun toString(): String {
-            return this.artifactType
-        }
-    }
-
-    /**
      * Manifest file entry
      */
     @XmlElement
