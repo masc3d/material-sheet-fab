@@ -64,6 +64,11 @@ public class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuAr
         }
     }
 
+    override fun equals(other: Any?): Boolean {
+        return if (other is PlatformId) this.cpuArch == other.cpuArch && this.operatingSystem == other.operatingSystem
+        else false
+    }
+
     override fun toString(): String {
         return this.operatingSystem.toString() + this.cpuArch.toString()
     }
