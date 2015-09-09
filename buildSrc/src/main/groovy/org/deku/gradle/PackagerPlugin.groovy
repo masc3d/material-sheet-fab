@@ -83,6 +83,10 @@ class PackagerPlugin implements Plugin<Project> {
         }
         project.tasks.releasePush.dependsOn(project.tasks.releaseJars)
 
+        project.tasks.create('releasePull', PackagerReleasePullTask) {
+            extension = ext
+        }
+
         // Initialize rsync
         Rsync.executableFile = Paths.get(project.project(':libs:sx-common').projectDir.toURI())
                 .resolve("bin")

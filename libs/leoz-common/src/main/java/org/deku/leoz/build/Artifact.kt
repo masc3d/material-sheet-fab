@@ -91,16 +91,17 @@ public data class Artifact(
             var platformId = PlatformId.parse(path.getName())
 
             // Walk artifact directory and calculate md5 for each regular file
-            var pathUri= path.toURI()
+            var pathUri = path.toURI()
             var nPath = Paths.get(pathUri)
-            Files.walk(nPath).forEach { p ->
-                if (java.nio.file.Files.isRegularFile(p)) {
-                    fileEntries.add(FileEntry(
-                            // Store relative path, simply cutting at root path length, including the slash
-                            uriPath = p.toUri().toString().substring(pathUri.toString().length() + 2),
-                            md5 = this.hashFile(p.toFile())))
-                }
-            }
+            Files.walk(nPath)
+                    .filter { p -> java.nio.file.Files.isRegularFile(p) &&
+                            !p.getFileName().toString().equals(MANIFEST_FILENAME) }
+                    .forEach { p ->
+                        fileEntries.add(FileEntry(
+                                // Store relative path, simply cutting at root path length, including the slash
+                                uriPath = p.toUri().toString().substring(pathUri.toString().length() + 2),
+                                md5 = this.hashFile(p.toFile())))
+                    }
 
             // Create artifact instance
             var artifact = Artifact(path, name, version, platformId, fileEntries)
@@ -159,7 +160,7 @@ public data class Artifact(
         }
 
         if (checkList.size() > 0) {
-            this.log.warn("Excess files detected during manifest creation [${checkList.keySet().joinToString(",")}")
+            this.log.warn("Excess files detected during manifest verification [${checkList.keySet().joinToString(",")}]")
         }
     }
 

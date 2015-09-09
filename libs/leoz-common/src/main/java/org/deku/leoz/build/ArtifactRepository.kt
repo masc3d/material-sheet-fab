@@ -138,32 +138,27 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
         } else {
             log.info("Version already exists remotely")
 
-            // Determine platforms which haven't been transferred yet
-            val remotePlatforms = this.listPlatforms(version)
-
             for (artifact in artifacts) {
-                if (!remotePlatforms.contains(artifact.platform)) {
-                    // Take the two most recent versions for comparison during sync
-                    val comparisonDestinationUris = comparisonDestinationVersions
-                            .map({ v -> Rsync.URI("../../").resolve(v, artifact.platform!!) })
+                // Take the two most recent versions for comparison during sync
+                val comparisonDestinationUris = comparisonDestinationVersions
+                        .map({ v -> Rsync.URI("../../").resolve(v, artifact.platform!!) })
 
-                    val rc = this.createRsyncClient()
-                    rc.source = Rsync.URI(srcPath).resolve(artifact.platform!!)
-                    rc.destination = this.rsyncArtifactUri.resolve(artifact.version!!, artifact.platform!!)
-                    rc.copyDestinations = comparisonDestinationUris
+                val rc = this.createRsyncClient()
+                rc.source = Rsync.URI(srcPath).resolve(artifact.platform!!)
+                rc.destination = this.rsyncArtifactUri.resolve(artifact.version!!, artifact.platform)
+                rc.copyDestinations = comparisonDestinationUris
 
-                    log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
-                    onStart(rc.source, rc.destination)
+                log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
+                onStart(rc.source, rc.destination)
 
-                    rc.sync({ r ->
-                        log.info("Uploading ${r.path}")
-                        onFile(r)
-                    })
-                }
+                rc.sync({ r ->
+                    log.info("Uploading ${r.path}")
+                    onFile(r)
+                })
             }
         }
 
-        log.info("Upload sequence successful")
+        log.info("Upload sequence complete")
     }
 
     /**
@@ -191,8 +186,11 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
      * Download a specific version of an artifact from remote repository (all platforms)
      * @param version Artifact version
      * @üaram destPath Destination path
+     * @param verify Verify artifact after download
      */
-    public @jvmOverloads fun download(version: Artifact.Version, destPath: File, verify: Boolean = false) {
+    public @jvmOverloads fun download(version: Artifact.Version,
+                                      destPath: File,
+                                      verify: Boolean = false) {
         val rc = this.createRsyncClient()
         rc.source = this.rsyncArtifactUri.resolve(version)
         rc.destination = Rsync.URI(destPath)

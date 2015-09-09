@@ -11,6 +11,7 @@ import sx.platform.PlatformId
 
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.stream.Collectors
 
 /**
  * Base class for all packager tasks
@@ -372,6 +373,26 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
                 { s, d -> println("Synchronizing [${s}] -> [${d}]") },
                 { f -> println("Uploading [${f.path}]") }
         )
+    }
+}
+
+class PackagerReleasePullTask extends PackagerReleaseTask {
+    @TaskAction
+    def packagerReleasePullTask() {
+        def releasePath = this.getReleasePath()
+
+        def version = Artifact.Version.parse(project.version)
+        ArtifactRepository ar = ArtifactRepositoryFactory.INSTANCE$.stagingRepository(project.name)
+
+        def remoteVersions = ar.listVersions()
+                .stream()
+                .filter { v -> v.compareTo(version) <= 0 }
+                .sorted().collect(Collectors.toList()).reverse()
+
+        if (remoteVersions.size() == 0)
+            throw new IllegalStateException("No remote versions <= ${version}")
+
+        ar.download(remoteVersions.get(0), releasePath, true)
     }
 }
 
