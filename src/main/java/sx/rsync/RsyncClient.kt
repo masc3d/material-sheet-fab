@@ -45,7 +45,7 @@ public class RsyncClient() {
     /** Preserve executable flag of files */
     var preserveExecutability = true
     /** Preserve acl permissions */
-    var preserveAcls = true
+    var preserveAcls = false
     /** Compression level, 0 (none) - 9 (max) */
     var compression: Int = 0
     /** Relative paths */
