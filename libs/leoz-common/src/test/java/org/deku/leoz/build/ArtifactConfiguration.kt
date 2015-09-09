@@ -8,7 +8,7 @@ import java.nio.file.Paths
  * Created by masc on 29.08.15.
  */
 public object ArtifactConfiguration {
-    val rsyncUri = Rsync.URI("rsync://leoz@syntronix.de/leoz")
+    val rsyncUri = Rsync.URI("rsync://leoz@syntronix.de/leoz-test")
     val rsyncPw = "leoz"
 
     val path = Paths.get("").toAbsolutePath()
