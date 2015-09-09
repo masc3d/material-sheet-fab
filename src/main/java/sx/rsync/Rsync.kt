@@ -182,8 +182,11 @@ public open class Rsync() {
             else
                 rsyncPath = Paths.get(this.uri).toAbsolutePath().toString()
 
-            if (this.uri.getPath().endsWith('/'))
-                rsyncPath += FileSystems.getDefault().getSeparator()
+            if (this.uri.getPath().endsWith('/')) {
+                if (!rsyncPath.endsWith('/'))
+                    rsyncPath += '/'
+            } else
+                rsyncPath = rsyncPath.trimEnd('/')
 
             return rsyncPath
         }
