@@ -37,7 +37,7 @@ public data class Artifact(
         public val version: Artifact.Version? = null,
         @XmlAttribute
         @XmlJavaTypeAdapter(PlatformId.XmlAdapter::class)
-        public val platformId: PlatformId? = null,
+        public val platform: PlatformId? = null,
         @XmlElement(name = "file")
         /** File entries */
         public val fileEntries: List<Artifact.FileEntry> = ArrayList(),

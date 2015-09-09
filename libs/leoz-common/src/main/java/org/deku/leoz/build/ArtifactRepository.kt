@@ -112,66 +112,58 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
         val version = artifacts.get(0).version!!
         val remoteVersions = this.listVersions()
 
-        if (remoteVersions.contains(version))
-            throw IllegalArgumentException("Version [${version}] already exists remotely")
-
-        // Take the two most recent versions for comparison during sync
-        val comparisonDestinationUris = remoteVersions.sortDescending()
+        val comparisonDestinationVersions = remoteVersions.sortDescending()
                 .filter({ v -> v.compareTo(version) != 0 })
                 .take(2)
-                .map({ v -> Rsync.URI("../").resolve(v) })
 
-        val rc = this.createRsyncClient()
-        rc.source = Rsync.URI(srcPath)
-        rc.destination = this.rsyncArtifactUri.resolve(version)
-        rc.copyDestinations = comparisonDestinationUris
+        if (!remoteVersions.contains(version)) {
+            log.info("Version does not exist remotely, transferring all platforms")
+            // Transfer entire version folder
+            // Take the two most recent versions for comparison during sync
+            val comparisonDestinationUris = comparisonDestinationVersions
+                    .map({ v -> Rsync.URI("../").resolve(v) })
 
-        log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
-        onStart(rc.source, rc.destination)
+            val rc = this.createRsyncClient()
+            rc.source = Rsync.URI(srcPath)
+            rc.destination = this.rsyncArtifactUri.resolve(version)
+            rc.copyDestinations = comparisonDestinationUris
 
-        rc.sync({ r ->
-            log.info("Uploading ${r.path}")
-            onFile(r)
-        })
-    }
+            log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
+            onStart(rc.source, rc.destination)
 
-    /**
-     * Upload artifact version/platform to remote repository
-     * @param srcPath Local source path
-     * @param platform Platform id
-     * @param onStart Optional callback providing details about synchronization before start
-     * @param onFile Optional callback providing details during sync/upload process
-     */
-    public fun upload(srcPath: File,
-                      platform: PlatformId,
-                      onStart: (src: Rsync.URI?, dst: Rsync.URI?) -> Unit = { s, d -> },
-                      onFile: (fr: RsyncClient.FileRecord) -> Unit = { }) {
-        val artifact = Artifact.load(srcPath)
+            rc.sync({ r ->
+                log.info("Uploading ${r.path}")
+                onFile(r)
+            })
+        } else {
+            log.info("Version already exists remotely")
 
-        val remoteVersions = this.listVersions()
-        if (remoteVersions.contains(artifact.version)) {
-            if (this.listPlatforms(artifact.version!!).contains(platform))
-                throw IllegalStateException("Artifact [${artifact}] already exists remotely")
+            // Determine platforms which haven't been transferred yet
+            val remotePlatforms = this.listPlatforms(version)
+
+            for (artifact in artifacts) {
+                if (!remotePlatforms.contains(artifact.platform)) {
+                    // Take the two most recent versions for comparison during sync
+                    val comparisonDestinationUris = comparisonDestinationVersions
+                            .map({ v -> Rsync.URI("../../").resolve(v, artifact.platform!!) })
+
+                    val rc = this.createRsyncClient()
+                    rc.source = Rsync.URI(srcPath).resolve(artifact.platform!!)
+                    rc.destination = this.rsyncArtifactUri.resolve(artifact.version!!, artifact.platform!!)
+                    rc.copyDestinations = comparisonDestinationUris
+
+                    log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
+                    onStart(rc.source, rc.destination)
+
+                    rc.sync({ r ->
+                        log.info("Uploading ${r.path}")
+                        onFile(r)
+                    })
+                }
+            }
         }
 
-        // Take the two most recent versions for comparison during sync
-        val comparisonDestinationUris = remoteVersions.sortDescending()
-                .filter({ v -> v.compareTo(artifact.version!!) != 0 })
-                .take(2)
-                .map({ v -> Rsync.URI("../../").resolve(v, platform) })
-
-        val rc = this.createRsyncClient()
-        rc.source = Rsync.URI(srcPath)
-        rc.destination = this.rsyncArtifactUri.resolve(artifact.version!!, platform)
-        rc.copyDestinations = comparisonDestinationUris
-
-        log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
-        onStart(rc.source, rc.destination)
-
-        rc.sync({ r ->
-            log.info("Uploading ${r.path}")
-            onFile(r)
-        })
+        log.info("Upload sequence successful")
     }
 
     /**

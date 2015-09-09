@@ -44,11 +44,6 @@ public class ArtifactRepositoryTest {
     }
 
     @Test
-    public fun testUploadPlatform() {
-        ArtifactConfiguration.repository.upload(ArtifactConfiguration.path.resolve("osx64").toFile(), PlatformId.parse("osx64"))
-    }
-
-    @Test
     public fun testDownload() {
         var path = ArtifactConfiguration.path
                 .resolve(PlatformId.current().toString()).toFile()

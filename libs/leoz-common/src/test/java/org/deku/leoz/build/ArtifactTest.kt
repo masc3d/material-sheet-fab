@@ -37,7 +37,7 @@ public class ArtifactTest {
     public fun testCreate() {
         var path = ArtifactConfiguration.path.resolve(PlatformId.current().toString())
 
-        Artifact.create(path.toFile(), Artifact.Type.LEOZ_BOOT.toString(), Artifact.Version.parse("0.1"))
+        Artifact.create(path.toFile(), Artifacts.LEOZ_BOOT, Artifact.Version.parse("0.1"))
     }
 
     @Test
