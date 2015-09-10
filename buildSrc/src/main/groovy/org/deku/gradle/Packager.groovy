@@ -330,27 +330,29 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
             def File releasePlatformPath = it.toFile()
             def PlatformId platformId = PlatformId.parse(releasePlatformPath.name)
 
+            // TODO. update packager configuration file (main jar name, class path, start class)
+
             println "Releasing jars and binaries for [${platformId}]"
 
-            def jarDestinationPath = this.getReleaseJarPath(platformId)
+            def releaseBundleJarPath = this.getReleaseJarPath(platformId)
 
-            println "Jar destination path [${jarDestinationPath}]"
+            println "Jar destination path [${releaseBundleJarPath}]"
 
-            if (!jarDestinationPath.exists())
-                throw new IOException("Release jar destination path [${jarDestinationPath}] doesn't exist")
+            if (!releaseBundleJarPath.exists())
+                throw new IOException("Release jar destination path [${releaseBundleJarPath}] doesn't exist")
 
             // Remove jar files from jar destination path
-            println "Removing all jars from [${jarDestinationPath}]"
-            Files.walk(Paths.get(jarDestinationPath.toURI()), 1)
+            println "Removing all jars from [${releaseBundleJarPath}]"
+            Files.walk(Paths.get(releaseBundleJarPath.toURI()), 1)
                     .filter { p -> Files.isRegularFile(p) && p.toString().toLowerCase().endsWith(".jar") }
                     .each { p ->
                 Files.delete(p)
             }
 
-            println "Copying jars -> [${jarDestinationPath}]"
+            println "Copying jars -> [${releaseBundleJarPath}]"
             project.copy {
                 from this.getProjectJars()
-                into jarDestinationPath
+                into releaseBundleJarPath
             }
 
             this.copySupplementalDirs(platformId)
@@ -368,6 +370,8 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 class PackagerReleasePushTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePushTask() {
+        // TODO. pull, create git tag (verify if it doesn't exist) and push tags in order to prevent overwriting of existing versions
+
         ArtifactRepository ar = ArtifactRepositoryFactory.INSTANCE$.stagingRepository(project.name)
 
         ar.upload(
