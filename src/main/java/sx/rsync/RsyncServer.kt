@@ -124,7 +124,7 @@ public class RsyncServer(
         fun saveSecrets(os: OutputStream) {
             var ow = PrintWriter(os)
 
-            var users =  this.modules.asSequence()
+            this.modules.asSequence()
                     .flatMap { m -> m.permissions.keySet().asSequence() }
                     .filterIsInstance<Rsync.User>()
                     .distinct()
