@@ -341,9 +341,11 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 
             // Remove jar files from jar destination path
             println "Removing all jars from [${jarDestinationPath}]"
-            Files.walk(Paths.get(jarDestinationPath.toURI()), 0)
-                    .filter({ it2 -> it2.toString().toLowerCase().endsWith(".jar") })
-                    .each { Files.delete(i2t) }
+            Files.walk(Paths.get(jarDestinationPath.toURI()), 1)
+                    .filter { p -> Files.isRegularFile(p) && p.toString().toLowerCase().endsWith(".jar") }
+                    .each { p ->
+                Files.delete(p)
+            }
 
             println "Copying jars -> [${jarDestinationPath}]"
             project.copy {
