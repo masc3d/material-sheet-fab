@@ -52,7 +52,7 @@ namespace LeoBridge.Service
         public string TimeFrom { get; set; }
         [DataMember(Name = "timeTo", IsRequired = false, EmitDefaultValue = false)]
         public string TimeTo { get; set; }
-        [DataMember(Name = "desireStation", IsRequired = false, EmitDefaultValue = false)]
+        [DataMember(Name = "desiredStation", IsRequired = false, EmitDefaultValue = false)]
         public string DesiredStation { get; set; }
     }
     #endregion
@@ -77,7 +77,7 @@ namespace LeoBridge.Service
 
         [DataMember(Name = "sendDate", IsRequired = true)]
         public String SendDate { get; set; }
-        [DataMember(Name = "desireDeliveryDate", EmitDefaultValue=false)]
+        [DataMember(Name = "desiredDeliveryDate", EmitDefaultValue=false)]
         public String DesiredDeliveryDate { get; set; }
         [DataMember(Name = "sender")]
         public RoutingRequestParticipant Sender { get; set; }

@@ -9,13 +9,13 @@ using System.ServiceModel.Web;
 
 using LeoBridge;
 using LeoBridge.Service;
+using System.Threading;
 
 namespace LeoBridgeTest
 {
     [TestClass]
     public class RoutingServiceTest : WebserviceClientTest
-    {
-
+    {  
         [TestMethod]
         public void TestRequest()
         {
@@ -27,27 +27,53 @@ namespace LeoBridgeTest
 
             LeoBridge.Service.RoutingRequest r = new RoutingRequest();
 
-            r.SendDate = "2015-06-05";
+            r.SendDate = "2015-06-01";
             r.DesiredDeliveryDate = "2015-06-02";
-            consignee.Country = "DE2";
-            consignee.Zip = "123";
-            consignee.TimeFrom = "10:00";
+            consignee.Country = "DE";
+            consignee.Zip = "36286";
+            consignee.TimeFrom = "09:00";
             consignee.TimeTo = "12:00";
-            consignee.DesiredStation = "0";
+            consignee.DesiredStation = "020";
             r.Consignee = consignee;
             sender.Country = "DE";
-            sender.Zip = "80331";
-            sender.TimeFrom = "10:00";
+            sender.Zip = "36286";
+            sender.TimeFrom = "09:00";
             sender.TimeTo = "12:00";
-            sender.DesiredStation = "0";
+            sender.DesiredStation = "020";
             r.Sender = sender;
-            r.Weight = 5;
+            r.Weight = 0;
             r.Services = 0;
+
             for (int i = 0; i < 1; i++)
             {
                 Routing result = this.ClientFactory.RoutingService.Request(r);
                 Console.WriteLine(String.Format("{0}: {1}", i, result.ToString()));
             }
+        }
+
+        [TestMethod]
+        public void TestRequestThreaded()
+        {
+            List<Thread> threads = new List<Thread>();
+            for (int i = 0; i < 100; i++)
+            {
+                ThreadStart ts = () =>
+                {
+                    try
+                    {
+                        this.TestRequest();
+                    }
+                    catch (Exception ex)
+                    {
+                        Assert.Fail(ex.ToString());
+                    }
+                };
+
+                Thread t = new Thread(ts);
+                threads.Add(t);
+                t.Start();
+            }
+            threads.ForEach((t) => t.Join());
         }
 
         [TestMethod]

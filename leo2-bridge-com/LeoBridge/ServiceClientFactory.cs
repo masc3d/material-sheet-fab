@@ -33,8 +33,7 @@ namespace LeoBridge
             _httpBinding = new WebHttpBinding();
             _httpBinding.OpenTimeout = TimeSpan.FromMilliseconds(3000);
             _httpBinding.CloseTimeout = TimeSpan.FromMilliseconds(3000);
-            _httpBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(3000);
-            _httpBinding.SendTimeout = TimeSpan.FromMilliseconds(3000);           
+            _httpBinding.ReceiveTimeout = TimeSpan.FromMilliseconds(6000);
 
             // Create service proxies
             _routingService = new Lazy<IRoutingService>(() => new RoutingServiceProxy(this.CreateChannelFactory<IRoutingService>()));

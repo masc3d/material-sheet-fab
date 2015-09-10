@@ -19,8 +19,6 @@ namespace LeoBridge
     /// <typeparam name="TChannel">Type of channel/service</typeparam>
     public abstract class ServiceClientProxy<TChannel>
     {
-        IClientChannel _serviceClient;
-
         public ServiceClientProxy(ChannelFactory<TChannel> channelFactory)
         {
             this.ChannelFactory = channelFactory;
@@ -35,16 +33,7 @@ namespace LeoBridge
         {
             get
             {
-                if (_serviceClient == null)
-                {
-                    _serviceClient = (IClientChannel)this.ChannelFactory.CreateChannel();
-                    _serviceClient.Faulted += (sender, e) =>
-                    {
-                        _serviceClient.Dispose();
-                        _serviceClient = null;
-                    };
-                }
-                return (TChannel)_serviceClient;
+                return (TChannel)this.ChannelFactory.CreateChannel();
             }
         }
 
