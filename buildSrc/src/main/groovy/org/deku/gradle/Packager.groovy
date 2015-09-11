@@ -351,7 +351,6 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 class PackagerReleasePushTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePushTask() {
-        // TODO. verify jvm versions of all platforms match
         // TODO. pull, create git tag (verify if it doesn't exist) and push tags in order to prevent overwriting of existing versions
 
         ArtifactRepository ar = ArtifactRepositoryFactory.INSTANCE$.stagingRepository(project.name)

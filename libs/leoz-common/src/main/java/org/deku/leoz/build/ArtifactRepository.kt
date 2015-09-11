@@ -102,12 +102,25 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
             if (consoleOutput) println(s) else log.info(s)
         }
 
+        logInfo("Upload sequence start")
+
         val nSrcPath = Paths.get(srcPath.toURI())
 
         // Verify this is an artifact version folder (having only platform ids as subfolder)
         val artifacts = ArrayList<Artifact>()
         this.walkPlatformFolders(nSrcPath).forEach { p ->
-            artifacts.add(Artifact.load(p.toFile()))
+            val a = Artifact.load(p.toFile())
+            logInfo("Found [${a}]")
+            artifacts.add(a)
+        }
+
+        if (artifacts.size() > 1) {
+            artifacts.takeLast(artifacts.size() - 1).forEach { a ->
+                if (!artifacts[0].version!!.equals(a.version))
+                    throw IllegalStateException("Inconsistent artifact versions")
+                if (!artifacts[0].javaVersion.equals(a.javaVersion))
+                    throw IllegalStateException("Inconsistent java versions")
+            }
         }
 
         if (artifacts.isEmpty())

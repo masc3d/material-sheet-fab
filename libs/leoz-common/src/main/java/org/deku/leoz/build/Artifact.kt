@@ -169,6 +169,10 @@ public data class Artifact(
         }
     }
 
+    override fun toString(): String {
+        return "${javaClass.getSimpleName()}(name=${name}, version=${version}, platform=${this.platform}, javaVersion=${javaVersion})"
+    }
+
     /**
      * Artifact version
      * Created by masc on 24.08.15.
