@@ -83,7 +83,13 @@ class PackagerPlugin implements Plugin<Project> {
         }
         project.tasks.releasePush.dependsOn(project.tasks.releaseJars)
 
+        // Release pull task
         project.tasks.create('releasePull', PackagerReleasePullTask) {
+            extension = ext
+        }
+
+        // Release clean task
+        project.tasks.create('releaseClean', PackagerReleaseCleanTask) {
             extension = ext
         }
 

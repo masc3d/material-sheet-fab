@@ -94,8 +94,13 @@ public data class Artifact(
             var pathUri = path.toURI()
             var nPath = Paths.get(pathUri)
             Files.walk(nPath)
-                    .filter { p -> java.nio.file.Files.isRegularFile(p) &&
-                            !p.getFileName().toString().equals(MANIFEST_FILENAME) }
+                    .filter { p ->
+                        val filename = p.getFileName().toString()
+                        // Exclude file specific patterns from manifest
+                        java.nio.file.Files.isRegularFile(p) &&
+                                !filename.equals(MANIFEST_FILENAME) &&
+                                !filename.startsWith('.')
+                    }
                     .forEach { p ->
                         fileEntries.add(FileEntry(
                                 // Store relative path, simply cutting at root path length, including the slash

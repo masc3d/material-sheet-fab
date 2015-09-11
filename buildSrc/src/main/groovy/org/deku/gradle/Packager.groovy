@@ -4,8 +4,12 @@ import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.build.Artifact
 import org.deku.leoz.build.ArtifactRepository
 import org.deku.leoz.build.ArtifactRepositoryFactory
+import org.deku.leoz.build.Bundle
 import org.gradle.api.DefaultTask
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.internal.slf4j.OutputEventListenerBackedLoggerContext
+import org.slf4j.LoggerFactory
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 
@@ -87,46 +91,22 @@ abstract class PackagerReleaseTask extends PackagerTask {
     }
 
     /**
+     * Returns bundle for platform
+     * @param platformId
+     * @return
+     */
+    def Bundle getReleaseBundle(PlatformId platformId) {
+        return new Bundle(project.name, platformId.operatingSystem, this.getReleasePlatformPath(platformId))
+    }
+
+    /**
      * Gets a release supplmental path
      * @param platformId Platform
      * @param relativePath Relative sub path
      * @return
      */
     protected def getReleaseSupplementalPath(PlatformId platformId, File relativePath) {
-        def dst
-        if (SystemUtils.IS_OS_MAC_OSX) {
-            dst = Paths.get(this.getReleasePlatformPath(platformId).toURI())
-                    .resolve("${project.name}.app")
-                    .resolve('Contents')
-                    .resolve(relativePath.toString())
-                    .toFile()
-        } else {
-            dst = new File(this.getReleasePlatformPath(platformId), relativePath.toString())
-        }
-        return dst
-    }
-
-    /**
-     * Builds jar destination path for specific platform/arch
-     * @param basePath
-     * @return
-     */
-    def File getReleaseJarPath(PlatformId platformId) {
-        def File jarDestinationPath
-
-        def File releasePlatformPath = this.getReleasePlatformPath(platformId)
-
-        // Add path to jars within packager release bundle
-        if (platformId.operatingSystem == OperatingSystem.OSX) {
-            jarDestinationPath = Paths.get(releasePlatformPath.toURI())
-                    .resolve(project.name + '.app')
-                    .resolve('Contents')
-                    .resolve('Java')
-                    .toFile()
-        } else {
-            jarDestinationPath = new File(releasePlatformPath, 'app')
-        }
-        return jarDestinationPath
+        return new File(this.getReleaseBundle(platformId).contentPath, relativePath.toString())
     }
 
     /**
@@ -135,6 +115,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
      * @return
      */
     protected def copySupplementalDirs(PlatformId platformId) {
+        // TODO: implement
         this.extension.getSupplementalDirs().each {
             it -> println it.key
         }
@@ -334,7 +315,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 
             println "Releasing jars and binaries for [${platformId}]"
 
-            def releaseBundleJarPath = this.getReleaseJarPath(platformId)
+            def releaseBundleJarPath = this.getReleaseBundle(platformId).jarPath
 
             println "Jar destination path [${releaseBundleJarPath}]"
 
@@ -370,18 +351,19 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 class PackagerReleasePushTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePushTask() {
+        // TODO. verify jvm versions of all platforms match
         // TODO. pull, create git tag (verify if it doesn't exist) and push tags in order to prevent overwriting of existing versions
 
         ArtifactRepository ar = ArtifactRepositoryFactory.INSTANCE$.stagingRepository(project.name)
 
-        ar.upload(
-                this.getReleasePath(),
-                { s, d -> println("Synchronizing [${s}] -> [${d}]") },
-                { f -> println("Uploading [${f.path}]") }
-        )
+        ar.upload(this.getReleasePath(), true)
     }
 }
 
+/**
+ * Release pull task downloads (and overwrites) remote release with version equal or less than the current project version
+ * Used to "seed" the release directory with artifacts for all platforms
+ */
 class PackagerReleasePullTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePullTask() {
@@ -398,7 +380,20 @@ class PackagerReleasePullTask extends PackagerReleaseTask {
         if (remoteVersions.size() == 0)
             throw new IllegalStateException("No remote versions <= ${version}")
 
-        ar.download(remoteVersions.get(0), releasePath, true)
+        ar.download(remoteVersions.get(0), releasePath, true, true)
+    }
+}
+
+/**
+ * Cleans the release directory for this project (by removing and recreating it)
+ */
+class PackagerReleaseCleanTask extends PackagerReleaseTask {
+    @TaskAction
+    def packagerReleaseCleanTask() {
+        def releasePath = this.getReleasePath()
+
+        releasePath.deleteDir()
+        releasePath.mkdirs()
     }
 }
 

@@ -96,8 +96,12 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
      * @param onFile Optional callback providing details during sync/upload process
      */
     public @jvmOverloads fun upload(srcPath: File,
-                                    onStart: (src: Rsync.URI?, dst: Rsync.URI?) -> Unit = { s, d -> },
-                                    onFile: (fr: RsyncClient.FileRecord) -> Unit = { }) {
+                                    consoleOutput: Boolean = false) {
+        /** Info logging wrapper */
+        fun logInfo(s: String) {
+            if (consoleOutput) println(s) else log.info(s)
+        }
+
         val nSrcPath = Paths.get(srcPath.toURI())
 
         // Verify this is an artifact version folder (having only platform ids as subfolder)
@@ -117,7 +121,7 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
                 .take(2)
 
         if (!remoteVersions.contains(version)) {
-            log.info("Version does not exist remotely, transferring all platforms")
+            logInfo("Version does not exist remotely, transferring all platforms")
             // Transfer entire version folder
             // Take the two most recent versions for comparison during sync
             val comparisonDestinationUris = comparisonDestinationVersions
@@ -128,16 +132,15 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
             rc.destination = this.rsyncArtifactUri.resolve(version)
             rc.copyDestinations = comparisonDestinationUris
 
-            log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
-            onStart(rc.source, rc.destination)
+            logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
 
             rc.sync({ r ->
-                log.info("Uploading ${r.path}")
-                onFile(r)
+                logInfo("Uploading ${r.path}")
             })
         } else {
-            log.info("Version already exists remotely")
+            logInfo("Version already exists remotely")
 
+            // Transfer artifacts separately, to prevent non-existing platforms to be deleted remotely
             for (artifact in artifacts) {
                 // Take the two most recent versions for comparison during sync
                 val comparisonDestinationUris = comparisonDestinationVersions
@@ -145,20 +148,18 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
 
                 val rc = this.createRsyncClient()
                 rc.source = Rsync.URI(srcPath).resolve(artifact.platform!!)
-                rc.destination = this.rsyncArtifactUri.resolve(artifact.version!!, artifact.platform)
+                rc.destination = this.rsyncArtifactUri.resolve(artifact.version!!, artifact.platform!!)
                 rc.copyDestinations = comparisonDestinationUris
 
-                log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
-                onStart(rc.source, rc.destination)
+                logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
 
                 rc.sync({ r ->
-                    log.info("Uploading ${r.path}")
-                    onFile(r)
+                    logInfo("Updating [${r.flags}] [${r.path}]")
                 })
             }
         }
 
-        log.info("Upload sequence complete")
+        logInfo("Upload sequence complete")
     }
 
     /**
@@ -172,11 +173,13 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
         rc.source = this.rsyncArtifactUri.resolve(version, platformId)
         rc.destination = Rsync.URI(destPath)
 
-        log.info("Downloading [${rc.source}] -> [${rc.destination}]")
-        rc.sync({ r -> log.info("Downloading ${r.path}") })
+        log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
+        rc.sync({ r ->
+            log.info("Updating [${r.flags}] [${r.path}]")
+        })
 
         if (verify) {
-            log.info("Verifying artifact")
+            log.info("Verifying artifact [${destPath}]")
             Artifact.load(destPath)
                     .verify()
         }
@@ -185,23 +188,34 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
     /**
      * Download a specific version of an artifact from remote repository (all platforms)
      * @param version Artifact version
-     * @üaram destPath Destination path
+     * @param destPath Destination path
      * @param verify Verify artifact after download
+     * @param consoleOutput Log to console instead of logger (used for gradle)
      */
     public @jvmOverloads fun download(version: Artifact.Version,
                                       destPath: File,
-                                      verify: Boolean = false) {
+                                      verify: Boolean = false,
+                                      consoleOutput: Boolean = false) {
+        fun logInfo(s: String) {
+            if (consoleOutput) println(s) else log.info(s)
+        }
+
         val rc = this.createRsyncClient()
         rc.source = this.rsyncArtifactUri.resolve(version)
         rc.destination = Rsync.URI(destPath)
 
-        log.info("Downloading [${rc.source}] -> [${rc.destination}]")
-        rc.sync({ r -> log.info("Downloading ${r.path}") })
+        logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
+        rc.sync({ r ->
+            logInfo("Updating [${r.flags}] [${r.path}]")
+        })
 
         if (verify) {
             this.walkPlatformFolders(destPath.toPath()).forEach { p ->
+                logInfo("Verifying artifact [${p}]")
                 Artifact.load(p.toFile()).verify()
             }
         }
+
+        logInfo("Download sequence complete")
     }
 }
