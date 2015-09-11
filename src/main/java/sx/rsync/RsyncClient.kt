@@ -166,7 +166,7 @@ public class RsyncClient() {
 
         val error = StringBuffer()
         var pe: ProcessExecutor = ProcessExecutor(pb,
-                object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
+                outputHandler = object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
                     override fun onProcessedOutput(output: String) {
                         var lr = ListRecord.tryParse(output)
                         if (lr != null) {
@@ -174,7 +174,7 @@ public class RsyncClient() {
                         }
                     }
                 },
-                ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectBuffer = error))
+                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectBuffer = error))
 
         pe.start()
 
@@ -254,7 +254,7 @@ public class RsyncClient() {
         val error = StringBuffer()
 
         var pe: ProcessExecutor = ProcessExecutor(pb,
-                object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
+                outputHandler = object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
                     override fun onProcessedOutput(output: String) {
                         var fr = FileRecord.tryParse(output)
                         if (fr != null) {
@@ -273,7 +273,7 @@ public class RsyncClient() {
                         }
                     }
                 },
-                ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectBuffer = error))
+                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectBuffer = error))
 
         pe.start()
 
