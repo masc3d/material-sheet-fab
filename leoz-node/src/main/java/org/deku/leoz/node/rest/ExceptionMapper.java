@@ -67,7 +67,7 @@ public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exceptio
         }
 
         return Response
-                .status(result.getStatus())
+                .status(result.getHttpStatus())
                 .entity(result)
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .build();

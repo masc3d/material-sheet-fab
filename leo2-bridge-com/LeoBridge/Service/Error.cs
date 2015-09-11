@@ -11,8 +11,7 @@ namespace LeoBridge.Service
     public interface IError
     {
         int HttpStatus { get; set; }
-        int Status { get; set; }
-        int ErrorCode { get; set; }
+        int Code { get; set; }
         String Message { get; set; }
     }
 
@@ -28,12 +27,10 @@ namespace LeoBridge.Service
 
         [DataMember(Name = "httpStatus")]
         public int HttpStatus { get; set; }
-        [DataMember(Name = "status")]
-        public int Status { get; set; }
-        [DataMember(Name = "message")]
-        public String Message { get; set; }
         [DataMember(Name = "code")]
-        public int ErrorCode { get; set; }
+        public int Code { get; set; }
+        [DataMember(Name = "message")]
+        public string Message { get; set; }
     }
 
     /// <summary>

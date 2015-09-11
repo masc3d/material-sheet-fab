@@ -45,7 +45,7 @@ namespace LeoBridgeTest
             {
                 Routing result = this.ClientFactory.RoutingService.Request(r);
 
-                Console.WriteLine("ErrorCode:" + String.Format(result.Error.ErrorCode.ToString()));
+                Console.WriteLine("ErrorCode:" + String.Format(result.Error.Code.ToString()));
             }
         }
 

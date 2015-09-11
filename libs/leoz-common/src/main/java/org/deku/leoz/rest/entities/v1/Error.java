@@ -7,26 +7,26 @@ import com.wordnik.swagger.annotations.ApiModel;
  */
 @ApiModel(value = "Error", description = "Service error")
 public class Error {
-    private Integer mStatus;
+    private Integer mHttpStatus;
     private Integer mCode;
     private String mMessage;
 
-    public Error(int status, Integer code, String message) {
-        mStatus = status;
+    public Error(int httpStatus, Integer code, String message) {
+        mHttpStatus = httpStatus;
         mCode = code;
         mMessage = message;
     }
 
-    public Error(int status, String message) {
-        this(status, null, message);
+    public Error(int httpStatus, String message) {
+        this(httpStatus, null, message);
     }
 
-    public Error(int status, Exception e) {
-        this(status, e.getMessage());
+    public Error(int httpStatus, Exception e) {
+        this(httpStatus, e.getMessage());
     }
 
-    public Integer getStatus() {
-        return mStatus;
+    public Integer getHttpStatus() {
+        return mHttpStatus;
     }
 
     public String getMessage() {
