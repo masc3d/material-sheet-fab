@@ -22,6 +22,6 @@
 [submodule "sx-common"]
 	path = libs/sx-common
 	url = ssh://git@bitbucket.org/masc3d/sx-common
-[submodule "leo2-bridge-com/Libraries/CLAP"]
-	path = leo2-bridge-com/Libraries/CLAP
+[submodule "leoz-bridge-com/Libraries/CLAP"]
+	path = leoz-bridge-com/Libraries/CLAP
 	url = https://github.com/masc3d/CLAP.git
