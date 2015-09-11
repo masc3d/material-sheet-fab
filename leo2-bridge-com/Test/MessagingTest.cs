@@ -25,15 +25,5 @@ namespace LeoBridge.Test
             System.Windows.Forms.MessageBox.Show(message.ToString());
         }
 
-        [TestMethod]
-        public void TestSend()
-        {
-            using (MessageQueue lb = new MessageQueue())
-            {
-                Message msg = new Message();
-                msg.Put("_", "Test");
-                lb.SendMessage(msg);
-            }
-        }
     }
 }
