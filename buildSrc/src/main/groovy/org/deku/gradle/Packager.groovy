@@ -14,7 +14,10 @@ import org.deku.leoz.build.ArtifactRepositoryFactory
 import org.deku.leoz.build.Bundle
 import org.eclipse.jgit.api.ListTagCommand
 import org.eclipse.jgit.api.PushCommand
+import org.eclipse.jgit.api.Status
+import org.eclipse.jgit.api.StatusCommand
 import org.eclipse.jgit.api.TagCommand
+import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevTag
@@ -23,6 +26,8 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.transport.JschConfigSessionFactory
 import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshSessionFactory
+import org.eclipse.jgit.treewalk.AbstractTreeIterator
+import org.eclipse.jgit.treewalk.FileTreeIterator
 import org.eclipse.jgit.util.FS
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -398,12 +403,19 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         // Provide session factory to jgit
         SshSessionFactory.setInstance(sessionFactory)
 
+        // Git repository
+        println "Perfoming sanity checks against git repository"
         def repo = FileRepositoryBuilder.create(new File(project.rootDir, ".git"))
+
+        // Check for uncommitted changes
+        def sc = new StatusCommand(repo)
+        def s = sc.call()
+        if (s.hasUncommittedChanges())
+            throw new IllegalStateException("Repository has uncommitted changes. Cannot push release")
 
         // Maintain git tag, verify if it doesn't exist and push tags in order to prevent overwriting of existing versions
         def String tagName = "${project.name}-${project.version}"
 
-        println "Checking git tags"
         def lt = new ListTagCommand(repo)
         List<Ref> tagRefs = lt.call()
 
@@ -421,7 +433,7 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
             if (!currentCommit.name.equals(tagCommit.name))
                 throw new IllegalStateException("Release tag [${tagName}] already exists for [${tagCommit.name}] but current branch is on different rev [${currentCommit.name}]")
         } else {
-            println "Creating tag ${tagName}"
+            println "Creating tag [${tagName}]"
             def tc = new TagCommand(repo)
             tc.name = tagName
             tc.call()
