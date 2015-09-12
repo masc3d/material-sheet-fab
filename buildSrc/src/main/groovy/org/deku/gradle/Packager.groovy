@@ -413,13 +413,10 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
 
         // Check for uncommitted changes
         def statusCommand = git.status()
+        // TODO: ignoring submodules for now, as jgit always reports them as modified, even though everything is clean
         statusCommand.setIgnoreSubmodules(SubmoduleWalk.IgnoreSubmoduleMode.ALL)
         def status = statusCommand.call()
         if (!status.clean) {
-            git.submoduleStatus().call().each { a, b ->
-                println "${a} -> ${b}"
-            }
-            status.modified.each { println it }
             throw new IllegalStateException("Repository has uncommitted changes. Cannot push release")
         }
 
