@@ -218,6 +218,7 @@ class PackagerBundleTask extends PackagerTask {
         // Create libs dir for gathering
         packagerLibsDir.mkdirs()
 
+        // TODO. fix empty packager libs dir bug since 1.8.0_60
         // Copy
         project.copy {
             from jars
@@ -324,6 +325,12 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
             def PlatformId platformId = PlatformId.parse(releasePlatformPath.name)
 
             // TODO. update packager configuration file (main jar name, class path, start class)
+            def releaseBundle = this.getReleaseBundle(platformId)
+
+//            println("Updating bundle configuration")
+//            def bundleConfig = releaseBundle.configuration
+//            bundleConfig.appMainJar = this.getMainJar().getName()
+//            bundleConfig.save()
 
             println "Releasing jars and binaries for [${platformId}]"
 
