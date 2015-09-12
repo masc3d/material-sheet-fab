@@ -323,14 +323,15 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 
             def File releasePlatformPath = it.toFile()
             def PlatformId platformId = PlatformId.parse(releasePlatformPath.name)
-
-            // TODO. update packager configuration file (main jar name, class path, start class)
             def releaseBundle = this.getReleaseBundle(platformId)
 
-//            println("Updating bundle configuration")
-//            def bundleConfig = releaseBundle.configuration
-//            bundleConfig.appMainJar = this.getMainJar().getName()
-//            bundleConfig.save()
+            // Update packager configuration file (main jar name, class path, start class)
+            println("Updating bundle configuration")
+            def bundleConfig = releaseBundle.configuration
+            bundleConfig.appMainJar = this.getMainJar().getName()
+            bundleConfig.appVersion = project.version
+            bundleConfig.appClassPath = this.getProjectJars().stream().map { it.getName() }.collect()
+            bundleConfig.save()
 
             println "Releasing jars and binaries for [${platformId}]"
 

@@ -22,8 +22,6 @@ dependencies {
     compile "ch.qos.logback:logback-classic:+"
     compile "org.slf4j:jcl-over-slf4j:+"
 
-    compile 'org.ini4j:ini4j:+'
-
     // javax
     compile "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs"
     compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
