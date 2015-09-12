@@ -12,6 +12,7 @@ import org.deku.leoz.build.Artifact
 import org.deku.leoz.build.ArtifactRepository
 import org.deku.leoz.build.ArtifactRepositoryFactory
 import org.deku.leoz.build.Bundle
+import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListTagCommand
 import org.eclipse.jgit.api.PushCommand
 import org.eclipse.jgit.api.Status
@@ -19,10 +20,12 @@ import org.eclipse.jgit.api.StatusCommand
 import org.eclipse.jgit.api.TagCommand
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.Ref
+import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevTag
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.submodule.SubmoduleWalk
 import org.eclipse.jgit.transport.JschConfigSessionFactory
 import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshSessionFactory
@@ -404,13 +407,18 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         SshSessionFactory.setInstance(sessionFactory)
 
         // Git repository
-        def repo = FileRepositoryBuilder.create(new File(project.rootDir, ".git"))
+        def git = Git.open(project.rootDir)
+        def repo = git.repository// FileRepositoryBuilder.create(new File(project.rootDir, ".git"))
         println "Perfoming sanity checks against git repository [${repo.directory}]"
 
         // Check for uncommitted changes
-        def sc = new StatusCommand(repo)
-        def status = sc.call()
+        def statusCommand = git.status()
+        statusCommand.setIgnoreSubmodules(SubmoduleWalk.IgnoreSubmoduleMode.ALL)
+        def status = statusCommand.call()
         if (!status.clean) {
+            git.submoduleStatus().call().each { a, b ->
+                println "${a} -> ${b}"
+            }
             status.modified.each { println it }
             throw new IllegalStateException("Repository has uncommitted changes. Cannot push release")
         }
