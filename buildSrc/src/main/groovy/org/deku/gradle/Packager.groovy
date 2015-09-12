@@ -221,7 +221,6 @@ class PackagerBundleTask extends PackagerTask {
         // Create libs dir for gathering
         packagerLibsDir.mkdirs()
 
-        // TODO. fix empty packager libs dir bug since 1.8.0_60
         // Copy
         project.copy {
             from jars
