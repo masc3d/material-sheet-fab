@@ -404,8 +404,8 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         SshSessionFactory.setInstance(sessionFactory)
 
         // Git repository
-        println "Perfoming sanity checks against git repository"
         def repo = FileRepositoryBuilder.create(new File(project.rootDir, ".git"))
+        println "Perfoming sanity checks against git repository [${repo.directory}]"
 
         // Check for uncommitted changes
         def sc = new StatusCommand(repo)
