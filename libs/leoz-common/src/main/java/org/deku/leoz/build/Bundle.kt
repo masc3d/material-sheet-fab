@@ -127,7 +127,6 @@ public class Bundle(
             val writer = FileWriter(this@Bundle.configFile).buffered()
 
             try {
-                this.entryMap.forEach { e -> println(e.getValue()) }
                 for (entry in entries) {
                     val outputLine = if (entry is Pair<*, *>) {
                         // Get current entry value from entry map

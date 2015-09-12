@@ -16,6 +16,9 @@ import org.eclipse.jgit.api.ListTagCommand
 import org.eclipse.jgit.api.PushCommand
 import org.eclipse.jgit.api.TagCommand
 import org.eclipse.jgit.lib.Ref
+import org.eclipse.jgit.revwalk.RevCommit
+import org.eclipse.jgit.revwalk.RevTag
+import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.transport.JschConfigSessionFactory
 import org.eclipse.jgit.transport.OpenSshConfig
@@ -403,21 +406,33 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
 
         println "Checking git tags"
         def lt = new ListTagCommand(repo)
-        List<Ref> refs = lt.call()
-        refs.stream().map { t -> t.name.split("/").last() }.collect().each { println it }
+        List<Ref> tagRefs = lt.call()
 
-        if (refs.stream().map { t -> t.name.split("/").last() }.collect().contains(tagName))
-            throw new IllegalStateException("Release tag [${tagName}] already exists")
+        def RevWalk walk = new RevWalk(repo);
 
-        println "Creating tag ${tagName}"
-        def tc = new TagCommand(repo)
-        tc.name = tagName
-        tc.call()
+        // Walk revs and map to RevTag
+        def RevTag tag = tagRefs.stream().map { tr -> walk.parseTag(tr.objectId) }.filter { t -> t.tagName.equals(tagName) }.findFirst().orElse(null)
 
-        def pc = new PushCommand(repo)
-        pc.remote = "origin"
-        println "Pushing to git remote [${pc.remote}]"
-        pc.call()
+        if (tag != null) {
+            // Commit the tag points to
+            def RevCommit tagCommit = tag.getObject()
+            // Current branch commit
+            def RevCommit currentCommit = walk.parseCommit(repo.getRef(repo.branch).objectId)
+
+            if (!currentCommit.name.equals(tagCommit.name))
+                throw new IllegalStateException("Release tag [${tagName}] already exists for [${tagCommit.name}] but current branch is on different rev [${currentCommit.name}]")
+        } else {
+            println "Creating tag ${tagName}"
+            def tc = new TagCommand(repo)
+            tc.name = tagName
+            tc.call()
+
+            def pc = new PushCommand(repo)
+            pc.remote = "origin"
+            pc.setPushTags()
+            println "Pushing to git remote [${pc.remote}]"
+            pc.call()
+        }
 
         // Upload to artifact repository
         ArtifactRepository ar = ArtifactRepositoryFactory.INSTANCE$.stagingRepository(project.name)
