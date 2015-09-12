@@ -410,8 +410,10 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         // Check for uncommitted changes
         def sc = new StatusCommand(repo)
         def status = sc.call()
-        if (status.hasUncommittedChanges())
+        if (!status.clean) {
+            status.modified.each { println it }
             throw new IllegalStateException("Repository has uncommitted changes. Cannot push release")
+        }
 
         // Maintain git tag, verify if it doesn't exist and push tags in order to prevent overwriting of existing versions
         def String tagName = "${project.name}-${project.version}"

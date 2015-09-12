@@ -63,7 +63,6 @@ public class Bundle(
      * Created by masc on 10.09.15.
      */
     public inner class Configuration() {
-        private val SECTION_APPLICATION = "Application"
         private val KEY_APP_MAINJAR = "app.mainjar"
         private val KEY_APP_VERSION = "app.version"
         private val KEY_APP_CLASSPATH = "app.classpath"
