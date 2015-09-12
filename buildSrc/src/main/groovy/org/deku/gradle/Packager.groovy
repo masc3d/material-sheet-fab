@@ -1,16 +1,28 @@
 package org.deku.gradle
 
+import com.jcraft.jsch.IdentityRepository
+import com.jcraft.jsch.JSch
+import com.jcraft.jsch.JSchException
+import com.jcraft.jsch.Session
+import com.jcraft.jsch.agentproxy.Connector
+import com.jcraft.jsch.agentproxy.ConnectorFactory
+import com.jcraft.jsch.agentproxy.RemoteIdentityRepository
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.build.Artifact
 import org.deku.leoz.build.ArtifactRepository
 import org.deku.leoz.build.ArtifactRepositoryFactory
 import org.deku.leoz.build.Bundle
+import org.eclipse.jgit.api.ListTagCommand
+import org.eclipse.jgit.api.PushCommand
+import org.eclipse.jgit.api.TagCommand
+import org.eclipse.jgit.lib.Ref
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.transport.JschConfigSessionFactory
+import org.eclipse.jgit.transport.OpenSshConfig
+import org.eclipse.jgit.transport.SshSessionFactory
+import org.eclipse.jgit.util.FS
 import org.gradle.api.DefaultTask
-import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
-import org.gradle.logging.internal.slf4j.OutputEventListenerBackedLoggerContext
-import org.slf4j.LoggerFactory
-import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 
 import java.nio.file.Files
@@ -351,10 +363,56 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 class PackagerReleasePushTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePushTask() {
-        // TODO. pull, create git tag (verify if it doesn't exist) and push tags in order to prevent overwriting of existing versions
+        println "Pushing release ${project.name}-${project.version}"
 
+        // Wire jsch agent proxy with session factory
+        def sessionFactory = new JschConfigSessionFactory() {
+            @Override
+            protected void configure(OpenSshConfig.Host host, Session session) {
+                session.setConfig("StrictHostKeyChecking", "false");
+            }
+
+            @Override
+            protected JSch createDefaultJSch(FS fs) throws JSchException {
+                Connector con = ConnectorFactory.getDefault().createConnector()
+                if (con == null)
+                    throw new IllegalStateException("No jsch agent proxy connector available")
+
+                final JSch jsch = new JSch();
+                jsch.setConfig("PreferredAuthentications", "publickey");
+                IdentityRepository irepo = new RemoteIdentityRepository(con);
+                jsch.setIdentityRepository(irepo);
+                return jsch
+            }
+        }
+        // Provide session factory to jgit
+        SshSessionFactory.setInstance(sessionFactory)
+
+        def repo = FileRepositoryBuilder.create(new File(project.rootDir, ".git"))
+
+        // Maintain git tag, verify if it doesn't exist and push tags in order to prevent overwriting of existing versions
+        def String tagName = "${project.name}-${project.version}"
+
+        println "Checking git tags"
+        def lt = new ListTagCommand(repo)
+        List<Ref> refs = lt.call()
+        refs.stream().map { t -> t.name.split("/").last() }.collect().each { println it }
+
+        if (refs.stream().map { t -> t.name.split("/").last() }.collect().contains(tagName))
+            throw new IllegalStateException("Release tag [${tagName}] already exists")
+
+        println "Creating tag ${tagName}"
+        def tc = new TagCommand(repo)
+        tc.name = tagName
+        tc.call()
+
+        def pc = new PushCommand(repo)
+        pc.remote = "origin"
+        println "Pushing to git remote [${pc.remote}]"
+        pc.call()
+
+        // Upload to artifact repository
         ArtifactRepository ar = ArtifactRepositoryFactory.INSTANCE$.stagingRepository(project.name)
-
         ar.upload(this.getReleasePath(), true)
     }
 }

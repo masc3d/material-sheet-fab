@@ -25,6 +25,10 @@ dependencies {
     compile "org.eclipse.jgit:org.eclipse.jgit:4.+"
     compile 'com.google.guava:guava:18.+'
     compile 'org.ini4j:ini4j:+'
+
+    // For authenticating ssh/jgit against key agent
+    compile 'com.jcraft:jsch.agentproxy.connector-factory:+'
+    compile 'com.jcraft:jsch.agentproxy.jsch:+'
 }
 
 def srcdir_import = file("$projectDir/src/import/java")
