@@ -433,13 +433,16 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
             // Maintain git tag, verify if it doesn't exist and push tags in order to prevent overwriting of existing versions
             def String tagName = "${project.name}-${project.version}"
 
-            def ltc = new ListTagCommand(repo)
+            def ltc = git.tagList()
             List<Ref> tagRefs = ltc.call()
 
             def RevWalk walk = new RevWalk(repo);
 
             // Walk revs and map to RevTag
-            def RevTag tag = tagRefs.stream().map { tr -> walk.parseTag(tr.objectId) }.filter { t -> t.tagName.equals(tagName) }.findFirst().orElse(null)
+            def RevTag tag = tagRefs.stream()
+                    .map { tr -> walk.parseTag(tr.objectId) }
+                    .filter { t -> t.tagName.equals(tagName) }
+                    .findFirst().orElse(null)
 
             if (tag != null) {
                 // Commit the tag points to
@@ -451,12 +454,12 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
                     throw new IllegalStateException("Release tag [${tagName}] already exists for [${tagCommit.name}] but current branch is on different rev [${currentCommit.name}]")
             } else {
                 println "Creating tag [${tagName}]"
-                def tc = new TagCommand(repo)
+                def tc = git.tag()
                 tc.name = tagName
                 tc.call()
 
                 try {
-                    def pc = new PushCommand(repo)
+                    def pc = git.push()
                     pc.setPushTags()
                     pc.setPushAll()
                     println "Pushing to git remote [${pc.remote}]"
