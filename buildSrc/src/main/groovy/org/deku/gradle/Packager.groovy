@@ -410,62 +410,66 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
 
         // Git repository
         def git = Git.open(project.rootDir)
-        def repo = git.repository// FileRepositoryBuilder.create(new File(project.rootDir, ".git"))
-        println "Perfoming sanity checks against git repository [${repo.directory}]"
+        try {
+            def repo = git.repository// FileRepositoryBuilder.create(new File(project.rootDir, ".git"))
+            println "Perfoming sanity checks against git repository [${repo.directory}]"
 
-        // Check for uncommitted changes
-        def sc = git.status()
-        // TODO: ignoring submodules for now, as jgit always reports them as modified, even though everything is clean
-        sc.setIgnoreSubmodules(SubmoduleWalk.IgnoreSubmoduleMode.ALL)
-        def status = sc.call()
-        if (!status.clean) {
-            throw new IllegalStateException("Repository has uncommitted changes. Cannot push release")
-        }
-
-        // Fetch tags
-        println "Fetching tags from git remotes"
-        def fc = git.fetch()
-        fc.checkFetchedObjects = true
-        fc.tagOpt = TagOpt.FETCH_TAGS
-        fc.call()
-
-        // Maintain git tag, verify if it doesn't exist and push tags in order to prevent overwriting of existing versions
-        def String tagName = "${project.name}-${project.version}"
-
-        def ltc = new ListTagCommand(repo)
-        List<Ref> tagRefs = ltc.call()
-
-        def RevWalk walk = new RevWalk(repo);
-
-        // Walk revs and map to RevTag
-        def RevTag tag = tagRefs.stream().map { tr -> walk.parseTag(tr.objectId) }.filter { t -> t.tagName.equals(tagName) }.findFirst().orElse(null)
-
-        if (tag != null) {
-            // Commit the tag points to
-            def RevCommit tagCommit = tag.getObject()
-            // Current branch commit
-            def RevCommit currentCommit = walk.parseCommit(repo.getRef(repo.branch).objectId)
-
-            if (!currentCommit.name.equals(tagCommit.name))
-                throw new IllegalStateException("Release tag [${tagName}] already exists for [${tagCommit.name}] but current branch is on different rev [${currentCommit.name}]")
-        } else {
-            println "Creating tag [${tagName}]"
-            def tc = new TagCommand(repo)
-            tc.name = tagName
-            tc.call()
-
-            try {
-                def pc = new PushCommand(repo)
-                pc.setPushTags()
-                pc.setPushAll()
-                println "Pushing to git remote [${pc.remote}]"
-                pc.call()
-            } catch(Exception ex) {
-                def tdc = git.tagDelete()
-                tdc.tags = tagName
-                tdc.call()
-                throw ex
+            // Check for uncommitted changes
+            def sc = git.status()
+            // TODO: ignoring submodules for now, as jgit always reports them as modified, even though everything is clean
+            sc.setIgnoreSubmodules(SubmoduleWalk.IgnoreSubmoduleMode.ALL)
+            def status = sc.call()
+            if (!status.clean) {
+                throw new IllegalStateException("Repository has uncommitted changes. Cannot push release")
             }
+
+            // Fetch tags
+            println "Fetching tags from git remotes"
+            def fc = git.fetch()
+            fc.checkFetchedObjects = true
+            fc.tagOpt = TagOpt.FETCH_TAGS
+            fc.call()
+
+            // Maintain git tag, verify if it doesn't exist and push tags in order to prevent overwriting of existing versions
+            def String tagName = "${project.name}-${project.version}"
+
+            def ltc = new ListTagCommand(repo)
+            List<Ref> tagRefs = ltc.call()
+
+            def RevWalk walk = new RevWalk(repo);
+
+            // Walk revs and map to RevTag
+            def RevTag tag = tagRefs.stream().map { tr -> walk.parseTag(tr.objectId) }.filter { t -> t.tagName.equals(tagName) }.findFirst().orElse(null)
+
+            if (tag != null) {
+                // Commit the tag points to
+                def RevCommit tagCommit = tag.getObject()
+                // Current branch commit
+                def RevCommit currentCommit = walk.parseCommit(repo.getRef(repo.branch).objectId)
+
+                if (!currentCommit.name.equals(tagCommit.name))
+                    throw new IllegalStateException("Release tag [${tagName}] already exists for [${tagCommit.name}] but current branch is on different rev [${currentCommit.name}]")
+            } else {
+                println "Creating tag [${tagName}]"
+                def tc = new TagCommand(repo)
+                tc.name = tagName
+                tc.call()
+
+                try {
+                    def pc = new PushCommand(repo)
+                    pc.setPushTags()
+                    pc.setPushAll()
+                    println "Pushing to git remote [${pc.remote}]"
+                    pc.call()
+                } catch(Exception ex) {
+                    def tdc = git.tagDelete()
+                    tdc.tags = tagName
+                    tdc.call()
+                    throw ex
+                }
+            }
+        } finally {
+            git.close()
         }
 
         // Upload to artifact repository
