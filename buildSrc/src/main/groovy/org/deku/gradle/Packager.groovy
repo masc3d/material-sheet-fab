@@ -448,8 +448,8 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
 
             try {
                 def pc = new PushCommand(repo)
-                pc.remote = "origin"
                 pc.setPushTags()
+                pc.setPushAll()
                 println "Pushing to git remote [${pc.remote}]"
                 pc.call()
             } catch(Exception ex) {
