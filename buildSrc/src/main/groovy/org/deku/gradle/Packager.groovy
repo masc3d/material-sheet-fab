@@ -30,6 +30,7 @@ import org.eclipse.jgit.submodule.SubmoduleWalk
 import org.eclipse.jgit.transport.JschConfigSessionFactory
 import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshSessionFactory
+import org.eclipse.jgit.transport.TagOpt
 import org.eclipse.jgit.treewalk.AbstractTreeIterator
 import org.eclipse.jgit.treewalk.FileTreeIterator
 import org.eclipse.jgit.util.FS
@@ -413,19 +414,25 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         println "Perfoming sanity checks against git repository [${repo.directory}]"
 
         // Check for uncommitted changes
-        def statusCommand = git.status()
+        def sc = git.status()
         // TODO: ignoring submodules for now, as jgit always reports them as modified, even though everything is clean
-        statusCommand.setIgnoreSubmodules(SubmoduleWalk.IgnoreSubmoduleMode.ALL)
-        def status = statusCommand.call()
+        sc.setIgnoreSubmodules(SubmoduleWalk.IgnoreSubmoduleMode.ALL)
+        def status = sc.call()
         if (!status.clean) {
             throw new IllegalStateException("Repository has uncommitted changes. Cannot push release")
         }
 
+        // Fetch tags
+        def fc = git.fetch()
+        fc.checkFetchedObjects = true
+        fc.tagOpt = TagOpt.FETCH_TAGS
+        fc.call()
+
         // Maintain git tag, verify if it doesn't exist and push tags in order to prevent overwriting of existing versions
         def String tagName = "${project.name}-${project.version}"
 
-        def lt = new ListTagCommand(repo)
-        List<Ref> tagRefs = lt.call()
+        def ltc = new ListTagCommand(repo)
+        List<Ref> tagRefs = ltc.call()
 
         def RevWalk walk = new RevWalk(repo);
 
