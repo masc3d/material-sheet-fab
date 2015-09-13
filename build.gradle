@@ -86,12 +86,9 @@ subprojects {
 
     // Reporting setup
     // Dependency report depends on classes but only if compilation actually took place (not uptodate)
-    tasks.classes.dependsOn(tasks.dependencyReport)
-    tasks.classes.dependsOn(tasks.htmlDependencyReport)
-    tasks.dependencyReport.mustRunAfter(tasks.compileJava)
-    tasks.htmlDependencyReport.mustRunAfter(tasks.compileJava)
-    tasks.dependencyReport.onlyIf { tasks.compileJava.didWork }
-    tasks.htmlDependencyReport.onlyIf { tasks.compileJava.didWork }
+    tasks.classes.finalizedBy(/*testTask, */tasks.dependencyReport, tasks.htmlDependencyReport)
+    tasks.dependencyReport.onlyIf { !tasks.classes.state.upToDate }
+    tasks.htmlDependencyReport.onlyIf { !tasks.classes.state.upToDate }
 
     projectReportDirName = new File(project.projectDir, 'reports').toString()
 
