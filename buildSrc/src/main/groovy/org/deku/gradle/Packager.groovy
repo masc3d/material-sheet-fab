@@ -12,6 +12,7 @@ import org.deku.leoz.build.Artifact
 import org.deku.leoz.build.ArtifactRepository
 import org.deku.leoz.build.ArtifactRepositoryFactory
 import org.deku.leoz.build.Bundle
+import org.eclipse.jgit.api.DeleteTagCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ListTagCommand
 import org.eclipse.jgit.api.PushCommand
@@ -445,11 +446,18 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
             tc.name = tagName
             tc.call()
 
-            def pc = new PushCommand(repo)
-            pc.remote = "origin"
-            pc.setPushTags()
-            println "Pushing to git remote [${pc.remote}]"
-            pc.call()
+            try {
+                def pc = new PushCommand(repo)
+                pc.remote = "origin"
+                pc.setPushTags()
+                println "Pushing to git remote [${pc.remote}]"
+                pc.call()
+            } catch(Exception ex) {
+                def tdc = git.tagDelete()
+                tdc.tags = tagName
+                tdc.call()
+                throw ex
+            }
         }
 
         // Upload to artifact repository
