@@ -423,6 +423,7 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         }
 
         // Fetch tags
+        println "Fetching tags from git remotes"
         def fc = git.fetch()
         fc.checkFetchedObjects = true
         fc.tagOpt = TagOpt.FETCH_TAGS
