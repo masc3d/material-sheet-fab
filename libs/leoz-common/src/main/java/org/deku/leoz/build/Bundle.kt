@@ -133,7 +133,7 @@ public class Bundle(
                         "${entry.first}=${v}"
                     } else entry.toString()
                     writer.write(outputLine)
-                    writer.newLine()
+                    writer.write(if (os == OperatingSystem.WINDOWS) "\r\n" else "\n")
                 }
             } finally {
                 writer.close()
