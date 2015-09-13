@@ -12,11 +12,13 @@ import org.eclipse.jgit.transport.SshSessionFactory
 import org.eclipse.jgit.transport.TagOpt
 import org.eclipse.jgit.util.FS
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
 /**
  * Created by n3 on 13-Sep-15.
  */
+@Ignore
 public class JgitTest {
     @Before
     public void setup() {
