@@ -10,7 +10,7 @@
       <option name="LOCAL" value="false" />
     </RunnerSettings>
     <method>
-      <option name="Gradle.BeforeRunTask" enabled="true" tasks="packagerReleasePush" externalProjectPath="$PROJECT_DIR$/leoz-boot" vmOptions="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006" scriptParameters="" />
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="releasePush" externalProjectPath="$PROJECT_DIR$/leoz-boot" vmOptions="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006" scriptParameters="" />
     </method>
   </configuration>
 </component>
