@@ -68,7 +68,6 @@ namespace LeoBridge
                     DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(Error));
                     HttpWebResponse hwr = (HttpWebResponse)we.Response;
                     ec.Error = (Error)jsonSerializer.ReadObject(we.Response.GetResponseStream());
-                    ec.Error.HttpStatus = (int)hwr.StatusCode;
                     return result;
                 }
                 else throw e;
