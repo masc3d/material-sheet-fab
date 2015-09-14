@@ -46,7 +46,7 @@ jar {
         )
     }
 }
-tasks.jar.dependsOn(copyRsyncBinaries)
+tasks.classes.dependsOn(copySxBinariesToBuild)
 
 distributions {
     main {

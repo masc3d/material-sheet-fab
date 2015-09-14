@@ -17,7 +17,7 @@
     </RunnerSettings>
     <method>
       <option name="Make" enabled="false" />
-      <option name="Gradle.BeforeRunTask" enabled="true" tasks="compileJava" externalProjectPath="$PROJECT_DIR$/leoz-node" vmOptions="" scriptParameters="" />
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="classes" externalProjectPath="$PROJECT_DIR$/leoz-node" vmOptions="" scriptParameters="" />
     </method>
   </configuration>
 </component>

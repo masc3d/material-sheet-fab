@@ -214,42 +214,40 @@ subprojects {
     }
 
     ext {
+        globalBinDir = new File(project.rootDir, 'bin')
+        sxBinDir = new File(project(':libs:sx-common').projectDir, 'bin')
         projectBuildSupplementalsDir= new File(project.buildDir, 'supplementals')
         projectBuildBinDir = new File(projectBuildSupplementalsDir, 'bin')
+        projectBinDir = new File(project.projectDir, 'bin')
     }
 
-    /**
-     * Task for cleaning binaries
-     */
-    task cleanBinaries << {
-        projectBuildBinDir.deleteDir()
+    task copySxBinariesToProject(type: Copy) {
+        from sxBinDir
+        into projectBinDir
+        // Rename generic name to leoz specific process name, as it's easier to handle,
+        // when eg. looking at process names while leoz is running
+        rename 'sx-rsync(.*)', 'leoz-rsync$1'
     }
 
-    /**
-     * Task copying rsync binaries into project build dir
-     */
-    task copyRsyncBinaries << {
-        copy {
-            from new File(project(':libs:sx-common').projectDir, 'bin')
-            into projectBuildBinDir
-            // Rename generic name to leoz specific process name, as it's easier to handle,
-            // when eg. looking at process names while leoz is running
-            rename 'sx-rsync(.*)', 'leoz-rsync$1'
-        }
+    task copySxBinariesToBuild(type: Copy) {
+        from sxBinDir
+        into projectBuildBinDir
+        // Rename generic name to leoz specific process name, as it's easier to handle,
+        // when eg. looking at process names while leoz is running
+        rename 'sx-rsync(.*)', 'leoz-rsync$1'
+    }
+    tasks.copySxBinariesToBuild.dependsOn(tasks.copySxBinariesToProject)
 
+    task copyGlobalBinariesToProject(type: Copy) {
+        from globalBinDir
+        into projectBinDir
     }
 
-    /**
-     * Task copying global binariess
-     */
-    task copyGlobalBinaries(type: Copy) {
-        from new File(project.rootDir, 'bin')
+    task copyGlobalBinariesToBuild(type: Copy) {
+        from globalBinDir
         into projectBuildBinDir
     }
-
-    // Any copy operation depends on clean to avoid orphan files in case of updates
-    tasks.copyRsyncBinaries.dependsOn(cleanBinaries)
-    tasks.copyGlobalBinaries.dependsOn(cleanBinaries)
+    tasks.copyGlobalBinariesToBuild.dependsOn(tasks.copyGlobalBinariesToProject)
 }
 
 // Data(base) sources in intellij contain hashes which are updated every time the IDE updates

@@ -183,8 +183,8 @@ jar {
         )
     }
 }
-tasks.jar.dependsOn(copyRsyncBinaries)
-tasks.jar.dependsOn(copyGlobalBinaries)
+tasks.classes.dependsOn(copySxBinariesToBuild)
+tasks.classes.dependsOn(copyGlobalBinariesToBuild)
 
 distributions {
     main {

@@ -89,7 +89,7 @@ jar {
 // Non-standard, but nicer to keep .fxml files together with classes
 sourceSets.main.resources.srcDir 'src/main/java'
 
-project.tasks.jar.dependsOn(copyRsyncBinaries)
+tasks.classes.dependsOn(copySxBinariesToBuild)
 
 packager {
     title = "LeoZ UI"
