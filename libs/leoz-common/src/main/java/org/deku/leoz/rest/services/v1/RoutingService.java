@@ -32,7 +32,7 @@ public interface RoutingService {
 
     @POST
     @Path("/request")
-    @ApiOperation(value = "Determ routing and via")
+    @ApiOperation(value = "Request routing information")
     @ApiResponses( {
             @ApiResponse(code = 400, message = "Bad request/parameter", response = Error.class)
     })
