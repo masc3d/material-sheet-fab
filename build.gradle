@@ -214,7 +214,8 @@ subprojects {
     }
 
     ext {
-        projectBuildBinDir = new File(project.buildDir, 'bin')
+        projectBuildSupplementalsDir= new File(project.buildDir, 'supplementals')
+        projectBuildBinDir = new File(projectBuildSupplementalsDir, 'bin')
     }
 
     /**

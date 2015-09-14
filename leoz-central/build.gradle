@@ -55,25 +55,6 @@ dependencies {
     testCompile project(':libs:sx-common')
 }
 
-run {
-    errorOutput = System.err
-    standardOutput = System.out
-    standardInput = System.in
-}
-
-// Required for eclipse modelgen to find xml resources (eg. persistence.xml)
-sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
-compileJava.dependsOn(processResources)
-
-jar {
-    manifest {
-        attributes (
-                'Main-Class': mainClassName,
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
-        )
-    }
-}
-
 // Location for generated sources
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
@@ -110,8 +91,34 @@ jooq {
 }
 tasks.generateJooq.outputs.upToDateWhen { false }
 
-project.tasks.jar.dependsOn(copyRsyncBinaries)
-project.tasks.jar.dependsOn(copyGlobalBinaries)
+run {
+    errorOutput = System.err
+    standardOutput = System.out
+    standardInput = System.in
+}
+
+// Required for eclipse modelgen to find xml resources (eg. persistence.xml)
+sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+compileJava.dependsOn(processResources)
+
+jar {
+    manifest {
+        attributes (
+                'Main-Class': mainClassName,
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
+        )
+    }
+}
+tasks.jar.dependsOn(copyRsyncBinaries)
+tasks.jar.dependsOn(copyGlobalBinaries)
+
+distributions {
+    main {
+        contents {
+            from projectBuildSupplementalsDir
+        }
+    }
+}
 
 // Packager task
 packager {
