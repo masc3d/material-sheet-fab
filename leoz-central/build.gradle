@@ -110,6 +110,9 @@ jooq {
 }
 tasks.generateJooq.outputs.upToDateWhen { false }
 
+project.tasks.jar.dependsOn(copyRsyncBinaries)
+project.tasks.jar.dependsOn(copyGlobalBinaries)
+
 // Packager task
 packager {
     title = "LeoZ Central"
@@ -117,28 +120,6 @@ packager {
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
     supplementalPlatformDirs(
-            (g_bin_path): new File('bin'),
-            (new File(project(':libs:sx-common').projectDir, 'bin')): new File('bin')
+            (projectBuildBinDir): new File('bin')
     )
 }
-
-// masc20150507. task prototypes
-////copying all dependencies attached to 'compile' into a specific folder
-//task copyAllDependencies(type: Copy) {
-//    //referring to the 'compile' configuration
-//    from configurations.compile
-//    into 'allLibs'
-//}
-//
-//configurations.all.each {
-//    println "compile: $it"
-//}
-//
-//sourceSets.main.compileClasspath.each {
-//    println "ss: $it"
-//}
-
-//configurations.compile.allDependencies.each {
-//    println "$it.group:$it.name:$it.version"
-//
-//}

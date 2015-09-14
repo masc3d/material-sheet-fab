@@ -89,9 +89,14 @@ jar {
 // Non-standard, but nicer to keep .fxml files together with classes
 sourceSets.main.resources.srcDir 'src/main/java'
 
+project.tasks.jar.dependsOn(copyRsyncBinaries)
+
 packager {
     title = "LeoZ UI"
     releaseBasePath = g_release_path
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
+    supplementalPlatformDirs(
+            (projectBuildBinDir): new File('bin')
+    )
 }

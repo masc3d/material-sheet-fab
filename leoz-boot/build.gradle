@@ -40,18 +40,23 @@ dependencies {
 
 jar {
     manifest {
-        attributes (
+        attributes(
                 'Main-Class': mainClassName,
                 'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
         )
     }
 }
 
+project.tasks.jar.dependsOn(copyRsyncBinaries)
+
 packager {
     title = "LeoZ Boot"
     releaseBasePath = g_release_path
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
+    supplementalPlatformDirs(
+            (projectBuildBinDir): new File('bin')
+    )
 }
 
 sourceSets {
