@@ -29,13 +29,12 @@ namespace LeoBridge.Util
                 try
                 {
                     Console.WriteLine("LeoBridge Util v{0}", Assembly.GetExecutingAssembly().GetName().Version);
-                    Console.WriteLine("arg:"+args[0]);
                     Parser.Run<Program>(args);
                     //App a = new App();            
                     //return a.Run(new MainWindow());
                 }
                 catch (Exception ex)
-                {                    
+                {
                     Console.WriteLine(ex);
                     result = 1;
 
@@ -157,13 +156,13 @@ namespace LeoBridge.Util
 
             Boolean installDirectoryExisted = Directory.Exists(installDirectory);
             try
-            {                
+            {
                 if (!installDirectoryExisted)
                     Directory.CreateDirectory(installDirectory);
 
                 File.Copy(assemblyFilename, installFile, false);
 
-                Console.WriteLine("Registering Win32 [{0}]", installFile);
+                Console.WriteLine("Registering win32 [{0}]", installFile);
                 Execute(GetRegAsmPath(DotNetFrameworkArchitecture.Bitness32),
                      String.Format("/verbose /codebase /tlb:{0}-x86.tlb {1}", Path.GetFileNameWithoutExtension(installFile), Path.GetFileName(installFile)),
                      installDirectory);
@@ -174,7 +173,7 @@ namespace LeoBridge.Util
 
                 if (Environment.Is64BitOperatingSystem)
                 {
-                    Console.WriteLine("Registering Win64 [{0}]", installFile);
+                    Console.WriteLine("Registering win64 [{0}]", installFile);
                     Execute(GetRegAsmPath(DotNetFrameworkArchitecture.Bitness64),
                          String.Format("/verbose /codebase /tlb:{0}-x64.tlb {1}", Path.GetFileNameWithoutExtension(installFile), Path.GetFileName(installFile)),
                          installDirectory);
@@ -219,18 +218,18 @@ namespace LeoBridge.Util
 
             if (File.Exists(installFile))
             {
-             
-                Console.WriteLine("Unregistering Win32 [{0}]", installFile);
+
+                Console.WriteLine("Unregistering win32 [{0}]", installFile);
                 Execute(GetRegAsmPath(DotNetFrameworkArchitecture.Bitness32),
                      String.Format("/verbose /codebase /unregister /tlb:{0}-x86.tlb {1}", Path.GetFileNameWithoutExtension(installFile), Path.GetFileName(installFile)),
                      installDirectory);
 
-                if (Environment.Is64BitOperatingSystem )
-                { 
-                    Console.WriteLine("Unregistering Win64 [{0}]", installFile);
-                        Execute(GetRegAsmPath(DotNetFrameworkArchitecture.Bitness64),
-                        String.Format("/verbose /codebase /unregister /tlb:{0}-x64.tlb {1}", Path.GetFileNameWithoutExtension(installFile), Path.GetFileName(installFile)),
-                        installDirectory);
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    Console.WriteLine("Unregistering win64 [{0}]", installFile);
+                    Execute(GetRegAsmPath(DotNetFrameworkArchitecture.Bitness64),
+                    String.Format("/verbose /codebase /unregister /tlb:{0}-x64.tlb {1}", Path.GetFileNameWithoutExtension(installFile), Path.GetFileName(installFile)),
+                    installDirectory);
                 }
             }
 
@@ -309,8 +308,8 @@ namespace LeoBridge.Util
         private static String GetRegAsmPath(DotNetFrameworkArchitecture arch)
         {
             return Path.Combine(
-                ToolLocationHelper.GetPathToDotNetFramework(TargetDotNetFrameworkVersion.Version40, arch), 
-                "regasm.exe");         
+                ToolLocationHelper.GetPathToDotNetFramework(TargetDotNetFrameworkVersion.Version40, arch),
+                "regasm.exe");
         }
 
         /// <summary>
