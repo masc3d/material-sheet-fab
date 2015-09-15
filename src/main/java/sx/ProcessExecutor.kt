@@ -78,9 +78,12 @@ public class ProcessExecutor @jvmOverloads constructor(
      * Monitor thread
      */
     private inner class MonitorThread : Thread() {
+        private volatile var shutdownHookInvoked = false
+
         override fun run() {
             val shutdownHook = object : Thread("ProcessExecutor shutdown hook") {
                 override fun run() {
+                    shutdownHookInvoked = true
                     if (process!!.isAlive()) {
                         log.warn("Terminating process [${processBuilder.command().get(0)}]")
                         process!!.destroy()
@@ -100,8 +103,10 @@ public class ProcessExecutor @jvmOverloads constructor(
             } catch (e: InterruptedException) {
                 log.error(e.getMessage(), e)
             } finally {
-                Runtime.getRuntime().removeShutdownHook(shutdownHook)
-                shutdownHook.run()
+                if (!shutdownHookInvoked) {
+                    Runtime.getRuntime().removeShutdownHook(shutdownHook)
+                    shutdownHook.run()
+                }
                 this@ProcessExecutor.onTermination(exception)
             }
         }
