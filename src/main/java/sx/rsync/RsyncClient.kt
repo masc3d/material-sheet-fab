@@ -52,6 +52,8 @@ public class RsyncClient() {
     var relativePaths: Boolean = false
     /** Delete destination files */
     var delete: Boolean = false
+    /** Remove source files after successful transmission */
+    var removeSourceFiles: Boolean = false
     /** List of relative destination paths to compare against */
     var comparisonDestinations: List<Rsync.URI> = ArrayList()
     /** List of relative destination paths to compare against and copy from (to minimize files to transfer) */
@@ -214,6 +216,7 @@ public class RsyncClient() {
         if (this.fuzzy) command.add("-y")
         if (this.relativePaths) command.add("-R")
         if (this.delete) command.add("--delete")
+        if (this.removeSourceFiles) command.add("--remove-source-files")
         if (this.partial) command.add("--partial")
         if (this.relative) command.add("--relative")
         command.add(if (partial) "--whole-file" else "--no-whole-file")
