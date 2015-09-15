@@ -3,6 +3,7 @@ package org.deku.leoz.node.rsync
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.LocalStorage
 import org.deku.leoz.node.LogConfiguration
+import org.deku.leoz.rsync.RsyncFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -24,22 +25,24 @@ import kotlin.properties.Delegates
 @ConfigurationProperties(prefix = "rsync")
 @Lazy(false)
 public open class RsyncConfiguration {
-    private val log = LogFactory.getLog(javaClass<RsyncConfiguration>())
-
-    /** Rsync server instance */
-    private var rsyncServer: RsyncServer by Delegates.notNull()
-
     /** Server properties holder */
     public inner class Server {
         public var port: Int? = null
     }
-    public var server: Server = Server()
 
     /** Client properties holder */
     public inner class Client {
         public var port: Int? = null
     }
+
+    private val log = LogFactory.getLog(javaClass<RsyncConfiguration>())
+
+    // Properties
+    public var server: Server = Server()
     public var client: Client = Client()
+
+    /** Rsync server instance */
+    private var rsyncServer: RsyncServer by Delegates.notNull()
 
     @PostConstruct
     public fun initialize() {
@@ -51,6 +54,14 @@ public open class RsyncConfiguration {
         val config = RsyncServer.Configuration()
         config.port = this.server.port
         config.logFile = File(LocalStorage.instance().logDirectory, "rsyncd.log")
+
+        // Users
+        var user = Rsync.User(RsyncFactory.USERNAME, RsyncFactory.PASSWORD)
+
+        // Bundles module
+        var module = Rsync.Module("bundles", LocalStorage.instance().bundlesDirectory)
+        module.permissions.put(user, Rsync.Permission.READWRITE)
+        config.modules.add(module)
 
         // Initialize and start server
         rsyncServer = RsyncServer(LocalStorage.instance().etcDirectory, config)

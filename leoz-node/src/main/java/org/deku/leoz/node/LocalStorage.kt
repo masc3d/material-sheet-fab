@@ -20,6 +20,28 @@ import kotlin.platform.platformStatic
 class LocalStorage {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
+    // Directories
+    /** Local home directory */
+    val homeDirectory: File;
+    /** Local data directory */
+    val dataDirectory: File
+    /** Etc/settings directory */
+    val etcDirectory: File
+    /** Local log directory */
+    val logDirectory: File
+    /** Local embedded activemq data directory */
+    val activeMqDataDirectory: File
+    /** Local bundles directory */
+    val bundlesDirectory: File
+
+    // Files
+    /** Local application configuration file */
+    val applicationConfigurationFile: File
+    /** Local identity configuration file */
+    val identityConfigurationFile: File
+    /** Local log file */
+    val logFile: File
+
     companion object Singleton {
         private val instance: LocalStorage = LocalStorage()
         @platformStatic fun instance(): LocalStorage {
@@ -47,6 +69,7 @@ class LocalStorage {
         this.dataDirectory = File(this.homeDirectory, "data")
         this.logDirectory = File(this.homeDirectory, "log");
         this.etcDirectory = File(this.homeDirectory, "etc")
+        this.bundlesDirectory = File(this.homeDirectory, "bundles")
 
         this.applicationConfigurationFile = File(this.homeDirectory, "leoz.properties")
         this.identityConfigurationFile = File(this.dataDirectory, "identity.properties")
@@ -78,25 +101,6 @@ class LocalStorage {
         this.dataDirectory.mkdirs()
         this.logDirectory.mkdirs()
         this.etcDirectory.mkdirs()
+        this.bundlesDirectory.mkdirs()
     }
-
-    // Directories
-    /** Local home directory */
-    val homeDirectory: File;
-    /** Local data directory */
-    val dataDirectory: File
-    /** Etc/settings directory */
-    val etcDirectory: File
-    /** Local log directory */
-    val logDirectory: File
-    /** Local embedded activemq data directory */
-    val activeMqDataDirectory: File
-
-    // Files
-    /** Local application configuration file */
-    val applicationConfigurationFile: File
-    /** Local identity configuration file */
-    val identityConfigurationFile: File
-    /** Local log file */
-    val logFile: File
 }
