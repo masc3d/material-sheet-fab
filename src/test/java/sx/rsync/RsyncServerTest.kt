@@ -19,7 +19,6 @@ public class RsyncServerTest {
 
     private fun createConfiguration(): RsyncServer.Configuration {
         var config = RsyncServer.Configuration()
-        config.useChroot = true
         config.port = 27000
         config.logFile = modulePath.resolve("resyncd.log").toFile()
 
@@ -47,11 +46,9 @@ public class RsyncServerTest {
 
     @Test
     public fun testServer() {
-        RsyncServer.configurationPath = modulePath.toFile()
-
         var config = this.createConfiguration()
 
-        var rsyncServer = RsyncServer(config)
+        var rsyncServer = RsyncServer(modulePath.toFile(), config)
         rsyncServer.onTermination = { e ->
             if (e != null)
                 log.error(e.getMessage(), e)

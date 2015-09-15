@@ -13,16 +13,13 @@ import kotlin.properties.Delegates
  * Created by masc on 15.08.15.
  */
 public class RsyncServer(
+        /** Path containing configuration files */
+        public val configurationPath: File,
         /** Embedded configuration */
         val configuration: RsyncServer.Configuration? = null) : Rsync(), Disposable {
 
     val log = LogFactory.getLog(RsyncClient.javaClass)
     var processExecutor: ProcessExecutor? = null
-
-    companion object {
-        /** Path containing configuration files */
-        var configurationPath: File by Delegates.notNull()
-    }
 
     /**
      * Rsync server configuration
@@ -142,7 +139,7 @@ public class RsyncServer(
             // Running with embedded configuration
 
             // Store configuration to file
-            this.configuration.save(RsyncServer.configurationPath)
+            this.configuration.save(this.configurationPath)
 
             // Remove log file if it exists
             if (this.configuration.logFile != null && this.configuration.logFile!!.exists())
@@ -155,7 +152,7 @@ public class RsyncServer(
         command.add("--daemon")
         command.add("--no-detach")
         command.add("--config")
-        command.add(Rsync.URI(File(RsyncServer.configurationPath, Configuration.CONFIG_FILENAME), asDirectory = false).toString())
+        command.add(Rsync.URI(File(this.configurationPath, Configuration.CONFIG_FILENAME), asDirectory = false).toString())
 
         val error = StringBuffer()
 
