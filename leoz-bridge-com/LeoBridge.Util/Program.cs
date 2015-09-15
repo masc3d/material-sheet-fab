@@ -218,7 +218,6 @@ namespace LeoBridge.Util
 
             if (File.Exists(installFile))
             {
-
                 Console.WriteLine("Unregistering win32 [{0}]", installFile);
                 Execute(GetRegAsmPath(DotNetFrameworkArchitecture.Bitness32),
                      String.Format("/verbose /codebase /unregister /tlb:{0}-x86.tlb {1}", Path.GetFileNameWithoutExtension(installFile), Path.GetFileName(installFile)),
@@ -255,8 +254,6 @@ namespace LeoBridge.Util
         [Empty, Help]
         public static void Help(string help)
         {
-            // this is an empty handler that prints
-            // the automatic help string to the console.
             Console.WriteLine(help);
         }
 
