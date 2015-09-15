@@ -5,7 +5,9 @@ import org.ini4j.Ini
 import sx.Disposable
 import sx.ProcessExecutor
 import java.io.*
-import java.nio.file.attribute.UserPrincipal
+import java.nio.file.Files
+import java.nio.file.attribute.*
+import java.util
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -29,8 +31,9 @@ public class RsyncServer(
             val CONFIG_FILENAME = "rsyncd.conf"
             val SECRETS_FILENAME = "rsyncd.secrets"
         }
+        private val log = LogFactory.getLog(this.javaClass)
 
-        public var useChroot: Boolean = true
+        public var useChroot: Boolean = false
         /** Rsync log file */
         public var logFile: File? = null
         /** Rsync port */
@@ -59,6 +62,25 @@ public class RsyncServer(
                 os.close()
             }
 
+            val nioSecretsFile = secretsFile.toPath()
+            var aclFav = Files.getFileAttributeView(nioSecretsFile, javaClass<AclFileAttributeView>())
+            if (aclFav != null) {
+                var fowner = Files.getOwner(nioSecretsFile)
+                val acls = ArrayList<AclEntry>()
+                acls.add(AclEntry.newBuilder().setPrincipal(fowner).setPermissions(AclEntryPermission.READ_DATA).build())
+                aclFav.setAcl(acls)
+            } else {
+                var posixFav = Files.getFileAttributeView(nioSecretsFile, javaClass<PosixFileAttributeView>())
+                if (posixFav != null) {
+                    val perms = HashSet<PosixFilePermission>()
+                    perms.add(PosixFilePermission.OWNER_READ)
+                    perms.add(PosixFilePermission.OWNER_WRITE)
+                    posixFav.setPermissions(perms)
+                } else {
+                    log.warn("Could not set secret file permissions")
+                }
+            }
+            
             // Save configuration file
             os = FileOutputStream(configFile).buffered()
             try {
