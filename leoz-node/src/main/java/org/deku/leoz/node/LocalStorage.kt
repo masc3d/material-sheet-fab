@@ -44,8 +44,9 @@ class LocalStorage {
 
         this.homeDirectory = File(basePath, baseDirectory)
         this.log.info("Home directory [${homeDirectory}]")
-        this.logDirectory = File(this.homeDirectory, "log");
         this.dataDirectory = File(this.homeDirectory, "data")
+        this.logDirectory = File(this.homeDirectory, "log");
+        this.etcDirectory = File(this.homeDirectory, "etc")
 
         this.applicationConfigurationFile = File(this.homeDirectory, "leoz.properties")
         this.identityConfigurationFile = File(this.dataDirectory, "identity.properties")
@@ -76,6 +77,7 @@ class LocalStorage {
         }
         this.dataDirectory.mkdirs()
         this.logDirectory.mkdirs()
+        this.etcDirectory.mkdirs()
     }
 
     // Directories
@@ -83,6 +85,8 @@ class LocalStorage {
     val homeDirectory: File;
     /** Local data directory */
     val dataDirectory: File
+    /** Etc/settings directory */
+    val etcDirectory: File
     /** Local log directory */
     val logDirectory: File
     /** Local embedded activemq data directory */

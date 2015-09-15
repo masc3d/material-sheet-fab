@@ -14,13 +14,15 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 /**
+ * Broker configuration.
+ * Initializes message brokers
  * Created by masc on 11.06.15.
  */
 @Configuration
 @ConfigurationProperties(prefix="broker")
 @Lazy(false)
 public class BrokerConfiguration {
-    private Log mLog = LogFactory.getLog(this.getClass());
+    private Log mLog = LogFactory.getLog(BrokerConfiguration.class);
 
     @Inject
     RemotePeerSettings mPeerSettings;
@@ -60,7 +62,7 @@ public class BrokerConfiguration {
             ActiveMQBroker.instance().addPeerBroker(new Broker.PeerBroker(
                     mPeerSettings.getHost(),
                     Broker.TransportType.TCP,
-                    null));
+                    mPeerSettings.getBroker().getNativePort()));
         }
         //endregion
     }
