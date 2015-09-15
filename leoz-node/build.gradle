@@ -119,25 +119,6 @@ dependencies {
     testCompile project(':libs:sx-common')
 }
 
-kapt {
-    generateStubs = true
-}
-
-run {
-    errorOutput = System.err
-    standardOutput = System.out
-    standardInput = System.in
-}
-
-jar {
-    manifest {
-        attributes (
-                'Main-Class': mainClassName,
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
-        )
-    }
-}
-
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
@@ -146,17 +127,6 @@ compileJava.dependsOn(processResources)
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
 def srcdir_apt = file("$projectDir/src/generated/apt")
-
-compileJava {
-    doFirst {
-        // Source dir must exist
-        srcdir_apt.exists() || srcdir_apt.mkdirs()
-        // Tell javac about the generated sources location
-        options.compilerArgs = [
-                '-s', srcdir_apt.toString()
-        ]
-    }
-}
 
 // Add generated sources to a separate sourceset, so IDEs can see them
 // (Adding sources to main/java instead will cause subsequent builds to fail)
@@ -177,15 +147,52 @@ sourceSets {
     }
 }
 
+kapt {
+    generateStubs = true
+}
+
+compileJava {
+    doFirst {
+        // Source dir must exist
+        srcdir_apt.exists() || srcdir_apt.mkdirs()
+        // Tell javac about the generated sources location
+        options.compilerArgs = [
+                '-s', srcdir_apt.toString()
+        ]
+    }
+}
+
+run {
+    errorOutput = System.err
+    standardOutput = System.out
+    standardInput = System.in
+}
+
 // Copy webapp content into classpath prior to compilation
 task copyWebapp(type: Copy) {
     from 'src/main/webapp'
     into 'build/classes/main/webapp'
 }
-compileJava.dependsOn(copyWebapp)
+tasks.compileJava.dependsOn(copyWebapp)
 
-project.tasks.jar.dependsOn(copyRsyncBinaries)
-project.tasks.jar.dependsOn(copyGlobalBinaries)
+jar {
+    manifest {
+        attributes (
+                'Main-Class': mainClassName,
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
+        )
+    }
+}
+tasks.classes.dependsOn(copySxBinariesToBuild)
+tasks.classes.dependsOn(copyGlobalBinariesToBuild)
+
+distributions {
+    main {
+        contents {
+            from projectBuildSupplementalsDir
+        }
+    }
+}
 
 packager {
     title = "LeoZ Node"

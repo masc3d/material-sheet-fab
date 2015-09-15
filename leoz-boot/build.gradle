@@ -46,8 +46,15 @@ jar {
         )
     }
 }
+tasks.classes.dependsOn(copySxBinariesToBuild)
 
-project.tasks.jar.dependsOn(copyRsyncBinaries)
+distributions {
+    main {
+        contents {
+            from projectBuildSupplementalsDir
+        }
+    }
+}
 
 packager {
     title = "LeoZ Boot"

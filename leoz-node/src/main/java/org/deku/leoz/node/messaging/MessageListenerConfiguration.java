@@ -17,14 +17,15 @@ import sx.jms.embedded.activemq.ActiveMQBroker;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-/**
+/** Message listener configuration.
+ * Initializes message listener(s) and their message handlers
  * Created by masc on 20.06.15.
  */
 @Profile( { App.PROFILE_CLIENT_NODE} )
 @Configuration
 @Lazy(false)
 public class MessageListenerConfiguration {
-    private Log mLog = LogFactory.getLog(this.getClass());
+    private Log mLog = LogFactory.getLog(MessageListenerConfiguration.class);
 
     MessageListener mMessageListener;
 

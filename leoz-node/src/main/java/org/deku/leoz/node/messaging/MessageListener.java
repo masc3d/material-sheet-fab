@@ -8,6 +8,8 @@ import sx.jms.listeners.SpringJmsListener;
 import javax.jms.Destination;
 
 /**
+ * Global message listener.
+ * Handlers are attached during runtime.s
  * Created by masc on 27.06.15.
  */
 public class MessageListener extends SpringJmsListener {

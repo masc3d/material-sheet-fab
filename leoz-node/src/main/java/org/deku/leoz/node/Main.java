@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.node.data.sync.EntitySyncConfiguration;
 import org.deku.leoz.node.messaging.BrokerConfiguration;
 import org.deku.leoz.node.messaging.MessageListenerConfiguration;
+import org.deku.leoz.node.rsync.RsyncConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -44,6 +45,8 @@ import org.springframework.core.annotation.Order;
         EntitySyncConfiguration.class,
         /** Leoz message listener configuration */
         MessageListenerConfiguration.class,
+        /** Rsync configuration */
+        RsyncConfiguration.class
 })
 @EnableConfigurationProperties
 public class Main {

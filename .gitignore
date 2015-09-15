@@ -41,3 +41,4 @@ libraries/leoz-common/build
 buildSrc/src/import
 libs/leoz-common/build
 libs/leoz-common/reports/dependencies
+leoz-node/bin
