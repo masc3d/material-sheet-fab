@@ -12,6 +12,7 @@ import java.util.*
 import kotlin.properties.Delegates
 
 /**
+ * Rsync server. Wraps rsync as a daemon process, generates configurations as needed
  * Created by masc on 15.08.15.
  */
 public class RsyncServer(
@@ -62,6 +63,7 @@ public class RsyncServer(
                 os.close()
             }
 
+            // Amend secrets file permissions
             val nioSecretsFile = secretsFile.toPath()
             var aclFav = Files.getFileAttributeView(nioSecretsFile, javaClass<AclFileAttributeView>())
             if (aclFav != null) {
@@ -80,7 +82,7 @@ public class RsyncServer(
                     log.warn("Could not set secret file permissions")
                 }
             }
-            
+
             // Save configuration file
             os = FileOutputStream(configFile).buffered()
             try {
