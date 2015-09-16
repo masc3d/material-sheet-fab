@@ -28,7 +28,7 @@ import kotlin.text.Regex
  * Created by masc on 22.08.15.
  */
 @XmlRootElement
-public @jvmOverloads class Bundle : Serializable {
+public class Bundle : Serializable {
 
     private val log = LogFactory.getLog(this.javaClass)
 
@@ -115,7 +115,6 @@ public @jvmOverloads class Bundle : Serializable {
     /**
      * Manifest file entry
      */
-    @XmlElement
     public data class FileEntry(
             @XmlAttribute
             val uriPath: String? = null,
@@ -330,7 +329,7 @@ public @jvmOverloads class Bundle : Serializable {
         /** Application main jar */
         public var appMainJar: String
             get() {
-                return entryMap.get(KEY_APP_MAINJAR)
+                return entryMap.get(KEY_APP_MAINJAR) ?: ""
             }
             set(value: String) {
                 entryMap.set(KEY_APP_MAINJAR, value)
@@ -338,7 +337,7 @@ public @jvmOverloads class Bundle : Serializable {
 
         public var appVersion: String
             get() {
-                return entryMap.get(KEY_APP_VERSION)
+                return entryMap.get(KEY_APP_VERSION) ?: ""
             }
             set(value: String) {
                 entryMap.set(KEY_APP_VERSION, value)
@@ -346,7 +345,7 @@ public @jvmOverloads class Bundle : Serializable {
 
         public var appClassPath: List<String>
             get() {
-                return entryMap.get(KEY_APP_CLASSPATH).split(':', ';')
+                return entryMap.get(KEY_APP_CLASSPATH)?.split(':', ';') ?: ArrayList()
             }
             set(value: List<String>) {
                 entryMap.set(KEY_APP_CLASSPATH, value.joinToString(";"))

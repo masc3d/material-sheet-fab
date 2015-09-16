@@ -107,7 +107,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
             for (s in senderParticipants) {
                 if (!possibleSenderSectors.contains(s))
-                    possibleSenderSectors.add(s.sector)
+                    possibleSenderSectors.add(s.sector!!)
             }
 
             senderParticipant = senderParticipants.first()
@@ -133,7 +133,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
             for (c in consigneeParticipants) {
                 if (!possibleSenderSectors.contains(c))
-                    possibleSenderSectors.add(c.sector)
+                    possibleSenderSectors.add(c.sector!!)
             }
 
             consigneeParticipant = consigneeParticipants.first()
