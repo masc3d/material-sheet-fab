@@ -71,14 +71,14 @@ compile - Compile classpath for source set 'main'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.12.0 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.12.0 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1 -> 4.4.3
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5.1
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.3
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5.1 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |         +--- org.springframework:spring-aop:4.1.7.RELEASE
@@ -190,7 +190,7 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.jboss.resteasy:jaxrs-api:3.0.12.Final
 |    |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    |    +--- javax.activation:activation:1.1.1
-|    |    +--- org.apache.httpcomponents:httpclient:4.3.6 -> 4.5 (*)
+|    |    +--- org.apache.httpcomponents:httpclient:4.3.6 -> 4.5.1 (*)
 |    |    +--- commons-io:commons-io:2.1 -> 2.4
 |    |    \--- net.jcip:jcip-annotations:1.0
 |    +--- org.jboss.resteasy:resteasy-spring:3.+ -> 3.0.12.Final
@@ -207,7 +207,7 @@ compile - Compile classpath for source set 'main'.
 |    |    |    \--- org.codehaus.jettison:jettison:1.3.2
 |    |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    |    \--- javax.activation:activation:1.1.1
-|    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.12.Final
+|    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.13.Final
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.5.4
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.5.4 (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.5.4
@@ -370,14 +370,14 @@ default - Configuration for default artifacts.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.12.0 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.12.0 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1 -> 4.4.3
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5.1
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.3
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5.1 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |         +--- org.springframework:spring-aop:4.1.7.RELEASE
@@ -489,7 +489,7 @@ default - Configuration for default artifacts.
 |    |    +--- org.jboss.resteasy:jaxrs-api:3.0.12.Final
 |    |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    |    +--- javax.activation:activation:1.1.1
-|    |    +--- org.apache.httpcomponents:httpclient:4.3.6 -> 4.5 (*)
+|    |    +--- org.apache.httpcomponents:httpclient:4.3.6 -> 4.5.1 (*)
 |    |    +--- commons-io:commons-io:2.1 -> 2.4
 |    |    \--- net.jcip:jcip-annotations:1.0
 |    +--- org.jboss.resteasy:resteasy-spring:3.+ -> 3.0.12.Final
@@ -506,7 +506,7 @@ default - Configuration for default artifacts.
 |    |    |    \--- org.codehaus.jettison:jettison:1.3.2
 |    |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    |    \--- javax.activation:activation:1.1.1
-|    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.12.Final
+|    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.13.Final
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.5.4
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.5.4 (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.5.4
@@ -679,14 +679,14 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.12.0 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.12.0 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1 -> 4.4.3
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5.1
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.3
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5.1 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |         +--- org.springframework:spring-aop:4.1.7.RELEASE
@@ -798,7 +798,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.jboss.resteasy:jaxrs-api:3.0.12.Final
 |    |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    |    +--- javax.activation:activation:1.1.1
-|    |    +--- org.apache.httpcomponents:httpclient:4.3.6 -> 4.5 (*)
+|    |    +--- org.apache.httpcomponents:httpclient:4.3.6 -> 4.5.1 (*)
 |    |    +--- commons-io:commons-io:2.1 -> 2.4
 |    |    \--- net.jcip:jcip-annotations:1.0
 |    +--- org.jboss.resteasy:resteasy-spring:3.+ -> 3.0.12.Final
@@ -815,7 +815,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    \--- org.codehaus.jettison:jettison:1.3.2
 |    |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    |    \--- javax.activation:activation:1.1.1
-|    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.12.Final
+|    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.13.Final
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.5.4
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.5.4 (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.5.4
@@ -978,14 +978,14 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.12.0 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.12.0 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1 -> 4.4.3
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5.1
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.3
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5.1 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |         +--- org.springframework:spring-aop:4.1.7.RELEASE
@@ -1097,7 +1097,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.jboss.resteasy:jaxrs-api:3.0.12.Final
 |    |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    |    +--- javax.activation:activation:1.1.1
-|    |    +--- org.apache.httpcomponents:httpclient:4.3.6 -> 4.5 (*)
+|    |    +--- org.apache.httpcomponents:httpclient:4.3.6 -> 4.5.1 (*)
 |    |    +--- commons-io:commons-io:2.1 -> 2.4
 |    |    \--- net.jcip:jcip-annotations:1.0
 |    +--- org.jboss.resteasy:resteasy-spring:3.+ -> 3.0.12.Final
@@ -1114,7 +1114,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    \--- org.codehaus.jettison:jettison:1.3.2
 |    |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    |    \--- javax.activation:activation:1.1.1
-|    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.12.Final
+|    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.13.Final
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.5.4
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.5.4 (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.5.4
@@ -1292,14 +1292,14 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    \--- org.apache.activemq:activemq-broker:5.12.0 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.12.0 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.10 -> 1.7.12
-|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5
-|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.1 -> 4.4.3
+|    |    +--- org.apache.httpcomponents:httpclient:4.2.5 -> 4.5.1
+|    |    |    +--- org.apache.httpcomponents:httpcore:4.4.3
 |    |    |    +--- commons-logging:commons-logging:1.2
 |    |    |    \--- commons-codec:commons-codec:1.9 -> 1.10
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.7 -> 1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
 |    |         \--- xpp3:xpp3_min:1.1.4c
-|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5 (*)
+|    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5.1 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    \--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |         +--- org.springframework:spring-aop:4.1.7.RELEASE
@@ -1411,7 +1411,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.jboss.resteasy:jaxrs-api:3.0.12.Final
 |    |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    |    +--- javax.activation:activation:1.1.1
-|    |    +--- org.apache.httpcomponents:httpclient:4.3.6 -> 4.5 (*)
+|    |    +--- org.apache.httpcomponents:httpclient:4.3.6 -> 4.5.1 (*)
 |    |    +--- commons-io:commons-io:2.1 -> 2.4
 |    |    \--- net.jcip:jcip-annotations:1.0
 |    +--- org.jboss.resteasy:resteasy-spring:3.+ -> 3.0.12.Final
@@ -1428,7 +1428,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    \--- org.codehaus.jettison:jettison:1.3.2
 |    |    +--- org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec:1.0.1.Final
 |    |    \--- javax.activation:activation:1.1.1
-|    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.12.Final
+|    +--- org.jboss.resteasy:resteasy-jackson2-provider:3.+ -> 3.0.13.Final
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.4.1 -> 2.5.4
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.1 -> 2.5.4 (*)
 |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.1 -> 2.5.4

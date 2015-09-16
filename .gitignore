@@ -43,3 +43,5 @@ libs/leoz-common/build
 libs/leoz-common/reports/dependencies
 leoz-node/bin
 leoz-bridge-com/Release*
+leoz-boot/bin
+leoz-ui/bin

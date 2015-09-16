@@ -1,4 +1,4 @@
-package org.deku.leoz.build
+package org.deku.leoz.bundle
 
 /**
  * Created by masc on 09.09.15.

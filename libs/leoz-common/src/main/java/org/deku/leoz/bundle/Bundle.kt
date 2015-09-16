@@ -1,4 +1,4 @@
-package org.deku.leoz.build
+package org.deku.leoz.bundle
 
 import org.apache.commons.lang3.SystemUtils
 import sx.platform.OperatingSystem

@@ -1,4 +1,4 @@
-package org.deku.leoz.build
+package org.deku.leoz.bundle
 
 import com.google.common.hash.Hashing
 import org.apache.commons.lang3.SystemUtils
@@ -21,7 +21,7 @@ import kotlin.properties.Delegates
 import kotlin.text.Regex
 
 /**
- * Represents a local/physical leoz artifact and its manifest at the same time
+ * Represents a local/physical leoz bundle including a manifest containing metadata
  * Created by masc on 22.08.15.
  */
 @XmlRootElement
