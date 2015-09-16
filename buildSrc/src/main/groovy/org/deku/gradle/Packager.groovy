@@ -8,10 +8,9 @@ import com.jcraft.jsch.agentproxy.Connector
 import com.jcraft.jsch.agentproxy.ConnectorFactory
 import com.jcraft.jsch.agentproxy.RemoteIdentityRepository
 import org.apache.commons.lang3.SystemUtils
-import org.deku.leoz.bundle.Artifact
-import org.deku.leoz.bundle.ArtifactRepository
-import org.deku.leoz.bundle.ArtifactRepositoryFactory
 import org.deku.leoz.bundle.Bundle
+import org.deku.leoz.bundle.BundleRepository
+import org.deku.leoz.bundle.BundleRepositoryFactory
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
@@ -110,7 +109,11 @@ abstract class PackagerReleaseTask extends PackagerTask {
      * @return
      */
     def Bundle getReleaseBundle(PlatformId platformId) {
-        return new Bundle(project.name, platformId.operatingSystem, this.getReleasePlatformPath(platformId))
+        return new Bundle(
+                this.getReleasePlatformPath(platformId),
+                project.name,
+                Bundle.Version.parse(project.version),
+                platformId)
     }
 
     /**
@@ -304,8 +307,8 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
         this.copySupplementalDirs(PlatformId.current())
         this.copySupplementalPlatformDirs(PlatformId.current())
 
-        println "Creating artifact/manifest"
-        Artifact.create(releasePlatformPath, project.name, Artifact.Version.parse(project.version))
+        println "Creating bundle manifest"
+        Bundle.create(releasePlatformPath, project.name, Bundle.Version.parse(project.version))
     }
 }
 
@@ -360,8 +363,8 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
             this.copySupplementalDirs(platformId)
             this.copySupplementalPlatformDirs(platformId)
 
-            println "Creating artifact/manifest"
-            Artifact.create(releasePlatformPath, project.name, Artifact.Version.parse(project.version))
+            println "Creating bundle manifest"
+            Bundle.create(releasePlatformPath, project.name, Bundle.Version.parse(project.version))
         }
     }
 }
@@ -464,23 +467,23 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
             git.close()
         }
 
-        // Upload to artifact repository
-        ArtifactRepository ar = ArtifactRepositoryFactory.INSTANCE$.stagingRepository(project.name)
+        // Upload to bundle repository
+        BundleRepository ar = BundleRepositoryFactory.INSTANCE$.stagingRepository(project.name)
         ar.upload(this.getReleasePath(), true)
     }
 }
 
 /**
  * Release pull task downloads (and overwrites) remote release with version equal or less than the current project version
- * Used to "seed" the release directory with artifacts for all platforms
+ * Used to "seed" the release directory with bundle for all platforms
  */
 class PackagerReleasePullTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleasePullTask() {
         def releasePath = this.getReleasePath()
 
-        def version = Artifact.Version.parse(project.version)
-        ArtifactRepository ar = ArtifactRepositoryFactory.INSTANCE$.stagingRepository(project.name)
+        def version = Bundle.Version.parse(project.version)
+        BundleRepository ar = BundleRepositoryFactory.INSTANCE$.stagingRepository(project.name)
 
         def remoteVersions = ar.listVersions()
                 .stream()

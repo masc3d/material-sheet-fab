@@ -22,7 +22,7 @@ import java.util.function.IntSupplier
  * @param rsyncModuleUri The base rsync module uri. The expected directory structur is $artifact-name/$version/$platform
  * Created by masc on 24.08.15.
  */
-public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyncPassword: String) {
+public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyncPassword: String) {
     val log = LogFactory.getLog(this.javaClass)
 
     val rsyncArtifactUri: Rsync.URI
@@ -45,7 +45,7 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
     /**
      * List  artifact versions in remote repository
      */
-    public fun listVersions(): List<Artifact.Version> {
+    public fun listVersions(): List<Bundle.Version> {
         // Get remote list
         val rc = this.createRsyncClient()
         rc.destination = this.rsyncArtifactUri
@@ -53,10 +53,10 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
         val lr = rc.list()
 
         // Parse entries to versions
-        val result = ArrayList<Artifact.Version>()
+        val result = ArrayList<Bundle.Version>()
         lr.forEach { l ->
             try {
-                if (l.filename != ".") result.add(Artifact.Version.parse(l.filename))
+                if (l.filename != ".") result.add(Bundle.Version.parse(l.filename))
             } catch(e: Exception) {
                 this.log.warn("Could not parse artifact version [${l.filename}]")
             }
@@ -67,9 +67,9 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
 
     /**
      * List remote platform ids of a specific artifact version in remote repository
-     * @param version Artifact version
+     * @param version Bundle version
      */
-    public fun listPlatforms(version: Artifact.Version): List<PlatformId> {
+    public fun listPlatforms(version: Bundle.Version): List<PlatformId> {
         val rc = this.createRsyncClient()
         rc.destination = this.rsyncArtifactUri.resolve(version)
 
@@ -107,9 +107,9 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
         val nSrcPath = Paths.get(srcPath.toURI())
 
         // Verify this is an artifact version folder (having only platform ids as subfolder)
-        val artifacts = ArrayList<Artifact>()
+        val artifacts = ArrayList<Bundle>()
         this.walkPlatformFolders(nSrcPath).forEach { p ->
-            val a = Artifact.load(p.toFile())
+            val a = Bundle.load(p.toFile())
             logInfo("Found [${a}]")
             artifacts.add(a)
         }
@@ -178,10 +178,10 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
     /**
      * Download a specific platform/version of an artifact from remote repository
      * @param destPath Local destination path
-     * @param version Artifact version
+     * @param version Bundle version
      * @param platformId Platform id
      */
-    public @jvmOverloads fun download(version: Artifact.Version, platformId: PlatformId, destPath: File, verify: Boolean = false) {
+    public @jvmOverloads fun download(version: Bundle.Version, platformId: PlatformId, destPath: File, verify: Boolean = false) {
         val rc = this.createRsyncClient()
         rc.source = this.rsyncArtifactUri.resolve(version, platformId)
         rc.destination = Rsync.URI(destPath)
@@ -193,19 +193,19 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
 
         if (verify) {
             log.info("Verifying artifact [${destPath}]")
-            Artifact.load(destPath)
+            Bundle.load(destPath)
                     .verify()
         }
     }
 
     /**
      * Download a specific version of an artifact from remote repository (all platforms)
-     * @param version Artifact version
+     * @param version Bundle version
      * @param destPath Destination path
      * @param verify Verify artifact after download
      * @param consoleOutput Log to console instead of logger (used for gradle)
      */
-    public @jvmOverloads fun download(version: Artifact.Version,
+    public @jvmOverloads fun download(version: Bundle.Version,
                                       destPath: File,
                                       verify: Boolean = false,
                                       consoleOutput: Boolean = false) {
@@ -225,7 +225,7 @@ public class ArtifactRepository(val name: String, val rsyncModuleUri: Rsync.URI,
         if (verify) {
             this.walkPlatformFolders(destPath.toPath()).forEach { p ->
                 logInfo("Verifying artifact [${p}]")
-                Artifact.load(p.toFile()).verify()
+                Bundle.load(p.toFile()).verify()
             }
         }
 
