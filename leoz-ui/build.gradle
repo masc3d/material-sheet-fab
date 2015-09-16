@@ -1,13 +1,3 @@
-buildscript {
-//    repositories {
-//        flatDir dirs: '/Users/n3/Java/proguard5.0/lib'
-//        jcenter();
-//    }
-    dependencies {
-//        classpath ':proguard'
-    }
-}
-
 apply plugin: 'application'
 apply plugin: org.deku.gradle.PackagerPlugin
 

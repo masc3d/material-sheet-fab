@@ -2,24 +2,6 @@ import org.apache.commons.lang3.SystemUtils
 
 import java.nio.file.Paths
 
-// Gradle dependencies/plugins
-buildscript {
-    dependencies {
-        // Kotlin
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
-
-        // jooq codegen gradle plugin
-        classpath 'com.github.ben-manes:gradle-jooq-plugin:+'
-
-        // override jooq dependencies of gradle-jooq-plugin with desired version
-        classpath("org.jooq:jooq-codegen:$v_jooq") { force true }
-        classpath("org.jooq:jooq-meta:$v_jooq") { force true }
-
-        // mysql jdbc connector
-        classpath "mysql:mysql-connector-java:$v_mysql"
-    }
-}
-
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: 'jooq'

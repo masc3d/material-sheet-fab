@@ -1,9 +1,3 @@
-buildscript {
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
-    }
-}
-
 sourceCompatibility = 1.8
 version = '1.0'
 

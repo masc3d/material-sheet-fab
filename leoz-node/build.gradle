@@ -2,16 +2,6 @@ import org.apache.commons.lang3.SystemUtils
 
 import java.nio.file.*;
 
-buildscript {
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
-//        classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
-    }
-    repositories {
-        mavenCentral()
-    }
-}
-
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: org.deku.gradle.PackagerPlugin

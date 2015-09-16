@@ -7,77 +7,83 @@ version = '0.1'
 
 buildscript {
     ext {
+        // Versions
+        v_activemq = "5.+"
+        v_commons_lang = "3.+"
+        v_eclipselink = "2.+"
+        v_flyway = "3.+"
+        v_guava = "18.+"
+        v_h2 = "1.+"
+        v_hk2 = "2.+"
+        v_hibernate = "5.2.+"
+        v_jackson = "2.5.+"
+        v_javax_servlet = "3.1.+"
+        v_javax_persistence = "2.1.+"
+        v_javax_ws_rs = "2.0.+"
+        v_jersey = "2.+"
+        v_jetty = "9.2.+"
+        v_jgit = "4.+"
+        v_jna = "4.+"
+        v_jooq = "3.+"
+        v_junit = "4.+"
         v_kotlin = "0.13.+"
+        v_kryo = "3.+"
+        v_querydsl = "3.+"
+        v_mysql = "5.+"
+        // Resteasy > 3.0.9 breaks integration with spring-boot.
+        // it actually still works fine when spring is initialized via resteasy's SpringContextLoaderListener
+        v_resteasy = "3.+"
+        v_scala = "2.11.+"
+        v_slf4j = "1.+"
+        v_spring = "4.1.7.+"
+        v_spring_data_jpa = "1.8.+"
+        v_spring_data_commons = "1.10.+"
+        v_springboot = "1.2.5.+"
+        v_swagger = "+"
+
+        // LeoZ release path, relative to root project
+        g_platform_identifier = PlatformId.current().toString()
+
+        g_release_path = Paths.get(project.rootDir.toURI())
+                .parent
+                .resolve("leoz-release")
+                .toFile()
+
+        g_bin_path = new File(project.rootDir, 'bin')
+
+        g_osx_icon = Paths.get(project.rootDir.toURI())
+                .resolve('images')
+                .resolve('DEKU.icon.icns')
+                .toFile()
+
+        g_windows_icon = Paths.get(project.rootDir.toURI())
+                .resolve('images')
+                .resolve('DEKU.icon.ico')
+                .toFile()
     }
+
+    dependencies {
+        // Kotlin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+
+        // jooq codegen gradle plugin
+        classpath 'com.github.ben-manes:gradle-jooq-plugin:+'
+
+        // override jooq dependencies of gradle-jooq-plugin with desired version
+        classpath("org.jooq:jooq-codegen:$v_jooq") { force true }
+        classpath("org.jooq:jooq-meta:$v_jooq") { force true }
+
+        // mysql jdbc connector
+        classpath "mysql:mysql-connector-java:$v_mysql"
+    }
+
     repositories {
         jcenter()
         mavenCentral()
-    }
-}
+    }}
 
 // Start parameters
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
-
-// Common configuration for all projects, eg. version varws
-allprojects {
-    buildscript {
-        // Global variables
-        ext {
-            // Versions
-            v_activemq = "5.+"
-            v_commons_lang = "3.+"
-            v_eclipselink = "2.+"
-            v_flyway = "3.+"
-            v_guava = "18.+"
-            v_h2 = "1.+"
-            v_hk2 = "2.+"
-            v_hibernate = "5.2.+"
-            v_jackson = "2.5.+"
-            v_javax_servlet = "3.1.+"
-            v_javax_persistence = "2.1.+"
-            v_javax_ws_rs = "2.0.+"
-            v_jersey = "2.+"
-            v_jetty = "9.2.+"
-            v_jgit = "4.+"
-            v_jna = "4.+"
-            v_jooq = "3.+"
-            v_junit = "4.+"
-            v_kryo = "3.+"
-            v_querydsl = "3.+"
-            v_mysql = "5.+"
-            // Resteasy > 3.0.9 breaks integration with spring-boot.
-            // it actually still works fine when spring is initialized via resteasy's SpringContextLoaderListener
-            v_resteasy = "3.+"
-            v_scala = "2.11.+"
-            v_slf4j = "1.+"
-            v_spring = "4.1.7.+"
-            v_spring_data_jpa = "1.8.+"
-            v_spring_data_commons = "1.10.+"
-            v_springboot = "1.2.5.+"
-            v_swagger = "+"
-
-            // LeoZ release path, relative to root project
-            g_platform_identifier = PlatformId.current().toString()
-
-            g_release_path = Paths.get(project.rootDir.toURI())
-                    .parent
-                    .resolve("leoz-release")
-                    .toFile()
-
-            g_bin_path = new File(project.rootDir, 'bin')
-
-            g_osx_icon = Paths.get(project.rootDir.toURI())
-                    .resolve('images')
-                    .resolve('DEKU.icon.icns')
-                    .toFile()
-
-            g_windows_icon = Paths.get(project.rootDir.toURI())
-                    .resolve('images')
-                    .resolve('DEKU.icon.ico')
-                    .toFile()
-        }
-    }
-}
 
 // Common configuration for subprojects
 subprojects {
@@ -99,19 +105,6 @@ subprojects {
             url "http://repo.spring.io/snapshot"
         }
         mavenCentral()
-    }
-
-    // Global buildscript repositories
-    buildscript {
-        repositories {
-            jcenter()
-            maven {
-                url "http://repo.spring.io/snapshot"
-            }
-            mavenCentral()
-        }
-        dependencies {
-        }
     }
 
     // Global jar configuration
