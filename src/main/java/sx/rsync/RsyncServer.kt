@@ -21,7 +21,7 @@ public class RsyncServer(
         /** Embedded configuration */
         val configuration: RsyncServer.Configuration? = null) : Rsync(), Disposable {
 
-    val log = LogFactory.getLog(RsyncClient.javaClass)
+    val log = LogFactory.getLog(RsyncClient::class.java)
     var processExecutor: ProcessExecutor? = null
 
     /**
@@ -65,14 +65,14 @@ public class RsyncServer(
 
             // Amend secrets file permissions
             val nioSecretsFile = secretsFile.toPath()
-            var aclFav = Files.getFileAttributeView(nioSecretsFile, javaClass<AclFileAttributeView>())
+            var aclFav = Files.getFileAttributeView(nioSecretsFile, AclFileAttributeView::class.java)
             if (aclFav != null) {
                 var fowner = Files.getOwner(nioSecretsFile)
                 val acls = ArrayList<AclEntry>()
                 acls.add(AclEntry.newBuilder().setPrincipal(fowner).setPermissions(AclEntryPermission.READ_DATA).build())
-                aclFav.setAcl(acls)
+                aclFav.acl = acls
             } else {
-                var posixFav = Files.getFileAttributeView(nioSecretsFile, javaClass<PosixFileAttributeView>())
+                var posixFav = Files.getFileAttributeView(nioSecretsFile, PosixFileAttributeView::class.java)
                 if (posixFav != null) {
                     val perms = HashSet<PosixFilePermission>()
                     perms.add(PosixFilePermission.OWNER_READ)
@@ -100,11 +100,11 @@ public class RsyncServer(
             fun convertBoolean(b: Boolean): String = if (b) "yes" else "no"
 
             var ini = Ini()
-            var globalSection = ini.getConfig().getGlobalSectionName()
+            var globalSection = ini.config.globalSectionName
 
-            ini.getConfig().setEmptySection(true)
-            ini.getConfig().setGlobalSection(true)
-            ini.getConfig().setEscape(false)
+            ini.config.isEmptySection = true
+            ini.config.isGlobalSection = true
+            ini.config.isEscape = false
             ini.put(globalSection, "use chroot", convertBoolean(this.useChroot))
             if (this.port != null)
                 ini.put(globalSection, "port", port!!.toString())
@@ -158,7 +158,7 @@ public class RsyncServer(
     /**
      * Start rsync daemon
      */
-    public @synchronized fun start() {
+    public @Synchronized fun start() {
         if (this.configuration != null) {
             // Running with embedded configuration
 
@@ -192,7 +192,7 @@ public class RsyncServer(
     /**
      * Stop rsync daemon
      */
-    public @synchronized fun stop() {
+    public @Synchronized fun stop() {
         if (this.processExecutor != null) {
             this.processExecutor?.dispose()
             this.processExecutor = null

@@ -15,7 +15,7 @@ import java.util.logging.StreamHandler
  * @param processBuilder Process builder
  * @param outputHandler Stream handler implementation
  */
-public class ProcessExecutor @jvmOverloads constructor(
+public class ProcessExecutor @JvmOverloads constructor(
         private val processBuilder: ProcessBuilder,
         private val outputHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler(),
         private val errorHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler()) : Disposable {
@@ -28,7 +28,7 @@ public class ProcessExecutor @jvmOverloads constructor(
     private var monitorThread: MonitorThread? = null
 
     /** Indicates if process is stopping gracefully */
-    private @volatile var stopping = false
+    private @Volatile var stopping = false
 
     /**
      * Process exception
@@ -48,7 +48,7 @@ public class ProcessExecutor @jvmOverloads constructor(
     /**
      * Default stream handler, collecting both error and output
      */
-    public open class DefaultStreamHandler @jvmOverloads constructor(
+    public open class DefaultStreamHandler @JvmOverloads constructor(
             public val trim: Boolean = false,
             public val omitEmptyLines: Boolean = false,
             public val collectBuffer: StringBuffer? = null
@@ -78,13 +78,13 @@ public class ProcessExecutor @jvmOverloads constructor(
      * Monitor thread
      */
     private inner class MonitorThread : Thread() {
-        private volatile var shutdownHookInvoked = false
+        private @Volatile var shutdownHookInvoked = false
 
         override fun run() {
             val shutdownHook = object : Thread("ProcessExecutor shutdown hook") {
                 override fun run() {
                     shutdownHookInvoked = true
-                    if (process!!.isAlive()) {
+                    if (process!!.isAlive) {
                         log.warn("Terminating process [${processBuilder.command().get(0)}]")
                         process!!.destroy()
                     }
@@ -146,7 +146,7 @@ public class ProcessExecutor @jvmOverloads constructor(
     /**
      * Start process
      */
-    public @synchronized fun start() {
+    public @Synchronized fun start() {
         if (process != null)
             throw IllegalStateException("Process already started")
 
@@ -156,9 +156,9 @@ public class ProcessExecutor @jvmOverloads constructor(
         monitorThread!!.start()
 
         // Add stream handlers
-        outputReaderThread = StreamReaderThread(process!!.getInputStream(), outputHandler)
+        outputReaderThread = StreamReaderThread(process!!.inputStream, outputHandler)
 
-        errorReaderThread = StreamReaderThread(process!!.getErrorStream(), errorHandler)
+        errorReaderThread = StreamReaderThread(process!!.errorStream, errorHandler)
 
         outputReaderThread!!.start()
         errorReaderThread!!.start()
@@ -170,8 +170,8 @@ public class ProcessExecutor @jvmOverloads constructor(
      * *
      * @throws InterruptedException
      */
-    @throws(InterruptedException::class, ProcessException::class)
-    public @synchronized fun waitFor() {
+    @Throws(InterruptedException::class, ProcessException::class)
+    public @Synchronized fun waitFor() {
         if (process == null)
             throw IllegalStateException("Process not started")
 
@@ -189,10 +189,10 @@ public class ProcessExecutor @jvmOverloads constructor(
     /**
      * Stop/destroy process
      */
-    public @synchronized fun stop() {
+    public @Synchronized fun stop() {
         this.stopping = true
 
-        if (process != null && process!!.isAlive()) {
+        if (process != null && process!!.isAlive) {
             process!!.destroy()
         }
 

@@ -6,7 +6,6 @@ package sx.platform
 import org.apache.commons.lang3.SystemUtils
 import sx.platform.CpuArch
 import sx.platform.OperatingSystem
-import kotlin.platform.platformStatic
 import kotlin.text.Regex
 
 /**
@@ -25,7 +24,7 @@ public class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuAr
     }
 
     companion object {
-        @platformStatic public fun parse(identifier: String): PlatformId {
+        @JvmStatic public fun parse(identifier: String): PlatformId {
             var id  = identifier.toLowerCase()
 
             val regex = Regex("^([a-z]+)([0-9]{2}?)$")
@@ -46,7 +45,7 @@ public class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuAr
             return PlatformId(p, ca)
         }
 
-        @platformStatic public fun current(): PlatformId {
+        @JvmStatic public fun current(): PlatformId {
             var platform = when {
                 SystemUtils.IS_OS_WINDOWS -> OperatingSystem.WINDOWS
                 SystemUtils.IS_OS_LINUX -> OperatingSystem.LINUX

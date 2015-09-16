@@ -41,7 +41,7 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
      * @param <T>
      */
     public interface Runnable<T> {
-        public void run(T listener);
+        void run(T listener);
     }
 
     public EventDispatcher() {
