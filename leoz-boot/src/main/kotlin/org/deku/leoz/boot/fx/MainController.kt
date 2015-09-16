@@ -35,7 +35,7 @@ class MainController : Initializable {
             var max = 2000
             for (i in 1..max) {
                 log.info("Hello ${i}")
-                uxProgressBar!!.setProgress(i.toDouble() / max)
+                uxProgressBar!!.progress = i.toDouble() / max
                 Thread.sleep(1)
             }
             System.gc()

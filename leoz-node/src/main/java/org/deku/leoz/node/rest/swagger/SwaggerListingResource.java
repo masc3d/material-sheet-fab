@@ -92,7 +92,7 @@ public abstract class SwaggerListingResource {
             @Context ServletConfig sc,
             @Context HttpHeaders headers,
             @Context UriInfo uriInfo) {
-        Swagger swagger = (Swagger) mConfig.getSwagger();
+        Swagger swagger = mConfig.getSwagger();
         if(swagger.getPaths() == null)
             swagger = scan(app, sc);
         if(swagger != null) {
@@ -119,7 +119,7 @@ public abstract class SwaggerListingResource {
             @Context ServletConfig sc,
             @Context HttpHeaders headers,
             @Context UriInfo uriInfo) {
-        Swagger swagger = (Swagger) mConfig.getSwagger();
+        Swagger swagger = mConfig.getSwagger();
         if(swagger.getPaths() == null)
             swagger = scan(app, sc);
         try{

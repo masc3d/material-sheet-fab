@@ -12,7 +12,6 @@ import org.deku.leoz.messaging.activemq.ActiveMQContext
 import org.deku.leoz.messaging.log.LogAppender
 import org.slf4j.LoggerFactory
 import sx.Disposable
-import kotlin.platform.platformStatic
 
 /**
  * Log configuration
@@ -23,7 +22,7 @@ class LogConfiguration : Disposable {
 
     companion object Singleton {
         private val instance: LogConfiguration = LogConfiguration()
-        @platformStatic fun instance(): LogConfiguration {
+        @JvmStatic fun instance(): LogConfiguration {
             return this.instance;
         }
     }
@@ -45,25 +44,25 @@ class LogConfiguration : Disposable {
 
         // region File appender
         this.fileAppender = RollingFileAppender()
-        this.fileAppender.setContext(loggerContext)
-        this.fileAppender.setFile(LocalStorage.instance().logFile.toString())
+        this.fileAppender.context = loggerContext
+        this.fileAppender.file = LocalStorage.instance().logFile.toString()
 
         // Encoder
         val encoder = PatternLayoutEncoder()
-        encoder.setContext(this.loggerContext)
-        encoder.setPattern("%d %r %thread %level - %msg%n")
+        encoder.context = this.loggerContext
+        encoder.pattern = "%d %r %thread %level - %msg%n"
         encoder.start()
-        this.fileAppender.setEncoder(encoder)
+        this.fileAppender.encoder = encoder
 
         // Rolling policy
         val rollingPolicy = TimeBasedRollingPolicy<ILoggingEvent>()
-        rollingPolicy.setContext(this.loggerContext)
+        rollingPolicy.context = this.loggerContext
         rollingPolicy.setParent(this.fileAppender)
-        rollingPolicy.setMaxHistory(10)
-        rollingPolicy.setFileNamePattern("${this.fileAppender.rawFileProperty()}-%d{yyyy-MM-dd}")
+        rollingPolicy.maxHistory = 10
+        rollingPolicy.fileNamePattern = "${this.fileAppender.rawFileProperty()}-%d{yyyy-MM-dd}"
         rollingPolicy.start()
-        this.fileAppender.setRollingPolicy(rollingPolicy)
-        this.fileAppender.setTriggeringPolicy(rollingPolicy)
+        this.fileAppender.rollingPolicy = rollingPolicy
+        this.fileAppender.triggeringPolicy = rollingPolicy
         // endregion
     }
 
@@ -80,7 +79,7 @@ class LogConfiguration : Disposable {
             if (this.jmsLogAppender == null) {
                 // Setup message log appender
                 this.jmsLogAppender = LogAppender(ActiveMQContext.instance())
-                this.jmsLogAppender!!.setContext(loggerContext)
+                this.jmsLogAppender!!.context = loggerContext
             }
             this.jmsLogAppender!!.start()
             this.rootLogger.addAppender(this.jmsLogAppender)

@@ -11,7 +11,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.attribute.*
 import java.util.*
-import kotlin.platform.platformStatic
 
 /**
  * Local Storage
@@ -44,7 +43,7 @@ class LocalStorage {
 
     companion object Singleton {
         private val instance: LocalStorage = LocalStorage()
-        @platformStatic fun instance(): LocalStorage {
+        @JvmStatic fun instance(): LocalStorage {
             return this.instance;
         }
     }
@@ -82,20 +81,20 @@ class LocalStorage {
         if (!homeExists) {
             if (SystemUtils.IS_OS_WINDOWS) {
                 // Get file attribute view
-                var fav = Files.getFileAttributeView(Paths.get(this.homeDirectory.toURI()), javaClass<AclFileAttributeView>())
+                var fav = Files.getFileAttributeView(Paths.get(this.homeDirectory.toURI()), AclFileAttributeView::class.java)
 
                 // Lookup principal
                 var fs = FileSystems.getDefault()
-                var ups: UserPrincipalLookupService = fs.getUserPrincipalLookupService()
+                var ups: UserPrincipalLookupService = fs.userPrincipalLookupService
                 var gp = ups.lookupPrincipalByGroupName("Everyone")
 
                 // Set ACL
                 var aclb = AclEntry.newBuilder()
-                aclb.setPermissions(EnumSet.allOf(javaClass<AclEntryPermission>()))
+                aclb.setPermissions(EnumSet.allOf(AclEntryPermission::class.java))
                 aclb.setPrincipal(gp)
                 aclb.setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT)
                 aclb.setType(AclEntryType.ALLOW)
-                fav.setAcl(Collections.singletonList(aclb.build()))
+                fav.acl = Collections.singletonList(aclb.build())
             }
         }
         this.dataDirectory.mkdirs()

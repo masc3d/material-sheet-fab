@@ -15,7 +15,7 @@ object LogConfiguration {
     private val context = LoggerFactory.getILoggerFactory() as LoggerContext
 
     fun addAppender(appender: AppenderBase<ILoggingEvent>) {
-        appender.setContext(this.context)
+        appender.context = this.context
         appender.start()
         this.rootLogger.addAppender(appender)
     }

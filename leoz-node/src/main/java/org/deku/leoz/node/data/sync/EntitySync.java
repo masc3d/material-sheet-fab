@@ -14,7 +14,7 @@ import javax.persistence.EntityManagerFactory;
 public class EntitySync implements Disposable {
     private static final LazyInstance<EntitySync> mInstance = new LazyInstance(EntitySync::new);
 
-    public static EntitySync instance() { return mInstance.get(); };
+    public static EntitySync instance() { return mInstance.get(); }
 
     private EntityConsumer mEntityConsumer;
     private EntityManagerFactory mEntityManagerFactory;

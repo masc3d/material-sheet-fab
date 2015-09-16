@@ -86,7 +86,7 @@ public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, v
     private fun walkPlatformFolders(path: Path): java.util.stream.Stream<Path> {
         return Files.find(path,
                 1,
-                BiPredicate { p, b -> !p.equals(path) && !p.getFileName().toString().startsWith(".") })
+                BiPredicate { p, b -> !p.equals(path) && !p.fileName.toString().startsWith(".") })
     }
 
     /**
@@ -95,7 +95,7 @@ public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, v
      * @param onStart Optional callback providing details about synchronization before start
      * @param onFile Optional callback providing details during sync/upload process
      */
-    public @jvmOverloads fun upload(srcPath: File,
+    public @JvmOverloads fun upload(srcPath: File,
                                     consoleOutput: Boolean = false) {
         /** Info logging wrapper */
         fun logInfo(s: String) {
@@ -129,7 +129,7 @@ public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, v
         val version = artifacts.get(0).version!!
         val remoteVersions = this.listVersions()
 
-        val comparisonDestinationVersions = remoteVersions.sortDescending()
+        val comparisonDestinationVersions = remoteVersions.sortedDescending()
                 .filter({ v -> v.compareTo(version) != 0 })
                 .take(2)
 
@@ -181,7 +181,7 @@ public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, v
      * @param version Bundle version
      * @param platformId Platform id
      */
-    public @jvmOverloads fun download(version: Bundle.Version, platformId: PlatformId, destPath: File, verify: Boolean = false) {
+    public @JvmOverloads fun download(version: Bundle.Version, platformId: PlatformId, destPath: File, verify: Boolean = false) {
         val rc = this.createRsyncClient()
         rc.source = this.rsyncArtifactUri.resolve(version, platformId)
         rc.destination = Rsync.URI(destPath)
@@ -205,7 +205,7 @@ public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, v
      * @param verify Verify artifact after download
      * @param consoleOutput Log to console instead of logger (used for gradle)
      */
-    public @jvmOverloads fun download(version: Bundle.Version,
+    public @JvmOverloads fun download(version: Bundle.Version,
                                       destPath: File,
                                       verify: Boolean = false,
                                       consoleOutput: Boolean = false) {

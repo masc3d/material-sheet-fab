@@ -37,7 +37,7 @@ public class IdentityPublisher {
      * Publishes client node idenity to the central system
      * @param identity
      */
-    public void publish(Identity identity) throws TimeoutException, Exception {
+    public void publish(Identity identity) throws Exception {
         this.sendAndReceive(identity, false);
     }
 
@@ -45,7 +45,7 @@ public class IdentityPublisher {
      * Request client node id from central system
      * @param identity
      */
-    public AuthorizationMessage requestId(Identity identity) throws TimeoutException, Exception {
+    public AuthorizationMessage requestId(Identity identity) throws Exception {
         return this.sendAndReceive(identity, true);
     }
 
@@ -57,7 +57,7 @@ public class IdentityPublisher {
     @SuppressWarnings("unchecked")
     private AuthorizationMessage sendAndReceive(
             Identity identity,
-            boolean receive) throws TimeoutException, Exception {
+            boolean receive) throws Exception {
 
         // Connection and session
         Connection cn = mMessagingContext.getBroker().getConnectionFactory().createConnection();

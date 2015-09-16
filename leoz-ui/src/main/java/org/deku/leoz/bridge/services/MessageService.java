@@ -24,7 +24,7 @@ public class MessageService implements IMessageService {
     @Override
     public void send(Message message) {
         Date test = new Date();
-        Listener l = (Listener) LeoBridge.instance();
+        Listener l = LeoBridge.instance();
         l.onLeoBridgeServiceMessageReceived(message);
     }
 }

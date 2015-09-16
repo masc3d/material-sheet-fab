@@ -10,7 +10,6 @@ import sx.event
 import sx.event.EventDelegate
 
 import javax.persistence.EntityManagerFactory
-import kotlin.platform.platformStatic
 import kotlin.properties.Delegates
 
 /**
@@ -21,7 +20,7 @@ public class EntitySync private constructor() : Disposable {
     //region Singleton
     companion object Singleton {
         private val instance = EntitySync()
-        @platformStatic public fun it(): EntitySync {
+        @JvmStatic public fun it(): EntitySync {
             return instance;
         }
     }
@@ -46,7 +45,7 @@ public class EntitySync private constructor() : Disposable {
     /** Start entity sync */
     public fun start() {
         // Register event
-        this.databaseSync.getEventDelegate().add(databaseSyncEvent)
+        this.databaseSync.eventDelegate.add(databaseSyncEvent)
 
         // Configure and start publisher
         this.entityPublisher = EntityPublisher(

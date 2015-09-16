@@ -21,11 +21,11 @@ public interface RoutingService {
     /**
      * Routing service specific error codes
      */
-    public enum ErrorCode {
+    enum ErrorCode {
         ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER(1000);
 
         private int mValue;
-        private ErrorCode(int value) {
+        ErrorCode(int value) {
             mValue = value;
         }
     }

@@ -96,7 +96,7 @@ public class LogAppender extends AppenderBase<ILoggingEvent> implements Disposab
                         session
                 ));
 
-                session.commit();;
+                session.commit();
             } catch(Exception e) {
                 mLog.error(e.getMessage(), e);
             }

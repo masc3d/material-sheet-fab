@@ -20,7 +20,7 @@ public abstract class ModuleController extends Controller {
      */
     public static <T extends ModuleController> T fromFxml(String path) {
         FXMLLoader fxml = Main.instance().loadFxPane(path);
-        T m = (T)fxml.getController();
+        T m = fxml.getController();
         m.mRootNode = fxml.getRoot();
         return m;
     }

@@ -8,5 +8,5 @@ import java.util.List;
  * Created by masc on 07.05.15.
  */
 public interface StationRepositoryCustom {
-    public List<Station> findWithQuery(String query);
+    List<Station> findWithQuery(String query);
 }

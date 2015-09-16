@@ -129,7 +129,7 @@ public class DatabaseSync {
 
         this.updateEntities(
                 Tables.MST_ROUTE,
-                MstRoute.MST_ROUTE.MST_ROUTE.TIMESTAMP,
+                MstRoute.MST_ROUTE.TIMESTAMP,
                 mRouteRepository,
                 QRoute.route,
                 QRoute.route.timestamp,
@@ -138,7 +138,7 @@ public class DatabaseSync {
 
         this.updateEntities(
                 Tables.MST_SECTOR,
-                MstSector.MST_SECTOR.MST_SECTOR.TIMESTAMP,
+                MstSector.MST_SECTOR.TIMESTAMP,
                 mSectorRepository,
                 QSector.sector,
                 QSector.sector.timestamp,
@@ -147,7 +147,7 @@ public class DatabaseSync {
 
         this.updateEntities(
                 Tables.MST_ROUTINGLAYER,
-                MstRoutinglayer.MST_ROUTINGLAYER.MST_ROUTINGLAYER.TIMESTAMP,
+                MstRoutinglayer.MST_ROUTINGLAYER.TIMESTAMP,
                 mRoutingLayerRepository,
                 QRoutingLayer.routingLayer,
                 QRoutingLayer.routingLayer.timestamp,
@@ -156,7 +156,7 @@ public class DatabaseSync {
 
         this.updateEntities(
                 Tables.SYS_PROPERTY,
-                SysProperty.SYS_PROPERTY.SYS_PROPERTY.TIMESTAMP,
+                SysProperty.SYS_PROPERTY.TIMESTAMP,
                 mPropertyRepository,
                 QProperty.property,
                 QProperty.property.timestamp,
@@ -166,7 +166,7 @@ public class DatabaseSync {
 
         this.updateEntities(
                 Tables.MST_STATION_SECTOR,
-                MstStationSector.MST_STATION_SECTOR.MST_STATION_SECTOR.TIMESTAMP,
+                MstStationSector.MST_STATION_SECTOR.TIMESTAMP,
                 mStationSectorRepository,
                 QStationSector.stationSector,
                 QStationSector.stationSector.timestamp,

@@ -131,10 +131,10 @@ public class MainController extends Controller implements Initializable, Sidebar
         // Add new pane to container
         if (!mContentPaneContainer.getChildren().contains(node))
             mContentPaneContainer.getChildren().add(node);
-        mContentPaneContainer.setTopAnchor(node, 0.0);
-        mContentPaneContainer.setBottomAnchor(node, 0.0);
-        mContentPaneContainer.setRightAnchor(node, 0.0);
-        mContentPaneContainer.setLeftAnchor(node, 0.0);
+        AnchorPane.setTopAnchor(node, 0.0);
+        AnchorPane.setBottomAnchor(node, 0.0);
+        AnchorPane.setRightAnchor(node, 0.0);
+        AnchorPane.setLeftAnchor(node, 0.0);
 
         if (animated) {
             // Fade in new pane

@@ -13,8 +13,8 @@ public object RsyncConfiguration {
     public fun initialize() {
         Rsync.executableFile = Paths.get("")
                 .toAbsolutePath()
-                .getParent()
-                .getParent()
+                .parent
+                .parent
                 .resolve("libs")
                 .resolve("sx-common")
                 .resolve("bin")

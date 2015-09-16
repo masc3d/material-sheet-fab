@@ -87,9 +87,9 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
         //TODO rWereLayer bitmaske suchen
 
-        val sendDate = routingRequest.sendDate?.getLocalDate()
+        val sendDate = routingRequest.sendDate?.localDate
         val routingValidDate = sendDate
-        var desiredDeliveryDate: LocalDate? = routingRequest.desiredDeliveryDate?.getLocalDate()
+        var desiredDeliveryDate: LocalDate? = routingRequest.desiredDeliveryDate?.localDate
 
         var deliveryDate: LocalDate? = null
 
@@ -182,19 +182,19 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         val rcountry = countryRepository!!.findOne(country)
                 ?: throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} unknown country")
 
-        if (Strings.isNullOrEmpty(rcountry.getZipFormat()))
+        if (Strings.isNullOrEmpty(rcountry.zipFormat))
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} unknown country")
 
-        if (zip.length() < rcountry.getMinLen())
+        if (zip.length() < rcountry.minLen)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} zipcode too short")
 
-        if (rcountry.getRoutingTyp() < 0 || rcountry.getRoutingTyp() > 3)
+        if (rcountry.routingTyp < 0 || rcountry.routingTyp > 3)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} country not enabled")
 
-        if (zip.length() > rcountry.getMaxLen())
+        if (zip.length() > rcountry.maxLen)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} zipcode too long")
 
-        val parsedZip = ParsedZip(zip = zip, zipFormat = rcountry.getZipFormat())
+        val parsedZip = ParsedZip(zip = zip, zipFormat = rcountry.zipFormat)
 
         if (Strings.isNullOrEmpty(parsedZip.query))
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} wrong zipcode format")
@@ -250,7 +250,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         //        )
 
         val rRoutes = routeRepository!!.findAll(
-                QRoute.route.layer.eq(routingLayer.getLayer())
+                QRoute.route.layer.eq(routingLayer.layer)
                         .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
                         .and(QRoute.route.zipFrom.loe(queryZipCode))
                         .and(QRoute.route.zipTo.goe(queryZipCode))
@@ -264,15 +264,15 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
         //TODO Sector aus stationsector
 
-        val rStation = stationRepository!!.findOne(rRoute.getStation())
+        val rStation = stationRepository!!.findOne(rRoute.station)
 
         if (rStation == null)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} Route Station not found");
 
-        participant.sector = rStation.getSector()
-        participant.country = rRoute.getCountry()
+        participant.sector = rStation.sector
+        participant.country = rRoute.country
         participant.zipCode = queryZipCode
-        participant.term = rRoute.getTerm()
+        participant.term = rRoute.term
 
         when (sendDelivery) {
             "S" -> {
@@ -285,7 +285,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
             }
             "D" -> {
                 var deliveryDate = desiredDeliveryDate
-                        ?: getNextDeliveryDay(sendDate, participant.country, rRoute.getHolidayCtrl())
+                        ?: getNextDeliveryDay(sendDate, participant.country, rRoute.holidayCtrl)
 
                 participant.date = deliveryDate
             }
@@ -295,16 +295,16 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
                 this.getDayType(
                         participant.date,
                         requestParticipant?.country?.toUpperCase(),
-                        rRoute.getHolidayCtrl()
+                        rRoute.holidayCtrl
                 ).toString()
 
-        participant.station = rRoute.getStation()
-        participant.zone = rRoute.getArea()
-        participant.island = (rRoute.getIsland() != 0)
-        participant.earliestTimeOfDelivery = rRoute.getEtod().toShortTime()
-        participant.term = rRoute.getTerm()
-        if (rRoute.getLtodsa() != null)
-            participant.sundayDeliveryUntil = ShortTime(rRoute.getLtodsa().toString())
+        participant.station = rRoute.station
+        participant.zone = rRoute.area
+        participant.island = (rRoute.island != 0)
+        participant.earliestTimeOfDelivery = rRoute.etod.toShortTime()
+        participant.term = rRoute.term
+        if (rRoute.ltodsa != null)
+            participant.sundayDeliveryUntil = ShortTime(rRoute.ltodsa.toString())
 
         return participant
     }
@@ -325,7 +325,7 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
      * Get day type
      */
     private fun getDayType(date: LocalDate?, country: String?, holidayCtrl: String): DayType {
-        var daytype = when (date?.getDayOfWeek()) {
+        var daytype = when (date?.dayOfWeek) {
             DayOfWeek.SUNDAY -> DayType.Sunday
             DayOfWeek.SATURDAY -> DayType.Saturday
             else -> DayType.Workday
@@ -334,10 +334,10 @@ public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         val rHolidayCtrl = holidayctrlRepostitory!!.findOne(HolidayCtrlPK(date?.toTimestamp(), country))
 
         if (rHolidayCtrl != null) {
-            if (rHolidayCtrl.getCtrlPos() == -1)
+            if (rHolidayCtrl.ctrlPos == -1)
                 daytype = DayType.Holiday
-            else if (rHolidayCtrl.getCtrlPos() > 0) {
-                if (holidayCtrl.charAt(rHolidayCtrl.getCtrlPos()) == 'J')
+            else if (rHolidayCtrl.ctrlPos > 0) {
+                if (holidayCtrl.charAt(rHolidayCtrl.ctrlPos) == 'J')
                     daytype = DayType.RegionalHoliday
             }
         }

@@ -37,6 +37,6 @@ public class WebserviceTest {
 
 
     public <T> T getService(Class<T> c) {
-        return (T) ((ResteasyWebTarget)target).proxy(c);
+        return ((ResteasyWebTarget)target).proxy(c);
     }
 }

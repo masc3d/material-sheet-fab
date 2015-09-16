@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.XmlAttribute
 import javax.xml.bind.annotation.XmlElement
 import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
-import kotlin.platform.platformStatic
 import kotlin.properties.Delegates
 import kotlin.text.Regex
 
@@ -58,7 +57,7 @@ public class Bundle : Serializable {
     public var javaVersion: String = SystemUtils.JAVA_VERSION
         private set
 
-    @jvmOverloads constructor(/** Path of artifact */
+    @JvmOverloads constructor(/** Path of artifact */
                               path: File? = null,
                               /** Name */
                               name: String? = null,
@@ -78,7 +77,7 @@ public class Bundle : Serializable {
     }
 
     /** Bundle content path */
-    public val contentPath: File by Delegates.lazy( {
+    public val contentPath: File by lazy(LazyThreadSafetyMode.NONE, {
         val nioBasePath: Path = this.path!!.toPath()
         val nioContentPath: Path
         if (this.platform!!.operatingSystem == OperatingSystem.OSX) {
@@ -93,7 +92,7 @@ public class Bundle : Serializable {
     })
 
     /** Jar path */
-    public val jarPath: File by Delegates.lazy( {
+    public val jarPath: File by lazy(LazyThreadSafetyMode.NONE, {
         if (this.platform!!.operatingSystem == OperatingSystem.OSX) {
             File(this.contentPath, "Java")
         } else {
@@ -102,15 +101,15 @@ public class Bundle : Serializable {
     })
 
     /** Bumdle configuration file */
-    public val configFile: File by Delegates.lazy( {
-        var nioConfigFile = Files.find(this.jarPath.toPath(), 1, BiPredicate { p, a -> a.isRegularFile() && p.getFileName().toString().endsWith(".cfg") }).findFirst()
-        if (!nioConfigFile.isPresent())
+    public val configFile: File by lazy(LazyThreadSafetyMode.NONE, {
+        var nioConfigFile = Files.find(this.jarPath.toPath(), 1, BiPredicate { p, a -> a.isRegularFile && p.fileName.toString().endsWith(".cfg") }).findFirst()
+        if (!nioConfigFile.isPresent)
             throw IllegalStateException("Config file not found within jar path [${this.jarPath}]")
 
         nioConfigFile.get().toFile()
     })
 
-    public val configuration: Configuration by Delegates.lazy { -> Configuration() }
+    public val configuration: Configuration by lazy(LazyThreadSafetyMode.NONE) { -> Configuration() }
 
     /**
      * Manifest file entry
@@ -142,17 +141,17 @@ public class Bundle : Serializable {
          * @param name Name of the artifact to create
          * @param version Version of the artifact
          */
-        @platformStatic public fun create(path: File, name: String, version: Version): Bundle {
+        @JvmStatic public fun create(path: File, name: String, version: Version): Bundle {
             val fileEntries = ArrayList<FileEntry>()
 
-            var platformId = PlatformId.parse(path.getName())
+            var platformId = PlatformId.parse(path.name)
 
             // Walk artifact directory and calculate md5 for each regular file
             var pathUri = path.toURI()
             var nPath = Paths.get(pathUri)
             Files.walk(nPath)
                     .filter { p ->
-                        val filename = p.getFileName().toString()
+                        val filename = p.fileName.toString()
                         // Exclude file specific patterns from manifest
                         java.nio.file.Files.isRegularFile(p) &&
                                 !filename.equals(MANIFEST_FILENAME) &&
@@ -169,7 +168,7 @@ public class Bundle : Serializable {
             var artifact = Bundle(path, name, version, platformId, fileEntries)
 
             // Serialize artifact to manifest
-            var context = JAXBContext.newInstance(javaClass<Bundle>())
+            var context = JAXBContext.newInstance(Bundle::class.java)
             var m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
             var os = FileOutputStream(File(path, MANIFEST_FILENAME)).buffered()
@@ -186,8 +185,8 @@ public class Bundle : Serializable {
          * Load artifact from manifest/path
          * @param artifactPath Bundle path
          */
-        @platformStatic public fun load(artifactPath: File): Bundle {
-            var context = JAXBContext.newInstance(javaClass<Bundle>())
+        @JvmStatic public fun load(artifactPath: File): Bundle {
+            var context = JAXBContext.newInstance(Bundle::class.java)
             var m = context.createUnmarshaller();
             var inputStream = FileInputStream(File(artifactPath, MANIFEST_FILENAME)).buffered()
             try {
@@ -227,7 +226,7 @@ public class Bundle : Serializable {
     }
 
     override fun toString(): String {
-        return "${javaClass.getSimpleName()}(name=${name}, version=${version}, platform=${this.platform}, javaVersion=${javaVersion})"
+        return "${javaClass.simpleName}(name=${name}, version=${version}, platform=${this.platform}, javaVersion=${javaVersion})"
     }
 
     /**
@@ -247,7 +246,7 @@ public class Bundle : Serializable {
         }
 
         public companion object {
-            @platformStatic public fun parse(version: String): Version {
+            @JvmStatic public fun parse(version: String): Version {
                 // Determine end of numeric components
                 var end = version.indexOfFirst({ c -> !c.isDigit() && c != '.' })
 

@@ -27,7 +27,7 @@ public class Message {
      */
     public static final class JsonDeserializer extends com.fasterxml.jackson.databind.JsonDeserializer<Message> {
         @Override
-        public Message deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public Message deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
             String key = "";
             HashMap attributes = new HashMap();
             while(jp.hasCurrentToken()) {
@@ -60,7 +60,7 @@ public class Message {
      */
     public static final class JsonSerializer extends com.fasterxml.jackson.databind.JsonSerializer<Message> {
         @Override
-        public void serialize(Message value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+        public void serialize(Message value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
             jgen.writeStartObject();
             for (Map.Entry<Object, Object> entry : value.mAttributes.entrySet()) {
 

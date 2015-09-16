@@ -11,7 +11,6 @@ import sx.ProcessExecutor
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util
-import kotlin.platform.platformStatic
 
 /**
  * Local Storage
@@ -22,7 +21,7 @@ class Setup {
 
     companion object Singleton {
         private val instance: Setup = Setup()
-        @platformStatic fun instance(): Setup {
+        @JvmStatic fun instance(): Setup {
             return this.instance;
         }
     }
@@ -33,10 +32,10 @@ class Setup {
     private var leozsvcPath: Path
 
     private constructor() {
-        this.codeSourcePath = Paths.get(this.javaClass.getProtectionDomain().getCodeSource().getLocation().toURI())
+        this.codeSourcePath = Paths.get(this.javaClass.protectionDomain.codeSource.location.toURI())
         if (this.codeSourcePath.toString().endsWith(".jar")) {
             // Running from within jar. Parent directory is supposed to contain bin\ directory for service installation
-            this.basePath = this.codeSourcePath.getParent().getParent()
+            this.basePath = this.codeSourcePath.parent.parent
             this.binPath = this.basePath.resolve("bin");
         } else {
             // Assume running from ide, working dir plus arch bin path
@@ -78,7 +77,7 @@ class Setup {
      */
     private fun logProcessOutput(output: String, isError: Boolean = false) {
         if (!Strings.isNullOrEmpty(output)) {
-            var lines = output.splitBy(StandardSystemProperty.LINE_SEPARATOR.value())
+            var lines = output.split(StandardSystemProperty.LINE_SEPARATOR.value())
             log.info("Lines [${lines.count()}]")
             for (line in lines) {
                 var tLine = line.trim()
@@ -97,7 +96,7 @@ class Setup {
     public fun install(serviceName: String, mainClass: Class<Any>) {
         log.info("Installing service")
 
-        var classPath = Paths.get(mainClass.getProtectionDomain().getCodeSource().getLocation().toURI())
+        var classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
 
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//IS/LeoZ",
@@ -110,9 +109,9 @@ class Setup {
                 "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
                 "--StartMode=jvm",
                 "--StopMode=jvm",
-                "--StartClass=${mainClass.getCanonicalName()}",
+                "--StartClass=${mainClass.canonicalName}",
                 "--StartMethod=main",
-                "--StopClass=${mainClass.getCanonicalName()}",
+                "--StopClass=${mainClass.canonicalName}",
                 "--StopMethod=stop",
                 "--Classpath=${classPath}")
 
