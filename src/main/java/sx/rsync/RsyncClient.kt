@@ -22,7 +22,7 @@ import kotlin.text.Regex
 /**
  * Created by masc on 15.08.15.
  */
-public class RsyncClient() {
+class RsyncClient() {
     companion object {
         val log = LogFactory.getLog(RsyncClient::class.java)
     }
@@ -61,7 +61,7 @@ public class RsyncClient() {
     /** Use relative paths */
     var relative: Boolean = false
 
-    public class Result(val files: List<File>) {
+    class Result(val files: List<File>) {
 
     }
 
@@ -70,7 +70,7 @@ public class RsyncClient() {
      * File entry record
      * @param line Line to parse
      */
-    public data class FileRecord(val flags: String, val path: String) {
+    data class FileRecord(val flags: String, val path: String) {
         companion object {
             /** Output format for rsync */
             val OutputFormat = ">>> %i %n %L"
@@ -79,7 +79,7 @@ public class RsyncClient() {
              * Try to parse file record line
              * @return FileRecord or null if it couldn't be parsed
              */
-            public fun tryParse(line: String): FileRecord? {
+            fun tryParse(line: String): FileRecord? {
                 // Flag field length is 12 on osx (linux?) and 11 on windows.
                 var re = Regex("^>>> (.{11,12}) (.*)$")
                 var mr = re.match(line) ?: return null
@@ -92,7 +92,7 @@ public class RsyncClient() {
         init {
         }
 
-        public val isDirectory: Boolean
+        val isDirectory: Boolean
             get() = this.flags[1] == 'd'
     }
 
@@ -100,13 +100,13 @@ public class RsyncClient() {
      * Progress record
      * @param line Line to parse
      */
-    public data class ProgressRecord(val bytes: Int, val percentage: Int) {
+    data class ProgressRecord(val bytes: Int, val percentage: Int) {
         companion object {
             /**
              * Try to parse progress record line
              * @return ProgressRecord or null if it couldn't be parsed
              */
-            public fun tryParse(line: String): ProgressRecord? {
+            fun tryParse(line: String): ProgressRecord? {
                 var re = Regex("^([0-9,]+)[\\s]+([0-9]+)%[\\s]+([^\\s]+).*$")
                 var mr = re.match(line) ?: return null
                 return ProgressRecord(
@@ -116,13 +116,13 @@ public class RsyncClient() {
         }
     }
 
-    public data class ListRecord(val flags: String, val size: Int, val timestamp: LocalDateTime, val filename: String) {
+    data class ListRecord(val flags: String, val size: Int, val timestamp: LocalDateTime, val filename: String) {
         companion object {
             /**
              * Try to parse list record line
              * @return ListRecord or null if it couldn't be parsed
              */
-            public fun tryParse(line: String): ListRecord? {
+            fun tryParse(line: String): ListRecord? {
                 // Example: drwxr-xr-x             10 2015/08/22 11:19:10 0.1
                 var re = Regex("^([^\\s]{10})[\\s]+([0-9,]+)[\\s]+([0-9]{4})/([0-9]{2})/([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2}) ([^\\s]+)$")
                 var mr = re.match(line) ?: return null
@@ -141,7 +141,7 @@ public class RsyncClient() {
             }
         }
 
-        public val isDirectory: Boolean
+        val isDirectory: Boolean
             get() = this.flags[0] == 'd'
     }
     //endregion
@@ -149,7 +149,7 @@ public class RsyncClient() {
     /**
      * List destination directory
      */
-    public fun list(): List<ListRecord> {
+    fun list(): List<ListRecord> {
         if (this.destination == null)
             throw IllegalArgumentException("Destination is mandatory")
 
@@ -194,7 +194,7 @@ public class RsyncClient() {
      * Synchronize
      * @return Sync result
      */
-    @JvmOverloads public fun sync(
+    @JvmOverloads fun sync(
             fileRecordCallback: (fr: FileRecord) -> Unit = {},
             progressRecordCallback: (pr: ProgressRecord) -> Unit = {})
             : Result {

@@ -3,7 +3,7 @@ package sx.platform
 /**
  * Platform types
  */
-public enum class OperatingSystem(val os: String) {
+enum class OperatingSystem(val os: String) {
     OSX("osx"),
     WINDOWS("win"),
     LINUX("linux");
@@ -16,7 +16,7 @@ public enum class OperatingSystem(val os: String) {
 /**
  * Cpu architecture types
  */
-public enum class CpuArch(val cpuArch: String) {
+enum class CpuArch(val cpuArch: String) {
     X86("32"),
     X64("64");
 

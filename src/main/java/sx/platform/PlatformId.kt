@@ -11,7 +11,7 @@ import kotlin.text.Regex
 /**
  * Platform/architecture
  */
-public class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuArch) {
+class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuArch) {
     /** Adapter for xml serialization */
     class XmlAdapter : javax.xml.bind.annotation.adapters.XmlAdapter<String, PlatformId>() {
         override fun marshal(p: PlatformId?): String? {
@@ -24,7 +24,7 @@ public class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuAr
     }
 
     companion object {
-        @JvmStatic public fun parse(identifier: String): PlatformId {
+        @JvmStatic fun parse(identifier: String): PlatformId {
             var id  = identifier.toLowerCase()
 
             val regex = Regex("^([a-z]+)([0-9]{2}?)$")
@@ -45,7 +45,7 @@ public class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuAr
             return PlatformId(p, ca)
         }
 
-        @JvmStatic public fun current(): PlatformId {
+        @JvmStatic fun current(): PlatformId {
             var platform = when {
                 SystemUtils.IS_OS_WINDOWS -> OperatingSystem.WINDOWS
                 SystemUtils.IS_OS_LINUX -> OperatingSystem.LINUX

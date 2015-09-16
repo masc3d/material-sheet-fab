@@ -16,7 +16,7 @@ import java.util.function.Supplier
  * Lightweight messaging channel
  * Created by masc on 06.07.15.
  */
-public class Channel
+class Channel
 /**
  * c'tor
  * @param connectionFactory Connection factory used to create session
@@ -73,7 +73,7 @@ public class Channel
      * @param messageConfigurer Callback for customizing the message before sending
      */
     @Throws(JMSException::class)
-    public fun send(message: Message, messageConfigurer: Action<Message>?) {
+    fun send(message: Message, messageConfigurer: Action<Message>?) {
         val mp = session.get().createProducer(destination)
 
         mp.deliveryMode = jmsDeliveryMode
@@ -91,7 +91,7 @@ public class Channel
      * @param message Message to send
      */
     @Throws(JMSException::class)
-    public fun send(message: Message) {
+    fun send(message: Message) {
         this.send(message, null)
     }
 
@@ -100,7 +100,7 @@ public class Channel
      * @param message
      */
     @Throws(JMSException::class)
-    public fun send(message: Any) {
+    fun send(message: Any) {
         if (converter == null)
             throw IllegalStateException("Cannot send object without a message converter")
 
@@ -109,7 +109,7 @@ public class Channel
 
     // TODO: add receive support
 //    throws(JMSException::class)
-//    public fun <T> receive(messageType: Class<T>): T {
+//    fun <T> receive(messageType: Class<T>): T {
 //        return null
 //    }
 
@@ -117,7 +117,7 @@ public class Channel
      * Explicitly commit transaction
      */
     @Throws(JMSException::class)
-    public fun commit() {
+    fun commit() {
         val session = session.get()
         if (session.transacted)
             session.commit()

@@ -8,7 +8,7 @@ import java.nio.file.Paths
 /**
  * Created by masc on 01.09.15.
  */
-public class RsyncServerTest {
+class RsyncServerTest {
     private val log = LogFactory.getLog(this.javaClass)
 
     private val modulePath = Paths.get("").toAbsolutePath()
@@ -34,7 +34,7 @@ public class RsyncServerTest {
     }
 
     @Test
-    public fun testConfiguration() {
+    fun testConfiguration() {
         var config = this.createConfiguration()
 
         println("CONFIG:")
@@ -45,7 +45,7 @@ public class RsyncServerTest {
     }
 
     @Test
-    public fun testServer() {
+    fun testServer() {
         var config = this.createConfiguration()
 
         var rsyncServer = RsyncServer(modulePath.toFile(), config)
