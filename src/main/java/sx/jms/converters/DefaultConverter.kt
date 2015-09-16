@@ -95,7 +95,7 @@ public class DefaultConverter(var mSerializationType: DefaultConverter.Serializa
         }
     }
 
-    throws(JMSException::class)
+    @Throws(JMSException::class)
     override fun toMessage(obj: Any, session: Session): Message {
         val baos = ByteArrayOutputStream()
 
@@ -113,11 +113,11 @@ public class DefaultConverter(var mSerializationType: DefaultConverter.Serializa
         return bm
     }
 
-    throws(JMSException::class)
+    @Throws(JMSException::class)
     override fun fromMessage(message: Message): Any {
         // Create binary stream from jms bytes message
         val bm = message as BytesMessage
-        val size = bm.getBodyLength().toInt()
+        val size = bm.bodyLength.toInt()
         val buf = ByteArray(size)
         bm.readBytes(buf)
         val bais = ByteArrayInputStream(buf)

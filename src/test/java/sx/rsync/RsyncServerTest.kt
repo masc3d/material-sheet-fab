@@ -12,9 +12,9 @@ public class RsyncServerTest {
     private val log = LogFactory.getLog(this.javaClass)
 
     private val modulePath = Paths.get("").toAbsolutePath()
-            .getParent()
-            .getParent()
-            .getParent()
+            .parent
+            .parent
+            .parent
             .resolve("leoz-release")
 
     private fun createConfiguration(): RsyncServer.Configuration {

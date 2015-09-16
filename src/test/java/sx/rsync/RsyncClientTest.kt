@@ -16,7 +16,7 @@ class RsyncClientTest {
     fun testSync() {
         val rsyncClient = RsyncClient()
         rsyncClient.source = Rsync.URI("rsync://leoz@syntronix.de/leoz/test")
-        var path = Paths.get("").toAbsolutePath().getParent().getParent().getParent().resolve("leoz-release").resolve("test")
+        var path = Paths.get("").toAbsolutePath().parent.parent.parent.resolve("leoz-release").resolve("test")
 
         rsyncClient.destination = Rsync.URI(path)
         rsyncClient.password = "leoz"

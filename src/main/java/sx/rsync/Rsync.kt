@@ -20,12 +20,12 @@ import kotlin.properties.Delegates
  */
 public open class Rsync() {
     companion object {
-        val log = LogFactory.getLog(Rsync.javaClass)
+        val log = LogFactory.getLog(Rsync::class.java)
 
         /** Rsync executable base filename */
         public var executableBaseFilename: String = "sx-rsync"
         /** Rsync executable file name */
-        public val executableFilename: String by Delegates.lazy {
+        public val executableFilename: String by lazy(LazyThreadSafetyMode.NONE) {
             this.executableBaseFilename + if (SystemUtils.IS_OS_WINDOWS) ".exe" else ""
         }
 
@@ -53,7 +53,7 @@ public open class Rsync() {
                 if (Files.exists(binPath))
                     return binPath.toFile()
 
-                path = path.getParent()
+                path = path.parent
             } while (path != null)
 
             return null
@@ -70,12 +70,12 @@ public open class Rsync() {
                         Files.isRegularFile(p) && (!filename.contains('.') || filename.endsWith(".exe") || filename.endsWith(".dll")) }
                     .forEach { p ->
                         // Get file attribute view
-                        var fav = Files.getFileAttributeView(p, javaClass<AclFileAttributeView>())
+                        var fav = Files.getFileAttributeView(p, AclFileAttributeView::class.java)
 
                         if (fav != null) {
                             log.debug("Verifying executable permission for [${p}]")
 
-                            var oldAcls = fav.getAcl()
+                            var oldAcls = fav.acl
                             var newAcls = ArrayList<AclEntry>()
                             var update = false
                             for (acl in oldAcls) {
@@ -94,7 +94,7 @@ public open class Rsync() {
                             }
                             if (update) {
                                 log.debug("Adding permission to execute to [${p}]")
-                                fav.setAcl(newAcls)
+                                fav.acl = newAcls
                             }
                         }
                     }
@@ -105,7 +105,7 @@ public open class Rsync() {
          * When not set explicitly, tries to detect/find executable automatically within current and parent paths
          * */
         public var executableFile: File? = null
-            @synchronized get() {
+            @Synchronized get() {
                 if ($executableFile == null) {
                     log.debug("Searching for rsync executable [${this.executableFilename}]")
                     $executableFile = this.findExecutable()
@@ -114,7 +114,7 @@ public open class Rsync() {
 
                     log.debug("Found rsync executable [${$executableFile}]")
 
-                    this.setExecutablePermissions($executableFile!!.getParentFile())
+                    this.setExecutablePermissions($executableFile!!.parentFile)
                 }
 
                 return $executableFile
@@ -132,9 +132,9 @@ public open class Rsync() {
         init {
             // Make sure URI has trailing slash (or not) according to flag
             if (!asDirectory) {
-                this.uri = if (uri.getPath().endsWith('/')) java.net.URI(uri.toString().trimEnd('/')) else uri
+                this.uri = if (uri.path.endsWith('/')) java.net.URI(uri.toString().trimEnd('/')) else uri
             } else {
-                this.uri = if (!uri.getPath().endsWith('/')) java.net.URI(uri.toString() + '/') else uri
+                this.uri = if (!uri.path.endsWith('/')) java.net.URI(uri.toString() + '/') else uri
             }
         }
 
@@ -158,7 +158,7 @@ public open class Rsync() {
 
         // Extension methods for java.net.URI
         private fun java.net.URI.isFile(): Boolean {
-            return this.getScheme() == "file"
+            return this.scheme == "file"
         }
 
         /**
@@ -167,7 +167,7 @@ public open class Rsync() {
         public fun resolve(vararg str: Any): Rsync.URI {
             val path = str.joinToString("/")
             return Rsync.URI(
-                    uri = if (uri.getPath().endsWith('/')) uri.resolve(path) else java.net.URI(uri.toString() + "/" + path),
+                    uri = if (uri.path.endsWith('/')) uri.resolve(path) else java.net.URI(uri.toString() + "/" + path),
                     asDirectory = this.asDirectory)
         }
 
@@ -178,11 +178,11 @@ public open class Rsync() {
             var rsyncPath: String
             if (SystemUtils.IS_OS_WINDOWS)
             // Return cygwin path on windows systems
-                rsyncPath = "/cygdrive${this.uri.getPath().replace(":", "")}"
+                rsyncPath = "/cygdrive${this.uri.path.replace(":", "")}"
             else
                 rsyncPath = Paths.get(this.uri).toAbsolutePath().toString()
 
-            if (this.uri.getPath().endsWith('/')) {
+            if (this.uri.path.endsWith('/')) {
                 if (!rsyncPath.endsWith('/'))
                     rsyncPath += '/'
             } else

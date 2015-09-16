@@ -33,7 +33,7 @@ public class Channel
  * *
  * @param priority JMS message priority
  */
-@jvmOverloads constructor(
+@JvmOverloads constructor(
         private val connectionFactory: ConnectionFactory,
         private val destination: Destination,
         private val converter: Converter?,
@@ -72,14 +72,14 @@ public class Channel
      * *
      * @param messageConfigurer Callback for customizing the message before sending
      */
-    throws(JMSException::class)
+    @Throws(JMSException::class)
     public fun send(message: Message, messageConfigurer: Action<Message>?) {
         val mp = session.get().createProducer(destination)
 
-        mp.setDeliveryMode(jmsDeliveryMode)
-        mp.setTimeToLive(jmsTtl)
+        mp.deliveryMode = jmsDeliveryMode
+        mp.timeToLive = jmsTtl
         if (jmsPriority != null)
-            mp.setPriority(jmsPriority)
+            mp.priority = jmsPriority
 
         messageConfigurer?.perform(message)
 
@@ -90,7 +90,7 @@ public class Channel
      * Send jms message
      * @param message Message to send
      */
-    throws(JMSException::class)
+    @Throws(JMSException::class)
     public fun send(message: Message) {
         this.send(message, null)
     }
@@ -99,7 +99,7 @@ public class Channel
      * Send object as message using converter
      * @param message
      */
-    throws(JMSException::class)
+    @Throws(JMSException::class)
     public fun send(message: Any) {
         if (converter == null)
             throw IllegalStateException("Cannot send object without a message converter")
@@ -116,10 +116,10 @@ public class Channel
     /**
      * Explicitly commit transaction
      */
-    throws(JMSException::class)
+    @Throws(JMSException::class)
     public fun commit() {
         val session = session.get()
-        if (session.getTransacted())
+        if (session.transacted)
             session.commit()
     }
 

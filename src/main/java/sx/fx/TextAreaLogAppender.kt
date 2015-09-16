@@ -24,8 +24,8 @@ class TextAreaLogAppender(val textArea: TextArea) : AppenderBase<ILoggingEvent>(
 
     init {
         //this.patternLayout.setPattern("%-5level [%thread]: %message%n")
-        this.patternLayout.setPattern("%date{HH:mm:ss.SSS} %-5level [%thread]: %message%n")
-        this.patternLayout.setContext(LoggerFactory.getILoggerFactory() as LoggerContext)
+        this.patternLayout.pattern = "%date{HH:mm:ss.SSS} %-5level [%thread]: %message%n"
+        this.patternLayout.context = LoggerFactory.getILoggerFactory() as LoggerContext
         this.patternLayout.start()
     }
 
@@ -52,8 +52,8 @@ class TextAreaLogAppender(val textArea: TextArea) : AppenderBase<ILoggingEvent>(
         try {
             Platform.runLater({
                 try {
-                    this.textArea.setText(this.buffer.toString())
-                    this.textArea.setScrollTop(Double.MAX_VALUE);
+                    this.textArea.text = this.buffer.toString()
+                    this.textArea.scrollTop = Double.MAX_VALUE;
                 } catch (e: Exception) {
                     // Ignore exceptions
                 }

@@ -24,7 +24,7 @@ import kotlin.text.Regex
  */
 public class RsyncClient() {
     companion object {
-        val log = LogFactory.getLog(RsyncClient.javaClass)
+        val log = LogFactory.getLog(RsyncClient::class.java)
     }
 
     var source: Rsync.URI? = null
@@ -194,7 +194,7 @@ public class RsyncClient() {
      * Synchronize
      * @return Sync result
      */
-    @jvmOverloads public fun sync(
+    @JvmOverloads public fun sync(
             fileRecordCallback: (fr: FileRecord) -> Unit = {},
             progressRecordCallback: (pr: ProgressRecord) -> Unit = {})
             : Result {
