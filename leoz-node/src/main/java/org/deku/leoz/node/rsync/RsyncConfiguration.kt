@@ -24,28 +24,28 @@ import kotlin.properties.Delegates
 @Configuration
 @ConfigurationProperties(prefix = "rsync")
 @Lazy(false)
-public open class RsyncConfiguration {
+open class RsyncConfiguration {
     /** Server properties holder */
-    public inner class Server {
-        public var port: Int? = null
+    inner class Server {
+        var port: Int? = null
     }
 
     /** Client properties holder */
-    public inner class Client {
-        public var port: Int? = null
+    inner class Client {
+        var port: Int? = null
     }
 
     private val log = LogFactory.getLog(RsyncConfiguration::class.java)
 
     // Properties
-    public var server: Server = Server()
-    public var client: Client = Client()
+    var server: Server = Server()
+    var client: Client = Client()
 
     /** Rsync server instance */
     private var rsyncServer: RsyncServer by Delegates.notNull()
 
     @PostConstruct
-    public fun initialize() {
+    fun initialize() {
         // Initialize rsync executable path
         Rsync.executableBaseFilename = "leoz-rsync"
         log.info(Rsync.executableFile)
@@ -72,7 +72,7 @@ public open class RsyncConfiguration {
     }
 
     @PreDestroy
-    public fun shutdown() {
+    fun shutdown() {
         this.rsyncServer.dispose()
     }
 }

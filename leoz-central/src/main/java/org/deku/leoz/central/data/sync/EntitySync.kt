@@ -16,11 +16,11 @@ import kotlin.properties.Delegates
  * Supervising sync class
  * Created by masc on 19.06.15.
  */
-public class EntitySync private constructor() : Disposable {
+class EntitySync private constructor() : Disposable {
     //region Singleton
     companion object Singleton {
         private val instance = EntitySync()
-        @JvmStatic public fun it(): EntitySync {
+        @JvmStatic fun it(): EntitySync {
             return instance;
         }
     }
@@ -32,9 +32,9 @@ public class EntitySync private constructor() : Disposable {
     private var entityPublisher: EntityPublisher by Delegates.notNull()
 
     /** Injected: jpa entity manager factory  */
-    public var entityManagerFactory: EntityManagerFactory by Delegates.notNull()
+    var entityManagerFactory: EntityManagerFactory by Delegates.notNull()
     /** Injected: database sync instance */
-    public var databaseSync: DatabaseSync by Delegates.notNull()
+    var databaseSync: DatabaseSync by Delegates.notNull()
 
     /** Database sync event listener */
     private val databaseSyncEvent = DatabaseSync.EventListener { clazz, timestamp ->
@@ -43,7 +43,7 @@ public class EntitySync private constructor() : Disposable {
     };
 
     /** Start entity sync */
-    public fun start() {
+    fun start() {
         // Register event
         this.databaseSync.eventDelegate.add(databaseSyncEvent)
 

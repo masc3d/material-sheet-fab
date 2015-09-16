@@ -22,7 +22,7 @@ import java.util.function.IntSupplier
  * @param rsyncModuleUri The base rsync module uri. The expected directory structur is $artifact-name/$version/$platform
  * Created by masc on 24.08.15.
  */
-public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyncPassword: String) {
+class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyncPassword: String) {
     val log = LogFactory.getLog(this.javaClass)
 
     val rsyncArtifactUri: Rsync.URI
@@ -45,7 +45,7 @@ public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, v
     /**
      * List  artifact versions in remote repository
      */
-    public fun listVersions(): List<Bundle.Version> {
+    fun listVersions(): List<Bundle.Version> {
         // Get remote list
         val rc = this.createRsyncClient()
         rc.destination = this.rsyncArtifactUri
@@ -69,7 +69,7 @@ public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, v
      * List remote platform ids of a specific artifact version in remote repository
      * @param version Bundle version
      */
-    public fun listPlatforms(version: Bundle.Version): List<PlatformId> {
+    fun listPlatforms(version: Bundle.Version): List<PlatformId> {
         val rc = this.createRsyncClient()
         rc.destination = this.rsyncArtifactUri.resolve(version)
 
@@ -95,7 +95,7 @@ public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, v
      * @param onStart Optional callback providing details about synchronization before start
      * @param onFile Optional callback providing details during sync/upload process
      */
-    public @JvmOverloads fun upload(srcPath: File,
+    @JvmOverloads fun upload(srcPath: File,
                                     consoleOutput: Boolean = false) {
         /** Info logging wrapper */
         fun logInfo(s: String) {
@@ -181,7 +181,7 @@ public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, v
      * @param version Bundle version
      * @param platformId Platform id
      */
-    public @JvmOverloads fun download(version: Bundle.Version, platformId: PlatformId, destPath: File, verify: Boolean = false) {
+    @JvmOverloads fun download(version: Bundle.Version, platformId: PlatformId, destPath: File, verify: Boolean = false) {
         val rc = this.createRsyncClient()
         rc.source = this.rsyncArtifactUri.resolve(version, platformId)
         rc.destination = Rsync.URI(destPath)
@@ -205,7 +205,7 @@ public class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, v
      * @param verify Verify artifact after download
      * @param consoleOutput Log to console instead of logger (used for gradle)
      */
-    public @JvmOverloads fun download(version: Bundle.Version,
+    @JvmOverloads fun download(version: Bundle.Version,
                                       destPath: File,
                                       verify: Boolean = false,
                                       consoleOutput: Boolean = false) {

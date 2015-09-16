@@ -27,34 +27,34 @@ import kotlin.text.Regex
  * Created by masc on 22.08.15.
  */
 @XmlRootElement
-public class Bundle : Serializable {
+class Bundle : Serializable {
 
     private val log = LogFactory.getLog(this.javaClass)
 
-    public var path: File? = null
+    var path: File? = null
         private set
 
     @XmlAttribute
-    public var name: String? = null
+    var name: String? = null
         private set
 
     @XmlAttribute
     @XmlJavaTypeAdapter(Bundle.Version.XmlAdapter::class)
-    public var version: Bundle.Version? = null
+    var version: Bundle.Version? = null
         private set
 
     @XmlAttribute
     @XmlJavaTypeAdapter(PlatformId.XmlAdapter::class)
-    public var platform: PlatformId? = null
+    var platform: PlatformId? = null
         private set
 
     @XmlElement(name = "file")
     /** File entries */
-    public var fileEntries: List<Bundle.FileEntry> = ArrayList()
+    var fileEntries: List<Bundle.FileEntry> = ArrayList()
         private set
 
     @XmlAttribute
-    public var javaVersion: String = SystemUtils.JAVA_VERSION
+    var javaVersion: String = SystemUtils.JAVA_VERSION
         private set
 
     @JvmOverloads constructor(/** Path of artifact */
@@ -77,7 +77,7 @@ public class Bundle : Serializable {
     }
 
     /** Bundle content path */
-    public val contentPath: File by lazy(LazyThreadSafetyMode.NONE, {
+    val contentPath: File by lazy(LazyThreadSafetyMode.NONE, {
         val nioBasePath: Path = this.path!!.toPath()
         val nioContentPath: Path
         if (this.platform!!.operatingSystem == OperatingSystem.OSX) {
@@ -92,7 +92,7 @@ public class Bundle : Serializable {
     })
 
     /** Jar path */
-    public val jarPath: File by lazy(LazyThreadSafetyMode.NONE, {
+    val jarPath: File by lazy(LazyThreadSafetyMode.NONE, {
         if (this.platform!!.operatingSystem == OperatingSystem.OSX) {
             File(this.contentPath, "Java")
         } else {
@@ -101,7 +101,7 @@ public class Bundle : Serializable {
     })
 
     /** Bumdle configuration file */
-    public val configFile: File by lazy(LazyThreadSafetyMode.NONE, {
+    val configFile: File by lazy(LazyThreadSafetyMode.NONE, {
         var nioConfigFile = Files.find(this.jarPath.toPath(), 1, BiPredicate { p, a -> a.isRegularFile && p.fileName.toString().endsWith(".cfg") }).findFirst()
         if (!nioConfigFile.isPresent)
             throw IllegalStateException("Config file not found within jar path [${this.jarPath}]")
@@ -109,12 +109,12 @@ public class Bundle : Serializable {
         nioConfigFile.get().toFile()
     })
 
-    public val configuration: Configuration by lazy(LazyThreadSafetyMode.NONE) { -> Configuration() }
+    val configuration: Configuration by lazy(LazyThreadSafetyMode.NONE) { -> Configuration() }
 
     /**
      * Manifest file entry
      */
-    public data class FileEntry(
+    data class FileEntry(
             @XmlAttribute
             val uriPath: String? = null,
             @XmlAttribute
@@ -123,7 +123,7 @@ public class Bundle : Serializable {
     /**
      * Verification exception
      */
-    public class VerificationException(message: String) : Exception(message) {}
+    class VerificationException(message: String) : Exception(message) {}
 
     /**
      * Static methods
@@ -141,7 +141,7 @@ public class Bundle : Serializable {
          * @param name Name of the artifact to create
          * @param version Version of the artifact
          */
-        @JvmStatic public fun create(path: File, name: String, version: Version): Bundle {
+        @JvmStatic fun create(path: File, name: String, version: Version): Bundle {
             val fileEntries = ArrayList<FileEntry>()
 
             var platformId = PlatformId.parse(path.name)
@@ -185,7 +185,7 @@ public class Bundle : Serializable {
          * Load artifact from manifest/path
          * @param artifactPath Bundle path
          */
-        @JvmStatic public fun load(artifactPath: File): Bundle {
+        @JvmStatic fun load(artifactPath: File): Bundle {
             var context = JAXBContext.newInstance(Bundle::class.java)
             var m = context.createUnmarshaller();
             var inputStream = FileInputStream(File(artifactPath, MANIFEST_FILENAME)).buffered()
@@ -202,7 +202,7 @@ public class Bundle : Serializable {
     /**
      * Verify manifest against files in a path
      */
-    public fun verify() {
+    fun verify() {
         val nPath = Paths.get(this.path!!.toURI())
 
         // Hashed check list to verify left-overs
@@ -233,7 +233,7 @@ public class Bundle : Serializable {
      * Bundle version
      * Created by masc on 24.08.15.
      */
-    public data class Version(val components: List<Int>, val suffix: String) : Comparable<Version>, Serializable {
+    data class Version(val components: List<Int>, val suffix: String) : Comparable<Version>, Serializable {
         /** Adapter for xml serialization */
         class XmlAdapter : javax.xml.bind.annotation.adapters.XmlAdapter<String, Version>() {
             override fun marshal(v: Version?): String? {
@@ -245,8 +245,8 @@ public class Bundle : Serializable {
             }
         }
 
-        public companion object {
-            @JvmStatic public fun parse(version: String): Version {
+        companion object {
+            @JvmStatic fun parse(version: String): Version {
                 // Determine end of numeric components
                 var end = version.indexOfFirst({ c -> !c.isDigit() && c != '.' })
 
@@ -271,7 +271,7 @@ public class Bundle : Serializable {
                 return Version(components, suffix)
             }
 
-            public fun tryParse(version: String): Version? {
+            fun tryParse(version: String): Version? {
                 return try {
                     this.parse(version)
                 } catch(e: Exception) {
@@ -316,7 +316,7 @@ public class Bundle : Serializable {
      * Native packager bundle configuration (file)
      * Created by masc on 10.09.15.
      */
-    public inner class Configuration() {
+    inner class Configuration() {
         private val KEY_APP_MAINJAR = "app.mainjar"
         private val KEY_APP_VERSION = "app.version"
         private val KEY_APP_CLASSPATH = "app.classpath"
@@ -326,7 +326,7 @@ public class Bundle : Serializable {
         private val entryMap = LinkedHashMap<String, String>()
 
         /** Application main jar */
-        public var appMainJar: String
+        var appMainJar: String
             get() {
                 return entryMap.get(KEY_APP_MAINJAR) ?: ""
             }
@@ -334,7 +334,7 @@ public class Bundle : Serializable {
                 entryMap.set(KEY_APP_MAINJAR, value)
             }
 
-        public var appVersion: String
+        var appVersion: String
             get() {
                 return entryMap.get(KEY_APP_VERSION) ?: ""
             }
@@ -342,7 +342,7 @@ public class Bundle : Serializable {
                 entryMap.set(KEY_APP_VERSION, value)
             }
 
-        public var appClassPath: List<String>
+        var appClassPath: List<String>
             get() {
                 return entryMap.get(KEY_APP_CLASSPATH)?.split(':', ';') ?: ArrayList()
             }
@@ -376,7 +376,7 @@ public class Bundle : Serializable {
         /**
          * Save configuration
          */
-        public fun save() {
+        fun save() {
             val writer = FileWriter(this@Bundle.configFile).buffered()
 
             try {

@@ -7,7 +7,7 @@ import java.nio.file.Paths
 /**
  * Created by masc on 29.08.15.
  */
-public object BundleConfiguration {
+object BundleConfiguration {
     val rsyncUri = Rsync.URI("rsync://leoz@syntronix.de/leoz-test")
     val rsyncPw = "leoz"
 

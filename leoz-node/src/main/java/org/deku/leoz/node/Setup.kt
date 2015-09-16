@@ -93,7 +93,7 @@ class Setup {
     /**
      * Installs node as a system service
      */
-    public fun install(serviceName: String, mainClass: Class<Any>) {
+    fun install(serviceName: String, mainClass: Class<Any>) {
         log.info("Installing service")
 
         var classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
@@ -124,7 +124,7 @@ class Setup {
     /**
      * Uninstalls node system service
      */
-    public fun uninstall() {
+    fun uninstall() {
         log.info("Uninstalling service")
 
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
@@ -137,7 +137,7 @@ class Setup {
     /**
      * Start
      */
-    public fun start() {
+    fun start() {
         log.info("Starting service")
 
         var pb: ProcessBuilder = ProcessBuilder("net", "start", "LeoZ")
@@ -149,7 +149,7 @@ class Setup {
     /**
      * Stop
      */
-    public fun stop() {
+    fun stop() {
         log.info("Stopping service")
 
         var pb: ProcessBuilder = ProcessBuilder("net", "stop", "LeoZ")

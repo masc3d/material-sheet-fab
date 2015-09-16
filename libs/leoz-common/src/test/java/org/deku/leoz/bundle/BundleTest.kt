@@ -6,9 +6,9 @@ import sx.platform.PlatformId
 /**
  * Created by masc on 24.08.15.
  */
-public class BundleTest {
+class BundleTest {
     @Test
-    public fun testVersion() {
+    fun testVersion() {
         var v: Bundle.Version
 
         v = Bundle.Version.parse("1.0.1-FINAL")
@@ -19,7 +19,7 @@ public class BundleTest {
     }
 
     @Test
-    public fun testVersionSorting() {
+    fun testVersionSorting() {
         var l = arrayListOf(
                 Bundle.Version.parse("1.0.1-FINAL"),
                 Bundle.Version.parse("1.3.1-RELEASE"),
@@ -34,21 +34,21 @@ public class BundleTest {
 
 
     @Test
-    public fun testCreate() {
+    fun testCreate() {
         var path = BundleConfiguration.path.resolve(PlatformId.current().toString())
 
         Bundle.create(path.toFile(), Bundles.LEOZ_BOOT, Bundle.Version.parse("0.1"))
     }
 
     @Test
-    public fun testLoad() {
+    fun testLoad() {
         var path = BundleConfiguration.path.resolve(PlatformId.current().toString())
 
         Bundle.load(path.toFile())
     }
 
     @Test
-    public fun testVerify() {
+    fun testVerify() {
         var path = BundleConfiguration.path.resolve(PlatformId.current().toString())
 
         Bundle.load(path.toFile()).verify()

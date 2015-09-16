@@ -33,7 +33,7 @@ class LogConfiguration : Disposable {
     private var fileAppender: RollingFileAppender<ILoggingEvent>
 
     /** Enable support for jms log appender */
-    public var jmsAppenderEnabled: Boolean = false
+    var jmsAppenderEnabled: Boolean = false
 
     /**
      * c'tor
@@ -69,7 +69,7 @@ class LogConfiguration : Disposable {
     /**
      * Initialize logging
      */
-    public fun initialize() {
+    fun initialize() {
         // Initialize file appender
         this.fileAppender.start()
         this.rootLogger.addAppender(this.fileAppender)

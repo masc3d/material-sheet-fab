@@ -36,7 +36,7 @@ import javax.inject.Inject
 @ApiKey(false)
 @Path("v1/routing")
 @Produces(MediaType.APPLICATION_JSON)
-public class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
+class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     @Inject
     var countryRepository: CountryRepository? = null
     @Inject

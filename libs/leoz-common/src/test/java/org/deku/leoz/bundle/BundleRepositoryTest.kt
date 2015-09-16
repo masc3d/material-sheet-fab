@@ -17,7 +17,7 @@ import java.nio.file.Paths
  * Created by masc on 24.08.15.
  */
 @Ignore
-public class BundleRepositoryTest {
+class BundleRepositoryTest {
 
     init {
         var logger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger
@@ -27,24 +27,24 @@ public class BundleRepositoryTest {
     }
 
     @Test
-    public fun testList() {
+    fun testList() {
         var versions = BundleConfiguration.repository.listVersions()
         versions.forEach { println(it) }
     }
 
     @Test
-    public fun testListPlatforms() {
+    fun testListPlatforms() {
         var platforms = BundleConfiguration.repository.listPlatforms(Bundle.Version.parse("0.1"))
         platforms.forEach { println(it) }
     }
 
     @Test
-    public fun testUpload() {
+    fun testUpload() {
         BundleConfiguration.repository.upload(BundleConfiguration.path.toFile())
     }
 
     @Test
-    public fun testDownload() {
+    fun testDownload() {
         var path = BundleConfiguration.path
                 .resolve(PlatformId.current().toString()).toFile()
 

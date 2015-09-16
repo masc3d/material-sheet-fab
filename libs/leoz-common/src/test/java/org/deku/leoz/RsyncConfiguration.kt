@@ -9,8 +9,8 @@ import java.nio.file.Paths
  * Leoz rsync configuration
  * Created by masc on 24.08.15.
  */
-public object RsyncConfiguration {
-    public fun initialize() {
+object RsyncConfiguration {
+    fun initialize() {
         Rsync.executableFile = Paths.get("")
                 .toAbsolutePath()
                 .parent
