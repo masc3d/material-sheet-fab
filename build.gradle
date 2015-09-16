@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:+"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:0.12.+"
     }
     repositories {
         mavenCentral()
@@ -34,8 +34,8 @@ configurations {
 
 dependencies {
     // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:+"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:+"
+    compile "org.jetbrains.kotlin:kotlin-runtime:0.12.+"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:0.12.+"
 
     compile 'com.google.guava:guava:18.+'
     compile 'commons-logging:commons-logging:1.+'
