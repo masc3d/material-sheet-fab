@@ -15,9 +15,9 @@ import kotlin.properties.Delegates
  * Rsync server. Wraps rsync as a daemon process, generates configurations as needed
  * Created by masc on 15.08.15.
  */
-public class RsyncServer(
+class RsyncServer(
         /** Path containing configuration files */
-        public val configurationPath: File,
+        val configurationPath: File,
         /** Embedded configuration */
         val configuration: RsyncServer.Configuration? = null) : Rsync(), Disposable {
 
@@ -27,26 +27,26 @@ public class RsyncServer(
     /**
      * Rsync server configuration
      */
-    public class Configuration {
+    class Configuration {
         companion object {
             val CONFIG_FILENAME = "rsyncd.conf"
             val SECRETS_FILENAME = "rsyncd.secrets"
         }
         private val log = LogFactory.getLog(this.javaClass)
 
-        public var useChroot: Boolean = false
+        var useChroot: Boolean = false
         /** Rsync log file */
-        public var logFile: File? = null
+        var logFile: File? = null
         /** Rsync port */
-        public var port: Int? = null
+        var port: Int? = null
         /** Rsync modules */
-        public val modules: ArrayList<Rsync.Module> = ArrayList<Rsync.Module>()
+        val modules: ArrayList<Rsync.Module> = ArrayList<Rsync.Module>()
 
         /**
          * Save configuration files to path
          * @param path Path to save configuration files to
          */
-        public fun save(path: File) {
+        fun save(path: File) {
             var secretsFile = File(path, SECRETS_FILENAME)
             var configFile = File(path, CONFIG_FILENAME)
 
@@ -158,7 +158,7 @@ public class RsyncServer(
     /**
      * Start rsync daemon
      */
-    public @Synchronized fun start() {
+    @Synchronized fun start() {
         if (this.configuration != null) {
             // Running with embedded configuration
 
@@ -192,7 +192,7 @@ public class RsyncServer(
     /**
      * Stop rsync daemon
      */
-    public @Synchronized fun stop() {
+    @Synchronized fun stop() {
         if (this.processExecutor != null) {
             this.processExecutor?.dispose()
             this.processExecutor = null
@@ -202,14 +202,14 @@ public class RsyncServer(
     /**
      * Wait for daemon to terminate
      */
-    public fun waitFor() {
+    fun waitFor() {
         this.processExecutor?.waitFor()
     }
 
     /**
      * Termination callback
      */
-    public var onTermination: (exception: Exception?) -> Unit = { }
+    var onTermination: (exception: Exception?) -> Unit = { }
 
     override fun dispose() {
         this.stop();

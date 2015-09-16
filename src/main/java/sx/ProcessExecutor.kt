@@ -15,13 +15,13 @@ import java.util.logging.StreamHandler
  * @param processBuilder Process builder
  * @param outputHandler Stream handler implementation
  */
-public class ProcessExecutor @JvmOverloads constructor(
+class ProcessExecutor @JvmOverloads constructor(
         private val processBuilder: ProcessBuilder,
         private val outputHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler(),
         private val errorHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler()) : Disposable {
 
     private val log = LogFactory.getLog(this.javaClass)
-    public var process: Process? = null
+    var process: Process? = null
         private set
     private var outputReaderThread: StreamReaderThread? = null
     private var errorReaderThread: StreamReaderThread? = null
@@ -33,12 +33,12 @@ public class ProcessExecutor @JvmOverloads constructor(
     /**
      * Process exception
      */
-    public inner class ProcessException(public val errorCode: Int) : java.lang.Exception("Process failed with error code [${errorCode}]")
+    inner class ProcessException(val errorCode: Int) : java.lang.Exception("Process failed with error code [${errorCode}]")
 
     /**
      * Stream handler interface
      */
-    public interface StreamHandler {
+    interface StreamHandler {
         /**
          * Called for each line of output.
          */
@@ -48,10 +48,10 @@ public class ProcessExecutor @JvmOverloads constructor(
     /**
      * Default stream handler, collecting both error and output
      */
-    public open class DefaultStreamHandler @JvmOverloads constructor(
-            public val trim: Boolean = false,
-            public val omitEmptyLines: Boolean = false,
-            public val collectBuffer: StringBuffer? = null
+    open class DefaultStreamHandler @JvmOverloads constructor(
+            val trim: Boolean = false,
+            val omitEmptyLines: Boolean = false,
+            val collectBuffer: StringBuffer? = null
     ) : StreamHandler {
         override fun onOutput(output: String) {
             // Optionally trim
@@ -141,12 +141,12 @@ public class ProcessExecutor @JvmOverloads constructor(
     }
 
     /** Termination callback */
-    public var onTermination: (exception: Exception?) -> Unit = { }
+    var onTermination: (exception: Exception?) -> Unit = { }
 
     /**
      * Start process
      */
-    public @Synchronized fun start() {
+    @Synchronized fun start() {
         if (process != null)
             throw IllegalStateException("Process already started")
 
@@ -171,7 +171,7 @@ public class ProcessExecutor @JvmOverloads constructor(
      * @throws InterruptedException
      */
     @Throws(InterruptedException::class, ProcessException::class)
-    public @Synchronized fun waitFor() {
+    @Synchronized fun waitFor() {
         if (process == null)
             throw IllegalStateException("Process not started")
 
@@ -189,7 +189,7 @@ public class ProcessExecutor @JvmOverloads constructor(
     /**
      * Stop/destroy process
      */
-    public @Synchronized fun stop() {
+    @Synchronized fun stop() {
         this.stopping = true
 
         if (process != null && process!!.isAlive) {

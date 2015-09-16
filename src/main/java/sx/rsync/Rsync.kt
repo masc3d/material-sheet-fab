@@ -18,14 +18,14 @@ import kotlin.properties.Delegates
 /**
  * Created by masc on 15.08.15.
  */
-public open class Rsync() {
+open class Rsync() {
     companion object {
         val log = LogFactory.getLog(Rsync::class.java)
 
         /** Rsync executable base filename */
-        public var executableBaseFilename: String = "sx-rsync"
+        var executableBaseFilename: String = "sx-rsync"
         /** Rsync executable file name */
-        public val executableFilename: String by lazy(LazyThreadSafetyMode.NONE) {
+        val executableFilename: String by lazy(LazyThreadSafetyMode.NONE) {
             this.executableBaseFilename + if (SystemUtils.IS_OS_WINDOWS) ".exe" else ""
         }
 
@@ -104,7 +104,7 @@ public open class Rsync() {
          * Path to rsync executable.
          * When not set explicitly, tries to detect/find executable automatically within current and parent paths
          * */
-        public var executableFile: File? = null
+        var executableFile: File? = null
             @Synchronized get() {
                 if ($executableFile == null) {
                     log.debug("Searching for rsync executable [${this.executableFilename}]")
@@ -126,7 +126,7 @@ public open class Rsync() {
      * @param uri File or rsync URI
      * @param asDirectory Indicates if final path component/directory should be included (implies traling slash if true)
      */
-    public class URI(uri: java.net.URI, val asDirectory: Boolean = true) {
+    class URI(uri: java.net.URI, val asDirectory: Boolean = true) {
         val uri: java.net.URI
 
         init {
@@ -164,7 +164,7 @@ public open class Rsync() {
         /**
          * Resolve path
          */
-        public fun resolve(vararg str: Any): Rsync.URI {
+        fun resolve(vararg str: Any): Rsync.URI {
             val path = str.joinToString("/")
             return Rsync.URI(
                     uri = if (uri.path.endsWith('/')) uri.resolve(path) else java.net.URI(uri.toString() + "/" + path),
@@ -195,7 +195,7 @@ public open class Rsync() {
     /**
      * Rsync server module permission
      */
-    public enum class Permission(val permission: String) {
+    enum class Permission(val permission: String) {
         READONLY("ro"),
         READWRITE("rw"),
         DENY("deny");
@@ -208,27 +208,27 @@ public open class Rsync() {
     /**
      * Rsync server module, equivalent to a shared folder
      * */
-    public class Module(
+    class Module(
             /** Module name */
             var name: String,
             /** The shared folder this module refers to */
             val path: File) {
 
         /** Secrets file. */
-        public var secretsFile: File? = null
+        var secretsFile: File? = null
         /** Permissions for this module */
-        public val permissions: HashMap<Principal, Permission> = HashMap()
+        val permissions: HashMap<Principal, Permission> = HashMap()
     }
 
     /**
      * Rsync principal, base class for users and groups
      */
-    public open class Principal(val name: String)
+    open class Principal(val name: String)
 
     /**
      * Rsync user
      * */
-    public class User(
+    class User(
             name: String,
             val password: String) : Principal(name) {
 

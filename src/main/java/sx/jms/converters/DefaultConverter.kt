@@ -19,26 +19,26 @@ import java.util.zip.GZIPOutputStream
  * Object message converter
  * Created by masc on 19.06.15.
  */
-public class DefaultConverter(var mSerializationType: DefaultConverter.SerializationType, var mCompressionType: DefaultConverter.CompressionType) : Converter {
-    public enum class SerializationType {
+class DefaultConverter(var mSerializationType: DefaultConverter.SerializationType, var mCompressionType: DefaultConverter.CompressionType) : Converter {
+    enum class SerializationType {
         JAVA,
         KRYO
     }
 
-    public enum class CompressionType {
+    enum class CompressionType {
         NONE,
         GZIP,
         SNAPPY
     }
 
-    public var bytesWritten: Long = 0
+    var bytesWritten: Long = 0
         private set
-    public var bytesRead: Long = 0
+    var bytesRead: Long = 0
         private set
 
     //    private interface StreamSupplier<T> {
     //        throws(Exception::class)
-    //        public fun get(stream: T): T
+    //        fun get(stream: T): T
     //    }
 
     private var mSerializationStreamSupplier: (o: OutputStream) -> OutputStream
@@ -131,7 +131,7 @@ public class DefaultConverter(var mSerializationType: DefaultConverter.Serializa
         return obj
     }
 
-    public fun resetStatistics() {
+    fun resetStatistics() {
         bytesRead = 0
         bytesWritten = 0
     }
