@@ -24,6 +24,7 @@ import org.eclipse.jgit.transport.TagOpt
 import org.eclipse.jgit.util.FS
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 
 import java.nio.file.Files
@@ -95,6 +96,18 @@ abstract class PackagerReleaseTask extends PackagerTask {
     }
 
     /**
+     * Builds path to bundle within platform release path
+     * @param platformId Platform
+     * @return
+     */
+    def File getReleasePlatformBundlePath(PlatformId platformId) {
+        if (platformId.operatingSystem == OperatingSystem.OSX)
+            return new File(this.getReleasePlatformPath(platformId), "${project.name}.app")
+        else
+            this.getReleasePlatformPath(platformId)
+    }
+
+    /**
      * Builds a release path for current project and platform/arch
      * @param basePath Release base path
      * @return
@@ -104,13 +117,21 @@ abstract class PackagerReleaseTask extends PackagerTask {
     }
 
     /**
+     * Builds path to bundle within platform release path for current platform/project
+     * @return
+     */
+    def File getReleasePlatformBundlePath() {
+        return this.getReleasePlatformBundlePath(PlatformId.current())
+    }
+
+    /**
      * Returns bundle for platform
      * @param platformId
      * @return
      */
     def Bundle getReleaseBundle(PlatformId platformId) {
         return new Bundle(
-                this.getReleasePlatformPath(platformId),
+                this.getReleasePlatformBundlePath(platformId),
                 project.name,
                 Bundle.Version.parse(project.version),
                 platformId)
@@ -272,13 +293,13 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
 
         def packagerPlatformDir = this.getPackagerPlatformDir()
 
-        def bundlePath = Paths.get(packagerPlatformDir.toURI())
+        def packagerBundlePath = Paths.get(packagerPlatformDir.toURI())
                 .resolve('bundles')
                 .resolve(SystemUtils.IS_OS_MAC_OSX ? "" : project.name)
                 .toFile()
 
-        if (!bundlePath.exists())
-            throw new IOException("Bundle path [${bundlePath}] doesn't exist")
+        if (!packagerBundlePath.exists())
+            throw new IOException("Bundle release path [${packagerBundlePath}] doesn't exist")
 
         if (!releasePlatformPath.exists())
             releasePlatformPath.mkdirs()
@@ -298,9 +319,9 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
             }
         }
 
-        println "Copying bundle [${bundlePath}] -> [${releasePlatformPath}]"
+        println "Copying bundle [${packagerBundlePath}] -> [${releasePlatformPath}]"
         project.copy {
-            from bundlePath
+            from packagerBundlePath
             into releasePlatformPath
         }
 
@@ -308,7 +329,11 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
         this.copySupplementalPlatformDirs(PlatformId.current())
 
         println "Creating bundle manifest"
-        Bundle.create(releasePlatformPath, project.name, Bundle.Version.parse(project.version))
+        Bundle.create(
+                this.getReleasePlatformBundlePath(),
+                project.name,
+                PlatformId.current(),
+                Bundle.Version.parse(project.version))
     }
 }
 
@@ -364,7 +389,11 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
             this.copySupplementalPlatformDirs(platformId)
 
             println "Creating bundle manifest"
-            Bundle.create(releasePlatformPath, project.name, Bundle.Version.parse(project.version))
+            Bundle.create(
+                    this.getReleasePlatformBundlePath(platformId),
+                    project.name,
+                    platformId,
+                    Bundle.Version.parse(project.version))
         }
     }
 }

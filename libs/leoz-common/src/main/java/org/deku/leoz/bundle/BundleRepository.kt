@@ -1,6 +1,8 @@
 package org.deku.leoz.bundle
 
+import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
+import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
@@ -90,13 +92,18 @@ class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyn
     }
 
     /**
-     * Upload artifact version to remote repository
-     * @param srcPath Local source path
-     * @param onStart Optional callback providing details about synchronization before start
-     * @param onFile Optional callback providing details during sync/upload process
+     * Bundle path
      */
-    @JvmOverloads fun upload(srcPath: File,
-                                    consoleOutput: Boolean = false) {
+    private fun bundlePath(path: File): File {
+        return if (SystemUtils.IS_OS_MAC_OSX) File(path, "${this.name}.app") else path
+    }
+
+    /**
+     * Upload bundle version to remote repository
+     * @param versionSrcPath Local version source path. The folder is expected to have platform id subdirs
+     */
+    @JvmOverloads fun upload(versionSrcPath: File,
+                             consoleOutput: Boolean = false) {
         /** Info logging wrapper */
         fun logInfo(s: String) {
             if (consoleOutput) println(s) else log.info(s)
@@ -104,29 +111,29 @@ class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyn
 
         logInfo("Upload sequence start")
 
-        val nSrcPath = Paths.get(srcPath.toURI())
+        val nSrcPath = Paths.get(versionSrcPath.toURI())
 
         // Verify this is an artifact version folder (having only platform ids as subfolder)
-        val artifacts = ArrayList<Bundle>()
+        val bundles = ArrayList<Bundle>()
         this.walkPlatformFolders(nSrcPath).forEach { p ->
-            val a = Bundle.load(p.toFile())
+            val a = Bundle.load(this.bundlePath(p.toFile()))
             logInfo("Found [${a}]")
-            artifacts.add(a)
+            bundles.add(a)
         }
 
-        if (artifacts.size() > 1) {
-            artifacts.takeLast(artifacts.size() - 1).forEach { a ->
-                if (!artifacts[0].version!!.equals(a.version))
+        if (bundles.size() > 1) {
+            bundles.takeLast(bundles.size() - 1).forEach { a ->
+                if (!bundles[0].version!!.equals(a.version))
                     throw IllegalStateException("Inconsistent artifact versions")
-                if (!artifacts[0].javaVersion.equals(a.javaVersion))
+                if (!bundles[0].javaVersion.equals(a.javaVersion))
                     throw IllegalStateException("Inconsistent java versions")
             }
         }
 
-        if (artifacts.isEmpty())
+        if (bundles.isEmpty())
             throw IllegalStateException("No artifacts found in path")
 
-        val version = artifacts.get(0).version!!
+        val version = bundles.get(0).version!!
         val remoteVersions = this.listVersions()
 
         val comparisonDestinationVersions = remoteVersions.sortedDescending()
@@ -141,7 +148,7 @@ class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyn
                     .map({ v -> Rsync.URI("../").resolve(v) })
 
             val rc = this.createRsyncClient()
-            rc.source = Rsync.URI(srcPath)
+            rc.source = Rsync.URI(versionSrcPath)
             rc.destination = this.rsyncArtifactUri.resolve(version)
             rc.copyDestinations = comparisonDestinationUris
 
@@ -154,14 +161,14 @@ class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyn
             logInfo("Version already exists remotely")
 
             // Transfer artifacts separately, to prevent non-existing platforms to be deleted remotely
-            for (artifact in artifacts) {
+            for (bundle in bundles) {
                 // Take the two most recent versions for comparison during sync
                 val comparisonDestinationUris = comparisonDestinationVersions
-                        .map({ v -> Rsync.URI("../../").resolve(v, artifact.platform!!) })
+                        .map({ v -> Rsync.URI("../../").resolve(v, bundle.platform!!) })
 
                 val rc = this.createRsyncClient()
-                rc.source = Rsync.URI(srcPath).resolve(artifact.platform!!)
-                rc.destination = this.rsyncArtifactUri.resolve(artifact.version!!, artifact.platform!!)
+                rc.source = Rsync.URI(versionSrcPath).resolve(bundle.platform!!)
+                rc.destination = this.rsyncArtifactUri.resolve(bundle.version!!, bundle.platform!!)
                 rc.copyDestinations = comparisonDestinationUris
 
                 logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
@@ -176,26 +183,62 @@ class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyn
     }
 
     /**
-     * Download a specific platform/version of an artifact from remote repository
-     * @param destPath Local destination path
+     * Download a specific platform/version of a bundle from remote repository
      * @param version Bundle version
      * @param platformId Platform id
+     * @param destPath Local destination path
      */
-    @JvmOverloads fun download(version: Bundle.Version, platformId: PlatformId, destPath: File, verify: Boolean = false) {
+    @JvmOverloads fun download(version: Bundle.Version,
+                               platformId: PlatformId,
+                               destPath: File,
+                               comparePaths: List<File> = ArrayList(),
+                               verify: Boolean = false,
+                               onProgress: ((file: String, percentage: Double) -> Unit)? = null) {
         val rc = this.createRsyncClient()
-        rc.source = this.rsyncArtifactUri.resolve(version, platformId)
-        rc.destination = Rsync.URI(destPath)
+
+        val isOsx = platformId.operatingSystem == OperatingSystem.OSX
+
+        var source = this.rsyncArtifactUri.resolve(version, platformId)
+        var destination = Rsync.URI(destPath)
+        var comparisonDestinations = comparePaths.asSequence().map { Rsync.URI(it) }
+
+        if (isOsx) {
+            val osxBundleName = "${this.name}.app"
+            source = source.resolve(osxBundleName)
+            destination = destination.resolve(osxBundleName)
+            if (destPath.parentFile.exists())
+                File(destPath, osxBundleName).mkdirs()
+        }
+
+        rc.source = source
+        rc.destination = destination
+        rc.comparisonDestinations = comparisonDestinations.toArrayList()
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
-        rc.sync({ r ->
-            log.info("Updating [${r.flags}] [${r.path}]")
-        })
+
+        var currentFile: String = ""
+        var currentPercentage: Double = 0.0
+        rc.sync(
+                onFile = { r ->
+                    log.info("Updating [${r.flags}] [${r.path}]")
+                    currentFile = r.path
+                    if (onProgress != null) onProgress(currentFile, currentPercentage)
+                },
+                onProgress = { p ->
+                    currentPercentage = p.percentage.toDouble() / 100
+                    if (onProgress != null) onProgress(currentFile, currentPercentage)
+                })
+
+        if (onProgress != null) onProgress(currentFile, 0.95)
 
         if (verify) {
-            log.info("Verifying artifact [${destPath}]")
-            Bundle.load(destPath)
+            val bundlePath = this.bundlePath(destPath)
+            log.info("Verifying bundle [${bundlePath}]")
+            Bundle.load(bundlePath)
                     .verify()
         }
+
+        if (onProgress != null) onProgress(currentFile, 1.0)
     }
 
     /**
@@ -206,9 +249,9 @@ class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyn
      * @param consoleOutput Log to console instead of logger (used for gradle)
      */
     @JvmOverloads fun download(version: Bundle.Version,
-                                      destPath: File,
-                                      verify: Boolean = false,
-                                      consoleOutput: Boolean = false) {
+                               destPath: File,
+                               verify: Boolean = false,
+                               consoleOutput: Boolean = false) {
         fun logInfo(s: String) {
             if (consoleOutput) println(s) else log.info(s)
         }
@@ -224,8 +267,9 @@ class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyn
 
         if (verify) {
             this.walkPlatformFolders(destPath.toPath()).forEach { p ->
-                logInfo("Verifying artifact [${p}]")
-                Bundle.load(p.toFile()).verify()
+                val bundlePath = this.bundlePath(p.toFile())
+                logInfo("Verifying bundle [${bundlePath}]")
+                Bundle.load(bundlePath).verify()
             }
         }
 

@@ -49,7 +49,7 @@ class Bundle : Serializable {
         private set
 
     @XmlElement(name = "file")
-    /** File entries */
+            /** File entries */
     var fileEntries: List<Bundle.FileEntry> = ArrayList()
         private set
 
@@ -57,17 +57,18 @@ class Bundle : Serializable {
     var javaVersion: String = SystemUtils.JAVA_VERSION
         private set
 
-    @JvmOverloads constructor(/** Path of artifact */
-                              path: File? = null,
-                              /** Name */
-                              name: String? = null,
-                              /** Version */
-                              version: Bundle.Version? = null,
-                              platform: PlatformId? = null,
-                              /** File entries */
-                              fileEntries: List<Bundle.FileEntry> = ArrayList(),
-                              /** Java version */
-                              javaVersion: String = SystemUtils.JAVA_VERSION) {
+    @JvmOverloads constructor(
+            /** Bundle path */
+            path: File? = null,
+            /** Name */
+            name: String? = null,
+            /** Version */
+            version: Bundle.Version? = null,
+            platform: PlatformId? = null,
+            /** File entries */
+            fileEntries: List<Bundle.FileEntry> = ArrayList(),
+            /** Java version */
+            javaVersion: String = SystemUtils.JAVA_VERSION) {
         this.path = path
         this.name = name
         this.version = version
@@ -82,7 +83,6 @@ class Bundle : Serializable {
         val nioContentPath: Path
         if (this.platform!!.operatingSystem == OperatingSystem.OSX) {
             nioContentPath = nioBasePath
-                    .resolve(this.name + ".app")
                     .resolve("Contents")
         } else {
             nioContentPath = nioBasePath
@@ -100,9 +100,19 @@ class Bundle : Serializable {
         }
     })
 
+    /** Manifest file path */
+    val manifestFile: File by lazy(LazyThreadSafetyMode.NONE, {
+        Bundle.manifestFile(this.path!!)
+    })
+
     /** Bumdle configuration file */
     val configFile: File by lazy(LazyThreadSafetyMode.NONE, {
-        var nioConfigFile = Files.find(this.jarPath.toPath(), 1, BiPredicate { p, a -> a.isRegularFile && p.fileName.toString().endsWith(".cfg") }).findFirst()
+        var nioConfigFile = Files.find(this.jarPath.toPath(), 1, BiPredicate {
+            p, a ->
+            a.isRegularFile && p.fileName.toString().endsWith(".cfg")
+        }
+        ).findFirst()
+
         if (!nioConfigFile.isPresent)
             throw IllegalStateException("Config file not found within jar path [${this.jarPath}]")
 
@@ -136,25 +146,36 @@ class Bundle : Serializable {
         }
 
         /**
-         * Create artifact instance and stores manifest within artifact path
-         * @param path Path of artifact. The name of the folder must be a parsable platform id (eg. osx64)
-         * @param name Name of the artifact to create
-         * @param version Version of the artifact
+         * Search manifest file within bundle path
+         * @param path Bundle path
+         * @return Manifest file or null if not found
          */
-        @JvmStatic fun create(path: File, name: String, version: Version): Bundle {
+        private fun manifestFile(path: File): File {
+            return File(path, MANIFEST_FILENAME)
+        }
+
+        /**
+         * Create bundle instance and stores manifest within bundle path
+         * @param bundlePath Path of bundle. The name of the folder must be a parsable platform id (eg. osx64)
+         * @param bundleNme Name of the bundle to create
+         * @param version Version of the bundle
+         */
+        @JvmStatic fun create(bundlePath: File, bundleName: String, platformId: PlatformId, version: Version): Bundle {
             val fileEntries = ArrayList<FileEntry>()
 
-            var platformId = PlatformId.parse(path.name)
-
-            // Walk artifact directory and calculate md5 for each regular file
-            var pathUri = path.toURI()
+            // Walk bundle directory and calculate md5 for each regular file
+            var pathUri = bundlePath.toURI()
             var nPath = Paths.get(pathUri)
+
+            // Remove existing manifest
+            var manifestFile = Bundle.manifestFile(bundlePath)
+            if (manifestFile.exists()) manifestFile.delete()
+
             Files.walk(nPath)
                     .filter { p ->
                         val filename = p.fileName.toString()
                         // Exclude file specific patterns from manifest
                         java.nio.file.Files.isRegularFile(p) &&
-                                !filename.equals(MANIFEST_FILENAME) &&
                                 !filename.startsWith('.')
                     }
                     .forEach { p ->
@@ -164,35 +185,37 @@ class Bundle : Serializable {
                                 md5 = this.hashFile(p.toFile())))
                     }
 
-            // Create artifact instance
-            var artifact = Bundle(path, name, version, platformId, fileEntries)
+            // Create bundle instance
+            var bundle = Bundle(bundlePath, bundleName, version, platformId, fileEntries)
 
-            // Serialize artifact to manifest
+            // Serialize bundle to manifest
             var context = JAXBContext.newInstance(Bundle::class.java)
             var m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-            var os = FileOutputStream(File(path, MANIFEST_FILENAME)).buffered()
+            var os = FileOutputStream(bundle.manifestFile).buffered()
             try {
-                m.marshal(artifact, os)
+                m.marshal(bundle, os)
             } finally {
                 os.close()
             }
 
-            return artifact
+            return bundle
         }
 
         /**
-         * Load artifact from manifest/path
-         * @param artifactPath Bundle path
+         * Load bundle from manifest/path
+         * @param bundlePath Bundle path
          */
-        @JvmStatic fun load(artifactPath: File): Bundle {
+        @JvmStatic fun load(bundlePath: File): Bundle {
+            val manifestFile = Bundle.manifestFile(bundlePath)
+
             var context = JAXBContext.newInstance(Bundle::class.java)
             var m = context.createUnmarshaller();
-            var inputStream = FileInputStream(File(artifactPath, MANIFEST_FILENAME)).buffered()
+            var inputStream = FileInputStream(manifestFile).buffered()
             try {
-                var artifact = m.unmarshal(inputStream) as Bundle
-                artifact.path = artifactPath
-                return artifact
+                var bundle = m.unmarshal(inputStream) as Bundle
+                bundle.path = bundlePath
+                return bundle
             } finally {
                 inputStream.close()
             }
@@ -355,16 +378,17 @@ class Bundle : Serializable {
             val reader = FileReader(this@Bundle.configFile).buffered()
 
             try {
+                // All property entries starting with 'app.'
                 val re = Regex("^(app\\..+)=(.*)$")
                 var line: String? = null
 
                 val read = { line = reader.readLine(); line != null }
-                while(read()) {
+                while (read()) {
                     val entry: Any
                     val mr = re.match(line!!)
                     if (mr != null) {
                         entry = Pair(mr.groups.get(1)!!.value, mr.groups.get(2)!!.value)
-                        entryMap. putAll(entry)
+                        entryMap.putAll(entry)
                     } else entry = line!!
                     entries.add(entry)
                 }
