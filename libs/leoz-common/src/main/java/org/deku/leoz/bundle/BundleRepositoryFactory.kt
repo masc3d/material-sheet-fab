@@ -10,9 +10,9 @@ object BundleRepositoryFactory {
     private var stagingRsyncModuleUri = Rsync.URI("rsync://leoz@syntronix.de/leoz")
     private var stagingRsyncModulePassword = "leoz"
 
-    fun stagingRepository(artifactName: String): BundleRepository {
+    fun stagingRepository(bundleName: String): BundleRepository {
         return BundleRepository(
-                name = artifactName,
+                name = bundleName,
                 rsyncModuleUri = stagingRsyncModuleUri,
                 rsyncPassword = stagingRsyncModulePassword)
     }
