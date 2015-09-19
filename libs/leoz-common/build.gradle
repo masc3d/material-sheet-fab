@@ -3,6 +3,15 @@ version = '1.0'
 
 apply plugin: 'kotlin'
 
+configurations {
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
+}
+
 dependencies {
     compile project(':libs:sx-common')
 
@@ -13,38 +22,37 @@ dependencies {
     // logging
     compile 'commons-logging:commons-logging:+'
     compile "org.apache.commons:commons-lang3:$v_commons_lang"
-    compile "ch.qos.logback:logback-classic:+"
-    compile "org.slf4j:jcl-over-slf4j:+"
+    compile "ch.qos.logback:logback-classic:$v_logback"
+    compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
 
     // javax
     compile "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs"
-    compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
 
     // persistence
-    compile "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
+    provided "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
 
     // swagger for json doc
-    compile "com.wordnik:swagger-annotations:$v_swagger"
-    compile "com.fasterxml.jackson.core:jackson-databind:$v_jackson"
+    provided "com.wordnik:swagger-annotations:$v_swagger"
+    provided "com.fasterxml.jackson.core:jackson-databind:$v_jackson"
 
     // messaging
     // ActiveMQ
-    compile "org.apache.activemq:activemq-broker:$v_activemq"
-    compile "org.apache.activemq:activemq-kahadb-store:$v_activemq"
-    compile "org.apache.activemq:activemq-jms-pool:$v_activemq"
-    compile "org.apache.activemq:activemq-jaas:$v_activemq"
-    compile "org.apache.activemq:activemq-mqtt:$v_activemq"
-    compile("org.apache.activemq:activemq-http:$v_activemq") {
+    provided "org.apache.activemq:activemq-broker:$v_activemq"
+    provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
+    provided "org.apache.activemq:activemq-jms-pool:$v_activemq"
+    provided "org.apache.activemq:activemq-jaas:$v_activemq"
+    provided "org.apache.activemq:activemq-mqtt:$v_activemq"
+    provided("org.apache.activemq:activemq-http:$v_activemq") {
         exclude group: 'org.springframework'
         exclude group: 'org.apache.activemq', module: 'activemq-spring'
         exclude group: 'org.eclipse.jetty.aggregate'
     }
     // http support
-    compile 'org.apache.httpcomponents:httpclient:4.+'
-    compile 'com.thoughtworks.xstream:xstream:1.+'
+    provided "org.apache.httpcomponents:httpclient:$v_apache_httpclient"
+    provided "com.thoughtworks.xstream:xstream:$v_xstream"
 
     // spring
-    compile("org.springframework:spring-jms:$v_spring")
+    provided ("org.springframework:spring-jms:$v_spring")
 
     testCompile group: 'junit', name: 'junit', version: v_junit
 

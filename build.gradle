@@ -9,6 +9,7 @@ buildscript {
     ext {
         // Versions
         v_activemq = "5.+"
+        v_apache_httpclient = "4.+"
         v_commons_lang = "3.+"
         v_eclipselink = "2.+"
         v_flyway = "3.+"
@@ -17,6 +18,8 @@ buildscript {
         v_hk2 = "2.+"
         v_hibernate = "5.2.+"
         v_jackson = "2.5.+"
+        v_javassist = "3.+"
+        v_javax_inject = "+"
         v_javax_servlet = "3.1.+"
         v_javax_persistence = "2.1.+"
         v_javax_ws_rs = "2.0.+"
@@ -28,10 +31,9 @@ buildscript {
         v_junit = "4.+"
         v_kotlin = "0.13.+"
         v_kryo = "3.+"
+        v_logback = "1.+"
         v_querydsl = "3.+"
         v_mysql = "5.+"
-        // Resteasy > 3.0.9 breaks integration with spring-boot.
-        // it actually still works fine when spring is initialized via resteasy's SpringContextLoaderListener
         v_resteasy = "3.+"
         v_scala = "2.11.+"
         v_slf4j = "1.+"
@@ -40,6 +42,7 @@ buildscript {
         v_spring_data_commons = "1.10.+"
         v_springboot = "1.2.5.+"
         v_swagger = "+"
+        v_xstream = "1.+"
 
         // LeoZ release path, relative to root project
         g_platform_identifier = PlatformId.current().toString()

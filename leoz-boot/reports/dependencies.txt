@@ -21,11 +21,20 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- org.slf4j:slf4j-api:1.7.12
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1513
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1513 (*)
+|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
+|    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1513
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1513 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.3 (*)
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12 (*)
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -57,11 +66,20 @@ default - Configuration for default artifacts.
 |    |    \--- org.slf4j:slf4j-api:1.7.12
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1513
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1513 (*)
+|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
+|    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1513
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1513 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.3 (*)
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12 (*)
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -103,11 +121,20 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- org.slf4j:slf4j-api:1.7.12
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1513
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1513 (*)
+|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
+|    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1513
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1513 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.3 (*)
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12 (*)
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -139,11 +166,20 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- org.slf4j:slf4j-api:1.7.12
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1513
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1513 (*)
+|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
+|    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1513
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1513 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.3 (*)
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12 (*)
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -177,11 +213,20 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- org.slf4j:slf4j-api:1.7.12
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1513
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1513 (*)
+|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
+|    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1513
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1513 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.3 (*)
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12 (*)
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
