@@ -28,6 +28,8 @@ dependencies {
     // For authenticating ssh/jgit against key agent
     compile 'com.jcraft:jsch.agentproxy.connector-factory:+'
     compile 'com.jcraft:jsch.agentproxy.jsch:+'
+    compile 'com.jcraft:jsch.agentproxy.sshagent:+'
+    compile 'com.jcraft:jsch.agentproxy.pageant:+'
 }
 
 def srcdir_import = file("$projectDir/src/import/java")
@@ -36,7 +38,6 @@ sourceSets {
     main.java.srcDirs += srcdir_import
     main.java.srcDirs += 'src/main/kotlin'
 }
-
 
 // Task for importing classes from other projects
 task syncClasses(type: Sync) {
