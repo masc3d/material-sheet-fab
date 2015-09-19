@@ -92,10 +92,19 @@ class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyn
     }
 
     /**
+     * Bundle path for specific platform
+     * @param path Base path
+     * @param platform Platform
+     */
+    private fun bundlePath(path: File, platform: PlatformId): File {
+        return if (platform.operatingSystem == OperatingSystem.OSX) File(path, "${this.name}.app") else path
+    }
+
+    /**
      * Bundle path
      */
     private fun bundlePath(path: File): File {
-        return if (SystemUtils.IS_OS_MAC_OSX) File(path, "${this.name}.app") else path
+        return this.bundlePath(path, PlatformId.current())
     }
 
     /**
@@ -116,7 +125,8 @@ class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyn
         // Verify this is an artifact version folder (having only platform ids as subfolder)
         val bundles = ArrayList<Bundle>()
         this.walkPlatformFolders(nSrcPath).forEach { p ->
-            val a = Bundle.load(this.bundlePath(p.toFile()))
+            val bundlePath = this.bundlePath(p.toFile(), PlatformId.parse(p.fileName.toString()))
+            val a = Bundle.load(bundlePath)
             logInfo("Found [${a}]")
             bundles.add(a)
         }
@@ -267,7 +277,7 @@ class BundleRepository(val name: String, val rsyncModuleUri: Rsync.URI, val rsyn
 
         if (verify) {
             this.walkPlatformFolders(destPath.toPath()).forEach { p ->
-                val bundlePath = this.bundlePath(p.toFile())
+                val bundlePath = this.bundlePath(p.toFile(), PlatformId.parse(p.fileName.toString()))
                 logInfo("Verifying bundle [${bundlePath}]")
                 Bundle.load(bundlePath).verify()
             }
