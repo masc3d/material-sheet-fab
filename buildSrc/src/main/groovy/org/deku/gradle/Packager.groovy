@@ -185,7 +185,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
         }
 
         this.extension.getSupplementalPlatformDirs().each { it ->
-            def src = new File(it.key, PlatformId.current().toString())
+            def src = new File(it.key, platformId.toString())
             def dst = this.getReleaseSupplementalPath(platformId, it.value)
 
             println "Copying supplemental platform dir [${src}] -> [${dst}]"
