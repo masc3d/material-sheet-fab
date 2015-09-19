@@ -195,8 +195,8 @@ class RsyncClient() {
      * @return Sync result
      */
     @JvmOverloads fun sync(
-            fileRecordCallback: (fr: FileRecord) -> Unit = {},
-            progressRecordCallback: (pr: ProgressRecord) -> Unit = {})
+            onFile: ((fr: FileRecord) -> Unit)? = null,
+            onProgress: ((pr: ProgressRecord) -> Unit)? = null)
             : Result {
 
         if (this.source == null || this.destination == null)
@@ -213,7 +213,7 @@ class RsyncClient() {
         if (this.preserveExecutability) command.add("-E")
         if (this.preserveAcls) command.add("-A")
         if (this.skipBasedOnChecksum) command.add("-c")
-        if (this.fuzzy) command.add("-y")
+        if (this.fuzzy) command.add("-yy")
         if (this.relativePaths) command.add("-R")
         if (this.delete) command.add("--delete")
         if (this.removeSourceFiles) command.add("--remove-source-files")
@@ -261,7 +261,7 @@ class RsyncClient() {
                     override fun onProcessedOutput(output: String) {
                         var fr = FileRecord.tryParse(output)
                         if (fr != null) {
-                            fileRecordCallback(fr)
+                            if (onFile != null) onFile(fr)
                             log.trace(fr)
                             if (!fr.isDirectory)
                                 files.add(File(fr.path))
@@ -270,7 +270,7 @@ class RsyncClient() {
 
                         var pr = ProgressRecord.tryParse(output)
                         if (pr != null) {
-                            progressRecordCallback(pr)
+                            if (onProgress != null) onProgress(pr)
                             log.trace(pr)
                             return
                         }
