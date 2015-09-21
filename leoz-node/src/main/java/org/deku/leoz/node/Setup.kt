@@ -56,8 +56,8 @@ class Setup {
 
         // Execute
         var pe: ProcessExecutor = ProcessExecutor(pb,
-                outputHandler = ProcessExecutor.DefaultStreamHandler(collectBuffer = output),
-                errorHandler = ProcessExecutor.DefaultStreamHandler(collectBuffer = error))
+                outputHandler = ProcessExecutor.DefaultStreamHandler(collectInto = output),
+                errorHandler = ProcessExecutor.DefaultStreamHandler(collectInto = error))
 
         try {
             pe.start()
@@ -104,7 +104,7 @@ class Setup {
                 "--Description=LeoZ node system service",
                 "--Install=${this.leozsvcPath}",
                 "--Startup=auto",
-                "--LogPath=${LocalStorage.logDirectory}",
+                "--LogPath=${LocalStorage.instance.logDirectory}",
                 "--LogPrefix=leoz-svc",
                 "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
                 "--StartMode=jvm",

@@ -3,6 +3,7 @@ package org.deku.leoz.bundle
 import com.google.common.hash.Hashing
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
+import sx.ProcessExecutor
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import java.io.*
@@ -416,6 +417,37 @@ class Bundle : Serializable {
             } finally {
                 writer.close()
             }
+        }
+    }
+
+    /**
+     * Execute bundle process
+     * @param args Arguments
+     */
+    fun execute(vararg args:String) {
+        val error = StringBuffer()
+
+        val command = ArrayList<String>()
+        if (SystemUtils.IS_OS_MAC_OSX) {
+            command.add("open")
+            command.add(this.path!!.toString())
+            command.add("--args")
+        } else {
+            command.add(File(this.path!!, this.name).toString())
+        }
+        command.addAll(args)
+
+        val pb = ProcessBuilder(command)
+        val pe = ProcessExecutor(pb, errorHandler = ProcessExecutor.DefaultStreamHandler(
+                trim = true,
+                omitEmptyLines = true,
+                collectInto = error))
+        pe.start()
+        try {
+            pe.waitFor()
+        } catch(e: Exception) {
+            if (error.length() > 0) log.error(error.toString())
+            throw e
         }
     }
 }

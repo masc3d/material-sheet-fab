@@ -45,7 +45,7 @@ public class PersistenceConfiguration implements DisposableBean /*, TransactionM
 
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-        File dbPath = new File(LocalStorage.instance().getDataDirectory(), "h2/leoz");
+        File dbPath = new File(LocalStorage.getInstance().getDataDirectory(), "h2/leoz");
 
         dataSource.setDriverClassName("org.h2.Driver");
         if (!IN_MEMORY) {

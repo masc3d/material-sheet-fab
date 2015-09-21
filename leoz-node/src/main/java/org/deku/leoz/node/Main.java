@@ -92,6 +92,7 @@ public class Main {
                         rCommand.run();
                     } catch (Exception e) {
                         mLog.error(e.getMessage(), e);
+                        System.exit(-1);
                         throw e;
                     } finally {
                         LogConfiguration.instance().dispose();

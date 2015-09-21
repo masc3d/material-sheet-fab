@@ -1,30 +1,72 @@
 package org.deku.leoz.boot
 
+//import com.beust.jcommander.JCommander
+//import com.beust.jcommander.Parameter
+import com.beust.jcommander.JCommander
+import com.beust.jcommander.Parameter
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Screen
 import javafx.stage.Stage
+import org.deku.leoz.bundle.BundleRepositoryFactory
+import sx.rsync.Rsync
 import java.awt.SplashScreen
+import java.util.*
 import kotlin.concurrent.thread
+import kotlin.properties.Delegates
 
+/**
+ * Main application entry point
+ */
 fun main(args: Array<String>) {
-    javafx.application.Application.launch(Application::class.java)
+    javafx.application.Application.launch(Application::class.java, *args)
 }
 
 /**
- * Created by n3 on 29-Jul-15.
+ * Main application (javafx) class
+ * Created by masc on 29-Jul-15.
  */
 class Application : javafx.application.Application() {
     @Throws(Exception::class)
 
+    private object Parameters {
+        @Parameter(description = "Bundle to boot")
+        var bundle: List<String> = ArrayList()
+
+        @Parameter(names = arrayOf("--repository"), description = "Repository URI")
+        var repositoryUriString: String? = null
+    }
+
+    /** Bundle to install */
+    val bundle by lazy({
+        Parameters.bundle.first()
+    })
+
+    /** Bundle repository URI */
+    val repositoryUri: Rsync.URI
+        get() = Rsync.URI(Parameters.repositoryUriString!!)
+
     override fun start(primaryStage: Stage) {
+        Application.set(this)
+
+        // Parse command line params
+        JCommander(Parameters, *this.parameters.raw.toTypedArray())
+
+        // Initialize local storage
+        LocalStorage.appName = "leoz-boot"
+
+        // Initialize rsync
+        Rsync.executableBaseFilename = "leoz-rsync"
+
+        // Show splash screen
         var splash = SplashScreen.getSplashScreen()
 
+        // Setup JavaFX stage
         val root = FXMLLoader.load<Parent>(this.javaClass.getResource("/fx/Main.fxml"))
-        primaryStage.title = "LeoZ Boot"
-        primaryStage.scene = Scene(root, 600.0, 275.0)
+        primaryStage.title = "Leoz"
+        primaryStage.scene = Scene(root, 800.0, 475.0)
 
         var screenBounds = Screen.getPrimary().bounds
         var rootBounds = root.boundsInLocal
@@ -35,11 +77,19 @@ class Application : javafx.application.Application() {
         primaryStage.x = (screenBounds.width - rootBounds.width) / 2
         primaryStage.show()
 
+        // Dismiss splash
         if (splash != null) {
             splash.close()
         }
     }
 
     companion object {
+        /** Application singleton instance */
+        var instance: Application by Delegates.notNull()
+            private set
+
+        private fun set(instance: Application) {
+            this.instance = instance
+        }
     }
 }

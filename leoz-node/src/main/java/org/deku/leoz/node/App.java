@@ -95,7 +95,6 @@ public class App implements
             throw new IllegalStateException("Application already initialized");
         mIsInitialized = true;
 
-        LocalStorage.instance().setAppName(this.getName());
         mProfile = profile;
 
         // Initialize logging
@@ -123,7 +122,7 @@ public class App implements
 
             // Add local home configuration
             try {
-                configLocations.add(new URL("file:" + LocalStorage.instance().getApplicationConfigurationFile().toString()));
+                configLocations.add(new URL("file:" + LocalStorage.getInstance().getApplicationConfigurationFile().toString()));
             } catch (MalformedURLException e) {
                 mLog.error(e.getMessage(), e);
             }
@@ -145,7 +144,7 @@ public class App implements
         //endregion
 
         // Basic broker configuration
-        ActiveMQBroker.instance().setDataDirectory(LocalStorage.instance().getActiveMqDataDirectory());
+        ActiveMQBroker.instance().setDataDirectory(LocalStorage.getInstance().getActiveMqDataDirectory());
         mDisposables.add(ActiveMQBroker.instance());
 
         Runtime.getRuntime().addShutdownHook(new Thread("App shutdown hook") {

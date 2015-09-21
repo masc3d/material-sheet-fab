@@ -1,0 +1,15 @@
+.leoz-green-bar {
+    -fx-accent: green;
+}
+
+.leoz-yellow-bar {
+    -fx-accent: yellow;
+}
+
+.leoz-orange-bar {
+    -fx-accent: orange;
+}
+
+.leoz-red-bar {
+    -fx-accent: red;
+}

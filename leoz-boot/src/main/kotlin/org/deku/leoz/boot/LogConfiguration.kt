@@ -1,5 +1,6 @@
 package org.deku.leoz.boot
 
+import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.spi.ILoggingEvent
@@ -15,6 +16,7 @@ object LogConfiguration {
     private val context = LoggerFactory.getILoggerFactory() as LoggerContext
 
     fun addAppender(appender: AppenderBase<ILoggingEvent>) {
+        rootLogger.level = Level.INFO
         appender.context = this.context
         appender.start()
         this.rootLogger.addAppender(appender)

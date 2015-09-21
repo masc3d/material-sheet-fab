@@ -16,7 +16,7 @@ import java.util.*
  * Local Storage
  * Created by masc on 26.06.15.
  */
-object LocalStorage : org.deku.leoz.LocalStorage() {
+class LocalStorage : org.deku.leoz.LocalStorage() {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     // Directories
@@ -35,6 +35,14 @@ object LocalStorage : org.deku.leoz.LocalStorage() {
 
     /** c'tor */
     init {
+        this.appName = App.instance().name
         this.applicationConfigurationFile = File(this.baseDirectory, "leoz.properties")
+    }
+
+    companion object {
+        /**
+         * Java instance access. $INSTANCE doesn't seem to work with JPA annotation processor
+         */
+        @JvmStatic val instance = LocalStorage()
     }
 }

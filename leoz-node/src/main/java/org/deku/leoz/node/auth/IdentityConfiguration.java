@@ -58,7 +58,7 @@ public class IdentityConfiguration {
         mLog.info(systemInformation);
 
         // Verify and read existing identity file
-        File identityFile = LocalStorage.instance().getIdentityConfigurationFile();
+        File identityFile = LocalStorage.getInstance().getIdentityConfigurationFile();
         if (identityFile.exists()) {
             try {
                 identity = Identity.createFromFile(systemInformation, identityFile);

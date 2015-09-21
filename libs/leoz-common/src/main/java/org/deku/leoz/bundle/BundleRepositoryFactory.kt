@@ -12,7 +12,7 @@ object BundleRepositoryFactory {
 
     fun stagingRepository(bundleName: String): BundleRepository {
         return BundleRepository(
-                name = bundleName,
+                bundleName = bundleName,
                 rsyncModuleUri = stagingRsyncModuleUri,
                 rsyncPassword = stagingRsyncModulePassword)
     }

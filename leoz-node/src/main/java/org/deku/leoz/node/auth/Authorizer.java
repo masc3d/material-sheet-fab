@@ -73,7 +73,7 @@ public class Authorizer implements Disposable {
                         // Set id based on response and store identity
                         mLog.info(String.format("Received authorization update [%s]", authorizationMessage));
                         identity.setId(authorizationMessage.getId());
-                        identity.store(LocalStorage.instance().getIdentityConfigurationFile());
+                        identity.store(LocalStorage.getInstance().getIdentityConfigurationFile());
                     }
                     success = true;
                 } catch (TimeoutException e) {
