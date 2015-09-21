@@ -3,6 +3,7 @@ package sx.rsync
 import com.google.common.base.StandardSystemProperty
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
+import sx.EmbeddedExecutable
 import sx.ProcessExecutor
 import sx.platform.PlatformId
 import java.io.File
@@ -22,103 +23,7 @@ open class Rsync() {
     companion object {
         val log = LogFactory.getLog(Rsync::class.java)
 
-        /** Rsync executable base filename */
-        var executableBaseFilename: String = "sx-rsync"
-        /** Rsync executable file name */
-        val executableFilename: String by lazy(LazyThreadSafetyMode.NONE) {
-            this.executableBaseFilename + if (SystemUtils.IS_OS_WINDOWS) ".exe" else ""
-        }
-
-        /**
-         * Find rsync executabe
-         */
-        private fun findExecutable(): File? {
-            // Search for executable in current and parent paths
-            var binPlatformRelPath = Paths.get("bin")
-                    .resolve(PlatformId.current().toString())
-                    .resolve(executableFilename)
-
-            var binRelPath = Paths.get("bin")
-                    .resolve(executableFilename)
-
-            var path = Paths.get("").toAbsolutePath()
-            do {
-                var binPath: Path
-
-                binPath = path.resolve(binPlatformRelPath)
-                if (Files.exists(binPath))
-                    return binPath.toFile()
-
-                binPath = path.resolve(binRelPath)
-                if (Files.exists(binPath))
-                    return binPath.toFile()
-
-                path = path.parent
-            } while (path != null)
-
-            return null
-        }
-
-        /**
-         * Ensures all binaries within path have the executable bit/permission set
-         * @param path Path
-         */
-        private fun setExecutablePermissions(path: File) {
-            Files.walk(Paths.get(path.toURI()), 1)
-                    .filter { p ->
-                        val filename = p.toString().toLowerCase()
-                        Files.isRegularFile(p) && (!filename.contains('.') || filename.endsWith(".exe") || filename.endsWith(".dll")) }
-                    .forEach { p ->
-                        // Get file attribute view
-                        var fav = Files.getFileAttributeView(p, AclFileAttributeView::class.java)
-
-                        if (fav != null) {
-                            log.debug("Verifying executable permission for [${p}]")
-
-                            var oldAcls = fav.acl
-                            var newAcls = ArrayList<AclEntry>()
-                            var update = false
-                            for (acl in oldAcls) {
-                                // Add executable permission if it's not there yet
-                                var perms = acl.permissions()
-                                if (!perms.contains(AclEntryPermission.EXECUTE)) {
-                                    perms.add(AclEntryPermission.EXECUTE)
-                                    // Build new acl from old one with updated permissions
-                                    var aclb = AclEntry.newBuilder(acl)
-                                    aclb.setPermissions(perms)
-                                    newAcls.add(aclb.build())
-                                    update = true
-                                } else {
-                                    newAcls.add(acl)
-                                }
-                            }
-                            if (update) {
-                                log.debug("Adding permission to execute to [${p}]")
-                                fav.acl = newAcls
-                            }
-                        }
-                    }
-        }
-
-        /**
-         * Path to rsync executable.
-         * When not set explicitly, tries to detect/find executable automatically within current and parent paths
-         * */
-        var executableFile: File? = null
-            @Synchronized get() {
-                if ($executableFile == null) {
-                    log.debug("Searching for rsync executable [${this.executableFilename}]")
-                    $executableFile = this.findExecutable()
-                    if ($executableFile == null)
-                        throw IllegalStateException("Could not find rsync executable [${this.executableFilename}]")
-
-                    log.debug("Found rsync executable [${$executableFile}]")
-
-                    this.setExecutablePermissions($executableFile!!.parentFile)
-                }
-
-                return $executableFile
-            }
+        val executable = EmbeddedExecutable("sx-rsync")
     }
 
     /**
