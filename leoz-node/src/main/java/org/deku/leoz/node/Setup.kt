@@ -11,6 +11,7 @@ import sx.ProcessExecutor
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util
+import kotlin.text.Regex
 
 /**
  * Local Storage
@@ -56,8 +57,8 @@ class Setup {
 
         // Execute
         var pe: ProcessExecutor = ProcessExecutor(pb,
-                outputHandler = ProcessExecutor.DefaultStreamHandler(collectInto = output),
-                errorHandler = ProcessExecutor.DefaultStreamHandler(collectInto = error))
+                outputHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = output),
+                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
         try {
             pe.start()
@@ -77,16 +78,10 @@ class Setup {
      */
     private fun logProcessOutput(output: String, isError: Boolean = false) {
         if (!Strings.isNullOrEmpty(output)) {
-            var lines = output.split(StandardSystemProperty.LINE_SEPARATOR.value())
-            log.info("Lines [${lines.count()}]")
-            for (line in lines) {
-                var tLine = line.trim()
-                if (tLine.length() > 0)
-                    if (isError)
-                        log.error(tLine)
-                    else
-                        log.info(tLine)
-            }
+            if (isError)
+                log.error(output)
+            else
+                log.info(output)
         }
     }
 
@@ -121,14 +116,63 @@ class Setup {
         log.info("Installed successfully")
     }
 
+    private enum class ServiceStatus {
+        STOPPED,
+        NOT_STOPPED,
+        NOT_FOUND
+    }
+
+    /**
+     * Determimes service status
+     */
+    private fun serviceStatus(): ServiceStatus {
+        val pb: ProcessBuilder = ProcessBuilder("sc", "query", "LeoZ")
+
+        var output = StringBuffer()
+        var error = StringBuffer()
+
+        try {
+            // Execute
+            var pe: ProcessExecutor = ProcessExecutor(pb,
+                    outputHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = output),
+                    errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
+
+            pe.start()
+            pe.waitFor()
+
+            val re = Regex("STATE.*:.*([0-9]+)[\\s]+([A-Z]+).*")
+            val mr = re.match(output.toString())
+            if (mr != null) {
+                val state = mr.groups[1]!!.value.toInt()
+                when (state) {
+                    1 -> return ServiceStatus.STOPPED
+                    else -> return ServiceStatus.NOT_STOPPED
+                }
+            }
+        } catch(e: ProcessExecutor.ProcessException) {
+            when (e.errorCode) {
+                1060 -> return ServiceStatus.NOT_FOUND
+                else -> throw e
+            }
+        }
+
+        return ServiceStatus.NOT_STOPPED
+    }
+
     /**
      * Uninstalls node system service
      */
     fun uninstall() {
+        if (serviceStatus() == ServiceStatus.NOT_FOUND) {
+            log.info("Service not found. That's ok")
+            return
+        }
+
         log.info("Uninstalling service")
 
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
                 "//DS/LeoZ")
+
         this.execute(pb)
 
         log.info("Uninstalled successfully")
@@ -150,6 +194,11 @@ class Setup {
      * Stop
      */
     fun stop() {
+        if (serviceStatus() != ServiceStatus.NOT_STOPPED) {
+            log.info("Service does not need to be stopped")
+            return
+        }
+
         log.info("Stopping service")
 
         var pb: ProcessBuilder = ProcessBuilder("net", "stop", "LeoZ")

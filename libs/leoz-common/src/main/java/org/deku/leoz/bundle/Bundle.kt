@@ -3,6 +3,7 @@ package org.deku.leoz.bundle
 import com.google.common.hash.Hashing
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
+import sx.EmbeddedExecutable
 import sx.ProcessExecutor
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
@@ -221,6 +222,13 @@ class Bundle : Serializable {
                 inputStream.close()
             }
         }
+
+        /**
+         * Elevation executable
+         */
+        private val elevationExecutable: EmbeddedExecutable by lazy {
+            EmbeddedExecutable("nircmdc")
+        }
     }
 
     /**
@@ -270,6 +278,10 @@ class Bundle : Serializable {
         }
 
         companion object {
+            /**
+             * Parse version string
+             * @param version Version string
+             */
             @JvmStatic fun parse(version: String): Version {
                 // Determine end of numeric components
                 var end = version.indexOfFirst({ c -> !c.isDigit() && c != '.' })
@@ -424,7 +436,7 @@ class Bundle : Serializable {
      * Execute bundle process
      * @param args Arguments
      */
-    fun execute(vararg args:String) {
+    fun execute(elevate: Boolean = false, vararg args:String) {
         val error = StringBuffer()
 
         val command = ArrayList<String>()
@@ -433,6 +445,10 @@ class Bundle : Serializable {
             command.add(this.path!!.toString())
             command.add("--args")
         } else {
+            if (elevate) {
+                command.add(elevationExecutable.file.toString())
+                command.add("elevate")
+            }
             command.add(File(this.path!!, this.name).toString())
         }
         command.addAll(args)
