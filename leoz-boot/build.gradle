@@ -5,7 +5,7 @@ apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: PackagerPlugin
 
-version '0.4'
+version '0.1'
 sourceCompatibility = 1.8
 mainClassName = "org.deku.leoz.boot.BootPackage"
 
@@ -22,12 +22,21 @@ dependencies {
     compile "ch.qos.logback:logback-classic:$v_logback"
     compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
 
+    // command line
+    compile "com.beust:jcommander:+"
+
     compile "org.jfxtras:jfxtras-all:8.+"
     compile "com.dooapp.fxform2:core:8.+"
 
-    compile "org.eclipse.jgit:org.eclipse.jgit:$v_jgit"
-
     testCompile group: 'junit', name: 'junit', version: v_junit
+}
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+
+    // Add resources (like .fxml files) from souce path.
+    // Non-standard, but nicer to keep .fxml files together with classes
+    main.resources.srcDir 'src/main/java'
 }
 
 jar {
@@ -49,19 +58,11 @@ distributions {
 }
 
 packager {
-    title = "LeoZ Boot"
+    title = "Leoz Boot"
     releaseBasePath = g_release_path
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
     supplementalPlatformDirs(
             (projectBuildBinDir): new File('bin')
     )
-}
-
-sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
-
-    // Add resources (like .fxml files) from souce path.
-    // Non-standard, but nicer to keep .fxml files together with classes
-    main.resources.srcDir 'src/main/java'
 }

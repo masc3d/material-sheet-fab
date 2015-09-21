@@ -3,7 +3,7 @@
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <option name="MAIN_CLASS_NAME" value="org.deku.leoz.boot.BootPackage" />
     <option name="VM_PARAMETERS" value="-splash:src/main/resources/images/DEKU.splash.png" />
-    <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="PROGRAM_PARAMETERS" value="leoz-central --repository rsync://test" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/leoz-boot" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -12,6 +12,9 @@
     <option name="PASS_PARENT_ENVS" value="true" />
     <module name="leoz-boot" />
     <envs />
-    <method />
+    <method>
+      <option name="Make" enabled="false" />
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="classes" externalProjectPath="$PROJECT_DIR$/leoz-boot" vmOptions="" scriptParameters="" />
+    </method>
   </configuration>
 </component>
