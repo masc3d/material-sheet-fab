@@ -148,18 +148,6 @@ abstract class PackagerReleaseTask extends PackagerTask {
     }
 
     /**
-     * Copy plain plain supplemental dirs
-     * @param platformId
-     * @return
-     */
-    protected def copySupplementalDirs(PlatformId platformId) {
-        // TODO: implement
-        this.extension.getSupplementalDirs().each {
-            it -> println it.key
-        }
-    }
-
-    /**
      * Copy platform specific supplemental dirs
      * @param platformId
      * @return
@@ -325,7 +313,6 @@ class PackagerReleaseBundleTask extends PackagerReleaseTask {
             into releasePlatformPath
         }
 
-        this.copySupplementalDirs(PlatformId.current())
         this.copySupplementalPlatformDirs(PlatformId.current())
 
         println "Creating bundle manifest"
@@ -385,7 +372,6 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
                 into releaseBundleJarPath
             }
 
-            this.copySupplementalDirs(platformId)
             this.copySupplementalPlatformDirs(platformId)
 
             println "Creating bundle manifest"
