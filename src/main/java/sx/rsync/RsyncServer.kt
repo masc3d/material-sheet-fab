@@ -69,7 +69,10 @@ class RsyncServer(
             if (aclFav != null) {
                 var fowner = Files.getOwner(nioSecretsFile)
                 val acls = ArrayList<AclEntry>()
-                acls.add(AclEntry.newBuilder().setPrincipal(fowner).setPermissions(AclEntryPermission.READ_DATA).build())
+                acls.add(AclEntry.newBuilder()
+                        .setType(AclEntryType.ALLOW)
+                        .setPrincipal(fowner)
+                        .setPermissions(AclEntryPermission.READ_DATA).build())
                 aclFav.acl = acls
             } else {
                 var posixFav = Files.getFileAttributeView(nioSecretsFile, PosixFileAttributeView::class.java)
