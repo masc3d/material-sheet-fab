@@ -72,7 +72,7 @@ class RsyncServer(
                 acls.add(AclEntry.newBuilder()
                         .setType(AclEntryType.ALLOW)
                         .setPrincipal(fowner)
-                        .setPermissions(AclEntryPermission.READ_DATA).build())
+                        .setPermissions(AclEntryPermission.values().toSet()).build())
                 aclFav.acl = acls
             } else {
                 var posixFav = Files.getFileAttributeView(nioSecretsFile, PosixFileAttributeView::class.java)
