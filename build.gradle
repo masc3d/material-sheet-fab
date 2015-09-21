@@ -37,11 +37,14 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-runtime:0.13.+"
     compile "org.jetbrains.kotlin:kotlin-stdlib:0.13.+"
 
-    compile 'com.google.guava:guava:18.+'
+    // Logging
     compile 'commons-logging:commons-logging:1.+'
-    compile 'org.apache.commons:commons-lang3:+'
     compile "ch.qos.logback:logback-classic:+"
     compile "org.slf4j:jcl-over-slf4j:+"
+
+    // Misc
+    compile 'com.google.guava:guava:18.+'
+    compile 'org.apache.commons:commons-lang3:+'
 
     // JMS
     provided 'javax.jms:jms-api:1.1-rev-1'
@@ -49,6 +52,7 @@ dependencies {
     // JAX-RS
     compile "javax.ws.rs:javax.ws.rs-api:2.+"
 
+    // Ini/conf file support
     compile 'org.ini4j:ini4j:+'
 
     provided "javax.servlet:javax.servlet-api:+"
