@@ -17,7 +17,7 @@ import kotlin.properties.Delegates
  * Local Storage
  * Created by masc on 26.06.15.
  */
-open abstract class LocalStorage {
+abstract class LocalStorage {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     /** Base name for process specific files/directories */
