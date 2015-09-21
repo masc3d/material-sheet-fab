@@ -58,7 +58,7 @@ class Application : javafx.application.Application() {
         LocalStorage.appName = "leoz-boot"
 
         // Initialize rsync
-        Rsync.executableBaseFilename = "leoz-rsync"
+        Rsync.executable.baseFilename = "leoz-rsync"
 
         // Show splash screen
         var splash = SplashScreen.getSplashScreen()

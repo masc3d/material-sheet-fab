@@ -47,8 +47,8 @@ open class RsyncConfiguration {
     @PostConstruct
     fun initialize() {
         // Initialize rsync executable path
-        Rsync.executableBaseFilename = "leoz-rsync"
-        log.info(Rsync.executableFile)
+        Rsync.executable.baseFilename = "leoz-rsync"
+        log.info(Rsync.executable.file)
 
         // Rsync configuration
         val config = RsyncServer.Configuration()
