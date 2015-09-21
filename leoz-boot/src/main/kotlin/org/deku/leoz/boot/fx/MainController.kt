@@ -51,8 +51,6 @@ class MainController : Initializable {
                 bundleName,
                 BundleRepositoryFactory.stagingRepository(bundleName))
 
-        installer.bundle.start()
-
         thread {
             try {
                 if (installer.hasBundle()) {
