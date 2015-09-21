@@ -80,6 +80,11 @@ public class App implements
     protected App() {
     }
 
+    /** Application name */
+    public String getName() {
+        return "leoz-node";
+    }
+
     /**
      * Intialize application
      * @param profile Spring profile name
@@ -90,6 +95,7 @@ public class App implements
             throw new IllegalStateException("Application already initialized");
         mIsInitialized = true;
 
+        LocalStorage.instance().setAppName(this.getName());
         mProfile = profile;
 
         // Initialize logging

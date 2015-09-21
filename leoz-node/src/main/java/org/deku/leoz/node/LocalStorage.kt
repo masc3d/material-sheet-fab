@@ -21,13 +21,17 @@ class LocalStorage : org.deku.leoz.LocalStorage() {
 
     // Directories
     /** Local embedded activemq data directory */
-    val activeMqDataDirectory: File
+    val activeMqDataDirectory: File by lazy({
+        File(this.dataDirectory, "activemq")
+    })
 
     // Files
     /** Local application configuration file */
     val applicationConfigurationFile: File
     /** Local identity configuration file */
-    val identityConfigurationFile: File
+    val identityConfigurationFile: File by lazy({
+        File(this.dataDirectory, "identity.properties")
+    })
 
     companion object Singleton {
         private val instance: LocalStorage = LocalStorage()
@@ -38,8 +42,6 @@ class LocalStorage : org.deku.leoz.LocalStorage() {
 
     /** c'tor */
     init {
-        this.applicationConfigurationFile = File(this.homeDirectory, "leoz.properties")
-        this.identityConfigurationFile = File(this.dataDirectory, "identity.properties")
-        this.activeMqDataDirectory = File(this.dataDirectory, "activemq")
+        this.applicationConfigurationFile = File(this.baseDirectory, "leoz.properties")
     }
 }

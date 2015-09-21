@@ -16,6 +16,11 @@ public class App extends org.deku.leoz.node.App {
     public static final String PROFILE_CENTRAL = "central";
 
     @Override
+    public String getName() {
+        return "leoz-central";
+    }
+
+    @Override
     public void initialize() {
         // No JMS logging for leoz-central
         super.initialize(PROFILE_CENTRAL);
