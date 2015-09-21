@@ -53,9 +53,7 @@ open abstract class LocalStorage {
 
     /** Local log file */
     val logFile: File by lazy({
-        val d = File(this.logDirectory, "${this.appName}.log")
-        d.mkdirs()
-        d
+        File(this.logDirectory, "${this.appName}.log")
     })
 
     /** c'tor */
