@@ -176,7 +176,7 @@ class RsyncClient() {
                         }
                     }
                 },
-                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectBuffer = error))
+                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
         pe.start()
 
@@ -276,7 +276,7 @@ class RsyncClient() {
                         }
                     }
                 },
-                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectBuffer = error))
+                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
         pe.start()
 

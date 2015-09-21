@@ -11,7 +11,9 @@ import java.io.InputStreamReader
 import java.util.logging.StreamHandler
 
 /**
- * Process executor with threaded stream reading support
+ * Process executor with threaded stream reading support.
+ * Unlike with process builder, process executor will attempt to destroy the process instance when it's disposed
+ * or the jvm shutdowns down.
  * @param processBuilder Process builder
  * @param outputHandler Stream handler implementation
  */
@@ -51,7 +53,7 @@ class ProcessExecutor @JvmOverloads constructor(
     open class DefaultStreamHandler @JvmOverloads constructor(
             val trim: Boolean = false,
             val omitEmptyLines: Boolean = false,
-            val collectBuffer: StringBuffer? = null
+            val collectInto: StringBuffer? = null
     ) : StreamHandler {
         override fun onOutput(output: String) {
             // Optionally trim
@@ -64,8 +66,11 @@ class ProcessExecutor @JvmOverloads constructor(
             this.onProcessedOutput(processedOutput)
 
             // Optionally collect output
-            if (collectBuffer != null)
-                collectBuffer.append(processedOutput + StandardSystemProperty.LINE_SEPARATOR.value())
+            if (collectInto != null) {
+                if (collectInto.length() > 0)
+                    collectInto.append(StandardSystemProperty.LINE_SEPARATOR.value())
+                collectInto.append(processedOutput)
+            }
         }
 
         /**

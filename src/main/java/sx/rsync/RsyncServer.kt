@@ -181,7 +181,7 @@ class RsyncServer(
         val error = StringBuffer()
 
         this.processExecutor = ProcessExecutor(ProcessBuilder(command),
-                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectBuffer = error))
+                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
         this.processExecutor?.onTermination = { ex ->
             if (error.length() > 0) this.log.error(error.toString())
             this.onTermination(ex)
