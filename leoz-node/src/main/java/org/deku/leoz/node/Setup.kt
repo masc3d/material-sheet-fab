@@ -104,7 +104,7 @@ class Setup {
                 "--Description=LeoZ node system service",
                 "--Install=${this.leozsvcPath}",
                 "--Startup=auto",
-                "--LogPath=${LocalStorage.instance().logDirectory}",
+                "--LogPath=${LocalStorage.logDirectory}",
                 "--LogPrefix=leoz-svc",
                 "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
                 "--StartMode=jvm",

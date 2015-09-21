@@ -45,7 +45,7 @@ class LogConfiguration : Disposable {
         // region File appender
         this.fileAppender = RollingFileAppender()
         this.fileAppender.context = loggerContext
-        this.fileAppender.file = LocalStorage.instance().logFile.toString()
+        this.fileAppender.file = LocalStorage.logFile.toString()
 
         // Encoder
         val encoder = PatternLayoutEncoder()

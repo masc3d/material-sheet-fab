@@ -53,18 +53,18 @@ open class RsyncConfiguration {
         // Rsync configuration
         val config = RsyncServer.Configuration()
         config.port = this.server.port
-        config.logFile = File(LocalStorage.instance().logDirectory, "leoz-rsyncd.log")
+        config.logFile = File(LocalStorage.logDirectory, "leoz-rsyncd.log")
 
         // Users
         var user = Rsync.User(RsyncFactory.USERNAME, RsyncFactory.PASSWORD)
 
         // Bundles module
-        var module = Rsync.Module("bundles", LocalStorage.instance().bundlesDirectory)
+        var module = Rsync.Module("bundles", LocalStorage.bundlesDirectory)
         module.permissions.put(user, Rsync.Permission.READWRITE)
         config.modules.add(module)
 
         // Initialize and start server
-        rsyncServer = RsyncServer(LocalStorage.instance().etcDirectory, config)
+        rsyncServer = RsyncServer(LocalStorage.etcDirectory, config)
         rsyncServer.onTermination = { e ->
             if (e != null) log.error(e.getMessage(), e)
         }

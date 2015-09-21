@@ -16,7 +16,7 @@ import java.util.*
  * Local Storage
  * Created by masc on 26.06.15.
  */
-class LocalStorage : org.deku.leoz.LocalStorage() {
+object LocalStorage : org.deku.leoz.LocalStorage() {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     // Directories
@@ -32,13 +32,6 @@ class LocalStorage : org.deku.leoz.LocalStorage() {
     val identityConfigurationFile: File by lazy({
         File(this.dataDirectory, "identity.properties")
     })
-
-    companion object Singleton {
-        private val instance: LocalStorage = LocalStorage()
-        @JvmStatic fun instance(): LocalStorage {
-            return this.instance;
-        }
-    }
 
     /** c'tor */
     init {
