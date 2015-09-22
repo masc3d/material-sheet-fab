@@ -416,6 +416,9 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         SshSessionFactory.setInstance(sessionFactory)
 
         // Git repository
+        if (!this.extension.checkRepository)
+            logger.warn("WARNING: Repository checks have been disabled!")
+
         def git = Git.open(project.rootDir)
         try {
             def repo = git.repository// FileRepositoryBuilder.create(new File(project.rootDir, ".git"))
@@ -426,7 +429,7 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
             // TODO: ignoring submodules for now, as jgit always reports them as modified, even though everything is clean
             sc.setIgnoreSubmodules(SubmoduleWalk.IgnoreSubmoduleMode.ALL)
             def status = sc.call()
-            if (!status.clean) {
+            if (this.extension.checkRepository && !status.clean) {
                 throw new IllegalStateException("Repository has uncommitted changes. Cannot push release")
             }
 
@@ -457,7 +460,7 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
                 // Current branch commit
                 def RevCommit currentCommit = walk.parseCommit(repo.getRef(repo.branch).objectId)
 
-                if (!currentCommit.name.equals(tagCommit.name))
+                if (this.extension.checkRepository && !currentCommit.name.equals(tagCommit.name))
                     throw new IllegalStateException("Release tag [${tagName}] already exists for [${tagCommit.name}] but current branch is on different rev [${currentCommit.name}]")
             } else {
                 println "Creating tag [${tagName}]"

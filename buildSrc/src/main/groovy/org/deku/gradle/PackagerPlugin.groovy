@@ -24,6 +24,9 @@ class PackagerPluginExtension {
     /** Path to .ico file */
     def File windowsIcon
 
+    /** Perform repository sanity checks */
+    def Boolean checkRepository = true
+
     /** Map of source -> (relative) destination directories to copy to bundle release directory */
     def supplementalDirs(LinkedHashMap<File, File> dirs) {
         mSupplementalDirs = dirs
