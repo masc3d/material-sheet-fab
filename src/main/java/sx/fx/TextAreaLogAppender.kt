@@ -14,13 +14,15 @@ import org.slf4j.LoggerFactory
 
  * @author Russell Shingleton @oclc.org>
  */
-class TextAreaLogAppender(val textArea: TextArea) : AppenderBase<ILoggingEvent>() {
+class TextAreaLogAppender(
+        /** Text are to attach to */
+        val textArea: TextArea,
+        /** Maximum number of lines */
+        var maxLines: Int = 500) : AppenderBase<ILoggingEvent>() {
+
     private var patternLayout: PatternLayout = PatternLayout()
     private var lines: Int = 0
     private var buffer: StringBuilder = StringBuilder()
-
-    /** Maximum number of lines */
-    var maxLines: Int = 500
 
     init {
         //this.patternLayout.setPattern("%-5level [%thread]: %message%n")
