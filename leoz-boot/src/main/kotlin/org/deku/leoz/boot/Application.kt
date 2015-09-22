@@ -68,8 +68,7 @@ class Application : javafx.application.Application() {
         if (nativeBundlePath.parentFile.equals(LocalStorage.bundlesDirectory))
             return
 
-        log.info("Installing leoz-boot")
-
+        log.info("Performing self verification")
         Bundle.load(nativeBundlePath).verify()
 
         val srcPath = nativeBundlePath

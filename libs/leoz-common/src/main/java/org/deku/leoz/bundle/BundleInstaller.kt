@@ -22,8 +22,32 @@ class BundleInstaller(
 
     private val log = LogFactory.getLog(this.javaClass)
 
-    private val UPDATE_SUFFIX = ".update"
-    private val OLD_SUFFIX = ".old"
+    companion object {
+        private val UPDATE_SUFFIX = ".update"
+        private val OLD_SUFFIX = ".old"
+
+        /**
+         * Checks if (file/folder) name is a valid module name
+         */
+        private fun isBundleName(name: String): Boolean {
+            return !name.endsWith(UPDATE_SUFFIX) &&
+                    !name.endsWith(OLD_SUFFIX)
+        }
+
+        /**
+         * List bundle container paths. The bundle itself may reside in a subfolder (eg. on OSX it's the .app osx bundle)
+         */
+        fun listBundlePaths(bundleContainerPath: File): List<File> {
+            return bundleContainerPath.listFiles { f -> f.isDirectory && this.isBundleName(f.name) }?.asList() ?: ArrayList()
+        }
+
+        /**
+         * List bundle names
+         */
+        fun listBundleNames(bundleContainerPath: File): List<String> {
+            return this.listBundlePaths(bundleContainerPath).map { f -> f.name }
+        }
+    }
 
     init {
         if (this.bundleName != repository.bundleName)
@@ -36,14 +60,6 @@ class BundleInstaller(
      */
     private fun bundleUpdatePath(): File {
         return File(bundleContainerPath, "${this.repository.bundleName}${UPDATE_SUFFIX}")
-    }
-
-    /**
-     * Checks if (file/folder) name is a valid module name
-     */
-    private fun isBundleName(name: String): Boolean {
-        return !name.endsWith(UPDATE_SUFFIX) &&
-                !name.endsWith(OLD_SUFFIX)
     }
 
     /**
@@ -91,7 +107,7 @@ class BundleInstaller(
         val destPath = if (prepareAsUpdate) this.bundleUpdatePath() else this.bundlePath()
 
         val platform = PlatformId.current()
-        var comparePaths = this.listBundleContainerPaths().filter { f -> !f.name.equals(repository.bundleName) }
+        var comparePaths = this.listBundlePaths().filter { f -> !f.name.equals(repository.bundleName) }
         if (platform.operatingSystem == OperatingSystem.OSX)
             comparePaths = comparePaths.map { f -> File(f, "${f.name}.app") }
 
@@ -133,14 +149,14 @@ class BundleInstaller(
     /**
      * List bundle container paths. The bundle itself may reside in a subfolder (eg. on OSX it's the .app osx bundle)
      */
-    fun listBundleContainerPaths(): List<File> {
-        return this.bundleContainerPath.listFiles { f -> f.isDirectory && this.isBundleName(f.name) }?.asList() ?: ArrayList()
+    fun listBundlePaths(): List<File> {
+        return listBundlePaths(this.bundleContainerPath)
     }
 
     /**
      * List bundle names
      */
     fun listBundleNames(): List<String> {
-        return this.listBundleContainerPaths().map { f -> f.name }
+        return listBundleNames(this.bundleContainerPath)
     }
 }

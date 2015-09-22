@@ -38,7 +38,7 @@ class MainController : Initializable {
     var logAppender: TextAreaLogAppender? = null
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
-        LogConfiguration.addAppender(TextAreaLogAppender(uxTextArea))
+        LogConfiguration.addAppender(TextAreaLogAppender(uxTextArea, 1000))
 
         val bundleName = Application.instance.bundle
         uxTitle.text = "Booting ${bundleName}"
@@ -61,7 +61,11 @@ class MainController : Initializable {
                     installer.bundle.uninstall()
                 }
 
-                installer.download(Bundle.Version.parse("0.1"), false, { f, p ->
+                log.info("Checking for available versions of [${bundleName}]")
+                val versionToInstall = installer.repository.listVersions().sortedDescending().first()
+
+                log.info("Installing [${bundleName}-${versionToInstall}]")
+                installer.download(versionToInstall, false, { f, p ->
                     if (p > 0.0) uxProgressBar.progress = p
                 })
 
