@@ -58,6 +58,8 @@ class TextAreaLogAppender(val textArea: TextArea) : AppenderBase<ILoggingEvent>(
                     // Ignore exceptions
                 }
             })
+            // Pass thread slice to give UI opportunity to update asap
+            Thread.sleep(0)
         } catch (e: Exception) {
             // Ignore exceptions
         }
