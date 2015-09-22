@@ -159,7 +159,7 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
             val rc = this.createRsyncClient()
             rc.source = Rsync.URI(versionSrcPath)
             rc.destination = this.rsyncBundleUri.resolve(version)
-            rc.preservePermissions = false
+            //rc.preservePermissions = false
             rc.copyDestinations = comparisonDestinationUris
 
             logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
@@ -222,7 +222,7 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
 
         rc.source = source
         rc.destination = destination
-        rc.preservePermissions = false
+        //rc.preservePermissions = false
         rc.comparisonDestinations = comparisonDestinations.toArrayList()
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
@@ -270,7 +270,7 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
         val rc = this.createRsyncClient()
         rc.source = this.rsyncBundleUri.resolve(version)
         rc.destination = Rsync.URI(destPath)
-        rc.preservePermissions = false
+        //rc.preservePermissions = false
 
         logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
         rc.sync({ r ->
