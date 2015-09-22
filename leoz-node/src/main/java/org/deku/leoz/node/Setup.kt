@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import sx.platform.PlatformId
 import org.slf4j.Logger
+import sx.EmbeddedExecutable
 import sx.ProcessExecutor
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -30,7 +31,7 @@ class Setup {
     private var basePath: Path
     private var binPath: Path
     private var codeSourcePath: Path
-    private var leozsvcPath: Path
+    private val leozsvcExecutable: EmbeddedExecutable
 
     private constructor() {
         this.codeSourcePath = Paths.get(this.javaClass.protectionDomain.codeSource.location.toURI())
@@ -44,7 +45,8 @@ class Setup {
             this.binPath = this.basePath.resolve("bin").resolve(PlatformId.current().toString())
         }
 
-        leozsvcPath = this.binPath.resolve("leoz-svc.exe")
+        leozsvcExecutable = EmbeddedExecutable("leoz-svc")
+
         log.info("Setup base path [${basePath}] bin path [${binPath}]")
     }
 
@@ -93,11 +95,11 @@ class Setup {
 
         var classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
 
-        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
+        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
                 "//IS/LeoZ",
                 "--DisplayName=${serviceName}",
                 "--Description=LeoZ node system service",
-                "--Install=${this.leozsvcPath}",
+                "--Install=${this.leozsvcExecutable.file.toString()}",
                 "--Startup=auto",
                 "--LogPath=${LocalStorage.instance.logDirectory}",
                 "--LogPrefix=leoz-svc",
@@ -170,7 +172,7 @@ class Setup {
 
         log.info("Uninstalling service")
 
-        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcPath.toString(),
+        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
                 "//DS/LeoZ")
 
         this.execute(pb)
