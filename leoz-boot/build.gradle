@@ -25,6 +25,9 @@ dependencies {
     // command line
     compile "com.beust:jcommander:+"
 
+    // ini/conf file
+    compile 'org.ini4j:ini4j:+'
+
     compile "org.jfxtras:jfxtras-all:8.+"
     compile "com.dooapp.fxform2:core:8.+"
 

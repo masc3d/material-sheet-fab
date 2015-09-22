@@ -46,6 +46,9 @@ class MainController : Initializable {
             uxProgressIndicator.isVisible = (n.toDouble() > 0.0 && n.toDouble() < 1)
         }
 
+        Application.instance.selfInstall()
+
+        // TODO: move installation logic from controller to bundle installer
         val installer = BundleInstaller(
                 LocalStorage.bundlesDirectory,
                 bundleName,

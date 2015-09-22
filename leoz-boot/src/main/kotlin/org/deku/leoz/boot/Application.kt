@@ -10,9 +10,16 @@ import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Screen
 import javafx.stage.Stage
+import org.apache.commons.logging.LogFactory
+import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleRepositoryFactory
+import org.deku.leoz.bundle.Bundles
 import sx.rsync.Rsync
+import sx.rsync.RsyncClient
 import java.awt.SplashScreen
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
 import kotlin.concurrent.thread
 import kotlin.properties.Delegates
@@ -39,6 +46,8 @@ class Application : javafx.application.Application() {
         var repositoryUriString: String? = null
     }
 
+    private val log = LogFactory.getLog(this.javaClass)
+
     /** Bundle to install */
     val bundle by lazy({
         Parameters.bundle.first()
@@ -47,6 +56,35 @@ class Application : javafx.application.Application() {
     /** Bundle repository URI */
     val repositoryUri: Rsync.URI
         get() = Rsync.URI(Parameters.repositoryUriString!!)
+
+
+    fun selfInstall() {
+        if (LocalStorage.nativeBundleBasePath == null)
+            return
+
+        val nativeBundlePath = LocalStorage.nativeBundleBasePath!!
+        log.info(nativeBundlePath)
+
+        if (nativeBundlePath.parentFile.equals(LocalStorage.bundlesDirectory))
+            return
+
+        log.info("Installing leoz-boot")
+
+        Bundle.load(nativeBundlePath).verify()
+
+        val srcPath = nativeBundlePath
+        val destPath = File(LocalStorage.bundlesDirectory, Bundles.LEOZ_BOOT)
+
+        val rc = RsyncClient()
+        rc.source = Rsync.URI(srcPath)
+        rc.destination = Rsync.URI(destPath)
+        rc.preservePermissions = false
+
+        log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
+        rc.sync( onFile = { r ->
+            log.info("Updating [${r.flags}] [${r.path}]")
+        })
+    }
 
     override fun start(primaryStage: Stage) {
         Application.set(this)
