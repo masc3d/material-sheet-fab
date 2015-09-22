@@ -45,7 +45,15 @@ class RsyncClient() {
     /** Preserve executable flag of files */
     var preserveExecutability = true
     /** Preserve acl permissions */
-    var preserveAcls = false
+    var preserveAcls: Boolean = false
+    /** Preserve permissions */
+    var preservePermissions: Boolean? = null
+    /** Preserve times */
+    var preserveTimes: Boolean? = null
+    /** Preserve groups */
+    var preserveGroup: Boolean? = null
+    /** Preserve owners */
+    var preserveOwner: Boolean? = null
     /** Compression level, 0 (none) - 9 (max) */
     var compression: Int = 0
     /** Relative paths */
@@ -212,6 +220,14 @@ class RsyncClient() {
         if (this.archive) command.add("-a")
         if (this.preserveExecutability) command.add("-E")
         if (this.preserveAcls) command.add("-A")
+        if (this.preservePermissions != null)
+            command.add(if (this.preservePermissions!!) "--perms" else "--no-perms")
+        if (this.preserveTimes != null)
+            command.add(if (this.preserveTimes!!) "--times" else "--no-times")
+        if (this.preserveGroup!= null)
+            command.add(if (this.preserveGroup!!) "--group" else "--no-group")
+        if (this.preserveOwner!= null)
+            command.add(if (this.preserveOwner!!) "--owner" else "--no-owner")
         if (this.skipBasedOnChecksum) command.add("-c")
         if (this.fuzzy) command.add("-yy")
         if (this.relativePaths) command.add("-R")
