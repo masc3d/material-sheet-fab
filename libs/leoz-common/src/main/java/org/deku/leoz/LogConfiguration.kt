@@ -45,7 +45,7 @@ abstract class LogConfiguration : Disposable {
                 // Encoder
                 val encoder = PatternLayoutEncoder()
                 encoder.context = this.loggerContext
-                encoder.pattern = "%d %r %thread %level - %msg%n"
+                encoder.pattern = "%d %r %thread %logger %level - %msg%n"
                 encoder.start()
                 fileAppender.encoder = encoder
 
