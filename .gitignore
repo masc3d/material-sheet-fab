@@ -4,7 +4,6 @@
 *.ldb
 .gradle
 .idea/libraries
-/bin/
 dataSources.local.xml
 dataSources.xml
 leoz-boot/reports/dependencies/

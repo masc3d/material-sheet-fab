@@ -43,7 +43,7 @@ sourceSets {
 task syncClasses(type: Sync) {
     from '../libs/leoz-common/src/main/java', '../libs/sx-common/src/main/java'
     into srcdir_import
-    include '**/bundle/**', '**/rsync/**', '**/ProcessExecutor*', '**/Disposable*/', '**/EmbeddedExecutable*/', '**/Action*/', '**/platform/**', '**/Bundle'
+    include '**/bundle/**', '**/rsync/**', '**/system/**', '**/ProcessExecutor*', '**/Disposable*/', '**/EmbeddedExecutable*/', '**/Action*/', '**/platform/**', '**/Bundle'
     includeEmptyDirs = false
 }
 

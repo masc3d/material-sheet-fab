@@ -3,6 +3,7 @@ package org.deku.leoz.bundle
 import com.google.common.hash.Hashing
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.system.ProcessElevation
 import sx.EmbeddedExecutable
 import sx.ProcessExecutor
 import sx.platform.OperatingSystem
@@ -222,13 +223,6 @@ class Bundle : Serializable {
                 inputStream.close()
             }
         }
-
-        /**
-         * Elevation executable
-         */
-        private val elevationExecutable: EmbeddedExecutable by lazy {
-            EmbeddedExecutable("nircmdc")
-        }
     }
 
     /**
@@ -446,7 +440,7 @@ class Bundle : Serializable {
             command.add("--args")
         } else {
             if (elevate) {
-                command.add(elevationExecutable.file.toString())
+                command.add(ProcessElevation.executable.file.toString())
                 command.add("elevate")
             }
             command.add(File(this.path!!, this.name).toString())
