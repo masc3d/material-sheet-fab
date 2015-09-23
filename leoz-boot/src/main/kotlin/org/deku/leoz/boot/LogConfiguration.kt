@@ -5,19 +5,22 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
+import ch.qos.logback.core.rolling.RollingFileAppender
 import javafx.scene.control.TextArea
 import org.slf4j.LoggerFactory
 
 /**
  * Created by n3 on 01-Aug-15.
  */
-object LogConfiguration {
-    private val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
-    private val context = LoggerFactory.getILoggerFactory() as LoggerContext
+object LogConfiguration : org.deku.leoz.LogConfiguration() {
+
+    init {
+        this.logFile = LocalStorage.logFile
+    }
 
     fun addAppender(appender: AppenderBase<ILoggingEvent>) {
-        rootLogger.level = Level.INFO
-        appender.context = this.context
+        this.rootLogger.level = Level.INFO
+        appender.context = this.loggerContext
         appender.start()
         this.rootLogger.addAppender(appender)
     }

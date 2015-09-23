@@ -17,13 +17,12 @@ import kotlin.properties.Delegates
  * Local Storage
  * Created by masc on 26.06.15.
  */
-abstract class LocalStorage {
+abstract class LocalStorage(
+        /** Base name for process specific files/directories */
+        val appName: String) {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
-    /** Base name for process specific files/directories */
-    var appName: String by Delegates.notNull()
-
-    // Directories
+// Directories
     /** Local home directory */
     val baseDirectory: File;
 

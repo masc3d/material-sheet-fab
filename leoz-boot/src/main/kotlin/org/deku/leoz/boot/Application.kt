@@ -87,11 +87,16 @@ class Application : javafx.application.Application() {
     override fun start(primaryStage: Stage) {
         Application.set(this)
 
+        // Uncaught threaded exception handler
+        Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {
+            override fun uncaughtException(t: Thread, e: Throwable) {
+                log.error(e.getMessage(), e)
+                System.exit(-1)
+            }
+        })
+
         // Parse command line params
         JCommander(Parameters, *this.parameters.raw.toTypedArray())
-
-        // Initialize local storage
-        LocalStorage.appName = "leoz-boot"
 
         // Initialize rsync
         Rsync.executable.baseFilename = "leoz-rsync"

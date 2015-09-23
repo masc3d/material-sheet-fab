@@ -17,7 +17,7 @@ import sx.Disposable
  * Log configuration
  * Created by masc on 24-Jul-15.
  */
-class LogConfiguration : Disposable {
+class LogConfiguration : org.deku.leoz.LogConfiguration() {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     companion object Singleton {
@@ -27,60 +27,40 @@ class LogConfiguration : Disposable {
         }
     }
 
-    private var rootLogger: Logger
-    private var loggerContext: LoggerContext
+    /** Jms log appender */
     private var jmsLogAppender: LogAppender? = null
-    private var fileAppender: RollingFileAppender<ILoggingEvent>
-
-    /** Enable support for jms log appender */
-    var jmsAppenderEnabled: Boolean = false
 
     /**
-     * c'tor
-     */
-    private constructor() {
-        this.rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
-        this.loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+     * Enable or disable jms log appender
+     * */
+    var jmsAppenderEnabled: Boolean = false
+        set(value: Boolean) {
+            if (value) {
+                if (this.jmsLogAppender == null) {
+                    // Setup message log appender
+                    this.jmsLogAppender = LogAppender(ActiveMQContext.instance())
+                    this.jmsLogAppender!!.context = loggerContext
+                }
+            } else {
+                if (this.jmsLogAppender != null) {
+                    this.jmsLogAppender!!.stop()
+                    rootLogger.detachAppender(this.jmsLogAppender)
+                    this.jmsLogAppender = null
+                }
+            }
+        }
 
-        // region File appender
-        this.fileAppender = RollingFileAppender()
-        this.fileAppender.context = loggerContext
-        this.fileAppender.file = LocalStorage.instance.logFile.toString()
-
-        // Encoder
-        val encoder = PatternLayoutEncoder()
-        encoder.context = this.loggerContext
-        encoder.pattern = "%d %r %thread %level - %msg%n"
-        encoder.start()
-        this.fileAppender.encoder = encoder
-
-        // Rolling policy
-        val rollingPolicy = TimeBasedRollingPolicy<ILoggingEvent>()
-        rollingPolicy.context = this.loggerContext
-        rollingPolicy.setParent(this.fileAppender)
-        rollingPolicy.maxHistory = 10
-        rollingPolicy.fileNamePattern = "${this.fileAppender.rawFileProperty()}-%d{yyyy-MM-dd}"
-        rollingPolicy.start()
-        this.fileAppender.rollingPolicy = rollingPolicy
-        this.fileAppender.triggeringPolicy = rollingPolicy
-        // endregion
+    init {
+        this.logFile = LocalStorage.instance.logFile
     }
 
     /**
      * Initialize logging
      */
-    fun initialize() {
-        // Initialize file appender
-        this.fileAppender.start()
-        this.rootLogger.addAppender(this.fileAppender)
+    override fun initialize() {
+        super.initialize()
 
         if (this.jmsAppenderEnabled) {
-            // Initialize jms appender
-            if (this.jmsLogAppender == null) {
-                // Setup message log appender
-                this.jmsLogAppender = LogAppender(ActiveMQContext.instance())
-                this.jmsLogAppender!!.context = loggerContext
-            }
             this.jmsLogAppender!!.start()
             this.rootLogger.addAppender(this.jmsLogAppender)
         }
@@ -90,12 +70,7 @@ class LogConfiguration : Disposable {
      * Dispose loggers
      */
     override fun dispose() {
-        if (this.jmsLogAppender != null) {
-            this.jmsLogAppender!!.stop()
-            rootLogger.detachAppender(this.jmsLogAppender)
-        }
-
-        fileAppender.stop()
-        rootLogger.detachAppender(fileAppender)
+        this.jmsAppenderEnabled = false
+        super.dispose()
     }
 }
