@@ -35,8 +35,11 @@ import java.util.stream.Collectors
  * Base class for all packager tasks
  */
 abstract class PackagerTask extends DefaultTask {
+    final GROUP_PACKAGER = 'packager'
+    final GROUP_PACKAGER_NATIVE = 'packager-native'
+
     /** Group for all packager tasks */
-    def String group = "packager"
+    def String group = GROUP_PACKAGER
     /** Plugin extension used for extension within build.gradle scope */
     def PackagerPluginExtension extension
 
@@ -189,7 +192,9 @@ abstract class PackagerReleaseTask extends PackagerTask {
  * Java packager task
  * Created by masc on 22.07.15.
  */
-class PackagerBundleTask extends PackagerTask {
+class PackagerNativeBundleTask extends PackagerTask {
+    def String group = GROUP_PACKAGER_NATIVE
+
     // Optional extension
     def String packageName
     def String packageDescription
@@ -274,7 +279,9 @@ class PackagerBundleTask extends PackagerTask {
 /**
  * Release bundle task
  */
-class PackagerReleaseBundleTask extends PackagerReleaseTask {
+class PackagerReleaseNativeBundleTask extends PackagerReleaseTask {
+    def String group = GROUP_PACKAGER_NATIVE
+
     @TaskAction
     def packagerReleaseAll() {
         def releasePlatformPath = this.getReleasePlatformPath()

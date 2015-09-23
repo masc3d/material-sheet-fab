@@ -63,17 +63,17 @@ class PackagerPlugin implements Plugin<Project> {
         project.extensions.packager = ext
 
         // Bundle task
-        project.tasks.create('buildBundle', PackagerBundleTask) {
+        project.tasks.create('buildNativeBundle', PackagerNativeBundleTask) {
             extension = ext
             jvmOptions = "-XX:+UseCompressedOops"
         }
-        project.tasks.buildBundle.dependsOn(project.tasks.jar)
+        project.tasks.buildNativeBundle.dependsOn(project.tasks.jar)
 
         // Release bundle task
-        project.tasks.create('releaseBundle', PackagerReleaseBundleTask) {
+        project.tasks.create('releaseNativeBundle', PackagerReleaseNativeBundleTask) {
             extension = ext
         }
-        project.tasks.releaseBundle.dependsOn(project.tasks.buildBundle)
+        project.tasks.releaseNativeBundle.dependsOn(project.tasks.buildNativeBundle)
 
         // Release jars task
         project.tasks.create('releaseJars', PackagerReleaseJarsTask) {
@@ -84,7 +84,7 @@ class PackagerPlugin implements Plugin<Project> {
         // TODO: workaround for bug in jdk 1.8.0_60, where jars are not picked up when building bundle
         // Jars are already missing in packager bundle dir. This worked fine with jdk 1.8.0_51
         if (SystemUtils.IS_OS_MAC_OSX) {
-            project.tasks.releaseBundle.finalizedBy(project.tasks.releaseJars)
+            project.tasks.releaseNativeBundle.finalizedBy(project.tasks.releaseJars)
         }
 
         // Release push task
