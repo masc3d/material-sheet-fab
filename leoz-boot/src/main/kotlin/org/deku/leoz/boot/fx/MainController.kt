@@ -2,6 +2,7 @@ package org.deku.leoz.boot.fx
 
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
+import javafx.application.Platform
 import javafx.beans.property.DoubleProperty
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
@@ -72,11 +73,17 @@ class MainController : Initializable {
                 installer.bundle.install()
                 installer.bundle.start()
 
-                uxProgressBar.styleClass.add("leoz-green-bar")
-                log.info("Installed sucessfully")
+                log.info("Installed sucessfully.")
+                Platform.runLater {
+                    uxProgressBar.styleClass.add("leoz-green-bar")
+                    uxTitle.text = "Booted ${bundleName} succesfully."
+                }
             } catch(e: Exception) {
-                uxProgressBar.styleClass.add("leoz-red-bar")
                 log.error(e.getMessage(), e)
+                Platform.runLater {
+                    uxProgressBar.styleClass.add("leoz-red-bar")
+                    uxTitle.text = "Booting ${bundleName} failed."
+                }
             } finally {
                 uxProgressBar.progress = 1.0
             }
