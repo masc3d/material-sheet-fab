@@ -21,6 +21,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:0.13.+"
 
     compile "org.apache.commons:commons-lang3:3.+"
+    compile "org.apache.commons:commons-compress:+"
+    compile "commons-io:commons-io:+"
+    compile "org.tukaani:xz:+"
     compile "org.eclipse.jgit:org.eclipse.jgit:4.+"
     compile 'com.google.guava:guava:18.+'
     compile 'org.ini4j:ini4j:+'

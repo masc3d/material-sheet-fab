@@ -7,6 +7,11 @@ import com.jcraft.jsch.Session
 import com.jcraft.jsch.agentproxy.Connector
 import com.jcraft.jsch.agentproxy.ConnectorFactory
 import com.jcraft.jsch.agentproxy.RemoteIdentityRepository
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry
+import org.apache.commons.compress.archivers.sevenz.SevenZMethod
+import org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration
+import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile
+import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleRepository
@@ -24,6 +29,7 @@ import org.eclipse.jgit.transport.TagOpt
 import org.eclipse.jgit.util.FS
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.tukaani.xz.LZMA2Options
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 
@@ -183,6 +189,93 @@ abstract class PackagerReleaseTask extends PackagerTask {
             project.copy {
                 from src
                 into dst
+            }
+        }
+    }
+
+    protected def createSelfExtractingArchive(PlatformId platformId) {
+        if (this.extension.createSelfExtractingArchive) {
+            if (platformId.operatingSystem == OperatingSystem.WINDOWS) {
+                def sfxPath = project.projectDir.toPath().resolve("sfx").resolve("win").toFile()
+                if (!sfxPath.exists()) {
+                    logger.warn("Skipping sfx creation. Path [${sfxPath}] does not exist.")
+                    return
+                }
+
+                println "Creating self extracting archive(s)"
+
+                // Archive content path
+                def archiveContentPath = this.getReleasePlatformPath(platformId)
+                def nioArchiveContentPath = archiveContentPath.toPath()
+
+                // Prepare build and release destinations
+                def archiveDirectoryName = "${project.name}-archive"
+                def buildArchivePath = new File(this.extension.packagerBaseDir, archiveDirectoryName)
+                buildArchivePath.mkdirs()
+                def releaseArchivePath = new File(this.extension.releaseBasePath, archiveDirectoryName)
+                releaseArchivePath.mkdirs()
+
+                def buildArchiveName = "${project.name}-${platformId}.7z"
+                def buildArchive = new File(buildArchivePath, buildArchiveName)
+
+                buildArchive.delete()
+
+                // Archive contents
+                def byte[] buffer = new byte[8*1024*1024]
+                def lzma2Options = new LZMA2Options()
+                lzma2Options.preset = 1
+                def lzma2Method = new SevenZMethodConfiguration(SevenZMethod.LZMA2, lzma2Options)
+
+                def szOut = new SevenZOutputFile(buildArchive)
+                try {
+                    szOut.setContentMethods(Collections.singletonList(lzma2Method))
+                    Files.walk(nioArchiveContentPath)
+                            .filter { p -> !p.equals(nioArchiveContentPath) }
+                            .each { p ->
+                        def entryName = nioArchiveContentPath.relativize(p).toString()
+                        def szEntry = szOut.createArchiveEntry(p.toFile(), entryName)
+                        szOut.putArchiveEntry(szEntry)
+                        if (Files.isRegularFile(p)) {
+                            def is = p.newInputStream()
+                            try {
+                                int length
+                                while((length = is.read(buffer, 0, buffer.length)) > 0) {
+                                    szOut.write(buffer, 0, length)
+                                }
+                            } finally {
+                                is.close()
+                            }
+                        }
+                        szOut.closeArchiveEntry()
+                    }
+                } finally {
+                    szOut.close()
+                }
+
+                // Join files to self executable
+                def CFG_EXTENSION = ".cfg"
+                Files.walk(sfxPath.toPath())
+                        .filter { p -> Files.isRegularFile(p) && p.fileName.toString().endsWith(CFG_EXTENSION)}
+                        .each { p ->
+
+                    def configName = p.fileName.toString()
+                    configName = configName.substring(0, configName.length() - CFG_EXTENSION.length())
+                    def releaseExecutable = new File(releaseArchivePath, "${project.name}-${configName}-${platformId}.exe")
+
+                    def os = releaseExecutable.newOutputStream()
+                    try {
+                        [new File(sfxPath, "7zsd.sfx"), p.toFile(), buildArchive].each {
+                            def is = it.newInputStream()
+                            try {
+                                IOUtils.copyLarge(is, os, buffer)
+                            } finally {
+                                is.close()
+                            }
+                        }
+                    } finally {
+                        os.close()
+                    }
+                }
             }
         }
     }
@@ -387,6 +480,8 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
                     project.name,
                     platformId,
                     Bundle.Version.parse(project.version))
+
+            this.createSelfExtractingArchive(platformId)
         }
     }
 }
@@ -534,4 +629,3 @@ class PackagerReleaseCleanTask extends PackagerReleaseTask {
         releasePath.mkdirs()
     }
 }
-

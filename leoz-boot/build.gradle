@@ -51,6 +51,7 @@ jar {
     }
 }
 tasks.classes.dependsOn(copySxBinariesToBuild)
+tasks.classes.dependsOn(copyGlobalBinariesToBuild)
 
 distributions {
     main {
@@ -68,4 +69,5 @@ packager {
     supplementalPlatformDirs(
             (projectBuildBinDir): new File('bin')
     )
+    createSelfExtractingArchive = true
 }

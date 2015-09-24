@@ -27,6 +27,9 @@ class PackagerPluginExtension {
     /** Perform repository sanity checks */
     def Boolean checkRepository = true
 
+    /** Create self extracting archive */
+    def Boolean createSelfExtractingArchive = false
+
     /** Map of source -> (relative) destination directories to copy to bundle release directory */
     def supplementalDirs(LinkedHashMap<File, File> dirs) {
         mSupplementalDirs = dirs
