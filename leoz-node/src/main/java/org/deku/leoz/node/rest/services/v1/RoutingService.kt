@@ -38,15 +38,15 @@ import javax.inject.Inject
 @Produces(MediaType.APPLICATION_JSON)
 class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     @Inject
-    var countryRepository: CountryRepository? = null
+    lateinit var countryRepository: CountryRepository
     @Inject
-    var routeRepository: RouteRepository? = null
+    lateinit var routeRepository: RouteRepository
     @Inject
-    var holidayctrlRepostitory: HolidayctrlRepository? = null
+    lateinit var holidayctrlRepostitory: HolidayctrlRepository
     @Inject
-    var routingLayerRepository: RoutingLayerRepository? = null
+    lateinit var routingLayerRepository: RoutingLayerRepository
     @Inject
-    var stationRepository: StationRepository? = null
+    lateinit var stationRepository: StationRepository
 
     /**
      * Request routing
@@ -82,7 +82,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         //TODO
         ctrlTransportUnit = 23
 
-        val layer = routingLayerRepository!!.findAll(
+        val layer = routingLayerRepository.findAll(
                 QRoutingLayer.routingLayer.services.eq(ctrlTransportUnit))
 
         //TODO rWereLayer bitmaske suchen
@@ -107,7 +107,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
             for (s in senderParticipants) {
                 if (!possibleSenderSectors.contains(s))
-                    possibleSenderSectors.add(s.sector!!)
+                    possibleSenderSectors.add(s.sector)
             }
 
             senderParticipant = senderParticipants.first()
@@ -133,7 +133,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
             for (c in consigneeParticipants) {
                 if (!possibleSenderSectors.contains(c))
-                    possibleSenderSectors.add(c.sector!!)
+                    possibleSenderSectors.add(c.sector)
             }
 
             consigneeParticipant = consigneeParticipants.first()
@@ -179,7 +179,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         var zip: String = requestParticipant?.zip?.toUpperCase()
                 ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "${errorPrefix} empty zipcode")
 
-        val rcountry = countryRepository!!.findOne(country)
+        val rcountry = countryRepository.findOne(country)
                 ?: throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} unknown country")
 
         if (Strings.isNullOrEmpty(rcountry.zipFormat))
@@ -249,7 +249,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         //                        .and(QRoute.route.validTo.after(validDate?.toTimestamp()))
         //        )
 
-        val rRoutes = routeRepository!!.findAll(
+        val rRoutes = routeRepository.findAll(
                 QRoute.route.layer.eq(routingLayer.layer)
                         .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
                         .and(QRoute.route.zipFrom.loe(queryZipCode))
@@ -264,7 +264,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
         //TODO Sector aus stationsector
 
-        val rStation = stationRepository!!.findOne(rRoute.station)
+        val rStation = stationRepository.findOne(rRoute.station)
 
         if (rStation == null)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} Route Station not found");
@@ -285,7 +285,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
             }
             "D" -> {
                 var deliveryDate = desiredDeliveryDate
-                        ?: getNextDeliveryDay(sendDate, participant.country, rRoute.holidayCtrl)
+                        ?: getNextDeliveryDay(sendDate, participant.country, rRoute.holidayCtrl, participant.term)
 
                 participant.date = deliveryDate
             }
@@ -331,7 +331,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
             else -> DayType.Workday
         }
 
-        val rHolidayCtrl = holidayctrlRepostitory!!.findOne(HolidayCtrlPK(date?.toTimestamp(), country))
+        val rHolidayCtrl = holidayctrlRepostitory.findOne(HolidayCtrlPK(date?.toTimestamp(), country))
 
         if (rHolidayCtrl != null) {
             if (rHolidayCtrl.ctrlPos == -1)
@@ -348,21 +348,21 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     /**
      * Get next delivery day
      */
-    private fun getNextDeliveryDay(date: LocalDate?, country: String, holidayCtrl: String): LocalDate? {
-        var d = date
+    private fun getNextDeliveryDay(date: LocalDate?, country: String, holidayCtrl: String, term: Int): LocalDate {
+        var day = date
 
-        var workDaysRequired: Int = 1
-        if (this.getDayType(d, country, holidayCtrl) != DayType.Workday)
-            workDaysRequired = 2
+        var workDaysRequired: Int = term
+        if (this.getDayType(day, country, holidayCtrl) != DayType.Workday)
+            workDaysRequired++
 
         var workDays: Int = 0
         do {
-            d = d?.plusDays(1)
-            if (getDayType(d, country, holidayCtrl) == DayType.Workday)
+            day = day?.plusDays(1)
+            if (getDayType(day, country, holidayCtrl) == DayType.Workday)
                 workDays++
         } while (workDays < workDaysRequired)
 
-        return d
+        return day!!
     }
 
     /**
