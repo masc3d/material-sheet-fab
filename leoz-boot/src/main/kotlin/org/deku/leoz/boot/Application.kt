@@ -77,6 +77,7 @@ class Application : javafx.application.Application() {
         val rc = RsyncClient()
         rc.source = Rsync.URI(srcPath)
         rc.destination = Rsync.URI(destPath)
+        rc.delete = true
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
         rc.sync( onFile = { r ->
