@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -10,20 +11,32 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 
-<VBox stylesheets="@../css/leoz-boot.css" prefHeight="426.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leoz.boot.fx.MainController">
+<VBox prefHeight="426.0" prefWidth="650.0" styleClass="leoz-undecorated" stylesheets="@../css/leoz-boot.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leoz.boot.fx.MainController">
    <children>
       <AnchorPane maxWidth="1.7976931348623157E308">
          <children>
-            <FlowPane hgap="8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-               <children>
-                  <Label fx:id="uxTitle" maxWidth="1.7976931348623157E308" text="Installing LeoZ">
-                     <font>
-                        <Font name="System Bold" size="24.0" />
-                     </font>
-                  </Label>
-                  <ProgressIndicator fx:id="uxProgressIndicator" prefHeight="18.0" prefWidth="18.0" />
-               </children>
-            </FlowPane>
+            <BorderPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <center>
+                  <HBox spacing="8.0">
+                     <children>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/DEKU.icon.256px.png" />
+                           </image>
+                        </ImageView>
+                        <Label fx:id="uxTitle" maxWidth="1.7976931348623157E308" text="Installing LeoZ">
+                           <font>
+                              <Font name="System Bold" size="24.0" />
+                           </font>
+                        </Label>
+                        <ProgressIndicator fx:id="uxProgressIndicator" prefHeight="21.0" prefWidth="21.0" />
+                     </children>
+                  </HBox>
+               </center>
+               <right>
+                  <Button fx:id="uxClose" mnemonicParsing="false" text="Close" BorderPane.alignment="CENTER" />
+               </right>
+            </BorderPane>
          </children>
          <VBox.margin>
             <Insets bottom="12.0" />

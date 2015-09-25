@@ -4,13 +4,19 @@ package org.deku.leoz.boot
 //import com.beust.jcommander.Parameter
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
+import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
+import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.image.Image
+import javafx.scene.input.MouseButton
+import javafx.scene.input.MouseEvent
 import javafx.stage.Screen
 import javafx.stage.Stage
+import javafx.stage.StageStyle
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.boot.fx.ResizeHelper
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleRepositoryFactory
 import org.deku.leoz.bundle.Bundles
@@ -40,7 +46,7 @@ class Application : javafx.application.Application() {
 
     private object Parameters {
         @Parameter(description = "Bundle to boot")
-        var bundle: List<String> = ArrayList()
+        var bundles: List<String> = ArrayList()
 
         @Parameter(names = arrayOf("--repository"), description = "Repository URI")
         var repositoryUriString: String? = null
@@ -50,13 +56,16 @@ class Application : javafx.application.Application() {
 
     /** Bundle to install */
     val bundle by lazy({
-        Parameters.bundle.first()
+        Parameters.bundles.first()
     })
 
     /** Bundle repository URI */
     val repositoryUri: Rsync.URI
         get() = Rsync.URI(Parameters.repositoryUriString!!)
 
+    /** Primary stage */
+    var primaryStage: Stage by Delegates.notNull()
+        private set
 
     fun selfInstall() {
         if (LocalStorage.nativeBundleBasePath == null)
@@ -88,6 +97,8 @@ class Application : javafx.application.Application() {
     override fun start(primaryStage: Stage) {
         Application.set(this)
 
+        this.primaryStage = primaryStage
+
         // Uncaught threaded exception handler
         Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {
             override fun uncaughtException(t: Thread, e: Throwable) {
@@ -98,6 +109,11 @@ class Application : javafx.application.Application() {
 
         // Parse command line params
         JCommander(Parameters, *this.parameters.raw.toTypedArray())
+        if (Parameters.bundles.size() == 0) {
+            // Nothing to do
+            System.exit(0)
+            return
+        }
 
         // Initialize rsync
         Rsync.executable.baseFilename = "leoz-rsync"
@@ -109,12 +125,14 @@ class Application : javafx.application.Application() {
         val root = FXMLLoader.load<Parent>(this.javaClass.getResource("/fx/Main.fxml"))
         primaryStage.title = "Leoz"
         primaryStage.scene = Scene(root, 800.0, 475.0)
+        ResizeHelper.addResizeListener(primaryStage)
 
         var screenBounds = Screen.getPrimary().bounds
         var rootBounds = root.boundsInLocal
 
         var img = this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")
         primaryStage.icons.add(Image(img))
+        primaryStage.initStyle(StageStyle.UNDECORATED)
         primaryStage.y = (screenBounds.height - rootBounds.height) / 2
         primaryStage.x = (screenBounds.width - rootBounds.width) / 2
         primaryStage.show()

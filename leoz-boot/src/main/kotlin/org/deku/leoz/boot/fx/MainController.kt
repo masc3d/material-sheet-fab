@@ -4,12 +4,11 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import javafx.application.Platform
 import javafx.beans.property.DoubleProperty
+import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
-import javafx.scene.control.Label
-import javafx.scene.control.ProgressBar
-import javafx.scene.control.ProgressIndicator
-import javafx.scene.control.TextArea
+import javafx.scene.control.*
+import javafx.scene.input.MouseEvent
 import javafx.scene.text.TextFlow
 import org.deku.leoz.boot.Application
 import org.deku.leoz.boot.LocalStorage
@@ -35,6 +34,8 @@ class MainController : Initializable {
     lateinit val uxProgressBar: ProgressBar
     @FXML
     lateinit val uxProgressIndicator: ProgressIndicator
+    @FXML
+    lateinit val uxClose: Button
 
     var logAppender: TextAreaLogAppender? = null
 
@@ -46,6 +47,12 @@ class MainController : Initializable {
         uxProgressBar.progressProperty().addListener { v, o, n ->
             uxProgressIndicator.isVisible = (n.toDouble() > 0.0 && n.toDouble() < 1)
         }
+        uxClose.onMouseClicked = object:EventHandler<MouseEvent> {
+            override fun handle(event: MouseEvent?) {
+                Application.instance.primaryStage.close()
+            }
+        }
+        uxClose.visibleProperty().value = false
 
         thread {
             try {
@@ -86,6 +93,7 @@ class MainController : Initializable {
                 }
             } finally {
                 uxProgressBar.progress = 1.0
+                uxClose.visibleProperty().value = true
             }
         }
     }

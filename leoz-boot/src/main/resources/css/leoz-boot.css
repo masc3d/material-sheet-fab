@@ -1,3 +1,8 @@
+.leoz-undecorated {
+    -fx-border-color: lightgray;
+    -fx-border-width: 1pt
+}
+
 .leoz-green-bar {
     -fx-accent: green;
 }
