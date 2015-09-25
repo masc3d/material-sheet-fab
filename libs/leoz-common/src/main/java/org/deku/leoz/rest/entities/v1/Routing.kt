@@ -22,7 +22,7 @@ class Routing {
     @ApiModel(value = "Participant", description = "Response participant. Sender or consignee")
     class Participant {
         @ApiModelProperty(dataType = "string", example = "020", position = 10, required = true, value = "Station number", allowableValues = "010 - 999")
-        var station: Int? = 0
+        var station: Int = 0
         
         val stationFormatted: String?
             get() = if (station != null) Strings.padStart(station.toString(), 3, '0') else null
@@ -37,16 +37,16 @@ class Routing {
         var zone: String = ""
         
         @ApiModelProperty(dataType = "string", example = "X", position = 50, required = true, value = "Sector", allowableValues = "A-Z")
-        var sector: String? = ""
+        var sector: String = ""
 
         @ApiModelProperty(dataType = "string", example = "Workday", position = 60, required = true, value = "Type of day")
         var dayType: String = DayType.Workday.toString()
 
         @ApiModelProperty(example = "false", position = 70, required = true, value = "Is island")
-        var island: Boolean? = false
+        var island: Boolean = false
 
         @ApiModelProperty(dataType = "integer", example = "1", position = 80, required = true, value = "Termtime in days", allowableValues = ">=1")
-        var term: Int? = 1
+        var term: Int = 1
 
         @ApiModelProperty(dataType = "string", example = "08:01", position = 90, required = true, value = "Earliest time of delivery", allowableValues = "00:00 - 23:59")
         var earliestTimeOfDelivery: ShortTime? = ShortTime()
