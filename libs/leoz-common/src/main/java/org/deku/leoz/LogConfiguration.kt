@@ -7,6 +7,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
+import org.apache.commons.io.FilenameUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.messaging.activemq.ActiveMQContext
@@ -50,11 +51,16 @@ abstract class LogConfiguration : Disposable {
                 fileAppender.encoder = encoder
 
                 // Rolling policy
+                val baseFilename = FilenameUtils.removeExtension(fileAppender.rawFileProperty())
+                val extension = FilenameUtils.getExtension(fileAppender.rawFileProperty())
+
                 val rollingPolicy = TimeBasedRollingPolicy<ILoggingEvent>()
                 rollingPolicy.context = this.loggerContext
                 rollingPolicy.setParent(fileAppender)
                 rollingPolicy.maxHistory = 10
-                rollingPolicy.fileNamePattern = "${fileAppender.rawFileProperty()}-%d{yyyy-MM-dd}"
+                rollingPolicy.fileNamePattern = "${baseFilename}-%d{yyyy-MM-dd}"
+                if (extension.length() > 0)
+                    rollingPolicy.fileNamePattern += ".${extension}"
                 rollingPolicy.start()
                 fileAppender.rollingPolicy = rollingPolicy
                 fileAppender.triggeringPolicy = rollingPolicy

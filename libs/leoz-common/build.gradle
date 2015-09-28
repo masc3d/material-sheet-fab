@@ -25,6 +25,8 @@ dependencies {
     compile "ch.qos.logback:logback-classic:$v_logback"
     compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
 
+    compile "commons-io:commons-io:$v_commons_io"
+
     // javax
     compile "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs"
 
