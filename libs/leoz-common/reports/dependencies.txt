@@ -17,7 +17,7 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
 |    |    \--- org.slf4j:slf4j-api:1.7.12
-|    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- com.google.guava:guava:+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
@@ -111,7 +111,7 @@ default - Configuration for default artifacts.
 |    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
 |    |    \--- org.slf4j:slf4j-api:1.7.12
-|    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- com.google.guava:guava:+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
@@ -217,7 +217,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
 |    |    \--- org.slf4j:slf4j-api:1.7.12
-|    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- com.google.guava:guava:+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
@@ -311,7 +311,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
 |    |    \--- org.slf4j:slf4j-api:1.7.12
-|    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- com.google.guava:guava:+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
@@ -429,7 +429,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.12
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.12
 |    |    \--- org.slf4j:slf4j-api:1.7.12
-|    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- com.google.guava:guava:+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4

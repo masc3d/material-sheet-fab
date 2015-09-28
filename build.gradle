@@ -14,6 +14,8 @@ buildscript {
         v_eclipselink = "2.+"
         v_flyway = "3.+"
         v_guava = "18.+"
+        v_hawtdispatch = "1.+"
+        v_hawtbuf = "1.+"
         v_h2 = "1.+"
         v_hk2 = "2.+"
         v_hibernate = "5.2.+"
@@ -31,6 +33,7 @@ buildscript {
         v_junit = "4.+"
         v_kotlin = "0.13.+"
         v_kryo = "3.+"
+        v_leveldb = "+"
         v_logback = "1.+"
         v_querydsl = "3.+"
         v_mysql = "5.+"
@@ -161,6 +164,15 @@ subprojects {
                 if (details.requested.group == 'org.hibernate') {
                     details.useVersion v_hibernate
                 } else
+                if (details.requested.group == 'org.fusesource.hawtbuf') {
+                    details.useVersion v_hawtbuf
+                } else
+                if (details.requested.group == 'org.fusesource.hawtdispatch') {
+                    details.useVersion v_hawtdispatch
+                } else
+                if (details.requested.group == 'org.iq80.leveldb') {
+                    details.useVersion v_leveldb
+                } else
                 if (details.requested.group == 'org.javassist') {
                     details.useVersion '3.+'
                 } else
@@ -201,8 +213,6 @@ subprojects {
             force "com.esotericsoftware:kryo:$v_kryo"
             force "com.thoughtworks.xstream:xstream:1.+"
             force "org.apache.commons:commons-lang3:$v_commons_lang"
-            force "org.fusesource.hawtdispatch:hawtdispatch-transport:1.+"
-            force "org.fusesource.hawtbuf:hawtbuf:1.+"
             force "org.jboss.logging:jboss-logging:3.+"
             force "org.jboss.logging:jboss-logging-annotations:1.+"
             force "com.jcraft:jsch:+"
