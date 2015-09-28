@@ -11,7 +11,7 @@ object LocalStorage : org.deku.leoz.LocalStorage(Bundles.LEOZ_BOOT) {
     /** Base path of native bundle.
      * @return Path of bundle or null if path could not be detected
      */
-    val nativeBundleBasePath: File? by lazy( LazyThreadSafetyMode.NONE, fun (): File? {
+    val nativeBundleBasePath: File? by lazy(fun (): File? {
         val codeSourcePath = Paths.get(this.javaClass.protectionDomain.codeSource.location.toURI())
 
         if (!codeSourcePath.toString().endsWith(".jar"))
