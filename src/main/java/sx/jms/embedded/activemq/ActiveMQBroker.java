@@ -10,6 +10,8 @@ import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.filter.DestinationMapEntry;
 import org.apache.activemq.jms.pool.PooledConnectionFactory;
+import org.apache.activemq.leveldb.LevelDBStore;
+import org.apache.activemq.leveldb.LevelDBStoreFactory;
 import org.apache.activemq.network.DiscoveryNetworkConnector;
 import org.apache.activemq.network.NetworkConnector;
 import org.apache.activemq.security.*;
@@ -22,6 +24,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.IllegalStateException;
 import javax.jms.Queue;
 import javax.jms.Topic;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,6 +38,25 @@ import java.util.function.Supplier;
  * Created by masc on 16.04.15.
  */
 public class ActiveMQBroker extends Broker {
+    /**
+     * Persistence store type
+     */
+    public enum StoreType {
+        KahaDb("kahadb"),
+        LevelDb("leveldb");
+
+        private String mStoreType;
+
+        StoreType(String storeType) {
+            mStoreType = storeType;
+        }
+
+        @Override
+        public String toString() {
+            return mStoreType;
+        }
+    }
+
     //region Singleton
     private static LazyInstance<ActiveMQBroker> mInstance = new LazyInstance(new Supplier() {
         @Override
@@ -53,6 +75,9 @@ public class ActiveMQBroker extends Broker {
 
     /** Native broker service */
     private volatile BrokerService mBrokerService;
+
+    /** Persistence store type to use */
+    private StoreType mStoreType = StoreType.KahaDb;
 
     /** External transport servers, eg. servlets */
     List<TransportServer> mExternalTransportServers = new ArrayList<>();
@@ -104,15 +129,33 @@ public class ActiveMQBroker extends Broker {
 
         // Broker initialization
         mBrokerService = new BrokerService();
-        mBrokerService.setDataDirectoryFile(this.getDataDirectory());
+
+
+        // Persistence setup
+        File persistenceStoreDirectory = new File(this.getDataDirectory(), mStoreType.toString());
+        mBrokerService.setDataDirectoryFile(persistenceStoreDirectory);
+
+        switch(mStoreType) {
+            case KahaDb: {
+                KahaDBPersistenceAdapter pa = (KahaDBPersistenceAdapter) mBrokerService.getPersistenceAdapter();
+                pa.setCheckForCorruptJournalFiles(true);
+                break;
+            }
+            case LevelDb: {
+                mBrokerService.setPersistenceFactory(new LevelDBStoreFactory());
+                LevelDBStore pa = (LevelDBStore)mBrokerService.getPersistenceAdapter();
+                pa.setDirectory(persistenceStoreDirectory);
+                break;
+            }
+            default:
+                throw new IllegalStateException(String.format("Unknown store type [%s]", mStoreType));
+        }
+
+
         // Required for redelivery plugin/policy
         mBrokerService.setSchedulerSupport(true);
         // Disabling activemq's integrated  shutdown hook, favoring consumer side ordered shutdown
         mBrokerService.setUseShutdownHook(false);
-
-        // Persistence setup
-        KahaDBPersistenceAdapter pa = (KahaDBPersistenceAdapter)mBrokerService.getPersistenceAdapter();
-        pa.setCheckForCorruptJournalFiles(true);
 
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect
