@@ -142,7 +142,12 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.0_spec:1.0.0.Final
 |    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.13.Final
 |    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.13.Final
-|    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7 -> 2.2.11
+|    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7
+|    |    |    |    +--- com.sun.xml.bind:jaxb-core:2.2.7
+|    |    |    |    |    +--- javax.xml.bind:jaxb-api:2.2.7
+|    |    |    |    |    \--- com.sun.istack:istack-commons-runtime:2.16
+|    |    |    |    \--- com.sun.xml.fastinfoset:FastInfoset:1.2.12
+|    |    |    |         \--- javax.xml.bind:jsr173_api:1.0
 |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    +--- org.codehaus.jettison:jettison:1.3.2
 |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
@@ -430,7 +435,12 @@ default - Configuration for default artifacts.
 |    +--- org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.0_spec:1.0.0.Final
 |    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.13.Final
 |    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.13.Final
-|    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7 -> 2.2.11
+|    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7
+|    |    |    |    +--- com.sun.xml.bind:jaxb-core:2.2.7
+|    |    |    |    |    +--- javax.xml.bind:jaxb-api:2.2.7
+|    |    |    |    |    \--- com.sun.istack:istack-commons-runtime:2.16
+|    |    |    |    \--- com.sun.xml.fastinfoset:FastInfoset:1.2.12
+|    |    |    |         \--- javax.xml.bind:jsr173_api:1.0
 |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    +--- org.codehaus.jettison:jettison:1.3.2
 |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
@@ -750,7 +760,12 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.0_spec:1.0.0.Final
 |    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.13.Final
 |    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.13.Final
-|    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7 -> 2.2.11
+|    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7
+|    |    |    |    +--- com.sun.xml.bind:jaxb-core:2.2.7
+|    |    |    |    |    +--- javax.xml.bind:jaxb-api:2.2.7
+|    |    |    |    |    \--- com.sun.istack:istack-commons-runtime:2.16
+|    |    |    |    \--- com.sun.xml.fastinfoset:FastInfoset:1.2.12
+|    |    |    |         \--- javax.xml.bind:jsr173_api:1.0
 |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    +--- org.codehaus.jettison:jettison:1.3.2
 |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
@@ -1038,7 +1053,12 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.0_spec:1.0.0.Final
 |    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.13.Final
 |    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.13.Final
-|    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7 -> 2.2.11
+|    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7
+|    |    |    |    +--- com.sun.xml.bind:jaxb-core:2.2.7
+|    |    |    |    |    +--- javax.xml.bind:jaxb-api:2.2.7
+|    |    |    |    |    \--- com.sun.istack:istack-commons-runtime:2.16
+|    |    |    |    \--- com.sun.xml.fastinfoset:FastInfoset:1.2.12
+|    |    |    |         \--- javax.xml.bind:jsr173_api:1.0
 |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    +--- org.codehaus.jettison:jettison:1.3.2
 |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
@@ -1333,7 +1353,12 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.0_spec:1.0.0.Final
 |    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.13.Final
 |    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.13.Final
-|    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7 -> 2.2.11
+|    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7
+|    |    |    |    +--- com.sun.xml.bind:jaxb-core:2.2.7
+|    |    |    |    |    +--- javax.xml.bind:jaxb-api:2.2.7
+|    |    |    |    |    \--- com.sun.istack:istack-commons-runtime:2.16
+|    |    |    |    \--- com.sun.xml.fastinfoset:FastInfoset:1.2.12
+|    |    |    |         \--- javax.xml.bind:jsr173_api:1.0
 |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    +--- org.codehaus.jettison:jettison:1.3.2
 |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
