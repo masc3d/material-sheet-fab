@@ -97,7 +97,7 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.6 -> 2.5.4
 |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.4
 |    |    |    \--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    +--- org.hibernate:hibernate-validator:5.1.3.Final -> 5.2.1.Final
+|    |    +--- org.hibernate:hibernate-validator:5.1.3.Final -> 5.2.2.Final
 |    |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    |    +--- org.jboss.logging:jboss-logging:3.2.1.Final -> 3.3.0.Final
 |    |    |    \--- com.fasterxml:classmate:1.1.0
@@ -145,12 +145,7 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.0_spec:1.0.0.Final
 |    |    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.13.Final
 |    |    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.13.Final
-|    |    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7
-|    |    |    |    |    +--- com.sun.xml.bind:jaxb-core:2.2.7
-|    |    |    |    |    |    +--- javax.xml.bind:jaxb-api:2.2.7
-|    |    |    |    |    |    \--- com.sun.istack:istack-commons-runtime:2.16
-|    |    |    |    |    \--- com.sun.xml.fastinfoset:FastInfoset:1.2.12
-|    |    |    |    |         \--- javax.xml.bind:jsr173_api:1.0
+|    |    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7 -> 2.2.11
 |    |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    |    +--- org.codehaus.jettison:jettison:1.3.2
 |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
@@ -178,24 +173,24 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    \--- org.glassfish:javax.json:1.0.4
-|    +--- com.mysema.querydsl:querydsl-core:3.+ -> 3.6.7
+|    +--- com.mysema.querydsl:querydsl-core:3.+ -> 3.6.8
 |    |    +--- com.google.guava:guava:18.0
 |    |    +--- com.google.code.findbugs:jsr305:1.3.9
 |    |    +--- com.mysema.commons:mysema-commons-lang:0.2.4
 |    |    \--- com.infradna.tool:bridge-method-annotation:1.13
-|    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.6.7
-|    |    +--- com.mysema.querydsl:querydsl-core:3.6.7 (*)
+|    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.6.8
+|    |    +--- com.mysema.querydsl:querydsl-core:3.6.8 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
-|    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.6.7
-|    |    \--- com.mysema.querydsl:querydsl-codegen:3.6.7
-|    |         +--- com.mysema.querydsl:querydsl-core:3.6.7 (*)
-|    |         +--- com.mysema.codegen:codegen:0.6.7
+|    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.6.8
+|    |    \--- com.mysema.querydsl:querydsl-codegen:3.6.8
+|    |         +--- com.mysema.querydsl:querydsl-core:3.6.8 (*)
+|    |         +--- com.mysema.codegen:codegen:0.6.8
 |    |         |    +--- com.google.guava:guava:18.0
 |    |         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1
 |    |         \--- javax.inject:javax.inject:1
-|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.7
-|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.7 (*)
-|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.7 (*)
+|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.8
+|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.8 (*)
+|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.8 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 |    +--- javax.inject:javax.inject:+ -> 1
@@ -304,7 +299,7 @@ compile - Compile classpath for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1514
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1514 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
-\--- org.jooq:jooq:3.+ -> 3.6.3
+\--- org.jooq:jooq:3.+ -> 3.6.4
 
 default - Configuration for default artifacts.
 +--- project :libs:sx-common
@@ -397,7 +392,7 @@ default - Configuration for default artifacts.
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.6 -> 2.5.4
 |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.4
 |    |    |    \--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    +--- org.hibernate:hibernate-validator:5.1.3.Final -> 5.2.1.Final
+|    |    +--- org.hibernate:hibernate-validator:5.1.3.Final -> 5.2.2.Final
 |    |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    |    +--- org.jboss.logging:jboss-logging:3.2.1.Final -> 3.3.0.Final
 |    |    |    \--- com.fasterxml:classmate:1.1.0
@@ -445,12 +440,7 @@ default - Configuration for default artifacts.
 |    |    +--- org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.0_spec:1.0.0.Final
 |    |    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.13.Final
 |    |    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.13.Final
-|    |    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7
-|    |    |    |    |    +--- com.sun.xml.bind:jaxb-core:2.2.7
-|    |    |    |    |    |    +--- javax.xml.bind:jaxb-api:2.2.7
-|    |    |    |    |    |    \--- com.sun.istack:istack-commons-runtime:2.16
-|    |    |    |    |    \--- com.sun.xml.fastinfoset:FastInfoset:1.2.12
-|    |    |    |    |         \--- javax.xml.bind:jsr173_api:1.0
+|    |    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7 -> 2.2.11
 |    |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    |    +--- org.codehaus.jettison:jettison:1.3.2
 |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
@@ -478,24 +468,24 @@ default - Configuration for default artifacts.
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    \--- org.glassfish:javax.json:1.0.4
-|    +--- com.mysema.querydsl:querydsl-core:3.+ -> 3.6.7
+|    +--- com.mysema.querydsl:querydsl-core:3.+ -> 3.6.8
 |    |    +--- com.google.guava:guava:18.0
 |    |    +--- com.google.code.findbugs:jsr305:1.3.9
 |    |    +--- com.mysema.commons:mysema-commons-lang:0.2.4
 |    |    \--- com.infradna.tool:bridge-method-annotation:1.13
-|    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.6.7
-|    |    +--- com.mysema.querydsl:querydsl-core:3.6.7 (*)
+|    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.6.8
+|    |    +--- com.mysema.querydsl:querydsl-core:3.6.8 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
-|    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.6.7
-|    |    \--- com.mysema.querydsl:querydsl-codegen:3.6.7
-|    |         +--- com.mysema.querydsl:querydsl-core:3.6.7 (*)
-|    |         +--- com.mysema.codegen:codegen:0.6.7
+|    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.6.8
+|    |    \--- com.mysema.querydsl:querydsl-codegen:3.6.8
+|    |         +--- com.mysema.querydsl:querydsl-core:3.6.8 (*)
+|    |         +--- com.mysema.codegen:codegen:0.6.8
 |    |         |    +--- com.google.guava:guava:18.0
 |    |         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1
 |    |         \--- javax.inject:javax.inject:1
-|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.7
-|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.7 (*)
-|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.7 (*)
+|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.8
+|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.8 (*)
+|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.8 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 |    +--- javax.inject:javax.inject:+ -> 1
@@ -604,7 +594,7 @@ default - Configuration for default artifacts.
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1514
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1514 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
-\--- org.jooq:jooq:3.+ -> 3.6.3
+\--- org.jooq:jooq:3.+ -> 3.6.4
 
 kapt
 \--- org.jetbrains.kotlin:kotlin-annotation-processing:0.13.1514
@@ -707,7 +697,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.6 -> 2.5.4
 |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.4
 |    |    |    \--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    +--- org.hibernate:hibernate-validator:5.1.3.Final -> 5.2.1.Final
+|    |    +--- org.hibernate:hibernate-validator:5.1.3.Final -> 5.2.2.Final
 |    |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    |    +--- org.jboss.logging:jboss-logging:3.2.1.Final -> 3.3.0.Final
 |    |    |    \--- com.fasterxml:classmate:1.1.0
@@ -755,12 +745,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.0_spec:1.0.0.Final
 |    |    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.13.Final
 |    |    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.13.Final
-|    |    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7
-|    |    |    |    |    +--- com.sun.xml.bind:jaxb-core:2.2.7
-|    |    |    |    |    |    +--- javax.xml.bind:jaxb-api:2.2.7
-|    |    |    |    |    |    \--- com.sun.istack:istack-commons-runtime:2.16
-|    |    |    |    |    \--- com.sun.xml.fastinfoset:FastInfoset:1.2.12
-|    |    |    |    |         \--- javax.xml.bind:jsr173_api:1.0
+|    |    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7 -> 2.2.11
 |    |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    |    +--- org.codehaus.jettison:jettison:1.3.2
 |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
@@ -788,24 +773,24 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    \--- org.glassfish:javax.json:1.0.4
-|    +--- com.mysema.querydsl:querydsl-core:3.+ -> 3.6.7
+|    +--- com.mysema.querydsl:querydsl-core:3.+ -> 3.6.8
 |    |    +--- com.google.guava:guava:18.0
 |    |    +--- com.google.code.findbugs:jsr305:1.3.9
 |    |    +--- com.mysema.commons:mysema-commons-lang:0.2.4
 |    |    \--- com.infradna.tool:bridge-method-annotation:1.13
-|    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.6.7
-|    |    +--- com.mysema.querydsl:querydsl-core:3.6.7 (*)
+|    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.6.8
+|    |    +--- com.mysema.querydsl:querydsl-core:3.6.8 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
-|    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.6.7
-|    |    \--- com.mysema.querydsl:querydsl-codegen:3.6.7
-|    |         +--- com.mysema.querydsl:querydsl-core:3.6.7 (*)
-|    |         +--- com.mysema.codegen:codegen:0.6.7
+|    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.6.8
+|    |    \--- com.mysema.querydsl:querydsl-codegen:3.6.8
+|    |         +--- com.mysema.querydsl:querydsl-core:3.6.8 (*)
+|    |         +--- com.mysema.codegen:codegen:0.6.8
 |    |         |    +--- com.google.guava:guava:18.0
 |    |         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1
 |    |         \--- javax.inject:javax.inject:1
-|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.7
-|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.7 (*)
-|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.7 (*)
+|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.8
+|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.8 (*)
+|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.8 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 |    +--- javax.inject:javax.inject:+ -> 1
@@ -914,7 +899,7 @@ runtime - Runtime classpath for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1514
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1514 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
-\--- org.jooq:jooq:3.+ -> 3.6.3
+\--- org.jooq:jooq:3.+ -> 3.6.4
 
 testCompile - Compile classpath for source set 'test'.
 +--- project :libs:sx-common
@@ -1007,7 +992,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.6 -> 2.5.4
 |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.4
 |    |    |    \--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    +--- org.hibernate:hibernate-validator:5.1.3.Final -> 5.2.1.Final
+|    |    +--- org.hibernate:hibernate-validator:5.1.3.Final -> 5.2.2.Final
 |    |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    |    +--- org.jboss.logging:jboss-logging:3.2.1.Final -> 3.3.0.Final
 |    |    |    \--- com.fasterxml:classmate:1.1.0
@@ -1055,12 +1040,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.0_spec:1.0.0.Final
 |    |    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.13.Final
 |    |    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.13.Final
-|    |    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7
-|    |    |    |    |    +--- com.sun.xml.bind:jaxb-core:2.2.7
-|    |    |    |    |    |    +--- javax.xml.bind:jaxb-api:2.2.7
-|    |    |    |    |    |    \--- com.sun.istack:istack-commons-runtime:2.16
-|    |    |    |    |    \--- com.sun.xml.fastinfoset:FastInfoset:1.2.12
-|    |    |    |    |         \--- javax.xml.bind:jsr173_api:1.0
+|    |    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7 -> 2.2.11
 |    |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    |    +--- org.codehaus.jettison:jettison:1.3.2
 |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
@@ -1088,24 +1068,24 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    \--- org.glassfish:javax.json:1.0.4
-|    +--- com.mysema.querydsl:querydsl-core:3.+ -> 3.6.7
+|    +--- com.mysema.querydsl:querydsl-core:3.+ -> 3.6.8
 |    |    +--- com.google.guava:guava:18.0
 |    |    +--- com.google.code.findbugs:jsr305:1.3.9
 |    |    +--- com.mysema.commons:mysema-commons-lang:0.2.4
 |    |    \--- com.infradna.tool:bridge-method-annotation:1.13
-|    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.6.7
-|    |    +--- com.mysema.querydsl:querydsl-core:3.6.7 (*)
+|    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.6.8
+|    |    +--- com.mysema.querydsl:querydsl-core:3.6.8 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
-|    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.6.7
-|    |    \--- com.mysema.querydsl:querydsl-codegen:3.6.7
-|    |         +--- com.mysema.querydsl:querydsl-core:3.6.7 (*)
-|    |         +--- com.mysema.codegen:codegen:0.6.7
+|    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.6.8
+|    |    \--- com.mysema.querydsl:querydsl-codegen:3.6.8
+|    |         +--- com.mysema.querydsl:querydsl-core:3.6.8 (*)
+|    |         +--- com.mysema.codegen:codegen:0.6.8
 |    |         |    +--- com.google.guava:guava:18.0
 |    |         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1
 |    |         \--- javax.inject:javax.inject:1
-|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.7
-|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.7 (*)
-|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.7 (*)
+|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.8
+|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.8 (*)
+|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.8 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 |    +--- javax.inject:javax.inject:+ -> 1
@@ -1214,7 +1194,7 @@ testCompile - Compile classpath for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1514
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1514 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
-+--- org.jooq:jooq:3.+ -> 3.6.3
++--- org.jooq:jooq:3.+ -> 3.6.4
 +--- junit:junit:4.+ -> 4.12
 |    \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- org.jboss.resteasy:resteasy-client:3.+ -> 3.0.13.Final
@@ -1323,7 +1303,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- com.fasterxml.jackson.core:jackson-databind:2.4.6 -> 2.5.4
 |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.4
 |    |    |    \--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    +--- org.hibernate:hibernate-validator:5.1.3.Final -> 5.2.1.Final
+|    |    +--- org.hibernate:hibernate-validator:5.1.3.Final -> 5.2.2.Final
 |    |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    |    +--- org.jboss.logging:jboss-logging:3.2.1.Final -> 3.3.0.Final
 |    |    |    \--- com.fasterxml:classmate:1.1.0
@@ -1371,12 +1351,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_2.0_spec:1.0.0.Final
 |    |    +--- org.jboss.resteasy:resteasy-jettison-provider:3.0.13.Final
 |    |    |    +--- org.jboss.resteasy:resteasy-jaxb-provider:3.0.13.Final
-|    |    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7
-|    |    |    |    |    +--- com.sun.xml.bind:jaxb-core:2.2.7
-|    |    |    |    |    |    +--- javax.xml.bind:jaxb-api:2.2.7
-|    |    |    |    |    |    \--- com.sun.istack:istack-commons-runtime:2.16
-|    |    |    |    |    \--- com.sun.xml.fastinfoset:FastInfoset:1.2.12
-|    |    |    |    |         \--- javax.xml.bind:jsr173_api:1.0
+|    |    |    |    +--- com.sun.xml.bind:jaxb-impl:2.2.7 -> 2.2.11
 |    |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
 |    |    |    +--- org.codehaus.jettison:jettison:1.3.2
 |    |    |    \--- org.jboss.logging:jboss-logging:3.1.4.GA -> 3.3.0.Final
@@ -1404,24 +1379,24 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    \--- org.glassfish:javax.json:1.0.4
-|    +--- com.mysema.querydsl:querydsl-core:3.+ -> 3.6.7
+|    +--- com.mysema.querydsl:querydsl-core:3.+ -> 3.6.8
 |    |    +--- com.google.guava:guava:18.0
 |    |    +--- com.google.code.findbugs:jsr305:1.3.9
 |    |    +--- com.mysema.commons:mysema-commons-lang:0.2.4
 |    |    \--- com.infradna.tool:bridge-method-annotation:1.13
-|    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.6.7
-|    |    +--- com.mysema.querydsl:querydsl-core:3.6.7 (*)
+|    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.6.8
+|    |    +--- com.mysema.querydsl:querydsl-core:3.6.8 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
-|    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.6.7
-|    |    \--- com.mysema.querydsl:querydsl-codegen:3.6.7
-|    |         +--- com.mysema.querydsl:querydsl-core:3.6.7 (*)
-|    |         +--- com.mysema.codegen:codegen:0.6.7
+|    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.6.8
+|    |    \--- com.mysema.querydsl:querydsl-codegen:3.6.8
+|    |         +--- com.mysema.querydsl:querydsl-core:3.6.8 (*)
+|    |         +--- com.mysema.codegen:codegen:0.6.8
 |    |         |    +--- com.google.guava:guava:18.0
 |    |         |    \--- org.eclipse.jdt.core.compiler:ecj:4.3.1
 |    |         \--- javax.inject:javax.inject:1
-|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.7
-|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.7 (*)
-|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.7 (*)
+|    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.6.8
+|    |    +--- com.mysema.querydsl:querydsl-codegen:3.6.8 (*)
+|    |    +--- com.mysema.querydsl:querydsl-apt:3.6.8 (*)
 |    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.12
 |    +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 |    +--- javax.inject:javax.inject:+ -> 1
@@ -1530,7 +1505,7 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1514
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1514 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
-+--- org.jooq:jooq:3.+ -> 3.6.3
++--- org.jooq:jooq:3.+ -> 3.6.4
 +--- junit:junit:4.+ -> 4.12
 |    \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- org.jboss.resteasy:resteasy-client:3.+ -> 3.0.13.Final

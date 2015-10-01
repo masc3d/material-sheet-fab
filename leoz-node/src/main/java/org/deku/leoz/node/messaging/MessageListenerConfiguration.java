@@ -17,7 +17,8 @@ import sx.jms.embedded.activemq.ActiveMQBroker;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-/** Message listener configuration.
+/**
+ * Message listener configuration.
  * Initializes message listener(s) and their message handlers
  * Created by masc on 20.06.15.
  */

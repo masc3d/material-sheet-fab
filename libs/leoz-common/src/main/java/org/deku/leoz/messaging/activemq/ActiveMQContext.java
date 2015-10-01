@@ -8,7 +8,7 @@ import javax.jms.Queue;
 import javax.jms.Topic;
 
 /**
- * Messaging context implementation for activemq
+ * Common messaging context shared across leoz applications
  * Created by masc on 16.04.15.
  */
 public class ActiveMQContext implements MessagingContext {

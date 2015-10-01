@@ -54,7 +54,6 @@ public class IdentityPublisher {
      * @param identity
      * @param receive
      */
-    @SuppressWarnings("unchecked")
     private AuthorizationMessage sendAndReceive(
             Identity identity,
             boolean receive) throws Exception {

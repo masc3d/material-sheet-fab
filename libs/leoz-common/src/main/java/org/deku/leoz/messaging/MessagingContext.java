@@ -6,7 +6,7 @@ import javax.jms.Queue;
 import javax.jms.Topic;
 
 /**
- * Generic messaging context interface definition
+ * Common messaging context interface definition
  * Created by masc on 07.06.15.
  */
 public interface MessagingContext {

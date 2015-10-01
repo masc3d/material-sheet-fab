@@ -29,6 +29,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
+|    +--- commons-io:commons-io:2.+ -> 2.4
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1514
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1514 (*)
@@ -68,6 +69,7 @@ default - Configuration for default artifacts.
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
+|    +--- commons-io:commons-io:2.+ -> 2.4
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1514
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1514 (*)
@@ -117,6 +119,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
+|    +--- commons-io:commons-io:2.+ -> 2.4
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1514
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1514 (*)
@@ -156,6 +159,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
+|    +--- commons-io:commons-io:2.+ -> 2.4
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1514
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1514 (*)
@@ -197,6 +201,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.12 (*)
+|    +--- commons-io:commons-io:2.+ -> 2.4
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:0.13.+ -> 0.13.1514
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.13.+ -> 0.13.1514 (*)
