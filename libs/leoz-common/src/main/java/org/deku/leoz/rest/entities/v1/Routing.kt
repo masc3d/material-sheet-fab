@@ -25,7 +25,7 @@ class Routing {
         var station: Int = 0
         
         val stationFormatted: String?
-            get() = if (station != null) Strings.padStart(station.toString(), 3, '0') else null
+            get() = Strings.padStart(station.toString(), 3, '0')
         
         @ApiModelProperty(dataType = "string", example = "PL", position = 20, required = true, value = "Country two-letter ISO-3166")
         var country: String = ""
