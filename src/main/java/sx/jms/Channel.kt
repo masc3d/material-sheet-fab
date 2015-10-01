@@ -10,33 +10,31 @@ import sx.LazyInstance
 import javax.jms.*
 import javax.jms.IllegalStateException
 import java.io.Closeable
+import java.time.Duration
 import java.util.function.Supplier
 
 /**
- * Lightweight messaging channel
+ * Lightweight messaging channel with send/receive and automatic message conversion capabilities.
+ * Caches session and message consumer/producer.
  * Created by masc on 06.07.15.
  */
 class Channel
 /**
  * c'tor
  * @param connectionFactory Connection factory used to create session
- * *
  * @param destination Destination for this channel
- * *
  * @param converter Message converter to use
- * *
+ * @param receiveTimeout Timeout when receiving messages. Defaults to 10 seconds.
  * @param transacted Session transacted or not
- * *
  * @param deliveryMode JMS delivery mode
- * *
  * @param ttl JMS message time to live
- * *
  * @param priority JMS message priority
  */
 @JvmOverloads constructor(
         private val connectionFactory: ConnectionFactory,
         private val destination: Destination,
-        private val converter: Converter?,
+        private val converter: Converter,
+        private val receiveTimeout: Duration = Duration.ofSeconds(10),
         private val jmsSessionTransacted: Boolean,
         private val jmsDeliveryMode: Int,
         private val jmsTtl: Long,
@@ -49,19 +47,19 @@ class Channel
     private var sessionCreated = false
 
     init {
-        connection.set( fun (): Connection {
+        connection.set(fun(): Connection {
             var cn = connectionFactory.createConnection()
             cn!!.start()
             return cn
-        } )
+        })
 
-        session.set( fun (): Session {
+        session.set(fun(): Session {
             val session = connection.get().createSession(this.jmsSessionTransacted, this.jmsDeliveryMode)
             sessionCreated = true
             return session
         })
 
-        consumer.set( fun(): MessageConsumer {
+        consumer.set(fun(): MessageConsumer {
             return session.get().createConsumer(destination)
         })
     }
@@ -72,7 +70,6 @@ class Channel
      * *
      * @param messageConfigurer Callback for customizing the message before sending
      */
-    @Throws(JMSException::class)
     fun send(message: Message, messageConfigurer: Action<Message>?) {
         val mp = session.get().createProducer(destination)
 
@@ -90,7 +87,6 @@ class Channel
      * Send jms message
      * @param message Message to send
      */
-    @Throws(JMSException::class)
     fun send(message: Message) {
         this.send(message, null)
     }
@@ -99,24 +95,24 @@ class Channel
      * Send object as message using converter
      * @param message
      */
-    @Throws(JMSException::class)
     fun send(message: Any) {
-        if (converter == null)
-            throw IllegalStateException("Cannot send object without a message converter")
-
         this.send(converter.toMessage(message, session.get()))
     }
 
-    // TODO: add receive support
-//    throws(JMSException::class)
-//    fun <T> receive(messageType: Class<T>): T {
-//        return null
-//    }
+    /**
+     * Receive message as object using converter
+     * @param messageType Type of message
+     */
+    fun <T> receive(messageType: Class<T>): T {
+        return messageType.cast(
+                this.converter.fromMessage(
+                        this.consumer.get()
+                                .receive(this.receiveTimeout.toMillis())))
+    }
 
     /**
      * Explicitly commit transaction
      */
-    @Throws(JMSException::class)
     fun commit() {
         val session = session.get()
         if (session.transacted)
@@ -124,7 +120,7 @@ class Channel
     }
 
     override fun close() {
-        consumer.ifSet( { c ->
+        consumer.ifSet({ c ->
             try {
                 c.close()
             } catch (e: JMSException) {
@@ -140,7 +136,7 @@ class Channel
 
 
         if (sessionCreated) {
-            session.ifSet( { s ->
+            session.ifSet({ s ->
                 try {
                     s.close()
                 } catch (e: JMSException) {
@@ -149,7 +145,7 @@ class Channel
             })
         }
 
-        connection.ifSet( { c ->
+        connection.ifSet({ c ->
             try {
                 c.close()
             } catch (e: JMSException) {
