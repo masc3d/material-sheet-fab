@@ -1,5 +1,7 @@
 package org.deku.leoz.node.data.entities.master;
 
+import org.eclipse.persistence.annotations.CacheIndex;
+import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.Index;
 
 import javax.persistence.*;
@@ -13,8 +15,8 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "mst_route",
         indexes = {@javax.persistence.Index(
-                columnList = "layer, country, zipFrom, validCrtr, validFrom",
-                unique = true)})
+                columnList = "layer, country, zipFrom, zipTo, validFrom, validTo",
+                unique = false)})
 public class Route implements Serializable {
     private static final long serialVersionUID = 6472457478560400106L;
 
@@ -53,7 +55,6 @@ public class Route implements Serializable {
     }
 
     @Basic
-    @Index
     public Integer getLayer() {
         return layer;
     }
@@ -115,7 +116,6 @@ public class Route implements Serializable {
     public void setSaturdayOK(Integer saturdayOK) {
         this.saturdayOK = saturdayOK;
     }
-
 
     @Basic
     public Timestamp getValidFrom() {

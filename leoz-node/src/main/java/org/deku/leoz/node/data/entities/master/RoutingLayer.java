@@ -1,5 +1,7 @@
 package org.deku.leoz.node.data.entities.master;
 
+import org.eclipse.persistence.annotations.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -22,7 +24,6 @@ public class RoutingLayer implements Serializable {
         return serialVersionUID;
     }
 
-
     @Id
     public Integer getLayer() {
         return layer;
@@ -32,6 +33,7 @@ public class RoutingLayer implements Serializable {
         this.layer = layer;
     }
 
+    @CacheIndex
     @Basic
     public Integer getServices() {
         return services;
