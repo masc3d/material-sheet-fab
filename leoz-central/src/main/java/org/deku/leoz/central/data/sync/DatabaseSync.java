@@ -10,7 +10,7 @@ import org.deku.leoz.central.data.entities.jooq.Tables;
 import org.deku.leoz.central.data.entities.jooq.tables.*;
 import org.deku.leoz.central.data.entities.jooq.tables.records.*;
 import org.deku.leoz.central.data.repositories.GenericRepository;
-import org.deku.leoz.node.data.PersistenceConfiguration;
+import org.deku.leoz.node.config.PersistenceConfiguration;
 import org.deku.leoz.node.data.entities.master.*;
 import org.deku.leoz.node.data.entities.system.Property;
 import org.deku.leoz.node.data.entities.system.QProperty;
@@ -37,6 +37,7 @@ import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 /**
+ * TODO: split configuration (which tables to sync and how) from actual implementation, move config to DatabaseSyncConfiguration
  * Created by masc on 15.05.15.
  */
 @Named
@@ -82,7 +83,7 @@ public class DatabaseSync {
 
     @Inject
     public DatabaseSync(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) PlatformTransactionManager tx,
-                        @Qualifier(org.deku.leoz.central.data.PersistenceConfiguration.DB_CENTRAL) PlatformTransactionManager txJooq) {
+                        @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.DB_CENTRAL) PlatformTransactionManager txJooq) {
         mTransaction = new TransactionTemplate(tx);
         mTransaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 

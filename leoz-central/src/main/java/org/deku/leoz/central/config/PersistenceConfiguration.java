@@ -1,4 +1,4 @@
-package org.deku.leoz.central.data;
+package org.deku.leoz.central.config;
 
 import com.mysql.jdbc.AbandonedConnectionCleanupThread;
 import org.apache.commons.logging.Log;
@@ -32,10 +32,12 @@ import java.util.Properties;
  */
 @Configuration(PersistenceConfiguration.DB_CENTRAL)
 @ComponentScan(lazyInit = true,
+        basePackageClasses = { org.deku.leoz.central.data.Package.class },
         // Exclude configuration from component scan (for test run efficiency)
         excludeFilters =
-                { @ComponentScan.Filter(value = { Configuration.class } )})
-@Import(org.deku.leoz.node.data.PersistenceConfiguration.class)
+                { @ComponentScan.Filter(value = { Configuration.class } )}
+)
+@Import(org.deku.leoz.node.config.PersistenceConfiguration.class)
 @EnableConfigurationProperties
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 public class PersistenceConfiguration {

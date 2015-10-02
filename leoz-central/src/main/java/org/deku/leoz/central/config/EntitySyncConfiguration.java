@@ -1,9 +1,11 @@
-package org.deku.leoz.central.data.sync;
+package org.deku.leoz.central.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.central.App;
-import org.deku.leoz.node.data.PersistenceConfiguration;
+import org.deku.leoz.central.data.sync.DatabaseSync;
+import org.deku.leoz.central.data.sync.EntitySync;
+import org.deku.leoz.node.config.PersistenceConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import sx.jms.embedded.Broker;

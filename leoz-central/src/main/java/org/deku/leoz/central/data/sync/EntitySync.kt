@@ -8,14 +8,17 @@ import sx.Disposable
 import sx.LazyInstance
 import sx.event
 import sx.event.EventDelegate
+import javax.inject.Named
 
 import javax.persistence.EntityManagerFactory
 import kotlin.properties.Delegates
 
 /**
  * Supervising sync class
+ * TODO: move to EntitySyncConfiguration
  * Created by masc on 19.06.15.
  */
+@Named
 class EntitySync private constructor() : Disposable {
     //region Singleton
     companion object Singleton {

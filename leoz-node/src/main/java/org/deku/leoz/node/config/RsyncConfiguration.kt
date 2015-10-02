@@ -1,8 +1,8 @@
-package org.deku.leoz.node.rsync
+package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.LocalStorage
-import org.deku.leoz.node.LogConfiguration
+import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.rsync.RsyncFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration

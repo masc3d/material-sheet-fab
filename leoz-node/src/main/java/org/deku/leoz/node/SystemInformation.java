@@ -1,4 +1,4 @@
-package org.deku.leoz.node.auth;
+package org.deku.leoz.node;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.CharMatcher;

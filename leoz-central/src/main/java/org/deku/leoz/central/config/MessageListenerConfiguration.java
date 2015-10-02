@@ -1,8 +1,10 @@
-package org.deku.leoz.central.messaging;
+package org.deku.leoz.central.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.central.data.repositories.NodeRepository;
+import org.deku.leoz.central.messaging.handler.IdentityMessageHandler;
+import org.deku.leoz.central.messaging.MessageListener;
 import org.deku.leoz.messaging.activemq.ActiveMQContext;
 import org.deku.leoz.node.messaging.auth.v1.IdentityMessage;
 import org.springframework.context.annotation.Configuration;
@@ -74,7 +76,7 @@ public class MessageListenerConfiguration {
 
     @PostConstruct
     public void onInitialize() {
-        mLog.info("Initializing node message listener");
+        mLog.info("Initializing central message listener");
 
         // Register event listeners
         ActiveMQBroker.instance().getDelegate().add(mBrokerEventListener);

@@ -3,6 +3,7 @@ package org.deku.leoz.node.auth;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
+import org.deku.leoz.node.SystemInformation;
 import sx.event.EventDelegate;
 import sx.event.EventDispatcher;
 

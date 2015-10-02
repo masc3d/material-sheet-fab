@@ -1,4 +1,4 @@
-package org.deku.leoz.node.messaging;
+package org.deku.leoz.node.config;
 
 import com.google.common.base.Strings;
 import org.apache.commons.logging.Log;
@@ -21,8 +21,8 @@ import javax.inject.Inject;
 @Configuration
 @ConfigurationProperties(prefix="broker")
 @Lazy(false)
-public class BrokerConfiguration {
-    private Log mLog = LogFactory.getLog(BrokerConfiguration.class);
+public class ActiveMqConfiguration {
+    private Log mLog = LogFactory.getLog(ActiveMqConfiguration.class);
 
     @Inject
     RemotePeerSettings mPeerSettings;

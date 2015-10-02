@@ -9,6 +9,7 @@ import javax.persistence.EntityManagerFactory;
 
 /**
  * Application/leoz specific entity sync implementation
+ * TODO: move to entity sync configuration, as this is just wiring which entity types to request
  * Created by masc on 19.06.15.
  */
 public class EntitySync implements Disposable {

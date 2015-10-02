@@ -1,4 +1,4 @@
-package org.deku.leoz.central.messaging;
+package org.deku.leoz.central.messaging.handler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

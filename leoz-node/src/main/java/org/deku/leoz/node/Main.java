@@ -2,10 +2,7 @@ package org.deku.leoz.node;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.node.data.sync.EntitySyncConfiguration;
-import org.deku.leoz.node.messaging.BrokerConfiguration;
-import org.deku.leoz.node.messaging.MessageListenerConfiguration;
-import org.deku.leoz.node.rsync.RsyncConfiguration;
+import org.deku.leoz.node.config.*;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -30,6 +27,7 @@ import org.springframework.core.annotation.Order;
         EmbeddedServletContainerAutoConfiguration.class,
         /** Server properties support */
         ServerPropertiesAutoConfiguration.class,
+        PersistenceConfiguration.class,
         /**
          * Resteasy configuration. Only used for base setup, not fully autowired
          * as we currently prefer to setup the classic resteasy servlet manually
@@ -40,7 +38,7 @@ import org.springframework.core.annotation.Order;
         //FlywayAutoConfiguration.class,
 
         /** Leoz embedded broker configuration */
-        BrokerConfiguration.class,
+        ActiveMqConfiguration.class,
         /** Leoz entity sync configuration */
         EntitySyncConfiguration.class,
         /** Leoz message listener configuration */

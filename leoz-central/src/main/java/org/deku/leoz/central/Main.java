@@ -2,9 +2,10 @@ package org.deku.leoz.central;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.central.data.sync.DatabaseSyncConfiguration;
-import org.deku.leoz.central.data.sync.EntitySyncConfiguration;
-import org.deku.leoz.central.messaging.MessageListenerConfiguration;
+import org.deku.leoz.central.config.DatabaseSyncConfiguration;
+import org.deku.leoz.central.config.EntitySyncConfiguration;
+import org.deku.leoz.central.config.MessageListenerConfiguration;
+import org.deku.leoz.central.config.PersistenceConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -20,7 +21,9 @@ import org.springframework.core.annotation.Order;
 @Configuration("central.MainSpringBoot")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ComponentScan(lazyInit = true)
-@Import({EntitySyncConfiguration.class,
+@Import({
+        PersistenceConfiguration.class,
+        EntitySyncConfiguration.class,
         DatabaseSyncConfiguration.class,
         MessageListenerConfiguration.class})
 public class Main extends org.deku.leoz.node.Main {

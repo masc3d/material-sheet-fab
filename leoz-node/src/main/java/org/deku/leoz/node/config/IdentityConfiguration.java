@@ -1,10 +1,13 @@
-package org.deku.leoz.node.auth;
+package org.deku.leoz.node.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.messaging.activemq.ActiveMQContext;
 import org.deku.leoz.node.App;
 import org.deku.leoz.node.LocalStorage;
+import org.deku.leoz.node.SystemInformation;
+import org.deku.leoz.node.auth.Authorizer;
+import org.deku.leoz.node.auth.Identity;
 import sx.LazyInstance;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package org.deku.leoz.node.data;
+package org.deku.leoz.node.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,9 +28,9 @@ import java.util.Properties;
  * Embedded database persistence context
  */
 @Configuration(PersistenceConfiguration.DB_EMBEDDED)
-@ComponentScan(lazyInit = true)
+@ComponentScan(lazyInit = true, basePackageClasses = { org.deku.leoz.node.data.Package.class } )
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
-@EnableJpaRepositories(considerNestedRepositories = false)
+@EnableJpaRepositories(considerNestedRepositories = false, basePackageClasses = { org.deku.leoz.node.data.Package.class })
 public class PersistenceConfiguration implements DisposableBean /*, TransactionManagementConfigurer*/ {
     public static final String DB_EMBEDDED = "db_embedded";
     private Log mLog = LogFactory.getLog(PersistenceConfiguration.class.getName());
@@ -86,7 +86,7 @@ public class PersistenceConfiguration implements DisposableBean /*, TransactionM
         // more tests required referring to db outages during runtime
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan(PersistenceConfiguration.class.getPackage().getName());
+        em.setPackagesToScan(org.deku.leoz.node.data.Package.getName());
 
         // Setup specific jpa vendor adaptor
         JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();

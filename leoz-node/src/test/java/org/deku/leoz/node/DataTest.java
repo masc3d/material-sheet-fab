@@ -1,6 +1,6 @@
 package org.deku.leoz.node;
 
-import org.deku.leoz.node.data.PersistenceConfiguration;
+import org.deku.leoz.node.config.PersistenceConfiguration;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.ConfigFileApplicationContextInitializer;

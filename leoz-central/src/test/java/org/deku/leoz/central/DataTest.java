@@ -2,7 +2,7 @@ package org.deku.leoz.central;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import org.deku.leoz.node.data.PersistenceConfiguration;
+import org.deku.leoz.node.config.PersistenceConfiguration;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ import javax.servlet.ServletContext;
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        org.deku.leoz.central.data.PersistenceConfiguration.class,
+        org.deku.leoz.central.config.PersistenceConfiguration.class,
         PersistenceConfiguration.class
 }, initializers = ConfigFileApplicationContextInitializer.class)
 public class DataTest {

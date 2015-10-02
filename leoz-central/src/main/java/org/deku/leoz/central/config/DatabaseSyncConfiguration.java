@@ -1,7 +1,8 @@
-package org.deku.leoz.central.data.sync;
+package org.deku.leoz.central.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deku.leoz.central.data.sync.DatabaseSync;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 

@@ -1,9 +1,10 @@
-package org.deku.leoz.node.data.sync;
+package org.deku.leoz.node.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.node.App;
-import org.deku.leoz.node.data.PersistenceConfiguration;
+import org.deku.leoz.node.config.PersistenceConfiguration;
+import org.deku.leoz.node.data.sync.EntitySync;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;

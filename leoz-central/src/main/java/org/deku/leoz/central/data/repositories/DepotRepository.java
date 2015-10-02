@@ -1,6 +1,6 @@
 package org.deku.leoz.central.data.repositories;
 
-import org.deku.leoz.central.data.PersistenceConfiguration;
+import org.deku.leoz.central.config.PersistenceConfiguration;
 import org.deku.leoz.central.data.entities.jooq.Tables;
 import org.deku.leoz.central.data.entities.jooq.tables.records.TbldepotlisteRecord;
 import org.jooq.DSLContext;

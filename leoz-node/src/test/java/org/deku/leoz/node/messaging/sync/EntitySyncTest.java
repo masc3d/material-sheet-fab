@@ -4,7 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.deku.leoz.messaging.activemq.ActiveMQContext;
 import org.deku.leoz.node.DataTest;
-import org.deku.leoz.node.data.PersistenceConfiguration;
+import org.deku.leoz.node.config.PersistenceConfiguration;
 import org.deku.leoz.node.data.entities.master.Route;
 import org.deku.leoz.node.data.sync.EntityConsumer;
 import org.deku.leoz.node.data.sync.EntityPublisher;

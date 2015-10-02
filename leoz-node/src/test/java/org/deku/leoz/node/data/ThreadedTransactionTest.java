@@ -1,6 +1,7 @@
 package org.deku.leoz.node.data;
 
 import org.deku.leoz.node.DataTest;
+import org.deku.leoz.node.config.PersistenceConfiguration;
 import org.junit.Test;
 
 import javax.persistence.EntityManagerFactory;

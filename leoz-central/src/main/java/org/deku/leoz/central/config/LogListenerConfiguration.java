@@ -1,4 +1,4 @@
-package org.deku.leoz.central.log;
+package org.deku.leoz.central.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
