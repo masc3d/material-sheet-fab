@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /**
+ * Leoz-central log listener configuration
  * Created by masc on 29.06.15.
  */
 @Configuration

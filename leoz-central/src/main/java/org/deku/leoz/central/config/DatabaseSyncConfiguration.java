@@ -14,6 +14,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Leoz-central database sync configuration
  * Created by masc on 30.06.15.
  */
 @Configuration

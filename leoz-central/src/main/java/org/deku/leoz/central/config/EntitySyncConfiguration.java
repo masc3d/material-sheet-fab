@@ -17,6 +17,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
 /**
+ * Leoz-central entity sync configuration
  * Created by masc on 20.06.15.
  */
 @Configuration(App.PROFILE_CENTRAL)

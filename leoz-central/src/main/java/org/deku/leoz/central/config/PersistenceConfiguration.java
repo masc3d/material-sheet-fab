@@ -27,7 +27,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 /**
- * Central database persistence context
+ * Leoz-central database persistence configuration
  * Created by masc on 28.08.14.
  */
 @Configuration(PersistenceConfiguration.DB_CENTRAL)

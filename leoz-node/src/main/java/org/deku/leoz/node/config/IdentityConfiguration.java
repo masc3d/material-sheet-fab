@@ -14,6 +14,7 @@ import java.io.File;
 
 /**
  * Identity related configuration
+ * TODO: migrate to spring configuration
  * Created by masc on 30.06.15.
  */
 public class IdentityConfiguration {

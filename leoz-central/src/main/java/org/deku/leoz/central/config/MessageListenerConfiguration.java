@@ -17,6 +17,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 /**
+ * Leoz-central message listener configuration
  * Created by masc on 20.06.15.
  */
 @Configuration

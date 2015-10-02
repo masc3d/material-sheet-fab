@@ -111,4 +111,5 @@ packager {
     supplementalPlatformDirs(
             (projectBuildBinDir): new File('bin')
     )
+    checkRepository = false
 }

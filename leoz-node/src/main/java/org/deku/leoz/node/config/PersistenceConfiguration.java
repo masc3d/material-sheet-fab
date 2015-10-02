@@ -25,7 +25,8 @@ import java.io.File;
 import java.util.Properties;
 
 /**
- * Embedded database persistence context
+ * Leoz-node database persistence context
+ * Created by masc on 24-Jul-15.
  */
 @Configuration(PersistenceConfiguration.DB_EMBEDDED)
 @ComponentScan(lazyInit = true, basePackageClasses = { org.deku.leoz.node.data.Package.class } )
