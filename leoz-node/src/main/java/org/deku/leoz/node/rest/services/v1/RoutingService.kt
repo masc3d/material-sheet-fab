@@ -6,6 +6,8 @@ import com.google.common.primitives.Ints
 import com.mysema.query.jpa.impl.JPAQuery
 import com.mysema.query.types.expr.BooleanExpression
 import org.apache.commons.lang3.time.DateUtils
+import org.apache.commons.logging.LogFactory
+import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.entities.master.*
 import org.deku.leoz.node.data.repositories.master.*
 import org.deku.leoz.node.rest.ServiceException
@@ -28,6 +30,8 @@ import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 import java.util.ArrayList
 import javax.inject.Inject
+import javax.persistence.EntityManagerFactory
+import javax.persistence.PersistenceUnit
 
 /**
  * Created by masc on 23.07.14.
@@ -37,6 +41,8 @@ import javax.inject.Inject
 @Path("v1/routing")
 @Produces(MediaType.APPLICATION_JSON)
 class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
+    private val log = LogFactory.getLog(this.javaClass)
+
     @Inject
     lateinit var countryRepository: CountryRepository
     @Inject
@@ -48,11 +54,15 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     @Inject
     lateinit var stationRepository: StationRepository
 
+    PersistenceUnit(name = PersistenceConfiguration.DB_EMBEDDED)
+    lateinit var entityManagerFactory: EntityManagerFactory
+
     /**
      * Request routing
      * @param routingRequest Routing request
      */
     override fun request(routingRequest: RoutingRequest): Routing {
+//        log.info(">>> ${Thread.currentThread().id} START")
         val routing = Routing()
 
         if (routingRequest.sendDate == null)
@@ -155,6 +165,8 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         routing.viaHubs = viaHubs
         routing.message = "OK"
 
+//        log.info("<<< ${Thread.currentThread().id} END")
+
         return routing
     }
 
@@ -249,13 +261,25 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         //                        .and(QRoute.route.validTo.after(validDate?.toTimestamp()))
         //        )
 
-        val rRoutes = routeRepository.findAll(
-                QRoute.route.layer.eq(routingLayer.layer)
-                        .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
-                        .and(QRoute.route.zipFrom.loe(queryZipCode))
-                        .and(QRoute.route.zipTo.goe(queryZipCode))
-                        .and(QRoute.route.validFrom.before(validDate?.toTimestamp()))
-                        .and(QRoute.route.validTo.after(validDate?.toTimestamp())))
+        // TODO: preliminary optimization: named query with query result cache support
+        val em = entityManagerFactory.createEntityManager()
+        val emq = em.createNamedQuery("Route.find", Route::class.java)
+
+        emq.setParameter("layer", routingLayer.layer)
+        emq.setParameter("country", requestParticipant?.country?.toUpperCase())
+        emq.setParameter("zipFrom", queryZipCode)
+        emq.setParameter("zipTo", queryZipCode)
+        emq.setParameter("time", validDate?.toTimestamp())
+
+        val rRoutes = emq.resultList
+//
+//        val rRoutes = routeRepository.findAll(
+//                QRoute.route.layer.eq(routingLayer.layer)
+//                        .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
+//                        .and(QRoute.route.zipFrom.loe(queryZipCode))
+//                        .and(QRoute.route.zipTo.goe(queryZipCode))
+//                        .and(QRoute.route.validFrom.before(validDate?.toTimestamp()))
+//                        .and(QRoute.route.validTo.after(validDate?.toTimestamp())))
 
         if (Iterables.isEmpty(rRoutes))
             throw ServiceException(RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")

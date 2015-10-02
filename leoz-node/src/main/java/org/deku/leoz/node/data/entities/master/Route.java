@@ -3,6 +3,7 @@ package org.deku.leoz.node.data.entities.master;
 import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.Index;
+import org.eclipse.persistence.config.QueryHints;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,6 +18,19 @@ import java.sql.Timestamp;
         indexes = {@javax.persistence.Index(
                 columnList = "layer, country, zipFrom, zipTo, validFrom, validTo",
                 unique = false)})
+@NamedQueries(
+        {
+                @NamedQuery(name = "Route.find",
+                query = "SELECT r FROM Route r WHERE r.layer = :layer AND r.country = :country " +
+                        "AND r.zipFrom <= :zipFrom AND r.zipTo >= :zipTo AND r.validFrom < :time " +
+                        "AND r.validTo > :time",
+                hints = {
+                        @QueryHint( name = QueryHints.QUERY_RESULTS_CACHE, value = "true"),
+                        @QueryHint( name = QueryHints.QUERY_RESULTS_CACHE_SIZE, value = "500")
+                })
+        }
+)
+
 public class Route implements Serializable {
     private static final long serialVersionUID = 6472457478560400106L;
 
