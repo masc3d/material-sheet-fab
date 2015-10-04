@@ -54,7 +54,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     @Inject
     lateinit var stationRepository: StationRepository
 
-    PersistenceUnit(name = PersistenceConfiguration.DB_EMBEDDED)
+    @PersistenceUnit(name = PersistenceConfiguration.DB_EMBEDDED)
     lateinit var entityManagerFactory: EntityManagerFactory
 
     /**
