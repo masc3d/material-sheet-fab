@@ -2,7 +2,11 @@ package org.deku.leoz.node.config;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.utils.URIBuilder;
 import org.deku.leoz.node.LocalStorage;
+import org.h2.jdbc.JdbcConnection;
+import org.h2.jdbcx.JdbcConnectionPool;
+import org.h2.jdbcx.JdbcDataSource;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.flyway.FlywayDataSource;
@@ -18,10 +22,14 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -44,29 +52,29 @@ public class PersistenceConfiguration implements DisposableBean /*, TransactionM
     public DataSource dataSource() {
         final boolean IN_MEMORY = false;
 
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        JdbcDataSource dataSource = new JdbcDataSource();
 
-        File dbPath = new File(LocalStorage.getInstance().getDataDirectory(), "h2/leoz");
-
-        dataSource.setDriverClassName("org.h2.Driver");
+        // Base URI
+        String baseUri;
         if (!IN_MEMORY) {
-            dataSource.setUrl("jdbc:h2:file:" + dbPath.toString());
+            baseUri = "jdbc:h2:file:" + LocalStorage.getInstance().getH2DatabaseFile();
         } else {
-            dataSource.setUrl("jdbc:h2:mem:db1");
+            baseUri = "jdbc:h2:mem:db1";
         }
 
-        Properties dataSourceProperties = new Properties();
-        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull");
-        dataSourceProperties.setProperty("connectTimeout", "1000");
+        // Use URI components builder for building query string
+        UriComponentsBuilder ucb = UriComponentsBuilder.newInstance();
+        ucb.queryParam("zeroDateTimeBehavior", "convertToNull");
+        ucb.queryParam("connectTimeout", "1000");
         // For in memory db
         if (IN_MEMORY) {
-            dataSourceProperties.setProperty("INIT", "CREATE SCHEMA IF NOT EXISTS leoz");
-            dataSourceProperties.setProperty("DB_CLOSE_DELAY", "-1");
+            ucb.queryParam("INIT", "CREATE SCHEMA IF NOT EXISTS leoz");
+            ucb.queryParam("DB_CLOSE_DELAY", "-1");
         }
 
-        dataSource.setConnectionProperties(dataSourceProperties);
+        dataSource.setUrl(baseUri + ucb.toUriString());
 
-        return dataSource;
+        return JdbcConnectionPool.create(dataSource);
     }
 
     //region JPA
@@ -99,6 +107,8 @@ public class PersistenceConfiguration implements DisposableBean /*, TransactionM
         // Automatic schema generation from jpa entites
         eclipseLinkProperties.setProperty("javax.persistence.schema-generation.database.action", "create");
         eclipseLinkProperties.setProperty("javax.persistence.schema-generation.create-database-schemas", "true");
+        // Caching
+//        eclipseLinkProperties.setProperty("javax.persistence.sharedCache.mode", "ENABLE_SELECTIVE");
 
         //region DDL script generation configuration
         // TODO: preliminary (demo) code to let eclipselink/jpa generate sql from entites
@@ -117,6 +127,7 @@ public class PersistenceConfiguration implements DisposableBean /*, TransactionM
 
         eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc");
         eclipseLinkProperties.setProperty("eclipselink.weaving", "false");
+        eclipseLinkProperties.setProperty("eclipselink.cache.shared.default", "true");
 
         if (mShowSql) {
             // Show SQL

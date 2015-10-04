@@ -18,6 +18,9 @@ import java.sql.Timestamp;
         indexes = {@javax.persistence.Index(
                 columnList = "layer, country, zipFrom, zipTo, validFrom, validTo",
                 unique = false)})
+// Preliminary optimization. Query result cache currently only seems to work with static
+// parameterized named queries (eg. not with query dsl, as hints are added dynamically)
+// as documented here. http://www.eclipse.org/eclipselink/documentation/2.6/concepts/cache008.htm
 @NamedQueries(
         {
                 @NamedQuery(name = "Route.find",

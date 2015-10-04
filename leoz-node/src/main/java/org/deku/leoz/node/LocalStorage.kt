@@ -32,6 +32,10 @@ class LocalStorage(appName: String) : org.deku.leoz.LocalStorage(appName) {
     val identityConfigurationFile: File by lazy({
         File(this.dataDirectory, "identity.properties")
     })
+    /** Local h2 database file */
+    val h2DatabaseFile: File by lazy({
+        this.dataDirectory.toPath().resolve("h2").resolve("leoz").toFile()
+    })
 
     /** c'tor */
     init {
