@@ -18,7 +18,7 @@ import sx.Disposable
  * Log configuration
  * Created by masc on 24-Jul-15.
  */
-class LogConfiguration : org.deku.leoz.LogConfiguration() {
+open class LogConfiguration : org.deku.leoz.LogConfiguration() {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     companion object Singleton {
