@@ -8,7 +8,6 @@ import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz
 import org.deku.leoz.messaging.activemq.ActiveMQContext
 import org.deku.leoz.messaging.log.LogAppender
 import org.deku.leoz.node.LocalStorage
@@ -19,7 +18,7 @@ import sx.Disposable
  * Log configuration
  * Created by masc on 24-Jul-15.
  */
-class LogConfiguration : leoz.LogConfiguration() {
+class LogConfiguration : org.deku.leoz.LogConfiguration() {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     companion object Singleton {

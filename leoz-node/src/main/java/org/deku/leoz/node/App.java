@@ -210,8 +210,6 @@ public class App implements
             // logging configuration after spring environment has been prepared.
             LogConfiguration.instance().initialize();
         } else if (event instanceof ApplicationPreparedEvent) {
-            // Initialize identity
-            IdentityConfiguration.instance().initialize();
         } else if (event instanceof EmbeddedServletContainerInitializedEvent) {
             // Post spring initialization
         }

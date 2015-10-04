@@ -8,30 +8,29 @@ import org.deku.leoz.node.LocalStorage;
 import org.deku.leoz.node.SystemInformation;
 import org.deku.leoz.node.auth.Authorizer;
 import org.deku.leoz.node.auth.Identity;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import sx.LazyInstance;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 
 /**
- * Identity related configuration
+ * Leoz-node identity configuration
+ * Responsible for setting up identity of the node and initiating remote authorization task(s)
  * TODO: migrate to spring configuration
  * Created by masc on 30.06.15.
  */
+@Configuration
+@Lazy(false)
 public class IdentityConfiguration {
-    //region Singleton
-    private static LazyInstance<IdentityConfiguration> mInstance = new LazyInstance<>(IdentityConfiguration::new);
-    public static IdentityConfiguration instance() {
-        return mInstance.get();
-    }
-    //endregion
-
     private Log mLog = LogFactory.getLog(this.getClass());
 
     /** Authorizer */
     private Authorizer mAuthorizer;
 
     /** c'tor */
-    private IdentityConfiguration() { }
+    public IdentityConfiguration() { }
 
     /**
      * Application wide Node identity
@@ -54,6 +53,7 @@ public class IdentityConfiguration {
     /**
      * Initialize identity
      */
+    @PostConstruct
     public void initialize() {
         Identity identity = null;
 

@@ -16,6 +16,7 @@ import sx.jms.embedded.activemq.ActiveMQBroker;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 
 /**
  * Message listener configuration.
@@ -29,6 +30,9 @@ public class MessageListenerConfiguration {
     private Log mLog = LogFactory.getLog(MessageListenerConfiguration.class);
 
     MessageListener mMessageListener;
+
+    @Inject
+    IdentityConfiguration mIdentityConfiguration;
 
     /**
      * Broker event listener
@@ -61,7 +65,7 @@ public class MessageListenerConfiguration {
      */
     private boolean isReadyToStart() {
         return ActiveMQContext.instance().getBroker().isStarted() &&
-                IdentityConfiguration.instance().getIdentity().getId() != null;
+                mIdentityConfiguration.getIdentity().getId() != null;
     }
 
     /**
@@ -74,7 +78,7 @@ public class MessageListenerConfiguration {
             // Configure and create listener
             mMessageListener = new MessageListener(
                     ActiveMQContext.instance(),
-                    IdentityConfiguration.instance().getIdentity());
+                    mIdentityConfiguration.getIdentity());
 
             // Add message handler delegatess
             mMessageListener.addDelegate(AuthorizationMessage.class, new AuthorizationMessageHandler());
@@ -96,7 +100,7 @@ public class MessageListenerConfiguration {
 
         // Register event listeners
         ActiveMQBroker.instance().getDelegate().add(mBrokerEventListener);
-        IdentityConfiguration.instance().getIdentity().getDelegate().add(mIdentityEventListener);
+        mIdentityConfiguration.getIdentity().getDelegate().add(mIdentityEventListener);
 
         this.startIfReady();
     }
