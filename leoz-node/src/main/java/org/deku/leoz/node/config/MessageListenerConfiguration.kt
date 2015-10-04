@@ -95,7 +95,7 @@ open class MessageListenerConfiguration {
 
         // Register event listeners
         ActiveMQBroker.instance().delegate.add(brokerEventListener)
-        identityConfiguration.identity!!.delegate.add(identityEventListener)
+        identityConfiguration.identity.delegate.add(identityEventListener)
 
         this.startIfReady()
     }

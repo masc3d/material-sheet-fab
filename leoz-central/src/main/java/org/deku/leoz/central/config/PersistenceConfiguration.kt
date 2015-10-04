@@ -39,7 +39,7 @@ import java.util.Properties
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 open class PersistenceConfiguration {
     companion object {
-        const val DB_CENTRAL = "db_central"
+        val DB_CENTRAL = "db_central"
     }
 
     private val log = LogFactory.getLog(PersistenceConfiguration::class.java)
