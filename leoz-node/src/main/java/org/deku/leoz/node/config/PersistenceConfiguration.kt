@@ -41,6 +41,10 @@ import java.util.Properties
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 @EnableJpaRepositories(considerNestedRepositories = false, basePackageClasses = arrayOf(org.deku.leoz.node.data.Package::class))
 open class PersistenceConfiguration : DisposableBean /*, TransactionManagementConfigurer*/ {
+    companion object {
+        const val DB_EMBEDDED = "db_embedded"
+    }
+
     private val log = LogFactory.getLog(PersistenceConfiguration::class.java.name)
 
     private val mShowSql = false
@@ -143,10 +147,6 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
     @Throws(Exception::class)
     override fun destroy() {
 
-    }
-
-    companion object {
-        val DB_EMBEDDED = "db_embedded"
     }
 
     //        @Override
