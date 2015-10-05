@@ -144,10 +144,6 @@ public class App implements
         }
         //endregion
 
-        // Basic broker configuration
-        ActiveMQBroker.instance().setDataDirectory(LocalStorage.getInstance().getActiveMqDataDirectory());
-        mDisposables.add(ActiveMQBroker.instance());
-
         Runtime.getRuntime().addShutdownHook(new Thread("App shutdown hook") {
             @Override
             public void run() {

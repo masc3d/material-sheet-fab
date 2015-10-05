@@ -3,6 +3,7 @@ package org.deku.leoz.node.config
 import com.google.common.base.Strings
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.node.LocalStorage
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
@@ -11,6 +12,7 @@ import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
 
 import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
 import javax.inject.Inject
 
 /**
@@ -31,12 +33,11 @@ open class ActiveMqConfiguration {
     var httpContextPath: String? = null
 
     @PostConstruct
-    @Throws(Exception::class)
     fun initialize() {
 
-        //region Setup message broker
         // Broker configuration, must occur before tunnel servlet starts
         log.info("Configuring messaging broker")
+        ActiveMQBroker.instance().dataDirectory = LocalStorage.instance.activeMqDataDirectory
         ActiveMQBroker.instance().nativeTcpPort = this.nativePort
 
         if (!Strings.isNullOrEmpty(peerSettings.host)) {
@@ -49,6 +50,12 @@ open class ActiveMqConfiguration {
                     Broker.TransportType.TCP,
                     peerSettings.broker.nativePort))
         }
-        //endregion
+
+        // The broker is currently started by the http tunnel servlet, initialized via web context
+    }
+
+    @PreDestroy
+    fun onDestroy() {
+        ActiveMQBroker.instance().dispose()
     }
 }
