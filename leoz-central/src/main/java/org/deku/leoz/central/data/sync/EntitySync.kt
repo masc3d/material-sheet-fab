@@ -7,6 +7,7 @@ import org.deku.leoz.node.data.sync.EntityPublisher
 import sx.Disposable
 import sx.LazyInstance
 import sx.event.EventDelegate
+import java.sql.Timestamp
 import javax.inject.Named
 
 import javax.persistence.EntityManagerFactory
@@ -39,10 +40,12 @@ class EntitySync private constructor() : Disposable {
     var databaseSync: DatabaseSync by Delegates.notNull()
 
     /** Database sync event listener */
-    private val databaseSyncEvent = DatabaseSync.EventListener { clazz, timestamp ->
-        // Publish notification to consumers on databasesync update
-        this.entityPublisher.publish(clazz, timestamp);
-    };
+    private val databaseSyncEvent = object : DatabaseSync.EventListener {
+        override fun onUpdate(entityType: Class<out Any?>, currentTimestamp: Timestamp?) {
+            // Publish notification to consumers on databasesync update
+            entityPublisher.publish(entityType, currentTimestamp);
+        }
+    }
 
     /** Start entity sync */
     fun start() {
