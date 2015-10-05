@@ -145,7 +145,7 @@ public class RoutingLogicTest extends DataTest {
             request.setSender(rp);
             Routing r = mRoutingService.request(request);
             Assert.assertEquals(null, r.getConsignee());
-            Assert.assertEquals(r.getSender().getStation(), (Integer)514);
+            Assert.assertEquals(r.getSender().getStation(), 514);
             Assert.assertEquals(r.getSender().getZipCode(), "10-010");
         } catch (ServiceException e) {
             Assert.assertEquals("", e.getErrorCode());
@@ -185,9 +185,9 @@ public class RoutingLogicTest extends DataTest {
             request.setConsignee(rpc);
 
             Routing r = mRoutingService.request(request);
-            Assert.assertEquals(r.getConsignee().getStation(), (Integer)363);
+            Assert.assertEquals(r.getConsignee().getStation(), 363);
             Assert.assertEquals(r.getSender().getDayType(), "Saturday");
-            Assert.assertEquals(r.getSender().getStation(), (Integer)280);
+            Assert.assertEquals(r.getSender().getStation(), 280);
             Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
             Assert.assertEquals(r.getLabelContent(), "363");
         } catch (ServiceException e) {
@@ -210,9 +210,9 @@ public class RoutingLogicTest extends DataTest {
             request.setConsignee(rpc);
 
             Routing r = mRoutingService.request(request);
-            Assert.assertEquals(r.getConsignee().getStation(), (Integer)363);
+            Assert.assertEquals(r.getConsignee().getStation(), 363);
             Assert.assertEquals(r.getSender().getDayType(), "Saturday");
-            Assert.assertEquals(r.getSender().getStation(), (Integer)280);
+            Assert.assertEquals(r.getSender().getStation(), 280);
             Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
             Assert.assertEquals(r.getLabelContent(), "363");
         } catch (ServiceException e) {
@@ -234,9 +234,9 @@ public class RoutingLogicTest extends DataTest {
             request.setConsignee(rpc);
 
             Routing r = mRoutingService.request(request);
-            Assert.assertEquals(r.getConsignee().getStation(), (Integer)412);
+            Assert.assertEquals(r.getConsignee().getStation(), 412);
             Assert.assertEquals(r.getSender().getDayType(), "Saturday");
-            Assert.assertEquals(r.getSender().getStation(), (Integer)412);
+            Assert.assertEquals(r.getSender().getStation(), 412);
             Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
             Assert.assertEquals(r.getLabelContent(), "412");
         } catch (ServiceException e) {
@@ -258,9 +258,9 @@ public class RoutingLogicTest extends DataTest {
             request.setConsignee(rpc);
 
             Routing r = mRoutingService.request(request);
-            Assert.assertEquals(r.getConsignee().getStation(), (Integer)20);
+            Assert.assertEquals(r.getConsignee().getStation(), 20);
             Assert.assertEquals(r.getSender().getDayType(), "Saturday");
-            Assert.assertEquals(r.getSender().getStation(), (Integer)20);
+            Assert.assertEquals(r.getSender().getStation(), 20);
             Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
             Assert.assertEquals(r.getLabelContent(), "020");
         } catch (ServiceException e) {
@@ -282,9 +282,9 @@ public class RoutingLogicTest extends DataTest {
             request.setConsignee(rpc);
 
             Routing r = mRoutingService.request(request);
-            Assert.assertEquals(r.getConsignee().getStation(), (Integer)20);
+            Assert.assertEquals(r.getConsignee().getStation(), 20);
             Assert.assertEquals(r.getSender().getDayType(), "Saturday");
-            Assert.assertEquals(r.getSender().getStation(), (Integer)020);
+            Assert.assertEquals(r.getSender().getStation(), 020);
             Assert.assertEquals(r.getDeliveryDate().toString(), "2015-08-04");
             Assert.assertEquals(r.getLabelContent(), "020");
         } catch (ServiceException e) {
