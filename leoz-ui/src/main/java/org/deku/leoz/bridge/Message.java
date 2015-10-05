@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -66,7 +67,7 @@ public class Message {
 
                 if (entry.getValue() instanceof Date) {
                     jgen.writeFieldName(entry.getKey().toString());
-                    DateSerializer ds = new DateSerializer(false, StdDateFormat.getISO8601Format(StdDateFormat.getDefaultTimeZone()));
+                    DateSerializer ds = new DateSerializer(false, StdDateFormat.getISO8601Format(StdDateFormat.getDefaultTimeZone(), Locale.getDefault()));
                     ds.serialize((Date)entry.getValue(), jgen, provider);
                 } else {
                     jgen.writeObjectField(entry.getKey().toString(), entry.getValue());

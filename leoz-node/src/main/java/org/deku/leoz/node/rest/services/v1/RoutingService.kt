@@ -18,7 +18,6 @@ import org.deku.leoz.rest.entities.v1.DayType
 import org.deku.leoz.rest.entities.v1.Routing
 import org.deku.leoz.rest.entities.v1.RoutingRequest
 import org.deku.leoz.rest.services.ServiceErrorCode
-import org.deku.leoz.rest.services.v1
 import org.deku.leoz.rest.services.v1.RoutingService
 import sx.rs.ApiKey
 import java.sql.Timestamp

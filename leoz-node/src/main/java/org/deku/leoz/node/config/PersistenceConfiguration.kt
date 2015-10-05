@@ -42,7 +42,7 @@ import java.util.Properties
 @EnableJpaRepositories(considerNestedRepositories = false, basePackageClasses = arrayOf(org.deku.leoz.node.data.Package::class))
 open class PersistenceConfiguration : DisposableBean /*, TransactionManagementConfigurer*/ {
     companion object {
-        val DB_EMBEDDED = "db_embedded"
+        const val DB_EMBEDDED = "db_embedded"
     }
 
     private val log = LogFactory.getLog(PersistenceConfiguration::class.java.name)

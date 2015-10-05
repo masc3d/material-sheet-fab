@@ -27,15 +27,15 @@ class MainController : Initializable {
     private val log: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 
     @FXML
-    lateinit val uxTitle: Label
+    lateinit var uxTitle: Label
     @FXML
-    lateinit val uxTextArea: TextArea
+    lateinit var uxTextArea: TextArea
     @FXML
-    lateinit val uxProgressBar: ProgressBar
+    lateinit var uxProgressBar: ProgressBar
     @FXML
-    lateinit val uxProgressIndicator: ProgressIndicator
+    lateinit var uxProgressIndicator: ProgressIndicator
     @FXML
-    lateinit val uxClose: Button
+    lateinit var uxClose: Button
 
     var logAppender: TextAreaLogAppender? = null
 

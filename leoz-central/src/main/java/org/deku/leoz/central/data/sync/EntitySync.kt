@@ -6,7 +6,6 @@ import org.deku.leoz.messaging.activemq.ActiveMQContext
 import org.deku.leoz.node.data.sync.EntityPublisher
 import sx.Disposable
 import sx.LazyInstance
-import sx.event
 import sx.event.EventDelegate
 import javax.inject.Named
 

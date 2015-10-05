@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:0.13.+"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:0.14.+"
     }
 
     repositories {
@@ -17,8 +17,8 @@ repositories {
 
 dependencies {
     // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:0.13.+"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:0.13.+"
+    compile "org.jetbrains.kotlin:kotlin-runtime:0.14.+"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:0.14.+"
 
     compile "org.apache.commons:commons-lang3:3.+"
     compile "org.apache.commons:commons-compress:+"
