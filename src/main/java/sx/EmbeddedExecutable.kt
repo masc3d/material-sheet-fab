@@ -107,17 +107,17 @@ class EmbeddedExecutable(
      * */
     var file: File? = null
         @Synchronized get() {
-            if ($file== null) {
+            if (field == null) {
                 log.debug("Searching for executable [${this.filename}]")
-                $file = this.findExecutable()
-                if ($file== null)
+                field = this.findExecutable()
+                if (field == null)
                     throw IllegalStateException("Could not find executable [${this.filename}]")
 
-                log.debug("Found executable [${$file}]")
+                log.debug("Found executable [${field}]")
 
-                this.setExecutablePermissions($file!!.parentFile)
+                this.setExecutablePermissions(field!!.parentFile)
             }
 
-            return $file
+            return field
         }
 }
