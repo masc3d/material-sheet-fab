@@ -30,7 +30,7 @@ import java.io.File
 import java.net.URI
 import java.net.URISyntaxException
 import java.net.URL
-import java.util.Properties
+import java.util.*
 
 /**
  * Leoz-node database persistence context
@@ -65,17 +65,15 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
             baseUri = "jdbc:h2:mem:db1"
         }
 
-        // Use URI components builder for building query string
-        val ucb = UriComponentsBuilder.newInstance()
-        ucb.queryParam("zeroDateTimeBehavior", "convertToNull")
-        ucb.queryParam("connectTimeout", "1000")
-        // For in memory db
+        // H2 parameters
+        val params = HashMap<String, String>()
         if (IN_MEMORY) {
-            ucb.queryParam("INIT", "CREATE SCHEMA IF NOT EXISTS leoz")
-            ucb.queryParam("DB_CLOSE_DELAY", "-1")
+            // For in memory db
+            params.put("INIT", "CREATE SCHEMA IF NOT EXISTS leoz")
+            params.put("DB_CLOSE_DELAY", "-1")
         }
 
-        dataSource.setUrl(baseUri + ucb.toUriString())
+        dataSource.setUrl(baseUri + params.map { x -> "${x.key}=${x.value}" }.joinToString(separator = ";", prefix = ";"))
 
         return JdbcConnectionPool.create(dataSource)
     }
