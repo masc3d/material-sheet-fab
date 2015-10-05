@@ -51,7 +51,6 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
         /**
          * Convert mysql mst_station record to jpa entity
          * @param ds
-         * *
          * @return
          */
         private fun convert(ds: MstStationRecord): Station {
@@ -95,7 +94,6 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
         /**
          * Convert mysql country record to jpa entity
          * @param cr
-         * *
          * @return
          */
         private fun convert(cr: MstCountryRecord): Country {
@@ -115,7 +113,6 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
         /**
          * Convert mysql holidayctrl record to jpa entity
          * @param cr
-         * *
          * @return
          */
         private fun convert(cr: MstHolidayctrlRecord): HolidayCtrl {
@@ -133,7 +130,6 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
         /**
          * Convert mysql sector record to jpa entity
          * @param cr
-         * *
          * @return
          */
         private fun convert(cr: MstSectorRecord): Sector {
@@ -151,7 +147,6 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
         /**
          * Convert mysql value record to jpa entity
          * @param rs
-         * *
          * @return
          */
         private fun convert(rs: MstRoutinglayerRecord): RoutingLayer {
@@ -169,7 +164,6 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
         /**
          * Convert mysql route record to jpa entity
          * @param sr
-         * *
          * @return
          */
         private fun convert(sr: MstRouteRecord): Route {
@@ -200,7 +194,6 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
         /**
          * Convert mysql properties record to jpa entity
          * @param sp
-         * *
          * @return
          */
         private fun convert(sp: SysPropertyRecord): Property {
@@ -220,7 +213,6 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
         /**
          * Convert mysql stationsectors record to jpa entity
          * @param ss
-         * *
          * @return
          */
         private fun convert(ss: MstStationSectorRecord): StationSector {
@@ -368,20 +360,14 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
     /**
      * Generic updater for entites from jooq to jpa
      * @param sourceTable           JOOQ source table
-     * *
      * @param sourceTableField      JOOQ source timestamp field
-     * *
      * @param destRepository        Destination JPA repository
-     * *
      * @param destQdslEntityPath    Destination QueryDSL entity table path
-     * *
      * @param destQdslTimestampPath Destination QueryDSL timestamp field path
-     * *
      * @param conversionFunction    Conversion function JOOQ record -> JPA entity
-     * *
-     * @param              Type of destiantion JPA entity
-     * *
-     * @param       Type of source JOOQ record
+     * @param deleteBeforeUpdate    Delete all records before updating
+     * @param <TEntity>             Type of destiantion JPA entity
+     * @param <TCentralRecord>      Type of source JOOQ record
      */
     private fun <TCentralRecord : Record, TEntity> updateEntities(
             sourceTable: TableImpl<TCentralRecord>,
@@ -394,9 +380,10 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
 
         val query = JPAQuery(entityManager)
 
+        // Stopwatch
         val sw = Stopwatch.createStarted()
-
-        val lfmt = { s: String -> "[" + destQdslEntityPath!!.type.name + "] " + s + " " + sw.toString() }
+        // Log formatter
+        val lfmt = { s: String -> "[${destQdslEntityPath.type.name}] ${s} ${sw.toString()}" }
 
         entityManager.flushMode = FlushModeType.COMMIT
 
@@ -432,7 +419,6 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
                 log.info(lfmt("Inserting"))
                 transaction.execute<Any> { ts ->
                     var i = 0
-                    //for (r in Iterable { StreamSupport.stream<TCentralRecord>(source.spliterator(), false).map<TEntity>({ d -> conversionFunction.apply(d) }).iterator() } as Iterable<TEntity>) {
                     for (r in source.asSequence().map { d -> conversionFunction(d) }) {
                         destRepository.save(r)
                         if (i++ % 100 == 0) {
