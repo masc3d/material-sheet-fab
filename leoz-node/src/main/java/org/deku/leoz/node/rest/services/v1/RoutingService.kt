@@ -261,24 +261,24 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         //        )
 
         // TODO: preliminary optimization: named query with query result cache support
-        val em = entityManagerFactory.createEntityManager()
-        val emq = em.createNamedQuery("Route.find", Route::class.java)
-
-        emq.setParameter("layer", routingLayer.layer)
-        emq.setParameter("country", requestParticipant?.country?.toUpperCase())
-        emq.setParameter("zipFrom", queryZipCode)
-        emq.setParameter("zipTo", queryZipCode)
-        emq.setParameter("time", validDate?.toTimestamp())
-
-        val rRoutes = emq.resultList
+//        val em = entityManagerFactory.createEntityManager()
+//        val emq = em.createNamedQuery("Route.find", Route::class.java)
 //
-//        val rRoutes = routeRepository.findAll(
-//                QRoute.route.layer.eq(routingLayer.layer)
-//                        .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
-//                        .and(QRoute.route.zipFrom.loe(queryZipCode))
-//                        .and(QRoute.route.zipTo.goe(queryZipCode))
-//                        .and(QRoute.route.validFrom.before(validDate?.toTimestamp()))
-//                        .and(QRoute.route.validTo.after(validDate?.toTimestamp())))
+//        emq.setParameter("layer", routingLayer.layer)
+//        emq.setParameter("country", requestParticipant?.country?.toUpperCase())
+//        emq.setParameter("zipFrom", queryZipCode)
+//        emq.setParameter("zipTo", queryZipCode)
+//        emq.setParameter("time", validDate?.toTimestamp())
+//
+//        val rRoutes = emq.resultList
+//
+        val rRoutes = routeRepository.findAll(
+                QRoute.route.layer.eq(routingLayer.layer)
+                        .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
+                        .and(QRoute.route.zipFrom.loe(queryZipCode))
+                        .and(QRoute.route.zipTo.goe(queryZipCode))
+                        .and(QRoute.route.validFrom.before(validDate?.toTimestamp()))
+                        .and(QRoute.route.validTo.after(validDate?.toTimestamp())))
 
         if (Iterables.isEmpty(rRoutes))
             throw ServiceException(RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
