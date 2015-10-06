@@ -48,27 +48,31 @@ open class RsyncConfiguration {
     fun initialize() {
         // Initialize rsync executable path
         Rsync.executable.baseFilename = "leoz-rsync"
-        log.info(Rsync.executable.file)
+        try {
+            log.info(Rsync.executable.file)
 
-        // Rsync configuration
-        val config = RsyncServer.Configuration()
-        config.port = this.server.port
-        config.logFile = File(LocalStorage.instance.logDirectory, "leoz-rsyncd.log")
+            // Rsync configuration
+            val config = RsyncServer.Configuration()
+            config.port = this.server.port
+            config.logFile = File(LocalStorage.instance.logDirectory, "leoz-rsyncd.log")
 
-        // Users
-        var user = Rsync.User(RsyncFactory.USERNAME, RsyncFactory.PASSWORD)
+            // Users
+            var user = Rsync.User(RsyncFactory.USERNAME, RsyncFactory.PASSWORD)
 
-        // Bundles module
-        var module = Rsync.Module("bundles", LocalStorage.instance.bundlesDirectory)
-        module.permissions.put(user, Rsync.Permission.READWRITE)
-        config.modules.add(module)
+            // Bundles module
+            var module = Rsync.Module("bundles", LocalStorage.instance.bundlesDirectory)
+            module.permissions.put(user, Rsync.Permission.READWRITE)
+            config.modules.add(module)
 
-        // Initialize and start server
-        rsyncServer = RsyncServer(LocalStorage.instance.etcDirectory, config)
-        rsyncServer.onTermination = { e ->
-            if (e != null) log.error(e.getMessage(), e)
+            // Initialize and start server
+            rsyncServer = RsyncServer(LocalStorage.instance.etcDirectory, config)
+            rsyncServer.onTermination = { e ->
+                if (e != null) log.error(e.getMessage(), e)
+            }
+            this.rsyncServer.start()
+        } catch(e: Exception) {
+            log.error(e.getMessage(), e)
         }
-        this.rsyncServer.start()
     }
 
     @PreDestroy
