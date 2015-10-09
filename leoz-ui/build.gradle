@@ -34,15 +34,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: v_junit
 }
 
-jar {
-    manifest {
-        attributes (
-                'Main-Class': mainClassName,
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
-        )
-    }
-}
-
 //task proguard(type: proguard.gradle.ProGuardTask) {
 //    dependsOn(shadowJar)
 //    outputs.upToDateWhen { false }

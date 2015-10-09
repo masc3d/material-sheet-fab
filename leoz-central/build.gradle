@@ -83,14 +83,6 @@ run {
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
-jar {
-    manifest {
-        attributes (
-                'Main-Class': mainClassName,
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
-        )
-    }
-}
 tasks.classes.dependsOn(copySxBinariesToBuild)
 tasks.classes.dependsOn(copyGlobalBinariesToBuild)
 
@@ -111,5 +103,4 @@ packager {
     supplementalPlatformDirs(
             (projectBuildBinDir): new File('bin')
     )
-    checkRepository = false
 }

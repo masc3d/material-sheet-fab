@@ -115,8 +115,24 @@ subprojects {
     }
 
     // Global jar configuration
-    jar {
-        entryCompression ZipEntryCompression.STORED
+    tasks.jar.doFirst {
+        jar {
+            manifest {
+                if (project.hasProperty('mainClassName')) {
+                    attributes(
+                        'Main-Class': project.mainClassName
+                    )
+                }
+
+                attributes (
+                        'Implementation-Name': project.name,
+                        'Implementation-Version': project.version,
+                        'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
+                )
+            }
+
+            entryCompression ZipEntryCompression.STORED
+        }
     }
 
     // Global dependency resolution

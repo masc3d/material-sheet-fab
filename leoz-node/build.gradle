@@ -186,14 +186,6 @@ task copyWebapp(type: Copy) {
 }
 tasks.compileJava.dependsOn(copyWebapp)
 
-jar {
-    manifest {
-        attributes (
-                'Main-Class': mainClassName,
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
-        )
-    }
-}
 tasks.classes.dependsOn(copySxBinariesToBuild)
 tasks.classes.dependsOn(copyGlobalBinariesToBuild)
 
