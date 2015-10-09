@@ -43,7 +43,7 @@ compile - Compile classpath for source set 'main'.
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
 |              +--- org.jfxtras:jfxtras-fxml:8.0-r4
 |              \--- org.jfxtras:jfxtras-common:8.0-r4
-\--- com.dooapp.fxform2:core:8.+ -> 8.0.11
+\--- com.dooapp.fxform2:core:8.+ -> 8.0.12
      \--- javax.validation:validation-api:1.1.0.Final
 
 default - Configuration for default artifacts.
@@ -83,7 +83,7 @@ default - Configuration for default artifacts.
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
 |              +--- org.jfxtras:jfxtras-fxml:8.0-r4
 |              \--- org.jfxtras:jfxtras-common:8.0-r4
-\--- com.dooapp.fxform2:core:8.+ -> 8.0.11
+\--- com.dooapp.fxform2:core:8.+ -> 8.0.12
      \--- javax.validation:validation-api:1.1.0.Final
 
 kapt
@@ -133,7 +133,7 @@ runtime - Runtime classpath for source set 'main'.
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
 |              +--- org.jfxtras:jfxtras-fxml:8.0-r4
 |              \--- org.jfxtras:jfxtras-common:8.0-r4
-\--- com.dooapp.fxform2:core:8.+ -> 8.0.11
+\--- com.dooapp.fxform2:core:8.+ -> 8.0.12
      \--- javax.validation:validation-api:1.1.0.Final
 
 testCompile - Compile classpath for source set 'test'.
@@ -173,7 +173,7 @@ testCompile - Compile classpath for source set 'test'.
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
 |              +--- org.jfxtras:jfxtras-fxml:8.0-r4
 |              \--- org.jfxtras:jfxtras-common:8.0-r4
-+--- com.dooapp.fxform2:core:8.+ -> 8.0.11
++--- com.dooapp.fxform2:core:8.+ -> 8.0.12
 |    \--- javax.validation:validation-api:1.1.0.Final
 \--- junit:junit:4.+ -> 4.12
      \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
@@ -215,7 +215,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
 |              +--- org.jfxtras:jfxtras-fxml:8.0-r4
 |              \--- org.jfxtras:jfxtras-common:8.0-r4
-+--- com.dooapp.fxform2:core:8.+ -> 8.0.11
++--- com.dooapp.fxform2:core:8.+ -> 8.0.12
 |    \--- javax.validation:validation-api:1.1.0.Final
 \--- junit:junit:4.+ -> 4.12
      \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1

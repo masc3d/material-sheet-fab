@@ -12,11 +12,11 @@ import javax.inject.Inject
  */
 class StationRepositoryTest : DataTest() {
     @Inject
-    private lateinit var mStationRepository: StationRepository
+    private lateinit var stationRepository: StationRepository
 
     @Test
     fun test() {
-        for (d in mStationRepository.findAll()) {
+        for (d in stationRepository.findAll()) {
             println(d)
         }
     }

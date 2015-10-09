@@ -304,7 +304,7 @@ compile - Compile classpath for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-runtime:0.14.+ -> 0.14.451
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.14.+ -> 0.14.451 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
-\--- org.jooq:jooq:3.+ -> 3.6.4
+\--- org.jooq:jooq:3.+ -> 3.7.0
 
 default - Configuration for default artifacts.
 +--- project :libs:sx-common
@@ -604,7 +604,7 @@ default - Configuration for default artifacts.
 +--- org.jetbrains.kotlin:kotlin-runtime:0.14.+ -> 0.14.451
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.14.+ -> 0.14.451 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
-\--- org.jooq:jooq:3.+ -> 3.6.4
+\--- org.jooq:jooq:3.+ -> 3.7.0
 
 kapt
 \--- org.jetbrains.kotlin:kotlin-annotation-processing:0.14.451
@@ -914,7 +914,7 @@ runtime - Runtime classpath for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-runtime:0.14.+ -> 0.14.451
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.14.+ -> 0.14.451 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
-\--- org.jooq:jooq:3.+ -> 3.6.4
+\--- org.jooq:jooq:3.+ -> 3.7.0
 
 testCompile - Compile classpath for source set 'test'.
 +--- project :libs:sx-common
@@ -1214,7 +1214,7 @@ testCompile - Compile classpath for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-runtime:0.14.+ -> 0.14.451
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.14.+ -> 0.14.451 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
-+--- org.jooq:jooq:3.+ -> 3.6.4
++--- org.jooq:jooq:3.+ -> 3.7.0
 +--- junit:junit:4.+ -> 4.12
 |    \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- org.jboss.resteasy:resteasy-client:3.+ -> 3.0.13.Final
@@ -1530,7 +1530,7 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-runtime:0.14.+ -> 0.14.451
 +--- org.jetbrains.kotlin:kotlin-stdlib:0.14.+ -> 0.14.451 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.36
-+--- org.jooq:jooq:3.+ -> 3.6.4
++--- org.jooq:jooq:3.+ -> 3.7.0
 +--- junit:junit:4.+ -> 4.12
 |    \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- org.jboss.resteasy:resteasy-client:3.+ -> 3.0.13.Final
