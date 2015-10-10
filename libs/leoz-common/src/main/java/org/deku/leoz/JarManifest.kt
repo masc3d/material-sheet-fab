@@ -17,11 +17,11 @@ class JarManifest(type: Class<Any>) {
         this.manifest = jar.manifest
     }
 
-    val ImplementationName: String by lazy({
+    val implementationName: String by lazy({
         manifest.mainAttributes.getValue("Implementation-Name")
     })
 
-    val ImplementationVersion: String by lazy({
+    val implementationVersion: String by lazy({
         manifest.mainAttributes.getValue("Implementation-Version")
     })
 }

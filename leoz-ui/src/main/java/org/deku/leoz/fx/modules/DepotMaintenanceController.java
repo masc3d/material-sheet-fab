@@ -7,7 +7,7 @@ import org.deku.leoz.Main;
 import org.deku.leoz.fx.ModuleController;
 import org.deku.leoz.fx.components.DepotDetailsController;
 import org.deku.leoz.fx.components.DepotListController;
-import org.deku.leoz.rest.entities.internal.v1.Depot;
+import org.deku.leoz.rest.entities.internal.v1.Station;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -41,8 +41,8 @@ public class DepotMaintenanceController extends ModuleController implements Init
     }
 
     @Override
-    public void onDepotListItemSelected(Depot depot) {
-        mDepotDetailsController.setDepot(depot);
+    public void onDepotListItemSelected(Station station) {
+        mDepotDetailsController.setStation(station);
     }
 
     public void selectDepot(Integer id) {

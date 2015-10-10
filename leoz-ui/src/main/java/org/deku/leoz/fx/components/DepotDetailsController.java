@@ -7,7 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
 import org.deku.leoz.fx.FormSkin;
-import org.deku.leoz.rest.entities.internal.v1.Depot;
+import org.deku.leoz.rest.entities.internal.v1.Station;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -34,14 +34,14 @@ public class DepotDetailsController implements Initializable {
     private FXForm mFxFormAccounting;
     private FXForm mFxFormTransfer;
     private FXForm mFxFormPermissions;
-    private Depot mDepot;
+    private Station mStation;
 
-    public Depot getDepot() {
-        return mDepot;
+    public Station getStation() {
+        return mStation;
     }
 
-    public void setDepot(Depot depot) {
-        mDepot = depot;
+    public void setStation(Station station) {
+        mStation = station;
         this.updateTab();
     }
 
@@ -64,7 +64,7 @@ public class DepotDetailsController implements Initializable {
                 form = mFxFormPermissions;
                 break;
         }
-        form.setSource(mDepot);
+        form.setSource(mStation);
     }
 
     @Override

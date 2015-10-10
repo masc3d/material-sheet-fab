@@ -3,7 +3,7 @@ package org.deku.leoz;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.rest.services.internal.v1.DepotService;
+import org.deku.leoz.rest.services.internal.v1.StationService;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 
@@ -41,7 +41,7 @@ public class WebserviceFactory {
         return instance;
     }
 
-    public static DepotService depotService() {
-        return getService(DepotService.class);
+    public static StationService depotService() {
+        return getService(StationService.class);
     }
 }

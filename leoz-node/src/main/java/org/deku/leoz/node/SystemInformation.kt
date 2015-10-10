@@ -57,8 +57,8 @@ class SystemInformation : Serializable {
         @JvmStatic fun create(): SystemInformation {
             var hostname: String = ""
             var hardwareAddress: String = ""
-            var ipv4: Inet4Address? = null
-            var ipv6: Inet6Address? = null
+            var ipv4: Inet4Address?
+            var ipv6: Inet6Address?
 
             val addresses = ArrayList<InetAddress>()
 

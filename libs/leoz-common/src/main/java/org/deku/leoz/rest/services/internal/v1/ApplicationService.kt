@@ -3,7 +3,7 @@ package org.deku.leoz.rest.services.internal.v1
 import com.wordnik.swagger.annotations.Api
 import com.wordnik.swagger.annotations.ApiOperation
 import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
-import org.deku.leoz.rest.entities.internal.v1.Depot
+import org.deku.leoz.rest.entities.internal.v1.Station
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
 import javax.ws.rs.Path
@@ -23,5 +23,5 @@ interface ApplicationService {
     @GET
     @Path("/version")
     @ApiOperation(value = "Get application version", response = String::class)
-    abstract fun getVersion(): ApplicationVersion
+    fun getVersion(): ApplicationVersion
 }

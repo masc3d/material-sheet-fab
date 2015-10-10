@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType
 class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationService {
     override fun getVersion(): ApplicationVersion {
         return ApplicationVersion(
-                App.instance().jarManifest.ImplementationName,
-                App.instance().jarManifest.ImplementationVersion)
+                App.instance().jarManifest.implementationName,
+                App.instance().jarManifest.implementationVersion)
     }
 }

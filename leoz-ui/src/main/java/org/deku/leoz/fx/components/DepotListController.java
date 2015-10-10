@@ -21,7 +21,7 @@ import org.deku.leoz.WebserviceFactory;
 import org.deku.leoz.bridge.LeoBridge;
 import org.deku.leoz.bridge.MessageFactory;
 import org.deku.leoz.fx.Controller;
-import org.deku.leoz.rest.entities.internal.v1.Depot;
+import org.deku.leoz.rest.entities.internal.v1.Station;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ public class DepotListController extends Controller implements Initializable {
     @FXML
     private TextField mSearchText;
     @FXML
-    private TableView<Depot> mDepotTableView;
+    private TableView<Station> mDepotTableView;
     @FXML
     private TableColumn mDepotTableMatchcodeColumn;
     @FXML
@@ -53,23 +53,23 @@ public class DepotListController extends Controller implements Initializable {
     @FXML
     private TableColumn mDepotTableStreetColumn;
 
-    private ObservableList<Depot> mDepots = new ImmutableObservableList<Depot>();
+    private ObservableList<Station> mStations = new ImmutableObservableList<Station>();
 
     private ExecutorService mQueryTaskExecutor = Executors.newFixedThreadPool(3);
-    private Task<ObservableList<Depot>> mQueryTask;
+    private Task<ObservableList<Station>> mQueryTask;
     private Integer mRequestedDepotId = null;
     private Listener mListener;
 
     public interface Listener extends EventListener {
-        void onDepotListItemSelected(Depot depot);
+        void onDepotListItemSelected(Station station);
     }
 
     /**
      * Query task
      */
-    private class QueryTask extends Task<ObservableList<Depot>> {
+    private class QueryTask extends Task<ObservableList<Station>> {
         @Override
-        protected ObservableList<Depot> call() throws Exception {
+        protected ObservableList<Station> call() throws Exception {
             Platform.runLater(() -> Main.instance().getMainController().requestProgressIndicator());
 
             try {
@@ -84,8 +84,8 @@ public class DepotListController extends Controller implements Initializable {
 
         @Override
         protected void succeeded() {
-            mDepots = this.getValue();
-            mDepotTableView.setItems(mDepots);
+            mStations = this.getValue();
+            mDepotTableView.setItems(mStations);
             if (mRequestedDepotId != null)
                 selectDepot(mRequestedDepotId);
             mSearchText.getStyleClass().remove("leoz-error");
@@ -133,13 +133,13 @@ public class DepotListController extends Controller implements Initializable {
         });
 
         // Bind depotlist columns
-        mDepotTableMatchcodeColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("depotMatchcode"));
-        mDepotTableCompany1Column.setCellValueFactory(new PropertyValueFactory<Depot, String>("firma1"));
-        mDepotTableCompany2Column.setCellValueFactory(new PropertyValueFactory<Depot, String>("firma2"));
-        mDepotTableCountryColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("lkz"));
-        mDepotTableZipCodeColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("plz"));
-        mDepotTableCityColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("ort"));
-        mDepotTableStreetColumn.setCellValueFactory(new PropertyValueFactory<Depot, String>("strasse"));
+        mDepotTableMatchcodeColumn.setCellValueFactory(new PropertyValueFactory<Station, String>("depotMatchcode"));
+        mDepotTableCompany1Column.setCellValueFactory(new PropertyValueFactory<Station, String>("firma1"));
+        mDepotTableCompany2Column.setCellValueFactory(new PropertyValueFactory<Station, String>("firma2"));
+        mDepotTableCountryColumn.setCellValueFactory(new PropertyValueFactory<Station, String>("lkz"));
+        mDepotTableZipCodeColumn.setCellValueFactory(new PropertyValueFactory<Station, String>("plz"));
+        mDepotTableCityColumn.setCellValueFactory(new PropertyValueFactory<Station, String>("ort"));
+        mDepotTableStreetColumn.setCellValueFactory(new PropertyValueFactory<Station, String>("strasse"));
 
         // Cell factory for cell specific behaviour handling
         Callback<TableColumn, TableCell> cellFactory =
@@ -151,9 +151,9 @@ public class DepotListController extends Controller implements Initializable {
                             public void handle(MouseEvent event) {
                                 if (event.getClickCount() > 1) {
                                     TableCell cell = (TableCell) event.getSource();
-                                    Depot depot = (Depot) cell.getTableRow().getItem();
+                                    Station station = (Station) cell.getTableRow().getItem();
                                     try {
-                                        LeoBridge.instance().sendMessage(MessageFactory.createViewDepotMessage(depot));
+                                        LeoBridge.instance().sendMessage(MessageFactory.createViewDepotMessage(station));
                                     } catch (Exception e) {
                                         Main.instance().showError("Could not send message to leo1");
                                     }
@@ -176,8 +176,8 @@ public class DepotListController extends Controller implements Initializable {
     }
 
     private void selectDepot(Integer id) {
-        for (int i = 0; i < mDepots.size(); i++) {
-            Depot d = mDepots.get(i);
+        for (int i = 0; i < mStations.size(); i++) {
+            Station d = mStations.get(i);
             if (d.getDepotNr().equals(id)) {
                 mDepotTableView.getSelectionModel().select(d);
                 mDepotTableView.scrollTo(d);
@@ -189,7 +189,7 @@ public class DepotListController extends Controller implements Initializable {
 
     public void requestDepotSelection(Integer id) {
         mRequestedDepotId = id;
-        if (mSearchText.getText().length() == 0 && mDepots.size() > 0) {
+        if (mSearchText.getText().length() == 0 && mStations.size() > 0) {
             this.selectDepot(id);
         } else {
             mSearchText.setText("");

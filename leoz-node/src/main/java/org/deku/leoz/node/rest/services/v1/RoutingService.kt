@@ -13,7 +13,6 @@ import org.deku.leoz.node.data.repositories.master.*
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.rest.entities.ShortDate
 import org.deku.leoz.rest.entities.ShortTime
-import org.deku.leoz.rest.entities.internal.v1.TestEntry
 import org.deku.leoz.rest.entities.v1.DayType
 import org.deku.leoz.rest.entities.v1.Routing
 import org.deku.leoz.rest.entities.v1.RoutingRequest
@@ -158,7 +157,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
         val viaHubs = arrayOf("") // {"NST", "N1"};
 
-        routing.sendDate = ShortDate(sendDate)
+        routing.sendDate = ShortDate(sendDate!!)
         routing.deliveryDate = if (deliveryDate != null) ShortDate(deliveryDate) else null
         routing.labelContent = if (consigneeParticipant != null) consigneeParticipant.stationFormatted ?: "" else ""
         routing.viaHubs = viaHubs
