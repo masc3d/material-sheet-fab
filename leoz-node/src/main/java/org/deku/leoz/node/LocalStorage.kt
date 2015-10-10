@@ -28,10 +28,12 @@ class LocalStorage(appName: String) : org.deku.leoz.LocalStorage(appName) {
     // Files
     /** Local application configuration file */
     val applicationConfigurationFile: File
+
     /** Local identity configuration file */
     val identityConfigurationFile: File by lazy({
         File(this.dataDirectory, "identity.properties")
     })
+
     /** Local h2 database file */
     val h2DatabaseFile: File by lazy({
         this.dataDirectory.toPath().resolve("h2").resolve("leoz").toFile()
@@ -43,9 +45,7 @@ class LocalStorage(appName: String) : org.deku.leoz.LocalStorage(appName) {
     }
 
     companion object {
-        /**
-         * Java instance access. $INSTANCE doesn't seem to work with JPA annotation processor
-         */
+        /** Java instance access. $INSTANCE doesn't seem to work with JPA annotation processor */
         @JvmStatic val instance = LocalStorage(App.instance().name)
     }
 }

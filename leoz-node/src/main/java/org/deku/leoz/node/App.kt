@@ -30,13 +30,15 @@ import java.util.Collections
 import java.util.function.Supplier
 
 /**
+ * Application instance. Performs pre-spring configuration.
  * Created by masc on 30.05.15.
  */
-open class App
-/** c'tor  */
-protected constructor() : Disposable, // Srping won't recognize this as App is not a bean but
+open class App :
+        Disposable,
+        // Srping won't recognize this as App is not a bean but
         // we'll inject this within web application initializer
-        ApplicationContextAware, ApplicationListener<ApplicationEvent> {
+        ApplicationContextAware,
+        ApplicationListener<ApplicationEvent> {
 
     companion object {
         /** Logger  */
@@ -64,6 +66,9 @@ protected constructor() : Disposable, // Srping won't recognize this as App is n
             instance.set(supplier)
         }
     }
+
+    /** c'tor  */
+    protected constructor()
 
     /** The spring application context */
     var springApplicationContext: ApplicationContext? = null

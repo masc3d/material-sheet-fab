@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 /**
+ * Application instance.
+ * Derives from leoz node, overriding app specifics like spring profile and application name
  * Created by masc on 30.05.15.
  */
 class App : org.deku.leoz.node.App() {

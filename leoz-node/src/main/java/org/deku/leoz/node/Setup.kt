@@ -89,7 +89,7 @@ class Setup {
     /**
      * Installs node as a system service
      */
-    fun install(serviceName: String, mainClass: Class<Any>) {
+    fun install(serviceName: String, mainClass: Class<*>) {
         log.info("Installing service")
 
         var classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())

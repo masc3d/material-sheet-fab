@@ -22,7 +22,7 @@ abstract class LocalStorage(
         val appName: String) {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
-// Directories
+    // Directories
     /** Local home directory */
     val baseDirectory: File;
 

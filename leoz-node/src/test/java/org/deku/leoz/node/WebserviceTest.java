@@ -23,7 +23,7 @@ public class WebserviceTest {
 
     @Before
     public void setup() throws Exception {
-        org.deku.leoz.node.Main.main(null);
+        Main.main(null);
 
         // Setup jaxrs client & target
         this.client = ClientBuilder.newClient();
