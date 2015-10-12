@@ -31,8 +31,10 @@ class SystemInformation : Serializable {
         private set
 
     companion object {
-        private val serialVersionUID = 1558995436722991648L
-        private val mLog = LogFactory.getLog(SystemInformation::class.java)
+        @JvmStatic private const val serialVersionUID = 1558995436722991648L
+
+        /** Logger */
+        private val log = LogFactory.getLog(SystemInformation::class.java)
 
         /**
          * Find appropriate ipv4 address
@@ -68,11 +70,11 @@ class SystemInformation : Serializable {
                 localhost = InetAddress.getLocalHost()
                 networkInterface = NetworkInterface.getByInetAddress(localhost)
             } catch (e: Exception) {
-                mLog.warn(e.getMessage(), e)
+                log.warn(e.getMessage(), e)
             }
 
             if (networkInterface == null) {
-                mLog.warn("No network interface referring to host name")
+                log.warn("No network interface referring to host name")
 
                 try {
                     for (nii in Collections.list(NetworkInterface.getNetworkInterfaces())) {
@@ -83,7 +85,7 @@ class SystemInformation : Serializable {
                         }
                     }
                 } catch (e: Exception) {
-                    mLog.warn(e.getMessage(), e)
+                    log.warn(e.getMessage(), e)
                 }
 
             }
@@ -111,7 +113,7 @@ class SystemInformation : Serializable {
                     if (ipv6 != null)
                         addresses.add(ipv6)
                 } catch (e: Exception) {
-                    mLog.warn(e.getMessage(), e)
+                    log.warn(e.getMessage(), e)
                 }
 
             }

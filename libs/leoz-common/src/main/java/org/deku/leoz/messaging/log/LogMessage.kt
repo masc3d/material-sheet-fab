@@ -11,7 +11,7 @@ import java.io.Serializable
  */
 public class LogMessage : Serializable {
     companion object {
-        private val serialVersionUID = -8027400236775552276L
+        @JvmStatic private const val serialVersionUID = -8027400236775552276L
     }
 
     public var level: String = ""

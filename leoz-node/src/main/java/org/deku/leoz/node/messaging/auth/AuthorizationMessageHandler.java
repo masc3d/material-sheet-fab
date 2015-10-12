@@ -13,6 +13,6 @@ import javax.jms.Session;
 public class AuthorizationMessageHandler implements Handler<AuthorizationMessage> {
     @Override
     public void onMessage(AuthorizationMessage message, Message jmsMessage, Session session) throws JMSException {
-        // TODO: Push authorization update handling
+        // TODO: Push authorization update handling. May revoke the node's authorization key
     }
 }
