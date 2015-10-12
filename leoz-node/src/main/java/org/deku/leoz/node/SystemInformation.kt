@@ -31,7 +31,7 @@ class SystemInformation : Serializable {
         private set
 
     companion object {
-        @JvmStatic private const val serialVersionUID = 1558995436722991648L
+        private const val serialVersionUID = 1558995436722991648L
 
         /** Logger */
         private val log = LogFactory.getLog(SystemInformation::class.java)

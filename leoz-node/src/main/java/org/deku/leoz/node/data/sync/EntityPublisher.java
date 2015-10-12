@@ -71,8 +71,8 @@ public class EntityPublisher extends SpringJmsListener {
      */
     public void publish(Class entityType, Timestamp timestamp) throws JMSException {
         Channel mc = new Channel(
-                ActiveMQContext.instance().getBroker().getConnectionFactory(),
-                ActiveMQContext.instance().getNodeNotificationTopic(),
+                ActiveMQContext.getInstance().getBroker().getConnectionFactory(),
+                ActiveMQContext.getInstance().getNodeNotificationTopic(),
                 this.createMessageConverter(),
                 false,
                 DeliveryMode.NON_PERSISTENT,

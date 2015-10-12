@@ -33,7 +33,7 @@ open class MessageListenerConfiguration {
 
     init {
         // Configure and create listener
-        messageListener = MessageListener(ActiveMQContext.instance())
+        messageListener = MessageListener(ActiveMQContext.instance)
     }
 
     /**
@@ -55,7 +55,7 @@ open class MessageListenerConfiguration {
     private fun startIfReady() {
         this.stop()
 
-        if (ActiveMQContext.instance().broker.isStarted) {
+        if (ActiveMQContext.instance.broker.isStarted) {
 
             // Add message handler delegatess
             messageListener.addDelegate(IdentityMessage::class.java,

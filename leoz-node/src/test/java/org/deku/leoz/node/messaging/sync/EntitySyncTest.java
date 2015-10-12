@@ -39,17 +39,17 @@ public class EntitySyncTest extends DataTest {
         //ActiveMQContext.instance().getBroker().setLocalUri(new URI("tcp://localhost:61616"));
 
         // Starting broker
-        ActiveMQContext.instance().getBroker().start();
+        ActiveMQContext.getInstance().getBroker().start();
 
-        mListener = new EntityPublisher(ActiveMQContext.instance(), mEntityManagerFactory);
-        mClient = new EntityConsumer(ActiveMQContext.instance(), mEntityManagerFactory);
+        mListener = new EntityPublisher(ActiveMQContext.getInstance(), mEntityManagerFactory);
+        mClient = new EntityConsumer(ActiveMQContext.getInstance(), mEntityManagerFactory);
     }
 
     @After
     public void tearDown() {
         mClient.dispose();
         mListener.dispose();
-        ActiveMQContext.instance().getBroker().dispose();
+        ActiveMQContext.Companion.getInstance().getBroker().dispose();
     }
 
     @Test

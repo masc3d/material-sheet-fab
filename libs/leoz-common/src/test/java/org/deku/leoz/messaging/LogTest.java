@@ -19,7 +19,7 @@ public class LogTest extends MessagingTest {
     @Test
     public void testSend() throws JMSException {
         // Setup log appender
-        LogAppender lAppender = new LogAppender(ActiveMQContext.instance());
+        LogAppender lAppender = new LogAppender(ActiveMQContext.getInstance());
         lAppender.start();
         Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         lRoot.addAppender(lAppender);
@@ -35,7 +35,7 @@ public class LogTest extends MessagingTest {
     @Test
     public void testReceive() throws JMSException, InterruptedException {
         // Setup log message listener
-        LogListener mListener = new LogListener(ActiveMQContext.instance());
+        LogListener mListener = new LogListener(ActiveMQContext.getInstance());
         mListener.start();
 
         // Wait for some messages to be received

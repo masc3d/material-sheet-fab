@@ -25,7 +25,7 @@ open class LogListenerConfiguration {
     private val logListener: LogListener
 
     init {
-        logListener = LogListener(ActiveMQContext.instance())
+        logListener = LogListener(ActiveMQContext.instance)
     }
 
     private val brokerEventListener = object : Broker.EventListener {

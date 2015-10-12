@@ -54,7 +54,7 @@ class EntitySync private constructor() : Disposable {
 
         // Configure and start publisher
         this.entityPublisher = EntityPublisher(
-                ActiveMQContext.instance(),
+                ActiveMQContext.instance,
                 this.entityManagerFactory)
 
         this.entityPublisher.start()

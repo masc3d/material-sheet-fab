@@ -60,7 +60,7 @@ open class EntitySyncConfiguration {
             brokerEventListener.onStart()
 
         // Entity sync consumer
-        this.entityConsumer = EntityConsumer(ActiveMQContext.instance(), this.entityManagerFactory)
+        this.entityConsumer = EntityConsumer(ActiveMQContext.instance, this.entityManagerFactory)
     }
 
     @PreDestroy

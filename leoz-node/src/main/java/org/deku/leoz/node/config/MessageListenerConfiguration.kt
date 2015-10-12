@@ -35,6 +35,27 @@ open class MessageListenerConfiguration {
     @Inject
     lateinit private var identityConfiguration: IdentityConfiguration
 
+    @PostConstruct
+    fun onInitialize() {
+        log.info("Initializing node message listener")
+
+        // Configure and create listener
+        messageListener = MessageListener(
+                ActiveMQContext.instance,
+                identityConfiguration.identity)
+
+        // Register event listeners
+        ActiveMQBroker.instance().delegate.add(brokerEventListener)
+        identityConfiguration.identity.delegate.add(identityEventListener)
+
+        this.startIfReady()
+    }
+
+    @PreDestroy
+    fun onDestroy() {
+        messageListener.stop()
+    }
+
     /**
      * Broker event listener
      */
@@ -62,7 +83,7 @@ open class MessageListenerConfiguration {
      * @return
      */
     private val isReadyToStart: Boolean
-        get() = ActiveMQContext.instance().broker.isStarted && identityConfiguration.identity.id != null
+        get() = ActiveMQContext.instance.broker.isStarted && identityConfiguration.identity.id != null
 
     /**
      * Start message listener
@@ -81,27 +102,6 @@ open class MessageListenerConfiguration {
      * Stop message listener
      */
     private fun stop() {
-        messageListener.stop()
-    }
-
-    @PostConstruct
-    fun onInitialize() {
-        log.info("Initializing node message listener")
-
-        // Configure and create listener
-        messageListener = MessageListener(
-                ActiveMQContext.instance(),
-                identityConfiguration.identity)
-
-        // Register event listeners
-        ActiveMQBroker.instance().delegate.add(brokerEventListener)
-        identityConfiguration.identity.delegate.add(identityEventListener)
-
-        this.startIfReady()
-    }
-
-    @PreDestroy
-    fun onDestroy() {
         messageListener.stop()
     }
 }

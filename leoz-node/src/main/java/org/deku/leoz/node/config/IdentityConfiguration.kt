@@ -79,7 +79,7 @@ open class IdentityConfiguration {
 
         // Start authorizer (on client nodes only)
         if (App.instance().profile == App.PROFILE_CLIENT_NODE) {
-            authorizer = Authorizer(ActiveMQContext.instance())
+            authorizer = Authorizer(ActiveMQContext.instance)
             authorizer.start(identity)
         }
 

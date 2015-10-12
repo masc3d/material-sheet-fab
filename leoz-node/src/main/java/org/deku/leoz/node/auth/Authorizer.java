@@ -58,7 +58,7 @@ public class Authorizer implements Disposable {
             boolean success = false;
             while (!success && !mExecutorService.isShutdown()) {
                 try {
-                    IdentityPublisher isc = new IdentityPublisher(ActiveMQContext.instance());
+                    IdentityPublisher isc = new IdentityPublisher(ActiveMQContext.getInstance());
 
                     if (identity.hasId()) {
                         // Simply publish id
