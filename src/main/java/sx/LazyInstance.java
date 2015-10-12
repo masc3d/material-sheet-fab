@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Lazy instance
+ * Lazy instance supporting external injection
  * Created by masc on 14.04.15.
  */
 public class LazyInstance<T> {
