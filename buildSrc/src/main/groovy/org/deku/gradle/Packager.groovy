@@ -588,8 +588,8 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         }
 
         // Upload to bundle repository
-        BundleRepository ar = BundleRepositoryFactory.INSTANCE$.stagingRepository(project.name)
-        ar.upload(this.getReleasePath(), true)
+        BundleRepository ar = BundleRepositoryFactory.INSTANCE$.stagingRepository()
+        ar.upload(project.name, this.getReleasePath(), true)
     }
 }
 
@@ -603,9 +603,9 @@ class PackagerReleasePullTask extends PackagerReleaseTask {
         def releasePath = this.getReleasePath()
 
         def version = Bundle.Version.parse(project.version)
-        BundleRepository ar = BundleRepositoryFactory.INSTANCE$.stagingRepository(project.name)
+        BundleRepository repository = BundleRepositoryFactory.INSTANCE$.stagingRepository()
 
-        def remoteVersions = ar.listVersions()
+        def remoteVersions = repository.listVersions(project.name)
                 .stream()
                 .filter { v -> v.compareTo(version) <= 0 }
                 .sorted().collect(Collectors.toList()).reverse()
@@ -613,7 +613,7 @@ class PackagerReleasePullTask extends PackagerReleaseTask {
         if (remoteVersions.size() == 0)
             throw new IllegalStateException("No remote versions <= ${version}")
 
-        ar.download(remoteVersions.get(0), releasePath, true, true)
+        repository.download(project.name, remoteVersions.get(0), releasePath, true, true)
     }
 }
 

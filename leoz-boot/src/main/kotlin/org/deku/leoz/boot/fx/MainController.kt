@@ -62,7 +62,7 @@ class MainController : Initializable {
                 val installer = BundleInstaller(
                         LocalStorage.bundlesDirectory,
                         bundleName,
-                        BundleRepositoryFactory.stagingRepository(bundleName))
+                        BundleRepositoryFactory.stagingRepository())
 
                 if (installer.hasBundle()) {
                     installer.bundle.stop()
@@ -70,7 +70,7 @@ class MainController : Initializable {
                 }
 
                 log.info("Checking for available versions of [${bundleName}]")
-                val versionToInstall = installer.repository.listVersions().sortedDescending().first()
+                val versionToInstall = installer.repository.listVersions(bundleName).sortedDescending().first()
 
                 log.info("Installing [${bundleName}-${versionToInstall}]")
                 installer.download(versionToInstall, false, { f, p ->

@@ -50,8 +50,6 @@ class BundleInstaller(
     }
 
     init {
-        if (this.bundleName != repository.bundleName)
-            throw IllegalArgumentException("Installer bundle name [${bundleName}] does not match repository bundle name [${repository.bundleName}")
     }
 
     /**
@@ -59,21 +57,21 @@ class BundleInstaller(
      * @param name Bundle name
      */
     private fun bundleUpdatePath(): File {
-        return File(bundleContainerPath, "${this.repository.bundleName}${UPDATE_SUFFIX}")
+        return File(bundleContainerPath, "${this.bundleName}${UPDATE_SUFFIX}")
     }
 
     /**
      * Creates bundle path
      */
     private fun bundlePath(): File {
-        return File(bundleContainerPath, this.repository.bundleName)
+        return File(bundleContainerPath, this.bundleName)
     }
 
     /**
      * Creates path for old bundle (used when moving into place)
      */
     private fun oldBundlePath(): File {
-        return File(bundleContainerPath, "${this.repository.bundleName}${OLD_SUFFIX}")
+        return File(bundleContainerPath, "${this.bundleName}${OLD_SUFFIX}")
     }
 
     /**
@@ -107,11 +105,13 @@ class BundleInstaller(
         val destPath = if (prepareAsUpdate) this.bundleUpdatePath() else this.bundlePath()
 
         val platform = PlatformId.current()
-        var comparePaths = this.listBundlePaths().filter { f -> !f.name.equals(repository.bundleName) }
+        var comparePaths = this.listBundlePaths().filter { f -> !f.name.equals(this.bundleName) }
         if (platform.operatingSystem == OperatingSystem.OSX)
             comparePaths = comparePaths.map { f -> File(f, "${f.name}.app") }
 
-        repository.download(version,
+        repository.download(
+                this.bundleName,
+                version,
                 platform,
                 destPath = destPath,
                 comparePaths = comparePaths,
@@ -142,7 +142,7 @@ class BundleInstaller(
                 oldBundlePath.deleteRecursively()
             }
         } else {
-            log.warn("Bundle named [${this.repository.bundleName}] doesn't exist within [${this.bundleContainerPath}]")
+            log.warn("Bundle named [${this.bundleName}] doesn't exist within [${this.bundleContainerPath}]")
         }
     }
 

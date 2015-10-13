@@ -22,14 +22,8 @@ import java.util.function.IntSupplier
  * @param rsyncModuleUri The base rsync module uri. The expected directory structur is $artifact-name/$version/$platform
  * Created by masc on 24.08.15.
  */
-class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, val rsyncPassword: String) {
+class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String) {
     val log = LogFactory.getLog(this.javaClass)
-
-    val rsyncBundleUri: Rsync.URI
-
-    init {
-        rsyncBundleUri = rsyncModuleUri.resolve(bundleName)
-    }
 
     /**
      * Rsync client factory helper
@@ -45,10 +39,10 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
     /**
      * List  artifact versions in remote repository
      */
-    fun listVersions(): List<Bundle.Version> {
+    fun listVersions(bundleName: String): List<Bundle.Version> {
         // Get remote list
         val rc = this.createRsyncClient()
-        rc.destination = this.rsyncBundleUri
+        rc.destination = this.rsyncModuleUri.resolve(bundleName)
 
         val lr = rc.list()
 
@@ -69,9 +63,9 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
      * List remote platform ids of a specific artifact version in remote repository
      * @param version Bundle version
      */
-    fun listPlatforms(version: Bundle.Version): List<PlatformId> {
+    fun listPlatforms(bundleName: String, version: Bundle.Version): List<PlatformId> {
         val rc = this.createRsyncClient()
-        rc.destination = this.rsyncBundleUri.resolve(version)
+        rc.destination = this.rsyncModuleUri.resolve(bundleName).resolve(version)
 
         return rc.list().asSequence()
                 .filter { l -> !l.filename.startsWith(".") }
@@ -94,22 +88,25 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
      * @param path Base path
      * @param platform Platform
      */
-    private fun bundlePath(path: File, platform: PlatformId): File {
-        return if (platform.operatingSystem == OperatingSystem.OSX) File(path, "${this.bundleName}.app") else path
+    private fun bundlePath(bundleName: String, path: File, platform: PlatformId): File {
+        return if (platform.operatingSystem == OperatingSystem.OSX) File(path, "${bundleName}.app") else path
     }
 
     /**
      * Bundle path
      */
-    private fun bundlePath(path: File): File {
-        return this.bundlePath(path, PlatformId.current())
+    private fun bundlePath(bundleName: String, path: File): File {
+        return this.bundlePath(bundleName, path, PlatformId.current())
     }
 
     /**
      * Upload all platforms of a specific bundle version to remote repository
+     * @param bundleName Name of bundle to upload
      * @param versionSrcPath Local version source path. The folder is expected to have platform id subdirs
+     * @param consoleOutput Log to console instead of logger (used for gradle)
      */
-    @JvmOverloads fun upload(versionSrcPath: File,
+    @JvmOverloads fun upload(bundleName: String,
+                             versionSrcPath: File,
                              consoleOutput: Boolean = false) {
         /** Info logging wrapper */
         fun logInfo(s: String) {
@@ -123,7 +120,7 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
         // Verify this is an artifact version folder (having only platform ids as subfolder)
         val bundles = ArrayList<Bundle>()
         this.walkPlatformFolders(nSrcPath).forEach { p ->
-            val bundlePath = this.bundlePath(p.toFile(), PlatformId.parse(p.fileName.toString()))
+            val bundlePath = this.bundlePath(bundleName, p.toFile(), PlatformId.parse(p.fileName.toString()))
             val a = Bundle.load(bundlePath)
             logInfo("Found [${a}]")
             bundles.add(a)
@@ -142,7 +139,7 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
             throw IllegalStateException("No artifacts found in path")
 
         val version = bundles.get(0).version!!
-        val remoteVersions = this.listVersions()
+        val remoteVersions = this.listVersions(bundleName)
 
         val comparisonDestinationVersions = remoteVersions.sortedDescending()
                 .filter({ v -> v.compareTo(version) != 0 })
@@ -157,7 +154,7 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
 
             val rc = this.createRsyncClient()
             rc.source = Rsync.URI(versionSrcPath)
-            rc.destination = this.rsyncBundleUri.resolve(version)
+            rc.destination = this.rsyncModuleUri.resolve(bundleName).resolve(version)
             //rc.preservePermissions = false
             rc.copyDestinations = comparisonDestinationUris
 
@@ -177,7 +174,7 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
 
                 val rc = this.createRsyncClient()
                 rc.source = Rsync.URI(versionSrcPath).resolve(bundle.platform!!)
-                rc.destination = this.rsyncBundleUri.resolve(bundle.version!!, bundle.platform!!)
+                rc.destination = this.rsyncModuleUri.resolve(bundleName).resolve(bundle.version!!, bundle.platform!!)
                 rc.copyDestinations = comparisonDestinationUris
 
                 logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
@@ -193,11 +190,16 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
 
     /**
      * Download a specific platform/version of a bundle from remote repository
+     * @param bundleName Name of bundle to download
      * @param version Bundle version
      * @param platformId Platform id
      * @param destPath Local destination path
+     * @param comparePaths (Optional) Comparison paths (for rsync to cross reference, minimizing download volume)
+     * @param verify Verify bundle after successful download. Defaults to false.
+     * @param onProgress (Optional) Progress callback
      */
-    @JvmOverloads fun download(version: Bundle.Version,
+    @JvmOverloads fun download(bundleName: String,
+                               version: Bundle.Version,
                                platformId: PlatformId,
                                destPath: File,
                                comparePaths: List<File> = ArrayList(),
@@ -207,12 +209,12 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
 
         val isOsx = platformId.operatingSystem == OperatingSystem.OSX
 
-        var source = this.rsyncBundleUri.resolve(version, platformId)
+        var source = this.rsyncModuleUri.resolve(bundleName).resolve(version, platformId)
         var destination = Rsync.URI(destPath)
         var comparisonDestinations = comparePaths.asSequence().map { Rsync.URI(it) }
 
         if (isOsx) {
-            val osxBundleName = "${this.bundleName}.app"
+            val osxBundleName = "${bundleName}.app"
             source = source.resolve(osxBundleName)
             destination = destination.resolve(osxBundleName)
             if (destPath.parentFile.exists())
@@ -242,7 +244,7 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
         if (onProgress != null) onProgress(currentFile, 0.95)
 
         if (verify) {
-            val bundlePath = this.bundlePath(destPath)
+            val bundlePath = this.bundlePath(bundleName, destPath)
             log.info("Verifying bundle [${bundlePath}]")
             Bundle.load(bundlePath)
                     .verify()
@@ -253,12 +255,14 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
 
     /**
      * Download all platform bundles of a specific version from remote repository
+     * @param bundleName Name of bundle to download
      * @param version Bundle version
      * @param destPath Destination path
      * @param verify Verify bundle after download
      * @param consoleOutput Log to console instead of logger (used for gradle)
      */
-    @JvmOverloads fun download(version: Bundle.Version,
+    @JvmOverloads fun download(bundleName: String,
+                               version: Bundle.Version,
                                destPath: File,
                                verify: Boolean = false,
                                consoleOutput: Boolean = false) {
@@ -267,7 +271,7 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
         }
 
         val rc = this.createRsyncClient()
-        rc.source = this.rsyncBundleUri.resolve(version)
+        rc.source = this.rsyncModuleUri.resolve(bundleName).resolve(version)
         rc.destination = Rsync.URI(destPath)
         //rc.preservePermissions = false
 
@@ -278,7 +282,7 @@ class BundleRepository(val bundleName: String, val rsyncModuleUri: Rsync.URI, va
 
         if (verify) {
             this.walkPlatformFolders(destPath.toPath()).forEach { p ->
-                val bundlePath = this.bundlePath(p.toFile(), PlatformId.parse(p.fileName.toString()))
+                val bundlePath = this.bundlePath(bundleName, p.toFile(), PlatformId.parse(p.fileName.toString()))
                 logInfo("Verifying bundle [${bundlePath}]")
                 Bundle.load(bundlePath).verify()
             }
