@@ -256,6 +256,8 @@ class Bundle : Serializable {
 
     /**
      * Bundle version
+     * @property components Numeric version components
+     * @property suffix An optional version suffix
      * Created by masc on 24.08.15.
      */
     data class Version(val components: List<Int>, val suffix: String) : Comparable<Version>, Serializable {

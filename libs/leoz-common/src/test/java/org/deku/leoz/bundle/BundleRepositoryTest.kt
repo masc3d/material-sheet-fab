@@ -29,19 +29,19 @@ class BundleRepositoryTest {
 
     @Test
     fun testList() {
-        var versions = TestBundleConfiguration.repository.listVersions()
+        var versions = TestBundleConfiguration.repository.listVersions("test")
         versions.forEach { println(it) }
     }
 
     @Test
     fun testListPlatforms() {
-        var platforms = TestBundleConfiguration.repository.listPlatforms(Bundle.Version.parse("0.1"))
+        var platforms = TestBundleConfiguration.repository.listPlatforms("test", Bundle.Version.parse("0.1"))
         platforms.forEach { println(it) }
     }
 
     @Test
     fun testUpload() {
-        TestBundleConfiguration.repository.upload(TestBundleConfiguration.path.toFile())
+        TestBundleConfiguration.repository.upload(Bundles.LEOZ_BOOT, TestBundleConfiguration.path.toFile())
     }
 
     @Test
@@ -49,6 +49,6 @@ class BundleRepositoryTest {
         var path = TestBundleConfiguration.path
                 .resolve(PlatformId.current().toString()).toFile()
 
-        TestBundleConfiguration.repository.download(Bundle.Version.parse("0.1"), PlatformId.current(), path)
+        TestBundleConfiguration.repository.download(Bundles.LEOZ_BOOT, Bundle.Version.parse("0.1"), PlatformId.current(), path)
     }
 }

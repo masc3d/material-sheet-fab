@@ -47,6 +47,18 @@ class BundleInstaller(
         fun listBundleNames(bundleContainerPath: File): List<String> {
             return this.listBundlePaths(bundleContainerPath).map { f -> f.name }
         }
+
+        /**
+         * Gets the bundle path ready for use with the Bundle class
+         * This path is plaform specific, as on some platform the bundle resides in a subfolder
+         * (eg. on OSX ${bundleName}.app)
+         */
+        fun getNativeBundlePath(bundlePath: File): File {
+            return if (SystemUtils.IS_OS_MAC_OSX)
+                File(bundlePath, "${bundlePath.name}.app")
+            else
+                bundlePath
+        }
     }
 
     init {
@@ -78,12 +90,7 @@ class BundleInstaller(
      * Current bundle
      */
     public val bundle: Bundle by lazy({
-        Bundle(
-                if (SystemUtils.IS_OS_MAC_OSX)
-                    File(this.bundlePath(), "${this.bundleName}.app")
-                else
-                    this.bundlePath(),
-                this.bundleName)
+        Bundle(getNativeBundlePath(this.bundlePath()), this.bundleName)
     })
 
     /**
