@@ -1,4 +1,4 @@
-package org.deku.leoz
+package org.deku.leoz.config
 
 import org.apache.commons.lang3.SystemUtils
 import sx.rsync.Rsync
@@ -9,7 +9,7 @@ import java.nio.file.Paths
  * Leoz rsync configuration
  * Created by masc on 24.08.15.
  */
-object RsyncConfiguration {
+object TestRsyncConfiguration {
     fun initialize() {
         Rsync.executable.file = Paths.get("")
                 .toAbsolutePath()
