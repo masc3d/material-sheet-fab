@@ -30,7 +30,7 @@ import kotlin.properties.Delegates
 open class MessageListenerConfiguration {
     private val log = LogFactory.getLog(MessageListenerConfiguration::class.java)
 
-    internal var messageListener: MessageListener by Delegates.notNull()
+    private var messageListener: MessageListener by Delegates.notNull()
 
     @Inject
     lateinit private var identityConfiguration: IdentityConfiguration
@@ -88,7 +88,7 @@ open class MessageListenerConfiguration {
     /**
      * Start message listener
      */
-    private fun startIfReady() {
+    @Synchronized private fun startIfReady() {
         this.stop()
 
         if (this.isReadyToStart) {
@@ -101,7 +101,7 @@ open class MessageListenerConfiguration {
     /**
      * Stop message listener
      */
-    private fun stop() {
+    @Synchronized private fun stop() {
         messageListener.stop()
     }
 }

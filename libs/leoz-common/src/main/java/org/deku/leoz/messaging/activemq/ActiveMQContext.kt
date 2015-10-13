@@ -43,8 +43,8 @@ class ActiveMQContext private constructor() : MessagingContext {
         this.broker.createQueue("leoz.log")
     })
 
-    override fun getNodeQueue(id: Int?): Queue {
-        return this.broker.createQueue("leoz.node." + id!!.toString())
+    override fun getNodeQueue(id: Int): Queue {
+        return this.broker.createQueue("leoz.node." + id.toString())
     }
 
     override val nodeNotificationTopic: Topic by lazy({

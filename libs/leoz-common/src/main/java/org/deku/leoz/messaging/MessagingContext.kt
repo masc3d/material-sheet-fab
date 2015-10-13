@@ -21,7 +21,7 @@ interface MessagingContext {
     val centralLogQueue: Queue
 
     /** Node message queue for lightweight message exchange */
-    fun getNodeQueue(id: Int?): Queue
+    fun getNodeQueue(id: Int): Queue
 
     /** Node notification topic for broadcastss  */
     val nodeNotificationTopic: Topic
