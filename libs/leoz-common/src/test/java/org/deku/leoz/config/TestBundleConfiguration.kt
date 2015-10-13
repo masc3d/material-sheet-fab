@@ -18,7 +18,7 @@ object TestBundleConfiguration {
             .parent
             .parent
             .resolve("leoz-release")
-            .resolve("leoz-boot")
+            .resolve("test")
 
     val repository = BundleRepository(Bundles.LEOZ_BOOT, rsyncUri, rsyncPw)
 }

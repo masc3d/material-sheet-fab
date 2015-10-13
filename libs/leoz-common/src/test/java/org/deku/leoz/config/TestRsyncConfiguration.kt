@@ -11,6 +11,7 @@ import java.nio.file.Paths
  */
 object TestRsyncConfiguration {
     fun initialize() {
+        // Explicit rsync path for executing testcases on various platforms
         Rsync.executable.file = Paths.get("")
                 .toAbsolutePath()
                 .parent
