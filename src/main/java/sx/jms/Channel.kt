@@ -7,11 +7,10 @@ import sx.Disposable
 import sx.Dispose
 import sx.LazyInstance
 
-import javax.jms.*
-import javax.jms.IllegalStateException
 import java.io.Closeable
 import java.time.Duration
 import java.util.function.Supplier
+import javax.jms.*
 
 /**
  * Lightweight messaging channel with send/receive and automatic message conversion capabilities.
@@ -36,8 +35,8 @@ class Channel
         private val converter: Converter,
         private val receiveTimeout: Duration = Duration.ofSeconds(10),
         private val jmsSessionTransacted: Boolean,
-        private val jmsDeliveryMode: Int,
-        private val jmsTtl: Long,
+        private val jmsDeliveryMode: Channel.DeliveryMode,
+        private val jmsTtl: Duration,
         private val jmsPriority: Int? = null) : Disposable, Closeable {
 
     private val log = LogFactory.getLog(this.javaClass)
@@ -45,6 +44,11 @@ class Channel
     private val session = LazyInstance<Session>()
     private val consumer = LazyInstance<MessageConsumer>()
     private var sessionCreated = false
+
+    enum class DeliveryMode(val value: Int) {
+        NonPersistent(javax.jms.DeliveryMode.NON_PERSISTENT),
+        Persistent(javax.jms.DeliveryMode.PERSISTENT)
+    }
 
     init {
         connection.set(fun(): Connection {
@@ -54,7 +58,7 @@ class Channel
         })
 
         session.set(fun(): Session {
-            val session = connection.get().createSession(this.jmsSessionTransacted, this.jmsDeliveryMode)
+            val session = connection.get().createSession(this.jmsSessionTransacted, this.jmsDeliveryMode.value)
             sessionCreated = true
             return session
         })
@@ -73,8 +77,8 @@ class Channel
     fun send(message: Message, messageConfigurer: Action<Message>?) {
         val mp = session.get().createProducer(destination)
 
-        mp.deliveryMode = jmsDeliveryMode
-        mp.timeToLive = jmsTtl
+        mp.deliveryMode = jmsDeliveryMode.value
+        mp.timeToLive = jmsTtl.toMillis()
         if (jmsPriority != null)
             mp.priority = jmsPriority
 
