@@ -6,5 +6,5 @@ import org.deku.leoz.bundle.Bundles
 /**
  * Created by masc on 12.10.15.
  */
-object TestStorageConfiguration : StorageConfiguration(appName = "test") {
+object StorageTestConfiguration : StorageConfiguration(appName = "test") {
 }

@@ -9,7 +9,7 @@ import java.nio.file.Paths
  * Leoz rsync configuration
  * Created by masc on 24.08.15.
  */
-object TestRsyncConfiguration {
+object RsyncTestConfiguration {
     fun initialize() {
         // Explicit rsync path for executing testcases on various platforms
         Rsync.executable.file = Paths.get("")

@@ -3,8 +3,8 @@ package org.deku.leoz.bundle
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import org.apache.commons.lang3.SystemUtils
-import org.deku.leoz.config.TestBundleConfiguration
-import org.deku.leoz.config.TestRsyncConfiguration
+import org.deku.leoz.config.BundleTestConfiguration
+import org.deku.leoz.config.RsyncTestConfiguration
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -24,31 +24,31 @@ class BundleRepositoryTest {
         var logger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger
         logger.level = Level.TRACE
 
-        TestRsyncConfiguration.initialize()
+        RsyncTestConfiguration.initialize()
     }
 
     @Test
     fun testList() {
-        var versions = TestBundleConfiguration.repository.listVersions("test")
+        var versions = BundleTestConfiguration.repository.listVersions("test")
         versions.forEach { println(it) }
     }
 
     @Test
     fun testListPlatforms() {
-        var platforms = TestBundleConfiguration.repository.listPlatforms("test", Bundle.Version.parse("0.1"))
+        var platforms = BundleTestConfiguration.repository.listPlatforms("test", Bundle.Version.parse("0.1"))
         platforms.forEach { println(it) }
     }
 
     @Test
     fun testUpload() {
-        TestBundleConfiguration.repository.upload(Bundles.LEOZ_BOOT, TestBundleConfiguration.path.toFile())
+        BundleTestConfiguration.repository.upload(Bundles.LEOZ_BOOT, BundleTestConfiguration.path.toFile())
     }
 
     @Test
     fun testDownload() {
-        var path = TestBundleConfiguration.path
+        var path = BundleTestConfiguration.path
                 .resolve(PlatformId.current().toString()).toFile()
 
-        TestBundleConfiguration.repository.download(Bundles.LEOZ_BOOT, Bundle.Version.parse("0.1"), PlatformId.current(), path)
+        BundleTestConfiguration.repository.download(Bundles.LEOZ_BOOT, Bundle.Version.parse("0.1"), PlatformId.current(), path)
     }
 }

@@ -1,4 +1,4 @@
-package org.deku.leoz.messaging;
+package org.deku.leoz.log;
 
 import ch.qos.logback.classic.Logger;
 import org.deku.leoz.MessagingTest;

@@ -1,6 +1,6 @@
 package org.deku.leoz.bundle
 
-import org.deku.leoz.config.TestBundleConfiguration
+import org.deku.leoz.config.BundleTestConfiguration
 import org.junit.Test
 import sx.platform.PlatformId
 
@@ -36,21 +36,21 @@ class BundleTest {
 
     @Test
     fun testCreate() {
-        var path = TestBundleConfiguration.path.resolve(PlatformId.current().toString())
+        var path = BundleTestConfiguration.path.resolve(PlatformId.current().toString())
 
         Bundle.create(path.toFile(), Bundles.LEOZ_BOOT, PlatformId.current(), Bundle.Version.parse("0.1"))
     }
 
     @Test
     fun testLoad() {
-        var path = TestBundleConfiguration.path.resolve(PlatformId.current().toString())
+        var path = BundleTestConfiguration.path.resolve(PlatformId.current().toString())
 
         Bundle.load(path.toFile())
     }
 
     @Test
     fun testVerify() {
-        var path = TestBundleConfiguration.path.resolve(PlatformId.current().toString())
+        var path = BundleTestConfiguration.path.resolve(PlatformId.current().toString())
 
         Bundle.load(path.toFile()).verify()
     }
