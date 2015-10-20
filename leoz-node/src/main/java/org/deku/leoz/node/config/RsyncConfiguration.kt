@@ -1,9 +1,9 @@
 package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.node.LocalStorage
+import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.node.config.LogConfiguration
-import org.deku.leoz.rsync.RsyncFactory
+import org.deku.leoz.config.RsyncConfiguration
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -54,18 +54,18 @@ open class RsyncConfiguration {
             // Rsync configuration
             val config = RsyncServer.Configuration()
             config.port = this.server.port
-            config.logFile = File(LocalStorage.instance.logDirectory, "leoz-rsyncd.log")
+            config.logFile = File(StorageConfiguration.instance.logDirectory, "leoz-rsyncd.log")
 
             // Users
-            var user = Rsync.User(RsyncFactory.USERNAME, RsyncFactory.PASSWORD)
+            var user = Rsync.User(RsyncConfiguration.USERNAME, RsyncConfiguration.PASSWORD)
 
             // Bundles module
-            var module = Rsync.Module("bundles", LocalStorage.instance.bundlesDirectory)
+            var module = Rsync.Module("bundles", StorageConfiguration.instance.bundlesDirectory)
             module.permissions.put(user, Rsync.Permission.READWRITE)
             config.modules.add(module)
 
             // Initialize and start server
-            rsyncServer = RsyncServer(LocalStorage.instance.etcDirectory, config)
+            rsyncServer = RsyncServer(StorageConfiguration.instance.etcDirectory, config)
             rsyncServer.onTermination = { e ->
                 if (e != null) log.error(e.getMessage(), e)
             }

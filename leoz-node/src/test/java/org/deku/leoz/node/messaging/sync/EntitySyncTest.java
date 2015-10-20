@@ -2,7 +2,7 @@ package org.deku.leoz.node.messaging.sync;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import org.deku.leoz.messaging.activemq.ActiveMQContext;
+import org.deku.leoz.config.ActiveMQConfiguration;
 import org.deku.leoz.node.DataTest;
 import org.deku.leoz.node.config.PersistenceConfiguration;
 import org.deku.leoz.node.data.entities.master.Route;
@@ -39,17 +39,17 @@ public class EntitySyncTest extends DataTest {
         //ActiveMQContext.instance().getBroker().setLocalUri(new URI("tcp://localhost:61616"));
 
         // Starting broker
-        ActiveMQContext.getInstance().getBroker().start();
+        ActiveMQConfiguration.getInstance().getBroker().start();
 
-        mListener = new EntityPublisher(ActiveMQContext.getInstance(), mEntityManagerFactory);
-        mClient = new EntityConsumer(ActiveMQContext.getInstance(), mEntityManagerFactory);
+        mListener = new EntityPublisher(ActiveMQConfiguration.getInstance(), mEntityManagerFactory);
+        mClient = new EntityConsumer(ActiveMQConfiguration.getInstance(), mEntityManagerFactory);
     }
 
     @After
     public void tearDown() {
         mClient.dispose();
         mListener.dispose();
-        ActiveMQContext.Companion.getInstance().getBroker().dispose();
+        ActiveMQConfiguration.Companion.getInstance().getBroker().dispose();
     }
 
     @Test

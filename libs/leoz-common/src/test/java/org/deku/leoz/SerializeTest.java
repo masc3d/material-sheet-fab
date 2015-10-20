@@ -1,6 +1,6 @@
 package org.deku.leoz;
 
-import org.deku.leoz.messaging.log.LogMessage;
+import org.deku.leoz.log.LogMessage;
 import org.junit.Assert;
 import org.junit.Test;
 

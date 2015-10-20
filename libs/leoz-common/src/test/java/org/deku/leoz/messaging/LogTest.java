@@ -2,9 +2,9 @@ package org.deku.leoz.messaging;
 
 import ch.qos.logback.classic.Logger;
 import org.deku.leoz.MessagingTest;
-import org.deku.leoz.messaging.activemq.ActiveMQContext;
-import org.deku.leoz.messaging.log.LogAppender;
-import org.deku.leoz.messaging.log.LogListener;
+import org.deku.leoz.config.ActiveMQConfiguration;
+import org.deku.leoz.log.LogAppender;
+import org.deku.leoz.log.LogListener;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory;
 import javax.jms.JMSException;
 
 /**
- * Created by masc on 16.04.15.
+ * @author masc
  */
 @Ignore
 public class LogTest extends MessagingTest {
     @Test
     public void testSend() throws JMSException {
         // Setup log appender
-        LogAppender lAppender = new LogAppender(ActiveMQContext.getInstance());
+        LogAppender lAppender = new LogAppender(ActiveMQConfiguration.getInstance());
         lAppender.start();
         Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         lRoot.addAppender(lAppender);
@@ -35,7 +35,7 @@ public class LogTest extends MessagingTest {
     @Test
     public void testReceive() throws JMSException, InterruptedException {
         // Setup log message listener
-        LogListener mListener = new LogListener(ActiveMQContext.getInstance());
+        LogListener mListener = new LogListener(ActiveMQConfiguration.getInstance());
         mListener.start();
 
         // Wait for some messages to be received

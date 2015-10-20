@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.messaging.MessagingContext;
+import org.deku.leoz.config.MessagingConfiguration;
 import org.deku.leoz.node.auth.Identity;
 import org.deku.leoz.node.messaging.auth.v1.AuthorizationMessage;
 import org.deku.leoz.node.messaging.auth.v1.IdentityMessage;
@@ -20,17 +20,17 @@ import java.util.concurrent.TimeoutException;
 public class IdentityPublisher {
     private Log mLog = LogFactory.getLog(this.getClass());
 
-    private MessagingContext mMessagingContext;
+    private MessagingConfiguration mMessagingConfiguration;
     DefaultConverter mConverter = new DefaultConverter(
             DefaultConverter.SerializationType.KRYO,
             DefaultConverter.CompressionType.GZIP);
 
     /**
      * c'tor
-     * @param messagingContext
+     * @param messagingConfiguration
      */
-    public IdentityPublisher(MessagingContext messagingContext) {
-        mMessagingContext = messagingContext;
+    public IdentityPublisher(MessagingConfiguration messagingConfiguration) {
+        mMessagingConfiguration = messagingConfiguration;
     }
 
     /**
@@ -59,13 +59,13 @@ public class IdentityPublisher {
             boolean receive) throws Exception {
 
         // Connection and session
-        Connection cn = mMessagingContext.getBroker().getConnectionFactory().createConnection();
+        Connection cn = mMessagingConfiguration.getBroker().getConnectionFactory().createConnection();
         cn.start();
         Session session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         TemporaryQueue receiveQueue = null;
 
         // Message producer
-        MessageProducer mp = session.createProducer(mMessagingContext.getCentralQueue());
+        MessageProducer mp = session.createProducer(mMessagingConfiguration.getCentralQueue());
         mp.setTimeToLive(TimeUnit.SECONDS.toMillis(10));
         mp.setPriority(8);
         mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);

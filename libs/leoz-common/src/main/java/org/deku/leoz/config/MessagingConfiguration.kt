@@ -1,4 +1,4 @@
-package org.deku.leoz.messaging
+package org.deku.leoz.config
 
 import sx.jms.embedded.Broker
 
@@ -6,10 +6,10 @@ import javax.jms.Queue
 import javax.jms.Topic
 
 /**
- * Common messaging context interface definition
+ * Messaging configuration base interface
  * Created by masc on 07.06.15.
  */
-interface MessagingContext {
+interface MessagingConfiguration {
     /** Broker for this messaging context  */
     val broker: Broker
 
@@ -21,7 +21,7 @@ interface MessagingContext {
     val centralLogQueue: Queue
 
     /** Node message queue for lightweight message exchange */
-    fun getNodeQueue(id: Int): Queue
+    fun nodeQueue(id: Int): Queue
 
     /** Node notification topic for broadcastss  */
     val nodeNotificationTopic: Topic

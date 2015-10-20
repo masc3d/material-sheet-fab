@@ -1,6 +1,6 @@
-package org.deku.leoz.messaging.activemq
+package org.deku.leoz.config
 
-import org.deku.leoz.messaging.MessagingContext
+import org.deku.leoz.config.MessagingConfiguration
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
 
@@ -8,10 +8,10 @@ import javax.jms.Queue
 import javax.jms.Topic
 
 /**
- * Common messaging context shared across leoz applications
+ * ActiveMQ specific messaging configuration
  * Created by masc on 16.04.15.
  */
-class ActiveMQContext private constructor() : MessagingContext {
+class ActiveMQConfiguration private constructor() : MessagingConfiguration {
     companion object {
         val USERNAME = "leoz"
         val PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC"
@@ -19,7 +19,7 @@ class ActiveMQContext private constructor() : MessagingContext {
 
         /** Singleton instance  */
         @JvmStatic val instance by lazy({
-            ActiveMQContext()
+            ActiveMQConfiguration()
         })
     }
 
@@ -43,7 +43,7 @@ class ActiveMQContext private constructor() : MessagingContext {
         this.broker.createQueue("leoz.log")
     })
 
-    override fun getNodeQueue(id: Int): Queue {
+    override fun nodeQueue(id: Int): Queue {
         return this.broker.createQueue("leoz.node." + id.toString())
     }
 

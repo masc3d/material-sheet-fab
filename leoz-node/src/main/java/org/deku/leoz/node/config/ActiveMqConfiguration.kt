@@ -3,7 +3,7 @@ package org.deku.leoz.node.config
 import com.google.common.base.Strings
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.node.LocalStorage
+import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
@@ -37,7 +37,7 @@ open class ActiveMqConfiguration {
 
         // Broker configuration, must occur before tunnel servlet starts
         log.info("Configuring messaging broker")
-        ActiveMQBroker.instance().dataDirectory = LocalStorage.instance.activeMqDataDirectory
+        ActiveMQBroker.instance().dataDirectory = StorageConfiguration.instance.activeMqDataDirectory
         ActiveMQBroker.instance().nativeTcpPort = this.nativePort
 
         if (!Strings.isNullOrEmpty(peerSettings.host)) {

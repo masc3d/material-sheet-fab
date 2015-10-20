@@ -5,6 +5,7 @@ import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.node.config.StorageConfiguration
 import sx.platform.PlatformId
 import org.slf4j.Logger
 import sx.EmbeddedExecutable
@@ -100,7 +101,7 @@ class Setup {
                 "--Description=LeoZ node system service",
                 "--Install=${this.leozsvcExecutable.file.toString()}",
                 "--Startup=auto",
-                "--LogPath=${LocalStorage.instance.logDirectory}",
+                "--LogPath=${StorageConfiguration.instance.logDirectory}",
                 "--LogPrefix=leoz-svc",
                 "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
                 "--StartMode=jvm",

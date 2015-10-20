@@ -2,7 +2,7 @@ package org.deku.leoz.central.data.sync
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.messaging.activemq.ActiveMQContext
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.data.sync.EntityPublisher
 import sx.Disposable
 import sx.LazyInstance
@@ -54,7 +54,7 @@ class EntitySync private constructor() : Disposable {
 
         // Configure and start publisher
         this.entityPublisher = EntityPublisher(
-                ActiveMQContext.instance,
+                ActiveMQConfiguration.instance,
                 this.entityManagerFactory)
 
         this.entityPublisher.start()

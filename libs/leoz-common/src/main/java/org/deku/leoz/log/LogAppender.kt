@@ -1,11 +1,11 @@
-package org.deku.leoz.messaging.log
+package org.deku.leoz.log
 
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.spi.LoggingEvent
 import ch.qos.logback.core.AppenderBase
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.messaging.MessagingContext
+import org.deku.leoz.config.MessagingConfiguration
 import sx.Disposable
 import sx.Dispose
 import sx.jms.Converter
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
  */
 public class LogAppender(
         /** Messaging context */
-        private val messagingContext: MessagingContext) : AppenderBase<ILoggingEvent>(), Disposable {
+        private val messagingConfiguration: MessagingConfiguration) : AppenderBase<ILoggingEvent>(), Disposable {
 
     private val log = LogFactory.getLog(this.javaClass)
     /** Message converter  */
@@ -74,11 +74,11 @@ public class LogAppender(
         if (logMessageBuffer.size() > 0) {
             log.trace("Flushing [${logMessageBuffer.size()}]")
             try {
-                val cn = messagingContext.broker.connectionFactory.createConnection()
+                val cn = messagingConfiguration.broker.connectionFactory.createConnection()
                 cn.start()
                 val session = cn.createSession(true, Session.AUTO_ACKNOWLEDGE)
 
-                val mp = session.createProducer(messagingContext.centralLogQueue)
+                val mp = session.createProducer(messagingConfiguration.centralLogQueue)
                 mp.deliveryMode = DeliveryMode.PERSISTENT
                 // Log messages live a few days before they are purged by the broker
                 mp.timeToLive = TimeUnit.DAYS.toMillis(2)
@@ -109,8 +109,8 @@ public class LogAppender(
 
         executorService = Executors.newScheduledThreadPool(1)
 
-        messagingContext.broker.delegate.add(brokerEventListener)
-        if (messagingContext.broker.isStarted)
+        messagingConfiguration.broker.delegate.add(brokerEventListener)
+        if (messagingConfiguration.broker.isStarted)
             brokerEventListener.onStart()
 
         super.start()
@@ -133,13 +133,13 @@ public class LogAppender(
 
         // Final flush
         try {
-            if (messagingContext.broker.isStarted)
+            if (messagingConfiguration.broker.isStarted)
                 this.flush()
         } catch (e: Exception) {
             log.error(e.getMessage(), e)
         }
 
-        messagingContext.broker.delegate.remove(brokerEventListener)
+        messagingConfiguration.broker.delegate.remove(brokerEventListener)
 
         super.stop()
     }

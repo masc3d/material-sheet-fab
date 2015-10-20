@@ -3,7 +3,7 @@ package org.deku.leoz.node.data.sync;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.messaging.MessagingContext;
+import org.deku.leoz.config.MessagingConfiguration;
 import org.deku.leoz.node.data.PersistenceUtil;
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage;
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage;
@@ -35,7 +35,7 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
 
     private static final int RECEIVE_TIMEOUT = 5000;
     /** Messaging context */
-    private MessagingContext mMessagingContext;
+    private MessagingConfiguration mMessagingConfiguration;
     /** Entity manager factory */
     private EntityManagerFactory mEntityManagerFactory;
     /** Spring jms communication abstraction */
@@ -48,15 +48,15 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
 
     /**
      * c'tor
-     * @param messagingContext
+     * @param messagingConfiguration
      */
-    public EntityConsumer(MessagingContext messagingContext, EntityManagerFactory entityManagerFactory) {
-        super(messagingContext.getBroker().getConnectionFactory());
+    public EntityConsumer(MessagingConfiguration messagingConfiguration, EntityManagerFactory entityManagerFactory) {
+        super(messagingConfiguration.getBroker().getConnectionFactory());
 
         this.setConverter(mConverter);
         this.addDelegate(EntityStateMessage.class, this);
 
-        mMessagingContext = messagingContext;
+        mMessagingConfiguration = messagingConfiguration;
         mEntityManagerFactory = entityManagerFactory;
         mExecutorService = Executors.newSingleThreadExecutor(r -> {
             Thread t = new Thread(r);
@@ -68,7 +68,7 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
     @Override
     protected Destination createDestination() {
         // Listen for entity state updates
-        return mMessagingContext.getNodeNotificationTopic();
+        return mMessagingConfiguration.getNodeNotificationTopic();
     }
 
     @Override
@@ -99,13 +99,13 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
                     return null;
                 }
 
-                Connection cn = mMessagingContext.getBroker().getConnectionFactory().createConnection();
+                Connection cn = mMessagingConfiguration.getBroker().getConnectionFactory().createConnection();
                 cn.start();
                 Session session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
                 Stopwatch sw = Stopwatch.createStarted();
 
-                Queue requestQueue = mMessagingContext.getCentralEntitySyncQueue();
+                Queue requestQueue = mMessagingConfiguration.getCentralEntitySyncQueue();
                 receiveQueue = session.createTemporaryQueue();
 
                 mLog.info(lfmt.apply(String.format("Requesting entities")));

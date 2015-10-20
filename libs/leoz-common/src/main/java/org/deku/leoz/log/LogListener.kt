@@ -1,8 +1,8 @@
-package org.deku.leoz.messaging.log
+package org.deku.leoz.log
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.messaging.MessagingContext
+import org.deku.leoz.config.MessagingConfiguration
 import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener
 import sx.jms.converters.DefaultConverter
@@ -21,7 +21,7 @@ import java.time.ZoneId
  */
 class LogListener(
         /** Messaging context */
-        private val messagingContext: MessagingContext) : SpringJmsListener(messagingContext.broker.connectionFactory), Handler<Array<LogMessage>> {
+        private val messagingConfiguration: MessagingConfiguration) : SpringJmsListener(messagingConfiguration.broker.connectionFactory), Handler<Array<LogMessage>> {
 
     init {
         this.converter = DefaultConverter(
@@ -32,7 +32,7 @@ class LogListener(
     }
 
     override fun createDestination(): Destination {
-        return messagingContext.centralLogQueue
+        return messagingConfiguration.centralLogQueue
     }
 
     override fun onMessage(message: Array<LogMessage>, jmsMessage: Message, session: Session) {

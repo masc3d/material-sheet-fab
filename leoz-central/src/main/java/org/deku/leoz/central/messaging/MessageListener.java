@@ -1,6 +1,6 @@
 package org.deku.leoz.central.messaging;
 
-import org.deku.leoz.messaging.MessagingContext;
+import org.deku.leoz.config.MessagingConfiguration;
 import sx.jms.listeners.SpringJmsListener;
 import sx.jms.converters.DefaultConverter;
 
@@ -11,24 +11,24 @@ import javax.jms.Destination;
  */
 public class MessageListener extends SpringJmsListener {
     /** Application identity */
-    MessagingContext mMessagingContext;
+    MessagingConfiguration mMessagingConfiguration;
 
     /**
      * c'tor
-     * @param messagingContext
+     * @param messagingConfiguration
      */
-    public MessageListener(MessagingContext messagingContext) {
-        super(messagingContext.getBroker().getConnectionFactory());
+    public MessageListener(MessagingConfiguration messagingConfiguration) {
+        super(messagingConfiguration.getBroker().getConnectionFactory());
 
         this.setConverter(new DefaultConverter(
                 DefaultConverter.SerializationType.KRYO,
                 DefaultConverter.CompressionType.GZIP));
 
-        mMessagingContext = messagingContext;
+        mMessagingConfiguration = messagingConfiguration;
     }
 
     @Override
     protected Destination createDestination() {
-        return mMessagingContext.getCentralQueue();
+        return mMessagingConfiguration.getCentralQueue();
     }
 }

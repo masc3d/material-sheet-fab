@@ -16,6 +16,7 @@ import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.boot.config.StorageConfiguration
 import org.deku.leoz.boot.fx.ResizeHelper
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleRepositoryFactory
@@ -68,20 +69,20 @@ class Application : javafx.application.Application() {
         private set
 
     fun selfInstall() {
-        if (LocalStorage.nativeBundleBasePath == null)
+        if (StorageConfiguration.nativeBundleBasePath == null)
             return
 
-        val nativeBundlePath = LocalStorage.nativeBundleBasePath!!
+        val nativeBundlePath = StorageConfiguration.nativeBundleBasePath!!
         log.info(nativeBundlePath)
 
-        if (nativeBundlePath.parentFile.equals(LocalStorage.bundlesDirectory))
+        if (nativeBundlePath.parentFile.equals(StorageConfiguration.bundlesDirectory))
             return
 
         log.info("Performing self verification")
         Bundle.load(nativeBundlePath).verify()
 
         val srcPath = nativeBundlePath
-        val destPath = File(LocalStorage.bundlesDirectory, Bundles.LEOZ_BOOT)
+        val destPath = File(StorageConfiguration.bundlesDirectory, Bundles.LEOZ_BOOT)
 
         val rc = RsyncClient()
         rc.source = Rsync.URI(srcPath)

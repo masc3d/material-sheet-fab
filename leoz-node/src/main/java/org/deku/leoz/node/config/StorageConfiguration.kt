@@ -1,9 +1,10 @@
-package org.deku.leoz.node
+package org.deku.leoz.node.config
 
 import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.node.App
 import java.io.File
 import java.nio.file.FileSystem
 import java.nio.file.FileSystems
@@ -16,7 +17,7 @@ import java.util.*
  * Local Storage
  * Created by masc on 26.06.15.
  */
-class LocalStorage(appName: String) : org.deku.leoz.LocalStorage(appName) {
+class StorageConfiguration(appName: String) : org.deku.leoz.config.StorageConfiguration(appName) {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     // Directories
@@ -46,6 +47,6 @@ class LocalStorage(appName: String) : org.deku.leoz.LocalStorage(appName) {
 
     companion object {
         /** Java instance access. $INSTANCE doesn't seem to work with JPA annotation processor */
-        @JvmStatic val instance = LocalStorage(App.instance().name)
+        @JvmStatic val instance = StorageConfiguration(App.instance().name)
     }
 }

@@ -6,6 +6,7 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.JarManifest
 import org.deku.leoz.node.config.IdentityConfiguration
 import org.deku.leoz.node.config.LogConfiguration
+import org.deku.leoz.node.config.StorageConfiguration
 import org.springframework.beans.BeansException
 import org.springframework.boot.ExitCodeGenerator
 import org.springframework.boot.SpringApplication
@@ -130,7 +131,7 @@ open class App :
 
             // Add local home configuration
             try {
-                configLocations.add(URL("file:" + LocalStorage.instance.applicationConfigurationFile.toString()))
+                configLocations.add(URL("file:" + StorageConfiguration.instance.applicationConfigurationFile.toString()))
             } catch (e: MalformedURLException) {
                 log.error(e.getMessage(), e)
             }

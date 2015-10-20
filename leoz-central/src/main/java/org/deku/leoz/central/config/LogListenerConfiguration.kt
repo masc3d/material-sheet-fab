@@ -2,8 +2,8 @@ package org.deku.leoz.central.config
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.messaging.activemq.ActiveMQContext
-import org.deku.leoz.messaging.log.LogListener
+import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.log.LogListener
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.embedded.Broker
@@ -25,7 +25,7 @@ open class LogListenerConfiguration {
     private val logListener: LogListener
 
     init {
-        logListener = LogListener(ActiveMQContext.instance)
+        logListener = LogListener(ActiveMQConfiguration.instance)
     }
 
     private val brokerEventListener = object : Broker.EventListener {

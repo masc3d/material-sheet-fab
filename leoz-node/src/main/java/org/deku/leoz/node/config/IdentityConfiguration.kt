@@ -2,9 +2,9 @@ package org.deku.leoz.node.config
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.messaging.activemq.ActiveMQContext
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.node.LocalStorage
+import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.node.SystemInformation
 import org.deku.leoz.node.auth.Authorizer
 import org.deku.leoz.node.auth.Identity
@@ -54,7 +54,7 @@ open class IdentityConfiguration {
         log.info(systemInformation)
 
         // Verify and read existing identity file
-        val identityFile = LocalStorage.instance.identityConfigurationFile
+        val identityFile = StorageConfiguration.instance.identityConfigurationFile
         if (identityFile.exists()) {
             try {
                 identity = Identity.createFromFile(systemInformation, identityFile)
@@ -79,7 +79,7 @@ open class IdentityConfiguration {
 
         // Start authorizer (on client nodes only)
         if (App.instance().profile == App.PROFILE_CLIENT_NODE) {
-            authorizer = Authorizer(ActiveMQContext.instance)
+            authorizer = Authorizer(ActiveMQConfiguration.instance)
             authorizer.start(identity)
         }
 

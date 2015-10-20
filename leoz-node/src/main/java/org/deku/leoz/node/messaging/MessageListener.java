@@ -1,6 +1,6 @@
 package org.deku.leoz.node.messaging;
 
-import org.deku.leoz.messaging.MessagingContext;
+import org.deku.leoz.config.MessagingConfiguration;
 import org.deku.leoz.node.auth.Identity;
 import sx.jms.converters.DefaultConverter;
 import sx.jms.listeners.SpringJmsListener;
@@ -15,25 +15,25 @@ import javax.jms.Destination;
 public class MessageListener extends SpringJmsListener {
     /** Application identity */
     Identity mIdentity;
-    MessagingContext mMessagingContext;
+    MessagingConfiguration mMessagingConfiguration;
 
     /**
      * c'tor
-     * @param messagingContext
+     * @param messagingConfiguration
      */
-    public MessageListener(MessagingContext messagingContext, Identity identity) {
-        super(messagingContext.getBroker().getConnectionFactory());
+    public MessageListener(MessagingConfiguration messagingConfiguration, Identity identity) {
+        super(messagingConfiguration.getBroker().getConnectionFactory());
 
         this.setConverter(new DefaultConverter(
                 DefaultConverter.SerializationType.KRYO,
                 DefaultConverter.CompressionType.GZIP));
 
         mIdentity = identity;
-        mMessagingContext = messagingContext;
+        mMessagingConfiguration = messagingConfiguration;
     }
 
     @Override
     protected Destination createDestination() {
-        return mMessagingContext.getNodeQueue(mIdentity.getId());
+        return mMessagingConfiguration.nodeQueue(mIdentity.getId());
     }
 }

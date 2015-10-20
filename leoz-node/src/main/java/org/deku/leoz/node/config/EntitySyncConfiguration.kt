@@ -2,7 +2,7 @@ package org.deku.leoz.node.config
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.messaging.activemq.ActiveMQContext
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.entities.master.*
@@ -60,7 +60,7 @@ open class EntitySyncConfiguration {
             brokerEventListener.onStart()
 
         // Entity sync consumer
-        this.entityConsumer = EntityConsumer(ActiveMQContext.instance, this.entityManagerFactory)
+        this.entityConsumer = EntityConsumer(ActiveMQConfiguration.instance, this.entityManagerFactory)
     }
 
     @PreDestroy

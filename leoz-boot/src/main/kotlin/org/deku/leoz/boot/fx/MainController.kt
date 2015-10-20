@@ -11,8 +11,8 @@ import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import javafx.scene.text.TextFlow
 import org.deku.leoz.boot.Application
-import org.deku.leoz.boot.LocalStorage
-import org.deku.leoz.boot.LogConfiguration
+import org.deku.leoz.boot.config.StorageConfiguration
+import org.deku.leoz.boot.config.LogConfiguration
 import org.deku.leoz.bundle.*
 import org.slf4j.LoggerFactory
 import sx.fx.TextAreaLogAppender
@@ -60,7 +60,7 @@ class MainController : Initializable {
 
                 // TODO: move installation logic from controller to bundle installer
                 val installer = BundleInstaller(
-                        LocalStorage.bundlesDirectory,
+                        StorageConfiguration.bundlesDirectory,
                         bundleName,
                         BundleRepositoryFactory.stagingRepository())
 

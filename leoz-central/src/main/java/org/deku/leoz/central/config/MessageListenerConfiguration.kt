@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.data.repositories.NodeRepository
 import org.deku.leoz.central.messaging.handler.IdentityMessageHandler
 import org.deku.leoz.central.messaging.MessageListener
-import org.deku.leoz.messaging.activemq.ActiveMQContext
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.messaging.auth.v1.IdentityMessage
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -33,7 +33,7 @@ open class MessageListenerConfiguration {
 
     init {
         // Configure and create listener
-        messageListener = MessageListener(ActiveMQContext.instance)
+        messageListener = MessageListener(ActiveMQConfiguration.instance)
     }
 
     /**
@@ -55,7 +55,7 @@ open class MessageListenerConfiguration {
     private fun startIfReady() {
         this.stop()
 
-        if (ActiveMQContext.instance.broker.isStarted) {
+        if (ActiveMQConfiguration.instance.broker.isStarted) {
 
             // Add message handler delegatess
             messageListener.addDelegate(IdentityMessage::class.java,

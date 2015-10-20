@@ -3,7 +3,7 @@ package org.deku.leoz.node.config
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.apache.http.client.utils.URIBuilder
-import org.deku.leoz.node.LocalStorage
+import org.deku.leoz.node.config.StorageConfiguration
 import org.h2.jdbc.JdbcConnection
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
@@ -60,7 +60,7 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
         // Base URI
         val baseUri: String
         if (!IN_MEMORY) {
-            baseUri = "jdbc:h2:file:" + LocalStorage.instance.h2DatabaseFile
+            baseUri = "jdbc:h2:file:" + StorageConfiguration.instance.h2DatabaseFile
         } else {
             baseUri = "jdbc:h2:mem:db1"
         }

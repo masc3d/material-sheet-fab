@@ -8,9 +8,9 @@ import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.messaging.activemq.ActiveMQContext
-import org.deku.leoz.messaging.log.LogAppender
-import org.deku.leoz.node.LocalStorage
+import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.log.LogAppender
+import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
 import sx.Disposable
 
@@ -18,7 +18,7 @@ import sx.Disposable
  * Log configuration
  * Created by masc on 24-Jul-15.
  */
-open class LogConfiguration : org.deku.leoz.LogConfiguration() {
+open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     companion object Singleton {
@@ -39,7 +39,7 @@ open class LogConfiguration : org.deku.leoz.LogConfiguration() {
             if (value) {
                 if (this.jmsLogAppender == null) {
                     // Setup message log appender
-                    this.jmsLogAppender = LogAppender(ActiveMQContext.instance)
+                    this.jmsLogAppender = LogAppender(ActiveMQConfiguration.instance)
                     this.jmsLogAppender!!.context = loggerContext
                 }
             } else {
@@ -52,7 +52,7 @@ open class LogConfiguration : org.deku.leoz.LogConfiguration() {
         }
 
     init {
-        this.logFile = LocalStorage.instance.logFile
+        this.logFile = StorageConfiguration.instance.logFile
     }
 
     /**

@@ -2,9 +2,9 @@ package org.deku.leoz.node.auth;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.messaging.MessagingContext;
-import org.deku.leoz.messaging.activemq.ActiveMQContext;
-import org.deku.leoz.node.LocalStorage;
+import org.deku.leoz.config.MessagingConfiguration;
+import org.deku.leoz.config.ActiveMQConfiguration;
+import org.deku.leoz.node.config.StorageConfiguration;
 import org.deku.leoz.node.messaging.auth.IdentityPublisher;
 import org.deku.leoz.node.messaging.auth.v1.AuthorizationMessage;
 import sx.Disposable;
@@ -23,7 +23,7 @@ public class Authorizer implements Disposable {
     Log mLog = LogFactory.getLog(this.getClass());
 
     /** Messaging context */
-    private MessagingContext mMessagingContext;
+    private MessagingConfiguration mMessagingConfiguration;
     /** Executor service for authorization task */
     private ExecutorService mExecutorService;
     /** Authorization task */
@@ -42,8 +42,8 @@ public class Authorizer implements Disposable {
         }
     };
 
-    public Authorizer(MessagingContext messagingContext) {
-        mMessagingContext = messagingContext;
+    public Authorizer(MessagingConfiguration messagingConfiguration) {
+        mMessagingConfiguration = messagingConfiguration;
         mExecutorService = Executors.newSingleThreadExecutor();
     }
 
@@ -58,7 +58,7 @@ public class Authorizer implements Disposable {
             boolean success = false;
             while (!success && !mExecutorService.isShutdown()) {
                 try {
-                    IdentityPublisher isc = new IdentityPublisher(ActiveMQContext.getInstance());
+                    IdentityPublisher isc = new IdentityPublisher(ActiveMQConfiguration.getInstance());
 
                     if (identity.hasId()) {
                         // Simply publish id
@@ -73,7 +73,7 @@ public class Authorizer implements Disposable {
                         // Set id based on response and store identity
                         mLog.info(String.format("Received authorization update [%s]", authorizationMessage));
                         identity.setId(authorizationMessage.getId());
-                        identity.store(LocalStorage.getInstance().getIdentityConfigurationFile());
+                        identity.store(StorageConfiguration.getInstance().getIdentityConfigurationFile());
                     }
                     success = true;
                 } catch (TimeoutException e) {
@@ -100,8 +100,8 @@ public class Authorizer implements Disposable {
         };
 
         // Register broker event
-        mMessagingContext.getBroker().getDelegate().add(mBrokerEventListener);
-        if (mMessagingContext.getBroker().isStarted())
+        mMessagingConfiguration.getBroker().getDelegate().add(mBrokerEventListener);
+        if (mMessagingConfiguration.getBroker().isStarted())
             mExecutorService.submit(mAuthorizationTask);
     }
 

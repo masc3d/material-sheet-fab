@@ -1,4 +1,4 @@
-package org.deku.leoz
+package org.deku.leoz.config
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
@@ -10,8 +10,8 @@ import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.messaging.activemq.ActiveMQContext
-import org.deku.leoz.messaging.log.LogAppender
+import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.log.LogAppender
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import java.io.File

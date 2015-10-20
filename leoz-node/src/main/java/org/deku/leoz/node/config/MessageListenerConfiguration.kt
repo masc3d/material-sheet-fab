@@ -2,7 +2,7 @@ package org.deku.leoz.node.config
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.messaging.activemq.ActiveMQContext
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.auth.Identity
 import org.deku.leoz.node.messaging.MessageListener
@@ -41,7 +41,7 @@ open class MessageListenerConfiguration {
 
         // Configure and create listener
         messageListener = MessageListener(
-                ActiveMQContext.instance,
+                ActiveMQConfiguration.instance,
                 identityConfiguration.identity)
 
         // Register event listeners
@@ -83,7 +83,7 @@ open class MessageListenerConfiguration {
      * @return
      */
     private val isReadyToStart: Boolean
-        get() = ActiveMQContext.instance.broker.isStarted && identityConfiguration.identity.id != null
+        get() = ActiveMQConfiguration.instance.broker.isStarted && identityConfiguration.identity.id != null
 
     /**
      * Start message listener

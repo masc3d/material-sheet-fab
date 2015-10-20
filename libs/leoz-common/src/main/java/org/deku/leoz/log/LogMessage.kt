@@ -1,4 +1,4 @@
-package org.deku.leoz.messaging.log
+package org.deku.leoz.log
 
 import ch.qos.logback.classic.spi.LoggingEvent
 import org.slf4j.helpers.MessageFormatter

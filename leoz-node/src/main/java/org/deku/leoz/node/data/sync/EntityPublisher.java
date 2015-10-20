@@ -3,8 +3,8 @@ package org.deku.leoz.node.data.sync;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.messaging.MessagingContext;
-import org.deku.leoz.messaging.activemq.ActiveMQContext;
+import org.deku.leoz.config.MessagingConfiguration;
+import org.deku.leoz.config.ActiveMQConfiguration;
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage;
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage;
 import org.eclipse.persistence.queries.ScrollableCursor;
@@ -16,6 +16,7 @@ import javax.jms.*;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -29,7 +30,7 @@ import java.util.function.Function;
 public class EntityPublisher extends SpringJmsListener {
     private Log mLog = LogFactory.getLog(this.getClass());
     /** Messaging context */
-    private MessagingContext mMessagingContext;
+    private MessagingConfiguration mMessagingConfiguration;
     /** Entity manager factory */
     private EntityManagerFactory mEntityManagerFactory;
     /** Message converter */
@@ -37,12 +38,12 @@ public class EntityPublisher extends SpringJmsListener {
 
     /**
      * c'tor
-     * @param messagingContext
+     * @param messagingConfiguration
      * @param entityManagerFactory
      */
-    public EntityPublisher(MessagingContext messagingContext, EntityManagerFactory entityManagerFactory) {
-        super(messagingContext.getBroker().getConnectionFactory());
-        mMessagingContext = messagingContext;
+    public EntityPublisher(MessagingConfiguration messagingConfiguration, EntityManagerFactory entityManagerFactory) {
+        super(messagingConfiguration.getBroker().getConnectionFactory());
+        mMessagingConfiguration = messagingConfiguration;
         mEntityManagerFactory = entityManagerFactory;
         mConverter = this.createMessageConverter();
 
@@ -61,7 +62,7 @@ public class EntityPublisher extends SpringJmsListener {
 
     @Override
     protected Destination createDestination() {
-        return mMessagingContext.getCentralEntitySyncQueue();
+        return mMessagingConfiguration.getCentralEntitySyncQueue();
     }
 
     /**
@@ -71,12 +72,12 @@ public class EntityPublisher extends SpringJmsListener {
      */
     public void publish(Class entityType, Timestamp timestamp) throws JMSException {
         Channel mc = new Channel(
-                ActiveMQContext.getInstance().getBroker().getConnectionFactory(),
-                ActiveMQContext.getInstance().getNodeNotificationTopic(),
+                ActiveMQConfiguration.getInstance().getBroker().getConnectionFactory(),
+                ActiveMQConfiguration.getInstance().getNodeNotificationTopic(),
                 this.createMessageConverter(),
                 false,
-                DeliveryMode.NON_PERSISTENT,
-                TimeUnit.MINUTES.toMillis(5));
+                Channel.DeliveryMode.NonPersistent,
+                Duration.ofMinutes(5));
 
         mc.send(new EntityStateMessage(entityType, timestamp));
 

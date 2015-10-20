@@ -1,4 +1,4 @@
-package org.deku.leoz
+package org.deku.leoz.config
 
 import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
@@ -17,7 +17,7 @@ import kotlin.properties.Delegates
  * Local Storage
  * Created by masc on 26.06.15.
  */
-abstract class LocalStorage(
+abstract class StorageConfiguration(
         /** Base name for process specific files/directories */
         val appName: String) {
     private var log: Log = LogFactory.getLog(this.javaClass)
