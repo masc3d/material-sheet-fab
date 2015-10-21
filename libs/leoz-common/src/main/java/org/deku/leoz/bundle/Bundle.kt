@@ -15,6 +15,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import java.util.function.BiPredicate
+import java.util.regex.Pattern
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller
 import javax.xml.bind.annotation.XmlAttribute
@@ -23,6 +24,8 @@ import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
 import kotlin.properties.Delegates
 import kotlin.text.Regex
+
+
 
 /**
  * Represents a local/physical leoz bundle including a manifest containing metadata
@@ -485,4 +488,22 @@ class Bundle : Serializable {
             throw e
         }
     }
+}
+
+// Extension methods
+
+/**
+ * Extension method for filtering an iterable of versions
+ * @param pattern Pattern to match
+ */
+fun Iterable<Bundle.Version>.filter(pattern: String): Iterable<Bundle.Version> {
+    val l = pattern
+            // Split by wildcard (+) including empty elements
+            .split(Regex("\\+"), 0)
+            // Replace with regex wildcard and quote content
+            .map { p -> if (p.length() > 0) Pattern.quote(p) else ".+" }
+
+    val re = Regex("^" + l.joinToString("") + "$")
+
+    return this.filter { v -> re.matches(v.toString()) }
 }
