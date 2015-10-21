@@ -413,6 +413,17 @@ class PackagerReleaseNativeBundleTask extends PackagerReleaseTask {
             into releasePlatformPath
         }
 
+        // TODO: workaround for bug in jdk 1.8.0_60, where jars are not picked up when building bundle
+        // Jars are already missing in packager bundle dir. This worked fine with jdk 1.8.0_51
+        if (SystemUtils.IS_OS_MAC_OSX) {
+            def releaseBundleJarPath = this.getReleaseBundle(PlatformId.current()).jarPath
+            println "Copying jars -> [${releaseBundleJarPath}]"
+            project.copy {
+                from this.getProjectJars()
+                into releaseBundleJarPath
+            }
+        }
+
         this.copySupplementalPlatformDirs(PlatformId.current())
 
         println "Creating bundle manifest"
@@ -439,19 +450,15 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
 
             def File releasePlatformPath = it.toFile()
             def PlatformId platformId = PlatformId.parse(releasePlatformPath.name)
-            def releaseBundle = this.getReleaseBundle(platformId)
+            def releaseBundle = Bundle.load(this.getReleasePlatformBundlePath(platformId))
 
-            // Update packager configuration file (main jar name, class path, start class)
-            println("Updating bundle configuration")
-            def bundleConfig = releaseBundle.configuration
-            bundleConfig.appMainJar = this.getMainJar().getName()
-            bundleConfig.appVersion = project.version
-            bundleConfig.appClassPath = this.getProjectJars().stream().map { it.getName() }.collect()
-            bundleConfig.save()
+            // Kava version check here to prevent updating jars of a native bundle built with a different version
+            if (!releaseBundle.javaVersion.equals(SystemUtils.JAVA_VERSION))
+                throw new IllegalStateException("Java version of bundle [${releaseBundle}] does not match currently active java version [${SystemUtils.JAVA_VERSION}]")
 
             println "Releasing jars and binaries for [${platformId}]"
 
-            def releaseBundleJarPath = this.getReleaseBundle(platformId).jarPath
+            def releaseBundleJarPath = releaseBundle.jarPath
 
             println "Jar destination path [${releaseBundleJarPath}]"
 
@@ -473,6 +480,14 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
             }
 
             this.copySupplementalPlatformDirs(platformId)
+
+            // Update packager configuration file (main jar name, class path, start class)
+            println("Updating bundle configuration")
+            def bundleConfig = releaseBundle.configuration
+            bundleConfig.appMainJar = this.getMainJar().getName()
+            bundleConfig.appVersion = project.version
+            bundleConfig.appClassPath = this.getProjectJars().stream().map { it.getName() }.collect()
+            bundleConfig.save()
 
             println "Creating bundle manifest"
             Bundle.create(
@@ -563,7 +578,8 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
                 def RevCommit currentCommit = walk.parseCommit(repo.getRef(repo.branch).objectId)
 
                 if (this.extension.checkRepository && !currentCommit.name.equals(tagCommit.name))
-                    throw new IllegalStateException("Release tag [${tagName}] already exists for [${tagCommit.name}] but current branch is on different rev [${currentCommit.name}]")
+                    throw new IllegalStateException("Release tag [${tagName}] already exists for [${tagCommit.name}] but current branch is on different rev [${currentCommit.name}]. " +
+                            "If you intend to change the java version for this release, please manually remove (old) platform bundles not matching this java version.")
             } else {
                 println "Creating tag [${tagName}]"
                 def tc = git.tag()
