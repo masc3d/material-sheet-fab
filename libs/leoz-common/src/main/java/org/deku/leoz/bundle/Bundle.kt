@@ -30,46 +30,53 @@ import kotlin.text.Regex
  */
 @XmlRootElement
 class Bundle : Serializable {
-
     private val log = LogFactory.getLog(this.javaClass)
 
+    /** Bundle path */
     var path: File? = null
         private set
 
+    /** Bundle name */
     @XmlAttribute
     var name: String? = null
         private set
 
+    /** Bundle version */
     @XmlAttribute
     @XmlJavaTypeAdapter(Bundle.Version.XmlAdapter::class)
     var version: Bundle.Version? = null
         private set
 
+    /** Bundle platform identifier */
     @XmlAttribute
     @XmlJavaTypeAdapter(PlatformId.XmlAdapter::class)
     var platform: PlatformId? = null
         private set
 
+    /** File entries */
     @XmlElement(name = "file")
-            /** File entries */
     var fileEntries: List<Bundle.FileEntry> = ArrayList()
         private set
 
+    /** Java version */
     @XmlAttribute
     var javaVersion: String = SystemUtils.JAVA_VERSION
         private set
 
+    /**
+     * @param path Bundle path
+     * @param name Bundle name
+     * @param version Bundle version
+     * @param platform Platform identifier
+     * @param fileEntries File entries contained in this bundle
+     * @param javaVersion Java version
+     */
     @JvmOverloads constructor(
-            /** Bundle path */
             path: File? = null,
-            /** Name */
             name: String? = null,
-            /** Version */
             version: Bundle.Version? = null,
             platform: PlatformId? = null,
-            /** File entries */
             fileEntries: List<Bundle.FileEntry> = ArrayList(),
-            /** Java version */
             javaVersion: String = SystemUtils.JAVA_VERSION) {
         this.path = path
         this.name = name
@@ -256,12 +263,17 @@ class Bundle : Serializable {
 
     /**
      * Bundle version
-     * @property components Numeric version components
-     * @property suffix An optional version suffix
+     * @param components Numeric version components
+     * @param suffix An optional version suffix
      * Created by masc on 24.08.15.
      */
-    data class Version(val components: List<Int>, val suffix: String) : Comparable<Version>, Serializable {
-        /** Adapter for xml serialization */
+    data class Version(
+            val components: List<Int>,
+            val suffix: String
+    ) : Comparable<Version>, Serializable {
+        /**
+         * Adapter for xml serialization
+         * */
         class XmlAdapter : javax.xml.bind.annotation.adapters.XmlAdapter<String, Version>() {
             override fun marshal(v: Version?): String? {
                 return v.toString()
@@ -372,6 +384,7 @@ class Bundle : Serializable {
                 entryMap.set(KEY_APP_MAINJAR, value)
             }
 
+        /** Application version */
         var appVersion: String
             get() {
                 return entryMap.get(KEY_APP_VERSION) ?: ""
@@ -380,6 +393,7 @@ class Bundle : Serializable {
                 entryMap.set(KEY_APP_VERSION, value)
             }
 
+        /** Application class path */
         var appClassPath: List<String>
             get() {
                 return entryMap.get(KEY_APP_CLASSPATH)?.split(':', ';') ?: ArrayList()
@@ -388,7 +402,10 @@ class Bundle : Serializable {
                 entryMap.set(KEY_APP_CLASSPATH, value.joinToString(";"))
             }
 
-        /** c'tor. loads configuration from file */
+        /**
+         * c'tor.
+         * Loads configuration from file
+         **/
         init {
             val reader = FileReader(this@Bundle.configFile).buffered()
 
@@ -438,7 +455,7 @@ class Bundle : Serializable {
      * Execute bundle process
      * @param args Arguments
      */
-    fun execute(elevate: Boolean = false, vararg args:String) {
+    fun execute(elevate: Boolean = false, vararg args: String) {
         val error = StringBuffer()
 
         val command = ArrayList<String>()
