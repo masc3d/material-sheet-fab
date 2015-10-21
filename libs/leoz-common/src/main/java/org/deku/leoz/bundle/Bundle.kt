@@ -336,6 +336,13 @@ class Bundle : Serializable {
             return if (tSize > oSize) 1 else -1
         }
 
+        /**
+         * Equals implementation
+         */
+        override fun equals(other: Any?): Boolean {
+            return if (other is Version) this.compareTo(other) == 0 else false
+        }
+
         override fun toString(): String {
             return this.components.joinToString(".") +
                     if (this.suffix.length() > 0) "-" + suffix else ""
