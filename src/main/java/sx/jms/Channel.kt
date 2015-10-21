@@ -21,6 +21,7 @@ class Channel
 /**
  * c'tor
  * @param connectionFactory Connection factory used to create session
+ * @param session Existing session
  * @param destination Destination for this channel
  * @param converter Message converter to use
  * @param receiveTimeout Timeout when receiving messages. Defaults to 10 seconds.
@@ -30,7 +31,8 @@ class Channel
  * @param priority JMS message priority
  */
 @JvmOverloads constructor(
-        private val connectionFactory: ConnectionFactory,
+        private val connectionFactory: ConnectionFactory? = null,
+        session: Session? = null,
         private val destination: Destination,
         private val converter: Converter,
         private val receiveTimeout: Duration = Duration.ofSeconds(10),
@@ -51,20 +53,31 @@ class Channel
     }
 
     init {
-        connection.set(fun(): Connection {
+        // Initialize lazy properties
+
+        // JMS connection
+        this.connection.set(fun(): Connection {
+            if (this.connectionFactory == null)
+                throw IllegalStateException("Channel does not have connection factory")
             var cn = connectionFactory.createConnection()
             cn!!.start()
             return cn
         })
 
-        session.set(fun(): Session {
-            val session = connection.get().createSession(this.jmsSessionTransacted, this.jmsDeliveryMode.value)
+        // JMS session
+        this.session.set(fun(): Session {
+            // Return c'tor provided session if applicable
+            if (session != null)
+                return session
+
+            // Create session
             sessionCreated = true
-            return session
+            return connection.get().createSession(this.jmsSessionTransacted, this.jmsDeliveryMode.value)
         })
 
-        consumer.set(fun(): MessageConsumer {
-            return session.get().createConsumer(destination)
+        // JMS consumer
+        this.consumer.set(fun(): MessageConsumer {
+            return this.session.get().createConsumer(destination)
         })
     }
 
@@ -112,6 +125,16 @@ class Channel
                 this.converter.fromMessage(
                         this.consumer.get()
                                 .receive(this.receiveTimeout.toMillis())))
+    }
+
+    /**
+     * Request/response type send and receive
+     * @param request Request message
+     * @param responseType Response class type
+     */
+    fun <T> sendReceive(request: Any, responseType: Class<T>): T {
+        this.send(request)
+        return this.receive(responseType)
     }
 
     /**
