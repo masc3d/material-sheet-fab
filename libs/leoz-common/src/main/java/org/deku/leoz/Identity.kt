@@ -18,9 +18,10 @@ import java.util.Properties
  * @property systemInformation System information
  * Created by masc on 26.06.15.
  */
-class Identity private constructor(id: Int?,
-                                   val key: String?,
-                                   val systemInformation: SystemInformation) {
+class Identity private constructor(
+        id: Int?,
+        val key: String,
+        val systemInformation: SystemInformation) {
 
     //region Event
     interface Listener : sx.event.EventListener {
@@ -32,7 +33,7 @@ class Identity private constructor(id: Int?,
     //endregion
 
     /**
-     * @return The numeric/short id of a node
+     * Id property, emitting event on update
      */
     var id: Int? = null
         @Synchronized set(id: Int?) {
@@ -44,9 +45,6 @@ class Identity private constructor(id: Int?,
      * c'tor
      */
     init {
-        if (Strings.isNullOrEmpty(key))
-            throw IllegalArgumentException("Key cannot be null")
-
         this.id = id
     }
 
@@ -103,7 +101,7 @@ class Identity private constructor(id: Int?,
     }
 
     /**
-     * INdicates if identity has an id
+     * Indicates if identity has an id
      * @return
      */
     fun hasId(): Boolean {
@@ -113,7 +111,6 @@ class Identity private constructor(id: Int?,
     /**
      * Store identity locally
      * @param destination Destination file
-     * *
      * @throws IOException
      */
     @Synchronized
@@ -121,9 +118,8 @@ class Identity private constructor(id: Int?,
         val p = Properties()
 
         if (id != null)
-            p.put(PROP_ID, id!!.toString())
-        if (key != null)
-            p.put(PROP_KEY, key)
+            p.put(PROP_ID, id.toString())
+        p.put(PROP_KEY, key)
 
         val os = FileOutputStream(destination)
         p.store(os, "Identity")
