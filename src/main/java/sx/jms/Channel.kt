@@ -17,20 +17,7 @@ import javax.jms.*
  * Caches session and message consumer/producer.
  * Created by masc on 06.07.15.
  */
-class Channel
-/**
- * c'tor
- * @param connectionFactory Connection factory used to create session
- * @param session Existing session
- * @param destination Destination for this channel
- * @param converter Message converter to use
- * @param receiveTimeout Timeout when receiving messages. Defaults to 10 seconds.
- * @param transacted Session transacted or not
- * @param deliveryMode JMS delivery mode
- * @param ttl JMS message time to live
- * @param priority JMS message priority
- */
-@JvmOverloads constructor(
+class Channel private constructor(
         private val connectionFactory: ConnectionFactory? = null,
         session: Session? = null,
         private val destination: Destination,
@@ -46,6 +33,50 @@ class Channel
     private val session = LazyInstance<Session>()
     private val consumer = LazyInstance<MessageConsumer>()
     private var sessionCreated = false
+
+    /**
+     * c'tor for creating channel using a new connection created via connection factory
+     */
+    @JvmOverloads constructor(connectionFactory: ConnectionFactory,
+                destination: Destination,
+                converter: Converter,
+                receiveTimeout: Duration = Duration.ofSeconds(10),
+                jmsSessionTransacted: Boolean,
+                jmsDeliveryMode: Channel.DeliveryMode,
+                jmsTtl: Duration,
+                jmsPriority: Int? = null) : this(
+            connectionFactory = connectionFactory,
+            session = null,
+            destination = destination,
+            converter = converter,
+            receiveTimeout = receiveTimeout,
+            jmsSessionTransacted = jmsSessionTransacted,
+            jmsDeliveryMode = jmsDeliveryMode,
+            jmsTtl = jmsTtl,
+            jmsPriority = jmsPriority) {
+    }
+
+    /**
+     * c'tor for creating channel using an existing session
+     */
+    @JvmOverloads constructor(session: Session,
+                destination: Destination,
+                converter: Converter,
+                receiveTimeout: Duration = Duration.ofSeconds(10),
+                jmsSessionTransacted: Boolean,
+                jmsDeliveryMode: Channel.DeliveryMode,
+                jmsTtl: Duration,
+                jmsPriority: Int? = null) : this(
+            connectionFactory = null,
+            session = session,
+            destination = destination,
+            converter = converter,
+            receiveTimeout = receiveTimeout,
+            jmsSessionTransacted = jmsSessionTransacted,
+            jmsDeliveryMode = jmsDeliveryMode,
+            jmsTtl = jmsTtl,
+            jmsPriority = jmsPriority) {
+    }
 
     enum class DeliveryMode(val value: Int) {
         NonPersistent(javax.jms.DeliveryMode.NON_PERSISTENT),
