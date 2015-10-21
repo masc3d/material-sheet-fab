@@ -68,7 +68,7 @@ class Identity private constructor(
                         systemInformation.hardwareAddress,
                         systemInformation.networkAddresses.joinToString(", ")).joinToString(";")
 
-                m.update(hashBase.getBytes(Charsets.US_ASCII))
+                m.update(hashBase.toByteArray(Charsets.US_ASCII))
                 val salt = ByteArray(16)
                 sr.nextBytes(salt)
                 m.update(salt)

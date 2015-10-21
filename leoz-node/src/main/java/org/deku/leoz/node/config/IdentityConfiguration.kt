@@ -69,7 +69,7 @@ open class IdentityConfiguration {
 
             // Store updates/created identity
             try {
-                identity!!.store(identityFile)
+                identity.store(identityFile)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
@@ -84,7 +84,7 @@ open class IdentityConfiguration {
         }
 
         this.systemInformation = systemInformation
-        this.identity = identity!!
+        this.identity = identity
     }
 }
 /** c'tor  */
