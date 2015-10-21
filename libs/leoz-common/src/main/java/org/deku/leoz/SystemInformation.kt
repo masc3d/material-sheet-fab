@@ -1,4 +1,4 @@
-package org.deku.leoz.node
+package org.deku.leoz
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.google.common.base.CharMatcher
@@ -93,11 +93,8 @@ class SystemInformation : Serializable {
             if (networkInterface != null) {
                 try {
                     // Hardware address
-                    val hwAddressParts = Lists.newArrayList(*ArrayUtils.toObject(
-                            networkInterface.hardwareAddress))
-
                     // Format hardware address
-                    hardwareAddress = hwAddressParts.map { c -> java.lang.String.format("%02x", c) }.joinToString(":")
+                    hardwareAddress = networkInterface.hardwareAddress.map { c -> java.lang.String.format("%02x", c) }.joinToString(":")
 
                     // Hostname. getHostName()/getCanonicalHostName() as it does connection check/DNS resolve
                     // and may be slow in some scenarios (eg. windows). toString() is good enough and

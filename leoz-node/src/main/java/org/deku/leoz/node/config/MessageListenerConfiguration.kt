@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.node.auth.Identity
+import org.deku.leoz.Identity
 import org.deku.leoz.node.messaging.MessageListener
 import org.deku.leoz.node.messaging.auth.AuthorizationMessageHandler
 import org.deku.leoz.node.messaging.auth.v1.AuthorizationMessage

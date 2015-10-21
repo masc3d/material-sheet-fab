@@ -8,7 +8,7 @@ import java.nio.file.Paths
 /**
  * Created by masc on 21.09.15.
  */
-object StorageConfiguration : StorageConfiguration(Bundles.LEOZ_BOOT) {
+object StorageConfiguration : org.deku.leoz.config.StorageConfiguration(Bundles.LEOZ_BOOT) {
     /** Base path of native bundle.
      * @return Path of bundle or null if path could not be detected
      */

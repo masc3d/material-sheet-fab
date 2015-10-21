@@ -5,9 +5,9 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.StorageConfiguration
-import org.deku.leoz.node.SystemInformation
+import org.deku.leoz.SystemInformation
 import org.deku.leoz.node.auth.Authorizer
-import org.deku.leoz.node.auth.Identity
+import org.deku.leoz.Identity
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.LazyInstance

@@ -2,6 +2,7 @@ package org.deku.leoz.node.auth;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deku.leoz.Identity;
 import org.deku.leoz.config.MessagingConfiguration;
 import org.deku.leoz.config.ActiveMQConfiguration;
 import org.deku.leoz.node.config.StorageConfiguration;

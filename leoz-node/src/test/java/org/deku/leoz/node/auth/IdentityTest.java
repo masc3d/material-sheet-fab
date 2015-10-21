@@ -2,7 +2,8 @@ package org.deku.leoz.node.auth;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.node.SystemInformation;
+import org.deku.leoz.Identity;
+import org.deku.leoz.SystemInformation;
 import org.junit.Test;
 
 /**
@@ -13,7 +14,7 @@ public class IdentityTest {
 
     @Test
     public void testIdentity() {
-        Identity ident = Identity.create(SystemInformation.create());
+        Identity ident = Identity.Companion.create(SystemInformation.create());
         mLog.info(ident);
     }
 }

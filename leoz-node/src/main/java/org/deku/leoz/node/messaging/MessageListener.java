@@ -1,7 +1,7 @@
 package org.deku.leoz.node.messaging;
 
 import org.deku.leoz.config.MessagingConfiguration;
-import org.deku.leoz.node.auth.Identity;
+import org.deku.leoz.Identity;
 import sx.jms.converters.DefaultConverter;
 import sx.jms.listeners.SpringJmsListener;
 
