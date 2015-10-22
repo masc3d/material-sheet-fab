@@ -1,6 +1,5 @@
 package org.deku.leoz
 
-import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
 import java.io.File
 import java.util.jar.JarFile
 import java.util.jar.Manifest
