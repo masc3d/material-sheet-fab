@@ -6,6 +6,11 @@ buildscript {
     repositories {
         mavenCentral()
     }
+
+    ext {
+        // Versions
+        v_activemq = "5.+"
+    }
 }
 
 apply plugin: 'java'
@@ -13,6 +18,15 @@ apply plugin: 'kotlin'
 
 repositories {
     mavenCentral()
+}
+
+configurations {
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
 }
 
 dependencies {
@@ -33,28 +47,32 @@ dependencies {
     compile 'com.jcraft:jsch.agentproxy.jsch:+'
     compile 'com.jcraft:jsch.agentproxy.sshagent:+'
     compile 'com.jcraft:jsch.agentproxy.pageant:+'
-}
 
-def srcdir_import = file("$projectDir/src/import/java")
+
+    // Unused deps required for compilation
+    provided "javax.ws.rs:javax.ws.rs-api:2.+"
+    provided "ch.qos.logback:logback-classic:+"
+    provided "javax.servlet:javax.servlet-api:+"
+    provided "org.apache.activemq:activemq-broker:$v_activemq"
+    provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
+    provided "org.apache.activemq:activemq-leveldb-store:$v_activemq"
+    provided "org.apache.activemq:activemq-jms-pool:$v_activemq"
+    provided "org.apache.activemq:activemq-jaas:$v_activemq"
+    provided "org.apache.activemq:activemq-mqtt:$v_activemq"
+    provided("org.apache.activemq:activemq-http:$v_activemq") {
+        exclude group: 'org.springframework'
+        exclude group: 'org.apache.activemq', module: 'activemq-spring'
+        exclude group: 'org.eclipse.jetty.aggregate'
+    }
+    provided 'org.springframework:spring-jms:4.+'
+    provided 'com.esotericsoftware:kryo:3.+'
+    provided 'org.xerial.snappy:snappy-java:+'
+    provided "com.wordnik:swagger-annotations:+"
+
+}
 
 sourceSets {
-    main.java.srcDirs += srcdir_import
     main.java.srcDirs += 'src/main/kotlin'
+    main.java.srcDirs += '../libs/sx-common/src/main/java'
+    main.java.srcDirs += '../libs/leoz-common/src/main/java'
 }
-
-// Task for importing classes from other projects
-task syncClasses(type: Sync) {
-    from '../libs/leoz-common/src/main/java', '../libs/sx-common/src/main/java'
-    into srcdir_import
-    include '**/bundle/**', '**/rsync/**', '**/system/**', '**/ProcessExecutor*', '**/Disposable*/', '**/EmbeddedExecutable*/', '**/Action*/', '**/platform/**', '**/Bundle'
-    includeEmptyDirs = false
-}
-
-// Clean build directory if class sync task performed action
-tasks.syncClasses.doLast {
-    new File(project.projectDir, 'build').deleteDir()
-}
-
-// Copy classes before compilation
-compileJava.dependsOn(syncClasses)
-compileKotlin.dependsOn(syncClasses)
