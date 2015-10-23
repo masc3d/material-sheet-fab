@@ -26,7 +26,7 @@ import java.util.function.Supplier
         EntitySyncConfiguration::class,
         DatabaseSyncConfiguration::class,
         MessageListenerConfiguration::class)
-class Main : org.deku.leoz.node.Main() {
+open class Main : org.deku.leoz.node.Main() {
     companion object {
         private val log = LogFactory.getLog(Main::class.java)
 
