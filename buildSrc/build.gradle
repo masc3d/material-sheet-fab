@@ -75,6 +75,35 @@ dependencies {
 
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
-    main.java.srcDirs += '../libs/sx-common/src/main/java'
-    main.java.srcDirs += '../libs/leoz-common/src/main/java'
+
+    // See workaround below
+    //main.java.srcDirs += '../libs/sx-common/src/main/java'
+    //main.java.srcDirs += '../libs/leoz-common/src/main/java'
 }
+
+// TODO: workaround for intellij's inability of having sources outside the content root of a module
+// https://youtrack.jetbrains.com/issue/IDEA-122577
+// TODO: remove as soon as fix is released in IntelliJ 15.1
+def srcdir_import = file("$projectDir/src/import/java")
+
+sourceSets {
+    main.java.srcDirs += srcdir_import
+    main.java.srcDirs += 'src/main/kotlin'
+}
+
+// Task for importing classes from other projects
+task syncClasses(type: Sync) {
+    from '../libs/leoz-common/src/main/java', '../libs/sx-common/src/main/java'
+    into srcdir_import
+    //include '**/bundle/**', '**/rsync/**', '**/system/**', '**/ProcessExecutor*', '**/Disposable*/', '**/EmbeddedExecutable*/', '**/Action*/', '**/platform/**', '**/Bundle'
+    includeEmptyDirs = false
+}
+
+// Clean build directory if class sync task performed action
+tasks.syncClasses.doLast {
+    new File(project.projectDir, 'build').deleteDir()
+}
+
+// Copy classes before compilation
+compileJava.dependsOn(syncClasses)
+compileKotlin.dependsOn(syncClasses)
