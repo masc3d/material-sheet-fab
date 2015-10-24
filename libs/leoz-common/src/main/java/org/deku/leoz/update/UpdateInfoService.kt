@@ -8,7 +8,7 @@ import javax.jms.Message
 import javax.jms.Session
 
 /**
- * Bundle update provider service
+ * Update info service, providing version pattern information to clients
  * Created by masc on 19.10.15.
  */
 class UpdateInfoService : Handler<UpdateInfoRequest> {
@@ -17,7 +17,8 @@ class UpdateInfoService : Handler<UpdateInfoRequest> {
             DefaultConverter.CompressionType.NONE)
 
     override fun onMessage(updateInfoRequest: UpdateInfoRequest, jmsMessage: Message, session: Session) {
-        // Query bundle name/version against db
+        // TODO: Query bundle name/version against db
+        val versionPattern = "*RELEASE"
 
         val channel = Channel(
                 session = session,
@@ -29,6 +30,6 @@ class UpdateInfoService : Handler<UpdateInfoRequest> {
 
         channel.send(UpdateInfo(
                 updateInfoRequest.bundleName,
-                ""))
+                versionPattern))
     }
 }

@@ -26,6 +26,9 @@ import sx.jms.embedded.activemq.ActiveMQBroker
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
+import java.nio.channels.FileChannel
+import java.nio.channels.FileLock
+import java.nio.file.StandardOpenOption
 import java.util.ArrayList
 import java.util.Collections
 import java.util.function.Supplier
@@ -97,6 +100,8 @@ open class App :
         JarManifest(this.javaClass)
     })
 
+    private var bundlePathLock: FileLock by Delegates.notNull()
+
     /**
      * Intialize application
      * @param profile Spring profile name
@@ -106,6 +111,13 @@ open class App :
         if (isInitialized)
             throw IllegalStateException("Application already initialized")
         isInitialized = true
+
+        // Acquire lock on bundle path
+        val bundlePath = StorageConfiguration.instance.bundleLockFile
+        log.info("Acquiring lock on bundle path [${bundlePath}]")
+        this.bundlePathLock = FileChannel
+                .open(bundlePath.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)
+                .lock()
 
         this.profile = profile
 

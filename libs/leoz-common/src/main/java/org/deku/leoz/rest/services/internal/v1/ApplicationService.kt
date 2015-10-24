@@ -24,4 +24,9 @@ interface ApplicationService {
     @Path("/version")
     @ApiOperation(value = "Get application version", response = String::class)
     fun getVersion(): ApplicationVersion
+
+    @GET
+    @Path("/restart")
+    @ApiOperation(value = "Restart application")
+    fun restart()
 }

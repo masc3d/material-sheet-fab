@@ -456,7 +456,7 @@ class Bundle : Serializable {
      * Execute bundle process
      * @param args Arguments
      */
-    fun execute(elevate: Boolean = false, vararg args: String) {
+    fun execute(elevate: Boolean = false, wait: Boolean = true, vararg args: String) {
         val error = StringBuffer()
 
         val command = ArrayList<String>()
@@ -474,16 +474,20 @@ class Bundle : Serializable {
         command.addAll(args)
 
         val pb = ProcessBuilder(command)
-        val pe = ProcessExecutor(pb, errorHandler = ProcessExecutor.DefaultStreamHandler(
-                trim = true,
-                omitEmptyLines = true,
-                collectInto = error))
-        pe.start()
-        try {
-            pe.waitFor()
-        } catch(e: Exception) {
-            if (error.length > 0) log.error(error.toString())
-            throw e
+        if (wait) {
+            val pe = ProcessExecutor(pb, errorHandler = ProcessExecutor.DefaultStreamHandler(
+                    trim = true,
+                    omitEmptyLines = true,
+                    collectInto = error))
+            pe.start()
+            try {
+                pe.waitFor()
+            } catch(e: Exception) {
+                if (error.length > 0) log.error(error.toString())
+                throw e
+            }
+        } else {
+            pb.start()
         }
     }
 }

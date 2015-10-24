@@ -1,6 +1,8 @@
 package org.deku.leoz.node.rest.services.internal.v1
 
+import org.deku.leoz.Boot
 import org.deku.leoz.node.App
+import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
 import sx.rs.ApiKey
 import java.io.File
@@ -20,6 +22,11 @@ import javax.ws.rs.core.MediaType
 @Path("internal/v1/application")
 @Produces(MediaType.APPLICATION_JSON)
 class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationService {
+    override fun restart() {
+        Boot(StorageConfiguration.instance.bundlesDirectory)
+                .boot(App.instance().name)
+    }
+
     override fun getVersion(): ApplicationVersion {
         return ApplicationVersion(
                 App.instance().jarManifest.implementationName,
