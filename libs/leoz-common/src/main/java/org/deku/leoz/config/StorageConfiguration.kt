@@ -11,7 +11,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.attribute.*
 import java.util.*
-import kotlin.properties.Delegates
 
 /**
  * Local Storage
@@ -48,12 +47,32 @@ abstract class StorageConfiguration(
     })
 
     /** Local bundles directory */
-    val bundlesDirectory: File
+    val bundlesDirectory: File by lazy({
+        File(this.baseDirectory, "bundles")
+    })
+
+    /** Run directory, containing runtime related files, eg. bundle lock files */
+    val runDirectory: File by lazy({
+        File(this.baseDirectory, "run")
+    })
+
+    /** Lock file for this application */
+    val bundleLockFile: File by lazy({
+        this.lockFile(this.appName)
+    })
 
     /** Local log file */
     val logFile: File by lazy({
         File(this.logDirectory, "${this.appName}.log")
     })
+
+    /**
+     * Lock file for specific bundle
+     * @param bundleName Bundle name
+     **/
+    fun lockFile(bundleName: String): File {
+        return File(this.runDirectory, bundleName + ".lock")
+    }
 
     /** c'tor */
     init {
@@ -72,7 +91,6 @@ abstract class StorageConfiguration(
 
         this.baseDirectory = File(basePath, baseDirectoryName)
         this.log.info("Home directory [${baseDirectory}]")
-        this.bundlesDirectory = File(this.baseDirectory, "bundles")
 
         var baseDirectory = this.baseDirectory.exists()
         this.baseDirectory.mkdirs()
@@ -97,5 +115,13 @@ abstract class StorageConfiguration(
             }
         }
         this.bundlesDirectory.mkdirs()
+
+        if (!this.bundleLockFile.exists()) {
+            this.bundleLockFile.createNewFile()
+        }
+    }
+
+    protected fun finalize() {
+        log.info("FINALIZED")
     }
 }
