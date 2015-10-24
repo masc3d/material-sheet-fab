@@ -51,7 +51,7 @@ class RsyncServerTest {
         var rsyncServer = RsyncServer(modulePath.toFile(), config)
         rsyncServer.onTermination = { e ->
             if (e != null)
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
         }
         rsyncServer.start()
         rsyncServer.waitFor()

@@ -28,17 +28,19 @@ class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuArch) {
             var id  = identifier.toLowerCase()
 
             val regex = Regex("^([a-z]+)([0-9]{2}?)$")
-            val matchResult = regex.match(id)
-                    ?: throw IllegalArgumentException("Could not parse arch identifier [${identifier}]")
+            val matchResult = regex.find(id)
+
+            if (matchResult == null)
+                throw IllegalArgumentException("Invalid platform id [${identifier}]")
 
             var sPlatform = matchResult.groups[1]?.value
             var sCpuArch = matchResult.groups[2]?.value
 
-            var p = OperatingSystem.values().firstOrNull() { it.toString().equals(sPlatform) }
+            var p = OperatingSystem.values.firstOrNull() { it.toString().equals(sPlatform) }
             if (p == null)
                 throw IllegalArgumentException("Unknown platform identifier [${sPlatform}]")
 
-            var ca = CpuArch.values().firstOrNull() { it.toString().equals(sCpuArch) }
+            var ca = CpuArch.values.firstOrNull() { it.toString().equals(sCpuArch) }
             if (ca == null)
                 throw IllegalArgumentException("Unknown cpu arch identifier [${sCpuArch}]")
 

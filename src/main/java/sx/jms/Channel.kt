@@ -182,14 +182,14 @@ class Channel private constructor(
             try {
                 c.close()
             } catch (e: JMSException) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
             }
         })
 
         try {
             this.commit()
         } catch (e: JMSException) {
-            log.error(e.getMessage(), e)
+            log.error(e.message, e)
         }
 
 
@@ -198,7 +198,7 @@ class Channel private constructor(
                 try {
                     s.close()
                 } catch (e: JMSException) {
-                    log.error(e.getMessage(), e)
+                    log.error(e.message, e)
                 }
             })
         }
@@ -207,7 +207,7 @@ class Channel private constructor(
             try {
                 c.close()
             } catch (e: JMSException) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
             }
         })
     }
