@@ -86,7 +86,7 @@ class MainController : Initializable {
                     uxTitle.text = "Booted ${bundleName} succesfully."
                 }
             } catch(e: Exception) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
                 Platform.runLater {
                     uxProgressBar.styleClass.add("leoz-red-bar")
                     uxTitle.text = "Booting ${bundleName} failed."

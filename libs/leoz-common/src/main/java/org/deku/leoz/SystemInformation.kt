@@ -43,7 +43,7 @@ class SystemInformation : Serializable {
          * @return
          */
         private fun findIpv4Address(networkInterface: NetworkInterface): Inet4Address? {
-            return networkInterface.inetAddresses.toList().firstOrNull { li -> li is Inet4Address } as Inet4Address?
+            return networkInterface.inetAddresses.toList().filterIsInstance<Inet4Address>().firstOrNull()
         }
 
         /**
@@ -53,7 +53,7 @@ class SystemInformation : Serializable {
          * @return
          */
         private fun findIpv6Address(networkInterface: NetworkInterface): Inet6Address? {
-            return networkInterface.inetAddresses.toList().firstOrNull { li -> li is Inet6Address && !li.isLinkLocalAddress } as Inet6Address?
+            return networkInterface.inetAddresses.toList().filterIsInstance<Inet6Address>().firstOrNull { li -> !li.isLinkLocalAddress }
         }
 
         @JvmStatic fun create(): SystemInformation {
@@ -70,7 +70,7 @@ class SystemInformation : Serializable {
                 localhost = InetAddress.getLocalHost()
                 networkInterface = NetworkInterface.getByInetAddress(localhost)
             } catch (e: Exception) {
-                log.warn(e.getMessage(), e)
+                log.warn(e.message, e)
             }
 
             if (networkInterface == null) {
@@ -85,7 +85,7 @@ class SystemInformation : Serializable {
                         }
                     }
                 } catch (e: Exception) {
-                    log.warn(e.getMessage(), e)
+                    log.warn(e.message, e)
                 }
 
             }
@@ -110,7 +110,7 @@ class SystemInformation : Serializable {
                     if (ipv6 != null)
                         addresses.add(ipv6)
                 } catch (e: Exception) {
-                    log.warn(e.getMessage(), e)
+                    log.warn(e.message, e)
                 }
 
             }

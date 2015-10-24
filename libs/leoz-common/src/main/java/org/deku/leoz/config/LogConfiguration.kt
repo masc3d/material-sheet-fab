@@ -59,7 +59,7 @@ abstract class LogConfiguration : Disposable {
                 rollingPolicy.setParent(fileAppender)
                 rollingPolicy.maxHistory = 10
                 rollingPolicy.fileNamePattern = "${baseFilename}-%d{yyyy-MM-dd}"
-                if (extension.length() > 0)
+                if (extension.length > 0)
                     rollingPolicy.fileNamePattern += ".${extension}"
                 rollingPolicy.start()
                 fileAppender.rollingPolicy = rollingPolicy

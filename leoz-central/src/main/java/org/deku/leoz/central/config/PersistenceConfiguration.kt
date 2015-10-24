@@ -125,7 +125,7 @@ open class PersistenceConfiguration {
         try {
             AbandonedConnectionCleanupThread.shutdown()
         } catch (e: InterruptedException) {
-            log.error(e.getMessage(), e)
+            log.error(e.message, e)
         }
     }
 

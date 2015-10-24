@@ -114,7 +114,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
                     "Sender: ")
 
             for (s in senderParticipants) {
-                if (!possibleSenderSectors.contains(s))
+                if (!possibleSenderSectors.containsRaw(s))
                     possibleSenderSectors.add(s.sector)
             }
 
@@ -140,7 +140,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
                     "Consignee: ")
 
             for (c in consigneeParticipants) {
-                if (!possibleSenderSectors.contains(c))
+                if (!possibleSenderSectors.containsRaw(c))
                     possibleSenderSectors.add(c.sector)
             }
 
@@ -195,13 +195,13 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         if (Strings.isNullOrEmpty(rcountry.zipFormat))
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} unknown country")
 
-        if (zip.length() < rcountry.minLen)
+        if (zip.length < rcountry.minLen)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} zipcode too short")
 
         if (rcountry.routingTyp < 0 || rcountry.routingTyp > 3)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} country not enabled")
 
-        if (zip.length() > rcountry.maxLen)
+        if (zip.length > rcountry.maxLen)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} zipcode too long")
 
         val parsedZip = ParsedZip(zip = zip, zipFormat = rcountry.zipFormat)
@@ -359,7 +359,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
             if (rHolidayCtrl.ctrlPos == -1)
                 daytype = DayType.Holiday
             else if (rHolidayCtrl.ctrlPos > 0) {
-                if (holidayCtrl.charAt(rHolidayCtrl.ctrlPos) == 'J')
+                if (holidayCtrl[rHolidayCtrl.ctrlPos] == 'J')
                     daytype = DayType.RegionalHoliday
             }
         }
@@ -410,8 +410,8 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
             var validZip = true
 
-            while (k < this.zipFormat.length() && validZip) {
-                if (i + 1 > cZip.length())
+            while (k < this.zipFormat.length && validZip) {
+                if (i + 1 > cZip.length)
                     csZip = ""
                 else
                     csZip = cZip.get(i).toString()

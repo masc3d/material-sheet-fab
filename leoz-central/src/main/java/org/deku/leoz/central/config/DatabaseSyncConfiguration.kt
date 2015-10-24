@@ -41,7 +41,7 @@ open class DatabaseSyncConfiguration {
                     try {
                         databaseSync.sync()
                     } catch (e: Exception) {
-                        log.error(e.getMessage(), e)
+                        log.error(e.message, e)
                     }
                 },
                 // Initial delay
@@ -57,7 +57,7 @@ open class DatabaseSyncConfiguration {
         try {
             this.executorService.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
         } catch (e: InterruptedException) {
-            log.error(e.getMessage(), e)
+            log.error(e.message, e)
         }
 
     }

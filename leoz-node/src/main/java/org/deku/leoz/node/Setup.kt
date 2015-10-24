@@ -68,9 +68,9 @@ class Setup {
         }
         finally {
             // Evaluate/log output
-            if (output.length() > 0)
+            if (output.length > 0)
                 this.logProcessOutput(output.toString())
-            if (error.length() > 0)
+            if (error.length > 0)
                 this.logProcessOutput(error.toString(), isError = true)
         }
     }
@@ -143,7 +143,7 @@ class Setup {
             pe.waitFor()
 
             val re = Regex("STATE.*:.*([0-9]+)[\\s]+([A-Z]+).*")
-            val mr = re.match(output.toString())
+            val mr = re.find(output.toString())
             if (mr != null) {
                 val state = mr.groups[1]!!.value.toInt()
                 when (state) {

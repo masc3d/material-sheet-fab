@@ -67,11 +67,11 @@ open class RsyncConfiguration {
             // Initialize and start server
             rsyncServer = RsyncServer(StorageConfiguration.instance.etcDirectory, config)
             rsyncServer.onTermination = { e ->
-                if (e != null) log.error(e.getMessage(), e)
+                if (e != null) log.error(e.message, e)
             }
             this.rsyncServer.start()
         } catch(e: Exception) {
-            log.error(e.getMessage(), e)
+            log.error(e.message, e)
         }
     }
 

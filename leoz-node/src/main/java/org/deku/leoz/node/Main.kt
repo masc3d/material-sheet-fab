@@ -76,7 +76,7 @@ open class Main {
             log.info("Main arguments [${args!!.joinToString(", ")}]")
 
             // Support for command line parameters, setup commands
-            if (args.size() > 0) {
+            if (args.size > 0) {
                 val command = args[0].toLowerCase().trim()
 
                 var rCommand: Runnable? = null
@@ -92,7 +92,7 @@ open class Main {
                         LogConfiguration.instance().initialize()
                         rCommand.run()
                     } catch (e: Exception) {
-                        log.error(e.getMessage(), e)
+                        log.error(e.message, e)
                         System.exit(-1)
                         throw e
                     } finally {

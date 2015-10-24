@@ -71,8 +71,8 @@ public class LogAppender(
             this.buffer.clear()
         }
 
-        if (logMessageBuffer.size() > 0) {
-            log.trace("Flushing [${logMessageBuffer.size()}]")
+        if (logMessageBuffer.size > 0) {
+            log.trace("Flushing [${logMessageBuffer.size}]")
             try {
                 val cn = messagingConfiguration.broker.connectionFactory.createConnection()
                 cn.start()
@@ -89,7 +89,7 @@ public class LogAppender(
 
                 session.commit()
             } catch (e: Exception) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
             }
 
         }
@@ -125,7 +125,7 @@ public class LogAppender(
             try {
                 executorService!!.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
             } catch (e: InterruptedException) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
             }
 
             executorService = null
@@ -136,7 +136,7 @@ public class LogAppender(
             if (messagingConfiguration.broker.isStarted)
                 this.flush()
         } catch (e: Exception) {
-            log.error(e.getMessage(), e)
+            log.error(e.message, e)
         }
 
         messagingConfiguration.broker.delegate.remove(brokerEventListener)
@@ -148,7 +148,7 @@ public class LogAppender(
         try {
             this.stop()
         } catch (e: Exception) {
-            log.error(e.getMessage(), e)
+            log.error(e.message, e)
         }
 
     }

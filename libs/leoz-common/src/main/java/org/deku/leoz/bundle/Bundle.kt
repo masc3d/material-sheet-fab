@@ -22,9 +22,7 @@ import javax.xml.bind.annotation.XmlAttribute
 import javax.xml.bind.annotation.XmlElement
 import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
-import kotlin.properties.Delegates
 import kotlin.text.Regex
-
 
 
 /**
@@ -193,7 +191,7 @@ class Bundle : Serializable {
                     .forEach { p ->
                         fileEntries.add(FileEntry(
                                 // Store relative path, simply cutting at root path length, including the slash
-                                uriPath = p.toUri().toString().substring(pathUri.toString().length() + 2),
+                                uriPath = p.toUri().toString().substring(pathUri.toString().length + 2),
                                 md5 = this.hashFile(p.toFile())))
                     }
 
@@ -241,7 +239,7 @@ class Bundle : Serializable {
         val nPath = Paths.get(this.path!!.toURI())
 
         // Hashed check list to verify left-overs
-        var checkList = this.fileEntries.toMap({ s -> s.uriPath }) as HashMap
+        var checkList = this.fileEntries.toMapBy({ s -> s.uriPath }) as HashMap
 
         for (entry in this.fileEntries.asSequence().filter { e -> !e.uriPath!!.equals(MANIFEST_FILENAME) }) {
             val path = Paths.get(nPath.toUri().resolve(entry.uriPath))
@@ -255,8 +253,8 @@ class Bundle : Serializable {
             checkList.remove(entry.uriPath)
         }
 
-        if (checkList.size() > 0) {
-            this.log.warn("Excess files detected during manifest verification [${checkList.keySet().joinToString(",")}]")
+        if (checkList.size > 0) {
+            this.log.warn("Excess files detected during manifest verification [${checkList.keys.joinToString(",")}]")
         }
     }
 
@@ -298,7 +296,7 @@ class Bundle : Serializable {
 
                 var suffix: String
                 if (end < 0) {
-                    end = version.length()
+                    end = version.length
                     suffix = ""
                 } else {
                     // Cut and trim suffix
@@ -311,7 +309,7 @@ class Bundle : Serializable {
                 else
                     ArrayList<Int>()
 
-                if (components.size() == 0)
+                if (components.size == 0)
                     throw IllegalArgumentException("Empty version string [${version}]")
 
                 return Version(components, suffix)
@@ -330,13 +328,13 @@ class Bundle : Serializable {
          * Comparable implementation
          */
         override fun compareTo(other: Version): Int {
-            val tSize = this.components.size()
-            val oSize = other.components.size()
+            val tSize = this.components.size
+            val oSize = other.components.size
 
             val less = if (tSize < oSize) this else other
 
             // Compare version components
-            for (i in 0..less.components.size() - 1) {
+            for (i in 0..less.components.size - 1) {
                 val c = this.components[i].compareTo(other.components[i])
                 if (c != 0)
                     return c
@@ -360,7 +358,7 @@ class Bundle : Serializable {
 
         override fun toString(): String {
             return this.components.joinToString(".") +
-                    if (this.suffix.length() > 0) "-" + suffix else ""
+                    if (this.suffix.length > 0) "-" + suffix else ""
         }
     }
 
@@ -420,7 +418,7 @@ class Bundle : Serializable {
                 val read = { line = reader.readLine(); line != null }
                 while (read()) {
                     val entry: Any
-                    val mr = re.match(line!!)
+                    val mr = re.find(line!!)
                     if (mr != null) {
                         entry = Pair(mr.groups.get(1)!!.value, mr.groups.get(2)!!.value)
                         entryMap.putAll(entry)
@@ -442,7 +440,7 @@ class Bundle : Serializable {
                 for (entry in entries) {
                     val outputLine = if (entry is Pair<*, *>) {
                         // Get current entry value from entry map
-                        val v = this.entryMap.get(entry.first)
+                        val v = this.entryMap.getRaw(entry.first)
                         "${entry.first}=${v}"
                     } else entry.toString()
                     writer.write(outputLine)
@@ -484,7 +482,7 @@ class Bundle : Serializable {
         try {
             pe.waitFor()
         } catch(e: Exception) {
-            if (error.length() > 0) log.error(error.toString())
+            if (error.length > 0) log.error(error.toString())
             throw e
         }
     }
@@ -501,7 +499,7 @@ fun Iterable<Bundle.Version>.filter(pattern: String): Iterable<Bundle.Version> {
             // Split by wildcard (+) including empty elements
             .split(Regex("\\+"), 0)
             // Replace with regex wildcard and quote content
-            .map { p -> if (p.length() > 0) Pattern.quote(p) else ".+" }
+            .map { p -> if (p.length > 0) Pattern.quote(p) else ".+" }
 
     val re = Regex("^" + l.joinToString("") + "$")
 

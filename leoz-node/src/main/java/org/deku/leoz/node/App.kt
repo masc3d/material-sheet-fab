@@ -29,6 +29,7 @@ import java.net.URL
 import java.util.ArrayList
 import java.util.Collections
 import java.util.function.Supplier
+import kotlin.properties.Delegates
 
 /**
  * Application instance. Performs pre-spring configuration.
@@ -120,7 +121,7 @@ open class App :
         // Uncaught threaded exception handler
         Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {
             override fun uncaughtException(t: Thread, e: Throwable) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
                 System.exit(-1)
             }
         })
@@ -133,7 +134,7 @@ open class App :
             try {
                 configLocations.add(URL("file:" + StorageConfiguration.instance.applicationConfigurationFile.toString()))
             } catch (e: MalformedURLException) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
             }
 
             // Add application.properties from all classpaths
@@ -141,7 +142,7 @@ open class App :
             try {
                 configLocations.addAll(Collections.list(Thread.currentThread().contextClassLoader.getResources("application.properties")))
             } catch (e: IOException) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
             }
 
             System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY,

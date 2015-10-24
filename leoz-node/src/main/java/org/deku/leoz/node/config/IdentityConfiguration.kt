@@ -59,7 +59,7 @@ open class IdentityConfiguration {
             try {
                 identity = Identity.createFromFile(systemInformation, identityFile)
             } catch (e: Exception) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
             }
 
         }

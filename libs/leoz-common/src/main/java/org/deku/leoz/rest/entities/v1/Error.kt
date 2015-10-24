@@ -14,6 +14,6 @@ class Error(
     constructor(httpStatus: Int, message: String) : this(httpStatus, null, message) {
     }
 
-    constructor(httpStatus: Int, e: Exception) : this(httpStatus, e.getMessage()!!) {
+    constructor(httpStatus: Int, e: Exception) : this(httpStatus, e.message!!) {
     }
 }

@@ -28,7 +28,6 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
-import kotlin.concurrent.thread
 import kotlin.properties.Delegates
 
 /**
@@ -43,7 +42,6 @@ fun main(args: Array<String>) {
  * Created by masc on 29-Jul-15.
  */
 class Application : javafx.application.Application() {
-    @Throws(Exception::class)
 
     private object Parameters {
         @Parameter(description = "Bundle to boot")
@@ -103,14 +101,14 @@ class Application : javafx.application.Application() {
         // Uncaught threaded exception handler
         Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {
             override fun uncaughtException(t: Thread, e: Throwable) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
                 System.exit(-1)
             }
         })
 
         // Parse command line params
         JCommander(Parameters, *this.parameters.raw.toTypedArray())
-        if (Parameters.bundles.size() == 0) {
+        if (Parameters.bundles.size == 0) {
             // Nothing to do
             System.exit(0)
             return

@@ -126,8 +126,8 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
             bundles.add(a)
         }
 
-        if (bundles.size() > 1) {
-            bundles.takeLast(bundles.size() - 1).forEach { a ->
+        if (bundles.size > 1) {
+            bundles.takeLast(bundles.size - 1).forEach { a ->
                 if (!bundles[0].version!!.equals(a.version))
                     throw IllegalStateException("Inconsistent artifact versions")
                 if (!bundles[0].javaVersion.equals(a.javaVersion))
