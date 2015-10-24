@@ -89,7 +89,11 @@ class RsyncClient() {
             fun tryParse(line: String): FileRecord? {
                 // Flag field length is 12 on osx (linux?) and 11 on windows.
                 var re = Regex("^>>> (.{11,12}) (.*)$")
-                var mr = re.match(line) ?: return null
+                var mr = re.find(line)
+
+                if (mr == null)
+                    throw IllegalArgumentException("Could not parse file record [${line}]")
+
                 return FileRecord(
                         flags = mr.groups[1]!!.value,
                         path = mr.groups[2]!!.value)
@@ -115,7 +119,11 @@ class RsyncClient() {
              */
             fun tryParse(line: String): ProgressRecord? {
                 var re = Regex("^([0-9,]+)[\\s]+([0-9]+)%[\\s]+([^\\s]+).*$")
-                var mr = re.match(line) ?: return null
+                var mr = re.find(line)
+
+                if (mr == null)
+                    throw IllegalArgumentException("Could not parse progress record [${line}]")
+
                 return ProgressRecord(
                         bytes = mr.groups[1]!!.value.replace(",", "").toInt(),
                         percentage = mr.groups[2]!!.value.toInt())
@@ -132,7 +140,10 @@ class RsyncClient() {
             fun tryParse(line: String): ListRecord? {
                 // Example: drwxr-xr-x             10 2015/08/22 11:19:10 0.1
                 var re = Regex("^([^\\s]{10})[\\s]+([0-9,]+)[\\s]+([0-9]{4})/([0-9]{2})/([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2}) ([^\\s]+)$")
-                var mr = re.match(line) ?: return null
+                var mr = re.find(line)
+
+                if (mr == null)
+                    throw IllegalArgumentException("Could not parse list record [${line}]")
 
                 return ListRecord(
                         flags = mr.groups[1]!!.value,
@@ -190,7 +201,7 @@ class RsyncClient() {
         try {
             pe.waitFor()
         } catch(e: Exception) {
-            if (error.length() > 0) log.error(error.toString())
+            if (error.length > 0) log.error(error.toString())
             throw e
         }
 
@@ -251,7 +262,7 @@ class RsyncClient() {
         // Info flags
         if (this.progress) infoFlags.add("progress2")
 
-        if (infoFlags.size() > 0)
+        if (infoFlags.size > 0)
             command.add("--info=${java.lang.String.join(",", infoFlags)}")
 
         command.add("--out-format=${FileRecord.OutputFormat}")
@@ -298,7 +309,7 @@ class RsyncClient() {
         try {
             pe.waitFor()
         } catch(e: Exception) {
-            if (error.length() > 0) log.error(error.toString())
+            if (error.length > 0) log.error(error.toString())
             throw e
         }
 

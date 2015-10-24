@@ -60,14 +60,14 @@ class ProcessExecutor @JvmOverloads constructor(
             val processedOutput = if (this.trim) output.trim() else output
 
             // Optionally omit empty lines
-            if (this.omitEmptyLines && processedOutput.length() == 0)
+            if (this.omitEmptyLines && processedOutput.length == 0)
                 return
 
             this.onProcessedOutput(processedOutput)
 
             // Optionally collect output
             if (collectInto != null) {
-                if (collectInto.length() > 0)
+                if (collectInto.length > 0)
                     collectInto.append(StandardSystemProperty.LINE_SEPARATOR.value())
                 collectInto.append(processedOutput)
             }
@@ -106,7 +106,7 @@ class ProcessExecutor @JvmOverloads constructor(
                 if (exitCode != 0 && !stopping)
                     exception = ProcessException(exitCode)
             } catch (e: InterruptedException) {
-                log.error(e.getMessage(), e)
+                log.error(e.message, e)
             } finally {
                 if (!shutdownHookInvoked) {
                     Runtime.getRuntime().removeShutdownHook(shutdownHook)
@@ -140,7 +140,7 @@ class ProcessExecutor @JvmOverloads constructor(
                 }
             } catch (ex: Exception) {
                 if (ex !is InterruptedException)
-                    log.error(ex.getMessage(), ex)
+                    log.error(ex.message, ex)
             }
         }
     }
@@ -206,7 +206,7 @@ class ProcessExecutor @JvmOverloads constructor(
             try {
                 outputReaderThread!!.join()
             } catch (e: InterruptedException) {
-                log.warn(e.getMessage(), e)
+                log.warn(e.message, e)
             }
             outputReaderThread = null
         }
@@ -214,7 +214,7 @@ class ProcessExecutor @JvmOverloads constructor(
             try {
                 errorReaderThread!!.join()
             } catch (e: InterruptedException) {
-                log.warn(e.getMessage(), e)
+                log.warn(e.message, e)
             }
             errorReaderThread = null
         }
@@ -224,7 +224,7 @@ class ProcessExecutor @JvmOverloads constructor(
             try {
                 monitorThread!!.join()
             } catch(e: InterruptedException) {
-                log.warn(e.getMessage(), e)
+                log.warn(e.message, e)
             }
             monitorThread = null
         }

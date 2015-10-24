@@ -8,7 +8,6 @@ import java.io.*
 import java.nio.file.Files
 import java.nio.file.attribute.*
 import java.util.*
-import kotlin.properties.Delegates
 
 /**
  * Rsync server. Wraps rsync as a daemon process, generates configurations as needed
@@ -71,7 +70,7 @@ class RsyncServer(
                 acls.add(AclEntry.newBuilder()
                         .setType(AclEntryType.ALLOW)
                         .setPrincipal(fowner)
-                        .setPermissions(AclEntryPermission.values().toSet()).build())
+                        .setPermissions(AclEntryPermission.values.toSet()).build())
                 aclFav.acl = acls
             } else {
                 var posixFav = Files.getFileAttributeView(nioSecretsFile, PosixFileAttributeView::class.java)
@@ -120,7 +119,7 @@ class RsyncServer(
                     section.add("secrets file", Rsync.URI(module.secretsFile!!, asDirectory = false).toString())
                 section.add("auth users", module.permissions
                         .asSequence()
-                        .map { entry -> "${entry.getKey()}:${entry.getValue()}" }
+                        .map { entry -> "${entry.key}:${entry.value}" }
                         .joinToString(" "))
             }
 
@@ -148,7 +147,7 @@ class RsyncServer(
             var ow = PrintWriter(os)
 
             this.modules.asSequence()
-                    .flatMap { m -> m.permissions.keySet().asSequence() }
+                    .flatMap { m -> m.permissions.keys.asSequence() }
                     .filterIsInstance<Rsync.User>()
                     .distinct()
                     .forEach { u -> ow.println("${u.name}:${u.password}") }
@@ -185,7 +184,7 @@ class RsyncServer(
         this.processExecutor = ProcessExecutor(ProcessBuilder(command),
                 errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
         this.processExecutor?.onTermination = { ex ->
-            if (error.length() > 0) this.log.error(error.toString())
+            if (error.length > 0) this.log.error(error.toString())
             this.onTermination(ex)
         }
         this.processExecutor?.start()

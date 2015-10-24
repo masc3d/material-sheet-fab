@@ -108,7 +108,7 @@ class DefaultConverter(var mSerializationType: DefaultConverter.SerializationTyp
         val buffer = baos.toByteArray()
         bm.writeBytes(buffer)
 
-        bytesWritten += buffer.size().toLong()
+        bytesWritten += buffer.size.toLong()
 
         return bm
     }
