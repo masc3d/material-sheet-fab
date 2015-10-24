@@ -50,7 +50,6 @@ dependencies {
     compile 'com.jcraft:jsch.agentproxy.sshagent:+'
     compile 'com.jcraft:jsch.agentproxy.pageant:+'
 
-
     // Unused deps required for compilation
     provided "javax.ws.rs:javax.ws.rs-api:2.+"
     provided "ch.qos.logback:logback-classic:+"
@@ -71,6 +70,7 @@ dependencies {
     provided 'org.xerial.snappy:snappy-java:+'
     provided "com.wordnik:swagger-annotations:+"
 
+    testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
 sourceSets {
