@@ -13,12 +13,7 @@ object BundleTestConfiguration {
     val rsyncUri = Rsync.URI("rsync://leoz@syntronix.de/leoz-test")
     val rsyncPw = "leoz"
 
-    val path = Paths.get("").toAbsolutePath()
-            .parent
-            .parent
-            .parent
-            .resolve("leoz-release")
-            .resolve("test")
+    val path = StorageTestConfiguration.bundlesDirectory
 
     val repository = BundleRepository(rsyncUri, rsyncPw)
 }

@@ -19,6 +19,7 @@ import org.deku.leoz.boot.fx.ResizeHelper
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleRepositoryFactory
 import org.deku.leoz.bundle.Bundles
+import sx.io.PermissionUtil
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import java.awt.SplashScreen
@@ -47,6 +48,9 @@ class Application : javafx.application.Application() {
 
         @Parameter(names = arrayOf("--repository"), description = "Repository URI")
         var repositoryUriString: String? = null
+
+        @Parameter(names = arrayOf("--no-ui"), description = "Don't show user interface")
+        var hideUi: Boolean? = true
     }
 
     private val log = LogFactory.getLog(this.javaClass)
@@ -84,11 +88,15 @@ class Application : javafx.application.Application() {
         rc.source = Rsync.URI(srcPath)
         rc.destination = Rsync.URI(destPath)
         rc.delete = true
+        rc.preserveExecutability = true
+        rc.preservePermissions = false
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
         rc.sync( onFile = { r ->
             log.info("Updating [${r.flags}] [${r.path}]")
         })
+
+        PermissionUtil.applyAclRecursively(destPath.parentFile)
     }
 
     override fun start(primaryStage: Stage) {

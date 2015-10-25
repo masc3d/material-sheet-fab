@@ -8,6 +8,7 @@ import org.deku.leoz.config.RsyncTestConfiguration
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import sx.io.PermissionUtil
 import sx.platform.PlatformId
 import sx.rsync.RsyncClient
 import java.io.File
@@ -41,13 +42,13 @@ class BundleRepositoryTest {
 
     @Test
     fun testUpload() {
-        BundleTestConfiguration.repository.upload(Bundles.LEOZ_BOOT, BundleTestConfiguration.path.toFile())
+        BundleTestConfiguration.repository.upload(Bundles.LEOZ_BOOT, BundleTestConfiguration.path)
     }
 
     @Test
     fun testDownload() {
         var path = BundleTestConfiguration.path
-                .resolve(PlatformId.current().toString()).toFile()
+                .resolve(PlatformId.current().toString())
 
         BundleTestConfiguration.repository.download(Bundles.LEOZ_BOOT, Bundle.Version.parse("0.1"), PlatformId.current(), path)
     }

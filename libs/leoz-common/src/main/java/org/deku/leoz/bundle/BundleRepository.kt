@@ -2,6 +2,7 @@ package org.deku.leoz.bundle
 
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
+import sx.io.PermissionUtil
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import sx.rsync.Rsync
@@ -223,7 +224,10 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
 
         rc.source = source
         rc.destination = destination
-        //rc.preservePermissions = false
+        rc.preservePermissions = false
+        rc.preserveExecutability = true
+        rc.preserveGroup = false
+        rc.preserveOwner = false
         rc.comparisonDestinations = comparisonDestinations.toArrayList()
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
@@ -242,6 +246,9 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
                 })
 
         if (onProgress != null) onProgress(currentFile, 0.95)
+
+        // Cygwin's rsync implementation applies some crazy acls, even when setting preservation flags to false (sa.)
+        PermissionUtil.applyAclRecursively(destPath.parentFile)
 
         if (verify) {
             val bundlePath = this.bundlePath(bundleName, destPath)
@@ -273,12 +280,18 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
         val rc = this.createRsyncClient()
         rc.source = this.rsyncModuleUri.resolve(bundleName).resolve(version)
         rc.destination = Rsync.URI(destPath)
-        //rc.preservePermissions = false
+        rc.preservePermissions = false
+        rc.preserveExecutability = true
+        rc.preserveGroup = false
+        rc.preserveOwner = false
 
         logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
         rc.sync({ r ->
             logInfo("Updating [${r.flags}] [${r.path}]")
         })
+
+        // Cygwin's rsync implementation applies some crazy acls, even when setting preservation flags to false (sa.)
+        PermissionUtil.applyAclRecursively(destPath.parentFile)
 
         if (verify) {
             this.walkPlatformFolders(destPath.toPath()).forEach { p ->

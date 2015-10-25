@@ -102,7 +102,7 @@ abstract class StorageConfiguration(
         if (!baseDirectory) {
             if (SystemUtils.IS_OS_WINDOWS) {
                 // Get file attribute view
-                var fav = Files.getFileAttributeView(Paths.get(this.baseDirectory.toURI()), AclFileAttributeView::class.java)
+                var fav = Files.getFileAttributeView(this.baseDirectory.toPath(), AclFileAttributeView::class.java)
 
                 // Lookup principal
                 var fs = FileSystems.getDefault()
