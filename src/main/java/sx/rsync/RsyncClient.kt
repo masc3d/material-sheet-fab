@@ -5,6 +5,7 @@ import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
 import sx.ProcessExecutor
+import sx.io.PermissionUtil
 import java.io.BufferedWriter
 import java.io.File
 import java.io.OutputStreamWriter
@@ -302,6 +303,13 @@ class RsyncClient() {
         } catch(e: Exception) {
             if (error.length > 0) log.error(error.toString())
             throw e
+        }
+
+        if (this.preservePermissions == false &&
+                this.destination!!.uri.scheme.compareTo("file", ignoreCase = true) == 0 &&
+                SystemUtils.IS_OS_WINDOWS) {
+            // Cygwin's rsync implementation applies some crazy acls, even when setting preservation flags to false (sa.)
+            PermissionUtil.applyAclRecursively(File(this.destination!!.uri).parentFile)
         }
 
         return Result(files)
