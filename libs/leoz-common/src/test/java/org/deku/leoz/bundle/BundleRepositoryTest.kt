@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.config.BundleTestConfiguration
 import org.deku.leoz.config.RsyncTestConfiguration
+import org.deku.leoz.config.StorageTestConfiguration
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -42,14 +43,16 @@ class BundleRepositoryTest {
 
     @Test
     fun testUpload() {
-        BundleTestConfiguration.repository.upload(Bundles.LEOZ_BOOT, BundleTestConfiguration.path)
+        BundleTestConfiguration.repository.upload(Bundles.LEOZ_BOOT, BundleTestConfiguration.releasePath)
     }
 
     @Test
     fun testDownload() {
-        var path = BundleTestConfiguration.path
-                .resolve(PlatformId.current().toString())
+        var path = File(StorageTestConfiguration.bundlesDirectory, Bundles.LEOZ_BOOT)
 
-        BundleTestConfiguration.repository.download(Bundles.LEOZ_BOOT, Bundle.Version.parse("0.1"), PlatformId.current(), path)
+        BundleTestConfiguration.repository.download(
+                Bundles.LEOZ_BOOT,
+                BundleTestConfiguration.repository.listVersions(Bundles.LEOZ_BOOT).sortedDescending().first(),
+                BundleTestConfiguration.releasePath)
     }
 }

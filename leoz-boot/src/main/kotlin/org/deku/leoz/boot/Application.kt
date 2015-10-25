@@ -95,8 +95,6 @@ class Application : javafx.application.Application() {
         rc.sync( onFile = { r ->
             log.info("Updating [${r.flags}] [${r.path}]")
         })
-
-        PermissionUtil.applyAclRecursively(destPath.parentFile)
     }
 
     override fun start(primaryStage: Stage) {

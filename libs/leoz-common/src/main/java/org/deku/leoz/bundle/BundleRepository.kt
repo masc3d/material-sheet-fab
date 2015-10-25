@@ -156,7 +156,6 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
             val rc = this.createRsyncClient()
             rc.source = Rsync.URI(versionSrcPath)
             rc.destination = this.rsyncModuleUri.resolve(bundleName).resolve(version)
-            //rc.preservePermissions = false
             rc.copyDestinations = comparisonDestinationUris
 
             logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
@@ -247,9 +246,6 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
 
         if (onProgress != null) onProgress(currentFile, 0.95)
 
-        // Cygwin's rsync implementation applies some crazy acls, even when setting preservation flags to false (sa.)
-        PermissionUtil.applyAclRecursively(destPath.parentFile)
-
         if (verify) {
             val bundlePath = this.bundlePath(bundleName, destPath)
             log.info("Verifying bundle [${bundlePath}]")
@@ -289,9 +285,6 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
         rc.sync({ r ->
             logInfo("Updating [${r.flags}] [${r.path}]")
         })
-
-        // Cygwin's rsync implementation applies some crazy acls, even when setting preservation flags to false (sa.)
-        PermissionUtil.applyAclRecursively(destPath.parentFile)
 
         if (verify) {
             this.walkPlatformFolders(destPath.toPath()).forEach { p ->

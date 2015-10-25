@@ -45,21 +45,21 @@ class BundleTest {
 
     @Test
     fun testCreate() {
-        var path = BundleTestConfiguration.path.resolve(PlatformId.current().toString())
+        var path = BundleTestConfiguration.releasePath.resolve(PlatformId.current().toString())
 
         Bundle.create(path, Bundles.LEOZ_BOOT, PlatformId.current(), Bundle.Version.parse("0.1"))
     }
 
     @Test
     fun testLoad() {
-        var path = BundleTestConfiguration.path.resolve(PlatformId.current().toString())
+        var path = BundleTestConfiguration.releasePath.resolve(PlatformId.current().toString())
 
         Bundle.load(path)
     }
 
     @Test
     fun testVerify() {
-        var path = BundleTestConfiguration.path.resolve(PlatformId.current().toString())
+        var path = BundleTestConfiguration.releasePath.resolve(PlatformId.current().toString())
 
         Bundle.load(path).verify()
     }
