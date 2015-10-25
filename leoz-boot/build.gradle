@@ -7,7 +7,7 @@ apply plugin: PackagerPlugin
 
 version '0.1-SNAPSHOT'
 sourceCompatibility = 1.8
-mainClassName = "org.deku.leoz.boot.BootPackage"
+mainClassName = "org.deku.leoz.boot.ApplicationKt"
 
 dependencies {
     compile project(':libs:sx-common')

@@ -48,12 +48,16 @@ abstract class StorageConfiguration(
 
     /** Local bundles directory */
     val bundlesDirectory: File by lazy({
-        File(this.baseDirectory, "bundles")
+        val d = File(this.baseDirectory, "bundles")
+        d.mkdirs()
+        d
     })
 
     /** Run directory, containing runtime related files, eg. bundle lock files */
     val runDirectory: File by lazy({
-        File(this.baseDirectory, "run")
+        val d = File(this.baseDirectory, "run")
+        d.mkdirs()
+        d
     })
 
     /** Lock file for this application */
@@ -114,7 +118,6 @@ abstract class StorageConfiguration(
                 fav.acl = Collections.singletonList(aclb.build())
             }
         }
-        this.bundlesDirectory.mkdirs()
 
         if (!this.bundleLockFile.exists()) {
             this.bundleLockFile.createNewFile()
