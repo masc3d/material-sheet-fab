@@ -8,18 +8,16 @@ import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.filter
 import sx.event.EventDispatcher
 import sx.jms.Channel
-import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
-import sx.jms.listeners.SpringJmsListener
 import java.io.File
-import java.io.Serializable
 import java.time.Duration
 import java.time.LocalTime
-import java.util.*
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import javax.jms.*
+import javax.jms.ConnectionFactory
+import javax.jms.Destination
+import javax.jms.Message
+import javax.jms.Session
 
 /**
  * Updater suoporting async/background updates of bundles.
@@ -43,7 +41,7 @@ class Updater(
     private val bundlePaths: List<File>
 
     private val executor = Executors.newScheduledThreadPool(2)
-    private val updateRequestChannel: Channel
+    private val updateInfoRequestChannel: Channel
 
     //region Events
     interface Listener : sx.event.EventListener {
@@ -62,7 +60,7 @@ class Updater(
         this.bundleNames = BundleInstaller.listBundleNames(this.bundleContainerPath)
         this.bundlePaths = BundleInstaller.listBundlePaths(this.bundleContainerPath)
 
-        this.updateRequestChannel = Channel(
+        this.updateInfoRequestChannel = Channel(
                 connectionFactory = jmsConnectionFactory,
                 destination = jmsUpdateRequestQueue,
                 converter = DefaultConverter(
@@ -80,7 +78,7 @@ class Updater(
         log.info("Received update notification [${updateInfo}]")
         if (this.bundleNames.contains(updateInfo.bundleName)) {
             // Schedule update
-            this.executor.submit(Runnable {
+            this.executor.submit({
                 this.update(updateInfo.bundleName)
             })
         }
@@ -99,7 +97,7 @@ class Updater(
             }
 
             // Request currently assigned version for this bundle and node
-            val updateInfo = this.updateRequestChannel.sendReceive(
+            val updateInfo = this.updateInfoRequestChannel.sendReceive(
                     UpdateInfoRequest(nodeId, bundleName),
                     UpdateInfo::class.java)
 

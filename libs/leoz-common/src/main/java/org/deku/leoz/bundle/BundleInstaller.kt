@@ -2,7 +2,6 @@ package org.deku.leoz.bundle
 
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
-import sx.ProcessExecutor
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import java.io.File
@@ -66,7 +65,6 @@ class BundleInstaller(
 
     /**
      * Creates bundle update path
-     * @param name Bundle name
      */
     private fun bundleUpdatePath(): File {
         return File(bundleContainerPath, "${this.bundleName}${UPDATE_SUFFIX}")
@@ -130,7 +128,6 @@ class BundleInstaller(
 
     /**
      * Applies prepared update. Moves an prepared update into place.
-     * @param name Bundle name
      */
     fun applyUpdate() {
         val bundlePath = this.bundlePath()

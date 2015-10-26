@@ -1,21 +1,17 @@
 package org.deku.leoz.boot.fx
 
-import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.LoggerContext
 import javafx.application.Platform
-import javafx.beans.property.DoubleProperty
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
-import javafx.scene.text.TextFlow
 import org.deku.leoz.boot.Application
-import org.deku.leoz.boot.config.StorageConfiguration
+import org.deku.leoz.boot.config.BundleInstallerConfiguration
 import org.deku.leoz.boot.config.LogConfiguration
-import org.deku.leoz.bundle.*
-import org.slf4j.LoggerFactory
+import org.deku.leoz.bundle.install
 import sx.fx.TextAreaLogAppender
+import java.awt.GraphicsEnvironment
 import java.net.URL
 import java.util.*
 import kotlin.concurrent.thread
@@ -58,29 +54,12 @@ class MainController : Initializable {
             try {
                 Application.instance.selfInstall()
 
-                // TODO: move installation logic from controller to bundle installer
-                val installer = BundleInstaller(
-                        StorageConfiguration.bundlesDirectory,
-                        bundleName,
-                        BundleRepositoryFactory.stagingRepository())
+                val installer = BundleInstallerConfiguration.installerForBundle(bundleName)
 
-                if (installer.hasBundle()) {
-                    installer.bundle.stop()
-                    installer.bundle.uninstall()
-                }
-
-                log.info("Checking for available versions of [${bundleName}]")
-                val versionToInstall = installer.repository.listVersions(bundleName).sortedDescending().first()
-
-                log.info("Installing [${bundleName}-${versionToInstall}]")
-                installer.download(versionToInstall, false, { f, p ->
+                installer.install(onProgress = { f, p ->
                     if (p > 0.0) uxProgressBar.progress = p
                 })
 
-                installer.bundle.install()
-                installer.bundle.start()
-
-                log.info("Installed sucessfully.")
                 Platform.runLater {
                     uxProgressBar.styleClass.add("leoz-green-bar")
                     uxTitle.text = "Booted ${bundleName} succesfully."
@@ -95,6 +74,9 @@ class MainController : Initializable {
                 uxProgressBar.progress = 1.0
                 uxClose.visibleProperty().value = true
             }
+
+            if (Application.Parameters.hideUi || GraphicsEnvironment.isHeadless())
+                System.exit(0)
         }
     }
 }

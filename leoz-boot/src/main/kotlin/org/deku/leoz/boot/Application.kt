@@ -2,14 +2,10 @@ package org.deku.leoz.boot
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
-import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
-import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.image.Image
-import javafx.scene.input.MouseButton
-import javafx.scene.input.MouseEvent
 import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
@@ -17,15 +13,11 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.boot.config.StorageConfiguration
 import org.deku.leoz.boot.fx.ResizeHelper
 import org.deku.leoz.bundle.Bundle
-import org.deku.leoz.bundle.BundleRepositoryFactory
 import org.deku.leoz.bundle.Bundles
-import sx.io.PermissionUtil
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import java.awt.SplashScreen
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -42,7 +34,7 @@ fun main(args: Array<String>) {
  */
 class Application : javafx.application.Application() {
 
-    private object Parameters {
+    object Parameters {
         @Parameter(description = "Bundle to boot")
         var bundles: List<String> = ArrayList()
 
@@ -50,7 +42,7 @@ class Application : javafx.application.Application() {
         var repositoryUriString: String? = null
 
         @Parameter(names = arrayOf("--no-ui"), description = "Don't show user interface")
-        var hideUi: Boolean? = true
+        var hideUi: Boolean = false
     }
 
     private val log = LogFactory.getLog(this.javaClass)

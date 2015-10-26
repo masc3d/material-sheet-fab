@@ -1,14 +1,12 @@
 package org.deku.leoz.node.rest.services.internal.v1
 
-import org.deku.leoz.Boot
+import org.deku.leoz.bundle.BundleInstaller
+import org.deku.leoz.bundle.BundleRepositoryFactory
+import org.deku.leoz.bundle.boot
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
 import sx.rs.ApiKey
-import java.io.File
-import java.net.URLClassLoader
-import java.util.jar.JarFile
-import java.util.jar.Manifest
 import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
@@ -23,8 +21,12 @@ import javax.ws.rs.core.MediaType
 @Produces(MediaType.APPLICATION_JSON)
 class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationService {
     override fun restart() {
-        Boot(StorageConfiguration.instance.bundlesDirectory)
-                .boot(App.instance().name)
+        val bundleInstaller = BundleInstaller(
+                StorageConfiguration.instance.bundlesDirectory,
+                App.instance().name,
+                BundleRepositoryFactory.stagingRepository())
+
+        bundleInstaller.boot()
     }
 
     override fun getVersion(): ApplicationVersion {
