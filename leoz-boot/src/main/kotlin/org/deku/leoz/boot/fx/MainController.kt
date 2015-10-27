@@ -38,9 +38,22 @@ class MainController : Initializable {
         LogConfiguration.addAppender(TextAreaLogAppender(uxTextArea, 1000))
 
         val bundleName = Application.instance.bundle
-        uxTitle.text = "Booting ${bundleName}"
+        val verb: String
+        val verbPast: String
+
+        when (Application.Parameters.uninstall) {
+            true -> {
+                verb = "Uninstalling"
+                verbPast = "Uninstalled"
+            }
+            else -> {
+                verb = "Booting"
+                verbPast = "Booted"
+            }
+        }
+        uxTitle.text = "${verb} ${bundleName}"
         uxProgressBar.progressProperty().addListener { v, o, n ->
-            uxProgressIndicator.isVisible = (n.toDouble() == ProgressBar.INDETERMINATE_PROGRESS || (n.toDouble() > 0.0 && n.toDouble() < 1))
+            uxProgressIndicator.isVisible = (n.toDouble() == ProgressBar.INDETERMINATE_PROGRESS || (n.toDouble() >= 0.0 && n.toDouble() < 1))
         }
         uxClose.onMouseClicked = object:EventHandler<MouseEvent> {
             override fun handle(event: MouseEvent?) {
@@ -56,30 +69,34 @@ class MainController : Initializable {
 
                 val installer = BundleInstallerConfiguration.installer()
 
-                if (!installer.hasBundle(bundleName) || Application.Parameters.forceDownload) {
-                    installer.download(
-                            bundleName = bundleName,
-                            versionPattern = Application.Parameters.versionPattern,
-                            forceDownload = Application.Parameters.forceDownload,
-                            onProgress = { f, p ->
-                                if (p > 0.0) Platform.runLater { uxProgressBar.progress = p }
-                            }
-                    )
+                if (Application.Parameters.uninstall) {
+                    installer.uninstall(bundleName)
+                } else {
+                    if (!installer.hasBundle(bundleName) || Application.Parameters.forceDownload) {
+                        installer.download(
+                                bundleName = bundleName,
+                                versionPattern = Application.Parameters.versionPattern,
+                                forceDownload = Application.Parameters.forceDownload,
+                                onProgress = { f, p ->
+                                    if (p > 0.0) Platform.runLater { uxProgressBar.progress = p }
+                                }
+                        )
+                    }
+                    Platform.runLater {
+                        uxProgressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
+                    }
+                    installer.install(bundleName)
                 }
-                Platform.runLater {
-                    uxProgressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
-                }
-                installer.install(bundleName)
 
                 Platform.runLater {
                     uxProgressBar.styleClass.add("leoz-green-bar")
-                    uxTitle.text = "Booted ${bundleName} succesfully."
+                    uxTitle.text = "${verbPast} ${bundleName} succesfully."
                 }
             } catch(e: Exception) {
                 log.error(e.message, e)
                 Platform.runLater {
                     uxProgressBar.styleClass.add("leoz-red-bar")
-                    uxTitle.text = "Booting ${bundleName} failed."
+                    uxTitle.text = "${verb} ${bundleName} failed."
                 }
             } finally {
                 Platform.runLater {

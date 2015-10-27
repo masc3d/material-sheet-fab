@@ -227,6 +227,7 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
 
         var currentFile: String = ""
         var currentPercentage: Double = 0.0
+        if (onProgress != null) onProgress(currentFile, 0.0)
         rc.sync(
                 onFile = { r ->
                     log.info("Updating [${r.flags}] [${r.path}]")

@@ -49,6 +49,9 @@ class Application : javafx.application.Application() {
 
         @Parameter(names = arrayOf("--version-pattern"), description = "Version pattern override")
         var versionPattern: String = "+RELEASE"
+
+        @Parameter(names = arrayOf("--uninstall"), description = "Uninstall bundle")
+        var uninstall: Boolean = false
     }
 
     private val log = LogFactory.getLog(this.javaClass)

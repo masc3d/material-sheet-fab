@@ -306,4 +306,23 @@ class BundleInstaller(
 
         log.info("Installed sucessfully.")
     }
+
+    /**
+     * Uninstall bundle
+     * @param bundleName Bundle name
+     */
+    fun uninstall(bundleName: String) {
+        log.info("Uninstalling [${bundleName}]")
+
+        val bundlePath = this.bundlePath(bundleName)
+
+        if (bundlePath.exists()) {
+            val bundle = this.bundle(bundleName)
+            bundle.stop()
+            bundle.uninstall()
+            log.info("Uninstalled sucessfully.")
+        } else {
+            log.warn("Bundle does not exist.")
+        }
+    }
 }
