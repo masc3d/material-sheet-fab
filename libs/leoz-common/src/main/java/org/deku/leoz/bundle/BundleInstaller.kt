@@ -114,79 +114,6 @@ class BundleInstaller(
     }
 
     /**
-     * Download specific bundle version as bundle update (not overwriting the current bundle)
-     * @param bundleName Bundle name
-     * @param version Bundle version
-     */
-    private fun download(bundleName: String,
-                         version: Bundle.Version,
-                         onProgress: ((file: String, percentage: Double) -> Unit)? = null) {
-
-        val updatePath = this.bundleUpdatePath(bundleName)
-        val downloadPath = this.bundleDownloadPath(bundleName)
-
-        // If an update is already in place, make it the current download path, possibly minimizing download time
-        if (updatePath.exists()) {
-            if (downloadPath.exists())
-                downloadPath.deleteRecursively()
-
-            updatePath.renameTo(downloadPath)
-        }
-
-        val platform = PlatformId.current()
-        var copyPaths = this.listBundlePaths()
-        if (platform.operatingSystem == OperatingSystem.OSX)
-            copyPaths = copyPaths.map { f -> File(f, "${f.name}.app") }
-
-        repository.download(
-                bundleName,
-                version,
-                platform,
-                destPath = downloadPath,
-                copyPaths = copyPaths,
-                verify = true,
-                onProgress = { f, p ->
-                    if (onProgress != null) onProgress(f, p)
-                })
-
-        downloadPath.renameTo(updatePath)
-    }
-
-    /**
-     * Applies prepared update. Moves an prepared update into place.
-     * @param bundleName Bundle name
-     * @return If any changes were applied (successfully)
-     */
-    private fun applyUpdate(bundleName: String): Boolean {
-        var changesApplied = false
-        val bundlePath = this.bundlePath(bundleName)
-        val updatePath = this.bundleUpdatePath(bundleName)
-
-        if (bundlePath.exists()) {
-            if (updatePath.exists()) {
-                val oldBundlePath = this.oldBundlePath(bundleName)
-                if (oldBundlePath.exists()) {
-                    log.info("Removing old bundle path [${oldBundlePath}]")
-                    oldBundlePath.deleteRecursively()
-                }
-                log.info("Moving update into place [${updatePath}] -> [${bundlePath}]")
-                bundlePath.renameTo(oldBundlePath)
-                try {
-                    updatePath.renameTo(bundlePath)
-                } catch(e: Exception) {
-                    oldBundlePath.renameTo(bundlePath)
-                    throw e
-                }
-                oldBundlePath.deleteRecursively()
-                changesApplied = true
-            }
-        } else {
-            log.warn("Bundle named [${bundleName}] doesn't exist within [${this.bundleContainerPath}]")
-        }
-        return changesApplied
-    }
-
-    /**
      * List bundle container paths. The bundle itself may reside in a subfolder (eg. on OSX it's the .app osx bundle)
      */
     fun listBundlePaths(): List<File> {
@@ -198,6 +125,21 @@ class BundleInstaller(
      */
     fun listBundleNames(): List<String> {
         return this.listBundlePaths().map { f -> f.name }
+    }
+
+    /**
+     * Try to load bundle from bundle container subdir
+     * @param bundlePath Bundle path
+     */
+    private fun tryLoadBundle(bundlePath: File): Bundle? {
+        if (bundlePath.exists()) {
+            try {
+                return Bundle.load(getNativeBundlePath(bundlePath))
+            } catch(e: Exception) {
+                this.log.error(e.message, e)
+            }
+        }
+        return null
     }
 
     /**
@@ -213,73 +155,147 @@ class BundleInstaller(
         paths.forEach { p -> p.deleteRecursively() }
     }
 
-    enum class InstallationResult {
-        Installed,
-        Unchanged
+    /**
+     * Download specific bundle version as bundle update (not overwriting the current bundle)
+     * @param bundleName Bundle name
+     * @param version Bundle version
+     * @param forceDownload Always download, even if existing version is the same
+     * @param onProgress Progress callback
+     */
+    fun download(bundleName: String,
+                 version: Bundle.Version,
+                 forceDownload: Boolean = false,
+                 onProgress: ((file: String, percentage: Double) -> Unit)? = null): Boolean {
+
+        var changesApplied = false
+
+        val bundlePath = this.bundlePath(bundleName)
+        val bundleUpdatePath = this.bundleUpdatePath(bundleName)
+        val bundleDownloadPath = this.bundleDownloadPath(bundleName)
+
+        var bundle: Bundle? = this.tryLoadBundle(bundlePath)
+        var updateBundle: Bundle? = this.tryLoadBundle(bundleUpdatePath)
+
+        if (bundle != null) log.info("Current bundle [${bundle}]")
+        if (updateBundle != null) log.info("Current update bundle [${updateBundle}]")
+
+        val bundleUpToDate =
+                (bundle != null && version.equals(bundle.version)) ||
+                        (updateBundle != null && version.equals(updateBundle.version))
+
+        if (!bundleUpToDate || forceDownload) {
+            // If an update is already in place, make it the current download path, possibly minimizing download time
+            if (bundleUpdatePath.exists()) {
+                if (bundleDownloadPath.exists())
+                    bundleDownloadPath.deleteRecursively()
+
+                bundleUpdatePath.renameTo(bundleDownloadPath)
+            }
+
+            val platform = PlatformId.current()
+            var copyPaths = this.listBundlePaths()
+            if (platform.operatingSystem == OperatingSystem.OSX)
+                copyPaths = copyPaths.map { f -> File(f, "${f.name}.app") }
+
+            repository.download(
+                    bundleName,
+                    version,
+                    platform,
+                    destPath = bundleDownloadPath,
+                    copyPaths = copyPaths,
+                    verify = true,
+                    onProgress = { f, p ->
+                        if (onProgress != null) onProgress(f, p)
+                    })
+
+            bundleDownloadPath.renameTo(bundleUpdatePath)
+
+            changesApplied = true
+        } else {
+            log.info("Version [${version}] already downloaded")
+        }
+        return changesApplied
     }
 
     /**
-     * Install bundle from remote repository, also taking care of applying a prepared update and
+     * Download specific bundle version as bundle update (not overwriting the current bundle)
+     * @param bundleName Bundle name
+     * @param version Bundle version
+     * @param forceDownload Always download, even if existing version is the same
+     * @param onProgress Progress callback
+     */
+    fun download(bundleName: String,
+                 versionPattern: String,
+                 forceDownload: Boolean = false,
+                 onProgress: ((file: String, percentage: Double) -> Unit)? = null): Boolean {
+
+        log.info("Checking repository for version matching [${versionPattern}]")
+
+        var latestMatchingVersion: Bundle.Version? = null
+        val availableVersions = this.repository
+                .listVersions(bundleName)
+
+        log.info("Repository [${this.repository} versions [${bundleName}]: ${availableVersions.map { it -> it.toString() }.joinToString(", ")}")
+
+        latestMatchingVersion = availableVersions.filter(versionPattern)
+                .sortedDescending()
+                .firstOrNull()
+
+        if (latestMatchingVersion == null)
+            throw IllegalArgumentException("No version matching [${versionPattern}]")
+
+        return this.download(bundleName = bundleName,
+                version = latestMatchingVersion,
+                forceDownload = forceDownload,
+                onProgress = onProgress)
+    }
+
+    /**
+     * Installs previously downloaded bundle
      * performing native installation by calling into the bundle process' native entry points
      * @param bundleName Name of bundle to install
-     * @param version Version to download and install. If not provided, only prepared updates will be applied
-     * @param downloadOnly Version will be downloaded as an update, but not installed
      * @param omitNativeInstallation Do not call into bundle process for native stop/start/install/uninstall. This is merely
      * an optimization for bundles which do not require those entry points (eg. leoz-boot)
-     * @param onProgress Progress callback
      * @return If changes have been applied
      */
     fun install(
             bundleName: String,
-            version: Bundle.Version? = null,
-            downloadOnly: Boolean,
-            omitNativeInstallation: Boolean = false,
-            onProgress: ((file: String, percentage: Double) -> Unit)? = null): Boolean {
+            omitNativeInstallation: Boolean = false) {
 
-        var changesApplied = false
+        log.info("Installing [${bundleName}]")
 
-        var bundle: Bundle? = null
-        if (this.hasBundle(bundleName)) {
-            // Try to load existing bundle
-            try {
-                bundle = Bundle.load(
-                        BundleInstaller.getNativeBundlePath(
-                                File(this.bundleContainerPath, bundleName)))
+        val bundlePath = this.bundlePath(bundleName)
+        val bundleUpdatePath = this.bundleUpdatePath(bundleName)
 
-                log.info("Current bundle [${bundle}")
-
-            } catch(e: Exception) {
-                this.log.error(e.message, e)
-            }
-        }
+        var bundle: Bundle? = this.tryLoadBundle(bundlePath)
+        val updateBundle: Bundle? = this.tryLoadBundle(bundleUpdatePath)
 
         // Stop and uninstall native bundle process if applicable
-        if (!downloadOnly && !omitNativeInstallation && bundle != null) {
+        if (!omitNativeInstallation && bundle != null) {
             bundle.stop()
             bundle.uninstall()
         }
 
-        if (version != null) {
-            if (bundle != null && version.equals(bundle.version)) {
-                log.info("Version [${version}] already installed")
-                this.clean(bundleName)
-            } else {
-                org.deku.leoz.bundle.log.info("Installing [${bundleName}-${version}]")
+        if (bundleUpdatePath.exists()) {
+            log.info("Updating to [${updateBundle}]")
 
-                this.download(
-                        bundleName,
-                        version,
-                        onProgress)
-
-                changesApplied = true
+            val oldBundlePath = this.oldBundlePath(bundleName)
+            if (oldBundlePath.exists()) {
+                log.info("Removing backup bundle path [${oldBundlePath}]")
+                oldBundlePath.deleteRecursively()
             }
+
+            bundlePath.renameTo(oldBundlePath)
+            try {
+                bundleUpdatePath.renameTo(bundlePath)
+            } catch(e: Exception) {
+                oldBundlePath.renameTo(bundlePath)
+                throw e
+            }
+            oldBundlePath.deleteRecursively()
         }
 
-        if (!downloadOnly) {
-            changesApplied = this.applyUpdate(bundleName)
-        }
-
-        if (!downloadOnly && !omitNativeInstallation) {
+        if (!omitNativeInstallation) {
             // Create a stub bundle instance if needed
             if (bundle == null)
                 bundle = this.bundle(bundleName)
@@ -288,47 +304,6 @@ class BundleInstaller(
             bundle.start()
         }
 
-        org.deku.leoz.bundle.log.info("Installed sucessfully.")
-
-        return changesApplied
-    }
-
-    /**
-     * Install bundle from remote repository, also taking care of applying a prepared update and
-     * performing native installation by calling into the bundle process' native entry points
-     * @param bundleName Name of bundle to install
-     * @param versionPattern Version pattern to match against versions available in repository
-     * @param downloadOnly Version will be downloaded as an update (prepared for installation), but not moved into place
-     * @param omitNativeInstallation Do not call into bundle process for native stop/start/install/uninstall. This is merely
-     * an optimization for bundles which do not require those entry points (eg. leoz-boot)
-     * @param onProgress Progress callback
-     */
-    fun install(bundleName: String,
-                versionPattern: String? = null,
-                downloadOnly: Boolean,
-                omitNativeInstallation: Boolean = false,
-                onProgress: ((file: String, percentage: Double) -> Unit)? = null): Boolean {
-
-        var latestMatchingVersion: Bundle.Version? = null
-        if (versionPattern != null) {
-            val availableVersions = this.repository
-                    .listVersions(bundleName)
-
-            org.deku.leoz.bundle.log.info("Repository [${this.repository} has following versions of [${bundleName}]: ${availableVersions.map { it -> it.toString() }.joinToString(", ")}")
-
-            latestMatchingVersion = availableVersions.filter(versionPattern)
-                    .sortedDescending()
-                    .firstOrNull()
-
-            if (latestMatchingVersion == null)
-                throw IllegalArgumentException("No version matching [${versionPattern}] ")
-        }
-
-        return this.install(
-                bundleName = bundleName,
-                version = latestMatchingVersion,
-                downloadOnly = downloadOnly,
-                omitNativeInstallation = omitNativeInstallation,
-                onProgress = onProgress)
+        log.info("Installed sucessfully.")
     }
 }

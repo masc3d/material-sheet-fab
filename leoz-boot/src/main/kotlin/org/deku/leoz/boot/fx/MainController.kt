@@ -55,15 +55,17 @@ class MainController : Initializable {
 
                 val installer = BundleInstallerConfiguration.installer()
 
-                // Omit version pattern if an update is already in place
-                val versionPattern = if (installer.hasUpdate(bundleName)) null else "+RELEASE"
-                installer.install(
-                        bundleName = bundleName,
-                        versionPattern = versionPattern,
-                        downloadOnly = false,
-                        onProgress = { f, p ->
-                    if (p > 0.0) uxProgressBar.progress = p
-                })
+                if (!installer.hasBundle(bundleName) || Application.Parameters.forceDownload) {
+                    installer.download(
+                            bundleName = bundleName,
+                            versionPattern = Application.Parameters.versionPattern,
+                            forceDownload = Application.Parameters.forceDownload,
+                            onProgress = { f, p ->
+                                if (p > 0.0) uxProgressBar.progress = p
+                            }
+                    )
+                }
+                installer.install(bundleName)
 
                 Platform.runLater {
                     uxProgressBar.styleClass.add("leoz-green-bar")

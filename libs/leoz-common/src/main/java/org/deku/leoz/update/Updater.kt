@@ -97,10 +97,9 @@ class Updater(
                     UpdateInfoRequest(nodeId, bundleName),
                     UpdateInfo::class.java)
 
-            val changesApplied = this.bundleInstaller.install(
+            val changesApplied = this.bundleInstaller.download(
                     bundleName = bundleName,
-                    versionPattern = updateInfo.bundleVersionPattern,
-                    downloadOnly = true)
+                    versionPattern = updateInfo.bundleVersionPattern)
 
             if (changesApplied)
                 this.eventDispatcher.emit { l -> l.onUpdatePrepared(bundleName, updateInfo.desiredRestartTime) }

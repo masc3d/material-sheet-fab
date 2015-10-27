@@ -43,6 +43,12 @@ class Application : javafx.application.Application() {
 
         @Parameter(names = arrayOf("--no-ui"), description = "Don't show user interface")
         var hideUi: Boolean = false
+
+        @Parameter(names = arrayOf("--force-download"), description = "Force download")
+        var forceDownload: Boolean = false
+
+        @Parameter(names = arrayOf("--version-pattern"), description = "Version pattern override")
+        var versionPattern: String = "+RELEASE"
     }
 
     private val log = LogFactory.getLog(this.javaClass)
