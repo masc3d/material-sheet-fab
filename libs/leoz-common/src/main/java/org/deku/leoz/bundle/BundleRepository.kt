@@ -1,22 +1,16 @@
 package org.deku.leoz.bundle
 
-import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
-import sx.io.PermissionUtil
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import java.io.File
-import java.io.FileInputStream
-import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
 import java.util.function.BiPredicate
-import java.util.function.IntSupplier
 
 /**
  * Provices access to a remote rsync bundle repository, download and upload operations
@@ -194,7 +188,7 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
      * @param version Bundle version
      * @param platformId Platform id
      * @param destPath Local destination path
-     * @param comparePaths (Optional) Comparison paths (for rsync to cross reference, minimizing download volume)
+     * @param copyPaths (Optional) Comparison/copy paths (for rsync to cross reference, minimizing download volume)
      * @param verify Verify bundle after successful download. Defaults to false.
      * @param onProgress (Optional) Progress callback
      */
@@ -202,7 +196,7 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
                                version: Bundle.Version,
                                platformId: PlatformId,
                                destPath: File,
-                               comparePaths: List<File> = ArrayList(),
+                               copyPaths: List<File> = ArrayList(),
                                verify: Boolean = false,
                                onProgress: ((file: String, percentage: Double) -> Unit)? = null) {
         val rc = this.createRsyncClient()
@@ -211,7 +205,7 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
 
         var source = this.rsyncModuleUri.resolve(bundleName).resolve(version, platformId)
         var destination = Rsync.URI(destPath)
-        var comparisonDestinations = comparePaths.asSequence().map { Rsync.URI(it) }
+        var copyDestinations = copyPaths.asSequence().map { Rsync.URI(it) }
 
         if (isOsx) {
             val osxBundleName = "${bundleName}.app"
@@ -227,7 +221,7 @@ class BundleRepository(val rsyncModuleUri: Rsync.URI, val rsyncPassword: String)
         rc.preserveExecutability = true
         rc.preserveGroup = false
         rc.preserveOwner = false
-        rc.comparisonDestinations = comparisonDestinations.toArrayList()
+        rc.copyDestinations = copyDestinations.toArrayList()
 
         log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
 

@@ -134,16 +134,16 @@ class BundleInstaller(
         }
 
         val platform = PlatformId.current()
-        var comparePaths = this.listBundlePaths()
+        var copyPaths = this.listBundlePaths()
         if (platform.operatingSystem == OperatingSystem.OSX)
-            comparePaths = comparePaths.map { f -> File(f, "${f.name}.app") }
+            copyPaths = copyPaths.map { f -> File(f, "${f.name}.app") }
 
         repository.download(
                 bundleName,
                 version,
                 platform,
                 destPath = downloadPath,
-                comparePaths = comparePaths,
+                copyPaths = copyPaths,
                 verify = true,
                 onProgress = { f, p ->
                     if (onProgress != null) onProgress(f, p)
