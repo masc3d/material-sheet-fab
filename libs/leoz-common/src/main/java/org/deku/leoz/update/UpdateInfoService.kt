@@ -18,7 +18,7 @@ class UpdateInfoService : Handler<UpdateInfoRequest> {
 
     override fun onMessage(updateInfoRequest: UpdateInfoRequest, jmsMessage: Message, session: Session) {
         // TODO: Query bundle name/version against db
-        val versionPattern = "*RELEASE"
+        val versionPattern = "+RELEASE"
 
         val channel = Channel(
                 session = session,

@@ -2,7 +2,6 @@ package org.deku.leoz.bundle
 
 import org.apache.commons.logging.LogFactory
 import java.io.File
-import java.util.function.Supplier
 
 
 // Extension methods defining a process interface
@@ -39,50 +38,13 @@ fun Bundle.uninstall() {
     this.execute(elevate = false, args = "uninstall")
 }
 
-
-/**
- * Install bundle from remote repository
- * @param version Version to install
- * @param onProgress Progress callback
- */
-fun BundleInstaller.install(version: Supplier<Bundle.Version>? = null,
-                            onProgress: ((file: String, percentage: Double) -> Unit) = fun(f, p) {
-                            }) {
-    if (this.hasBundle()) {
-        this.bundle.stop()
-        this.bundle.uninstall()
-    }
-
-    val versionToInstall: Bundle.Version
-
-    when (version) {
-        null -> {
-            log.info("Checking for available versions of [${this.bundleName}]")
-            versionToInstall = this.repository
-                    .listVersions(this.bundleName)
-                    .sortedDescending()
-                    .first()
-        }
-        else -> versionToInstall = version.get()
-    }
-
-    log.info("Installing [${bundleName}-${versionToInstall}]")
-    this.download(versionToInstall, false, { f, p ->
-        onProgress(f, p)
-    })
-
-    this.bundle.install()
-    this.bundle.start()
-
-    log.info("Installed sucessfully.")
-}
-
 /**
  * Restart bundle process by invoking leoz-boot
+ * @param bundleName Bundle name
  **/
-fun BundleInstaller.boot() {
+fun BundleInstaller.boot(bundleName: String) {
     val leozBoot = Bundle.load(
             BundleInstaller.getNativeBundlePath(File(this.bundleContainerPath, Bundles.LEOZ_BOOT)))
 
-    leozBoot.execute(wait = false, args = *arrayOf("--no-ui", this.bundleName))
+    leozBoot.execute(wait = false, args = *arrayOf("--no-ui", bundleName))
 }

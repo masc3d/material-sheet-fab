@@ -9,7 +9,6 @@ import javafx.scene.input.MouseEvent
 import org.deku.leoz.boot.Application
 import org.deku.leoz.boot.config.BundleInstallerConfiguration
 import org.deku.leoz.boot.config.LogConfiguration
-import org.deku.leoz.bundle.install
 import sx.fx.TextAreaLogAppender
 import java.awt.GraphicsEnvironment
 import java.net.URL
@@ -54,9 +53,15 @@ class MainController : Initializable {
             try {
                 Application.instance.selfInstall()
 
-                val installer = BundleInstallerConfiguration.installerForBundle(bundleName)
+                val installer = BundleInstallerConfiguration.installer()
 
-                installer.install(onProgress = { f, p ->
+                // Omit version pattern if an update is already in place
+                val versionPattern = if (installer.hasUpdate(bundleName)) null else "+RELEASE"
+                installer.install(
+                        bundleName = bundleName,
+                        versionPattern = versionPattern,
+                        downloadOnly = false,
+                        onProgress = { f, p ->
                     if (p > 0.0) uxProgressBar.progress = p
                 })
 

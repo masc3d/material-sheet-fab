@@ -2,10 +2,7 @@ package org.deku.leoz.update
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
-import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.bundle.filter
 import sx.event.EventDispatcher
 import sx.jms.Channel
 import sx.jms.Handler
@@ -31,8 +28,7 @@ import javax.jms.Session
  */
 class Updater(
         public val identity: Identity,
-        public val bundleContainerPath: File,
-        public val bundleRepository: BundleRepository,
+        public val bundleInstaller: BundleInstaller,
         private val jmsConnectionFactory: ConnectionFactory,
         private val jmsUpdateRequestQueue: Destination) : Handler<UpdateInfo> {
 
@@ -49,7 +45,7 @@ class Updater(
          * Emitted when update was successfully prepared
          * @param desiredRestartTime Desired time for restarting if a bundle is self updating. If omitted the update is supposed to become active asap.
          */
-        fun onUpdatePrepared(bundleName: String, bundleVersion: Bundle.Version, desiredRestartTime: LocalTime?)
+        fun onUpdatePrepared(bundleName: String, desiredRestartTime: LocalTime?)
     }
     private val eventDispatcher = EventDispatcher.createThreadSafe<Listener>()
     public val eventDelegate = eventDispatcher
@@ -57,8 +53,8 @@ class Updater(
 
     init {
         // Use all available bundles if names are not explicitly provided
-        this.bundleNames = BundleInstaller.listBundleNames(this.bundleContainerPath)
-        this.bundlePaths = BundleInstaller.listBundlePaths(this.bundleContainerPath)
+        this.bundleNames = this.bundleInstaller.listBundleNames()
+        this.bundlePaths = this.bundleInstaller.listBundlePaths()
 
         this.updateInfoRequestChannel = Channel(
                 connectionFactory = jmsConnectionFactory,
@@ -101,38 +97,13 @@ class Updater(
                     UpdateInfoRequest(nodeId, bundleName),
                     UpdateInfo::class.java)
 
-            // Version check
-            val bundle = Bundle.load(
-                    BundleInstaller.getNativeBundlePath(
-                            File(this.bundleContainerPath, bundleName)))
+            val changesApplied = this.bundleInstaller.install(
+                    bundleName = bundleName,
+                    versionPattern = updateInfo.bundleVersionPattern,
+                    downloadOnly = true)
 
-            log.info("Bundle [${bundleName}] current version [${bundle.version}]")
-
-            val availableVersions = this.bundleRepository
-                    .listVersions(bundleName)
-
-            log.info("Repository [${this.bundleRepository} has following versions of [${bundleName}]: ${availableVersions.map { it -> it.toString() }.joinToString(", ")}")
-
-            val latestMatchingVersion = availableVersions.filter(updateInfo.bundleVersionPattern)
-                    .sortedDescending()
-                    .firstOrNull()
-
-            if (latestMatchingVersion == null) {
-                log.warn("No version matching [${updateInfo.bundleVersionPattern}] ")
-                return
-            }
-
-            if (latestMatchingVersion.equals(bundle.version)) {
-                log.info("Version [${latestMatchingVersion}] already installed")
-                return
-            }
-
-            // Install as prepared update
-            log.info("Updating [${bundleName}] to [${latestMatchingVersion}]")
-            val installer = BundleInstaller(this.bundleContainerPath, bundleName, this.bundleRepository)
-            installer.download(latestMatchingVersion, prepareAsUpdate = true)
-
-            this.eventDispatcher.emit { l -> l.onUpdatePrepared(bundleName, latestMatchingVersion, updateInfo.desiredRestartTime) }
+            if (changesApplied)
+                this.eventDispatcher.emit { l -> l.onUpdatePrepared(bundleName, updateInfo.desiredRestartTime) }
 
         } catch(e: Exception) {
             log.error(e.message, e)

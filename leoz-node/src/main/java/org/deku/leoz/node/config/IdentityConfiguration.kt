@@ -1,19 +1,13 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.node.App
-import org.deku.leoz.node.config.StorageConfiguration
-import org.deku.leoz.SystemInformation
-import org.deku.leoz.node.auth.Authorizer
 import org.deku.leoz.Identity
+import org.deku.leoz.SystemInformation
+import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.node.auth.Authorizer
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.LazyInstance
-
 import javax.annotation.PostConstruct
-import java.io.File
 import kotlin.properties.Delegates
 
 /**
@@ -77,11 +71,9 @@ open class IdentityConfiguration {
         }
         log.info(identity)
 
-        // Start authorizer (on client nodes only)
-        if (App.instance().profile == App.PROFILE_CLIENT_NODE) {
-            authorizer = Authorizer(ActiveMQConfiguration.instance)
-            authorizer.start(identity)
-        }
+        // Start authorizer
+        authorizer = Authorizer(ActiveMQConfiguration.instance)
+        authorizer.start(identity)
 
         this.systemInformation = systemInformation
         this.identity = identity
