@@ -40,7 +40,7 @@ class MainController : Initializable {
         val bundleName = Application.instance.bundle
         uxTitle.text = "Booting ${bundleName}"
         uxProgressBar.progressProperty().addListener { v, o, n ->
-            uxProgressIndicator.isVisible = (n.toDouble() > 0.0 && n.toDouble() < 1)
+            uxProgressIndicator.isVisible = (n.toDouble() == ProgressBar.INDETERMINATE_PROGRESS || (n.toDouble() > 0.0 && n.toDouble() < 1))
         }
         uxClose.onMouseClicked = object:EventHandler<MouseEvent> {
             override fun handle(event: MouseEvent?) {
@@ -48,6 +48,7 @@ class MainController : Initializable {
             }
         }
         uxClose.visibleProperty().value = false
+        uxProgressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
 
         thread {
             try {
@@ -61,9 +62,12 @@ class MainController : Initializable {
                             versionPattern = Application.Parameters.versionPattern,
                             forceDownload = Application.Parameters.forceDownload,
                             onProgress = { f, p ->
-                                if (p > 0.0) uxProgressBar.progress = p
+                                if (p > 0.0) Platform.runLater { uxProgressBar.progress = p }
                             }
                     )
+                }
+                Platform.runLater {
+                    uxProgressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
                 }
                 installer.install(bundleName)
 
@@ -78,8 +82,10 @@ class MainController : Initializable {
                     uxTitle.text = "Booting ${bundleName} failed."
                 }
             } finally {
-                uxProgressBar.progress = 1.0
-                uxClose.visibleProperty().value = true
+                Platform.runLater {
+                    uxProgressBar.progress = 1.0
+                    uxClose.visibleProperty().value = true
+                }
             }
 
             if (Application.Parameters.hideUi || GraphicsEnvironment.isHeadless())
