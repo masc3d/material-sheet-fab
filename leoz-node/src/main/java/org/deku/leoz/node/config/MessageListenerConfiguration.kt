@@ -1,23 +1,22 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.Identity
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.Identity
-import org.deku.leoz.node.messaging.MessageListener
-import org.deku.leoz.node.messaging.auth.AuthorizationMessageHandler
-import org.deku.leoz.node.messaging.auth.v1.AuthorizationMessage
+import org.deku.leoz.node.messaging.AuthorizationMessageHandler
+import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
+import sx.jms.converters.DefaultConverter
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
-
+import sx.jms.listeners.SpringJmsListener
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
-import kotlin.properties.Delegates
+import javax.jms.Destination
 
 /**
  * Message listener configuration.
@@ -30,20 +29,36 @@ import kotlin.properties.Delegates
 open class MessageListenerConfiguration {
     private val log = LogFactory.getLog(MessageListenerConfiguration::class.java)
 
-    private var messageListener: MessageListener by Delegates.notNull()
-
     @Inject
     lateinit private var identityConfiguration: IdentityConfiguration
 
+    private var nodeQueueListener: SpringJmsListener
+
+    init {
+        // Configure and create listeners
+        nodeQueueListener = object : SpringJmsListener(ActiveMQConfiguration.instance.broker.connectionFactory) {
+            init {
+                this.converter = DefaultConverter(
+                        DefaultConverter.SerializationType.KRYO,
+                        DefaultConverter.CompressionType.GZIP)
+            }
+
+            override fun createDestination(): Destination? {
+                return ActiveMQConfiguration.instance.nodeQueue(identityConfiguration.identity.id!!)
+            }
+        }
+    }
+
+    private fun initializeListener() {
+        // Add message handler delegatess
+        nodeQueueListener.addDelegate(
+                AuthorizationMessage::class.java,
+                AuthorizationMessageHandler())
+    }
+
+    //region Lifecycle
     @PostConstruct
     fun onInitialize() {
-        log.info("Initializing node message listener")
-
-        // Configure and create listener
-        messageListener = MessageListener(
-                ActiveMQConfiguration.instance,
-                identityConfiguration.identity)
-
         // Register event listeners
         ActiveMQBroker.instance().delegate.add(brokerEventListener)
         identityConfiguration.identity.delegate.add(identityEventListener)
@@ -53,7 +68,7 @@ open class MessageListenerConfiguration {
 
     @PreDestroy
     fun onDestroy() {
-        messageListener.stop()
+        this.nodeQueueListener.stop()
     }
 
     /**
@@ -92,9 +107,8 @@ open class MessageListenerConfiguration {
         this.stop()
 
         if (this.isReadyToStart) {
-            // Add message handler delegatess
-            messageListener.addDelegate(AuthorizationMessage::class.java, AuthorizationMessageHandler())
-            messageListener.start()
+            this.initializeListener()
+            this.nodeQueueListener.start()
         }
     }
 
@@ -102,6 +116,7 @@ open class MessageListenerConfiguration {
      * Stop message listener
      */
     @Synchronized private fun stop() {
-        messageListener.stop()
+        this.nodeQueueListener.stop()
     }
+    //endregion
 }

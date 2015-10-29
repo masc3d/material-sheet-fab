@@ -2,9 +2,11 @@ package org.deku.leoz.central.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.data.repositories.NodeRepository
-import org.deku.leoz.central.messaging.handler.IdentityMessageHandler
+import org.deku.leoz.central.messaging.handlers.IdentityMessageHandler
+import org.deku.leoz.central.messaging.handlers.UpdateInfoRequestHandler
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.node.messaging.auth.v1.IdentityMessage
+import org.deku.leoz.node.messaging.entities.IdentityMessage
+import org.deku.leoz.update.UpdateInfoRequest
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.converters.DefaultConverter
@@ -51,6 +53,10 @@ open class MessageListenerConfiguration {
         centralQueueListener.addDelegate(
                 IdentityMessage::class.java,
                 IdentityMessageHandler(nodeRepository))
+
+        centralQueueListener.addDelegate(
+                UpdateInfoRequest::class.java,
+                UpdateInfoRequestHandler())
     }
 
     //region Lifecycle

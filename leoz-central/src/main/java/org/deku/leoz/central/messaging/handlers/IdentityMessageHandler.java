@@ -1,11 +1,11 @@
-package org.deku.leoz.central.messaging.handler;
+package org.deku.leoz.central.messaging.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.central.data.entities.jooq.tables.records.MstNodeRecord;
 import org.deku.leoz.central.data.repositories.NodeRepository;
-import org.deku.leoz.node.messaging.auth.v1.AuthorizationMessage;
-import org.deku.leoz.node.messaging.auth.v1.IdentityMessage;
+import org.deku.leoz.node.messaging.entities.AuthorizationMessage;
+import org.deku.leoz.node.messaging.entities.IdentityMessage;
 import org.jetbrains.annotations.NotNull;
 import sx.jms.Converter;
 import sx.jms.Handler;

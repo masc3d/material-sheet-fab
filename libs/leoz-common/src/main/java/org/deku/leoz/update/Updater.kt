@@ -63,7 +63,6 @@ class Updater(
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP),
-                jmsSessionTransacted = false,
                 jmsDeliveryMode = Channel.DeliveryMode.NonPersistent,
                 jmsTtl = Duration.ofSeconds(10))
     }

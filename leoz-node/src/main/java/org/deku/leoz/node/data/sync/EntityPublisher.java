@@ -3,8 +3,8 @@ package org.deku.leoz.node.data.sync;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.config.MessagingConfiguration;
 import org.deku.leoz.config.ActiveMQConfiguration;
+import org.deku.leoz.config.MessagingConfiguration;
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage;
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage;
 import org.eclipse.persistence.queries.ScrollableCursor;
@@ -75,6 +75,7 @@ public class EntityPublisher extends SpringJmsListener {
                 ActiveMQConfiguration.getInstance().getBroker().getConnectionFactory(),
                 ActiveMQConfiguration.getInstance().getNodeNotificationTopic(),
                 this.createMessageConverter(),
+                Duration.ofSeconds(10),
                 false,
                 Channel.DeliveryMode.NonPersistent,
                 Duration.ofMinutes(5));

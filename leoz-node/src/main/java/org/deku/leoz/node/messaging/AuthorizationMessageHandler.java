@@ -1,6 +1,6 @@
-package org.deku.leoz.node.messaging.auth;
+package org.deku.leoz.node.messaging;
 
-import org.deku.leoz.node.messaging.auth.v1.AuthorizationMessage;
+import org.deku.leoz.node.messaging.entities.AuthorizationMessage;
 import org.jetbrains.annotations.NotNull;
 import sx.jms.Converter;
 import sx.jms.Handler;
