@@ -16,9 +16,9 @@ abstract class Listener(
         protected val connectionFactory: ConnectionFactory)
 :
         Disposable, ExceptionListener {
-    protected val log: Log
+    protected val log: Log = LogFactory.getLog(this.javaClass)
     /** Object message handler delegates  */
-    private val mHandlerDelegates = HashMap<Class<out Any?>, Handler<Any?>>()
+    private val handlerDelegates = HashMap<Class<out Any?>, Handler<Any?>>()
     /** Message converter  */
     var converter: Converter? = null
 
@@ -26,10 +26,6 @@ abstract class Listener(
      * Message handling exception
      */
     private inner class HandlingException(message: String) : RuntimeException(message)
-
-    init {
-        log = LogFactory.getLog(this.javaClass)
-    }
 
     @Throws(JMSException::class)
     abstract fun start()
@@ -51,7 +47,7 @@ abstract class Listener(
 
         if (converter != null) {
             messageObject = converter!!.fromMessage(message)
-            handler = mHandlerDelegates.getOrDefault(messageObject.javaClass, null)
+            handler = handlerDelegates.getOrDefault(messageObject.javaClass, null)
         }
 
         if (handler == null) {
@@ -74,7 +70,7 @@ abstract class Listener(
      */
     @Suppress("UNCHECKED_CAST")
     fun <T> addDelegate(c: Class<T>, delegate: Handler<T>) {
-        mHandlerDelegates.put(c, delegate as Handler<Any?>)
+        handlerDelegates.put(c, delegate as Handler<Any?>)
     }
 
     override fun dispose() {
