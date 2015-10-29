@@ -7,7 +7,9 @@ import org.deku.leoz.config.MessagingConfiguration;
 import org.deku.leoz.node.data.PersistenceUtil;
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage;
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jms.core.JmsTemplate;
+import sx.jms.Converter;
 import sx.jms.Handler;
 import sx.jms.converters.DefaultConverter;
 import sx.jms.listeners.SpringJmsListener;
@@ -72,7 +74,7 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
     }
 
     @Override
-    public void onMessage(EntityStateMessage message, Message jmsMessage, Session session) throws JMSException {
+    public void onMessage(EntityStateMessage message, @NotNull Converter converter, @NotNull Message jmsMessage, @NotNull Session session) {
         this.request(message.getEntityType(), message.getTimestamp());
     }
 

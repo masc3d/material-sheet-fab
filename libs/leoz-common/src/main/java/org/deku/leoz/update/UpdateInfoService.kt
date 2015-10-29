@@ -1,6 +1,7 @@
 package org.deku.leoz.update
 
 import sx.jms.Channel
+import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
 import java.time.Duration
@@ -16,7 +17,8 @@ class UpdateInfoService : Handler<UpdateInfoRequest> {
             DefaultConverter.SerializationType.KRYO,
             DefaultConverter.CompressionType.NONE)
 
-    override fun onMessage(updateInfoRequest: UpdateInfoRequest, jmsMessage: Message, session: Session) {
+    override fun onMessage(message: UpdateInfoRequest, converter: Converter, jmsMessage: Message, session: Session) {
+        val updateInfoRequest = message
         // TODO: Query bundle name/version against db
         val versionPattern = "+RELEASE"
 
@@ -24,7 +26,6 @@ class UpdateInfoService : Handler<UpdateInfoRequest> {
                 session = session,
                 destination = jmsMessage.jmsReplyTo,
                 converter = converter,
-                jmsSessionTransacted = false,
                 jmsDeliveryMode = Channel.DeliveryMode.NonPersistent,
                 jmsTtl = Duration.ofSeconds(10))
 

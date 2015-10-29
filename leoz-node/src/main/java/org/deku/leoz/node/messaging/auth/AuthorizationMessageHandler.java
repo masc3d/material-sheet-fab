@@ -1,9 +1,10 @@
 package org.deku.leoz.node.messaging.auth;
 
 import org.deku.leoz.node.messaging.auth.v1.AuthorizationMessage;
+import org.jetbrains.annotations.NotNull;
+import sx.jms.Converter;
 import sx.jms.Handler;
 
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 
@@ -12,7 +13,7 @@ import javax.jms.Session;
  */
 public class AuthorizationMessageHandler implements Handler<AuthorizationMessage> {
     @Override
-    public void onMessage(AuthorizationMessage message, Message jmsMessage, Session session) throws JMSException {
+    public void onMessage(AuthorizationMessage message, @NotNull Converter converter, @NotNull Message jmsMessage, @NotNull Session session) {
         // TODO: Push authorization update handling. May revoke the node's authorization key
     }
 }

@@ -5,6 +5,7 @@ import org.deku.leoz.Identity
 import org.deku.leoz.bundle.BundleInstaller
 import sx.event.EventDispatcher
 import sx.jms.Channel
+import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
 import java.io.File
@@ -70,7 +71,8 @@ class Updater(
     /**
      * Update notification message handler
      */
-    override fun onMessage(updateInfo: UpdateInfo, jmsMessage: Message, session: Session) {
+    override fun onMessage(message: UpdateInfo, converter: Converter, jmsMessage: Message, session: Session) {
+        val updateInfo = message
         log.info("Received update notification [${updateInfo}]")
         if (this.bundleNames.contains(updateInfo.bundleName)) {
             // Schedule update

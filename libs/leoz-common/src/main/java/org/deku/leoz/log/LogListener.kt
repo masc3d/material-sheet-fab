@@ -1,19 +1,16 @@
 package org.deku.leoz.log
 
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.MessagingConfiguration
+import sx.jms.Converter
 import sx.jms.Handler
-import sx.jms.listeners.SpringJmsListener
 import sx.jms.converters.DefaultConverter
-
-import javax.jms.Destination
-import javax.jms.JMSException
-import javax.jms.Message
-import javax.jms.Session
+import sx.jms.listeners.SpringJmsListener
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import javax.jms.Destination
+import javax.jms.Message
+import javax.jms.Session
 
 /**
  * Log message listener
@@ -21,7 +18,10 @@ import java.time.ZoneId
  */
 class LogListener(
         /** Messaging context */
-        private val messagingConfiguration: MessagingConfiguration) : SpringJmsListener(messagingConfiguration.broker.connectionFactory), Handler<Array<LogMessage>> {
+        private val messagingConfiguration: MessagingConfiguration)
+:
+        SpringJmsListener(messagingConfiguration.broker.connectionFactory),
+        Handler<Array<LogMessage>> {
 
     init {
         this.converter = DefaultConverter(
@@ -35,7 +35,7 @@ class LogListener(
         return messagingConfiguration.centralLogQueue
     }
 
-    override fun onMessage(message: Array<LogMessage>, jmsMessage: Message, session: Session) {
+    override fun onMessage(message: Array<LogMessage>, converter: Converter, jmsMessage: Message, session: Session) {
         val timestamp = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(
                         jmsMessage.jmsTimestamp), ZoneId.systemDefault())

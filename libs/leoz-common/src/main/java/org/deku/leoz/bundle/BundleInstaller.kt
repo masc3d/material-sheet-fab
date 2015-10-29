@@ -231,13 +231,12 @@ class BundleInstaller(
 
         log.info("Checking repository for version matching [${versionPattern}]")
 
-        var latestMatchingVersion: Bundle.Version? = null
         val availableVersions = this.repository
                 .listVersions(bundleName)
 
         log.info("Repository [${this.repository} versions [${bundleName}]: ${availableVersions.map { it -> it.toString() }.joinToString(", ")}")
 
-        latestMatchingVersion = availableVersions.filter(versionPattern)
+        val latestMatchingVersion = availableVersions.filter(versionPattern)
                 .sortedDescending()
                 .firstOrNull()
 

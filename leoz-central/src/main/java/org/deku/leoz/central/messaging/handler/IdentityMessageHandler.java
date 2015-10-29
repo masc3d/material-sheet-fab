@@ -6,8 +6,9 @@ import org.deku.leoz.central.data.entities.jooq.tables.records.MstNodeRecord;
 import org.deku.leoz.central.data.repositories.NodeRepository;
 import org.deku.leoz.node.messaging.auth.v1.AuthorizationMessage;
 import org.deku.leoz.node.messaging.auth.v1.IdentityMessage;
-import sx.jms.Handler;
+import org.jetbrains.annotations.NotNull;
 import sx.jms.Converter;
+import sx.jms.Handler;
 import sx.jms.converters.DefaultConverter;
 
 import javax.jms.*;
@@ -29,8 +30,9 @@ public class IdentityMessageHandler implements Handler<IdentityMessage> {
                 DefaultConverter.CompressionType.GZIP);
     }
 
+
     @Override
-    public void onMessage(IdentityMessage message, Message jmsMessage, Session session) throws JMSException {
+    public void onMessage(IdentityMessage message, @NotNull Converter converter, @NotNull Message jmsMessage, @NotNull Session session) {
         try {
             mLog.info(message);
 
@@ -58,7 +60,7 @@ public class IdentityMessageHandler implements Handler<IdentityMessage> {
 
                 mLog.info(String.format("Sent authorization [%s]", am));
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             mLog.error(e.getMessage(), e);
         }
     }
