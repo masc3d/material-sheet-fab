@@ -6,20 +6,23 @@ import com.esotericsoftware.kryo.io.Output
 import org.xerial.snappy.SnappyInputStream
 import org.xerial.snappy.SnappyOutputStream
 import sx.jms.Converter
-
+import java.io.*
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
 import javax.jms.BytesMessage
 import javax.jms.JMSException
 import javax.jms.Message
 import javax.jms.Session
-import java.io.*
-import java.util.zip.GZIPInputStream
-import java.util.zip.GZIPOutputStream
 
 /**
  * Object message converter
  * Created by masc on 19.06.15.
  */
-class DefaultConverter(var mSerializationType: DefaultConverter.SerializationType, var mCompressionType: DefaultConverter.CompressionType) : Converter {
+class DefaultConverter(
+        var mSerializationType: DefaultConverter.SerializationType,
+        var mCompressionType: DefaultConverter.CompressionType)
+:
+        Converter {
     enum class SerializationType {
         JAVA,
         KRYO

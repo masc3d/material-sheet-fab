@@ -1,15 +1,11 @@
 package sx.jms
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import sx.Action
 import sx.Disposable
-import sx.Dispose
 import sx.LazyInstance
-
 import java.io.Closeable
 import java.time.Duration
-import java.util.function.Supplier
 import javax.jms.*
 
 /**
@@ -63,7 +59,6 @@ class Channel private constructor(
                 destination: Destination,
                 converter: Converter,
                 receiveTimeout: Duration = Duration.ofSeconds(10),
-                jmsSessionTransacted: Boolean,
                 jmsDeliveryMode: Channel.DeliveryMode,
                 jmsTtl: Duration,
                 jmsPriority: Int? = null) : this(
@@ -72,7 +67,7 @@ class Channel private constructor(
             destination = destination,
             converter = converter,
             receiveTimeout = receiveTimeout,
-            jmsSessionTransacted = jmsSessionTransacted,
+            jmsSessionTransacted = session.transacted,
             jmsDeliveryMode = jmsDeliveryMode,
             jmsTtl = jmsTtl,
             jmsPriority = jmsPriority) {

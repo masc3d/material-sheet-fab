@@ -11,7 +11,7 @@ import javax.jms.*;
  * Created by masc on 16.04.15.
  */
 public abstract class Producer implements Disposable {
-    Log mLog;
+    Log mLog = LogFactory.getLog(this.getClass());
     ConnectionFactory mConnectionFactory;
     Connection mConnection;
     Session mSession;
@@ -19,7 +19,6 @@ public abstract class Producer implements Disposable {
     MessageProducer mProducer;
 
     public Producer(ConnectionFactory connectionFactory) {
-        mLog = LogFactory.getLog(this.getClass());
         mConnectionFactory = connectionFactory;
     }
 
