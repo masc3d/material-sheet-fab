@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.config.ActiveMQConfiguration;
 import org.deku.leoz.config.MessagingConfiguration;
+import org.deku.leoz.node.data.repositories.EntityRepository;
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage;
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage;
 import org.eclipse.persistence.queries.ScrollableCursor;

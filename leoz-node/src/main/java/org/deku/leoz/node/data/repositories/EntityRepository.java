@@ -1,4 +1,4 @@
-package org.deku.leoz.node.data.sync;
+package org.deku.leoz.node.data.repositories;
 
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.ResultSetType;
