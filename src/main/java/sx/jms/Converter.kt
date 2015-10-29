@@ -1,23 +1,24 @@
-package sx.jms;
+package sx.jms
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
+import javax.jms.JMSException
+import javax.jms.Message
+import javax.jms.Session
 
 /**
  * JMS message converter
  * Created by masc on 28.06.15.
  */
-public interface Converter {
+interface Converter {
     /**
      * Convert a Java object to a JMS Message using the supplied session
      * to create the message object.
-     * @param object  the object to convert
+     * @param obj  the object to convert
      * @param session the Session to use for creating a JMS Message
      * @return the JMS Message
      * @throws javax.jms.JMSException     if thrown by JMS API methods
      */
-    Message toMessage(Object object, Session session) throws JMSException;
+    @Throws(JMSException::class)
+    fun toMessage(obj: Any, session: Session): Message
 
     /**
      * Convert from a JMS Message to a Java object.
@@ -25,5 +26,6 @@ public interface Converter {
      * @return the converted Java object
      * @throws javax.jms.JMSException     if thrown by JMS API methods
      */
-    Object fromMessage(Message message) throws JMSException;
+    @Throws(JMSException::class)
+    fun fromMessage(message: Message): Any
 }
