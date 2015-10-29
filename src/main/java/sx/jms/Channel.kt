@@ -34,13 +34,13 @@ class Channel private constructor(
      * c'tor for creating channel using a new connection created via connection factory
      */
     @JvmOverloads constructor(connectionFactory: ConnectionFactory,
-                destination: Destination,
-                converter: Converter,
-                receiveTimeout: Duration = Duration.ofSeconds(10),
-                jmsSessionTransacted: Boolean,
-                jmsDeliveryMode: Channel.DeliveryMode,
-                jmsTtl: Duration,
-                jmsPriority: Int? = null) : this(
+                              destination: Destination,
+                              converter: Converter,
+                              receiveTimeout: Duration = Duration.ofSeconds(10),
+                              jmsSessionTransacted: Boolean = true,
+                              jmsDeliveryMode: Channel.DeliveryMode,
+                              jmsTtl: Duration,
+                              jmsPriority: Int? = null) : this(
             connectionFactory = connectionFactory,
             session = null,
             destination = destination,
@@ -98,7 +98,7 @@ class Channel private constructor(
 
             // Create session
             sessionCreated = true
-            return connection.get().createSession(this.jmsSessionTransacted, this.jmsDeliveryMode.value)
+            return connection.get().createSession(this.jmsSessionTransacted, Session.AUTO_ACKNOWLEDGE)
         })
 
         // JMS consumer
