@@ -3,6 +3,7 @@ package org.deku.leoz.update
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.bundle.BundleInstaller
+import sx.Disposable
 import sx.event.EventDispatcher
 import sx.jms.Channel
 import sx.jms.Converter
@@ -12,6 +13,7 @@ import java.io.File
 import java.time.Duration
 import java.time.LocalTime
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import javax.jms.ConnectionFactory
 import javax.jms.Destination
 import javax.jms.Message
@@ -33,7 +35,8 @@ class Updater(
         private val jmsConnectionFactory: ConnectionFactory,
         private val jmsUpdateRequestQueue: Destination)
 :
-        Handler<UpdateInfo> {
+        Handler<UpdateInfo>,
+        Disposable {
     private val log = LogFactory.getLog(this.javaClass)
     private val bundleNames: List<String>
     private val bundlePaths: List<File>
@@ -61,6 +64,7 @@ class Updater(
         this.updateInfoRequestChannel = Channel(
                 connectionFactory = jmsConnectionFactory,
                 destination = jmsUpdateRequestQueue,
+                jmsSessionTransacted = false,
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP),
@@ -76,10 +80,20 @@ class Updater(
         log.info("Received update notification [${updateInfo}]")
         if (this.bundleNames.contains(updateInfo.bundleName)) {
             // Schedule update
-            this.executor.submit({
-                this.update(updateInfo.bundleName)
-            })
+            this.startUpdate(updateInfo.bundleName)
         }
+    }
+
+    public fun startUpdate(bundleName: String) {
+        // Schedule update
+        this.executor.submit({
+            this.update(bundleName)
+        })
+    }
+
+    public fun stop() {
+        this.executor.shutdownNow()
+        this.executor.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
     }
 
     /**
@@ -97,7 +111,8 @@ class Updater(
             // Request currently assigned version for this bundle and node
             val updateInfo = this.updateInfoRequestChannel.sendReceive(
                     UpdateInfoRequest(nodeId, bundleName),
-                    UpdateInfo::class.java)
+                    UpdateInfo::class.java,
+                    useTemporaryResponseQueue = true)
 
             val changesApplied = this.bundleInstaller.download(
                     bundleName = bundleName,
@@ -109,5 +124,9 @@ class Updater(
         } catch(e: Exception) {
             log.error(e.message, e)
         }
+    }
+
+    override fun dispose() {
+        this.stop()
     }
 }

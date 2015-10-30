@@ -30,5 +30,7 @@ class UpdateInfoRequestHandler :
         channel.send(UpdateInfo(
                 updateInfoRequest.bundleName,
                 versionPattern))
+
+        channel.commit()
     }
 }

@@ -6,9 +6,9 @@ package org.deku.leoz.update
  */
 data class UpdateInfoRequest(
         /** Id of the node requesting the update */
-        val nodeId: Int,
+        val nodeId: Int = 0,
         /** Name of bundle to request update info for */
-        val bundleName: String) {
+        val bundleName: String = "") {
     companion object {
         private const val serialVersionUID = -1111506008152543276L
     }

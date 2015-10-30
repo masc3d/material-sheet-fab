@@ -9,9 +9,9 @@ import java.time.LocalTime
  */
 data class UpdateInfo(
         /** Bundle name */
-        val bundleName: String,
+        val bundleName: String = "",
         /** Bundle version pattern, eg. "2.+" or "+RELEASE" */
-        val bundleVersionPattern: String,
+        val bundleVersionPattern: String = "",
         /** Desired time for restarting if a bundle is self updating. If omitted the update is supposed to become active asap. */
         val desiredRestartTime: LocalTime? = null) {
     companion object {
