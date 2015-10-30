@@ -6,6 +6,7 @@ import sx.Disposable
 import sx.LazyInstance
 import java.io.Closeable
 import java.time.Duration
+import java.util.concurrent.TimeoutException
 import javax.jms.*
 
 /**
@@ -29,6 +30,13 @@ class Channel private constructor(
     private val session = LazyInstance<Session>()
     private val consumer = LazyInstance<MessageConsumer>()
     private var sessionCreated = false
+
+    private val temporaryResponseQueue: Destination by lazy ({
+        this.session.get().createTemporaryQueue()
+    })
+    private val temporaryResponseQueueConsumer: MessageConsumer by lazy ({
+        this.session.get().createConsumer(this.temporaryResponseQueue)
+    })
 
     /**
      * c'tor for creating channel using a new connection created via connection factory
@@ -110,10 +118,9 @@ class Channel private constructor(
     /**
      * Send jms message
      * @param message Message to send
-     * *
      * @param messageConfigurer Callback for customizing the message before sending
      */
-    fun send(message: Message, messageConfigurer: Action<Message>?) {
+    @JvmOverloads fun send(message: Message, messageConfigurer: Action<Message>? = null) {
         val mp = session.get().createProducer(destination)
 
         mp.deliveryMode = jmsDeliveryMode.value
@@ -127,40 +134,53 @@ class Channel private constructor(
     }
 
     /**
-     * Send jms message
-     * @param message Message to send
-     */
-    fun send(message: Message) {
-        this.send(message, null)
-    }
-
-    /**
      * Send object as message using converter
      * @param message
+     * @param messageConfigurer Callback for customizing the message before sending
      */
-    fun send(message: Any) {
-        this.send(converter.toMessage(message, session.get()))
+    @JvmOverloads fun send(message: Any, messageConfigurer: Action<Message>? = null) {
+        this.send(converter.toMessage(message, session.get()), messageConfigurer)
     }
 
     /**
      * Receive message as object using converter
      * @param messageType Type of message
      */
+    @Throws(TimeoutException::class)
     fun <T> receive(messageType: Class<T>): T {
-        return messageType.cast(
-                this.converter.fromMessage(
-                        this.consumer.get()
-                                .receive(this.receiveTimeout.toMillis())))
+        return this.receive(this.consumer.get(), messageType)
+    }
+
+    private fun <T> receive(consumer: MessageConsumer, messageType: Class<T>): T {
+        val jmsMessage = consumer.receive(this.receiveTimeout.toMillis())
+
+        if (jmsMessage == null)
+            throw TimeoutException("Timeout while waiting for message [${messageType}]")
+
+        return messageType.cast(this.converter.fromMessage(jmsMessage))
     }
 
     /**
      * Request/response type send and receive
      * @param request Request message
      * @param responseType Response class type
+     * @param requestMessageConfigurer Request message configurer
+     * @param useTemporaryResponseQueue Use a temporary response queue
      */
-    fun <T> sendReceive(request: Any, responseType: Class<T>): T {
-        this.send(request)
-        return this.receive(responseType)
+    @Throws(TimeoutException::class)
+    fun <T> sendReceive(
+            request: Any,
+            responseType: Class<T>,
+            requestMessageConfigurer: Action<Message>? = null,
+            useTemporaryResponseQueue: Boolean = false): T {
+        this.send(request, Action { m ->
+            m.jmsReplyTo = this.temporaryResponseQueue
+            requestMessageConfigurer?.perform(m)
+        })
+
+        return this.receive(
+                consumer = if (useTemporaryResponseQueue) this.temporaryResponseQueueConsumer else this.consumer.get(),
+                messageType = responseType)
     }
 
     /**
