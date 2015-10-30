@@ -8,16 +8,12 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
-import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.log.LogAppender
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import java.io.File
 
 /**
- * Log configuration
+ * Base class for leoz Log configuration
  * Created by masc on 24-Jul-15.
  */
 abstract class LogConfiguration : Disposable {

@@ -2,9 +2,7 @@ package org.deku.leoz.log;
 
 import ch.qos.logback.classic.Logger;
 import org.deku.leoz.MessagingTest;
-import org.deku.leoz.config.ActiveMQConfiguration;
-import org.deku.leoz.log.LogAppender;
-import org.deku.leoz.log.LogListener;
+import org.deku.leoz.config.messaging.ActiveMQConfiguration;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;

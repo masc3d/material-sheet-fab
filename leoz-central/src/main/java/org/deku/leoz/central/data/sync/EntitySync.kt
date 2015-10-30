@@ -1,15 +1,11 @@
 package org.deku.leoz.central.data.sync
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.data.sync.EntityPublisher
 import sx.Disposable
-import sx.LazyInstance
-import sx.event.EventDelegate
 import java.sql.Timestamp
 import javax.inject.Named
-
 import javax.persistence.EntityManagerFactory
 import kotlin.properties.Delegates
 

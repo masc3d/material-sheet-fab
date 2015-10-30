@@ -1,16 +1,13 @@
 package org.deku.leoz.node.config
 
 import com.google.common.base.Strings
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
-
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
@@ -22,8 +19,8 @@ import javax.inject.Inject
 @Configuration
 @ConfigurationProperties(prefix = "broker")
 @Lazy(false)
-open class ActiveMqConfiguration {
-    private val log = LogFactory.getLog(ActiveMqConfiguration::class.java)
+open class MessageBrokerConfiguration {
+    private val log = LogFactory.getLog(MessageBrokerConfiguration::class.java)
 
     @Inject
     private lateinit var peerSettings: RemotePeerSettings

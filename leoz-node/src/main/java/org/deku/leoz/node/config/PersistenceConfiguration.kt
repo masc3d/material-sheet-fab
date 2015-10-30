@@ -1,10 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.apache.http.client.utils.URIBuilder
-import org.deku.leoz.node.config.StorageConfiguration
-import org.h2.jdbc.JdbcConnection
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
 import org.springframework.beans.factory.DisposableBean
@@ -15,22 +11,15 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.orm.jpa.JpaTransactionManager
-import org.springframework.orm.jpa.JpaVendorAdapter
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
-import org.springframework.web.util.UriComponentsBuilder
-
+import java.io.File
+import java.util.*
 import javax.persistence.EntityManagerFactory
 import javax.sql.DataSource
-import java.io.File
-import java.net.URI
-import java.net.URISyntaxException
-import java.net.URL
-import java.util.*
 
 /**
  * Leoz-node database persistence context
@@ -47,7 +36,7 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
 
     private val log = LogFactory.getLog(PersistenceConfiguration::class.java.name)
 
-    private val mShowSql = false
+    private val showSql = false
 
     @Bean
     @FlywayDataSource
@@ -130,7 +119,7 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
         eclipseLinkProperties.setProperty("eclipselink.weaving", "false")
         eclipseLinkProperties.setProperty("eclipselink.cache.shared.default", "true")
 
-        if (mShowSql) {
+        if (showSql) {
             // Show SQL
             eclipseLinkProperties.setProperty("eclipselink.logging.level.sql", "FINE")
             eclipseLinkProperties.setProperty("eclipselink.logging.parameters", "true")

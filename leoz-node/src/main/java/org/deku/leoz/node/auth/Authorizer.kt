@@ -2,8 +2,8 @@ package org.deku.leoz.node.auth
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
-import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.config.MessagingConfiguration
+import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.node.messaging.IdentityPublisher
 import sx.Disposable

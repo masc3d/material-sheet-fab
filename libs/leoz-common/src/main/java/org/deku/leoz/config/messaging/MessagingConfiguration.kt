@@ -1,4 +1,4 @@
-package org.deku.leoz.config
+package org.deku.leoz.config.messaging
 
 import sx.jms.embedded.Broker
 
@@ -15,14 +15,18 @@ interface MessagingConfiguration {
 
     /** Central message queue for lightweight message exchange  */
     val centralQueue: Queue
-    /** Central message queue for entity sync  */
-    val centralEntitySyncQueue: Queue
+
     /** Central message queue for logs  */
     val centralLogQueue: Queue
 
-    /** Node message queue for lightweight message exchange */
+    /** Central message queue for entity sync  */
+    val centralEntitySyncQueue: Queue
+    /** Node topic for entity sync broadcastss  */
+    val nodeEntitySyncTopic: Topic
+
+    /** Queue for sending messages to a specific node */
     fun nodeQueue(id: Int): Queue
 
-    /** Node notification topic for broadcastss  */
+    /** Topci for notifications for all nodes */
     val nodeNotificationTopic: Topic
 }

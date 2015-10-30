@@ -1,6 +1,6 @@
 package org.deku.leoz.log
 
-import org.deku.leoz.config.MessagingConfiguration
+import org.deku.leoz.config.messaging.MessagingConfiguration
 import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter

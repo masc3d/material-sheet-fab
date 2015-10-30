@@ -31,8 +31,9 @@ class Updater(
         public val identity: Identity,
         public val bundleInstaller: BundleInstaller,
         private val jmsConnectionFactory: ConnectionFactory,
-        private val jmsUpdateRequestQueue: Destination) : Handler<UpdateInfo> {
-
+        private val jmsUpdateRequestQueue: Destination)
+:
+        Handler<UpdateInfo> {
     private val log = LogFactory.getLog(this.javaClass)
     private val bundleNames: List<String>
     private val bundlePaths: List<File>

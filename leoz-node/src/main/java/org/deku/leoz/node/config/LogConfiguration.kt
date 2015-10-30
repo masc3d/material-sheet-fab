@@ -1,21 +1,13 @@
 package org.deku.leoz.node.config
 
-import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.LoggerContext
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder
-import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.core.rolling.RollingFileAppender
-import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.log.LogAppender
-import org.deku.leoz.node.config.StorageConfiguration
-import org.slf4j.LoggerFactory
-import sx.Disposable
 
 /**
- * Log configuration
+ * Log configuration.
+ * Not maintained by spring, as it's required earlier during application startup
  * Created by masc on 24-Jul-15.
  */
 open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {

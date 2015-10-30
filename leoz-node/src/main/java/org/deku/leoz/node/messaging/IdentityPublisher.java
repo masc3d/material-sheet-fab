@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.Identity;
-import org.deku.leoz.config.MessagingConfiguration;
+import org.deku.leoz.config.messaging.MessagingConfiguration;
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage;
 import org.deku.leoz.node.messaging.entities.IdentityMessage;
 import sx.jms.converters.DefaultConverter;

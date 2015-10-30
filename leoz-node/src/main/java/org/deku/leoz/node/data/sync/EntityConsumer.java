@@ -3,7 +3,7 @@ package org.deku.leoz.node.data.sync;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.config.MessagingConfiguration;
+import org.deku.leoz.config.messaging.MessagingConfiguration;
 import org.deku.leoz.node.data.PersistenceUtil;
 import org.deku.leoz.node.data.repositories.EntityRepository;
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage;
@@ -71,7 +71,7 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
     @Override
     protected Destination createDestination() {
         // Listen for entity state updates
-        return mMessagingConfiguration.getNodeNotificationTopic();
+        return mMessagingConfiguration.getNodeEntitySyncTopic();
     }
 
     @Override

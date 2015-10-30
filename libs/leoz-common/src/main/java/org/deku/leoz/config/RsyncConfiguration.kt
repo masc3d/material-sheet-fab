@@ -1,7 +1,7 @@
 package org.deku.leoz.config
 
 /**
- * Rsync factory providing leoz specific instances and information (like usernames and passwords)
+ * Rsync configuration (like usernames and passwords)
  * Created by masc on 15.09.15.
  */
 object RsyncConfiguration {

@@ -5,15 +5,13 @@ import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import java.io.File
-import java.nio.file.FileSystem
 import java.nio.file.FileSystems
 import java.nio.file.Files
-import java.nio.file.Paths
 import java.nio.file.attribute.*
 import java.util.*
 
 /**
- * Local Storage
+ * Base class for loez local storage configurations
  * Created by masc on 26.06.15.
  */
 abstract class StorageConfiguration(

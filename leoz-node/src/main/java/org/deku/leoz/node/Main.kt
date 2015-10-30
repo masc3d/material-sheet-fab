@@ -1,8 +1,8 @@
 package org.deku.leoz.node
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.node.config.*
+import org.deku.leoz.node.config.LogConfiguration
+import org.deku.leoz.node.config.PersistenceConfiguration
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration
 import org.springframework.boot.builder.SpringApplicationBuilder
@@ -32,18 +32,10 @@ import org.springframework.core.annotation.Order
          * as we currently prefer to setup the classic resteasy servlet manually
          * @link WebContextInitializer
          */
-        ResteasyAutoConfiguration::class,
+        ResteasyAutoConfiguration::class
         /** Flyway database migration setup  */
-        //FlywayAutoConfiguration.class,
-
-        /** Leoz embedded broker configuration  */
-        ActiveMqConfiguration::class,
-        /** Leoz entity sync configuration  */
-        EntitySyncConfiguration::class,
-        /** Leoz message listener configuration  */
-        MessageListenerConfiguration::class,
-        /** Rsync configuration  */
-        RsyncConfiguration::class)
+        //FlywayAutoConfiguration.class
+)
 @EnableConfigurationProperties
 open class Main {
     companion object {

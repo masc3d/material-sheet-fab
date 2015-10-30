@@ -3,8 +3,8 @@ package org.deku.leoz.node.data.sync;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deku.leoz.config.ActiveMQConfiguration;
-import org.deku.leoz.config.MessagingConfiguration;
+import org.deku.leoz.config.messaging.ActiveMQConfiguration;
+import org.deku.leoz.config.messaging.MessagingConfiguration;
 import org.deku.leoz.node.data.repositories.EntityRepository;
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage;
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage;
@@ -74,7 +74,7 @@ public class EntityPublisher extends SpringJmsListener {
     public void publish(Class entityType, Timestamp timestamp) throws JMSException {
         Channel mc = new Channel(
                 ActiveMQConfiguration.getInstance().getBroker().getConnectionFactory(),
-                ActiveMQConfiguration.getInstance().getNodeNotificationTopic(),
+                ActiveMQConfiguration.getInstance().getNodeEntitySyncTopic(),
                 this.createMessageConverter(),
                 Duration.ofSeconds(10),
                 false,

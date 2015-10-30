@@ -2,12 +2,10 @@ package org.deku.leoz.update
 
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
-import org.deku.leoz.config.StorageConfiguration
-import org.deku.leoz.config.StorageTestConfiguration
+import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepositoryFactory
-import org.deku.leoz.bundle.Bundles
-import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.update.Updater
+import org.deku.leoz.config.StorageTestConfiguration
+import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.junit.Test
 
 /**
@@ -16,8 +14,9 @@ import org.junit.Test
 class UpdateTest {
     val updater = Updater(
             identity = Identity.create(SystemInformation()),
-            bundleContainerPath = StorageTestConfiguration.bundlesDirectory,
-            bundleRepository = BundleRepositoryFactory.stagingRepository(),
+            bundleInstaller = BundleInstaller(
+                    StorageTestConfiguration.bundlesDirectory,
+                    BundleRepositoryFactory.stagingRepository()),
             jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
             jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue)
 

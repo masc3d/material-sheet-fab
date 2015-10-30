@@ -3,7 +3,7 @@ package org.deku.leoz.node.config
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.auth.Authorizer
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy

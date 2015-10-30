@@ -13,7 +13,8 @@ import javax.jms.Session
  * Update info service, providing version pattern information to clients
  * Created by masc on 19.10.15.
  */
-class UpdateInfoRequestHandler : Handler<UpdateInfoRequest> {
+class UpdateInfoRequestHandler :
+        Handler<UpdateInfoRequest> {
     override fun onMessage(message: UpdateInfoRequest, converter: Converter, jmsMessage: Message, session: Session) {
         val updateInfoRequest = message
         // TODO: Query bundle name/version against db

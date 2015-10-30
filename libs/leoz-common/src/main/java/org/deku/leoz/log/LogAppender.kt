@@ -3,23 +3,19 @@ package org.deku.leoz.log
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.spi.LoggingEvent
 import ch.qos.logback.core.AppenderBase
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.config.MessagingConfiguration
+import org.deku.leoz.config.messaging.MessagingConfiguration
 import sx.Disposable
 import sx.Dispose
 import sx.jms.Converter
 import sx.jms.converters.DefaultConverter
 import sx.jms.embedded.Broker
-
-import javax.jms.Connection
-import javax.jms.DeliveryMode
-import javax.jms.MessageProducer
-import javax.jms.Session
-import java.util.ArrayList
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import javax.jms.DeliveryMode
+import javax.jms.Session
 
 /**
  * Log appender sending log messages via jms

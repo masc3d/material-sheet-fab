@@ -8,7 +8,7 @@ import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.node.App;
-import org.deku.leoz.node.config.ActiveMqConfiguration;
+import org.deku.leoz.node.config.MessageBrokerConfiguration;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor;
@@ -55,7 +55,7 @@ class WebContextInitializer implements ServletContextInitializer {
     SpringBeanProcessor mSpringBeanProcessor;
 
     @Inject
-    ActiveMqConfiguration mActiveMqConfiguration;
+    MessageBrokerConfiguration mMessageBrokerConfiguration;
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
@@ -96,7 +96,7 @@ class WebContextInitializer implements ServletContextInitializer {
                     new HttpExternalTunnelServlet(
                             new URI("http://localhost:8080/leoz/jms")));
             sr.setLoadOnStartup(1);
-            sr.addMapping(this.mActiveMqConfiguration.getHttpContextPath() + "/*");
+            sr.addMapping(this.mMessageBrokerConfiguration.getHttpContextPath() + "/*");
         } catch (URISyntaxException e) {
             throw new ServletException(e);
         }

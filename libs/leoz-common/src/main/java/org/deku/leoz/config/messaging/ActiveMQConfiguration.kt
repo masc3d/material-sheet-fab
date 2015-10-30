@@ -1,6 +1,5 @@
-package org.deku.leoz.config
+package org.deku.leoz.config.messaging
 
-import org.deku.leoz.config.MessagingConfiguration
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
 
@@ -12,6 +11,7 @@ import javax.jms.Topic
  * Created by masc on 16.04.15.
  */
 class ActiveMQConfiguration private constructor() : MessagingConfiguration {
+
     companion object {
         val USERNAME = "leoz"
         val PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC"
@@ -32,22 +32,26 @@ class ActiveMQConfiguration private constructor() : MessagingConfiguration {
         get() = ActiveMQBroker.instance()
 
     override val centralQueue: Queue by lazy({
-        this.broker.createQueue("leoz.central")
+        this.broker.createQueue("leoz.central.queue")
     })
 
     override val centralEntitySyncQueue: Queue by lazy({
-        this.broker.createQueue("leoz.entity-sync")
+        this.broker.createQueue("leoz.entity-sync.queue")
+    })
+
+    override val nodeEntitySyncTopic: Topic by lazy({
+        this.broker.createTopic("leoz.entity-sync.topic")
     })
 
     override val centralLogQueue: Queue by lazy({
-        this.broker.createQueue("leoz.log")
+        this.broker.createQueue("leoz.log.queue")
     })
 
     override fun nodeQueue(id: Int): Queue {
-        return this.broker.createQueue("leoz.node." + id.toString())
+        return this.broker.createQueue("leoz.node.queue." + id.toString())
     }
 
     override val nodeNotificationTopic: Topic by lazy({
-        this.broker.createTopic("leoz.notifications")
+        this.broker.createTopic("leoz.node.notification.topic")
     })
 }
