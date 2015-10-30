@@ -49,7 +49,7 @@ public abstract class SpringJmsListener extends Listener implements ErrorHandler
      */
     @Override
     public synchronized void start() {
-        mLog.info(String.format("Starting %s", this.getClass().getSimpleName()));
+        mLog.info(String.format("Starting jms listener [%s]", this.getClass().getName()));
         if (mListenerContainer == null) {
             mDestination = this.createDestination();
 
