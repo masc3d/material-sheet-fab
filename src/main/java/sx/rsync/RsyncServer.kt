@@ -4,7 +4,10 @@ import org.apache.commons.logging.LogFactory
 import org.ini4j.Ini
 import sx.Disposable
 import sx.ProcessExecutor
-import java.io.*
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
+import java.io.PrintWriter
 import java.nio.file.Files
 import java.nio.file.attribute.*
 import java.util.*
@@ -160,6 +163,7 @@ class RsyncServer(
      * Start rsync daemon
      */
     @Synchronized fun start() {
+        log.info("Starting rsync server")
         if (this.configuration != null) {
             // Running with embedded configuration
 
@@ -194,6 +198,7 @@ class RsyncServer(
      * Stop rsync daemon
      */
     @Synchronized fun stop() {
+        log.info("Stopping rsync server")
         if (this.processExecutor != null) {
             this.processExecutor?.dispose()
             this.processExecutor = null
