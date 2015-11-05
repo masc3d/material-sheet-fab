@@ -18,7 +18,7 @@ import javax.jms.*
 abstract class SpringJmsListener(
         connectionFactory: ConnectionFactory,
         /** Destination this listener will be attached to  */
-        private val destination: () -> Destination,
+        val destination: () -> Destination,
         converter: Converter? = null)
 :
         Listener(connectionFactory, converter),
@@ -35,11 +35,15 @@ abstract class SpringJmsListener(
     open protected fun configure(listenerContainer: DefaultMessageListenerContainer) {
     }
 
+    private val description by lazy({
+        "[${this.javaClass.simpleName}] for [${this.destination().toString()}]"
+    })
+
     /**
      * Start listener
      */
     @Synchronized override fun start() {
-        log.info("Starting jms listener [%s]".format(this.javaClass.name))
+        log.info("Starting jms listener ${this.description}")
         var lc = listenerContainer
         if (lc == null) {
             lc = DefaultMessageListenerContainer()
