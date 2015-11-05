@@ -10,17 +10,17 @@ import javax.jms.*
  * Lightweight jms message listener abstraction.
  * This is the top level abstract class, only binding a connection factory.
  * Created by masc on 16.04.15.
+ * @property converter Message converter
  */
 abstract class Listener(
         /** Connection factory  */
-        protected val connectionFactory: ConnectionFactory)
+        protected val connectionFactory: ConnectionFactory,
+        protected val converter: Converter? = null)
 :
         Disposable, ExceptionListener {
     protected val log: Log = LogFactory.getLog(this.javaClass)
     /** Object message handler delegates  */
     private val handlerDelegates = HashMap<Class<out Any?>, Handler<Any?>>()
-    /** Message converter  */
-    var converter: Converter? = null
 
     /**
      * Message handling exception
@@ -45,9 +45,9 @@ abstract class Listener(
 
         var handler: Handler<Any?>? = null
 
-        if (converter != null) {
-            messageObject = converter!!.fromMessage(message)
-            handler = handlerDelegates.getOrDefault(messageObject.javaClass, null)
+        if (this.converter != null) {
+            messageObject = this.converter.fromMessage(message)
+            handler = this.handlerDelegates.getOrDefault(messageObject.javaClass, null)
         }
 
         if (handler == null) {
