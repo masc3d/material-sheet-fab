@@ -155,7 +155,7 @@ class Channel private constructor(
         val jmsMessage = consumer.receive(this.receiveTimeout.toMillis())
 
         if (jmsMessage == null)
-            throw TimeoutException("Timeout while waiting for message [${messageType}]")
+            throw TimeoutException("Timeout while waiting for message [${messageType.simpleName}]")
 
         return messageType.cast(this.converter.fromMessage(jmsMessage))
     }
