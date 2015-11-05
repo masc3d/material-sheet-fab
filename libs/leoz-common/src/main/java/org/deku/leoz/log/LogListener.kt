@@ -8,7 +8,6 @@ import sx.jms.listeners.SpringJmsListener
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
-import javax.jms.Destination
 import javax.jms.Message
 import javax.jms.Session
 
@@ -20,19 +19,14 @@ class LogListener(
         /** Messaging context */
         private val messagingConfiguration: MessagingConfiguration)
 :
-        SpringJmsListener(messagingConfiguration.broker.connectionFactory),
-        Handler<Array<LogMessage>> {
-
+        SpringJmsListener(
+                connectionFactory = messagingConfiguration.broker.connectionFactory,
+                destination = { messagingConfiguration.centralLogQueue },
+                converter = DefaultConverter(DefaultConverter.SerializationType.KRYO, DefaultConverter.CompressionType.GZIP)),
+        Handler<Array<LogMessage>>
+{
     init {
-        this.converter = DefaultConverter(
-                DefaultConverter.SerializationType.KRYO,
-                DefaultConverter.CompressionType.GZIP)
-
         this.addDelegate(Array<LogMessage>::class.java, this)
-    }
-
-    override fun createDestination(): Destination {
-        return messagingConfiguration.centralLogQueue
     }
 
     override fun onMessage(message: Array<LogMessage>, converter: Converter, jmsMessage: Message, session: Session) {

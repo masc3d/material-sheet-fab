@@ -13,7 +13,10 @@ import sx.jms.Channel;
 import sx.jms.converters.DefaultConverter;
 import sx.jms.listeners.SpringJmsListener;
 
-import javax.jms.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.sql.Timestamp;
@@ -34,8 +37,6 @@ public class EntityPublisher extends SpringJmsListener {
     private MessagingConfiguration mMessagingConfiguration;
     /** Entity manager factory */
     private EntityManagerFactory mEntityManagerFactory;
-    /** Message converter */
-    private DefaultConverter mConverter;
 
     /**
      * c'tor
@@ -43,27 +44,14 @@ public class EntityPublisher extends SpringJmsListener {
      * @param entityManagerFactory
      */
     public EntityPublisher(MessagingConfiguration messagingConfiguration, EntityManagerFactory entityManagerFactory) {
-        super(messagingConfiguration.getBroker().getConnectionFactory());
+        super(
+                messagingConfiguration.getBroker().getConnectionFactory(),
+                messagingConfiguration::getCentralEntitySyncQueue,
+                new DefaultConverter(
+                        DefaultConverter.SerializationType.KRYO,
+                        DefaultConverter.CompressionType.GZIP));
         mMessagingConfiguration = messagingConfiguration;
         mEntityManagerFactory = entityManagerFactory;
-        mConverter = this.createMessageConverter();
-
-        this.setConverter(mConverter);
-    }
-
-    /**
-     * Create message converter
-     * @return
-     */
-    private DefaultConverter createMessageConverter() {
-        return new DefaultConverter(
-                DefaultConverter.SerializationType.KRYO,
-                DefaultConverter.CompressionType.GZIP);
-    }
-
-    @Override
-    protected Destination createDestination() {
-        return mMessagingConfiguration.getCentralEntitySyncQueue();
     }
 
     /**
@@ -75,7 +63,7 @@ public class EntityPublisher extends SpringJmsListener {
         Channel mc = new Channel(
                 ActiveMQConfiguration.getInstance().getBroker().getConnectionFactory(),
                 ActiveMQConfiguration.getInstance().getNodeEntitySyncTopic(),
-                this.createMessageConverter(),
+                this.getConverter(),
                 Duration.ofSeconds(10),
                 false,
                 Channel.DeliveryMode.NonPersistent,
@@ -97,7 +85,7 @@ public class EntityPublisher extends SpringJmsListener {
         Stopwatch sw = Stopwatch.createStarted();
 
         // Create new message converter for this session, just for clean statistics sake
-        DefaultConverter messageConverter = this.createMessageConverter();
+        DefaultConverter messageConverter = (DefaultConverter)this.getConverter();
 
         // Entity state message
         EntityStateMessage esMessage = (EntityStateMessage) messageConverter.fromMessage(message);

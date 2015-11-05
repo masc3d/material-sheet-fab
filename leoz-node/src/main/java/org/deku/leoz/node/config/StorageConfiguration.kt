@@ -1,17 +1,9 @@
 package org.deku.leoz.node.config
 
-import com.google.common.base.Strings
-import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.App
 import java.io.File
-import java.nio.file.FileSystem
-import java.nio.file.FileSystems
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.attribute.*
-import java.util.*
 
 /**
  * Local Storage
@@ -38,6 +30,11 @@ class StorageConfiguration(appName: String) : org.deku.leoz.config.StorageConfig
     /** Local h2 database file */
     val h2DatabaseFile: File by lazy({
         this.dataDirectory.toPath().resolve("h2").resolve("leoz").toFile()
+    })
+
+    /** Bundle repository directory */
+    val bundleRepositoryDirectory: File by lazy({
+        File(this.dataDirectory, "bundle-repository")
     })
 
     /** c'tor */

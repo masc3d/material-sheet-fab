@@ -54,9 +54,11 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
      * @param messagingConfiguration
      */
     public EntityConsumer(MessagingConfiguration messagingConfiguration, EntityManagerFactory entityManagerFactory) {
-        super(messagingConfiguration.getBroker().getConnectionFactory());
+        super(
+                messagingConfiguration.getBroker().getConnectionFactory(),
+                messagingConfiguration::getNodeEntitySyncTopic,
+                new DefaultConverter(DefaultConverter.SerializationType.KRYO, DefaultConverter.CompressionType.GZIP));
 
-        this.setConverter(mConverter);
         this.addDelegate(EntityStateMessage.class, this);
 
         mMessagingConfiguration = messagingConfiguration;
@@ -66,12 +68,6 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
             t.setPriority(Thread.MIN_PRIORITY);
             return t;
         });
-    }
-
-    @Override
-    protected Destination createDestination() {
-        // Listen for entity state updates
-        return mMessagingConfiguration.getNodeEntitySyncTopic();
     }
 
     @Override

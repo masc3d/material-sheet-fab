@@ -24,9 +24,6 @@ open class UpdaterConfiguration {
     /** Updater instance */
     lateinit var updater: Updater
 
-    /** Bundle installer instance */
-    var bundleInstaller: BundleInstaller
-
     /** Broker listener  */
     private val brokerEventListener = object : Broker.EventListener {
         override fun onStart() {
@@ -39,10 +36,6 @@ open class UpdaterConfiguration {
     }
 
     init {
-        bundleInstaller = BundleInstaller(
-                StorageConfiguration.instance.bundlesDirectory,
-                BundleRepositoryFactory.stagingRepository()
-        )
     }
 
     @Inject
@@ -51,10 +44,12 @@ open class UpdaterConfiguration {
     @PostConstruct
     fun onInitialize() {
         updater = Updater(
-                identityConfiguration.identity,
-                bundleInstaller,
-                ActiveMQConfiguration.instance.broker.connectionFactory,
-                ActiveMQConfiguration.instance.centralQueue
+                identity = identityConfiguration.identity,
+                bundleInstaller = BundleInstaller(
+                        StorageConfiguration.instance.bundlesDirectory,
+                        BundleRepositoryFactory.stagingRepository()),
+                jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
+                jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue
         )
 
         ActiveMQConfiguration.instance.broker.delegate.add(brokerEventListener)

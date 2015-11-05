@@ -6,7 +6,7 @@ import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.messaging.AuthorizationMessageHandler
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
-import org.deku.leoz.update.UpdateInfo
+import org.deku.leoz.update.entities.UpdateInfo
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
@@ -17,7 +17,6 @@ import sx.jms.listeners.SpringJmsListener
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
-import javax.jms.Destination
 
 /**
  * Message listener configuration.
@@ -42,29 +41,22 @@ open class MessageListenerConfiguration {
 
     init {
         // Configure and create listeners
-        nodeQueueListener = object : SpringJmsListener(ActiveMQConfiguration.instance.broker.connectionFactory) {
-            init {
-                this.converter = DefaultConverter(
+        nodeQueueListener = object : SpringJmsListener(
+                connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
+                destination = { ActiveMQConfiguration.instance.nodeQueue(identityConfiguration.identity.id!!) },
+                converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP)
-            }
-
-            override fun createDestination(): Destination? {
-                return ActiveMQConfiguration.instance.nodeQueue(identityConfiguration.identity.id!!)
-            }
-        }
+        ) {}
 
         // Configure and create listeners
-        nodeNotificationListener = object : SpringJmsListener(ActiveMQConfiguration.instance.broker.connectionFactory) {
-            init {
-                this.converter = DefaultConverter(
+        nodeNotificationListener = object : SpringJmsListener(
+                connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
+                destination = { ActiveMQConfiguration.instance.nodeNotificationTopic },
+                converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP)
-            }
-
-            override fun createDestination(): Destination? {
-                return ActiveMQConfiguration.instance.nodeNotificationTopic
-            }
+        ) {
         }
     }
 

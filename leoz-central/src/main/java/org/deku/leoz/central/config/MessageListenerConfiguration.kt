@@ -6,7 +6,7 @@ import org.deku.leoz.central.messaging.handlers.IdentityMessageHandler
 import org.deku.leoz.central.messaging.handlers.UpdateInfoRequestHandler
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.messaging.entities.IdentityMessage
-import org.deku.leoz.update.UpdateInfoRequest
+import org.deku.leoz.update.entities.UpdateInfoRequest
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.converters.DefaultConverter
@@ -16,7 +16,6 @@ import sx.jms.listeners.SpringJmsListener
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
-import javax.jms.Destination
 
 /**
  * Leoz-central message listener configuration
@@ -35,16 +34,13 @@ open class MessageListenerConfiguration {
 
     init {
         // Configure and create listeners
-        centralQueueListener = object : SpringJmsListener(ActiveMQConfiguration.instance.broker.connectionFactory) {
-            init {
-                this.converter = DefaultConverter(
+        centralQueueListener = object : SpringJmsListener(
+                connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
+                destination = { ActiveMQConfiguration.instance.centralQueue },
+                converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP)
-            }
-
-            override fun createDestination(): Destination? {
-                return ActiveMQConfiguration.instance.centralQueue
-            }
+                        DefaultConverter.CompressionType.GZIP))
+        {
         }
     }
 

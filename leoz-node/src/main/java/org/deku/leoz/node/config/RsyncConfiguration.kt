@@ -1,8 +1,6 @@
 package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.node.config.StorageConfiguration
-import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.config.RsyncConfiguration
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
@@ -60,7 +58,7 @@ open class RsyncConfiguration {
             var user = Rsync.User(RsyncConfiguration.USERNAME, RsyncConfiguration.PASSWORD)
 
             // Bundles module
-            var module = Rsync.Module("bundles", StorageConfiguration.instance.bundlesDirectory)
+            var module = Rsync.Module("bundles", StorageConfiguration.instance.bundleRepositoryDirectory)
             module.permissions.put(user, Rsync.Permission.READWRITE)
             config.modules.add(module)
 

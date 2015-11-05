@@ -3,6 +3,8 @@ package org.deku.leoz.update
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.bundle.BundleInstaller
+import org.deku.leoz.update.entities.UpdateInfo
+import org.deku.leoz.update.entities.UpdateInfoRequest
 import sx.Disposable
 import sx.event.EventDispatcher
 import sx.jms.Channel
