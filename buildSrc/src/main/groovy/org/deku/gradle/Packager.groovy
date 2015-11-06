@@ -7,7 +7,6 @@ import com.jcraft.jsch.Session
 import com.jcraft.jsch.agentproxy.Connector
 import com.jcraft.jsch.agentproxy.ConnectorFactory
 import com.jcraft.jsch.agentproxy.RemoteIdentityRepository
-import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod
 import org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile
@@ -15,7 +14,7 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.bundle.BundleRepositoryFactory
+import org.deku.leoz.config.BundleRepositoryConfiguration
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
@@ -604,7 +603,7 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         }
 
         // Upload to bundle repository
-        BundleRepository ar = BundleRepositoryFactory.INSTANCE$.stagingRepository()
+        BundleRepository ar = BundleRepositoryConfiguration.INSTANCE$.stagingRepository()
         ar.upload(project.name, this.getReleasePath(), true)
     }
 }

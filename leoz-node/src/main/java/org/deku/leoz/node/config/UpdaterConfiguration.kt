@@ -1,8 +1,7 @@
 package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleRepositoryFactory
+import org.deku.leoz.config.BundleRepositoryConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.update.Updater
@@ -45,9 +44,8 @@ open class UpdaterConfiguration {
     fun onInitialize() {
         updater = Updater(
                 identity = identityConfiguration.identity,
-                bundleInstaller = BundleInstaller(
-                        StorageConfiguration.instance.bundlesDirectory,
-                        BundleRepositoryFactory.stagingRepository()),
+                bundleContainerPath = StorageConfiguration.instance.bundlesDirectory,
+                remoteRepository = BundleRepositoryConfiguration.stagingRepository(),
                 jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
                 jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue
         )

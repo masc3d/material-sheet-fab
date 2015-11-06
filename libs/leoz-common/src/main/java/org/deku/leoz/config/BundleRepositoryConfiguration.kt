@@ -1,12 +1,12 @@
-package org.deku.leoz.bundle
+package org.deku.leoz.config
 
+import org.deku.leoz.bundle.BundleRepository
 import sx.rsync.Rsync
-import sx.rsync.RsyncClient
 
 /**
  * Created by masc on 22.08.15.
  */
-object BundleRepositoryFactory {
+object BundleRepositoryConfiguration {
     private var stagingRsyncModuleUri = Rsync.URI("rsync://leoz@syntronix.de/leoz")
     private var stagingRsyncModulePassword = "leoz"
 

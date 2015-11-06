@@ -1,7 +1,6 @@
 package org.deku.leoz.node.rest.services.internal.v1
 
 import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleRepositoryFactory
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.StorageConfiguration
@@ -22,8 +21,7 @@ import javax.ws.rs.core.MediaType
 class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationService {
     override fun restart() {
         val bundleInstaller = BundleInstaller(
-                StorageConfiguration.instance.bundlesDirectory,
-                BundleRepositoryFactory.stagingRepository())
+                StorageConfiguration.instance.bundlesDirectory)
 
         bundleInstaller.boot(App.instance().name)
     }

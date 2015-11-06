@@ -3,6 +3,7 @@ package org.deku.leoz.update
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.bundle.BundleInstaller
+import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.update.entities.UpdateInfo
 import org.deku.leoz.update.entities.UpdateInfoRequest
 import sx.Disposable
@@ -26,14 +27,17 @@ import javax.jms.Session
  * Can be added as a message handler to a notification topic message listener for push update notifications.
  * @property nodeId Id of this leoz node
  * @property bundleContainerPath Path containing bundles
- * @property bundleRepository Remote bundle repository. The bundle name of this repository has to match the installer name
+ * @property remoteRepository Remote bundle repository. The bundle name of this repository has to match the installer name
+ * @property localRepository
  * @property jmsConnectionFactory JMS connection factory
  * @property jmsUpdateRequestQueue JMS queue to use for update requests
  * Created by masc on 12.10.15.
  */
 class Updater(
         public val identity: Identity,
-        public val bundleInstaller: BundleInstaller,
+        public val bundleContainerPath: File,
+        public val remoteRepository: BundleRepository,
+        public val localRepository: BundleRepository? = null,
         private val jmsConnectionFactory: ConnectionFactory,
         private val jmsUpdateRequestQueue: Destination)
 :
@@ -60,8 +64,9 @@ class Updater(
 
     init {
         // Use all available bundles if names are not explicitly provided
-        this.bundleNames = this.bundleInstaller.listBundleNames()
-        this.bundlePaths = this.bundleInstaller.listBundlePaths()
+        val installer = BundleInstaller(bundleContainerPath)
+        this.bundleNames = installer.listBundleNames()
+        this.bundlePaths = installer.listBundlePaths()
 
         this.updateInfoRequestChannel = Channel(
                 connectionFactory = jmsConnectionFactory,
@@ -116,7 +121,10 @@ class Updater(
                     UpdateInfo::class.java,
                     useTemporaryResponseQueue = true)
 
-            val changesApplied = this.bundleInstaller.download(
+            val installer = BundleInstaller(bundleContainerPath)
+
+            val changesApplied = installer.download(
+                    bundleRepository = this.remoteRepository,
                     bundleName = bundleName,
                     versionPattern = updateInfo.bundleVersionPattern)
 

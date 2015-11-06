@@ -13,9 +13,7 @@ import java.util.*
  */
 class BundleInstaller(
         /** Path containing bundles */
-        public val bundleContainerPath: File,
-        /** Remote bundle repository. The bundle name of this repository has to match the installer name */
-        public val repository: BundleRepository) {
+        public val bundleContainerPath: File) {
 
     private val log = LogFactory.getLog(this.javaClass)
 
@@ -157,12 +155,14 @@ class BundleInstaller(
 
     /**
      * Download specific bundle version as bundle update (not overwriting the current bundle)
+     * @param bundleRepository Bundle repository to download from
      * @param bundleName Bundle name
      * @param version Bundle version
      * @param forceDownload Always download, even if existing version is the same
      * @param onProgress Progress callback
      */
-    fun download(bundleName: String,
+    fun download(bundleRepository: BundleRepository,
+                 bundleName: String,
                  version: Bundle.Version,
                  forceDownload: Boolean = false,
                  onProgress: ((file: String, percentage: Double) -> Unit)? = null): Boolean {
@@ -197,7 +197,7 @@ class BundleInstaller(
             if (platform.operatingSystem == OperatingSystem.OSX)
                 copyPaths = copyPaths.map { f -> File(f, "${f.name}.app") }
 
-            repository.download(
+            bundleRepository.download(
                     bundleName,
                     version,
                     platform,
@@ -219,22 +219,24 @@ class BundleInstaller(
 
     /**
      * Download specific bundle version as bundle update (not overwriting the current bundle)
+     * @param bundleRepository Bundle repository to download from
      * @param bundleName Bundle name
      * @param version Bundle version
      * @param forceDownload Always download, even if existing version is the same
      * @param onProgress Progress callback
      */
-    fun download(bundleName: String,
+    fun download(bundleRepository: BundleRepository,
+                 bundleName: String,
                  versionPattern: String,
                  forceDownload: Boolean = false,
                  onProgress: ((file: String, percentage: Double) -> Unit)? = null): Boolean {
 
         log.info("Checking repository for version matching [${versionPattern}]")
 
-        val availableVersions = this.repository
+        val availableVersions = bundleRepository
                 .listVersions(bundleName)
 
-        log.info("Repository [${this.repository} versions [${bundleName}]: ${availableVersions.map { it -> it.toString() }.joinToString(", ")}")
+        log.info("Repository [${bundleRepository} versions [${bundleName}]: ${availableVersions.map { it -> it.toString() }.joinToString(", ")}")
 
         val latestMatchingVersion = availableVersions.filter(versionPattern)
                 .sortedDescending()
@@ -243,7 +245,9 @@ class BundleInstaller(
         if (latestMatchingVersion == null)
             throw IllegalArgumentException("No version matching [${versionPattern}]")
 
-        return this.download(bundleName = bundleName,
+        return this.download(
+                bundleRepository = bundleRepository,
+                bundleName = bundleName,
                 version = latestMatchingVersion,
                 forceDownload = forceDownload,
                 onProgress = onProgress)

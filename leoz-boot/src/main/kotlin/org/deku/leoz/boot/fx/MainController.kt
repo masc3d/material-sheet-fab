@@ -9,6 +9,7 @@ import javafx.scene.input.MouseEvent
 import org.deku.leoz.boot.Application
 import org.deku.leoz.boot.config.BundleInstallerConfiguration
 import org.deku.leoz.boot.config.LogConfiguration
+import org.deku.leoz.config.BundleRepositoryConfiguration
 import sx.fx.TextAreaLogAppender
 import java.awt.GraphicsEnvironment
 import java.net.URL
@@ -74,6 +75,7 @@ class MainController : Initializable {
                 } else {
                     if (!installer.hasBundle(bundleName) || Application.Parameters.forceDownload) {
                         installer.download(
+                                bundleRepository = BundleRepositoryConfiguration.stagingRepository(),
                                 bundleName = bundleName,
                                 versionPattern = Application.Parameters.versionPattern,
                                 forceDownload = Application.Parameters.forceDownload,
