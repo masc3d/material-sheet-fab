@@ -1,10 +1,11 @@
 package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.bundle.BundleInstaller
+import org.deku.leoz.bundle.update.Updater
 import org.deku.leoz.config.BundleRepositoryConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.update.Updater
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.embedded.Broker
@@ -20,31 +21,35 @@ import javax.inject.Inject
 open class UpdaterConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
+    @Inject
+    lateinit var identityConfiguration: IdentityConfiguration
+
     /** Updater instance */
-    lateinit var updater: Updater
+    lateinit var bundleUpdater: Updater
+
+    /** Bundle installer instance */
+    val bundleInstaller: BundleInstaller
 
     /** Broker listener  */
     private val brokerEventListener = object : Broker.EventListener {
         override fun onStart() {
-            updater.startUpdate(App.instance().name)
+            bundleUpdater.startUpdate(App.instance().name)
         }
 
         override fun onStop() {
-            updater.stop()
+            bundleUpdater.stop()
         }
     }
 
     init {
+        this.bundleInstaller = BundleInstaller(StorageConfiguration.instance.bundlesDirectory)
     }
-
-    @Inject
-    lateinit var identityConfiguration: IdentityConfiguration
 
     @PostConstruct
     fun onInitialize() {
-        updater = Updater(
-                identity = identityConfiguration.identity,
-                bundleContainerPath = StorageConfiguration.instance.bundlesDirectory,
+        bundleUpdater = Updater(
+                identity = this.identityConfiguration.identity,
+                installer = this.bundleInstaller,
                 remoteRepository = BundleRepositoryConfiguration.stagingRepository(),
                 jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
                 jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue

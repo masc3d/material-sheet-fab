@@ -1,11 +1,11 @@
-package org.deku.leoz.update
+package org.deku.leoz.bundle.update
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.update.entities.UpdateInfo
-import org.deku.leoz.update.entities.UpdateInfoRequest
+import org.deku.leoz.bundle.update.entities.UpdateInfo
+import org.deku.leoz.bundle.update.entities.UpdateInfoRequest
 import sx.Disposable
 import sx.event.EventDispatcher
 import sx.jms.Channel
@@ -25,17 +25,17 @@ import javax.jms.Session
 /**
  * Updater suoporting async/background updates of bundles.
  * Can be added as a message handler to a notification topic message listener for push update notifications.
- * @property nodeId Id of this leoz node
- * @property bundleContainerPath Path containing bundles
+ * @property identity Id of this leoz node
+ * @property installer Bundle installer for installing bundles locally
  * @property remoteRepository Remote bundle repository. The bundle name of this repository has to match the installer name
- * @property localRepository
+ * @property localRepository Optional local repository
  * @property jmsConnectionFactory JMS connection factory
  * @property jmsUpdateRequestQueue JMS queue to use for update requests
  * Created by masc on 12.10.15.
  */
 class Updater(
         public val identity: Identity,
-        public val bundleContainerPath: File,
+        public val installer: BundleInstaller,
         public val remoteRepository: BundleRepository,
         public val localRepository: BundleRepository? = null,
         private val jmsConnectionFactory: ConnectionFactory,
@@ -43,6 +43,15 @@ class Updater(
 :
         Handler<UpdateInfo>,
         Disposable {
+
+    class TaskSpec(
+            val bundleName: String,
+            val requiresBoot: Boolean = false,
+            val storeInLocalRepository: Boolean = false
+    ) {
+
+    }
+
     private val log = LogFactory.getLog(this.javaClass)
     private val bundleNames: List<String>
     private val bundlePaths: List<File>
@@ -64,9 +73,8 @@ class Updater(
 
     init {
         // Use all available bundles if names are not explicitly provided
-        val installer = BundleInstaller(bundleContainerPath)
-        this.bundleNames = installer.listBundleNames()
-        this.bundlePaths = installer.listBundlePaths()
+        this.bundleNames = this.installer.listBundleNames()
+        this.bundlePaths = this.installer.listBundlePaths()
 
         this.updateInfoRequestChannel = Channel(
                 connectionFactory = jmsConnectionFactory,
@@ -120,8 +128,6 @@ class Updater(
                     UpdateInfoRequest(nodeId, bundleName),
                     UpdateInfo::class.java,
                     useTemporaryResponseQueue = true)
-
-            val installer = BundleInstaller(bundleContainerPath)
 
             val changesApplied = installer.download(
                     bundleRepository = this.remoteRepository,

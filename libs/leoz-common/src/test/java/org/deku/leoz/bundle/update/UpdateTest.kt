@@ -1,4 +1,4 @@
-package org.deku.leoz.update
+package org.deku.leoz.bundle.update
 
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation

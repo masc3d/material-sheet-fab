@@ -1,7 +1,7 @@
 package org.deku.leoz.central.messaging.handlers
 
-import org.deku.leoz.update.entities.UpdateInfo
-import org.deku.leoz.update.entities.UpdateInfoRequest
+import org.deku.leoz.bundle.update.entities.UpdateInfo
+import org.deku.leoz.bundle.update.entities.UpdateInfoRequest
 import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.Handler

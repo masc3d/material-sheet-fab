@@ -2,11 +2,11 @@ package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
+import org.deku.leoz.bundle.update.entities.UpdateInfo
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.messaging.AuthorizationMessageHandler
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
-import org.deku.leoz.update.entities.UpdateInfo
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
@@ -69,7 +69,7 @@ open class MessageListenerConfiguration {
 
         nodeNotificationListener.addDelegate(
                 UpdateInfo::class.java,
-                updaterConfiguration.updater
+                updaterConfiguration.bundleUpdater
         )
     }
 

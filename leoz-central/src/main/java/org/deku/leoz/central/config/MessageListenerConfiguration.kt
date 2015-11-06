@@ -1,12 +1,12 @@
 package org.deku.leoz.central.config
 
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.bundle.update.entities.UpdateInfoRequest
 import org.deku.leoz.central.data.repositories.NodeRepository
 import org.deku.leoz.central.messaging.handlers.IdentityMessageHandler
 import org.deku.leoz.central.messaging.handlers.UpdateInfoRequestHandler
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.messaging.entities.IdentityMessage
-import org.deku.leoz.update.entities.UpdateInfoRequest
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.converters.DefaultConverter
