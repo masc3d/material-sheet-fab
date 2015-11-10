@@ -46,5 +46,5 @@ fun BundleInstaller.boot(bundleName: String) {
     val leozBoot = Bundle.load(
             BundleInstaller.getNativeBundlePath(File(this.bundleContainerPath, Bundles.LEOZ_BOOT)))
 
-    leozBoot.execute(wait = false, args = *arrayOf("--no-ui", bundleName))
+    leozBoot.execute(wait = false, args = *arrayOf("--no-ui", "--bundle", bundleName))
 }
