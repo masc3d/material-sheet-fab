@@ -1,18 +1,10 @@
 package sx.rsync
 
-import com.google.common.base.StandardSystemProperty
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
 import sx.EmbeddedExecutable
-import sx.ProcessExecutor
-import sx.platform.PlatformId
 import java.io.File
-import java.net.URL
-import java.nio.file.FileSystems
-import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.attribute.*
 import java.util.*
 
 /**
@@ -61,7 +53,7 @@ open class Rsync() {
         }
 
         // Extension methods for java.net.URI
-        private fun java.net.URI.isFile(): Boolean {
+        fun java.net.URI.isFile(): Boolean {
             return this.scheme == "file"
         }
 
@@ -73,6 +65,13 @@ open class Rsync() {
             return Rsync.URI(
                     uri = if (uri.path.endsWith('/')) uri.resolve(path) else java.net.URI(uri.toString() + "/" + path),
                     asDirectory = this.asDirectory)
+        }
+
+        /**
+         * Indicates if rsync uri is local
+         */
+        fun isFile(): Boolean {
+            return this.uri.isFile()
         }
 
         override fun toString(): String {
