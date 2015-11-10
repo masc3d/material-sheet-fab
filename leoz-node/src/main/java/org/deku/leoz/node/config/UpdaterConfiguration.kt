@@ -2,7 +2,7 @@ package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.update.Updater
+import org.deku.leoz.bundle.update.BundleUpdater
 import org.deku.leoz.config.BundleRepositoryConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
@@ -25,7 +25,7 @@ open class UpdaterConfiguration {
     lateinit var identityConfiguration: IdentityConfiguration
 
     /** Updater instance */
-    lateinit var bundleUpdater: Updater
+    lateinit var bundleUpdater: BundleUpdater
 
     /** Bundle installer instance */
     val bundleInstaller: BundleInstaller
@@ -33,7 +33,8 @@ open class UpdaterConfiguration {
     /** Broker listener  */
     private val brokerEventListener = object : Broker.EventListener {
         override fun onStart() {
-            bundleUpdater.startUpdate(App.instance().name)
+            bundleUpdater.startUpdate(BundleUpdater.Preset(
+                    bundleName = App.instance().name))
         }
 
         override fun onStop() {
@@ -47,10 +48,13 @@ open class UpdaterConfiguration {
 
     @PostConstruct
     fun onInitialize() {
-        bundleUpdater = Updater(
+        bundleUpdater = BundleUpdater(
                 identity = this.identityConfiguration.identity,
                 installer = this.bundleInstaller,
                 remoteRepository = BundleRepositoryConfiguration.stagingRepository(),
+                presets = listOf(
+                        BundleUpdater.Preset(
+                                bundleName = App.instance().name)),
                 jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
                 jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue
         )

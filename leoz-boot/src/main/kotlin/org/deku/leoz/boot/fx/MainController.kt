@@ -74,10 +74,18 @@ class MainController : Initializable {
                     installer.uninstall(bundleName)
                 } else {
                     if (!installer.hasBundle(bundleName) || Application.Parameters.forceDownload) {
+                        val repository = BundleRepositoryConfiguration.stagingRepository()
+
+                        // Query for version matching pattern
+                        val version = repository.queryLatestMatchingVersion(
+                                bundleName,
+                                Application.Parameters.versionPattern)
+
+                        // Download bundle
                         installer.download(
                                 bundleRepository = BundleRepositoryConfiguration.stagingRepository(),
                                 bundleName = bundleName,
-                                versionPattern = Application.Parameters.versionPattern,
+                                version = version,
                                 forceDownload = Application.Parameters.forceDownload,
                                 onProgress = { f, p ->
                                     if (p > 0.0) Platform.runLater { uxProgressBar.progress = p }

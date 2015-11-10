@@ -12,11 +12,12 @@ import org.junit.Test
  * Created by masc on 12.10.15.
  */
 class UpdateTest {
-    val updater = Updater(
+    val updater = BundleUpdater(
             identity = Identity.create(SystemInformation()),
-            bundleInstaller = BundleInstaller(
-                    StorageTestConfiguration.bundlesDirectory,
-                    BundleRepositoryConfiguration.stagingRepository()),
+            installer = BundleInstaller(
+                    StorageTestConfiguration.bundlesDirectory),
+            remoteRepository = BundleRepositoryConfiguration.stagingRepository(),
+            presets = listOf(),
             jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
             jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue)
 

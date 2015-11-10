@@ -7,14 +7,11 @@ import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.update.entities.UpdateInfo
 import org.deku.leoz.bundle.update.entities.UpdateInfoRequest
 import sx.Disposable
-import sx.event.EventDispatcher
 import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
-import java.io.File
 import java.time.Duration
-import java.time.LocalTime
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.jms.ConnectionFactory
@@ -29,53 +26,43 @@ import javax.jms.Session
  * @property installer Bundle installer for installing bundles locally
  * @property remoteRepository Remote bundle repository. The bundle name of this repository has to match the installer name
  * @property localRepository Optional local repository
+ * @property presets Bundke update presets
  * @property jmsConnectionFactory JMS connection factory
  * @property jmsUpdateRequestQueue JMS queue to use for update requests
  * Created by masc on 12.10.15.
  */
-class Updater(
+class BundleUpdater(
         public val identity: Identity,
         public val installer: BundleInstaller,
         public val remoteRepository: BundleRepository,
         public val localRepository: BundleRepository? = null,
+        public val presets: List<BundleUpdater.Preset>,
         private val jmsConnectionFactory: ConnectionFactory,
         private val jmsUpdateRequestQueue: Destination)
 :
         Handler<UpdateInfo>,
         Disposable {
 
-    class TaskSpec(
+    /**
+     * Bundle update preset
+     * @param bundleName Bundle to update
+     * @param install Bundle should be installed
+     * @param storeInLocalRepository Bundle should be stored in local repository
+     * @param requiresBoot Bundle requires (re)boot of module/process
+     */
+    data class Preset(
             val bundleName: String,
-            val requiresBoot: Boolean = false,
-            val storeInLocalRepository: Boolean = false
-    ) {
-
-    }
+            val install: Boolean = false,
+            val storeInLocalRepository: Boolean = false,
+            val requiresBoot: Boolean = false
+    ) { }
 
     private val log = LogFactory.getLog(this.javaClass)
-    private val bundleNames: List<String>
-    private val bundlePaths: List<File>
 
     private val executor = Executors.newScheduledThreadPool(2)
     private val updateInfoRequestChannel: Channel
 
-    //region Events
-    interface Listener : sx.event.EventListener {
-        /**
-         * Emitted when update was successfully prepared
-         * @param desiredRestartTime Desired time for restarting if a bundle is self updating. If omitted the update is supposed to become active asap.
-         */
-        fun onUpdatePrepared(bundleName: String, desiredRestartTime: LocalTime?)
-    }
-    private val eventDispatcher = EventDispatcher.createThreadSafe<Listener>()
-    public val eventDelegate = eventDispatcher
-    //endregion
-
     init {
-        // Use all available bundles if names are not explicitly provided
-        this.bundleNames = this.installer.listBundleNames()
-        this.bundlePaths = this.installer.listBundlePaths()
-
         this.updateInfoRequestChannel = Channel(
                 connectionFactory = jmsConnectionFactory,
                 destination = jmsUpdateRequestQueue,
@@ -93,16 +80,17 @@ class Updater(
     override fun onMessage(message: UpdateInfo, converter: Converter, jmsMessage: Message, session: Session) {
         val updateInfo = message
         log.info("Received update notification [${updateInfo}]")
-        if (this.bundleNames.contains(updateInfo.bundleName)) {
-            // Schedule update
-            this.startUpdate(updateInfo.bundleName)
+
+        val preset = this.presets.firstOrNull { s -> s.bundleName.compareTo(updateInfo.bundleName, ignoreCase = true) == 0 }
+        if (preset != null) {
+            this.startUpdate(preset)
         }
     }
 
-    public fun startUpdate(bundleName: String) {
+    public fun startUpdate(preset: Preset) {
         // Schedule update
         this.executor.submit({
-            this.update(bundleName)
+            this.update(preset)
         })
     }
 
@@ -114,8 +102,10 @@ class Updater(
     /**
      * Run the update process
      */
-    @Synchronized private fun update(bundleName: String) {
+    @Synchronized private fun update(preset: Preset) {
         try {
+            val bundleName = preset.bundleName
+
             log.info("Starting update sequence for bundle [${bundleName}]")
             val nodeId = this.identity.id
             if (nodeId == null) {
@@ -129,13 +119,20 @@ class Updater(
                     UpdateInfo::class.java,
                     useTemporaryResponseQueue = true)
 
-            val changesApplied = installer.download(
-                    bundleRepository = this.remoteRepository,
-                    bundleName = bundleName,
-                    versionPattern = updateInfo.bundleVersionPattern)
+            // Determine remote version matching version pattern
+            val remoteVersion = this.remoteRepository.queryLatestMatchingVersion(bundleName, updateInfo.bundleVersionPattern)
 
-            if (changesApplied)
-                this.eventDispatcher.emit { l -> l.onUpdatePrepared(bundleName, updateInfo.desiredRestartTime) }
+            if (preset.storeInLocalRepository) {
+                // Synchronize to local repository
+                if (this.localRepository == null)
+                    throw IllegalStateException("Cannot store bundle [${preset.bundleName}] as local repository is not set")
+
+                val versions = this.localRepository.listVersions(preset.bundleName)
+                        .filter { v -> !v.equals(remoteVersion) }
+            }
+
+            if (preset.install) {
+            }
 
         } catch(e: Exception) {
             log.error(e.message, e)

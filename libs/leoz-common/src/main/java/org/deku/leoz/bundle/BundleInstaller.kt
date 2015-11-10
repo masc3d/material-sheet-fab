@@ -18,7 +18,7 @@ class BundleInstaller(
     private val log = LogFactory.getLog(this.javaClass)
 
     companion object {
-        private val UPDATE_SUFFIX = ".update"
+        private val READY_SUFFIX = ".ready"
         private val DOWNLOAD_SUFFIX = ".download"
         private val OLD_SUFFIX = ".old"
 
@@ -26,7 +26,7 @@ class BundleInstaller(
          * Checks if (file/folder) name is a valid module name
          */
         private fun isBundleName(name: String): Boolean {
-            return !name.endsWith(UPDATE_SUFFIX) &&
+            return !name.endsWith(READY_SUFFIX) &&
                     !name.endsWith(OLD_SUFFIX) &&
                     !name.endsWith(DOWNLOAD_SUFFIX)
         }
@@ -52,7 +52,7 @@ class BundleInstaller(
      * @param bundleName Bundle name
      */
     private fun bundleUpdatePath(bundleName: String): File {
-        return File(bundleContainerPath, "${bundleName}${UPDATE_SUFFIX}")
+        return File(bundleContainerPath, "${bundleName}${READY_SUFFIX}")
     }
 
     /**
@@ -215,42 +215,6 @@ class BundleInstaller(
             log.info("Version [${version}] already downloaded")
         }
         return changesApplied
-    }
-
-    /**
-     * Download specific bundle version as bundle update (not overwriting the current bundle)
-     * @param bundleRepository Bundle repository to download from
-     * @param bundleName Bundle name
-     * @param version Bundle version
-     * @param forceDownload Always download, even if existing version is the same
-     * @param onProgress Progress callback
-     */
-    fun download(bundleRepository: BundleRepository,
-                 bundleName: String,
-                 versionPattern: String,
-                 forceDownload: Boolean = false,
-                 onProgress: ((file: String, percentage: Double) -> Unit)? = null): Boolean {
-
-        log.info("Checking repository for version matching [${versionPattern}]")
-
-        val availableVersions = bundleRepository
-                .listVersions(bundleName)
-
-        log.info("Repository [${bundleRepository} versions [${bundleName}]: ${availableVersions.map { it -> it.toString() }.joinToString(", ")}")
-
-        val latestMatchingVersion = availableVersions.filter(versionPattern)
-                .sortedDescending()
-                .firstOrNull()
-
-        if (latestMatchingVersion == null)
-            throw IllegalArgumentException("No version matching [${versionPattern}]")
-
-        return this.download(
-                bundleRepository = bundleRepository,
-                bundleName = bundleName,
-                version = latestMatchingVersion,
-                forceDownload = forceDownload,
-                onProgress = onProgress)
     }
 
     /**
