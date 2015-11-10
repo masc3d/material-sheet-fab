@@ -54,10 +54,11 @@ open class Main {
          * This one is only used externally, eg. by the service wrapper when running as a service.
          */
         @Suppress("unused_parameter") @JvmStatic fun stop(args: Array<String>) {
-            App.instance().shutdown()
+            App.instance.get().shutdown()
         }
     }
 
+    private val app = App.instance.get()
 
     /**
      * Main instance entry point
@@ -95,12 +96,12 @@ open class Main {
             }
 
             // Initialize and start application
-            App.instance().initialize()
+            App.instance.get().initialize()
             SpringApplicationBuilder()
                     .showBanner(false)
                     .sources(this.javaClass)
-                    .profiles(App.instance().profile)
-                    .listeners(App.instance()).run(*args)
+                    .profiles(this.app.profile)
+                    .listeners(this.app).run(*args)
         } catch (e: Exception) {
             e.printStackTrace()
         }

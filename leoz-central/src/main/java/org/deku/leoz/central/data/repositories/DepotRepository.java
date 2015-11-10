@@ -18,7 +18,7 @@ public class DepotRepository {
     @Inject
     DSLContext mDSLContext;
 
-    @Transactional(PersistenceConfiguration.DB_CENTRAL)
+    @Transactional(PersistenceConfiguration.QUALIFIER)
     public List<TbldepotlisteRecord> findAll() {
         return mDSLContext.select()
                 .from(Tables.TBLDEPOTLISTE)

@@ -21,14 +21,14 @@ import javax.ws.rs.core.MediaType
 class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationService {
     override fun restart() {
         val bundleInstaller = BundleInstaller(
-                StorageConfiguration.instance.bundlesDirectory)
+                StorageConfiguration.instance.get().bundlesDirectory)
 
-        bundleInstaller.boot(App.instance().name)
+        bundleInstaller.boot(App.instance.get().name)
     }
 
     override fun getVersion(): ApplicationVersion {
         return ApplicationVersion(
-                App.instance().jarManifest.implementationName,
-                App.instance().jarManifest.implementationVersion)
+                App.instance.get().jarManifest.implementationName,
+                App.instance.get().jarManifest.implementationVersion)
     }
 }

@@ -25,13 +25,13 @@ import javax.sql.DataSource
  * Leoz-node database persistence context
  * Created by masc on 24-Jul-15.
  */
-@Configuration(PersistenceConfiguration.DB_EMBEDDED)
+@Configuration(PersistenceConfiguration.QUALIFIER)
 @ComponentScan(lazyInit = true, basePackageClasses = arrayOf(org.deku.leoz.node.data.Package::class))
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 @EnableJpaRepositories(considerNestedRepositories = false, basePackageClasses = arrayOf(org.deku.leoz.node.data.Package::class))
 open class PersistenceConfiguration : DisposableBean /*, TransactionManagementConfigurer*/ {
     companion object {
-        const val DB_EMBEDDED = "db_embedded"
+        const val QUALIFIER = "db_embedded"
     }
 
     private val log = LogFactory.getLog(PersistenceConfiguration::class.java.name)
@@ -40,7 +40,7 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
 
     @Bean
     @FlywayDataSource
-    @Qualifier(DB_EMBEDDED)
+    @Qualifier(QUALIFIER)
     open fun dataSource(): DataSource {
         val IN_MEMORY = false
 
@@ -49,7 +49,7 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
         // Base URI
         val baseUri: String
         if (!IN_MEMORY) {
-            baseUri = "jdbc:h2:file:" + StorageConfiguration.instance.h2DatabaseFile
+            baseUri = "jdbc:h2:file:" + StorageConfiguration.instance.get().h2DatabaseFile
         } else {
             baseUri = "jdbc:h2:mem:db1"
         }
@@ -69,7 +69,7 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
 
     //region JPA
     @Bean
-    @Qualifier(DB_EMBEDDED)
+    @Qualifier(QUALIFIER)
     open fun transactionManager(emf: EntityManagerFactory): PlatformTransactionManager {
         val transactionManager = JpaTransactionManager()
         transactionManager.entityManagerFactory = emf

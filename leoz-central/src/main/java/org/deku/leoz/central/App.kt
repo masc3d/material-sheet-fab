@@ -1,6 +1,5 @@
 package org.deku.leoz.central
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 /**
@@ -8,7 +7,7 @@ import org.apache.commons.logging.LogFactory
  * Derives from leoz node, overriding app specifics like spring profile and application name
  * Created by masc on 30.05.15.
  */
-class App : org.deku.leoz.node.App() {
+class App private constructor() : org.deku.leoz.node.App() {
     private val log = LogFactory.getLog(App::class.java)
 
     override val name: String
@@ -20,9 +19,9 @@ class App : org.deku.leoz.node.App() {
     }
 
     companion object {
-        fun instance(): App {
-            return org.deku.leoz.node.App.instance() as App
-        }
+        val instance by lazy({
+            App()
+        })
 
         const val PROFILE_CENTRAL = "central"
     }

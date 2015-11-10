@@ -1,11 +1,11 @@
 package org.deku.leoz.central
 
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.central.config.StorageConfiguration
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import java.util.function.Supplier
 
 /**
  * Spring boot main application class
@@ -25,9 +25,9 @@ open class Main : org.deku.leoz.node.Main() {
          * @throws Exception
          */
         @JvmStatic fun main(args: Array<String>) {
-            // Manually inject derived app instance into base class singleton
-            org.deku.leoz.node.App.inject(
-                    Supplier<org.deku.leoz.node.App> { App() })
+            // Manually inject derived app instance into base class singletons
+            org.deku.leoz.node.App.instance.set({ App.instance })
+            org.deku.leoz.node.config.StorageConfiguration.instance.set({ StorageConfiguration.instance })
 
             Main().run(args)
         }

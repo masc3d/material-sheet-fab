@@ -1,15 +1,12 @@
 package org.deku.leoz.node
 
-import com.google.common.base.StandardSystemProperty
 import com.google.common.base.Strings
-import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.config.StorageConfiguration
-import sx.platform.PlatformId
-import org.slf4j.Logger
 import sx.EmbeddedExecutable
 import sx.ProcessExecutor
+import sx.platform.PlatformId
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.text.Regex
@@ -101,7 +98,7 @@ class Setup {
                 "--Description=LeoZ node system service",
                 "--Install=${this.leozsvcExecutable.file.toString()}",
                 "--Startup=auto",
-                "--LogPath=${StorageConfiguration.instance.logDirectory}",
+                "--LogPath=${StorageConfiguration.instance.get().logDirectory}",
                 "--LogPrefix=leoz-svc",
                 "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
                 "--StartMode=jvm",

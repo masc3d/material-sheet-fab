@@ -1,7 +1,6 @@
 package org.deku.leoz.central.config
 
 import com.mysql.jdbc.AbandonedConnectionCleanupThread
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.jooq.SQLDialect
 import org.jooq.impl.DataSourceConnectionProvider
@@ -16,21 +15,19 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import org.springframework.transaction.annotation.EnableTransactionManagement
-
-import javax.annotation.PostConstruct
-import javax.annotation.PreDestroy
-import javax.inject.Inject
 import java.sql.Driver
 import java.sql.DriverManager
 import java.sql.SQLException
-import java.util.Enumeration
-import java.util.Properties
+import java.util.*
+import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
+import javax.inject.Inject
 
 /**
  * Leoz-central database persistence configuration
  * Created by masc on 28.08.14.
  */
-@Configuration(PersistenceConfiguration.DB_CENTRAL)
+@Configuration(PersistenceConfiguration.QUALIFIER)
 @ComponentScan(
         lazyInit = true,
         basePackageClasses = arrayOf(org.deku.leoz.central.data.Package::class))
@@ -39,7 +36,7 @@ import java.util.Properties
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 open class PersistenceConfiguration {
     companion object {
-        const val DB_CENTRAL = "db_central"
+        const val QUALIFIER = "PersistenceConfigurationCentral"
     }
 
     private val log = LogFactory.getLog(PersistenceConfiguration::class.java)
@@ -48,7 +45,7 @@ open class PersistenceConfiguration {
     // or jooqTransactionAwareDataSourceProxy() are not @Lazy.
     // This works perfectly fine when running standalone.
     @Bean
-    @Qualifier(DB_CENTRAL)
+    @Qualifier(QUALIFIER)
     @ConfigurationProperties(prefix = "datasource.central")
     open fun dataSourceCentral(): AbstractDataSource {
         // When running within tomcat, spring can't figure out the driver type (even though mysql is
@@ -81,7 +78,7 @@ open class PersistenceConfiguration {
     }
 
     @Bean
-    @Qualifier(DB_CENTRAL)
+    @Qualifier(QUALIFIER)
     open fun jooqTransactionManager(): DataSourceTransactionManager {
         return DataSourceTransactionManager(dataSourceCentral())
     }

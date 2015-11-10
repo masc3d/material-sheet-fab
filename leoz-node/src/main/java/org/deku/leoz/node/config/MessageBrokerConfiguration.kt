@@ -34,7 +34,7 @@ open class MessageBrokerConfiguration {
 
         // Broker configuration, must occur before tunnel servlet starts
         log.info("Configuring messaging broker")
-        ActiveMQBroker.instance().dataDirectory = StorageConfiguration.instance.activeMqDataDirectory
+        ActiveMQBroker.instance().dataDirectory = StorageConfiguration.instance.get().activeMqDataDirectory
         ActiveMQBroker.instance().nativeTcpPort = this.nativePort
 
         if (!Strings.isNullOrEmpty(peerSettings.host)) {

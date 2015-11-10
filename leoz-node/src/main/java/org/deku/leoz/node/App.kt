@@ -1,10 +1,8 @@
 package org.deku.leoz.node
 
 import com.google.common.collect.Lists
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.JarManifest
-import org.deku.leoz.node.config.IdentityConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.springframework.beans.BeansException
@@ -21,16 +19,13 @@ import org.springframework.context.ApplicationListener
 import sx.Disposable
 import sx.Dispose
 import sx.LazyInstance
-import sx.jms.embedded.activemq.ActiveMQBroker
-
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
 import java.nio.channels.FileChannel
 import java.nio.channels.FileLock
 import java.nio.file.StandardOpenOption
-import java.util.ArrayList
-import java.util.Collections
+import java.util.*
 import java.util.function.Supplier
 import kotlin.properties.Delegates
 
@@ -52,24 +47,8 @@ open class App :
         /** Client node profile, activates specific configurations for leoz client nodes  */
         const val PROFILE_CLIENT_NODE = "client-node"
 
-        //region Singleton
-        private val instance = LazyInstance(Supplier { App() })
-
-        /**
-         * Singleton instance
-         * @return
-         */
-        @JvmStatic fun instance(): App {
-            return instance.get()
-        }
-
-        /**
-         * Static injection
-         * @param supplier
-         */
-        @JvmStatic fun inject(supplier: Supplier<App>) {
-            instance.set(supplier)
-        }
+        /** Injectable lazy instance */
+        @JvmField val instance = LazyInstance(Supplier { App() })
     }
 
     /** c'tor  */
@@ -113,7 +92,7 @@ open class App :
         isInitialized = true
 
         // Acquire lock on bundle path
-        val bundlePath = StorageConfiguration.instance.bundleLockFile
+        val bundlePath = StorageConfiguration.instance.get().bundleLockFile
         log.info("Acquiring lock on bundle path [${bundlePath}]")
         this.bundlePathLock = FileChannel
                 .open(bundlePath.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)
@@ -144,7 +123,7 @@ open class App :
 
             // Add local home configuration
             try {
-                configLocations.add(URL("file:" + StorageConfiguration.instance.applicationConfigurationFile.toString()))
+                configLocations.add(URL("file:" + StorageConfiguration.instance.get().applicationConfigurationFile.toString()))
             } catch (e: MalformedURLException) {
                 log.error(e.message, e)
             }
@@ -165,7 +144,7 @@ open class App :
         Runtime.getRuntime().addShutdownHook(object : Thread("App shutdown hook") {
             override fun run() {
                 log.info("Shutdown hook initiated")
-                App.instance().dispose()
+                App.instance.get().dispose()
                 log.info("Shutdown hook completed")
             }
         })
@@ -197,7 +176,7 @@ open class App :
         log.info("Shutting down")
         if (springApplicationContext != null)
             SpringApplication.exit(springApplicationContext, ExitCodeGenerator { exitCode })
-        App.instance().dispose()
+        App.instance.get().dispose()
     }
 
     fun shutdown() {

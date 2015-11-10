@@ -25,7 +25,7 @@ import kotlin.properties.Delegates
 open class EntitySyncConfiguration {
     private val mLog = LogFactory.getLog(this.javaClass)
 
-    @PersistenceUnit(name = PersistenceConfiguration.DB_EMBEDDED)
+    @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
     private lateinit var entityManagerFactory: EntityManagerFactory
 
     /** Entity sync consumer */

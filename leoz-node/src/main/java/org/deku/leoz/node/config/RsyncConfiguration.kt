@@ -10,6 +10,7 @@ import sx.rsync.RsyncServer
 import java.io.File
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import javax.inject.Inject
 import javax.inject.Named
 import kotlin.properties.Delegates
 
@@ -42,6 +43,11 @@ open class RsyncConfiguration {
     /** Rsync server instance */
     private var rsyncServer: RsyncServer by Delegates.notNull()
 
+    private val storageConfiguration by lazy({ StorageConfiguration.instance.get() })
+
+    @Inject
+    lateinit var rsyncModules: List<Rsync.Module>
+
     @PostConstruct
     fun initialize() {
         // Initialize rsync executable path
@@ -52,22 +58,26 @@ open class RsyncConfiguration {
             // Rsync configuration
             val config = RsyncServer.Configuration()
             config.port = this.server.port
-            config.logFile = File(StorageConfiguration.instance.logDirectory, "leoz-rsyncd.log")
+            config.logFile = File(this.storageConfiguration.logDirectory, "leoz-rsyncd.log")
 
             // Users
             var user = Rsync.User(RsyncConfiguration.USERNAME, RsyncConfiguration.PASSWORD)
 
             // Bundles module
-            var module = Rsync.Module("bundles", StorageConfiguration.instance.bundleRepositoryDirectory)
-            module.permissions.put(user, Rsync.Permission.READWRITE)
-            config.modules.add(module)
+            for (module in this.rsyncModules) {
+                module.permissions.put(user, Rsync.Permission.READWRITE)
+                config.modules.add(module)
+            }
 
             // Initialize and start server
-            rsyncServer = RsyncServer(StorageConfiguration.instance.etcDirectory, config)
+            rsyncServer = RsyncServer(this.storageConfiguration.etcDirectory, config)
             rsyncServer.onTermination = { e ->
                 if (e != null) log.error(e.message, e)
             }
+
+            // Start rsync server
             this.rsyncServer.start()
+
         } catch(e: Exception) {
             log.error(e.message, e)
         }

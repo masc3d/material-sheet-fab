@@ -12,7 +12,7 @@ import javax.persistence.PersistenceUnit;
  */
 public class ThreadedTransactionTest extends DataTest {
 
-    @PersistenceUnit(name = PersistenceConfiguration.DB_EMBEDDED)
+    @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
     EntityManagerFactory mEntityManagerFactory;
 
     @Test

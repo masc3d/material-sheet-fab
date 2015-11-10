@@ -24,7 +24,7 @@ import javax.persistence.PersistenceUnit;
 //@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 public class EntitySyncTest extends DataTest {
-    @PersistenceUnit(name = PersistenceConfiguration.DB_EMBEDDED)
+    @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
     private EntityManagerFactory mEntityManagerFactory;
 
     private EntityPublisher mListener;

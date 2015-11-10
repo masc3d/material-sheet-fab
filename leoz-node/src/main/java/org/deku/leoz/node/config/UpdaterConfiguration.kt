@@ -42,7 +42,8 @@ open class UpdaterConfiguration {
     }
 
     init {
-        this.bundleInstaller = BundleInstaller(StorageConfiguration.instance.bundlesDirectory)
+        this.bundleInstaller = BundleInstaller(
+                StorageConfiguration.instance.get().bundlesDirectory)
     }
 
     @PostConstruct
@@ -54,7 +55,7 @@ open class UpdaterConfiguration {
                 localRepository = BundleRepositoryConfiguration.localRepository,
                 presets = listOf(
                         BundleUpdater.Preset(
-                                bundleName = App.instance().name,
+                                bundleName = App.instance.get().name,
                                 install = true,
                                 storeInLocalRepository = false,
                                 requiresBoot = true),

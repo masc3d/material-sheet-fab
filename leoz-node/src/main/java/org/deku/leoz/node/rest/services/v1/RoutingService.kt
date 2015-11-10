@@ -3,12 +3,12 @@ package org.deku.leoz.node.rest.services.v1
 import com.google.common.base.Strings
 import com.google.common.collect.Iterables
 import com.google.common.primitives.Ints
-import com.mysema.query.jpa.impl.JPAQuery
-import com.mysema.query.types.expr.BooleanExpression
-import org.apache.commons.lang3.time.DateUtils
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.data.entities.master.*
+import org.deku.leoz.node.data.entities.master.HolidayCtrlPK
+import org.deku.leoz.node.data.entities.master.QRoute
+import org.deku.leoz.node.data.entities.master.QRoutingLayer
+import org.deku.leoz.node.data.entities.master.RoutingLayer
 import org.deku.leoz.node.data.repositories.master.*
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.rest.entities.ShortDate
@@ -20,16 +20,17 @@ import org.deku.leoz.rest.services.ServiceErrorCode
 import org.deku.leoz.rest.services.v1.RoutingService
 import sx.rs.ApiKey
 import java.sql.Timestamp
-import java.time.*
-
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.*
+import javax.inject.Inject
 import javax.inject.Named
+import javax.persistence.EntityManagerFactory
+import javax.persistence.PersistenceUnit
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
-import java.util.ArrayList
-import javax.inject.Inject
-import javax.persistence.EntityManagerFactory
-import javax.persistence.PersistenceUnit
 
 /**
  * Created by masc on 23.07.14.
@@ -52,7 +53,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     @Inject
     lateinit var stationRepository: StationRepository
 
-    @PersistenceUnit(name = PersistenceConfiguration.DB_EMBEDDED)
+    @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
     lateinit var entityManagerFactory: EntityManagerFactory
 
     /**

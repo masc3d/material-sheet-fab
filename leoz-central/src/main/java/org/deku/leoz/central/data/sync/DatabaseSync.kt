@@ -4,7 +4,6 @@ import com.google.common.base.Stopwatch
 import com.mysema.query.jpa.impl.JPAQuery
 import com.mysema.query.types.path.DateTimePath
 import com.mysema.query.types.path.EntityPathBase
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.data.entities.jooq.Tables
 import org.deku.leoz.central.data.entities.jooq.tables.*
@@ -27,14 +26,11 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
-
+import java.sql.Timestamp
 import javax.inject.Inject
 import javax.inject.Named
 import javax.persistence.EntityManager
 import javax.persistence.FlushModeType
-import java.sql.Timestamp
-import java.util.function.Function
-import java.util.stream.StreamSupport
 
 /**
  * TODO: split configuration (which tables to sync and how) from actual implementation, move config to DatabaseSyncConfiguration
@@ -43,8 +39,8 @@ import java.util.stream.StreamSupport
 @Named
 open class DatabaseSync
 @Inject
-constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransactionManager,
-            @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.DB_CENTRAL) txJooq: PlatformTransactionManager) {
+constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
+            @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER) txJooq: PlatformTransactionManager) {
     companion object {
         private val log = LogFactory.getLog(DatabaseSync::class.java)
 
@@ -270,12 +266,12 @@ constructor(@Qualifier(PersistenceConfiguration.DB_EMBEDDED) tx: PlatformTransac
         transactionJooq = TransactionTemplate(txJooq)
     }
 
-    @Transactional(value = PersistenceConfiguration.DB_EMBEDDED)
+    @Transactional(value = PersistenceConfiguration.QUALIFIER)
     open fun sync() {
         this.sync(false)
     }
 
-    @Transactional(value = PersistenceConfiguration.DB_EMBEDDED)
+    @Transactional(value = PersistenceConfiguration.QUALIFIER)
     open fun sync(reload: Boolean) {
         val sw = Stopwatch.createStarted()
 

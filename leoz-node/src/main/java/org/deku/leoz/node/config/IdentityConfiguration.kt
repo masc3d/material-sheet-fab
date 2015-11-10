@@ -48,7 +48,7 @@ open class IdentityConfiguration {
         log.info(systemInformation)
 
         // Verify and read existing identity file
-        val identityFile = StorageConfiguration.instance.identityConfigurationFile
+        val identityFile = StorageConfiguration.instance.get().identityConfigurationFile
         if (identityFile.exists()) {
             try {
                 identity = Identity.createFromFile(systemInformation, identityFile)

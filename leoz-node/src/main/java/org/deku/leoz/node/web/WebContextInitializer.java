@@ -62,7 +62,7 @@ class WebContextInitializer implements ServletContextInitializer {
         mLog.info("Leoz webcontext startup");
 
         // Inject web application context
-        App.instance().setApplicationContext(WebApplicationContextUtils.getWebApplicationContext(servletContext));
+        App.instance.get().setApplicationContext(WebApplicationContextUtils.getWebApplicationContext(servletContext));
 
         //region Setup servlets
 
