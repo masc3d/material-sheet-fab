@@ -56,7 +56,8 @@ open class UpdaterConfiguration {
                         BundleUpdater.Preset(
                                 bundleName = App.instance().name,
                                 install = true,
-                                storeInLocalRepository = false),
+                                storeInLocalRepository = false,
+                                requiresBoot = true),
                         BundleUpdater.Preset(
                                 bundleName = Bundles.LEOZ_BOOT,
                                 install = true,

@@ -51,7 +51,7 @@ class BundleInstaller(
      * Creates bundle update path
      * @param bundleName Bundle name
      */
-    private fun bundleUpdatePath(bundleName: String): File {
+    private fun bundleReadyPath(bundleName: String): File {
         return File(bundleContainerPath, "${bundleName}${READY_SUFFIX}")
     }
 
@@ -108,7 +108,7 @@ class BundleInstaller(
      * @param bundleName Bundle name
      */
     fun hasUpdate(bundleName: String): Boolean {
-        return this.bundleUpdatePath(bundleName).exists()
+        return this.bundleReadyPath(bundleName).exists()
     }
 
     /**
@@ -146,7 +146,7 @@ class BundleInstaller(
     private fun clean(bundleName: String) {
         log.info("Cleaning bundle metadirs for [${bundleName}]")
         val paths = arrayOf(
-                this.bundleUpdatePath(bundleName),
+                this.bundleReadyPath(bundleName),
                 this.bundleDownloadPath(bundleName),
                 this.oldBundlePath(bundleName))
 
@@ -160,6 +160,7 @@ class BundleInstaller(
      * @param version Bundle version
      * @param forceDownload Always download, even if existing version is the same
      * @param onProgress Progress callback
+     * @return true if the update is ready to install, false if the currently installed bundle is already uptodate.
      */
     fun download(bundleRepository: BundleRepository,
                  bundleName: String,
@@ -167,23 +168,22 @@ class BundleInstaller(
                  forceDownload: Boolean = false,
                  onProgress: ((file: String, percentage: Double) -> Unit)? = null): Boolean {
 
-        var changesApplied = false
+        var readyToInstall = false
 
         val bundlePath = this.bundlePath(bundleName)
-        val bundleUpdatePath = this.bundleUpdatePath(bundleName)
+        val bundleUpdatePath = this.bundleReadyPath(bundleName)
         val bundleDownloadPath = this.bundleDownloadPath(bundleName)
 
         var bundle: Bundle? = this.tryLoadBundle(bundlePath)
-        var updateBundle: Bundle? = this.tryLoadBundle(bundleUpdatePath)
+        var readyBundle: Bundle? = this.tryLoadBundle(bundleUpdatePath)
 
-        if (bundle != null) log.info("Current bundle [${bundle}]")
-        if (updateBundle != null) log.info("Current update bundle [${updateBundle}]")
+        if (bundle != null) log.info("Currently installed bundle [${bundle}]")
+        if (readyBundle != null) log.info("Currently ready bundle [${readyBundle}]")
 
-        val bundleUpToDate =
-                (bundle != null && version.equals(bundle.version)) ||
-                        (updateBundle != null && version.equals(updateBundle.version))
+        val installedBundleUpToDate = (bundle != null && version.equals(bundle.version))
+        val readyBundleUpToDate = (readyBundle != null && version.equals(readyBundle.version))
 
-        if (!bundleUpToDate || forceDownload) {
+        if (!(installedBundleUpToDate || readyBundleUpToDate) || forceDownload) {
             // If an update is already in place, make it the current download path, possibly minimizing download time
             if (bundleUpdatePath.exists()) {
                 if (bundleDownloadPath.exists())
@@ -210,11 +210,12 @@ class BundleInstaller(
 
             bundleDownloadPath.renameTo(bundleUpdatePath)
 
-            changesApplied = true
+            readyToInstall = true
         } else {
             log.info("Version [${version}] already downloaded")
+            readyToInstall = (readyBundle != null)
         }
-        return changesApplied
+        return readyToInstall
     }
 
     /**
@@ -232,10 +233,10 @@ class BundleInstaller(
         log.info("Installing [${bundleName}]")
 
         val bundlePath = this.bundlePath(bundleName)
-        val bundleUpdatePath = this.bundleUpdatePath(bundleName)
+        val bundleReadyPath = this.bundleReadyPath(bundleName)
 
         var bundle: Bundle? = this.tryLoadBundle(bundlePath)
-        val updateBundle: Bundle? = this.tryLoadBundle(bundleUpdatePath)
+        val readyBundle: Bundle? = this.tryLoadBundle(bundleReadyPath)
 
         // Stop and uninstall native bundle process if applicable
         if (!omitNativeInstallation && bundle != null) {
@@ -243,8 +244,8 @@ class BundleInstaller(
             bundle.uninstall()
         }
 
-        if (bundleUpdatePath.exists()) {
-            log.info("Updating to [${updateBundle}]")
+        if (bundleReadyPath.exists()) {
+            log.info("Updating to [${readyBundle}]")
 
             val oldBundlePath = this.oldBundlePath(bundleName)
             if (oldBundlePath.exists()) {
@@ -254,7 +255,7 @@ class BundleInstaller(
 
             bundlePath.renameTo(oldBundlePath)
             try {
-                bundleUpdatePath.renameTo(bundlePath)
+                bundleReadyPath.renameTo(bundlePath)
             } catch(e: Exception) {
                 oldBundlePath.renameTo(bundlePath)
                 throw e

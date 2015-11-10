@@ -37,7 +37,7 @@ class BundleUpdater(
         public val installer: BundleInstaller,
         public val remoteRepository: BundleRepository,
         public val localRepository: BundleRepository? = null,
-        public val presets: List<BundleUpdater.Preset>,
+        presets: List<BundleUpdater.Preset>,
         private val jmsConnectionFactory: ConnectionFactory,
         private val jmsUpdateRequestQueue: Destination)
 :
@@ -63,6 +63,8 @@ class BundleUpdater(
     private val executor = Executors.newScheduledThreadPool(2)
     private val updateInfoRequestChannel: Channel
 
+    val presets: List<BundleUpdater.Preset>
+
     init {
         this.updateInfoRequestChannel = Channel(
                 connectionFactory = jmsConnectionFactory,
@@ -73,6 +75,9 @@ class BundleUpdater(
                         DefaultConverter.CompressionType.GZIP),
                 jmsDeliveryMode = Channel.DeliveryMode.NonPersistent,
                 jmsTtl = Duration.ofSeconds(10))
+
+        // Bundle(s) requiring (re)boot go last
+        this.presets = presets.sortedBy { p -> p.requiresBoot }
     }
 
     /**
@@ -140,6 +145,9 @@ class BundleUpdater(
 
             log.info("Matching remote version is [${bundleName}-${version}]")
 
+            // The repository to actually install from.
+            // This may be the local repository if this bundle is supposed to be downloaded to local repository anyway
+            // or the remote repository if it's installed directly.
             val repositoryToInstallFrom: BundleRepository
 
             if (preset.storeInLocalRepository) {
@@ -158,15 +166,19 @@ class BundleUpdater(
             }
 
             if (preset.install) {
-                this.installer.download(
+                val readyToInstall = this.installer.download(
                         bundleRepository = repositoryToInstallFrom,
                         bundleName = bundleName,
                         version = version)
 
-                if (preset.requiresBoot) {
-                    this.installer.boot(bundleName)
+                if (readyToInstall) {
+                    if (preset.requiresBoot) {
+                        this.installer.boot(bundleName)
+                    } else {
+                        this.installer.install(bundleName)
+                    }
                 } else {
-                    this.installer.install(bundleName)
+                    log.info("Bundle [${bundleName}] is already uptodate.")
                 }
             }
 
