@@ -87,7 +87,8 @@ class BundleRepository(
         // Get remote list
         val entries: List<String>
         if (rsyncUri.isFile()) {
-            entries = File(rsyncUri.uri).listFiles().map { l -> l.name }
+            entries = (File(rsyncUri.uri).listFiles() ?: arrayOf<File>())
+                    .map { l -> l.name }
         } else {
             val rc = this.createRsyncClient()
             rc.destination = rsyncUri
@@ -355,29 +356,36 @@ class BundleRepository(
      * @param bundleName Name of bundle to download
      * @param version Bundle version
      * @param localRepository Local repository. The URI of this repository must be local, otherwise an exception is thrown
+     * @return true if version was downloaded and verified successfully. false if it already exists
      */
     fun download(bundleName: String,
                  version: Bundle.Version,
-                 localRepository: BundleRepository) {
+                 localRepository: BundleRepository): Boolean {
 
         if (!localRepository.rsyncModuleUri.isFile())
             throw IllegalStateException("Local repository url is supposed to be a file [${rsyncModuleUri}]")
 
         val localVersions = localRepository.listVersions(bundleName)
 
-        val copyDestinationUris = localVersions.sortedDescending()
+        val destPath = File(localRepository.rsyncModuleUri.resolve(bundleName).resolve(version.toString()).uri)
+        if (destPath.exists())
+            return false
+
+        val downloadPath = File(localRepository.rsyncModuleUri.resolve(bundleName).resolve(version.toString() + DOWNLOAD_SUFFIX).uri)
+        downloadPath.mkdirs()
+
+        val copyDestinationPaths = localVersions.sortedDescending()
                 .filter({ v -> v.compareTo(version) != 0 })
                 .take(2)
-                .map({ v -> Rsync.URI("../").resolve(v) })
+                .map({ v -> File(Rsync.URI("../").resolve(v).uri) })
 
-        val rc = this.createRsyncClient()
-        rc.source = this.rsyncModuleUri.resolve(bundleName).resolve(version)
-        rc.destination = localRepository.rsyncModuleUri.resolve(bundleName).resolve(version.toString() + DOWNLOAD_SUFFIX)
-        rc.copyDestinations = copyDestinationUris
+        this.download(bundleName = bundleName,
+                version = version,
+                destPath = downloadPath,
+                copyPaths = copyDestinationPaths,
+                verify = true)
 
-        log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
-        rc.sync({ r ->
-            log.info("Updating [${r.flags}] [${r.path}]")
-        })
+        downloadPath.renameTo(destPath)
+        return true
     }
 }

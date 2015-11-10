@@ -14,7 +14,6 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.config.BundleRepositoryConfiguration
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
@@ -35,6 +34,14 @@ import sx.platform.PlatformId
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
+
+class BundleRepositoryConfiguration extends org.deku.leoz.config.BundleRepositoryConfiguration {
+    private static BundleRepositoryConfiguration instance = new BundleRepositoryConfiguration()
+
+    public static BundleRepositoryConfiguration instance() {
+        return this.instance
+    }
+}
 
 /**
  * Base class for all packager tasks
@@ -486,6 +493,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
             bundleConfig.appMainJar = this.getMainJar().getName()
             bundleConfig.appVersion = project.version
             bundleConfig.appClassPath = this.getProjectJars().stream().map { it.getName() }.collect()
+            bundleConfig.appMainclass = project.mainClassName
             bundleConfig.save()
 
             println "Creating bundle manifest"
@@ -603,7 +611,7 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         }
 
         // Upload to bundle repository
-        BundleRepository ar = BundleRepositoryConfiguration.INSTANCE$.stagingRepository()
+        BundleRepository ar = BundleRepositoryConfiguration.instance().stagingRepository
         ar.upload(project.name, this.getReleasePath(), true)
     }
 }
@@ -618,7 +626,7 @@ class PackagerReleasePullTask extends PackagerReleaseTask {
         def releasePath = this.getReleasePath()
 
         def version = Bundle.Version.parse(project.version)
-        BundleRepository repository = BundleRepositoryFactory.INSTANCE$.stagingRepository()
+        BundleRepository repository = BundleRepositoryConfiguration.instance().stagingRepository
 
         def remoteVersions = repository.listVersions(project.name)
                 .stream()
@@ -628,7 +636,7 @@ class PackagerReleasePullTask extends PackagerReleaseTask {
         if (remoteVersions.size() == 0)
             throw new IllegalStateException("No remote versions <= ${version}")
 
-        repository.download(project.name, remoteVersions.get(0), releasePath, true, true)
+        repository.download(project.name, remoteVersions.get(0), releasePath, new ArrayList<File>(), true, true)
     }
 }
 

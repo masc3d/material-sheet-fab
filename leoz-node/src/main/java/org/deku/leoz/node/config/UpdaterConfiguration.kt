@@ -2,8 +2,8 @@ package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleInstaller
+import org.deku.leoz.bundle.Bundles
 import org.deku.leoz.bundle.update.BundleUpdater
-import org.deku.leoz.config.BundleRepositoryConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.springframework.context.annotation.Configuration
@@ -33,8 +33,7 @@ open class UpdaterConfiguration {
     /** Broker listener  */
     private val brokerEventListener = object : Broker.EventListener {
         override fun onStart() {
-            bundleUpdater.startUpdate(BundleUpdater.Preset(
-                    bundleName = App.instance().name))
+            bundleUpdater.startUpdate()
         }
 
         override fun onStop() {
@@ -51,10 +50,18 @@ open class UpdaterConfiguration {
         bundleUpdater = BundleUpdater(
                 identity = this.identityConfiguration.identity,
                 installer = this.bundleInstaller,
-                remoteRepository = BundleRepositoryConfiguration.stagingRepository(),
+                remoteRepository = BundleRepositoryConfiguration.stagingRepository,
+                localRepository = BundleRepositoryConfiguration.localRepository,
                 presets = listOf(
                         BundleUpdater.Preset(
-                                bundleName = App.instance().name)),
+                                bundleName = App.instance().name,
+                                install = true,
+                                storeInLocalRepository = false),
+                        BundleUpdater.Preset(
+                                bundleName = Bundles.LEOZ_BOOT,
+                                install = true,
+                                storeInLocalRepository = true)
+                        ),
                 jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
                 jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue
         )

@@ -34,7 +34,9 @@ class StorageConfiguration(appName: String) : org.deku.leoz.config.StorageConfig
 
     /** Bundle repository directory */
     val bundleRepositoryDirectory: File by lazy({
-        File(this.dataDirectory, "bundle-repository")
+        val d = File(this.dataDirectory, "bundle-repository")
+        d.mkdirs()
+        d
     })
 
     /** c'tor */

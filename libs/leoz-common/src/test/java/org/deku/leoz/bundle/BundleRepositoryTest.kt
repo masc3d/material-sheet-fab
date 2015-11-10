@@ -25,7 +25,12 @@ class BundleRepositoryTest {
     }
 
     @Test
-    fun testRemoteList() {
+    fun testListBundles() {
+        val bundles = BundleTestConfiguration.remoteRepository.listBundles()
+        bundles.forEach { println(it) }
+    }
+    @Test
+    fun testListVersions() {
         val versions = BundleTestConfiguration.remoteRepository.listVersions(BUNDLE_NAME)
         versions.forEach { println(it) }
     }

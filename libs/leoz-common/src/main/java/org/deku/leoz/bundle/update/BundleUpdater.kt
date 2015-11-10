@@ -4,6 +4,7 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
+import org.deku.leoz.bundle.boot
 import org.deku.leoz.bundle.update.entities.UpdateInfo
 import org.deku.leoz.bundle.update.entities.UpdateInfoRequest
 import sx.Disposable
@@ -87,11 +88,22 @@ class BundleUpdater(
         }
     }
 
-    public fun startUpdate(preset: Preset) {
+    /**
+     * Start update for specific preset
+     * @param preset Update preset
+     */
+    private fun startUpdate(preset: Preset) {
         // Schedule update
         this.executor.submit({
             this.update(preset)
         })
+    }
+
+    /**
+     * Start update for all bundle presets
+     */
+    public fun startUpdate() {
+        this.presets.forEach { p -> this.startUpdate(p) }
     }
 
     public fun stop() {
@@ -113,26 +125,52 @@ class BundleUpdater(
                 return
             }
 
+            log.info("Requesting version info for [${bundleName}]")
+
             // Request currently assigned version for this bundle and node
             val updateInfo = this.updateInfoRequestChannel.sendReceive(
                     UpdateInfoRequest(nodeId, bundleName),
                     UpdateInfo::class.java,
                     useTemporaryResponseQueue = true)
 
+            log.info("Update info [${updateInfo}]")
+
             // Determine remote version matching version pattern
-            val remoteVersion = this.remoteRepository.queryLatestMatchingVersion(bundleName, updateInfo.bundleVersionPattern)
+            val version = this.remoteRepository.queryLatestMatchingVersion(bundleName, updateInfo.bundleVersionPattern)
+
+            log.info("Matching remote version is [${bundleName}-${version}]")
+
+            val repositoryToInstallFrom: BundleRepository
 
             if (preset.storeInLocalRepository) {
                 // Synchronize to local repository
                 if (this.localRepository == null)
                     throw IllegalStateException("Cannot store bundle [${preset.bundleName}] as local repository is not set")
 
-                val versions = this.localRepository.listVersions(preset.bundleName)
-                        .filter { v -> !v.equals(remoteVersion) }
+                repositoryToInstallFrom = this.localRepository
+
+                this.remoteRepository.download(
+                        bundleName = bundleName,
+                        version = version,
+                        localRepository = this.localRepository)
+            } else {
+                repositoryToInstallFrom = this.remoteRepository
             }
 
             if (preset.install) {
+                this.installer.download(
+                        bundleRepository = repositoryToInstallFrom,
+                        bundleName = bundleName,
+                        version = version)
+
+                if (preset.requiresBoot) {
+                    this.installer.boot(bundleName)
+                } else {
+                    this.installer.install(bundleName)
+                }
             }
+
+            log.info("Update equence for bundle [${bundleName}] complete")
 
         } catch(e: Exception) {
             log.error(e.message, e)

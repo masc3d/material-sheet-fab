@@ -4,12 +4,10 @@ import com.google.common.hash.Hashing
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.system.ProcessElevation
-import sx.EmbeddedExecutable
 import sx.ProcessExecutor
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import java.io.*
-import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -371,6 +369,7 @@ class Bundle : Serializable {
         private val KEY_APP_MAINJAR = "app.mainjar"
         private val KEY_APP_VERSION = "app.version"
         private val KEY_APP_CLASSPATH = "app.classpath"
+        private val KEY_APP_MAINCLASS = "app.mainclass"
 
         /** Contains key/value pairs or plain strings (non parsable lines) */
         private val entries = ArrayList<Any>()
@@ -401,6 +400,15 @@ class Bundle : Serializable {
             }
             set(value: List<String>) {
                 entryMap.set(KEY_APP_CLASSPATH, value.joinToString(";"))
+            }
+
+        /** Application main class */
+        var appMainclass: String
+            get() {
+                return entryMap.get(KEY_APP_MAINCLASS)?.replace("/", ".") ?: ""
+            }
+            set(value: String) {
+                entryMap.set(KEY_APP_MAINCLASS, value.replace(".", "/"))
             }
 
         /**

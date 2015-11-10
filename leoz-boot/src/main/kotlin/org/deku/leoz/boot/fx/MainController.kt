@@ -8,8 +8,8 @@ import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import org.deku.leoz.boot.Application
 import org.deku.leoz.boot.config.BundleInstallerConfiguration
+import org.deku.leoz.boot.config.BundleRepositoryConfiguration
 import org.deku.leoz.boot.config.LogConfiguration
-import org.deku.leoz.config.BundleRepositoryConfiguration
 import sx.fx.TextAreaLogAppender
 import java.awt.GraphicsEnvironment
 import java.net.URL
@@ -74,7 +74,7 @@ class MainController : Initializable {
                     installer.uninstall(bundleName)
                 } else {
                     if (!installer.hasBundle(bundleName) || Application.Parameters.forceDownload) {
-                        val repository = BundleRepositoryConfiguration.stagingRepository()
+                        val repository = BundleRepositoryConfiguration.stagingRepository
 
                         // Query for version matching pattern
                         val version = repository.queryLatestMatchingVersion(
@@ -83,7 +83,7 @@ class MainController : Initializable {
 
                         // Download bundle
                         installer.download(
-                                bundleRepository = BundleRepositoryConfiguration.stagingRepository(),
+                                bundleRepository = repository,
                                 bundleName = bundleName,
                                 version = version,
                                 forceDownload = Application.Parameters.forceDownload,

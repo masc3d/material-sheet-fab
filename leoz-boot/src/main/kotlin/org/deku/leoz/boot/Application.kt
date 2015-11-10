@@ -2,6 +2,7 @@ package org.deku.leoz.boot
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
+import com.google.common.base.Strings
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
@@ -35,8 +36,11 @@ fun main(args: Array<String>) {
 class Application : javafx.application.Application() {
 
     object Parameters {
-        @Parameter(description = "Bundle to boot")
-        var bundles: List<String> = ArrayList()
+        @Parameter(description = "Command args")
+        val args: List<String> = ArrayList()
+
+        @Parameter(names = arrayOf("--bundle"), description = "Bundle to boot")
+        var bundle: String = ""
 
         @Parameter(names = arrayOf("--repository"), description = "Repository URI")
         var repositoryUriString: String? = null
@@ -58,7 +62,7 @@ class Application : javafx.application.Application() {
 
     /** Bundle to install */
     val bundle by lazy({
-        Parameters.bundles.first()
+        Parameters.bundle
     })
 
     /** Bundle repository URI */
@@ -113,7 +117,7 @@ class Application : javafx.application.Application() {
 
         // Parse command line params
         JCommander(Parameters, *this.parameters.raw.toTypedArray())
-        if (Parameters.bundles.size == 0) {
+        if (Strings.isNullOrEmpty(Parameters.bundle)) {
             // Nothing to do
             System.exit(0)
             return
