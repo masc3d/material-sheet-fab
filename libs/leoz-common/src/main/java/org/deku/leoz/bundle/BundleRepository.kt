@@ -365,19 +365,31 @@ class BundleRepository(
         if (!localRepository.rsyncModuleUri.isFile())
             throw IllegalStateException("Local repository url is supposed to be a file [${rsyncModuleUri}]")
 
-        val localVersions = localRepository.listVersions(bundleName)
+        // Local repository basepath
+        val localRepoBasePath = File(localRepository.rsyncModuleUri.uri)
+        val localRepoBundlePath = localRepoBasePath.resolve(bundleName)
 
-        val destPath = File(localRepository.rsyncModuleUri.resolve(bundleName).resolve(version.toString()).uri)
+        // Final destination path for download
+        val destPath = localRepoBundlePath
+                .resolve(version.toString())
         if (destPath.exists())
             return false
 
-        val downloadPath = File(localRepository.rsyncModuleUri.resolve(bundleName).resolve(version.toString() + DOWNLOAD_SUFFIX).uri)
+        // Temporary download path
+        val downloadPath = destPath.parentFile.resolve(destPath.name + DOWNLOAD_SUFFIX)
         downloadPath.mkdirs()
 
+        // Local version of bundle
+        val localVersions = localRepository.listVersions(bundleName)
+
+        // TODO. also include paths of other bundles. a good way to do it would possibly
+        // to use the latest of any bundle to minimize transfer volume.
+        // This should be done on a repo/bundle rsync URI basis, so the logic can be reused
+        // for remote URIs (eg. upload) as well
         val copyDestinationPaths = localVersions.sortedDescending()
                 .filter({ v -> v.compareTo(version) != 0 })
                 .take(2)
-                .map({ v -> File(Rsync.URI("../").resolve(v).uri) })
+                .map({ v -> localRepoBundlePath.resolve(v.toString()) })
 
         this.download(bundleName = bundleName,
                 version = version,
