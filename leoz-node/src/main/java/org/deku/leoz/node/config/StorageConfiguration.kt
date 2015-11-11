@@ -12,7 +12,8 @@ import java.io.File
  */
 open class StorageConfiguration protected constructor(appName: String)
 :
-        org.deku.leoz.config.StorageConfiguration(appName) {
+        org.deku.leoz.config.StorageConfiguration(appName)
+{
     companion object {
         val instance = LazyInstance({ StorageConfiguration(App.instance.get().name) })
     }

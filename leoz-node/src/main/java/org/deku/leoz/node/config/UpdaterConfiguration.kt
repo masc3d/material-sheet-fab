@@ -6,6 +6,7 @@ import org.deku.leoz.bundle.Bundles
 import org.deku.leoz.bundle.update.BundleUpdater
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.embedded.Broker
@@ -25,32 +26,14 @@ open class UpdaterConfiguration {
     lateinit var identityConfiguration: IdentityConfiguration
 
     /** Updater instance */
-    lateinit var bundleUpdater: BundleUpdater
-
-    /** Bundle installer instance */
-    val bundleInstaller: BundleInstaller
-
-    /** Broker listener  */
-    private val brokerEventListener = object : Broker.EventListener {
-        override fun onStart() {
-            bundleUpdater.startUpdate()
-        }
-
-        override fun onStop() {
-            bundleUpdater.stop()
-        }
-    }
-
-    init {
-        this.bundleInstaller = BundleInstaller(
+    @Bean
+    open fun bundleUpdater(): BundleUpdater {
+        val installer = BundleInstaller(
                 StorageConfiguration.instance.get().bundlesDirectory)
-    }
 
-    @PostConstruct
-    fun onInitialize() {
-        bundleUpdater = BundleUpdater(
+        return BundleUpdater(
                 identity = this.identityConfiguration.identity,
-                installer = this.bundleInstaller,
+                installer = installer,
                 remoteRepository = BundleRepositoryConfiguration.stagingRepository,
                 localRepository = BundleRepositoryConfiguration.localRepository,
                 presets = listOf(
@@ -63,11 +46,25 @@ open class UpdaterConfiguration {
                                 bundleName = Bundles.LEOZ_BOOT,
                                 install = true,
                                 storeInLocalRepository = true)
-                        ),
+                ),
                 jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
                 jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue
         )
+    }
 
+    /** Broker listener  */
+    private val brokerEventListener = object : Broker.EventListener {
+        override fun onStart() {
+            bundleUpdater().startUpdate()
+        }
+
+        override fun onStop() {
+            bundleUpdater().stop()
+        }
+    }
+
+    @PostConstruct
+    fun onInitialize() {
         ActiveMQConfiguration.instance.broker.delegate.add(brokerEventListener)
         if (ActiveMQConfiguration.instance.broker.isStarted)
             brokerEventListener.onStart()

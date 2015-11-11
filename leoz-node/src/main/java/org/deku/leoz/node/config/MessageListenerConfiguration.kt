@@ -69,7 +69,7 @@ open class MessageListenerConfiguration {
 
         nodeNotificationListener.addDelegate(
                 UpdateInfo::class.java,
-                updaterConfiguration.bundleUpdater
+                updaterConfiguration.bundleUpdater()
         )
     }
 

@@ -154,7 +154,7 @@ class BundleInstaller(
     }
 
     /**
-     * Download specific bundle version as bundle update (not overwriting the current bundle)
+     * Download specific bundle version and prepare it as an update, ready for installation
      * @param bundleRepository Bundle repository to download from
      * @param bundleName Bundle name
      * @param version Bundle version
@@ -168,7 +168,7 @@ class BundleInstaller(
                  forceDownload: Boolean = false,
                  onProgress: ((file: String, percentage: Double) -> Unit)? = null): Boolean {
 
-        var readyToInstall = false
+        var readyToInstall: Boolean
 
         val bundlePath = this.bundlePath(bundleName)
         val bundleUpdatePath = this.bundleReadyPath(bundleName)
@@ -219,8 +219,8 @@ class BundleInstaller(
     }
 
     /**
-     * Installs previously downloaded bundle
-     * performing native installation by calling into the bundle process' native entry points
+     * Installs previously downloaded bundle-
+     * Performs native installation by calling into the bundle process' native entry points
      * @param bundleName Name of bundle to install
      * @param omitNativeInstallation Do not call into bundle process for native stop/start/install/uninstall. This is merely
      * an optimization for bundles which do not require those entry points (eg. leoz-boot)

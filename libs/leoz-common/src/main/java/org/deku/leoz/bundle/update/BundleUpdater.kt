@@ -111,6 +111,9 @@ class BundleUpdater(
         this.presets.forEach { p -> this.startUpdate(p) }
     }
 
+    /**
+     * Stop all bundle tasks
+     */
     public fun stop() {
         this.executor.shutdownNow()
         this.executor.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
