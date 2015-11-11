@@ -1,4 +1,4 @@
-package org.deku.leoz.bundle.update.entities
+package org.deku.leoz.bundle.entities
 
 import java.time.LocalTime
 

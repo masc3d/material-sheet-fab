@@ -2,8 +2,8 @@ package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleInstaller
+import org.deku.leoz.bundle.BundleUpdater
 import org.deku.leoz.bundle.Bundles
-import org.deku.leoz.bundle.update.BundleUpdater
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.springframework.context.annotation.Bean

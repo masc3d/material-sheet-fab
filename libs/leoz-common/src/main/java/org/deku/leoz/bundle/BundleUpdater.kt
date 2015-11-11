@@ -1,12 +1,9 @@
-package org.deku.leoz.bundle.update
+package org.deku.leoz.bundle
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
-import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.bundle.boot
-import org.deku.leoz.bundle.update.entities.UpdateInfo
-import org.deku.leoz.bundle.update.entities.UpdateInfoRequest
+import org.deku.leoz.bundle.entities.UpdateInfo
+import org.deku.leoz.bundle.entities.UpdateInfoRequest
 import sx.Disposable
 import sx.jms.Channel
 import sx.jms.Converter
@@ -63,7 +60,7 @@ class BundleUpdater(
     private val executor = Executors.newScheduledThreadPool(2)
     private val updateInfoRequestChannel: Channel
 
-    val presets: List<BundleUpdater.Preset>
+    val presets: List<Preset>
 
     init {
         this.updateInfoRequestChannel = Channel(
@@ -116,7 +113,7 @@ class BundleUpdater(
      */
     public fun stop() {
         this.executor.shutdownNow()
-        this.executor.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
+        this.executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS)
     }
 
     /**

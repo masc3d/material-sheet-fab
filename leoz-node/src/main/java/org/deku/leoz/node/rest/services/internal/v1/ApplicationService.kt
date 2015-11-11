@@ -1,8 +1,8 @@
 package org.deku.leoz.node.rest.services.internal.v1
 
 import org.deku.leoz.bundle.BundleInstaller
+import org.deku.leoz.bundle.BundleUpdater
 import org.deku.leoz.bundle.boot
-import org.deku.leoz.bundle.update.BundleUpdater
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion

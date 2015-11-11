@@ -1,7 +1,7 @@
 package org.deku.leoz.central.config
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.bundle.update.entities.UpdateInfoRequest
+import org.deku.leoz.bundle.entities.UpdateInfoRequest
 import org.deku.leoz.central.data.repositories.NodeRepository
 import org.deku.leoz.central.messaging.handlers.IdentityMessageHandler
 import org.deku.leoz.central.messaging.handlers.UpdateInfoRequestHandler
