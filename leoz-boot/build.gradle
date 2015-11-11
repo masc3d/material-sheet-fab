@@ -4,7 +4,7 @@ apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: PackagerPlugin
 
-version '0.2-RELEASE'
+version '0.3-RELEASE'
 sourceCompatibility = 1.8
 mainClassName = "org.deku.leoz.boot.ApplicationKt"
 
