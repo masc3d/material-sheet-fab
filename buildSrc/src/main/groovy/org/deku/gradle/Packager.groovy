@@ -7,6 +7,7 @@ import com.jcraft.jsch.Session
 import com.jcraft.jsch.agentproxy.Connector
 import com.jcraft.jsch.agentproxy.ConnectorFactory
 import com.jcraft.jsch.agentproxy.RemoteIdentityRepository
+import com.jcraft.jsch.agentproxy.connector.PageantConnector
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod
 import org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile
@@ -525,7 +526,13 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
 
             @Override
             protected JSch createDefaultJSch(FS fs) throws JSchException {
-                Connector con = ConnectorFactory.getDefault().createConnector()
+                Connector con
+                // Workaround for windows, as pageant connector delivery by factory sporadically fails (?)
+                if (SystemUtils.IS_OS_WINDOWS)
+                    con = new PageantConnector()
+                else
+                    con = ConnectorFactory.getDefault().createConnector()
+
                 if (con == null)
                     throw new IllegalStateException("No jsch agent proxy connector available")
 
