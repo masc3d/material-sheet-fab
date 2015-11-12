@@ -35,10 +35,15 @@ class BundleInstaller(
          * Gets the bundle path ready for use with the Bundle class
          * This path is plaform specific, as on some platform the bundle resides in a subfolder
          * (eg. on OSX ${bundleName}.app)
+         * @param bundlePath Bundle base path
+         * @param bundleName Optional bundle name, hinting for native path. If not provided the bundle base path
+         * name is expected to be the same as the bundle name
          */
-        fun getNativeBundlePath(bundlePath: File): File {
+        fun getNativeBundlePath(
+                bundlePath: File,
+                bundleName: String? = null): File {
             return if (SystemUtils.IS_OS_MAC_OSX)
-                File(bundlePath, "${bundlePath.name}.app")
+                File(bundlePath, "${bundleName ?: bundlePath.name}.app")
             else
                 bundlePath
         }
@@ -128,11 +133,13 @@ class BundleInstaller(
     /**
      * Try to load bundle from bundle container subdir
      * @param bundlePath Bundle path
+     * @param bundleName Bundle name. As the bundle name cannot necessarily be derived from the path (suffixes may
+     * be in place), the name has to be provided explicitly
      */
-    private fun tryLoadBundle(bundlePath: File): Bundle? {
+    private fun tryLoadBundle(bundlePath: File, bundleName: String): Bundle? {
         if (bundlePath.exists()) {
             try {
-                return Bundle.load(getNativeBundlePath(bundlePath))
+                return Bundle.load(getNativeBundlePath(bundlePath, bundleName))
             } catch(e: Exception) {
                 this.log.error(e.message, e)
             }
@@ -174,8 +181,8 @@ class BundleInstaller(
         val bundleUpdatePath = this.bundleReadyPath(bundleName)
         val bundleDownloadPath = this.bundleDownloadPath(bundleName)
 
-        var bundle: Bundle? = this.tryLoadBundle(bundlePath)
-        var readyBundle: Bundle? = this.tryLoadBundle(bundleUpdatePath)
+        var bundle: Bundle? = this.tryLoadBundle(bundlePath, bundleName)
+        var readyBundle: Bundle? = this.tryLoadBundle(bundleUpdatePath, bundleName)
 
         if (bundle != null) log.info("Currently installed bundle [${bundle}]")
         if (readyBundle != null) log.info("Currently ready bundle [${readyBundle}]")
@@ -235,8 +242,8 @@ class BundleInstaller(
         val bundlePath = this.bundlePath(bundleName)
         val bundleReadyPath = this.bundleReadyPath(bundleName)
 
-        var bundle: Bundle? = this.tryLoadBundle(bundlePath)
-        val readyBundle: Bundle? = this.tryLoadBundle(bundleReadyPath)
+        var bundle: Bundle? = this.tryLoadBundle(bundlePath, bundleName)
+        val readyBundle: Bundle? = this.tryLoadBundle(bundleReadyPath, bundleName)
 
         // Stop and uninstall native bundle process if applicable
         if (!omitNativeInstallation && bundle != null) {

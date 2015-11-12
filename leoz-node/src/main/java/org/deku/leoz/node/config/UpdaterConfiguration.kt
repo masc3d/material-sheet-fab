@@ -25,6 +25,9 @@ open class UpdaterConfiguration {
     @Inject
     lateinit var identityConfiguration: IdentityConfiguration
 
+    @Inject
+    lateinit var bundleUpdater: BundleUpdater
+
     /** Updater instance */
     @Bean
     open fun bundleUpdater(): BundleUpdater {
@@ -55,11 +58,11 @@ open class UpdaterConfiguration {
     /** Broker listener  */
     private val brokerEventListener = object : Broker.EventListener {
         override fun onStart() {
-            bundleUpdater().startUpdate()
+            bundleUpdater.startUpdate()
         }
 
         override fun onStop() {
-            bundleUpdater().stop()
+            bundleUpdater.stop()
         }
     }
 
