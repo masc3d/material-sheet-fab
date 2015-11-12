@@ -3,7 +3,6 @@ package org.deku.leoz.bundle
 import com.google.common.hash.Hashing
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.system.ProcessElevation
 import sx.ProcessExecutor
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
@@ -464,7 +463,7 @@ class Bundle : Serializable {
      * Execute bundle process
      * @param args Arguments
      */
-    fun execute(elevate: Boolean = false, wait: Boolean = true, vararg args: String) {
+    fun execute(wait: Boolean = true, vararg args: String) {
         val error = StringBuffer()
 
         val command = ArrayList<String>()
@@ -473,10 +472,6 @@ class Bundle : Serializable {
             command.add(this.path!!.toString())
             command.add("--args")
         } else {
-            if (elevate) {
-                command.add(ProcessElevation.executable.file.toString())
-                command.add("elevate")
-            }
             command.add(File(this.path!!, this.name).toString())
         }
         command.addAll(args)

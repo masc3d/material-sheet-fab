@@ -11,7 +11,7 @@ val log = LogFactory.getLog(Bundle::class.javaClass)
 
 fun Bundle.start() {
     log.info("Starting bundle process [${this.name}]")
-    this.execute(elevate = false, args = "start")
+    this.execute(args = "start")
 }
 
 /**
@@ -19,7 +19,7 @@ fun Bundle.start() {
  */
 fun Bundle.stop() {
     log.info("Stopping bundle process [${this.name}]")
-    this.execute(elevate = false, args = "stop")
+    this.execute(args = "stop")
 }
 
 /**
@@ -27,7 +27,7 @@ fun Bundle.stop() {
  */
 fun Bundle.install() {
     log.info("Installing bundle [${this.name}]")
-    this.execute(elevate = false, args = "install")
+    this.execute(args = "install")
 }
 
 /**
@@ -35,7 +35,7 @@ fun Bundle.install() {
  */
 fun Bundle.uninstall() {
     log.info("Uninstalling bundle [${this.name}]")
-    this.execute(elevate = false, args = "uninstall")
+    this.execute(args = "uninstall")
 }
 
 /**
