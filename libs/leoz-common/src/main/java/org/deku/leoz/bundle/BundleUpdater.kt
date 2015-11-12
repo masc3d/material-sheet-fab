@@ -207,6 +207,7 @@ class BundleUpdater(
 
             if (readyToInstall) {
                 if (preset.requiresBoot) {
+                    // TODO: add support for updateInfo.desiredStartTime
                     this.installer.boot(bundleName)
                 } else {
                     this.installer.install(bundleName)
