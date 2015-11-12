@@ -26,6 +26,16 @@ class BundleRepository(
 
     companion object {
         val DOWNLOAD_SUFFIX = ".download"
+
+        /**
+         * Checks if repository is local and throws exception if not
+         * @param repository Bundle repository to check
+         * @throws IllegalArgumentException If repository is not local
+         */
+        fun assertLocalRepository(repository: BundleRepository) {
+            if (!repository.rsyncModuleUri.isFile())
+                throw IllegalStateException("Repository [${repository}] is supposed to be local, but has remote url")
+        }
     }
 
     /**
@@ -65,7 +75,7 @@ class BundleRepository(
      * @param bundleName Bundle name
      * @param platform Platform
      */
-    private fun bundlePath(path: File, bundleName: String, platform: PlatformId): File {
+    private fun nativeBundlePath(path: File, bundleName: String, platform: PlatformId): File {
         return if (platform.operatingSystem == OperatingSystem.OSX) File(path, "${bundleName}.app") else path
     }
 
@@ -74,8 +84,8 @@ class BundleRepository(
      * @param path Base path
      * @param bundleName Bundle name
      */
-    private fun bundlePath(path: File, bundleName: String): File {
-        return this.bundlePath(path, bundleName, PlatformId.current())
+    private fun nativeBundlePath(path: File, bundleName: String): File {
+        return this.nativeBundlePath(path, bundleName, PlatformId.current())
     }
 
     /**
@@ -178,7 +188,7 @@ class BundleRepository(
         // Verify this is an artifact version folder (having only platform ids as subfolder)
         val bundles = ArrayList<Bundle>()
         this.walkPlatformFolders(nSrcPath).forEach { p ->
-            val bundlePath = this.bundlePath(p.toFile(), bundleName, PlatformId.parse(p.fileName.toString()))
+            val bundlePath = this.nativeBundlePath(p.toFile(), bundleName, PlatformId.parse(p.fileName.toString()))
             val a = Bundle.load(bundlePath)
             logInfo("Found [${a}]")
             bundles.add(a)
@@ -301,7 +311,7 @@ class BundleRepository(
         if (onProgress != null) onProgress(currentFile, 0.95)
 
         if (verify) {
-            val bundlePath = this.bundlePath(destPath, bundleName)
+            val bundlePath = this.nativeBundlePath(destPath, bundleName)
             log.info("Verifying bundle [${bundlePath}]")
             Bundle.load(bundlePath)
                     .verify()
@@ -341,7 +351,7 @@ class BundleRepository(
 
         if (verify) {
             this.walkPlatformFolders(destPath.toPath()).forEach { p ->
-                val bundlePath = this.bundlePath(p.toFile(), bundleName, PlatformId.parse(p.fileName.toString()))
+                val bundlePath = this.nativeBundlePath(p.toFile(), bundleName, PlatformId.parse(p.fileName.toString()))
                 logInfo("Verifying bundle [${bundlePath}]")
                 Bundle.load(bundlePath).verify()
             }
@@ -352,18 +362,18 @@ class BundleRepository(
 
     /**
      * Download all platform bundles of a specific version to a local repository.
-     * The bundle being downloaded will have a download suffix until it's successfully verified
+     * The bundle being downloaded will have a download suffix until it's successfully verified.
      * @param bundleName Name of bundle to download
      * @param version Bundle version
      * @param localRepository Local repository. The URI of this repository must be local, otherwise an exception is thrown
      * @return true if version was downloaded and verified successfully. false if it already exists
+     * @throws IllegalStateException If repository (url) is not local
      */
     fun download(bundleName: String,
                  version: Bundle.Version,
                  localRepository: BundleRepository): Boolean {
 
-        if (!localRepository.rsyncModuleUri.isFile())
-            throw IllegalStateException("Local repository url is supposed to be a file [${rsyncModuleUri}]")
+        assertLocalRepository(localRepository)
 
         // Local repository basepath
         val localRepoBasePath = File(localRepository.rsyncModuleUri.uri)
@@ -399,5 +409,50 @@ class BundleRepository(
 
         downloadPath.renameTo(destPath)
         return true
+    }
+
+    /**
+     * Clean repository while keeping preserved bundles.
+     * This method is only supported for local repositories
+     * @param bundlesToPreserve List of bundle (names) to preserve
+     */
+    fun clean(bundlesToPreserve: List<String>) {
+        assertLocalRepository(this)
+
+        log.info("Cleaning bundles within [${this}] preserving [${bundlesToPreserve.joinToString(", ")}]")
+
+        val basePath = File(this.rsyncModuleUri.uri)
+
+        this.listBundles()
+                .filter { bundleName -> !bundlesToPreserve.contains(bundleName) }
+                .forEach { bundleName ->
+                    val bundlePath = basePath.resolve(bundleName)
+                    log.info("Deleting [${bundlePath}]")
+                    bundlePath.deleteRecursively()
+                }
+    }
+
+    /**
+     * Clean specific bundle within repository, keeping preserved versions
+     * @param bundleName Bundle (name) to process
+     * @param versionsToPreserve Bundle versions to preserve
+     */
+    fun clean(bundleName: String, versionsToPreserve: List<Bundle.Version>) {
+        assertLocalRepository(this)
+
+        log.info("Cleaning versions for bundle [${bundleName}] within [${this}] preserving [${versionsToPreserve.joinToString(", ")}]")
+
+        val basePath = File(this.rsyncModuleUri.uri)
+
+        this.listVersions(bundleName).filter { version -> !versionsToPreserve.contains(version) }
+                .forEach { version ->
+                    val bundleVersionPath = basePath.resolve(bundleName).resolve(version.toString())
+                    log.info("Deleting [${bundleVersionPath}]")
+                    bundleVersionPath.deleteRecursively()
+                }
+    }
+
+    override fun toString(): String {
+        return this.rsyncModuleUri.toString()
     }
 }

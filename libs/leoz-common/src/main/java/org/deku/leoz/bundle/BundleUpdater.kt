@@ -91,21 +91,35 @@ class BundleUpdater(
     }
 
     /**
-     * Start update for specific preset
-     * @param preset Update preset
-     */
-    private fun startUpdate(preset: Preset) {
-        // Schedule update
-        this.executor.submit({
-            this.update(preset)
-        })
-    }
-
-    /**
      * Start update for all bundle presets
+     * @param presets Presets to update, defaults to internal list of presets
      */
-    public fun startUpdate() {
-        this.presets.forEach { p -> this.startUpdate(p) }
+    public fun startUpdate(vararg presets: Preset = this.presets.toTypedArray()) {
+        this.executor.submit({
+            // Clean bundles before update
+            try {
+                this.clean()
+            } catch(e: Exception) {
+                log.error(e.message, e)
+            }
+
+            presets.forEach { p ->
+                try {
+                    this.update(p)
+                } catch(e: Exception) {
+                    log.error(e.message, e)
+                }
+
+                // Clean bundle version after update
+                try {
+                    this.clean(p.bundleName)
+                } catch(e: Exception) {
+                    log.error(e.message, e)
+                }
+            }
+
+            log.info("Update sequence complete")
+        })
     }
 
     /**
@@ -117,76 +131,92 @@ class BundleUpdater(
     }
 
     /**
+     * Clean any local bundles that are not contained within remote repository.
+     * In case this updater has been created without local repository, this method doesn't do anything.
+     */
+    private fun clean() {
+        if (this.localRepository != null) {
+            this.localRepository.clean(this.remoteRepository.listBundles())
+        }
+    }
+
+    /**
+     * Clean any local versions for a bundle that are not contained within remote repository.
+     * In case this updater has been created without local repository, this method doesn't do anything.
+     * @param bundleName Bundle to clean
+     */
+    private fun clean(bundleName: String) {
+        if (this.localRepository != null) {
+            this.localRepository.clean(bundleName, this.remoteRepository.listVersions(bundleName))
+        }
+    }
+
+    /**
      * Run the update process
      */
     @Synchronized private fun update(preset: Preset) {
-        try {
-            val bundleName = preset.bundleName
+        val bundleName = preset.bundleName
 
-            log.info("Starting update sequence for bundle [${bundleName}]")
-            val nodeId = this.identity.id
-            if (nodeId == null) {
-                log.warn("Identity not available, aborting update for bundle [${bundleName}]")
-                return
-            }
-
-            log.info("Requesting version info for [${bundleName}]")
-
-            // Request currently assigned version for this bundle and node
-            val updateInfo = this.updateInfoRequestChannel.sendReceive(
-                    UpdateInfoRequest(nodeId, bundleName),
-                    UpdateInfo::class.java,
-                    useTemporaryResponseQueue = true)
-
-            log.info("Update info [${updateInfo}]")
-
-            // Determine remote version matching version pattern
-            val version = this.remoteRepository.queryLatestMatchingVersion(bundleName, updateInfo.bundleVersionPattern)
-
-            log.info("Matching remote version is [${bundleName}-${version}]")
-
-            // The repository to actually install from.
-            // This may be the local repository if this bundle is supposed to be downloaded to local repository anyway
-            // or the remote repository if it's installed directly.
-            val repositoryToInstallFrom: BundleRepository
-
-            if (preset.storeInLocalRepository) {
-                // Synchronize to local repository
-                if (this.localRepository == null)
-                    throw IllegalStateException("Cannot store bundle [${preset.bundleName}] as local repository is not set")
-
-                repositoryToInstallFrom = this.localRepository
-
-                this.remoteRepository.download(
-                        bundleName = bundleName,
-                        version = version,
-                        localRepository = this.localRepository)
-            } else {
-                repositoryToInstallFrom = this.remoteRepository
-            }
-
-            if (preset.install) {
-                val readyToInstall = this.installer.download(
-                        bundleRepository = repositoryToInstallFrom,
-                        bundleName = bundleName,
-                        version = version)
-
-                if (readyToInstall) {
-                    if (preset.requiresBoot) {
-                        this.installer.boot(bundleName)
-                    } else {
-                        this.installer.install(bundleName)
-                    }
-                } else {
-                    log.info("Bundle [${bundleName}] is already uptodate.")
-                }
-            }
-
-            log.info("Update equence for bundle [${bundleName}] complete")
-
-        } catch(e: Exception) {
-            log.error(e.message, e)
+        log.info("Starting update sequence for bundle [${bundleName}]")
+        val nodeId = this.identity.id
+        if (nodeId == null) {
+            log.warn("Identity not available, aborting update for bundle [${bundleName}]")
+            return
         }
+
+        log.info("Requesting version info for [${bundleName}]")
+
+        // Request currently assigned version for this bundle and node
+        val updateInfo = this.updateInfoRequestChannel.sendReceive(
+                UpdateInfoRequest(nodeId, bundleName),
+                UpdateInfo::class.java,
+                useTemporaryResponseQueue = true)
+
+        log.info("Update info [${updateInfo}]")
+
+        // Determine remote version matching version pattern
+        val version = this.remoteRepository.queryLatestMatchingVersion(bundleName, updateInfo.bundleVersionPattern)
+
+        log.info("Matching remote version is [${bundleName}-${version}]")
+
+        // The repository to actually install from.
+        // This may be the local repository if this bundle is supposed to be downloaded to local repository anyway
+        // or the remote repository if it's installed directly.
+        val repositoryToInstallFrom: BundleRepository
+
+        if (preset.storeInLocalRepository) {
+            // Synchronize to local repository
+            if (this.localRepository == null)
+                throw IllegalStateException("Cannot store bundle [${preset.bundleName}] as local repository is not set")
+
+            repositoryToInstallFrom = this.localRepository
+
+            this.remoteRepository.download(
+                    bundleName = bundleName,
+                    version = version,
+                    localRepository = this.localRepository)
+        } else {
+            repositoryToInstallFrom = this.remoteRepository
+        }
+
+        if (preset.install) {
+            val readyToInstall = this.installer.download(
+                    bundleRepository = repositoryToInstallFrom,
+                    bundleName = bundleName,
+                    version = version)
+
+            if (readyToInstall) {
+                if (preset.requiresBoot) {
+                    this.installer.boot(bundleName)
+                } else {
+                    this.installer.install(bundleName)
+                }
+            } else {
+                log.info("Bundle [${bundleName}] is already uptodate.")
+            }
+        }
+
+        log.info("Update sequence for bundle [${bundleName}] complete")
     }
 
     override fun dispose() {
