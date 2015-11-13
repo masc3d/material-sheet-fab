@@ -33,6 +33,10 @@ compile - Compile classpath for source set 'main'.
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-1103
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-1103 (*)
++--- org.apache.mina:mina-core:3.+ -> 3.0.0-M2
+|    +--- org.apache.mina:mina-codec:3.0.0-M2
+|    |    \--- org.slf4j:slf4j-api:1.7.5 -> 1.7.13
+|    \--- org.slf4j:slf4j-api:1.7.5 -> 1.7.13
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
 |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE
@@ -326,6 +330,10 @@ default - Configuration for default artifacts.
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-1103
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-1103 (*)
++--- org.apache.mina:mina-core:3.+ -> 3.0.0-M2
+|    +--- org.apache.mina:mina-codec:3.0.0-M2
+|    |    \--- org.slf4j:slf4j-api:1.7.5 -> 1.7.13
+|    \--- org.slf4j:slf4j-api:1.7.5 -> 1.7.13
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
 |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE
@@ -651,6 +659,10 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-1103
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-1103 (*)
++--- org.apache.mina:mina-core:3.+ -> 3.0.0-M2
+|    +--- org.apache.mina:mina-codec:3.0.0-M2
+|    |    \--- org.slf4j:slf4j-api:1.7.5 -> 1.7.13
+|    \--- org.slf4j:slf4j-api:1.7.5 -> 1.7.13
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
 |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE
@@ -944,6 +956,10 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-1103
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-1103 (*)
++--- org.apache.mina:mina-core:3.+ -> 3.0.0-M2
+|    +--- org.apache.mina:mina-codec:3.0.0-M2
+|    |    \--- org.slf4j:slf4j-api:1.7.5 -> 1.7.13
+|    \--- org.slf4j:slf4j-api:1.7.5 -> 1.7.13
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
 |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE
@@ -1244,6 +1260,10 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-1103
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-1103 (*)
++--- org.apache.mina:mina-core:3.+ -> 3.0.0-M2
+|    +--- org.apache.mina:mina-codec:3.0.0-M2
+|    |    \--- org.slf4j:slf4j-api:1.7.5 -> 1.7.13
+|    \--- org.slf4j:slf4j-api:1.7.5 -> 1.7.13
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
 |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE

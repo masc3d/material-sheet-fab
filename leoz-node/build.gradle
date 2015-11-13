@@ -16,6 +16,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
+    compile "org.apache.mina:mina-core:3.+"
+
     // spring
     compile "org.springframework.data:spring-data-jpa:$v_spring_data_jpa"
     compile "org.springframework.data:spring-data-commons:$v_spring_data_commons"
