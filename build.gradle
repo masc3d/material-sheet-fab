@@ -10,6 +10,7 @@ buildscript {
         // Versions
         v_activemq = "5.+"
         v_apache_httpclient = "4.+"
+        v_apache_mina = "3.+"
         v_commons_lang = "3.+"
         v_commons_io = "2.+"
         v_eclipselink = "2.+"

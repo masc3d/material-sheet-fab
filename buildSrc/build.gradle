@@ -65,7 +65,7 @@ dependencies {
         exclude group: 'org.apache.activemq', module: 'activemq-spring'
         exclude group: 'org.eclipse.jetty.aggregate'
     }
-    provided 'org.springframework:spring-jms:4.+'
+    provided 'org.springframework:spring-jms:4.1.7.+'
     provided 'com.esotericsoftware:kryo:3.+'
     provided 'org.xerial.snappy:snappy-java:+'
     provided "com.wordnik:swagger-annotations:+"
