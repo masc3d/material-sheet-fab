@@ -26,7 +26,7 @@ open class Main : org.deku.leoz.node.Main() {
          */
         @JvmStatic fun main(args: Array<String>) {
             // Manually inject derived app instance into base class singletons
-            org.deku.leoz.node.App.instance.set({ App.instance })
+            org.deku.leoz.node.App.instance.set({ App.instance.get() })
             org.deku.leoz.node.config.StorageConfiguration.instance.set({ StorageConfiguration.instance })
 
             Main().run(args)

@@ -59,6 +59,8 @@ open class RsyncConfiguration {
             val config = RsyncServer.Configuration()
             config.port = this.server.port
             config.logFile = File(this.storageConfiguration.logDirectory, "leoz-rsyncd.log")
+            config.reverseLookup = false
+            config.forwardLookup = false
 
             // Users
             var user = Rsync.User(RsyncConfiguration.USERNAME, RsyncConfiguration.PASSWORD)

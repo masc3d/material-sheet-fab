@@ -12,7 +12,7 @@ class StorageConfiguration private constructor(appName: String)
         org.deku.leoz.node.config.StorageConfiguration(appName) {
     companion object {
         val instance by lazy({
-            StorageConfiguration(App.instance.name)
+            StorageConfiguration(App.instance.get().name)
         })
     }
 

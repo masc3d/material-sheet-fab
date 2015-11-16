@@ -1,6 +1,7 @@
 package org.deku.leoz.central
 
 import org.apache.commons.logging.LogFactory
+import sx.LazyInstance
 
 /**
  * Application instance.
@@ -19,9 +20,7 @@ class App private constructor() : org.deku.leoz.node.App() {
     }
 
     companion object {
-        val instance by lazy({
-            App()
-        })
+        @JvmStatic val instance = LazyInstance( { App() } )
 
         const val PROFILE_CENTRAL = "central"
     }

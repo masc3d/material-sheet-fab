@@ -48,7 +48,7 @@ open class App :
         const val PROFILE_CLIENT_NODE = "client-node"
 
         /** Injectable lazy instance */
-        @JvmField val instance = LazyInstance(Supplier { App() })
+        @JvmStatic val instance = LazyInstance(Supplier { App() })
     }
 
     /** c'tor  */
