@@ -15,7 +15,9 @@ open class StorageConfiguration protected constructor(appName: String)
         org.deku.leoz.config.StorageConfiguration(appName)
 {
     companion object {
-        val instance = LazyInstance({ StorageConfiguration(App.instance.get().name) })
+        val instance = LazyInstance({
+            StorageConfiguration(App.instance.get().name)
+        })
     }
 
     private var log: Log = LogFactory.getLog(this.javaClass)
