@@ -36,6 +36,10 @@ class RsyncServer(
         private val log = LogFactory.getLog(this.javaClass)
 
         var useChroot: Boolean = false
+        /** Controls whether the daemon performs a reverse lookup on the client’s IP address to determine its hostname */
+        var reverseLookup: Boolean = true
+        /** Controls  whether  the  daemon performs a forward lookup on any hostname specified in an hosts allow/deny setting */
+        var forwardLookup: Boolean = true
         /** Rsync log file */
         var logFile: File? = null
         /** Rsync port */
@@ -109,7 +113,10 @@ class RsyncServer(
             ini.config.isEmptySection = true
             ini.config.isGlobalSection = true
             ini.config.isEscape = false
+
             ini.put(globalSection, "use chroot", convertBoolean(this.useChroot))
+            ini.put(globalSection, "reverse lookup", convertBoolean(this.reverseLookup))
+            ini.put(globalSection, "forward lookup", convertBoolean(this.forwardLookup))
             if (this.port != null)
                 ini.put(globalSection, "port", port!!.toString())
             if (this.logFile != null)
@@ -117,7 +124,7 @@ class RsyncServer(
 
             for (module in this.modules) {
                 var section = ini.add(module.name)
-                section.add("path", module.path)
+                section.add("path", Rsync.URI(module.path, asDirectory = false).toString())
                 if (module.secretsFile != null)
                     section.add("secrets file", Rsync.URI(module.secretsFile!!, asDirectory = false).toString())
                 section.add("auth users", module.permissions
