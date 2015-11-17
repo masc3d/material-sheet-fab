@@ -17,13 +17,15 @@ import javax.persistence.PersistenceUnit
 import kotlin.properties.Delegates
 
 /**
+ * Entity synchronization configuration.
+ * Sets up entity/database synchronization over the message bus.
  * Created by masc on 20.06.15.
  */
 @Configuration(App.PROFILE_CLIENT_NODE)
 @Profile(App.PROFILE_CLIENT_NODE)
 @Lazy(false)
 open class EntitySyncConfiguration {
-    private val mLog = LogFactory.getLog(this.javaClass)
+    private val log = LogFactory.getLog(this.javaClass)
 
     @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
     private lateinit var entityManagerFactory: EntityManagerFactory
@@ -34,7 +36,7 @@ open class EntitySyncConfiguration {
     /** Broker listener  */
     private val brokerEventListener = object : Broker.EventListener {
         override fun onStart() {
-            mLog.info("Detected broker start, initializing entity sync")
+            log.info("Detected broker start, initializing entity sync")
             entityConsumer.start()
             entityConsumer.request(Station::class.java)
             entityConsumer.request(Country::class.java)

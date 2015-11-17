@@ -2,10 +2,7 @@ package org.deku.leoz.node.ssh
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
-import org.apache.sshd.common.NamedFactory
 import org.apache.sshd.server.SshServer
-import org.apache.sshd.server.auth.UserAuth
-import org.apache.sshd.server.auth.UserAuthPasswordFactory
 import org.apache.sshd.server.auth.password.PasswordAuthenticator
 import org.apache.sshd.server.forward.AcceptAllForwardingFilter
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
@@ -13,7 +10,6 @@ import org.apache.sshd.server.session.ServerSession
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import java.io.File
 import java.nio.file.Files
 
 /**
@@ -30,10 +26,6 @@ class SshServerTest {
         sshd.setPort(13005)
 
         sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(Files.createTempFile("hostkey", "ser")));
-
-        val userAuthFactories = arrayListOf<NamedFactory<UserAuth>>()
-        userAuthFactories.add(UserAuthPasswordFactory.INSTANCE);
-        sshd.setUserAuthFactories(userAuthFactories);
 
         sshd.tcpipForwardingFilter = AcceptAllForwardingFilter()
 
