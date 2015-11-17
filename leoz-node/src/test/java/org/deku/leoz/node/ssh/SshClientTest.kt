@@ -1,6 +1,10 @@
 package org.deku.leoz.node.ssh
 
 import org.apache.sshd.client.SshClient
+import org.apache.sshd.client.auth.UserAuth
+import org.apache.sshd.client.auth.UserAuthPasswordFactory
+import org.apache.sshd.common.NamedFactory
+import org.apache.sshd.common.SshdSocketAddress
 import org.apache.sshd.common.forward.DefaultTcpipForwarder
 import org.apache.sshd.common.forward.DefaultTcpipForwarderFactory
 import org.apache.sshd.common.forward.TcpipForwarderFactory
@@ -16,10 +20,13 @@ class SshClientTest {
     fun testRun() {
         val ssh = SshClient.setUpDefaultClient()
 
-        ssh.tcpipForwarderFactory = TcpipForwarderFactory { service ->
-            val forwarder = DefaultTcpipForwarder(service)
-            // Configure some forwarding
-            forwarder
-        }
+        ssh.start()
+        val session = ssh.connect("leoz", "localhost", 13005).await().session
+        session.addPasswordIdentity("leoz")
+        session.auth()
+
+        session.startLocalPortForwarding(SshdSocketAddress("localhost", 13010), SshdSocketAddress("localhost", 13000))
+
+        Thread.sleep(Long.MAX_VALUE)
     }
 }

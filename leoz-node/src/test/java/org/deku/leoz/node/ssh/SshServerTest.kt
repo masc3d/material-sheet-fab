@@ -14,6 +14,7 @@ import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.nio.file.Files
 
 /**
  * Created by masc on 13.11.15.
@@ -27,7 +28,8 @@ class SshServerTest {
 
         val sshd = SshServer.setUpDefaultServer()
         sshd.setPort(13005)
-        sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(File("hostkey.ser")));
+
+        sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(Files.createTempFile("hostkey", "ser")));
 
         val userAuthFactories = arrayListOf<NamedFactory<UserAuth>>()
         userAuthFactories.add(UserAuthPasswordFactory.INSTANCE);
