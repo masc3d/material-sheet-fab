@@ -73,6 +73,9 @@ dependencies {
         exclude group: 'org.eclipse.jetty.aggregate'
     }
 
+    // Mina/SSHD
+    provided 'org.apache.sshd:sshd-core:+'
+
     // Spring
     provided 'org.springframework:spring-jms:4.+'
 
