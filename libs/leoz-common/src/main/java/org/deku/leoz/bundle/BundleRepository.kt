@@ -5,6 +5,7 @@ import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
+import sx.ssh.SshTunnel
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -14,13 +15,15 @@ import java.util.function.BiPredicate
 
 /**
  * Provices access to a remote rsync bundle repository, download and upload operations
- * @param rsyncModuleUri The base rsync module uri. The expected directory structur is $artifact-name/$version/$platform
- * @param rsyncPassword Rsync password
+ * @property rsyncModuleUri The base rsync module uri. The expected directory structur is $artifact-name/$version/$platform
+ * @property rsyncPassword Rsync password
+ * @property rsyncSshTunnel Rsync SSH tunnel
  * Created by masc on 24.08.15.
  */
 class BundleRepository(
         val rsyncModuleUri: Rsync.URI,
-        val rsyncPassword: String = "")
+        val rsyncPassword: String = "",
+        val rsyncSshTunnel: SshTunnel? = null)
 {
     val log = LogFactory.getLog(this.javaClass)
 
@@ -44,6 +47,7 @@ class BundleRepository(
     private fun createRsyncClient(): RsyncClient {
         val rc = RsyncClient()
         rc.password = this.rsyncPassword
+        rc.sshTunnel = this.rsyncSshTunnel
         rc.compression = 9
         rc.delete = true
         rc.preservePermissions = false

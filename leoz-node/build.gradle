@@ -16,8 +16,6 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
-    compile "org.apache.mina:mina-core:3.+"
-
     // spring
     compile "org.springframework.data:spring-data-jpa:$v_spring_data_jpa"
     compile "org.springframework.data:spring-data-commons:$v_spring_data_commons"
@@ -94,6 +92,9 @@ dependencies {
     compile "org.apache.httpcomponents:httpclient:$v_apache_httpclient"
     compile "com.thoughtworks.xstream:xstream:$v_xstream"
 
+    // ssh support
+    compile 'org.apache.sshd:sshd-core:+'
+
     // spring
     compile ("org.springframework:spring-jms:$v_spring")
 
@@ -110,9 +111,6 @@ dependencies {
 
     // TODO: for testing jsch
     compile 'com.jcraft:jsch:+'
-
-    // TODO: for testing sshd/mina
-    compile 'org.apache.sshd:sshd-core:+'
 
     // TODO: For testing aspectj proxies with spring
 //    compile "org.aspectj:aspectjtools:+"
