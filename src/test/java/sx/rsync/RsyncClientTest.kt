@@ -2,8 +2,7 @@ package sx.rsync
 
 import org.junit.Ignore
 import org.junit.Test
-import java.net.URI
-import java.net.URL
+import sx.ssh.SshTunnel
 import java.nio.file.Paths
 
 /**
@@ -29,6 +28,21 @@ class RsyncClientTest {
     fun testList() {
         val rsyncClient = RsyncClient()
         rsyncClient.destination = Rsync.URI("rsync://leoz@syntronix.de/leoz/leoz-ui")
+
+        rsyncClient.password = "leoz"
+        var result = rsyncClient.list()
+    }
+
+    @Test
+    fun testTunneledList() {
+        val rsyncClient = RsyncClient()
+        rsyncClient.destination = Rsync.URI("rsync://leoz@syntronix.de/leoz/leoz-ui")
+        rsyncClient.sshTunnel = SshTunnel(host = "syntronix.de",
+                port = 22,
+                remoteTunnelPort = 873,
+                localTunnelPort = 13000,
+                userName = "leoz",
+                password = "leoz")
 
         rsyncClient.password = "leoz"
         var result = rsyncClient.list()

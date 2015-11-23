@@ -1,20 +1,12 @@
 package sx.rsync
 
-import com.google.common.base.StandardSystemProperty
-import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
 import sx.ProcessExecutor
 import sx.io.PermissionUtil
-import java.io.BufferedWriter
+import sx.ssh.SshTunnel
 import java.io.File
-import java.io.OutputStreamWriter
 import java.net.URI
-import java.net.URL
-import java.nio.file.FileSystem
-import java.nio.file.FileSystems
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.text.Regex
@@ -32,6 +24,10 @@ class RsyncClient() {
 
     /** Remote source/destination password */
     var password: String = ""
+
+    /** SSH tunnel to use.
+     * The tunnel and rsync destination host must match for the connection to succeed */
+    var sshTunnel: SshTunnel? = null
 
     var archive: Boolean = true
     var verbose: Boolean = true
@@ -157,6 +153,42 @@ class RsyncClient() {
     //endregion
 
     /**
+     * Helper to prepare tunneled connection, if required.
+     * Returns the destination for rsync to connect to.
+     * If no tunneled is configured for this client, will simply return the destination URI as a string
+     * @param r Code block consuming the prepared/tunneled connection
+     */
+    private fun prepareDestination(r: (destination: Rsync.URI) -> Unit) {
+        val sshTunnel = this.sshTunnel
+
+        val destination = this.destination!!
+
+        if (sshTunnel == null || destination.isFile()) {
+            r(destination)
+        } else {
+            try {
+                val destinationUri = destination.uri
+                if (!sshTunnel.host.equals(destinationUri.host))
+                    throw IllegalArgumentException("Rsync desitnation host [${destinationUri.host}] does not match SSH host [${sshTunnel.host}]")
+
+                sshTunnel.request()
+
+                // Replace destination with localhost tunnel URI
+                r(Rsync.URI(
+                        URI(destinationUri.scheme,
+                                destinationUri.userInfo,
+                                "localhost",
+                                sshTunnel.localTunnelPort,
+                                destinationUri.path,
+                                destinationUri.query,
+                                destinationUri.fragment)))
+            } finally {
+                sshTunnel.release()
+            }
+        }
+    }
+
+    /**
      * List destination directory
      */
     fun list(): List<ListRecord> {
@@ -165,36 +197,38 @@ class RsyncClient() {
 
         var result = ArrayList<ListRecord>()
 
-        var command = ArrayList<String>()
+        this.prepareDestination { destination ->
+            var command = ArrayList<String>()
 
-        command.add(Rsync.executable.file.toString())
-        command.add("--list-only")
-        command.add(this.destination.toString())
+            command.add(Rsync.executable.file.toString())
+            command.add("--list-only")
+            command.add(destination.toString())
 
-        var pb = ProcessBuilder(command)
+            var pb = ProcessBuilder(command)
 
-        // Set password via env var
-        pb.environment().put("RSYNC_PASSWORD", this.password);
+            // Set password via env var
+            pb.environment().put("RSYNC_PASSWORD", this.password);
 
-        val error = StringBuffer()
-        var pe: ProcessExecutor = ProcessExecutor(pb,
-                outputHandler = object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
-                    override fun onProcessedOutput(output: String) {
-                        var lr = ListRecord.tryParse(output)
-                        if (lr != null) {
-                            result.add(lr)
+            val error = StringBuffer()
+            var pe: ProcessExecutor = ProcessExecutor(pb,
+                    outputHandler = object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
+                        override fun onProcessedOutput(output: String) {
+                            var lr = ListRecord.tryParse(output)
+                            if (lr != null) {
+                                result.add(lr)
+                            }
                         }
-                    }
-                },
-                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
+                    },
+                    errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
-        pe.start()
+            pe.start()
 
-        try {
-            pe.waitFor()
-        } catch(e: Exception) {
-            if (error.length > 0) log.error(error.toString())
-            throw e
+            try {
+                pe.waitFor()
+            } catch(e: Exception) {
+                if (error.length > 0) log.error(error.toString())
+                throw e
+            }
         }
 
         return result
@@ -212,104 +246,107 @@ class RsyncClient() {
         if (this.source == null || this.destination == null)
             throw IllegalArgumentException("Source and destination are mandatory")
 
-        var command = ArrayList<String>()
-        var infoFlags = ArrayList<String>()
-
-        // Prepare command
-        command.add(Rsync.executable.file.toString())
-
-        if (this.verbose) command.add("-v")
-        if (this.archive) command.add("-a")
-        if (this.preserveExecutability) command.add("--executability")
-        if (this.preserveAcls) command.add("-A")
-        if (this.preservePermissions != null)
-            command.add(if (this.preservePermissions!!) "--perms" else "--no-perms")
-        if (this.preserveTimes != null)
-            command.add(if (this.preserveTimes!!) "--times" else "--no-times")
-        if (this.preserveGroup != null)
-            command.add(if (this.preserveGroup!!) "--group" else "--no-group")
-        if (this.preserveOwner != null)
-            command.add(if (this.preserveOwner!!) "--owner" else "--no-owner")
-        if (this.skipBasedOnChecksum) command.add("-c")
-        if (this.fuzzy) command.add("-yy")
-        if (this.relativePaths) command.add("-R")
-        if (this.delete) command.add("--delete")
-        if (this.removeSourceFiles) command.add("--remove-source-files")
-        if (this.partial) command.add("--partial")
-        if (this.relative) command.add("--relative")
-        command.add(if (partial) "--whole-file" else "--no-whole-file")
-        if (this.compression > 0) {
-            command.add("-zz")
-            command.add("--compress-level=${this.compression}")
-        }
-        for (url in this.comparisonDestinations) {
-            command.add("--compare-dest")
-            command.add(url.toString())
-        }
-        for (url in this.copyDestinations) {
-            command.add("--copy-dest")
-            command.add(url.toString())
-        }
-
-        // Info flags
-        if (this.progress) infoFlags.add("progress2")
-
-        if (infoFlags.size > 0)
-            command.add("--info=${java.lang.String.join(",", infoFlags)}")
-
-        command.add("--out-format=${FileRecord.OutputFormat}")
-
-        command.add(this.source!!.toString())
-        command.add(this.destination!!.toString())
-
-        log.debug(command.joinToString(" "))
-
-        // Prepare process builder
-        var pb: ProcessBuilder = ProcessBuilder(command)
-
-        // Set password via env var
-        pb.environment().put("RSYNC_PASSWORD", this.password);
-
-        // Execute
         var files = ArrayList<File>()
-        val error = StringBuffer()
 
-        var pe: ProcessExecutor = ProcessExecutor(pb,
-                outputHandler = object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
-                    override fun onProcessedOutput(output: String) {
-                        var fr = FileRecord.tryParse(output)
-                        if (fr != null) {
-                            if (onFile != null) onFile(fr)
-                            log.trace(fr)
-                            if (!fr.isDirectory)
-                                files.add(File(fr.path))
-                            return
+        this.prepareDestination { destination ->
+            var command = ArrayList<String>()
+            var infoFlags = ArrayList<String>()
+
+            // Prepare command
+            command.add(Rsync.executable.file.toString())
+
+            if (this.verbose) command.add("-v")
+            if (this.archive) command.add("-a")
+            if (this.preserveExecutability) command.add("--executability")
+            if (this.preserveAcls) command.add("-A")
+            if (this.preservePermissions != null)
+                command.add(if (this.preservePermissions!!) "--perms" else "--no-perms")
+            if (this.preserveTimes != null)
+                command.add(if (this.preserveTimes!!) "--times" else "--no-times")
+            if (this.preserveGroup != null)
+                command.add(if (this.preserveGroup!!) "--group" else "--no-group")
+            if (this.preserveOwner != null)
+                command.add(if (this.preserveOwner!!) "--owner" else "--no-owner")
+            if (this.skipBasedOnChecksum) command.add("-c")
+            if (this.fuzzy) command.add("-yy")
+            if (this.relativePaths) command.add("-R")
+            if (this.delete) command.add("--delete")
+            if (this.removeSourceFiles) command.add("--remove-source-files")
+            if (this.partial) command.add("--partial")
+            if (this.relative) command.add("--relative")
+            command.add(if (partial) "--whole-file" else "--no-whole-file")
+            if (this.compression > 0) {
+                command.add("-zz")
+                command.add("--compress-level=${this.compression}")
+            }
+            for (url in this.comparisonDestinations) {
+                command.add("--compare-dest")
+                command.add(url.toString())
+            }
+            for (url in this.copyDestinations) {
+                command.add("--copy-dest")
+                command.add(url.toString())
+            }
+
+            // Info flags
+            if (this.progress) infoFlags.add("progress2")
+
+            if (infoFlags.size > 0)
+                command.add("--info=${java.lang.String.join(",", infoFlags)}")
+
+            command.add("--out-format=${FileRecord.OutputFormat}")
+
+            command.add(this.source!!.toString())
+            command.add(destination.toString())
+
+            log.debug(command.joinToString(" "))
+
+            // Prepare process builder
+            var pb: ProcessBuilder = ProcessBuilder(command)
+
+            // Set password via env var
+            pb.environment().put("RSYNC_PASSWORD", this.password);
+
+            // Execute
+            val error = StringBuffer()
+
+            var pe: ProcessExecutor = ProcessExecutor(pb,
+                    outputHandler = object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
+                        override fun onProcessedOutput(output: String) {
+                            var fr = FileRecord.tryParse(output)
+                            if (fr != null) {
+                                if (onFile != null) onFile(fr)
+                                log.trace(fr)
+                                if (!fr.isDirectory)
+                                    files.add(File(fr.path))
+                                return
+                            }
+
+                            var pr = ProgressRecord.tryParse(output)
+                            if (pr != null) {
+                                if (onProgress != null) onProgress(pr)
+                                log.trace(pr)
+                                return
+                            }
                         }
+                    },
+                    errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
-                        var pr = ProgressRecord.tryParse(output)
-                        if (pr != null) {
-                            if (onProgress != null) onProgress(pr)
-                            log.trace(pr)
-                            return
-                        }
-                    }
-                },
-                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
+            pe.start()
 
-        pe.start()
+            try {
+                pe.waitFor()
+            } catch(e: Exception) {
+                if (error.length > 0) log.error(error.toString())
+                throw e
+            }
 
-        try {
-            pe.waitFor()
-        } catch(e: Exception) {
-            if (error.length > 0) log.error(error.toString())
-            throw e
-        }
-
-        if (this.preservePermissions == false &&
-                this.destination!!.uri.scheme.compareTo("file", ignoreCase = true) == 0 &&
-                SystemUtils.IS_OS_WINDOWS) {
-            // Cygwin's rsync implementation applies some crazy acls, even when setting preservation flags to false (sa.)
-            PermissionUtil.applyAclRecursively(File(this.destination!!.uri).parentFile)
+            if (this.preservePermissions == false &&
+                    this.destination!!.uri.scheme.compareTo("file", ignoreCase = true) == 0 &&
+                    SystemUtils.IS_OS_WINDOWS) {
+                // Cygwin's rsync implementation applies some crazy acls, even when setting preservation flags to false (sa.)
+                PermissionUtil.applyAclRecursively(File(this.destination!!.uri).parentFile)
+            }
         }
 
         return Result(files)
