@@ -36,15 +36,17 @@ class RsyncClientTest {
     @Test
     fun testTunneledList() {
         val rsyncClient = RsyncClient()
-        rsyncClient.destination = Rsync.URI("rsync://leoz@syntronix.de/leoz/leoz-ui")
-        rsyncClient.sshTunnel = SshTunnel(host = "syntronix.de",
-                port = 22,
-                remoteTunnelPort = 873,
-                localTunnelPort = 13000,
-                userName = "leoz",
-                password = "leoz")
+        rsyncClient.destination = Rsync.URI("rsync://leoz@10.211.55.7:13002/bundles/leoz-boot")
+        rsyncClient.password = "2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x"
 
-        rsyncClient.password = "leoz"
+        rsyncClient.sshTunnel = SshTunnel(host = "10.211.55.7",
+                port = 13003,
+                remoteTunnelPort = 13002,
+                localTunnelPort = 13050,
+                userName = "leoz",
+                password = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8")
+
         var result = rsyncClient.list()
+        println(result)
     }
 }

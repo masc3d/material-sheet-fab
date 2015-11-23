@@ -3,8 +3,8 @@ package sx.ssh
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.apache.sshd.client.SshClient
+import org.apache.sshd.client.session.ClientSession
 import org.apache.sshd.common.SshdSocketAddress
-import org.apache.sshd.common.session.Session
 
 /**
  * Coordinates ssh tunneled connections through localhost
@@ -19,10 +19,12 @@ class SshTunnel(
         val userName: String,
         val password: String) {
 
+    class AuthenticationException : Exception() {}
+
     private val log: Log = LogFactory.getLog(this.javaClass)
 
     private var requestCount: Int = 0
-    private var session: Session? = null
+    private var session: ClientSession? = null
 
     private fun closeSession() {
         var session = this.session
@@ -57,7 +59,10 @@ class SshTunnel(
                     .await()
                     .session
             session.addPasswordIdentity(this.password)
-            session.auth().await()
+
+            val result = session.auth().await()
+            if (result.isFailure)
+                throw AuthenticationException()
 
             session.startLocalPortForwarding(
                     SshdSocketAddress("localhost", this.localTunnelPort),
