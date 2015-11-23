@@ -1,5 +1,6 @@
 package sx.ssh
 
+import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
 
@@ -9,15 +10,33 @@ import org.junit.Test
 @Ignore
 class SshTunnelTest {
     @Test
-    fun testRequestRelease() {
+    fun testConnection() {
         val tunnel = SshTunnel(host = "10.211.55.7",
-                port = 13005,
-                remoteTunnelPort = 13003,
+                port = 13003,
+                remoteTunnelPort = 13002,
                 localTunnelPort = 13050,
                 userName = "leoz",
-                password = "leoz")
+                password = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8")
 
         tunnel.request()
         tunnel.release()
+    }
+
+    @Test
+    fun testAuthenticationFailure() {
+        val tunnel = SshTunnel(host = "10.211.55.7",
+                port = 13003,
+                remoteTunnelPort = 13002,
+                localTunnelPort = 13050,
+                userName = "leoz",
+                password = "meh")
+
+        try {
+            tunnel.request()
+            tunnel.release()
+            Assert.fail()
+        } catch(e: SshTunnel.AuthenticationException) {
+            // ok
+        }
     }
 }
