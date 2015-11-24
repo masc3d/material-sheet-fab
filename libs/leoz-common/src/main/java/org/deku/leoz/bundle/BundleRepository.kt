@@ -5,7 +5,6 @@ import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
-import sx.ssh.SshTunnel
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -22,8 +21,7 @@ import java.util.function.BiPredicate
  */
 class BundleRepository(
         val rsyncModuleUri: Rsync.URI,
-        val rsyncPassword: String = "",
-        val rsyncSshTunnel: SshTunnel? = null)
+        val rsyncPassword: String = "")
 {
     val log = LogFactory.getLog(this.javaClass)
 
@@ -47,8 +45,7 @@ class BundleRepository(
     private fun createRsyncClient(): RsyncClient {
         val rc = RsyncClient()
         rc.password = this.rsyncPassword
-        rc.sshTunnel = this.rsyncSshTunnel
-        rc.compression = 9
+        rc.compression = 2
         rc.delete = true
         rc.preservePermissions = false
         rc.preserveExecutability = true
@@ -105,8 +102,7 @@ class BundleRepository(
                     .map { l -> l.name }
         } else {
             val rc = this.createRsyncClient()
-            rc.destination = rsyncUri
-            entries = rc.list().map { l -> l.filename }
+            entries = rc.list(rsyncUri).map { l -> l.filename }
         }
         return entries
     }
@@ -225,13 +221,13 @@ class BundleRepository(
                     .map({ v -> Rsync.URI("../").resolve(v) })
 
             val rc = this.createRsyncClient()
-            rc.source = Rsync.URI(versionSrcPath)
-            rc.destination = this.rsyncModuleUri.resolve(bundleName).resolve(version)
+            val source = Rsync.URI(versionSrcPath)
+            val destination = this.rsyncModuleUri.resolve(bundleName).resolve(version)
             rc.copyDestinations = copyDestinationUris
 
-            logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
+            logInfo("Synchronizing [${source}] -> [${destination}]")
 
-            rc.sync({ r ->
+            rc.sync(source, destination, { r ->
                 logInfo("Uploading ${r.path}")
             })
         } else {
@@ -244,13 +240,13 @@ class BundleRepository(
                         .map({ v -> Rsync.URI("../../").resolve(v, bundle.platform!!) })
 
                 val rc = this.createRsyncClient()
-                rc.source = Rsync.URI(versionSrcPath).resolve(bundle.platform!!)
-                rc.destination = this.rsyncModuleUri.resolve(bundleName).resolve(bundle.version!!, bundle.platform!!)
+                val source = Rsync.URI(versionSrcPath).resolve(bundle.platform!!)
+                val destination = this.rsyncModuleUri.resolve(bundleName).resolve(bundle.version!!, bundle.platform!!)
                 rc.copyDestinations = copyDestinationUris
 
-                logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
+                logInfo("Synchronizing [${source}] -> [${destination}]")
 
-                rc.sync({ r ->
+                rc.sync(source, destination, { r ->
                     logInfo("Updating [${r.flags}] [${r.path}]")
                 })
             }
@@ -292,16 +288,14 @@ class BundleRepository(
                 File(destPath, osxBundleName).mkdirs()
         }
 
-        rc.source = source
-        rc.destination = destination
         rc.copyDestinations = copyDestinations.toArrayList()
 
-        log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
+        log.info("Synchronizing [${source}] -> [${destination}]")
 
         var currentFile: String = ""
         var currentPercentage: Double = 0.0
         if (onProgress != null) onProgress(currentFile, 0.0)
-        rc.sync(
+        rc.sync(source, destination,
                 onFile = { r ->
                     log.info("Updating [${r.flags}] [${r.path}]")
                     currentFile = r.path
@@ -344,12 +338,12 @@ class BundleRepository(
         }
 
         val rc = this.createRsyncClient()
-        rc.source = this.rsyncModuleUri.resolve(bundleName).resolve(version)
-        rc.destination = Rsync.URI(destPath)
+        val source = this.rsyncModuleUri.resolve(bundleName).resolve(version)
+        val destination = Rsync.URI(destPath)
         rc.copyDestinations = copyPaths.map { f -> Rsync.URI(f) }
 
-        logInfo("Synchronizing [${rc.source}] -> [${rc.destination}]")
-        rc.sync({ r ->
+        logInfo("Synchronizing [${source}] -> [${destination}]")
+        rc.sync(source, destination, { r ->
             logInfo("Updating [${r.flags}] [${r.path}]")
         })
 
