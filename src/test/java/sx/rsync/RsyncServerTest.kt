@@ -1,13 +1,14 @@
 package sx.rsync
 
 import org.apache.commons.logging.LogFactory
+import org.junit.Ignore
 import org.junit.Test
-import java.io.File
 import java.nio.file.Paths
 
 /**
  * Created by masc on 01.09.15.
  */
+@Ignore
 class RsyncServerTest {
     private val log = LogFactory.getLog(this.javaClass)
 

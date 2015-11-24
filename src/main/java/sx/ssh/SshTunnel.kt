@@ -70,11 +70,10 @@ class SshTunnel(
 
             this.session = session
             log.info("Established tunnel connection to [${host}]")
-        } else {
-            log.info("Increased tunnel request count [${this.requestCount}} for [${this.host}]")
         }
 
         requestCount++
+        log.info("Increased tunnel request count [${this.requestCount}} for [${this.host}]")
     }
 
     /**
@@ -82,8 +81,6 @@ class SshTunnel(
      * Decreases request count, the tunnel will be closed when the request reaches zero.
      */
     @Synchronized fun release() {
-        val session = this.session
-
         if (requestCount > 0) {
             requestCount--
             log.info("Decreased tunnel request count [${this.requestCount}} for [${this.host}]")

@@ -4,7 +4,6 @@ import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
 import sx.ProcessExecutor
 import sx.io.PermissionUtil
-import sx.ssh.SshTunnel
 import java.io.File
 import java.net.URI
 import java.time.LocalDateTime
@@ -19,15 +18,8 @@ class RsyncClient() {
         val log = LogFactory.getLog(RsyncClient::class.java)
     }
 
-    var source: Rsync.URI? = null
-    var destination: Rsync.URI? = null
-
     /** Remote source/destination password */
     var password: String = ""
-
-    /** SSH tunnel to use.
-     * The tunnel and rsync destination host must match for the connection to succeed */
-    var sshTunnel: SshTunnel? = null
 
     var archive: Boolean = true
     var verbose: Boolean = true
@@ -156,53 +148,67 @@ class RsyncClient() {
      * Helper to prepare tunneled connection, if required.
      * Returns the destination for rsync to connect to.
      * If no tunneled is configured for this client, will simply return the destination URI as a string
-     * @param r Code block consuming the prepared/tunneled connection
+     * @param locations One or more rsync URIs, where 1 may optionally have a ssh tunnel instance attached
+     * @param r Code block consuming the prepared/tunneled connections
      */
-    private fun prepareDestination(r: (destination: Rsync.URI) -> Unit) {
-        val sshTunnel = this.sshTunnel
+    private fun prepareTunnel(locations: Array<Rsync.URI>, r: (locations: Array<Rsync.URI>) -> Unit) {
+        if (locations.count { l -> l.sshTunnel != null } > 1)
+            throw IllegalStateException("Only one rsync endpoint may require tunneled connection")
 
-        val destination = this.destination!!
+        val tunnelLocation = locations.firstOrNull { l -> l.sshTunnel != null }
 
-        if (sshTunnel == null || destination.isFile()) {
-            r(destination)
+        if (tunnelLocation == null) {
+            r(locations)
         } else {
+            val sshTunnel = tunnelLocation.sshTunnel!!
+
+            sshTunnel.request()
             try {
-                val destinationUri = destination.uri
-                if (!sshTunnel.host.equals(destinationUri.host))
-                    throw IllegalArgumentException("Rsync desitnation host [${destinationUri.host}] does not match SSH host [${sshTunnel.host}]")
+                // Generate new locations, replacing remote host with localhost (tunnel).
+                // Request tunnel connection in the process.
+                val newLocations = locations.map { l ->
+                    val uri = l.uri
 
-                sshTunnel.request()
+                    if (l.sshTunnel != null) {
+                        // Mangle to localhost uri for connecting through tunnel
+                        Rsync.URI(
+                                URI(uri.scheme,
+                                        uri.userInfo,
+                                        "localhost",
+                                        l.sshTunnel.localTunnelPort,
+                                        uri.path,
+                                        uri.query,
+                                        uri.fragment))
+                    } else {
+                        l
+                    }
+                }.toTypedArray()
 
-                // Replace destination with localhost tunnel URI
-                r(Rsync.URI(
-                        URI(destinationUri.scheme,
-                                destinationUri.userInfo,
-                                "localhost",
-                                sshTunnel.localTunnelPort,
-                                destinationUri.path,
-                                destinationUri.query,
-                                destinationUri.fragment)))
+                r(newLocations)
             } finally {
                 sshTunnel.release()
             }
         }
     }
 
+    private fun prepareTunnel(location: Rsync.URI, r: (location: Rsync.URI) -> Unit) {
+        this.prepareTunnel(arrayOf(location), { uris ->
+            r(uris.get(0))
+        })
+    }
+
     /**
      * List destination directory
      */
-    fun list(): List<ListRecord> {
-        if (this.destination == null)
-            throw IllegalArgumentException("Destination is mandatory")
-
+    fun list(uri: Rsync.URI): List<ListRecord> {
         var result = ArrayList<ListRecord>()
 
-        this.prepareDestination { destination ->
+        this.prepareTunnel(uri, { uri ->
             var command = ArrayList<String>()
 
             command.add(Rsync.executable.file.toString())
             command.add("--list-only")
-            command.add(destination.toString())
+            command.add(uri.toString())
 
             var pb = ProcessBuilder(command)
 
@@ -229,7 +235,7 @@ class RsyncClient() {
                 if (error.length > 0) log.error(error.toString())
                 throw e
             }
-        }
+        })
 
         return result
     }
@@ -238,17 +244,18 @@ class RsyncClient() {
      * Synchronize
      * @return Sync result
      */
-    @JvmOverloads fun sync(
-            onFile: ((fr: FileRecord) -> Unit)? = null,
-            onProgress: ((pr: ProgressRecord) -> Unit)? = null)
+    @JvmOverloads fun sync(source: Rsync.URI,
+                           destination: Rsync.URI,
+                           onFile: ((fr: FileRecord) -> Unit)? = null,
+                           onProgress: ((pr: ProgressRecord) -> Unit)? = null)
             : Result {
-
-        if (this.source == null || this.destination == null)
-            throw IllegalArgumentException("Source and destination are mandatory")
 
         var files = ArrayList<File>()
 
-        this.prepareDestination { destination ->
+        this.prepareTunnel(arrayOf(source, destination), { uris ->
+            val newSource = uris.get(0)
+            val newDestination = uris.get(1)
+
             var command = ArrayList<String>()
             var infoFlags = ArrayList<String>()
 
@@ -296,8 +303,8 @@ class RsyncClient() {
 
             command.add("--out-format=${FileRecord.OutputFormat}")
 
-            command.add(this.source!!.toString())
-            command.add(destination.toString())
+            command.add(newSource.toString())
+            command.add(newDestination.toString())
 
             log.debug(command.joinToString(" "))
 
@@ -342,12 +349,12 @@ class RsyncClient() {
             }
 
             if (this.preservePermissions == false &&
-                    this.destination!!.uri.scheme.compareTo("file", ignoreCase = true) == 0 &&
+                    destination.uri.scheme.compareTo("file", ignoreCase = true) == 0 &&
                     SystemUtils.IS_OS_WINDOWS) {
                 // Cygwin's rsync implementation applies some crazy acls, even when setting preservation flags to false (sa.)
-                PermissionUtil.applyAclRecursively(File(this.destination!!.uri).parentFile)
+                PermissionUtil.applyAclRecursively(File(destination.uri).parentFile)
             }
-        }
+        })
 
         return Result(files)
     }
