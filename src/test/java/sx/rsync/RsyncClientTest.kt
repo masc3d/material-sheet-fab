@@ -1,9 +1,12 @@
 package sx.rsync
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import org.apache.commons.logging.LogFactory
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
+import org.slf4j.LoggerFactory
 import sx.ssh.SshTunnel
 import java.nio.file.Paths
 import java.util.*
@@ -27,6 +30,11 @@ class RsyncClientTest {
             password = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
 
     val localPath = Paths.get("").toAbsolutePath().parent.parent.parent.resolve("leoz-release").resolve("test")
+
+    init {
+        val lRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
+        lRoot.level = Level.INFO
+    }
 
     private fun createRsyncClient(): RsyncClient {
         val rsyncClient = RsyncClient()
@@ -88,8 +96,20 @@ class RsyncClientTest {
                     val path = this.localPath.resolve(i.toString())
                     path.toFile().mkdirs()
 
-                    val rsyncClient = RsyncClient()
-                    val source = this.rsyncTunneledSource
+                    val sshTunnel = this.rsyncTunneledSource.sshTunnel!!
+
+                    // Use separate tunnel for each connection.
+                    // Sharing the tunnel among multiple threads/connections makes ssh components freeze.
+                    val source = Rsync.URI(
+                            uri = this.rsyncSource.uri,
+                            sshTunnel = SshTunnel(
+                                    host = sshTunnel.host,
+                                    port = sshTunnel.port,
+                                    remoteTunnelPort = sshTunnel.remoteTunnelPort,
+                                    localTunnelPort = sshTunnel.localTunnelPort + i,
+                                    userName = sshTunnel.userName,
+                                    password = sshTunnel.password))
+                    
                     val destination = Rsync.URI(path)
 
                     rsyncClient.sync(source, destination, { fr -> println(fr) }, {})
