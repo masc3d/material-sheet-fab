@@ -9,7 +9,7 @@ import org.apache.sshd.server.session.ServerSession
 import org.deku.leoz.config.SshConfiguration
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import java.nio.file.Files
+import java.io.File
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
@@ -32,7 +32,8 @@ open class SshServerConfiguration {
         val sshd = this.sshServer
 
         sshd.setPort(13003)
-        sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(Files.createTempFile("hostkey", "ser")));
+        sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(
+                File(StorageConfiguration.instance.get().sshDataDirectory, "hostkey.ser")))
 
         sshd.tcpipForwardingFilter = AcceptAllForwardingFilter()
 

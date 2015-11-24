@@ -35,6 +35,12 @@ open class StorageConfiguration protected constructor(appName: String)
         d
     })
 
+    val sshDataDirectory: File by lazy({
+        val d = File(this.dataDirectory, "ssh")
+        d.mkdirs()
+        d
+    })
+
     // Files
     /** Local application configuration file */
     val applicationConfigurationFile: File by lazy({
