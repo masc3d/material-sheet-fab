@@ -3,6 +3,7 @@ package sx.rsync
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
 import sx.EmbeddedExecutable
+import sx.ssh.SshTunnel
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
@@ -19,10 +20,13 @@ open class Rsync() {
 
     /**
      * Rsync URI
-     * @param uri File or rsync URI
-     * @param asDirectory Indicates if final path component/directory should be included (implies traling slash if true)
+     * @property uri File or rsync URI
+     * @property asDirectory Indicates if final path component/directory should be included (implies traling slash if true)
+     * @property sshTunnel The ssh tunnel to use to establish connection to thie rsync URI
      */
-    class URI(uri: java.net.URI, val asDirectory: Boolean = true) {
+    class URI(uri: java.net.URI,
+              val asDirectory: Boolean = true,
+              val sshTunnel: SshTunnel? = null) {
         val uri: java.net.URI
 
         init {
@@ -32,6 +36,11 @@ open class Rsync() {
             } else {
                 this.uri = if (!uri.path.endsWith('/')) java.net.URI(uri.toString() + '/') else uri
             }
+
+            if (sshTunnel != null &&
+                    !sshTunnel.host.equals(this.uri.host))
+                throw IllegalArgumentException("Rsync desitnation host [${this.uri.host}] does not match SSH host [${sshTunnel.host}]")
+
         }
 
         /**
@@ -64,7 +73,8 @@ open class Rsync() {
             val path = str.joinToString("/")
             return Rsync.URI(
                     uri = if (uri.path.endsWith('/')) uri.resolve(path) else java.net.URI(uri.toString() + "/" + path),
-                    asDirectory = this.asDirectory)
+                    asDirectory = this.asDirectory,
+                    sshTunnel = this.sshTunnel)
         }
 
         /**
