@@ -34,7 +34,7 @@ open class RsyncConfiguration {
         var port: Int? = null
     }
 
-    private val log = LogFactory.getLog(RsyncConfiguration::class.java)
+    private val log = LogFactory.getLog(this.javaClass)
 
     // Properties
     var server: Server = Server()
