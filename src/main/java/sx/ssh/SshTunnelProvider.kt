@@ -16,11 +16,11 @@ class SshTunnelProvider(
 ) {
     private val log = LogFactory.getLog(this.javaClass)
 
-    val localPorts = LinkedList<Int>()
+    private val localPorts = LinkedList<Int>()
     /** SSH tunnel configuration by hostname */
-    val sshHosts = HashMap<String, SshHost>()
+    private val sshHosts = HashMap<String, SshHost>()
     /** SSH tunnel maps by composite tunnel key */
-    val tunnelRecords = HashMap<TunnelKey, TunnelRecord>()
+    private val tunnelRecords = HashMap<TunnelKey, TunnelRecord>()
 
     /**
      * SSH tunnel composite key for record/tunnel lookups.
@@ -73,20 +73,20 @@ class SshTunnelProvider(
 
     /**
      * Request a secure tunnel to a host for a specific remote port
-     * @param host Hostname
+     * @param hostname Hostname
      * @param port Remote service port
      * @return TunnelRequest instance exposing the local port to connect to
      * @throws IllegalArgumentException If provider does not have ssh connection information about the requested host
      */
     @Synchronized fun request(
-            host: String,
+            hostname: String,
             port: Int): TunnelResource {
 
         // Lookup tunnel spec
-        val host = this.sshHosts.get(host)
-                ?: throw IllegalArgumentException("No ssh connection info for [${host}}")
+        val sshHost = this.sshHosts.get(hostname)
+                ?: throw IllegalArgumentException("No ssh connection info for [${hostname}}")
 
-        val key = TunnelKey(Thread.currentThread().id, host.hostname, port)
+        val key = TunnelKey(Thread.currentThread().id, hostname, port)
 
         val tunnelRecord = this.tunnelRecords
                 .getOrPut(key, {
@@ -96,7 +96,7 @@ class SshTunnelProvider(
                     // Create new SSH tunnel for connection request
                     TunnelRecord(
                             SshTunnel(
-                                    host = host,
+                                    host = sshHost,
                                     remotePort = port,
                                     localPort = localPort
                             )
