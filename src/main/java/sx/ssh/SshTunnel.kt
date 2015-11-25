@@ -7,34 +7,36 @@ import org.apache.sshd.client.session.ClientSession
 import org.apache.sshd.common.SshdSocketAddress
 
 /**
- * Coordinates ssh tunneled connections through localhost
+ * SSH tunnel
  * Created by masc on 22.11.15.
- * @property portRange Local port range
+ * @property host SSH host
+ * @property sshPort SSH port
+ * @property sshUsername SSH username
+ * @property sshPassword SSH password
+ * @property remotePort Remote port to tunnel to
+ * @property localPort Local port, tunnel entrance
  */
 class SshTunnel(
         val host: String,
-        val port: Int,
-        val remoteTunnelPort: Int,
-        val localTunnelPort: Int,
-        val userName: String,
-        val password: String)
+        val sshPort: Int,
+        val sshUsername: String,
+        val sshPassword: String,
+        val remotePort: Int,
+        val localPort: Int)
 :
         AutoCloseable {
     class AuthenticationException : Exception() {}
 
     private val log: Log = LogFactory.getLog(this.javaClass)
 
-    private var requestCount: Int = 0
     private var session: ClientSession? = null
 
     /**
-     * Request tunnel connection.
-     * Establishes the tunnel connection if it's not been established yet and
-     * increases the request count for this tunnel.
+     * Open SSH tunnel
      */
-    @Synchronized fun request() {
+    @Synchronized fun open() {
         var session = this.session
-        log.info("SSH tunneled connection request to [${host}:${remoteTunnelPort}] via SSH port [${this.port}] through [localhost:${this.localTunnelPort}]")
+        log.info("SSH tunneled connection request to [${host}:${remotePort}] via SSH port [${this.sshPort}] through [localhost:${this.localPort}]")
         if (session == null || !session.isOpen) {
             this.close()
 
@@ -43,42 +45,27 @@ class SshTunnel(
 
             ssh.start()
 
-            session = ssh.connect(this.userName, this.host, this.port)
+            session = ssh.connect(this.sshUsername, this.host, this.sshPort)
                     .await()
                     .session
-            session.addPasswordIdentity(this.password)
+            session.addPasswordIdentity(this.sshPassword)
 
             val result = session.auth().await()
             if (result.isFailure)
                 throw AuthenticationException()
 
             session.startLocalPortForwarding(
-                    SshdSocketAddress("localhost", this.localTunnelPort),
-                    SshdSocketAddress("localhost", this.remoteTunnelPort))
+                    SshdSocketAddress("localhost", this.localPort),
+                    SshdSocketAddress("localhost", this.remotePort))
 
             this.session = session
             log.info("Established tunnel connection to [${host}]")
         }
-
-        requestCount++
-        log.info("Increased tunnel request count [${this.requestCount}} for [${this.host}]")
     }
 
     /**
-     * Release tunnel connection.
-     * Decreases request count, the tunnel will be closed when the request reaches zero.
+     * Close tunnel
      */
-    @Synchronized fun release() {
-        if (requestCount > 0) {
-            requestCount--
-            log.info("Decreased tunnel request count [${this.requestCount}} for [${this.host}]")
-        }
-
-        if (requestCount == 0) {
-            this.close()
-        }
-    }
-
     override fun close() {
         var session = this.session
         if (session != null) {
