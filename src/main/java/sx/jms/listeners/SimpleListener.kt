@@ -43,7 +43,7 @@ abstract class SimpleListener(connectionFactory: ConnectionFactory, converter: C
      * @throws JMSException
      */
     @Throws(JMSException::class)
-    override fun start() {
+    final override fun start() {
         this.stop()
 
         this.connection.start()
@@ -84,7 +84,7 @@ abstract class SimpleListener(connectionFactory: ConnectionFactory, converter: C
      * @throws JMSException
      */
     @Throws(JMSException::class)
-    override fun stop() {
+    final override fun stop() {
         this.connection.close()
     }
 }

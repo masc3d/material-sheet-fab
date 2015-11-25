@@ -22,10 +22,12 @@ open class Rsync() {
      * Rsync URI
      * @property uri File or rsync URI
      * @property asDirectory Indicates if final path component/directory should be included (implies traling slash if true)
+     * @property password Rsync password
      * @property sshTunnel The ssh tunnel to use to establish connection to thie rsync URI
      */
     class URI(uri: java.net.URI,
               val asDirectory: Boolean = true,
+              val password: String? = null,
               val sshTunnel: SshTunnel? = null) {
         val uri: java.net.URI
 
@@ -40,7 +42,6 @@ open class Rsync() {
             if (sshTunnel != null &&
                     !sshTunnel.host.equals(this.uri.host))
                 throw IllegalArgumentException("Rsync desitnation host [${this.uri.host}] does not match SSH host [${sshTunnel.host}]")
-
         }
 
         /**

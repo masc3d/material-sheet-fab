@@ -17,7 +17,8 @@ abstract class Listener(
         protected val connectionFactory: ConnectionFactory,
         protected val converter: Converter? = null)
 :
-        Disposable, ExceptionListener {
+        Disposable,
+        ExceptionListener {
     protected val log: Log = LogFactory.getLog(this.javaClass)
     /** Object message handler delegates  */
     private val handlerDelegates = HashMap<Class<out Any?>, Handler<Any?>>()
@@ -62,6 +63,14 @@ abstract class Listener(
     }
 
     /**
+     * Default error handler, simply logging the error
+     * @param e Error
+     */
+    protected open fun onError(e: Throwable) {
+        log.error(e.message, e)
+    }
+
+    /**
      * Add handler delegate for handling messages of specific (object) type
      * Delegate handlers requires a converter to be set.
      * @param c Class of object/message to process
@@ -73,16 +82,15 @@ abstract class Listener(
         handlerDelegates.put(c, delegate as Handler<Any?>)
     }
 
-    override fun dispose() {
+    final override fun onException(e: JMSException) {
+        this.onError(e)
+    }
+
+    override fun close() {
         try {
             this.stop()
         } catch (e: Exception) {
             log.error(e.message, e)
         }
-
-    }
-
-    override fun onException(e: JMSException) {
-        log.error(e.message, e)
     }
 }

@@ -61,7 +61,7 @@ public abstract class Producer implements Disposable {
     }
 
     @Override
-    public void dispose() {
+    public void close() {
         if (mConnection != null)
             try {
                 mConnection.stop();

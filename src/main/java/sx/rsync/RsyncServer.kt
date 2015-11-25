@@ -207,7 +207,7 @@ class RsyncServer(
     @Synchronized fun stop() {
         log.info("Stopping rsync server")
         if (this.processExecutor != null) {
-            this.processExecutor?.dispose()
+            this.processExecutor?.close()
             this.processExecutor = null
         }
     }
@@ -224,7 +224,7 @@ class RsyncServer(
      */
     var onTermination: (exception: Exception?) -> Unit = { }
 
-    override fun dispose() {
+    override fun close() {
         this.stop();
     }
 }

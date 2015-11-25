@@ -42,7 +42,7 @@ abstract class SpringJmsListener(
     /**
      * Start listener
      */
-    @Synchronized override fun start() {
+    @Synchronized final override fun start() {
         log.info("Starting jms listener ${this.description}")
         var lc = listenerContainer
         if (lc == null) {
@@ -66,6 +66,14 @@ abstract class SpringJmsListener(
     }
 
     /**
+     * Spring error handler
+     * @param t Error
+     */
+    final override fun handleError(t: Throwable) {
+        this.onError(t)
+    }
+
+    /**
      * Stop listener
      */
     @Synchronized override fun stop() {
@@ -75,13 +83,5 @@ abstract class SpringJmsListener(
             lc.shutdown()
             listenerContainer = null
         }
-    }
-
-    override fun handleError(t: Throwable) {
-        log.error(t.message, t)
-    }
-
-    override fun dispose() {
-        this.stop()
     }
 }
