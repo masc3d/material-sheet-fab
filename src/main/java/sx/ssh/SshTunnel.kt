@@ -17,10 +17,7 @@ import org.apache.sshd.common.SshdSocketAddress
  * @property localPort Local port, tunnel entrance
  */
 class SshTunnel(
-        val host: String,
-        val sshPort: Int,
-        val sshUsername: String,
-        val sshPassword: String,
+        val host: SshHost,
         val remotePort: Int,
         val localPort: Int)
 :
@@ -36,7 +33,7 @@ class SshTunnel(
      */
     @Synchronized fun open() {
         var session = this.session
-        log.info("SSH tunneled connection request to [${host}:${remotePort}] via SSH port [${this.sshPort}] through [localhost:${this.localPort}]")
+        log.info("SSH tunneled connection request to [${host}:${remotePort}] via SSH port [${this.host.sshPort}] through [localhost:${this.localPort}]")
         if (session == null || !session.isOpen) {
             this.close()
 
@@ -45,10 +42,10 @@ class SshTunnel(
 
             ssh.start()
 
-            session = ssh.connect(this.sshUsername, this.host, this.sshPort)
+            session = ssh.connect(this.host.sshUsername, this.host.hostname, this.host.sshPort)
                     .await()
                     .session
-            session.addPasswordIdentity(this.sshPassword)
+            session.addPasswordIdentity(this.host.sshPassword)
 
             val result = session.auth().await()
             if (result.isFailure)

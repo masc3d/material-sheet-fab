@@ -7,35 +7,23 @@ import java.util.*
  * SSH tunnel provider.
  * Managing and providing SSH tunnels with multithreading support.
  * Created by masc on 25.11.15.
+ * @property localPortRange Local port range to use
+ * @property sshHosts Array of SSH hosts
  */
 class SshTunnelProvider(
-        val portRange: IntRange,
-        vararg tunnelConfigurations: SshTunnelProvider.TunnelConfiguration
+        val localPortRange: IntRange,
+        vararg sshHosts: SshHost
 ) {
     private val log = LogFactory.getLog(this.javaClass)
 
     val localPorts = LinkedList<Int>()
     /** SSH tunnel configuration by hostname */
-    val tunnelConfigurations = HashMap<String, TunnelConfiguration>()
+    val sshHosts = HashMap<String, SshHost>()
     /** SSH tunnel maps by composite tunnel key */
     val tunnelRecords = HashMap<TunnelKey, TunnelRecord>()
 
     /**
-     * SSH tunnel configuration
-     * @param host SSH host to connect to
-     * @param sshPort SSH port
-     * @param sshUsername SSH username
-     * @param sshPassword SSH password
-     */
-    data class TunnelConfiguration(
-            val host: String,
-            val sshPort: Int,
-            val sshUsername: String,
-            val sshPassword: String) {
-    }
-
-    /**
-     * SSH tunnel composite key
+     * SSH tunnel composite key for record/tunnel lookups.
      */
     data class TunnelKey(
             val threadId: Long,
@@ -45,18 +33,22 @@ class SshTunnelProvider(
 
     /**
      * SSH tunnel record
+     * @property sshTunnel SSH tunnel
      */
-    class TunnelRecord(
+    private class TunnelRecord(
             val sshTunnel: SshTunnel) {
 
-        var count: Int = 0
+        /** Tunnel reference count */
+        var refCount: Int = 0
     }
 
     /**
-     * SSH tunnel request.
+     * SSH tunnel resource, handed out to the requestor for providing
+     * connection information (local port). Should be released using
+     * {@link #release}.
      * Automatically triggers release/closes tunnel when finalized/gc'ed
      */
-    open inner class TunnelRequest(
+    inner class TunnelResource(
             val key: TunnelKey,
             val localPort: Int)
     :
@@ -73,9 +65,10 @@ class SshTunnelProvider(
         }
     }
 
+    /** c'tor */
     init {
-        this.localPorts.addAll(this.portRange)
-        tunnelConfigurations.forEach { t -> this.tunnelConfigurations.put(t.host, t) }
+        this.localPorts.addAll(this.localPortRange)
+        sshHosts.forEach { t -> this.sshHosts.put(t.hostname, t) }
     }
 
     /**
@@ -83,16 +76,17 @@ class SshTunnelProvider(
      * @param host Hostname
      * @param port Remote service port
      * @return TunnelRequest instance exposing the local port to connect to
+     * @throws IllegalArgumentException If provider does not have ssh connection information about the requested host
      */
     @Synchronized fun request(
             host: String,
-            port: Int): TunnelRequest {
+            port: Int): TunnelResource {
 
         // Lookup tunnel spec
-        val tunnelSpec = this.tunnelConfigurations.get(host)
-                ?: throw IllegalArgumentException("No ssh tunnel spec for host [${host}}")
+        val host = this.sshHosts.get(host)
+                ?: throw IllegalArgumentException("No ssh connection info for [${host}}")
 
-        val key = TunnelKey(Thread.currentThread().id, host, port)
+        val key = TunnelKey(Thread.currentThread().id, host.hostname, port)
 
         val tunnelRecord = this.tunnelRecords
                 .getOrPut(key, {
@@ -102,29 +96,29 @@ class SshTunnelProvider(
                     // Create new SSH tunnel for connection request
                     TunnelRecord(
                             SshTunnel(
-                                    host = tunnelSpec.host,
-                                    sshPort = tunnelSpec.sshPort,
+                                    host = host,
                                     remotePort = port,
-                                    localPort = localPort,
-                                    sshUsername = tunnelSpec.sshUsername,
-                                    sshPassword = tunnelSpec.sshPassword))
+                                    localPort = localPort
+                            )
+                    )
                 })
 
         tunnelRecord.sshTunnel.open()
-        tunnelRecord.count++
+        tunnelRecord.refCount++
 
-        return TunnelRequest(key, tunnelRecord.sshTunnel.localPort)
+        return TunnelResource(key, tunnelRecord.sshTunnel.localPort)
     }
 
-    @Synchronized fun release(request: TunnelRequest) {
-        val tunnelRecord = this.tunnelRecords.get(request.key)
-                ?: throw IllegalArgumentException("Unknwon tunnel request [${request}]")
+    @Synchronized fun release(resource: TunnelResource) {
+        val tunnelRecord = this.tunnelRecords.get(resource.key)
+                ?: throw IllegalArgumentException("Unknown tunnel resource [${resource}]")
 
-        tunnelRecord.count--
-        if (tunnelRecord.count <= 0) {
+        tunnelRecord.refCount--
+        if (tunnelRecord.refCount <= 0) {
             tunnelRecord.sshTunnel.close()
-            this.tunnelRecords.remove(request.key)
-            this.localPorts.push(request.localPort)
+            // Remove tunnel record and push local port back into pool
+            this.tunnelRecords.remove(resource.key)
+            this.localPorts.push(resource.localPort)
         }
     }
 }
