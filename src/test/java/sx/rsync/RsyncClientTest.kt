@@ -7,7 +7,7 @@ import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.ssh.SshTunnel
+import sx.ssh.SshTunnelProvider
 import java.nio.file.Paths
 import java.util.*
 import kotlin.concurrent.thread
@@ -22,12 +22,11 @@ class RsyncClientTest {
     val rsyncSource = Rsync.URI("rsync://leoz@10.211.55.7:13002/bundles/leoz-boot/0.4-RELEASE/win64")
     val rsyncPassword = "2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x"
 
-    val rsyncTunneledSource = Rsync.URI(uri = this.rsyncSource.uri, sshTunnel = SshTunnel(host = "10.211.55.7",
-            port = 13003,
-            remoteTunnelPort = 13002,
-            localTunnelPort = 13050,
-            userName = "leoz",
-            password = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
+    val sshTunnelProvider = SshTunnelProvider(13100..13200,
+            SshTunnelProvider.TunnelConfiguration(host = "10.211.55.7",
+                    sshPort = 13003,
+                    sshUsername = "leoz",
+                    sshPassword = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
 
     val localPath = Paths.get("").toAbsolutePath().parent.parent.parent.resolve("leoz-release").resolve("test")
 
@@ -36,11 +35,12 @@ class RsyncClientTest {
         lRoot.level = Level.INFO
     }
 
-    private fun createRsyncClient(): RsyncClient {
+    private fun createRsyncClient(sshTunnelProvider: SshTunnelProvider? = null): RsyncClient {
         val rsyncClient = RsyncClient()
         rsyncClient.password = this.rsyncPassword
         rsyncClient.compression = 2
         rsyncClient.delete = true
+        rsyncClient.sshTunnelProvider = sshTunnelProvider
         return rsyncClient
     }
 
@@ -78,8 +78,8 @@ class RsyncClientTest {
 
     @Test
     fun testTunneledSync() {
-        val rsyncClient = this.createRsyncClient()
-        val source = this.rsyncTunneledSource
+        val rsyncClient = this.createRsyncClient(this.sshTunnelProvider)
+        val source = this.rsyncSource
         val destination = Rsync.URI(this.localPath)
 
         rsyncClient.sync(source, destination, { fr -> println(fr) }, {})
@@ -87,7 +87,7 @@ class RsyncClientTest {
 
     @Test
     fun testThreadedTunneledSync() {
-        val rsyncClient = this.createRsyncClient()
+        val rsyncClient = this.createRsyncClient(this.sshTunnelProvider)
 
         val threads = ArrayList<Thread>()
         for (i in 0..10) {
@@ -96,22 +96,8 @@ class RsyncClientTest {
                     val path = this.localPath.resolve(i.toString())
                     path.toFile().mkdirs()
 
-                    val sshTunnel = this.rsyncTunneledSource.sshTunnel!!
-
-                    // Use separate tunnel for each connection.
-                    // Sharing the tunnel among multiple threads/connections makes ssh components freeze.
-                    val source = Rsync.URI(
-                            uri = this.rsyncSource.uri,
-                            sshTunnel = SshTunnel(
-                                    host = sshTunnel.host,
-                                    port = sshTunnel.port,
-                                    remoteTunnelPort = sshTunnel.remoteTunnelPort,
-                                    localTunnelPort = sshTunnel.localTunnelPort + i,
-                                    userName = sshTunnel.userName,
-                                    password = sshTunnel.password))
-
+                    val source = this.rsyncSource
                     val destination = Rsync.URI(path)
-
                     rsyncClient.sync(source, destination, { fr -> println(fr) }, {})
                 } catch(e: Exception) {
                     log.error(e.message, e)
@@ -132,9 +118,9 @@ class RsyncClientTest {
 
     @Test
     fun testTunneledList() {
-        val rsyncClient = this.createRsyncClient()
+        val rsyncClient = this.createRsyncClient(this.sshTunnelProvider)
 
-        var result = rsyncClient.list(this.rsyncTunneledSource)
+        var result = rsyncClient.list(this.rsyncSource)
         println(result)
     }
 }

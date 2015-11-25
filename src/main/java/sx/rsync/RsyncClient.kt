@@ -4,6 +4,7 @@ import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
 import sx.ProcessExecutor
 import sx.io.PermissionUtil
+import sx.ssh.SshTunnelProvider
 import java.io.File
 import java.net.URI
 import java.time.LocalDateTime
@@ -20,6 +21,10 @@ class RsyncClient() {
 
     /** Remote source/destination password */
     var password: String = ""
+
+    /** SSH tunnel provider to use.
+     * If set, all remote connections are routed through tunnels provided by this instance */
+    var sshTunnelProvider: SshTunnelProvider? = null
 
     var archive: Boolean = true
     var verbose: Boolean = true
@@ -152,30 +157,33 @@ class RsyncClient() {
      * @param r Code block consuming the prepared/tunneled connections
      */
     private fun prepareTunnel(locations: Array<Rsync.URI>, r: (locations: Array<Rsync.URI>) -> Unit) {
-        if (locations.count { l -> l.sshTunnel != null } > 1)
-            throw IllegalStateException("Only one rsync endpoint may require tunneled connection")
+        if (locations.count { l -> !l.isFile() } > 1)
+            throw IllegalStateException("Only one rsync endpoint may be remote")
 
-        val tunnelLocation = locations.firstOrNull { l -> l.sshTunnel != null }
+        val tunnelLocation = locations.firstOrNull { l -> !l.isFile() }
+        val tunnelProvider = this.sshTunnelProvider
 
-        if (tunnelLocation == null) {
+        if (tunnelProvider == null || tunnelLocation == null) {
             r(locations)
         } else {
-            val sshTunnel = tunnelLocation.sshTunnel!!
+            // Request tunnel to remote service
+            val tunnel = tunnelProvider.request(
+                    tunnelLocation.uri.host,
+                    tunnelLocation.uri.port)
 
-            sshTunnel.request()
             try {
                 // Generate new locations, replacing remote host with localhost (tunnel).
                 // Request tunnel connection in the process.
                 val newLocations = locations.map { l ->
                     val uri = l.uri
 
-                    if (l.sshTunnel != null) {
+                    if (!l.isFile()) {
                         // Mangle to localhost uri for connecting through tunnel
                         Rsync.URI(
                                 URI(uri.scheme,
                                         uri.userInfo,
                                         "localhost",
-                                        l.sshTunnel.localTunnelPort,
+                                        tunnel.localPort,
                                         uri.path,
                                         uri.query,
                                         uri.fragment))
@@ -186,7 +194,7 @@ class RsyncClient() {
 
                 r(newLocations)
             } finally {
-                sshTunnel.release()
+                tunnelProvider.release(tunnel)
             }
         }
     }
