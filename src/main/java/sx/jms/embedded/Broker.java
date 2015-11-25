@@ -238,7 +238,7 @@ public abstract class Broker implements Disposable {
     }
 
     @Override
-    public void dispose() {
+    public void close() {
         try {
             this.stop();
         } catch (Exception e) {

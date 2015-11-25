@@ -4,7 +4,6 @@ import org.apache.commons.logging.LogFactory
 import sx.Action
 import sx.Disposable
 import sx.LazyInstance
-import java.io.Closeable
 import java.time.Duration
 import java.util.concurrent.TimeoutException
 import javax.jms.*
@@ -23,8 +22,10 @@ class Channel private constructor(
         private val jmsSessionTransacted: Boolean,
         private val jmsDeliveryMode: Channel.DeliveryMode,
         private val jmsTtl: Duration,
-        private val jmsPriority: Int? = null) : Disposable, Closeable {
-
+        private val jmsPriority: Int? = null)
+:
+        Disposable,
+        AutoCloseable {
     private val log = LogFactory.getLog(this.javaClass)
     private val connection = LazyInstance<Connection>()
     private val session = LazyInstance<Session>()
@@ -225,9 +226,5 @@ class Channel private constructor(
                 log.error(e.message, e)
             }
         })
-    }
-
-    override fun dispose() {
-        this.close()
     }
 }

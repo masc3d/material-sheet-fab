@@ -34,7 +34,7 @@ public class Dispose {
         safely(new Runnable() {
             @Override
             public void run() {
-                d.dispose();
+                d.close();
             }
         }, new Action<Exception>() {
             @Override

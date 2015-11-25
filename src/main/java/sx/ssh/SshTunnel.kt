@@ -17,27 +17,15 @@ class SshTunnel(
         val remoteTunnelPort: Int,
         val localTunnelPort: Int,
         val userName: String,
-        val password: String) {
-
+        val password: String)
+:
+        AutoCloseable {
     class AuthenticationException : Exception() {}
 
     private val log: Log = LogFactory.getLog(this.javaClass)
 
     private var requestCount: Int = 0
     private var session: ClientSession? = null
-
-    private fun closeSession() {
-        var session = this.session
-        if (session != null) {
-            log.info("Closing tunnel connection to [${host}]")
-            try {
-                session.close(false).await()
-            } catch(e: Exception) {
-                log.error(e.message, e)
-            }
-            this.session = null
-        }
-    }
 
     /**
      * Request tunnel connection.
@@ -48,7 +36,7 @@ class SshTunnel(
         var session = this.session
         log.info("SSH tunneled connection request to [${host}:${remoteTunnelPort}] via SSH port [${this.port}] through [localhost:${this.localTunnelPort}]")
         if (session == null || !session.isOpen) {
-            this.closeSession()
+            this.close()
 
             log.info("Establishing tunnel connection to [${host}]")
             val ssh = SshClient.setUpDefaultClient()
@@ -87,7 +75,20 @@ class SshTunnel(
         }
 
         if (requestCount == 0) {
-            this.closeSession()
+            this.close()
+        }
+    }
+
+    override fun close() {
+        var session = this.session
+        if (session != null) {
+            log.info("Closing tunnel connection to [${host}]")
+            try {
+                session.close(false).await()
+            } catch(e: Exception) {
+                log.error(e.message, e)
+            }
+            this.session = null
         }
     }
 }

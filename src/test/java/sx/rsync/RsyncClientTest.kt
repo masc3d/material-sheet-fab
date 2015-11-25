@@ -109,7 +109,7 @@ class RsyncClientTest {
                                     localTunnelPort = sshTunnel.localTunnelPort + i,
                                     userName = sshTunnel.userName,
                                     password = sshTunnel.password))
-                    
+
                     val destination = Rsync.URI(path)
 
                     rsyncClient.sync(source, destination, { fr -> println(fr) }, {})

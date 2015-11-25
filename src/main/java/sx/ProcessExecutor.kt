@@ -1,14 +1,10 @@
 package sx
 
 import com.google.common.base.StandardSystemProperty
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-
 import java.io.BufferedReader
-import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.util.logging.StreamHandler
 
 /**
  * Process executor with threaded stream reading support.
@@ -20,8 +16,10 @@ import java.util.logging.StreamHandler
 class ProcessExecutor @JvmOverloads constructor(
         private val processBuilder: ProcessBuilder,
         private val outputHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler(),
-        private val errorHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler()) : Disposable {
-
+        private val errorHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler())
+:
+        Disposable
+{
     private val log = LogFactory.getLog(this.javaClass)
     var process: Process? = null
         private set
@@ -233,7 +231,7 @@ class ProcessExecutor @JvmOverloads constructor(
         this.stopping = false
     }
 
-    override fun dispose() {
+    override fun close() {
         this.stop()
     }
 }
