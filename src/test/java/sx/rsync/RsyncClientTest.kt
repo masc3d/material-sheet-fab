@@ -7,6 +7,7 @@ import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import sx.ssh.SshHost
 import sx.ssh.SshTunnelProvider
 import java.nio.file.Paths
 import java.util.*
@@ -23,7 +24,7 @@ class RsyncClientTest {
     val rsyncPassword = "2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x"
 
     val sshTunnelProvider = SshTunnelProvider(13100..13200,
-            SshTunnelProvider.TunnelConfiguration(host = "10.211.55.7",
+            SshHost(hostname = "10.211.55.7",
                     sshPort = 13003,
                     sshUsername = "leoz",
                     sshPassword = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
