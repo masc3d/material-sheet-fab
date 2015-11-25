@@ -251,15 +251,15 @@ public class MainController extends Controller implements Initializable, Sidebar
     }
 
     @Override
-    public void dispose() {
-        super.dispose();
+    public void close() {
+        super.close();
 
         if (mHomeController != null)
-            mHomeController.dispose();
+            mHomeController.close();
         if (mDepotMaintenanceController != null)
-            mDepotMaintenanceController.dispose();
+            mDepotMaintenanceController.close();
         if (mDebugController != null)
-            mDebugController.dispose();
+            mDebugController.close();
     }
 
     @Override

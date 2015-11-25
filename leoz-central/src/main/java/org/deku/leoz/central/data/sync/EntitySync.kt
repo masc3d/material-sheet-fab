@@ -57,7 +57,7 @@ class EntitySync private constructor() : Disposable {
     }
 
     /** Dispose */
-    override fun dispose() {
+    override fun close() {
         this.entityPublisher.stop()
     }
 }

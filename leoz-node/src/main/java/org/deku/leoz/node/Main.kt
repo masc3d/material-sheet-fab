@@ -89,7 +89,7 @@ open class Main {
                         System.exit(-1)
                         throw e
                     } finally {
-                        LogConfiguration.instance().dispose()
+                        LogConfiguration.instance().close()
                     }
                     System.exit(0)
                 }

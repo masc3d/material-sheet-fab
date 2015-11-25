@@ -87,6 +87,6 @@ open class RsyncConfiguration {
 
     @PreDestroy
     fun shutdown() {
-        this.rsyncServer.dispose()
+        this.rsyncServer.close()
     }
 }

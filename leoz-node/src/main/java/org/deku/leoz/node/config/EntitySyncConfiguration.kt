@@ -63,6 +63,6 @@ open class EntitySyncConfiguration {
 
     @PreDestroy
     fun onDestroy() {
-        entityConsumer.dispose()
+        entityConsumer.close()
     }
 }

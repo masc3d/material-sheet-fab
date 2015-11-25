@@ -204,8 +204,8 @@ public class DepotListController extends Controller implements Initializable {
     }
 
     @Override
-    public void dispose() {
-        super.dispose();
+    public void close() {
+        super.close();
         mQueryTaskExecutor.shutdown();
     }
 }

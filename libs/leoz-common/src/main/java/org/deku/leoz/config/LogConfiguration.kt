@@ -95,7 +95,7 @@ abstract class LogConfiguration : Disposable {
     /**
      * Dispose loggers
      */
-    override fun dispose() {
+    override fun close() {
         this.logFile = null
     }
 }

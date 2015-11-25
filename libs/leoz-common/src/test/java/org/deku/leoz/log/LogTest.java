@@ -27,7 +27,7 @@ public class LogTest extends MessagingTest {
             lRoot.info("Test!");
 
         // Dispose to make sure everything is flushed
-        lAppender.dispose();
+        lAppender.close();
     }
 
     @Test
@@ -39,7 +39,7 @@ public class LogTest extends MessagingTest {
         // Wait for some messages to be received
         Thread.sleep(20000);
 
-        mListener.dispose();
+        mListener.close();
     }
 }
 

@@ -105,7 +105,7 @@ class Authorizer(
             executorService.submit(authorizationTask)
     }
 
-    override fun dispose() {
+    override fun close() {
         executorService.shutdownNow()
         try {
             executorService.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)

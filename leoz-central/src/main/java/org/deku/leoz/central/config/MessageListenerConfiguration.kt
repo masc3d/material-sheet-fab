@@ -100,7 +100,7 @@ open class MessageListenerConfiguration {
 
     @PreDestroy
     fun onDestroy() {
-        centralQueueListener.dispose()
+        centralQueueListener.close()
     }
     //endregion
 }

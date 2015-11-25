@@ -23,8 +23,10 @@ import javax.jms.Session
  */
 public class LogAppender(
         /** Messaging context */
-        private val messagingConfiguration: MessagingConfiguration) : AppenderBase<ILoggingEvent>(), Disposable {
-
+        private val messagingConfiguration: MessagingConfiguration)
+:
+        AppenderBase<ILoggingEvent>(),
+        Disposable {
     private val log = LogFactory.getLog(this.javaClass)
     /** Message converter  */
     private val converter: Converter
@@ -140,7 +142,7 @@ public class LogAppender(
         super.stop()
     }
 
-    override fun dispose() {
+    override fun close() {
         try {
             this.stop()
         } catch (e: Exception) {

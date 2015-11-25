@@ -109,7 +109,7 @@ public class LeoBridge implements Disposable, MessageService.Listener {
     }
 
     @Override
-    public void dispose() {
+    public void close() {
         this.stop();
     }
 }

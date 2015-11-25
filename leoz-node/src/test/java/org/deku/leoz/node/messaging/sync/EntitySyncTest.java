@@ -47,9 +47,9 @@ public class EntitySyncTest extends DataTest {
 
     @After
     public void tearDown() {
-        mClient.dispose();
-        mListener.dispose();
-        ActiveMQConfiguration.Companion.getInstance().getBroker().dispose();
+        mClient.close();
+        mListener.close();
+        ActiveMQConfiguration.Companion.getInstance().getBroker().close();
     }
 
     @Test

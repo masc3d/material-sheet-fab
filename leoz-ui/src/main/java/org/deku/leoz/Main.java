@@ -198,7 +198,7 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        mMainController.dispose();
+        mMainController.close();
         LeoBridge.instance().stop();
         super.stop();
     }

@@ -144,7 +144,7 @@ open class App :
         Runtime.getRuntime().addShutdownHook(object : Thread("App shutdown hook") {
             override fun run() {
                 log.info("Shutdown hook initiated")
-                App.instance.get().dispose()
+                App.instance.get().close()
                 log.info("Shutdown hook completed")
             }
         })
@@ -156,7 +156,7 @@ open class App :
     }
 
     /** Dispose application resources */
-    override fun dispose() {
+    override fun close() {
         for (d in Lists.reverse(ArrayList(disposables))) {
             Dispose.safely(d)
         }
@@ -176,7 +176,7 @@ open class App :
         log.info("Shutting down")
         if (springApplicationContext != null)
             SpringApplication.exit(springApplicationContext, ExitCodeGenerator { exitCode })
-        App.instance.get().dispose()
+        App.instance.get().close()
     }
 
     fun shutdown() {

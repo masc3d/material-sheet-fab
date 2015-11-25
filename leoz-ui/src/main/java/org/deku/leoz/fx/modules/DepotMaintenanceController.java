@@ -50,8 +50,8 @@ public class DepotMaintenanceController extends ModuleController implements Init
     }
 
     @Override
-    public void dispose() {
-        super.dispose();
-        mDepotListController.dispose();
+    public void close() {
+        super.close();
+        mDepotListController.close();
     }
 }

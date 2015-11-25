@@ -25,6 +25,6 @@ public abstract class Controller implements Activatable, Disposable {
     /**
      * Disposal. Optionally overridden by derived classes
      */
-    public void dispose() {
+    public void close() {
     }
 }

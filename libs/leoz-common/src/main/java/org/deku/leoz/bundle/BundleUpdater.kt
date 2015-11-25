@@ -220,7 +220,7 @@ class BundleUpdater(
         log.info("Update sequence for bundle [${bundleName}] complete")
     }
 
-    override fun dispose() {
+    override fun close() {
         this.stop()
     }
 }

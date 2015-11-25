@@ -220,12 +220,13 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
     }
 
     @Override
-    public void dispose() {
+    public void close() {
         mExecutorService.shutdown();
         try {
             mExecutorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
+            // Interruption is ok.
         }
-        super.dispose();
+        super.close();
     }
 }

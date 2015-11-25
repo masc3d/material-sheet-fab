@@ -36,7 +36,7 @@ open class EntitySyncConfiguration {
         }
 
         override fun onStop() {
-            EntitySync.it().dispose()
+            EntitySync.it().close()
         }
     }
 

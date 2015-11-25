@@ -44,6 +44,6 @@ open class LogListenerConfiguration {
 
     @PreDestroy
     fun onDestroy() {
-        logListener.dispose()
+        logListener.close()
     }
 }

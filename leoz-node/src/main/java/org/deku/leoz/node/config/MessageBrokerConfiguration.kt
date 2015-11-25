@@ -53,6 +53,6 @@ open class MessageBrokerConfiguration {
 
     @PreDestroy
     fun onDestroy() {
-        ActiveMQBroker.instance().dispose()
+        ActiveMQBroker.instance().close()
     }
 }

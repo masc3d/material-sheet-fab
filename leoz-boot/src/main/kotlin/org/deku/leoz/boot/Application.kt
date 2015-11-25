@@ -91,16 +91,17 @@ class Application : javafx.application.Application() {
         val destPath = File(StorageConfiguration.bundlesDirectory, Bundles.LEOZ_BOOT)
 
         val rc = RsyncClient()
-        rc.source = Rsync.URI(srcPath)
-        rc.destination = Rsync.URI(destPath)
+        val source = Rsync.URI(srcPath)
+        val destination = Rsync.URI(destPath)
         rc.delete = true
         rc.preserveExecutability = true
         rc.preservePermissions = false
 
-        log.info("Synchronizing [${rc.source}] -> [${rc.destination}]")
-        rc.sync( onFile = { r ->
-            log.info("Updating [${r.flags}] [${r.path}]")
-        })
+        log.info("Synchronizing [${source}] -> [${destination}]")
+        rc.sync(source, destination,
+                onFile = { r ->
+                    log.info("Updating [${r.flags}] [${r.path}]")
+                })
     }
 
     override fun start(primaryStage: Stage) {

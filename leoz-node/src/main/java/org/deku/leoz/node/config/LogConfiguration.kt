@@ -62,8 +62,8 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     /**
      * Dispose loggers
      */
-    override fun dispose() {
+    override fun close() {
         this.jmsAppenderEnabled = false
-        super.dispose()
+        super.close()
     }
 }
