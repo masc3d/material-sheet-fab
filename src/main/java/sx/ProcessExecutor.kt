@@ -101,7 +101,7 @@ class ProcessExecutor @JvmOverloads constructor(
                 var exitCode = process!!.waitFor()
                 // Don't throw process exception if exit oode was non zero while the process was being
                 // stopped/destroyed. (observed especially on windows)
-                if (exitCode != 0 && !stopping)
+                if (exitCode != 0 && !stopping && !shutdownHookInvoked)
                     exception = ProcessException(exitCode)
             } catch (e: InterruptedException) {
                 log.error(e.message, e)
