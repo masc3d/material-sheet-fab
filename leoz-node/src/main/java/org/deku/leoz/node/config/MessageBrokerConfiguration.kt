@@ -30,7 +30,7 @@ open class MessageBrokerConfiguration {
     var httpContextPath: String? = null
 
     @PostConstruct
-    fun initialize() {
+    fun onInitialize() {
 
         // Broker configuration, must occur before tunnel servlet starts
         log.info("Configuring messaging broker")

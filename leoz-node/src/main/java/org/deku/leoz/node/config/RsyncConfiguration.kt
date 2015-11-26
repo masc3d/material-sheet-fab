@@ -49,7 +49,7 @@ open class RsyncConfiguration {
     lateinit var rsyncModules: List<Rsync.Module>
 
     @PostConstruct
-    fun initialize() {
+    fun onInitialize() {
         // Initialize rsync executable path
         Rsync.executable.baseFilename = "leoz-rsync"
         try {

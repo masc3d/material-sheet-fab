@@ -40,7 +40,7 @@ open class IdentityConfiguration {
      * Initialize identity
      */
     @PostConstruct
-    fun initialize() {
+    fun onInitialize() {
         var identity: Identity? = null
 
         // Collect system information
