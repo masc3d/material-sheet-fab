@@ -216,13 +216,13 @@ abstract class PackagerReleaseTask extends PackagerTask {
                 def nioArchiveContentPath = archiveContentPath.toPath()
 
                 // Prepare build and release destinations
-                def archiveDirectoryName = "${project.name}-archive"
+                def archiveDirectoryName = "${project.name}-sfx"
                 def buildArchivePath = new File(this.extension.packagerBaseDir, archiveDirectoryName)
                 buildArchivePath.mkdirs()
                 def releaseArchivePath = new File(this.extension.releaseBasePath, archiveDirectoryName)
                 releaseArchivePath.mkdirs()
 
-                def buildArchiveName = "${project.name}-${platformId}.7z"
+                def buildArchiveName = "${project.name}-${project.version}-${platformId}.7z"
                 def buildArchive = new File(buildArchivePath, buildArchiveName)
 
                 buildArchive.delete()
@@ -267,7 +267,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
 
                     def configName = p.fileName.toString()
                     configName = configName.substring(0, configName.length() - CFG_EXTENSION.length())
-                    def releaseExecutable = new File(releaseArchivePath, "${project.name}-${configName}-${platformId}.exe")
+                    def releaseExecutable = new File(releaseArchivePath, "${project.name}-${project.version}-${configName}-${platformId}.exe")
 
                     def os = releaseExecutable.newOutputStream()
                     try {
