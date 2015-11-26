@@ -33,7 +33,7 @@ open class SshServerConfiguration {
 
         sshd.setPort(13003)
         sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(
-                File(StorageConfiguration.instance.get().sshDataDirectory, "hostkey.ser")))
+                File(StorageConfiguration.instance.sshDataDirectory, "hostkey.ser")))
 
         sshd.tcpipForwardingFilter = AcceptAllForwardingFilter()
 

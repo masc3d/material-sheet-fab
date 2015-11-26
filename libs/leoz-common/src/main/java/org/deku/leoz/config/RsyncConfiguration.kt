@@ -7,4 +7,8 @@ package org.deku.leoz.config
 object RsyncConfiguration {
     val USERNAME: String = "leoz"
     val PASSWORD: String = "2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x"
+
+    object ModuleNames {
+        val BUNDLES = "bundles"
+    }
 }

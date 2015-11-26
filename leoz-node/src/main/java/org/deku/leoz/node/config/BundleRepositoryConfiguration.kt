@@ -9,6 +9,6 @@ import sx.rsync.Rsync
 object BundleRepositoryConfiguration : org.deku.leoz.config.BundleRepositoryConfiguration() {
     val localRepository: BundleRepository by lazy({
         BundleRepository(
-                Rsync.URI(StorageConfiguration.instance.get().bundleRepositoryDirectory))
+                Rsync.URI(StorageConfiguration.instance.bundleRepositoryDirectory))
     })
 }

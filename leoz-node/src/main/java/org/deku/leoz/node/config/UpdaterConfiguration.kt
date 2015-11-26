@@ -32,7 +32,7 @@ open class UpdaterConfiguration {
     @Bean
     open fun bundleUpdater(): BundleUpdater {
         val installer = BundleInstaller(
-                StorageConfiguration.instance.get().bundlesDirectory)
+                StorageConfiguration.instance.bundlesDirectory)
 
         return BundleUpdater(
                 identity = this.identityConfiguration.identity,
@@ -41,7 +41,7 @@ open class UpdaterConfiguration {
                 localRepository = BundleRepositoryConfiguration.localRepository,
                 presets = listOf(
                         BundleUpdater.Preset(
-                                bundleName = App.instance.get().name,
+                                bundleName = App.injectableInstance.get().name,
                                 install = true,
                                 storeInLocalRepository = false,
                                 requiresBoot = true),

@@ -72,7 +72,7 @@ class Authorizer(
                         // Set id based on response and store identity
                         log.info("Received authorization update [%s]".format(authorizationMessage))
                         identity.id = authorizationMessage.id
-                        identity.store(StorageConfiguration.instance.get().identityConfigurationFile)
+                        identity.store(StorageConfiguration.instance.identityConfigurationFile)
                     }
                     success = true
                 } catch (e: TimeoutException) {

@@ -49,7 +49,7 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
         // Base URI
         val baseUri: String
         if (!IN_MEMORY) {
-            baseUri = "jdbc:h2:file:" + StorageConfiguration.instance.get().h2DatabaseFile
+            baseUri = "jdbc:h2:file:" + StorageConfiguration.instance.h2DatabaseFile
         } else {
             baseUri = "jdbc:h2:mem:db1"
         }

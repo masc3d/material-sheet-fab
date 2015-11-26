@@ -44,7 +44,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
         }
 
     init {
-        this.logFile = StorageConfiguration.instance.get().logFile
+        this.logFile = StorageConfiguration.instance.logFile
     }
 
     /**

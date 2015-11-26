@@ -48,7 +48,8 @@ open class App :
         const val PROFILE_CLIENT_NODE = "client-node"
 
         /** Injectable lazy instance */
-        @JvmStatic val instance = LazyInstance(Supplier { App() })
+        @JvmStatic val injectableInstance = LazyInstance(Supplier { App() })
+        @JvmStatic val instance by lazy({ injectableInstance.get() })
     }
 
     /** c'tor  */
@@ -92,7 +93,7 @@ open class App :
         isInitialized = true
 
         // Acquire lock on bundle path
-        val bundlePath = StorageConfiguration.instance.get().bundleLockFile
+        val bundlePath = StorageConfiguration.instance.bundleLockFile
         log.info("Acquiring lock on bundle path [${bundlePath}]")
         this.bundlePathLock = FileChannel
                 .open(bundlePath.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)
@@ -123,7 +124,7 @@ open class App :
 
             // Add local home configuration
             try {
-                configLocations.add(URL("file:" + StorageConfiguration.instance.get().applicationConfigurationFile.toString()))
+                configLocations.add(URL("file:" + StorageConfiguration.injectableInstance.get().applicationConfigurationFile.toString()))
             } catch (e: MalformedURLException) {
                 log.error(e.message, e)
             }
@@ -144,7 +145,7 @@ open class App :
         Runtime.getRuntime().addShutdownHook(object : Thread("App shutdown hook") {
             override fun run() {
                 log.info("Shutdown hook initiated")
-                App.instance.get().close()
+                App.injectableInstance.get().close()
                 log.info("Shutdown hook completed")
             }
         })
@@ -176,7 +177,7 @@ open class App :
         log.info("Shutting down")
         if (springApplicationContext != null)
             SpringApplication.exit(springApplicationContext, ExitCodeGenerator { exitCode })
-        App.instance.get().close()
+        App.injectableInstance.get().close()
     }
 
     fun shutdown() {

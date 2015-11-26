@@ -43,7 +43,7 @@ open class RsyncConfiguration {
     /** Rsync server instance */
     private var rsyncServer: RsyncServer by Delegates.notNull()
 
-    private val storageConfiguration by lazy({ StorageConfiguration.instance.get() })
+    private val storageConfiguration by lazy({ StorageConfiguration.instance })
 
     @Inject
     lateinit var rsyncModules: List<Rsync.Module>

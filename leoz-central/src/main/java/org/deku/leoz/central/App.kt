@@ -20,7 +20,8 @@ class App private constructor() : org.deku.leoz.node.App() {
     }
 
     companion object {
-        @JvmStatic val instance = LazyInstance( { App() } )
+        @JvmStatic val injectableInstance = LazyInstance({ App() })
+        @JvmStatic val instance by lazy({ injectableInstance.get() })
 
         const val PROFILE_CENTRAL = "central"
     }

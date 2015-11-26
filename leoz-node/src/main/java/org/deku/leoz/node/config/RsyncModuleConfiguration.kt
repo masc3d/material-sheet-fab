@@ -18,6 +18,8 @@ open class RsyncModuleConfiguration {
 
     @Bean
     open fun bundlesModule(): Rsync.Module {
-        return Rsync.Module("bundles", StorageConfiguration.instance.get().bundleRepositoryDirectory)
+        return Rsync.Module(
+                org.deku.leoz.config.RsyncConfiguration.ModuleNames.BUNDLES,
+                StorageConfiguration.instance.bundleRepositoryDirectory)
     }
 }

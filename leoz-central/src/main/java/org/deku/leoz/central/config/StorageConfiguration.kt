@@ -11,9 +11,7 @@ class StorageConfiguration private constructor(appName: String)
 :
         org.deku.leoz.node.config.StorageConfiguration(appName) {
     companion object {
-        val instance by lazy({
-            StorageConfiguration(App.instance.get().name)
-        })
+        val instance by lazy({ StorageConfiguration(App.instance.name) })
     }
 
     val transferDataDirectory by lazy({
