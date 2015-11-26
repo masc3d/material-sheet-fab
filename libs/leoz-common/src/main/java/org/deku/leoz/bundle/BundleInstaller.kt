@@ -261,11 +261,14 @@ class BundleInstaller(
                 oldBundlePath.deleteRecursively()
             }
 
-            Files.move(bundlePath.toPath(), oldBundlePath.toPath())
+            if (bundlePath.exists())
+                Files.move(bundlePath.toPath(), oldBundlePath.toPath())
+
             try {
                 Files.move(bundleReadyPath.toPath(), bundlePath.toPath())
             } catch(e: Exception) {
-                Files.move(oldBundlePath.toPath(), bundlePath.toPath())
+                if (oldBundlePath.exists())
+                    Files.move(oldBundlePath.toPath(), bundlePath.toPath())
                 throw e
             }
             oldBundlePath.deleteRecursively()
