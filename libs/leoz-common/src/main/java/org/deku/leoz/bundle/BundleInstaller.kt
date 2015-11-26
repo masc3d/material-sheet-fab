@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import java.io.File
+import java.nio.file.Files
 import java.util.*
 
 /**
@@ -196,7 +197,7 @@ class BundleInstaller(
                 if (bundleDownloadPath.exists())
                     bundleDownloadPath.deleteRecursively()
 
-                bundleUpdatePath.renameTo(bundleDownloadPath)
+                Files.move(bundleUpdatePath.toPath(), bundleDownloadPath.toPath())
             }
 
             val platform = PlatformId.current()
@@ -215,7 +216,7 @@ class BundleInstaller(
                         if (onProgress != null) onProgress(f, p)
                     })
 
-            bundleDownloadPath.renameTo(bundleUpdatePath)
+            Files.move(bundleDownloadPath.toPath(), bundleUpdatePath.toPath())
 
             readyToInstall = true
         } else {
@@ -260,11 +261,11 @@ class BundleInstaller(
                 oldBundlePath.deleteRecursively()
             }
 
-            bundlePath.renameTo(oldBundlePath)
+            Files.move(bundlePath.toPath(), oldBundlePath.toPath())
             try {
-                bundleReadyPath.renameTo(bundlePath)
+                Files.move(bundleReadyPath.toPath(), bundlePath.toPath())
             } catch(e: Exception) {
-                oldBundlePath.renameTo(bundlePath)
+                Files.move(oldBundlePath.toPath(), bundlePath.toPath())
                 throw e
             }
             oldBundlePath.deleteRecursively()

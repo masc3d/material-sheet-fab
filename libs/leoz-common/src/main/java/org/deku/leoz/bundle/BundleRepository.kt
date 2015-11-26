@@ -405,7 +405,7 @@ class BundleRepository(
                 copyPaths = copyDestinationPaths,
                 verify = true)
 
-        downloadPath.renameTo(destPath)
+        Files.move(downloadPath.toPath(), destPath.toPath())
         return true
     }
 
