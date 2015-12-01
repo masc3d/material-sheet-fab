@@ -96,12 +96,14 @@ open class UpdaterConfiguration {
 
     /** Broker listener  */
     private val brokerEventListener = object : Broker.EventListener {
+        val bundleUpdater by lazy({ this@UpdaterConfiguration.bundleUpdater() })
+
         override fun onStart() {
-            bundleUpdater().startUpdate()
+            this.bundleUpdater.startUpdate()
         }
 
         override fun onStop() {
-            bundleUpdater().stop()
+            this.bundleUpdater.stop()
         }
     }
 

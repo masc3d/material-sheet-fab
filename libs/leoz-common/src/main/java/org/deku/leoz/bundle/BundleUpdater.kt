@@ -126,6 +126,7 @@ class BundleUpdater(
      * Stop all bundle tasks
      */
     public fun stop() {
+        log.info("Stopping bundle updater")
         this.executor.shutdownNow()
         this.executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS)
     }

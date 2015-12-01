@@ -114,6 +114,7 @@ class BundleRepository(
      * List bundles within repository
      */
     fun listBundles(): List<String> {
+        log.info("Retrieving list of bundles from [${this.rsyncModuleUri}]")
         return this.list(this.rsyncModuleUri).filter { f -> this.isValidFilename(f) }
     }
 
@@ -122,6 +123,8 @@ class BundleRepository(
      * @param bundleName Bundle name
      */
     fun listVersions(bundleName: String): List<Bundle.Version> {
+        log.info("Retrieving versions of bundle [${bundleName}] from [${this.rsyncModuleUri}]")
+
         val filenames = this.list(
                 this.rsyncModuleUri.resolve(bundleName))
 
