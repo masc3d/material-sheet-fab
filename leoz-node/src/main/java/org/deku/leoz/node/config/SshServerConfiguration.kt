@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Lazy
 import java.io.File
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import javax.inject.Inject
 
 /**
  * Created by masc on 17.11.15.
@@ -26,6 +27,9 @@ open class SshServerConfiguration {
     init {
         this.sshServer = SshServer.setUpDefaultServer()
     }
+
+    @Inject
+    lateinit var tc: SshTunnelConfiguration
 
     @PostConstruct
     fun onInitialize() {

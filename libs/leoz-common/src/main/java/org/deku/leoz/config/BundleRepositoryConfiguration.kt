@@ -12,6 +12,4 @@ abstract class BundleRepositoryConfiguration {
                 rsyncModuleUri = Rsync.URI("rsync://leoz@syntronix.de/leoz"),
                 rsyncPassword = "leoz")
     })
-
-
 }

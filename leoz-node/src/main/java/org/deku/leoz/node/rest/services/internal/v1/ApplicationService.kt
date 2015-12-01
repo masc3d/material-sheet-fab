@@ -27,15 +27,15 @@ class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationSe
 
     override fun restart() {
         val bundleInstaller = BundleInstaller(
-                StorageConfiguration.injectableInstance.get().bundlesDirectory)
+                StorageConfiguration.instance.bundlesDirectory)
 
-        bundleInstaller.boot(App.injectableInstance.get().name)
+        bundleInstaller.boot(App.instance.name)
     }
 
     override fun getVersion(): ApplicationVersion {
         return ApplicationVersion(
-                App.injectableInstance.get().jarManifest.implementationName,
-                App.injectableInstance.get().jarManifest.implementationVersion)
+                App.instance.jarManifest.implementationName,
+                App.instance.jarManifest.implementationVersion)
     }
 
     override fun updateBundles() {

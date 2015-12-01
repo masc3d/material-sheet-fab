@@ -59,7 +59,7 @@ open class Main {
         }
     }
 
-    private val app = App.injectableInstance.get()
+    private val app = App.instance
 
     /**
      * Main instance entry point

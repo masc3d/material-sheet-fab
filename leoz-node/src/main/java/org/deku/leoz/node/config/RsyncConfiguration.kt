@@ -29,16 +29,10 @@ open class RsyncConfiguration {
         var port: Int? = null
     }
 
-    /** Client properties holder */
-    inner class Client {
-        var port: Int? = null
-    }
-
     private val log = LogFactory.getLog(this.javaClass)
 
     // Properties
     var server: Server = Server()
-    var client: Client = Client()
 
     /** Rsync server instance */
     private var rsyncServer: RsyncServer by Delegates.notNull()

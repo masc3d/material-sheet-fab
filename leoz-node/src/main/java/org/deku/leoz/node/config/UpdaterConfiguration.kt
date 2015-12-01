@@ -2,19 +2,25 @@ package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleInstaller
+import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.BundleUpdater
 import org.deku.leoz.bundle.Bundles
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.embedded.Broker
+import sx.rsync.Rsync
+import sx.ssh.SshTunnelProvider
 import javax.annotation.PostConstruct
 import javax.inject.Inject
+import javax.inject.Named
+import kotlin.properties.Delegates
 
 /**
- * Updater configuration
+ * Leoz updater configuration
  * Created by n3 on 30-Oct-15.
  */
 @Configuration
@@ -22,13 +28,46 @@ import javax.inject.Inject
 open class UpdaterConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
+    @Named
+    @ConfigurationProperties(prefix = "update")
+    class Settings {
+        var rsyncUri: String by Delegates.notNull()
+        var rsyncPassword: String by Delegates.notNull()
+    }
+
+    @Inject
+    lateinit var settings: Settings
+
     @Inject
     lateinit var identityConfiguration: IdentityConfiguration
 
-    @Inject
-    lateinit var bundleUpdater: BundleUpdater
+    /**
+     * Local bundle repository
+     * */
+    val localRepository: BundleRepository by lazy({
+        BundleRepository(
+                Rsync.URI(StorageConfiguration.instance.bundleRepositoryDirectory))
+    })
 
-    /** Updater instance */
+    /**
+     * Remote bundle update repository
+     * */
+    val updateRepository: BundleRepository by lazy({
+        BundleRepository(rsyncModuleUri = Rsync.URI(this.settings.rsyncUri),
+                rsyncPassword = this.settings.rsyncPassword,
+                sshTunnelProvider = this.sshTunnelProvider)
+
+    })
+
+    /**
+     * SSH tunnel provider
+     */
+    @Inject
+    lateinit var sshTunnelProvider: SshTunnelProvider
+
+    /**
+     * Updater instance
+     */
     @Bean
     open fun bundleUpdater(): BundleUpdater {
         val installer = BundleInstaller(
@@ -37,11 +76,11 @@ open class UpdaterConfiguration {
         return BundleUpdater(
                 identity = this.identityConfiguration.identity,
                 installer = installer,
-                remoteRepository = BundleRepositoryConfiguration.stagingRepository,
-                localRepository = BundleRepositoryConfiguration.localRepository,
+                remoteRepository = this.updateRepository,
+                localRepository = this.localRepository,
                 presets = listOf(
                         BundleUpdater.Preset(
-                                bundleName = App.injectableInstance.get().name,
+                                bundleName = App.instance.name,
                                 install = true,
                                 storeInLocalRepository = false,
                                 requiresBoot = true),
@@ -58,11 +97,11 @@ open class UpdaterConfiguration {
     /** Broker listener  */
     private val brokerEventListener = object : Broker.EventListener {
         override fun onStart() {
-            bundleUpdater.startUpdate()
+            bundleUpdater().startUpdate()
         }
 
         override fun onStop() {
-            bundleUpdater.stop()
+            bundleUpdater().stop()
         }
     }
 

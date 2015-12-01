@@ -12,7 +12,7 @@ public class AppTest {
         Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         lRoot.setLevel(Level.INFO);
 
-        App.getInstance().get().initialize("");
+        App.getInstance().initialize("");
     }
 
     public AppTest() {

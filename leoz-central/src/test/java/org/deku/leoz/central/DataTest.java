@@ -24,8 +24,8 @@ import javax.servlet.ServletContext;
 }, initializers = ConfigFileApplicationContextInitializer.class)
 public class DataTest {
     static {
-        App.getInstance().set(() -> App.getInstance().get());
-        App.getInstance().get().initialize();
+        App.getInjectableInstance().set(() -> App.getInstance());
+        App.getInstance().initialize();
     }
 
     public DataTest() {

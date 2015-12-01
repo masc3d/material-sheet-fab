@@ -5,6 +5,7 @@ import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
+import sx.ssh.SshTunnelProvider
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -21,7 +22,8 @@ import java.util.function.BiPredicate
  */
 class BundleRepository(
         val rsyncModuleUri: Rsync.URI,
-        val rsyncPassword: String = "")
+        val rsyncPassword: String = "",
+        val sshTunnelProvider: SshTunnelProvider? = null)
 {
     val log = LogFactory.getLog(this.javaClass)
 
@@ -51,6 +53,7 @@ class BundleRepository(
         rc.preserveExecutability = true
         rc.preserveGroup = false
         rc.preserveOwner = false
+        rc.sshTunnelProvider = this.sshTunnelProvider
         return rc
     }
 
