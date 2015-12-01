@@ -43,7 +43,7 @@ open class StorageConfiguration protected constructor(appName: String)
     // Files
     /** Local application configuration file */
     val applicationConfigurationFile: File by lazy({
-        File(this.baseDirectory, "leoz.properties")
+        File(this.etcDirectory, "${this.appName}.properties")
     })
 
     /** Local identity configuration file */
