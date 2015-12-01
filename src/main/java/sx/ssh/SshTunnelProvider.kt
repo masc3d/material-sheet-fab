@@ -96,7 +96,7 @@ class SshTunnelProvider(
                     // Create new SSH tunnel for connection request
                     TunnelRecord(
                             SshTunnel(
-                                    host = sshHost,
+                                    sshHost = sshHost,
                                     remotePort = port,
                                     localPort = localPort
                             )
