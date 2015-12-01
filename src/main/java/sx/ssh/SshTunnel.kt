@@ -9,7 +9,7 @@ import org.apache.sshd.common.SshdSocketAddress
 /**
  * SSH tunnel
  * Created by masc on 22.11.15.
- * @property host SSH host
+ * @property sshHost SSH host
  * @property sshPort SSH port
  * @property sshUsername SSH username
  * @property sshPassword SSH password
@@ -17,7 +17,7 @@ import org.apache.sshd.common.SshdSocketAddress
  * @property localPort Local port, tunnel entrance
  */
 class SshTunnel(
-        val host: SshHost,
+        val sshHost: SshHost,
         val remotePort: Int,
         val localPort: Int)
 :
@@ -33,19 +33,19 @@ class SshTunnel(
      */
     @Synchronized fun open() {
         var session = this.session
-        log.info("SSH tunneled connection request to [${host}:${remotePort}] via SSH port [${this.host.sshPort}] through [localhost:${this.localPort}]")
+        log.info("SSH tunneled connection request to [${sshHost}:${remotePort}] via SSH port [${this.sshHost.port}] through [localhost:${this.localPort}]")
         if (session == null || !session.isOpen) {
             this.close()
 
-            log.info("Establishing tunnel connection to [${host}]")
+            log.info("Establishing tunnel connection to [${sshHost}]")
             val ssh = SshClient.setUpDefaultClient()
 
             ssh.start()
 
-            session = ssh.connect(this.host.sshUsername, this.host.hostname, this.host.sshPort)
+            session = ssh.connect(this.sshHost.username, this.sshHost.hostname, this.sshHost.port)
                     .await()
                     .session
-            session.addPasswordIdentity(this.host.sshPassword)
+            session.addPasswordIdentity(this.sshHost.password)
 
             val result = session.auth().await()
             if (result.isFailure)
@@ -56,7 +56,7 @@ class SshTunnel(
                     SshdSocketAddress("localhost", this.remotePort))
 
             this.session = session
-            log.info("Established tunnel connection to [${host}]")
+            log.info("Established tunnel connection to [${sshHost}]")
         }
     }
 
@@ -66,7 +66,7 @@ class SshTunnel(
     override fun close() {
         var session = this.session
         if (session != null) {
-            log.info("Closing tunnel connection to [${host}]")
+            log.info("Closing tunnel connection to [${sshHost}]")
             try {
                 session.close(false).await()
             } catch(e: Exception) {

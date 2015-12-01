@@ -25,9 +25,9 @@ class RsyncClientTest {
 
     val sshTunnelProvider = SshTunnelProvider(13100..13200,
             SshHost(hostname = "10.211.55.7",
-                    sshPort = 13003,
-                    sshUsername = "leoz",
-                    sshPassword = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
+                    port = 13003,
+                    username = "leoz",
+                    password = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
 
     val localPath = Paths.get("").toAbsolutePath().parent.parent.parent.resolve("leoz-release").resolve("test")
 
