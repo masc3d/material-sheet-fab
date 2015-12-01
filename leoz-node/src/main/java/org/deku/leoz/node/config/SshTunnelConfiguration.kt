@@ -49,14 +49,14 @@ open class SshTunnelConfiguration {
         // Create SSH tunnel provider from settings/application.properties
         return SshTunnelProvider(
                 localPortRange = IntRange(
-                        this.settings.localPortRangeStart!!,
-                        this.settings.localPortRangeEnd!!),
+                        this.settings.localPortRangeStart,
+                        this.settings.localPortRangeEnd),
                 sshHosts = *this.settings.hosts.values.map {
                     SshHost(
-                            hostname = it.hostname!!,
-                            port = it.port!!,
-                            username = it.username!!,
-                            password = it.password!!)
+                            hostname = it.hostname,
+                            port = it.port,
+                            username = it.username,
+                            password = it.password)
                 }.toTypedArray())
     }
 
