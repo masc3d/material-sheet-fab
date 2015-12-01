@@ -63,9 +63,14 @@ abstract class StorageConfiguration(
         this.lockFile(this.appName)
     })
 
-    /** Local log file */
+    /** Application log file */
     val logFile: File by lazy({
         File(this.logDirectory, "${this.appName}.log")
+    })
+
+    /** Setup log file */
+    val setupLogFile: File by lazy({
+        File(this.logDirectory, "${this.appName}-setup.log")
     })
 
     /**

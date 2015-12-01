@@ -3,6 +3,7 @@ package org.deku.leoz.node
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
+import org.deku.leoz.node.config.StorageConfiguration
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration
 import org.springframework.boot.builder.SpringApplicationBuilder
@@ -54,7 +55,7 @@ open class Main {
          * This one is only used externally, eg. by the service wrapper when running as a service.
          */
         @Suppress("unused_parameter") @JvmStatic fun stop(args: Array<String>) {
-            App.injectableInstance.get().shutdown()
+            App.instance.shutdown()
         }
     }
 
@@ -82,6 +83,7 @@ open class Main {
 
                 if (rCommand != null) {
                     try {
+                        LogConfiguration.instance().logFile = StorageConfiguration.instance.setupLogFile
                         LogConfiguration.instance().initialize()
                         rCommand.run()
                     } catch (e: Exception) {
@@ -96,7 +98,7 @@ open class Main {
             }
 
             // Initialize and start application
-            App.injectableInstance.get().initialize()
+            App.instance.initialize()
             SpringApplicationBuilder()
                     .showBanner(false)
                     .sources(this.javaClass)

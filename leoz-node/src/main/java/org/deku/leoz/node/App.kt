@@ -124,7 +124,7 @@ open class App :
 
             // Add local home configuration
             try {
-                configLocations.add(URL("file:" + StorageConfiguration.injectableInstance.get().applicationConfigurationFile.toString()))
+                configLocations.add(URL("file:" + StorageConfiguration.instance.applicationConfigurationFile.toString()))
             } catch (e: MalformedURLException) {
                 log.error(e.message, e)
             }
