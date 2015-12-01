@@ -7,9 +7,13 @@ package sx.ssh
  * @param username SSH username
  * @param password SSH password
  */
-data class SshHost(
+class SshHost(
         val hostname: String,
         val port: Int,
         val username: String,
         val password: String) {
+
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(hostname=${hostname}, port=${port})"
+    }
 }

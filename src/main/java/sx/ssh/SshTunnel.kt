@@ -83,6 +83,6 @@ class SshTunnel(
     }
 
     override fun toString(): String {
-        return "${this.javaClass.simpleName}(host=${this.sshHost}, port=${this.remotePort}"
+        return "${this.javaClass.simpleName}(host=${this.sshHost}, port=${this.remotePort})"
     }
 }
