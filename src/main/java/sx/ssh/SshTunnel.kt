@@ -5,6 +5,8 @@ import org.apache.commons.logging.LogFactory
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.client.session.ClientSession
 import org.apache.sshd.common.SshdSocketAddress
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 /**
  * SSH tunnel
@@ -42,9 +44,13 @@ class SshTunnel(
 
             ssh.start()
 
-            session = ssh.connect(this.sshHost.username, this.sshHost.hostname, this.sshHost.port)
-                    .await()
-                    .session
+            val sshFuture = ssh.connect(this.sshHost.username, this.sshHost.hostname, this.sshHost.port)
+
+            if (!sshFuture.await(6, TimeUnit.SECONDS))
+                throw TimeoutException("Timeout while connecting [${this}]")
+
+            session = sshFuture.await().session
+
             session.addPasswordIdentity(this.sshHost.password)
 
             val result = session.auth().await()
@@ -74,5 +80,9 @@ class SshTunnel(
             }
             this.session = null
         }
+    }
+
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(host=${this.sshHost}, port=${this.remotePort}"
     }
 }
