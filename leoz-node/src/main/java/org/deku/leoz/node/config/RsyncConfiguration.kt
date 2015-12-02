@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Lazy
 import sx.rsync.Rsync
 import sx.rsync.RsyncServer
 import java.io.File
+import java.net.InetAddress
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
@@ -51,6 +52,8 @@ open class RsyncConfiguration {
 
             // Rsync configuration
             val config = RsyncServer.Configuration()
+            // Limit connections to loopback interface. Rsync server is only reachable via (ssh) tunneling
+            config.address = InetAddress.getLoopbackAddress().hostAddress
             config.port = this.server.port
             config.logFile = File(this.storageConfiguration.logDirectory, "leoz-rsyncd.log")
             config.reverseLookup = false
