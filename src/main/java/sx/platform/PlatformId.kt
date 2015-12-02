@@ -4,8 +4,6 @@ package sx.platform
  * Created by masc on 15.08.15.
  */
 import org.apache.commons.lang3.SystemUtils
-import sx.platform.CpuArch
-import sx.platform.OperatingSystem
 import kotlin.text.Regex
 
 /**
@@ -36,11 +34,11 @@ class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuArch) {
             var sPlatform = matchResult.groups[1]?.value
             var sCpuArch = matchResult.groups[2]?.value
 
-            var p = OperatingSystem.values.firstOrNull() { it.toString().equals(sPlatform) }
+            var p = OperatingSystem.values().firstOrNull() { it.toString().equals(sPlatform) }
             if (p == null)
                 throw IllegalArgumentException("Unknown platform identifier [${sPlatform}]")
 
-            var ca = CpuArch.values.firstOrNull() { it.toString().equals(sCpuArch) }
+            var ca = CpuArch.values().firstOrNull() { it.toString().equals(sCpuArch) }
             if (ca == null)
                 throw IllegalArgumentException("Unknown cpu arch identifier [${sCpuArch}]")
 
