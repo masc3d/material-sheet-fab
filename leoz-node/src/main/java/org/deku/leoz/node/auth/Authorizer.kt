@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import kotlin.properties.Delegates
 
 /**
  * Authorizer
@@ -25,7 +26,8 @@ class Authorizer(
         Disposable {
     private val log = LogFactory.getLog(this.javaClass)
     /** Executor service for authorization task  */
-    private val executorService: ExecutorService
+    // TODO: change back to val once kotlin bug complaining about uninitialized val (even though it's initialized in init) is resolved
+    private var executorService: ExecutorService by Delegates.notNull()
     /** Authorization task  */
     private var authorizationTask: Runnable? = null
 

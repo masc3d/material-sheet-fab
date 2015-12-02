@@ -428,7 +428,7 @@ class Bundle : Serializable {
                     val mr = re.find(line!!)
                     if (mr != null) {
                         entry = Pair(mr.groups.get(1)!!.value, mr.groups.get(2)!!.value)
-                        entryMap.putAll(entry)
+                        entryMap.put(entry.first, entry.second)
                     } else entry = line!!
                     entries.add(entry)
                 }

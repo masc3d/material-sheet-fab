@@ -9,6 +9,7 @@ import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.attribute.*
 import java.util.*
+import kotlin.properties.Delegates
 
 /**
  * Base class for loez local storage configurations
@@ -21,7 +22,8 @@ abstract class StorageConfiguration(
 
     // Directories
     /** Local home directory */
-    val baseDirectory: File;
+    // TODO: change back to val once kotlin bug complaining about uninitialized val (even though it's initialized in init) is resolved
+    var baseDirectory: File by Delegates.notNull()
 
     /** Local data directory */
     val dataDirectory: File by lazy({
