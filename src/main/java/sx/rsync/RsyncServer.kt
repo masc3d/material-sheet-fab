@@ -35,6 +35,9 @@ class RsyncServer(
         }
         private val log = LogFactory.getLog(this.javaClass)
 
+        /** Bind address */
+        var address: String? = null
+        /** Use jaled root */
         var useChroot: Boolean = false
         /** Controls whether the daemon performs a reverse lookup on the client’s IP address to determine its hostname */
         var reverseLookup: Boolean = true
@@ -114,6 +117,8 @@ class RsyncServer(
             ini.config.isGlobalSection = true
             ini.config.isEscape = false
 
+            if (this.address != null)
+                ini.put(globalSection, "address", this.address!!)
             ini.put(globalSection, "use chroot", convertBoolean(this.useChroot))
             ini.put(globalSection, "reverse lookup", convertBoolean(this.reverseLookup))
             ini.put(globalSection, "forward lookup", convertBoolean(this.forwardLookup))
