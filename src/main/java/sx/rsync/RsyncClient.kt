@@ -204,6 +204,15 @@ class RsyncClient() {
     }
 
     /**
+     * Adds common options to rsync command
+     * @param command
+     */
+    private fun addCommonOptions(command: ArrayList<String>) {
+        if (this.timeout != null)
+            command.add("--timeout=${this.timeout!!}")
+    }
+
+    /**
      * List destination directory
      */
     fun list(uri: Rsync.URI): List<ListRecord> {
@@ -214,9 +223,12 @@ class RsyncClient() {
 
             command.add(Rsync.executable.file.toString())
             command.add("--list-only")
-            if (this.timeout != null)
-                command.add("--timeout=${this.timeout!!}")
+
+            this.addCommonOptions(command)
+
             command.add(uri.toString())
+
+            log.debug(command.joinToString(" "))
 
             var pb = ProcessBuilder(command)
 
@@ -303,8 +315,7 @@ class RsyncClient() {
                 command.add(url.toString())
             }
 
-            if (this.timeout != null)
-                command.add("--timeout=${this.timeout!!}")
+            this.addCommonOptions(command)
 
             // Info flags
             if (this.progress) infoFlags.add("progress2")
