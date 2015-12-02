@@ -33,7 +33,7 @@ class RsyncClientTest {
 
     init {
         val lRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
-        lRoot.level = Level.INFO
+        lRoot.level = Level.DEBUG
     }
 
     private fun createRsyncClient(sshTunnelProvider: SshTunnelProvider? = null): RsyncClient {
@@ -42,6 +42,7 @@ class RsyncClientTest {
         rsyncClient.compression = 2
         rsyncClient.delete = true
         rsyncClient.sshTunnelProvider = sshTunnelProvider
+        rsyncClient.timeout = 2
         return rsyncClient
     }
 
