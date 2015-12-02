@@ -5,6 +5,9 @@ import org.apache.commons.logging.LogFactory
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.client.session.ClientSession
 import org.apache.sshd.common.SshdSocketAddress
+import org.apache.sshd.common.session.Session
+import org.apache.sshd.common.session.SessionListener
+import java.time.Duration
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
@@ -12,57 +15,97 @@ import java.util.concurrent.TimeoutException
  * SSH tunnel
  * Created by masc on 22.11.15.
  * @property sshHost SSH host
- * @property sshPort SSH port
- * @property sshUsername SSH username
- * @property sshPassword SSH password
  * @property remotePort Remote port to tunnel to
  * @property localPort Local port, tunnel entrance
+ * @property connectionTimeout SSH connection timeout
+ * @property idleTimeout SSH idle timeout
+ * @property onClosed Callback on session close
  */
 class SshTunnel(
         val sshHost: SshHost,
         val remotePort: Int,
-        val localPort: Int)
+        val localPort: Int,
+        val connectionTimeout: Duration = Duration.ofSeconds(6),
+        val idleTimeout: Duration = Duration.ofSeconds(30),
+        val onClosed: (sshTunnel: SshTunnel) -> Unit = { })
 :
         AutoCloseable {
+
+    /**
+     * SSH tunnel authentication exception
+     */
     class AuthenticationException : Exception() {}
 
+    /** Logger */
     private val log: Log = LogFactory.getLog(this.javaClass)
-
+    /** Sync object */
+    private val sync = Object()
+    /** SSH client session */
     private var session: ClientSession? = null
+
+    /**
+     * SSH session listener
+     */
+    private val sessionListener = object : SessionListener {
+        override fun sessionClosed(session: Session?) {
+            log.info("SSH tunnel closed [${this@SshTunnel}]")
+            this@SshTunnel.close()
+            this@SshTunnel.onClosed(this@SshTunnel)
+        }
+
+        override fun sessionCreated(session: Session?) {
+        }
+
+        override fun sessionEvent(session: Session?, event: SessionListener.Event?) {
+        }
+    }
 
     /**
      * Open SSH tunnel
      */
-    @Synchronized fun open() {
-        var session = this.session
-        log.info("SSH tunneled connection request to [${sshHost}:${remotePort}] via SSH port [${this.sshHost.port}] through [localhost:${this.localPort}]")
-        if (session == null || !session.isOpen) {
-            this.close()
+    fun open() {
+        synchronized(sync) {
+            var session = this.session
+            log.info("SSH tunneled connection request to [${sshHost}:${remotePort}] via SSH port [${this.sshHost.port}] through [localhost:${this.localPort}]")
+            if (session == null || !session.isOpen) {
+                this.close()
 
-            log.info("Establishing tunnel connection to [${sshHost}]")
-            val ssh = SshClient.setUpDefaultClient()
+                log.info("Establishing tunnel connection [${this}]")
+                val ssh = SshClient.setUpDefaultClient()
 
-            ssh.start()
+                // Set properties
+                ssh.properties.set(SshClient.IDLE_TIMEOUT, idleTimeout.toMillis())
 
-            val sshFuture = ssh.connect(this.sshHost.username, this.sshHost.hostname, this.sshHost.port)
+                // Start client
+                ssh.start()
 
-            if (!sshFuture.await(6, TimeUnit.SECONDS))
-                throw TimeoutException("Timeout while connecting [${this}]")
+                // Connect with timeout support
+                val sshFuture = ssh.connect(
+                        this.sshHost.username,
+                        this.sshHost.hostname,
+                        this.sshHost.port)
 
-            session = sshFuture.await().session
+                if (!sshFuture.await(connectionTimeout.toMillis(), TimeUnit.MILLISECONDS))
+                    throw TimeoutException("Timeout while connecting [${this}]")
 
-            session.addPasswordIdentity(this.sshHost.password)
+                session = sshFuture.await().session
 
-            val result = session.auth().await()
-            if (result.isFailure)
-                throw AuthenticationException()
+                // Prepare session and authenticate
+                session.addListener(this.sessionListener)
+                session.addPasswordIdentity(this.sshHost.password)
 
-            session.startLocalPortForwarding(
-                    SshdSocketAddress("localhost", this.localPort),
-                    SshdSocketAddress("localhost", this.remotePort))
+                val result = session.auth().await()
+                if (result.isFailure)
+                    throw AuthenticationException()
 
-            this.session = session
-            log.info("Established tunnel connection to [${sshHost}]")
+                // Start port forwarding for tunneled connections
+                session.startLocalPortForwarding(
+                        SshdSocketAddress("localhost", this.localPort),
+                        SshdSocketAddress("localhost", this.remotePort))
+
+                this.session = session
+                log.info("Established tunnel connection to [${sshHost}]")
+            }
         }
     }
 
@@ -70,15 +113,21 @@ class SshTunnel(
      * Close tunnel
      */
     override fun close() {
-        var session = this.session
-        if (session != null) {
-            log.info("Closing tunnel connection to [${sshHost}]")
-            try {
-                session.close(false).await()
-            } catch(e: Exception) {
-                log.error(e.message, e)
+        synchronized(sync) {
+            var session = this.session
+
+            if (session != null) {
+                try {
+                    if (!session.isClosed && !session.isClosing) {
+                        session.close(false).await()
+                    }
+                } catch(e: Exception) {
+                    log.error(e.message, e)
+                } finally {
+                    session.removeListener(this.sessionListener)
+                    this.session = null
+                }
             }
-            this.session = null
         }
     }
 

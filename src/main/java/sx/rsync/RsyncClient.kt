@@ -61,6 +61,8 @@ class RsyncClient() {
     var copyDestinations: List<Rsync.URI> = ArrayList()
     /** Use relative paths */
     var relative: Boolean = false
+    /** IO timeout in seconds */
+    var timeout: Int? = null
 
     class Result(val files: List<File>) {
 
@@ -169,33 +171,29 @@ class RsyncClient() {
             // Request tunnel to remote service
             val tunnel = tunnelProvider.request(
                     tunnelLocation.uri.host,
-                    tunnelLocation.uri.port)
+                    if (tunnelLocation.uri.port > 0) tunnelLocation.uri.port else 873)
 
-            try {
-                // Generate new locations, replacing remote host with localhost (tunnel).
-                // Request tunnel connection in the process.
-                val newLocations = locations.map { l ->
-                    val uri = l.uri
+            // Generate new locations, replacing remote host with localhost (tunnel).
+            // Request tunnel connection in the process.
+            val newLocations = locations.map { l ->
+                val uri = l.uri
 
-                    if (!l.isFile()) {
-                        // Mangle to localhost uri for connecting through tunnel
-                        Rsync.URI(
-                                URI(uri.scheme,
-                                        uri.userInfo,
-                                        "localhost",
-                                        tunnel.localPort,
-                                        uri.path,
-                                        uri.query,
-                                        uri.fragment))
-                    } else {
-                        l
-                    }
-                }.toTypedArray()
+                if (!l.isFile()) {
+                    // Mangle to localhost uri for connecting through tunnel
+                    Rsync.URI(
+                            URI(uri.scheme,
+                                    uri.userInfo,
+                                    "localhost",
+                                    tunnel.localPort,
+                                    uri.path,
+                                    uri.query,
+                                    uri.fragment))
+                } else {
+                    l
+                }
+            }.toTypedArray()
 
-                r(newLocations)
-            } finally {
-                tunnelProvider.release(tunnel)
-            }
+            r(newLocations)
         }
     }
 
@@ -216,6 +214,8 @@ class RsyncClient() {
 
             command.add(Rsync.executable.file.toString())
             command.add("--list-only")
+            if (this.timeout != null)
+                command.add("--timeout=${this.timeout!!}")
             command.add(uri.toString())
 
             var pb = ProcessBuilder(command)
@@ -302,6 +302,9 @@ class RsyncClient() {
                 command.add("--copy-dest")
                 command.add(url.toString())
             }
+
+            if (this.timeout != null)
+                command.add("--timeout=${this.timeout!!}")
 
             // Info flags
             if (this.progress) infoFlags.add("progress2")
