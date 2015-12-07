@@ -54,8 +54,6 @@ class BundleRepository(
         rc.preserveGroup = false
         rc.preserveOwner = false
         rc.sshTunnelProvider = this.sshTunnelProvider
-        // TODO: this is a workaround for rsync stalling when connecting through SSH tunnel and server returns (specific?) error codes, like 2/code 23 No such file or directory
-        rc.timeout = 3
         return rc
     }
 
