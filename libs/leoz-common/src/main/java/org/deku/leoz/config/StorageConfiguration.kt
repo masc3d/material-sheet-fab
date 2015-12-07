@@ -53,6 +53,12 @@ abstract class StorageConfiguration(
         d
     })
 
+    val bundleInstallationDirectory: File by lazy({
+        val d = File(this.bundlesDirectory, "install")
+        d.mkdirs()
+        d
+    })
+
     /** Run directory, containing runtime related files, eg. bundle lock files */
     val runDirectory: File by lazy({
         val d = File(this.baseDirectory, "run")

@@ -29,7 +29,7 @@ open class StorageConfiguration protected constructor(appName: String)
 
     /** Bundle repository directory */
     val bundleRepositoryDirectory: File by lazy({
-        val d = File(this.dataDirectory, "bundle-repository")
+        val d = File(this.bundlesDirectory, "repository")
         d.mkdirs()
         d
     })
