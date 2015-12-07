@@ -173,27 +173,33 @@ class RsyncClient() {
                     tunnelLocation.uri.host,
                     if (tunnelLocation.uri.port > 0) tunnelLocation.uri.port else 873)
 
-            // Generate new locations, replacing remote host with localhost (tunnel).
-            // Request tunnel connection in the process.
-            val newLocations = locations.map { l ->
-                val uri = l.uri
+            if (tunnel != null) {
+                // Generate new locations, replacing remote host with localhost (tunnel).
+                // Request tunnel connection in the process.
+                val newLocations = locations.map { l ->
+                    val uri = l.uri
 
-                if (!l.isFile()) {
-                    // Mangle to localhost uri for connecting through tunnel
-                    Rsync.URI(
-                            URI(uri.scheme,
-                                    uri.userInfo,
-                                    "localhost",
-                                    tunnel.localPort,
-                                    uri.path,
-                                    uri.query,
-                                    uri.fragment))
-                } else {
-                    l
-                }
-            }.toTypedArray()
+                    if (!l.isFile()) {
+                        // Mangle to localhost uri for connecting through tunnel
+                        Rsync.URI(
+                                URI(uri.scheme,
+                                        uri.userInfo,
+                                        "localhost",
+                                        tunnel.localPort,
+                                        uri.path,
+                                        uri.query,
+                                        uri.fragment))
+                    } else {
+                        l
+                    }
+                }.toTypedArray()
 
-            r(newLocations)
+                r(newLocations)
+            } else {
+                // SSH tunnel provider doesn't have information for this host, falling back to regular connection
+                log.warn("SSH tunnel provider does not have information for establishing tunnel to [${tunnelLocation.uri.host}]. Falling back to non-ecrypted direct connection.")
+                r(locations)
+            }
         }
     }
 

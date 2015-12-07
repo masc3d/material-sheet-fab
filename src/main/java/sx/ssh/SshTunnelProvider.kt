@@ -67,17 +67,15 @@ class SshTunnelProvider(
      * Request a secure tunnel to a host for a specific remote port
      * @param hostname Hostname
      * @param port Remote service port
-     * @return TunnelRequest instance exposing the local port to connect to
-     * @throws IllegalArgumentException If provider does not have ssh connection information about the requested host
+     * @return TunnelRequest instance exposing the local port to connect to or null if provider doesn't have host information
      */
     fun request(
             hostname: String,
-            port: Int): TunnelResource {
+            port: Int): TunnelResource? {
 
         synchronized(sync) {
             // Lookup tunnel spec
-            val sshHost = this.sshHosts.get(hostname)
-                    ?: throw IllegalArgumentException("No ssh connection info for [${hostname}}")
+            val sshHost = this.sshHosts.get(hostname) ?: return null
 
             val key = TunnelKey(Thread.currentThread().id, hostname, port)
 
