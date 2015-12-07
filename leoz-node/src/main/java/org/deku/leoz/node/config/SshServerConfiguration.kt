@@ -64,10 +64,12 @@ open class SshServerConfiguration {
                 return object : TcpipServerChannel(this.type) {
                     override fun close(immediately: Boolean): CloseFuture? {
                         val closeFuture = super.close(immediately)
-                        closeFuture.addListener({
-                            // Trigger graceful close of SSH session when tunnel connection closes
-                            this.session.close(false)
-                        })
+                        if (immediately) {
+                            closeFuture.addListener({
+                                // Trigger graceful close of SSH session when tunnel connection closes
+                                this.session.close(false)
+                            })
+                        }
                         return closeFuture
                     }
                 }
