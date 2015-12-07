@@ -197,13 +197,16 @@ class RsyncServer(
 
         val error = StringBuffer()
 
-        this.processExecutor = ProcessExecutor(ProcessBuilder(command),
+        val processExecutor = ProcessExecutor(
+                ProcessBuilder(command),
                 errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
-        this.processExecutor?.onTermination = { ex ->
+
+        processExecutor.onTermination = { ex ->
             if (error.length > 0) this.log.error(error.toString())
             this.onTermination(ex)
         }
-        this.processExecutor?.start()
+        processExecutor.start()
+        this.processExecutor = processExecutor
     }
 
     /**
@@ -211,8 +214,10 @@ class RsyncServer(
      */
     @Synchronized fun stop() {
         log.info("Stopping rsync server")
-        if (this.processExecutor != null) {
-            this.processExecutor?.close()
+
+        val processExecutor = this.processExecutor
+        if (processExecutor != null) {
+            processExecutor.close()
             this.processExecutor = null
         }
     }
