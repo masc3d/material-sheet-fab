@@ -49,7 +49,7 @@ class BundleRepositoryTest {
 
     @Test
     fun testDownload() {
-        val path = File(StorageTestConfiguration.bundlesDirectory, Bundles.LEOZ_BOOT)
+        val path = File(StorageTestConfiguration.bundlesTestDirectory, Bundles.LEOZ_BOOT)
 
         BundleTestConfiguration.remoteRepository.download(
                 Bundles.LEOZ_BOOT,

@@ -8,6 +8,6 @@ import org.deku.leoz.bundle.BundleInstaller
 object BundleInstallerConfiguration {
     fun installer(): BundleInstaller {
         return BundleInstaller(
-                StorageConfiguration.bundlesDirectory)
+                StorageConfiguration.bundleInstallationDirectory)
     }
 }

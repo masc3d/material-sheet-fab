@@ -71,7 +71,7 @@ open class UpdaterConfiguration {
     @Bean
     open fun bundleUpdater(): BundleUpdater {
         val installer = BundleInstaller(
-                StorageConfiguration.instance.bundlesDirectory)
+                StorageConfiguration.instance.bundleInstallationDirectory)
 
         return BundleUpdater(
                 identity = this.identityConfiguration.identity,

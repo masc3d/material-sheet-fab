@@ -47,7 +47,7 @@ abstract class StorageConfiguration(
     })
 
     /** Local bundles directory */
-    val bundlesDirectory: File by lazy({
+    protected val bundlesDirectory: File by lazy({
         val d = File(this.baseDirectory, "bundles")
         d.mkdirs()
         d

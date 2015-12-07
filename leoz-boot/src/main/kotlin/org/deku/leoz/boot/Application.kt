@@ -81,14 +81,14 @@ class Application : javafx.application.Application() {
         val nativeBundlePath = StorageConfiguration.nativeBundleBasePath!!
         log.info(nativeBundlePath)
 
-        if (nativeBundlePath.parentFile.equals(StorageConfiguration.bundlesDirectory))
+        if (nativeBundlePath.parentFile.equals(StorageConfiguration.bundleInstallationDirectory))
             return
 
         log.info("Performing self verification")
         Bundle.load(nativeBundlePath).verify()
 
         val srcPath = nativeBundlePath
-        val destPath = File(StorageConfiguration.bundlesDirectory, Bundles.LEOZ_BOOT)
+        val destPath = File(StorageConfiguration.bundleInstallationDirectory, Bundles.LEOZ_BOOT)
 
         val rc = RsyncClient()
         val source = Rsync.URI(srcPath)

@@ -17,7 +17,7 @@ class UpdateTest {
     val updater = BundleUpdater(
             identity = Identity.create(SystemInformation()),
             installer = BundleInstaller(
-                    StorageTestConfiguration.bundlesDirectory),
+                    StorageTestConfiguration.bundlesTestDirectory),
             remoteRepository = BundleTestConfiguration.remoteRepository,
             presets = listOf(),
             jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
