@@ -74,7 +74,7 @@ class Application : javafx.application.Application() {
     var primaryStage: Stage by Delegates.notNull()
         private set
 
-    fun selfInstall() {
+    fun selfInstall(onProgress: ((p: Double) -> Unit) = {}) {
         if (StorageConfiguration.nativeBundleBasePath == null)
             return
 
@@ -101,6 +101,9 @@ class Application : javafx.application.Application() {
         rc.sync(source, destination,
                 onFile = { r ->
                     log.info("Updating [${r.flags}] [${r.path}]")
+                },
+                onProgress = { pr ->
+                    onProgress(pr.percentage.toDouble() / 100)
                 })
     }
 

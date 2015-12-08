@@ -35,6 +35,20 @@ class MainController : Initializable {
 
     var logAppender: TextAreaLogAppender? = null
 
+    /**
+     * Calculate progress of intermediate steps
+     * @param startProgress Start of progress for intermediate step
+     * @param endProgress End of progress for intermediate step
+     * @param progress Current progress (from 0.0 to 1.0)
+     */
+    private fun calculateProgress(startProgress: Double, endProgress: Double, progress: Double): Double {
+        val range = endProgress - startProgress
+        return startProgress + (range * progress)
+    }
+
+    /**
+     * Initialize
+     */
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         LogConfiguration.addAppender(TextAreaLogAppender(uxTextArea, 1000))
 
@@ -66,7 +80,14 @@ class MainController : Initializable {
 
         thread {
             try {
-                Application.instance.selfInstall()
+                var startProgress = 0.0
+                var endProgress = 0.3
+                Application.instance.selfInstall(onProgress = { p ->
+                    if (p > 0.0)
+                        Platform.runLater {
+                            this.uxProgressBar.progress = this.calculateProgress(startProgress, endProgress, p)
+                        }
+                })
 
                 val installer = BundleInstallerConfiguration.installer()
 
@@ -82,13 +103,18 @@ class MainController : Initializable {
                                 Application.Parameters.versionPattern)
 
                         // Download bundle
+                        startProgress = 0.3
+                        endProgress = 1.0
                         installer.download(
                                 bundleRepository = repository,
                                 bundleName = bundleName,
                                 version = version,
                                 forceDownload = Application.Parameters.forceDownload,
                                 onProgress = { f, p ->
-                                    if (p > 0.0) Platform.runLater { uxProgressBar.progress = p }
+                                    if (p > 0.0)
+                                        Platform.runLater {
+                                            uxProgressBar.progress = this.calculateProgress(startProgress, endProgress, p)
+                                        }
                                 }
                         )
                     }
