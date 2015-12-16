@@ -66,23 +66,23 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.glassfish.jersey.core:jersey-common:2.22.1 (*)
 |    +--- org.glassfish.jersey.ext:jersey-entity-filtering:2.22.1
 |    |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
-|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.4
-|    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.4
-|    |         \--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.4
-|    |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4 (*)
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-|    |    \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.4
-|    |         +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |         \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-|    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.4
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.+ -> 2.5.4
-|    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-+--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.4 (*)
+|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4 -> 2.5.5
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5
+|    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.5
+|    |         \--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.4 -> 2.5.5
+|    |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.5 (*)
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
+|    |    \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.5
+|    |         +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |         \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
+|    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.4 -> 2.5.5
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.+ -> 2.5.5
+|    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
++--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
 +--- org.glassfish.jersey.containers:jersey-container-servlet:2.+ -> 2.22.1
 |    +--- org.glassfish.jersey.containers:jersey-container-servlet-core:2.22.1
 |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b31
@@ -178,23 +178,23 @@ default - Configuration for default artifacts.
 |    +--- org.glassfish.jersey.core:jersey-common:2.22.1 (*)
 |    +--- org.glassfish.jersey.ext:jersey-entity-filtering:2.22.1
 |    |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
-|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.4
-|    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.4
-|    |         \--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.4
-|    |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4 (*)
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-|    |    \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.4
-|    |         +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |         \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-|    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.4
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.+ -> 2.5.4
-|    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-+--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.4 (*)
+|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4 -> 2.5.5
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5
+|    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.5
+|    |         \--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.4 -> 2.5.5
+|    |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.5 (*)
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
+|    |    \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.5
+|    |         +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |         \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
+|    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.4 -> 2.5.5
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.+ -> 2.5.5
+|    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
++--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
 +--- org.glassfish.jersey.containers:jersey-container-servlet:2.+ -> 2.22.1
 |    +--- org.glassfish.jersey.containers:jersey-container-servlet-core:2.22.1
 |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b31
@@ -290,23 +290,23 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.glassfish.jersey.core:jersey-common:2.22.1 (*)
 |    +--- org.glassfish.jersey.ext:jersey-entity-filtering:2.22.1
 |    |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
-|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.4
-|    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.4
-|    |         \--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.4
-|    |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4 (*)
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-|    |    \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.4
-|    |         +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |         \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-|    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.4
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.+ -> 2.5.4
-|    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-+--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.4 (*)
+|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4 -> 2.5.5
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5
+|    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.5
+|    |         \--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.4 -> 2.5.5
+|    |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.5 (*)
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
+|    |    \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.5
+|    |         +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |         \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
+|    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.4 -> 2.5.5
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.+ -> 2.5.5
+|    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
++--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
 +--- org.glassfish.jersey.containers:jersey-container-servlet:2.+ -> 2.22.1
 |    +--- org.glassfish.jersey.containers:jersey-container-servlet-core:2.22.1
 |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b31
@@ -402,23 +402,23 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.glassfish.jersey.core:jersey-common:2.22.1 (*)
 |    +--- org.glassfish.jersey.ext:jersey-entity-filtering:2.22.1
 |    |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
-|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.4
-|    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.4
-|    |         \--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.4
-|    |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4 (*)
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-|    |    \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.4
-|    |         +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |         \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-|    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.4
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.+ -> 2.5.4
-|    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-+--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.4 (*)
+|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4 -> 2.5.5
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5
+|    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.5
+|    |         \--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.4 -> 2.5.5
+|    |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.5 (*)
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
+|    |    \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.5
+|    |         +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |         \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
+|    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.4 -> 2.5.5
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.+ -> 2.5.5
+|    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
++--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
 +--- org.glassfish.jersey.containers:jersey-container-servlet:2.+ -> 2.22.1
 |    +--- org.glassfish.jersey.containers:jersey-container-servlet-core:2.22.1
 |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b31
@@ -516,23 +516,23 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.glassfish.jersey.core:jersey-common:2.22.1 (*)
 |    +--- org.glassfish.jersey.ext:jersey-entity-filtering:2.22.1
 |    |    \--- javax.ws.rs:javax.ws.rs-api:2.0.1
-|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.4
-|    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.4
-|    |         \--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.4
-|    |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4 (*)
-|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-|    |    \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.4
-|    |         +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    |         \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-|    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.4
-+--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.+ -> 2.5.4
-|    +--- com.fasterxml.jackson.core:jackson-core:2.5.4
-|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.4 (*)
-+--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.4 (*)
+|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.4 -> 2.5.5
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5
+|    |         +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.5
+|    |         \--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.4 -> 2.5.5
+|    |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.5.5 (*)
+|    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |    +--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
+|    |    \--- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.5.5
+|    |         +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    |         \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
+|    \--- com.fasterxml.jackson.core:jackson-annotations:2.5.4 -> 2.5.5
++--- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.5.+ -> 2.5.5
+|    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
+|    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
++--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
 +--- org.glassfish.jersey.containers:jersey-container-servlet:2.+ -> 2.22.1
 |    +--- org.glassfish.jersey.containers:jersey-container-servlet-core:2.22.1
 |    |    +--- org.glassfish.hk2.external:javax.inject:2.4.0-b31

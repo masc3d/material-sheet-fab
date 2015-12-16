@@ -231,6 +231,7 @@ subprojects {
             force "com.esotericsoftware:kryo:$v_kryo"
             force "com.thoughtworks.xstream:xstream:1.+"
             force "org.apache.commons:commons-lang3:$v_commons_lang"
+            force "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
             force "org.jboss.logging:jboss-logging:3.+"
             force "org.jboss.logging:jboss-logging-annotations:1.+"
             force "com.jcraft:jsch:+"
