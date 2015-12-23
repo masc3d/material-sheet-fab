@@ -7,7 +7,7 @@ import java.io.File
 // Extension methods defining a process interface
 // for installation and start/stop control
 
-val log = LogFactory.getLog(Bundle::class.javaClass)
+val log = LogFactory.getLog(Bundle::class.java)
 
 fun Bundle.start() {
     log.info("Starting bundle process [${this.name}]")
