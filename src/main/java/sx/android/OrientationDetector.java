@@ -3,9 +3,9 @@ package sx.android;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.view.OrientationEventListener;
-import sx.util.EventDelegate;
-import sx.util.EventDispatcher;
-import sx.util.EventListener;
+import sx.event.EventDelegate;
+import sx.event.EventDispatcher;
+import sx.event.EventListener;
 
 /**
  * Orientation detector

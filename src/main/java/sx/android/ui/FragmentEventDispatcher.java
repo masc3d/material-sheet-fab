@@ -1,7 +1,7 @@
 package sx.android.ui;
 
-import sx.util.EventListener;
-import sx.util.RegularEventDispatcher;
+import sx.event.EventListener;
+import sx.event.RegularEventDispatcher;
 
 /**
  * Event dispatcher for fragments, automatically dispatches events to parent fragment
