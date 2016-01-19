@@ -22,8 +22,8 @@ import sx.android.ui.FragmentEventDispatcher;
 import sx.android.ui.views.AsyncImageView;
 import sx.android.ui.views.CameraView;
 import sx.android.ui.views.CircleButton;
-import sx.util.EventDispatcher;
-import sx.util.EventListener;
+import sx.event.EventDispatcher;
+import sx.event.EventListener;
 
 import java.util.Collections;
 import java.util.Comparator;
