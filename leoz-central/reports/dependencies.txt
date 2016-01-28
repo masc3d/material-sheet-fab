@@ -8,42 +8,42 @@ No dependencies
 
 compile - Compile classpath for source set 'main'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-3595
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-4589
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.3
 |    |    +--- ch.qos.logback:logback-core:1.1.3
-|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.13
-|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.13
-|    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.14
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.14
+|    |    \--- org.slf4j:slf4j-api:1.7.14
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
-|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.13 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- project :leoz-node
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:leoz-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
 |    |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    |    \--- commons-logging:commons-logging:1.2
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
@@ -68,8 +68,8 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.aspectj:aspectjrt:1.8.6
-|    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
+|    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
 |    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.3.BUILD-SNAPSHOT (*)
 |    +--- org.springframework:spring-web:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
@@ -84,11 +84,11 @@ compile - Compile classpath for source set 'main'.
 |    |    |    +--- org.springframework.boot:spring-boot:1.2.5.RELEASE (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14 -> 1.16
 |    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.5.RELEASE
-|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
-|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.12 -> 1.7.13
-|    |    |    |    \--- org.slf4j:slf4j-api:1.7.13
-|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.12 -> 1.7.13
-|    |    |    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
+|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.12 -> 1.7.14
+|    |    |    |    \--- org.slf4j:slf4j-api:1.7.14
+|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.12 -> 1.7.14
+|    |    |    |    \--- org.slf4j:slf4j-api:1.7.14
 |    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
 |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
 |    |    \--- org.yaml:snakeyaml:1.14 -> 1.16
@@ -125,8 +125,8 @@ compile - Compile classpath for source set 'main'.
 |    |    |    \--- org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final
 |    |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    |    \--- org.glassfish:javax.el:3.0.0
-|    +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.13 (*)
-|    +--- org.slf4j:log4j-over-slf4j:1.+ -> 1.7.13 (*)
+|    +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.14 (*)
+|    +--- org.slf4j:log4j-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 |    +--- org.jboss.resteasy:resteasy-jaxrs:3.+ -> 3.0.14.Final
@@ -173,8 +173,8 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
 |    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
-|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.1
-|    |    +--- org.eclipse.persistence:javax.persistence:2.1.0 -> 2.1.1
+|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.2
+|    |    +--- org.eclipse.persistence:javax.persistence:2.1.1
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    \--- org.glassfish:javax.json:1.0.4
@@ -185,7 +185,7 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- com.infradna.tool:bridge-method-annotation:1.13
 |    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.7.0
 |    |    +--- com.mysema.querydsl:querydsl-core:3.7.0 (*)
-|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.14
 |    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.7.0
 |    |    \--- com.mysema.querydsl:querydsl-codegen:3.7.0
 |    |         +--- com.mysema.querydsl:querydsl-core:3.7.0 (*)
@@ -196,15 +196,15 @@ compile - Compile classpath for source set 'main'.
 |    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.7.0
 |    |    +--- com.mysema.querydsl:querydsl-codegen:3.7.0 (*)
 |    |    +--- com.mysema.querydsl:querydsl-apt:3.7.0 (*)
-|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.14
 |    +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 |    +--- javax.inject:javax.inject:+ -> 1
-|    +--- com.h2database:h2:1.+ -> 1.4.190
+|    +--- com.h2database:h2:1.+ -> 1.4.191
 |    +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.+ -> 2.1.1
 |    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.0
 |    |    +--- org.apache.activemq:activemq-client:5.13.0
-|    |    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -216,12 +216,12 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.0
-|    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- org.apache.commons:commons-pool2:2.4.2
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.0
-|    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.0
 |    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -236,7 +236,7 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.apache.activemq:activemq-stomp:5.13.0
 |    |    |    \--- org.apache.activemq:activemq-broker:5.13.0 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.13.0 (*)
-|    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.httpcomponents:httpclient:4.5.1 (*)
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
@@ -244,7 +244,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5.1 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    +--- org.apache.sshd:sshd-core:+ -> 1.0.0
-|    |    \--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
 |    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
@@ -268,7 +268,7 @@ compile - Compile classpath for source set 'main'.
 |    |    |    \--- org.codehaus.woodstox:stax2-api:3.1.4
 |    |    +--- com.wordnik:swagger-core:1.5.3-M1
 |    |    |    +--- org.apache.commons:commons-lang3:3.2.1 -> 3.4
-|    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.13
+|    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.14
 |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.5
 |    |    |    +--- com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2 -> 2.5.5
 |    |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.5
@@ -278,7 +278,7 @@ compile - Compile classpath for source set 'main'.
 |    |    |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 -> 2.5.5 (*)
 |    |    |    +--- com.wordnik:swagger-models:1.5.3-M1
 |    |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.5
-|    |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.13
+|    |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.14
 |    |    |    |    \--- com.wordnik:swagger-annotations:1.5.3-M1
 |    |    |    \--- javax.validation:validation-api:1.1.0.Final
 |    |    +--- javax.ws.rs:jsr311-api:1.1.1
@@ -293,57 +293,57 @@ compile - Compile classpath for source set 'main'.
 |    |    |    \--- org.ow2.asm:asm:5.0.3
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
-|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2
-|    +--- org.jinq:jinq-jpa:+ -> 1.8.6
-|    |    +--- org.jinq:jinq-asm-rebased:1.8.6
-|    |    +--- org.jinq:api:1.8.6
-|    |    \--- org.jinq:analysis:1.8.6
-|    |         +--- org.jinq:jinq-asm-rebased:1.8.6
-|    |         \--- org.jinq:api:1.8.6
+|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
+|    +--- org.jinq:jinq-jpa:+ -> 1.8.9
+|    |    +--- org.jinq:jinq-asm-rebased:1.8.9
+|    |    +--- org.jinq:api:1.8.9
+|    |    \--- org.jinq:analysis:1.8.9
+|    |         +--- org.jinq:jinq-asm-rebased:1.8.9
+|    |         \--- org.jinq:api:1.8.9
 |    \--- com.jcraft:jsch:+ -> 0.1.53
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
-\--- org.jooq:jooq:3.+ -> 3.7.1
+\--- org.jooq:jooq:3.+ -> 3.7.2
 
 default - Configuration for default artifacts.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-3595
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-4589
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.3
 |    |    +--- ch.qos.logback:logback-core:1.1.3
-|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.13
-|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.13
-|    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.14
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.14
+|    |    \--- org.slf4j:slf4j-api:1.7.14
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
-|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.13 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- project :leoz-node
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:leoz-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
 |    |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    |    \--- commons-logging:commons-logging:1.2
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
@@ -368,8 +368,8 @@ default - Configuration for default artifacts.
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.aspectj:aspectjrt:1.8.6
-|    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
+|    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
 |    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.3.BUILD-SNAPSHOT (*)
 |    +--- org.springframework:spring-web:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
@@ -384,11 +384,11 @@ default - Configuration for default artifacts.
 |    |    |    +--- org.springframework.boot:spring-boot:1.2.5.RELEASE (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14 -> 1.16
 |    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.5.RELEASE
-|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
-|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.12 -> 1.7.13
-|    |    |    |    \--- org.slf4j:slf4j-api:1.7.13
-|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.12 -> 1.7.13
-|    |    |    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
+|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.12 -> 1.7.14
+|    |    |    |    \--- org.slf4j:slf4j-api:1.7.14
+|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.12 -> 1.7.14
+|    |    |    |    \--- org.slf4j:slf4j-api:1.7.14
 |    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
 |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
 |    |    \--- org.yaml:snakeyaml:1.14 -> 1.16
@@ -425,8 +425,8 @@ default - Configuration for default artifacts.
 |    |    |    \--- org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final
 |    |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    |    \--- org.glassfish:javax.el:3.0.0
-|    +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.13 (*)
-|    +--- org.slf4j:log4j-over-slf4j:1.+ -> 1.7.13 (*)
+|    +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.14 (*)
+|    +--- org.slf4j:log4j-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 |    +--- org.jboss.resteasy:resteasy-jaxrs:3.+ -> 3.0.14.Final
@@ -473,8 +473,8 @@ default - Configuration for default artifacts.
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
 |    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
-|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.1
-|    |    +--- org.eclipse.persistence:javax.persistence:2.1.0 -> 2.1.1
+|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.2
+|    |    +--- org.eclipse.persistence:javax.persistence:2.1.1
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    \--- org.glassfish:javax.json:1.0.4
@@ -485,7 +485,7 @@ default - Configuration for default artifacts.
 |    |    \--- com.infradna.tool:bridge-method-annotation:1.13
 |    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.7.0
 |    |    +--- com.mysema.querydsl:querydsl-core:3.7.0 (*)
-|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.14
 |    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.7.0
 |    |    \--- com.mysema.querydsl:querydsl-codegen:3.7.0
 |    |         +--- com.mysema.querydsl:querydsl-core:3.7.0 (*)
@@ -496,15 +496,15 @@ default - Configuration for default artifacts.
 |    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.7.0
 |    |    +--- com.mysema.querydsl:querydsl-codegen:3.7.0 (*)
 |    |    +--- com.mysema.querydsl:querydsl-apt:3.7.0 (*)
-|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.14
 |    +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 |    +--- javax.inject:javax.inject:+ -> 1
-|    +--- com.h2database:h2:1.+ -> 1.4.190
+|    +--- com.h2database:h2:1.+ -> 1.4.191
 |    +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.+ -> 2.1.1
 |    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.0
 |    |    +--- org.apache.activemq:activemq-client:5.13.0
-|    |    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -516,12 +516,12 @@ default - Configuration for default artifacts.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.0
-|    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- org.apache.commons:commons-pool2:2.4.2
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.0
-|    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.0
 |    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -536,7 +536,7 @@ default - Configuration for default artifacts.
 |    |    +--- org.apache.activemq:activemq-stomp:5.13.0
 |    |    |    \--- org.apache.activemq:activemq-broker:5.13.0 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.13.0 (*)
-|    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.httpcomponents:httpclient:4.5.1 (*)
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
@@ -544,7 +544,7 @@ default - Configuration for default artifacts.
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5.1 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    +--- org.apache.sshd:sshd-core:+ -> 1.0.0
-|    |    \--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
 |    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
@@ -568,7 +568,7 @@ default - Configuration for default artifacts.
 |    |    |    \--- org.codehaus.woodstox:stax2-api:3.1.4
 |    |    +--- com.wordnik:swagger-core:1.5.3-M1
 |    |    |    +--- org.apache.commons:commons-lang3:3.2.1 -> 3.4
-|    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.13
+|    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.14
 |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.5
 |    |    |    +--- com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2 -> 2.5.5
 |    |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.5
@@ -578,7 +578,7 @@ default - Configuration for default artifacts.
 |    |    |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 -> 2.5.5 (*)
 |    |    |    +--- com.wordnik:swagger-models:1.5.3-M1
 |    |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.5
-|    |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.13
+|    |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.14
 |    |    |    |    \--- com.wordnik:swagger-annotations:1.5.3-M1
 |    |    |    \--- javax.validation:validation-api:1.1.0.Final
 |    |    +--- javax.ws.rs:jsr311-api:1.1.1
@@ -593,67 +593,67 @@ default - Configuration for default artifacts.
 |    |    |    \--- org.ow2.asm:asm:5.0.3
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
-|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2
-|    +--- org.jinq:jinq-jpa:+ -> 1.8.6
-|    |    +--- org.jinq:jinq-asm-rebased:1.8.6
-|    |    +--- org.jinq:api:1.8.6
-|    |    \--- org.jinq:analysis:1.8.6
-|    |         +--- org.jinq:jinq-asm-rebased:1.8.6
-|    |         \--- org.jinq:api:1.8.6
+|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
+|    +--- org.jinq:jinq-jpa:+ -> 1.8.9
+|    |    +--- org.jinq:jinq-asm-rebased:1.8.9
+|    |    +--- org.jinq:api:1.8.9
+|    |    \--- org.jinq:analysis:1.8.9
+|    |         +--- org.jinq:jinq-asm-rebased:1.8.9
+|    |         \--- org.jinq:api:1.8.9
 |    \--- com.jcraft:jsch:+ -> 0.1.53
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
-\--- org.jooq:jooq:3.+ -> 3.7.1
+\--- org.jooq:jooq:3.+ -> 3.7.2
 
 kapt
-\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0-beta-3595
-     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-3595
-          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-3595
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0-beta-4589
+     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-4589
+          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-4589
 
 kaptTest
-\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0-beta-3595
-     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-3595
-          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-3595
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0-beta-4589
+     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0-beta-4589
+          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-4589
 
 runtime - Runtime classpath for source set 'main'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-3595
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-4589
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.3
 |    |    +--- ch.qos.logback:logback-core:1.1.3
-|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.13
-|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.13
-|    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.14
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.14
+|    |    \--- org.slf4j:slf4j-api:1.7.14
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
-|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.13 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- project :leoz-node
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:leoz-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
 |    |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    |    \--- commons-logging:commons-logging:1.2
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
@@ -678,8 +678,8 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.aspectj:aspectjrt:1.8.6
-|    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
+|    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
 |    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.3.BUILD-SNAPSHOT (*)
 |    +--- org.springframework:spring-web:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
@@ -694,11 +694,11 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    +--- org.springframework.boot:spring-boot:1.2.5.RELEASE (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14 -> 1.16
 |    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.5.RELEASE
-|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
-|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.12 -> 1.7.13
-|    |    |    |    \--- org.slf4j:slf4j-api:1.7.13
-|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.12 -> 1.7.13
-|    |    |    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
+|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.12 -> 1.7.14
+|    |    |    |    \--- org.slf4j:slf4j-api:1.7.14
+|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.12 -> 1.7.14
+|    |    |    |    \--- org.slf4j:slf4j-api:1.7.14
 |    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
 |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
 |    |    \--- org.yaml:snakeyaml:1.14 -> 1.16
@@ -735,8 +735,8 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    \--- org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final
 |    |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    |    \--- org.glassfish:javax.el:3.0.0
-|    +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.13 (*)
-|    +--- org.slf4j:log4j-over-slf4j:1.+ -> 1.7.13 (*)
+|    +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.14 (*)
+|    +--- org.slf4j:log4j-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 |    +--- org.jboss.resteasy:resteasy-jaxrs:3.+ -> 3.0.14.Final
@@ -783,8 +783,8 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
 |    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
-|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.1
-|    |    +--- org.eclipse.persistence:javax.persistence:2.1.0 -> 2.1.1
+|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.2
+|    |    +--- org.eclipse.persistence:javax.persistence:2.1.1
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    \--- org.glassfish:javax.json:1.0.4
@@ -795,7 +795,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- com.infradna.tool:bridge-method-annotation:1.13
 |    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.7.0
 |    |    +--- com.mysema.querydsl:querydsl-core:3.7.0 (*)
-|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.14
 |    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.7.0
 |    |    \--- com.mysema.querydsl:querydsl-codegen:3.7.0
 |    |         +--- com.mysema.querydsl:querydsl-core:3.7.0 (*)
@@ -806,15 +806,15 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.7.0
 |    |    +--- com.mysema.querydsl:querydsl-codegen:3.7.0 (*)
 |    |    +--- com.mysema.querydsl:querydsl-apt:3.7.0 (*)
-|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.14
 |    +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 |    +--- javax.inject:javax.inject:+ -> 1
-|    +--- com.h2database:h2:1.+ -> 1.4.190
+|    +--- com.h2database:h2:1.+ -> 1.4.191
 |    +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.+ -> 2.1.1
 |    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.0
 |    |    +--- org.apache.activemq:activemq-client:5.13.0
-|    |    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -826,12 +826,12 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.0
-|    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- org.apache.commons:commons-pool2:2.4.2
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.0
-|    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.0
 |    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -846,7 +846,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.apache.activemq:activemq-stomp:5.13.0
 |    |    |    \--- org.apache.activemq:activemq-broker:5.13.0 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.13.0 (*)
-|    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.httpcomponents:httpclient:4.5.1 (*)
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
@@ -854,7 +854,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5.1 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    +--- org.apache.sshd:sshd-core:+ -> 1.0.0
-|    |    \--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
 |    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
@@ -878,7 +878,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    \--- org.codehaus.woodstox:stax2-api:3.1.4
 |    |    +--- com.wordnik:swagger-core:1.5.3-M1
 |    |    |    +--- org.apache.commons:commons-lang3:3.2.1 -> 3.4
-|    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.13
+|    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.14
 |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.5
 |    |    |    +--- com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2 -> 2.5.5
 |    |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.5
@@ -888,7 +888,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 -> 2.5.5 (*)
 |    |    |    +--- com.wordnik:swagger-models:1.5.3-M1
 |    |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.5
-|    |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.13
+|    |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.14
 |    |    |    |    \--- com.wordnik:swagger-annotations:1.5.3-M1
 |    |    |    \--- javax.validation:validation-api:1.1.0.Final
 |    |    +--- javax.ws.rs:jsr311-api:1.1.1
@@ -903,57 +903,57 @@ runtime - Runtime classpath for source set 'main'.
 |    |    |    \--- org.ow2.asm:asm:5.0.3
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
-|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2
-|    +--- org.jinq:jinq-jpa:+ -> 1.8.6
-|    |    +--- org.jinq:jinq-asm-rebased:1.8.6
-|    |    +--- org.jinq:api:1.8.6
-|    |    \--- org.jinq:analysis:1.8.6
-|    |         +--- org.jinq:jinq-asm-rebased:1.8.6
-|    |         \--- org.jinq:api:1.8.6
+|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
+|    +--- org.jinq:jinq-jpa:+ -> 1.8.9
+|    |    +--- org.jinq:jinq-asm-rebased:1.8.9
+|    |    +--- org.jinq:api:1.8.9
+|    |    \--- org.jinq:analysis:1.8.9
+|    |         +--- org.jinq:jinq-asm-rebased:1.8.9
+|    |         \--- org.jinq:api:1.8.9
 |    \--- com.jcraft:jsch:+ -> 0.1.53
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
-\--- org.jooq:jooq:3.+ -> 3.7.1
+\--- org.jooq:jooq:3.+ -> 3.7.2
 
 testCompile - Compile classpath for source set 'test'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-3595
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-4589
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.3
 |    |    +--- ch.qos.logback:logback-core:1.1.3
-|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.13
-|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.13
-|    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.14
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.14
+|    |    \--- org.slf4j:slf4j-api:1.7.14
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
-|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.13 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- project :leoz-node
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:leoz-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
 |    |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    |    \--- commons-logging:commons-logging:1.2
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
@@ -978,8 +978,8 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.aspectj:aspectjrt:1.8.6
-|    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
+|    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
 |    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.3.BUILD-SNAPSHOT (*)
 |    +--- org.springframework:spring-web:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
@@ -994,11 +994,11 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    +--- org.springframework.boot:spring-boot:1.2.5.RELEASE (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14 -> 1.16
 |    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.5.RELEASE
-|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
-|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.12 -> 1.7.13
-|    |    |    |    \--- org.slf4j:slf4j-api:1.7.13
-|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.12 -> 1.7.13
-|    |    |    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
+|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.12 -> 1.7.14
+|    |    |    |    \--- org.slf4j:slf4j-api:1.7.14
+|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.12 -> 1.7.14
+|    |    |    |    \--- org.slf4j:slf4j-api:1.7.14
 |    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
 |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
 |    |    \--- org.yaml:snakeyaml:1.14 -> 1.16
@@ -1035,8 +1035,8 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    \--- org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final
 |    |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    |    \--- org.glassfish:javax.el:3.0.0
-|    +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.13 (*)
-|    +--- org.slf4j:log4j-over-slf4j:1.+ -> 1.7.13 (*)
+|    +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.14 (*)
+|    +--- org.slf4j:log4j-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 |    +--- org.jboss.resteasy:resteasy-jaxrs:3.+ -> 3.0.14.Final
@@ -1083,8 +1083,8 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
 |    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
-|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.1
-|    |    +--- org.eclipse.persistence:javax.persistence:2.1.0 -> 2.1.1
+|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.2
+|    |    +--- org.eclipse.persistence:javax.persistence:2.1.1
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    \--- org.glassfish:javax.json:1.0.4
@@ -1095,7 +1095,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- com.infradna.tool:bridge-method-annotation:1.13
 |    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.7.0
 |    |    +--- com.mysema.querydsl:querydsl-core:3.7.0 (*)
-|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.14
 |    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.7.0
 |    |    \--- com.mysema.querydsl:querydsl-codegen:3.7.0
 |    |         +--- com.mysema.querydsl:querydsl-core:3.7.0 (*)
@@ -1106,15 +1106,15 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.7.0
 |    |    +--- com.mysema.querydsl:querydsl-codegen:3.7.0 (*)
 |    |    +--- com.mysema.querydsl:querydsl-apt:3.7.0 (*)
-|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.14
 |    +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 |    +--- javax.inject:javax.inject:+ -> 1
-|    +--- com.h2database:h2:1.+ -> 1.4.190
+|    +--- com.h2database:h2:1.+ -> 1.4.191
 |    +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.+ -> 2.1.1
 |    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.0
 |    |    +--- org.apache.activemq:activemq-client:5.13.0
-|    |    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -1126,12 +1126,12 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.0
-|    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- org.apache.commons:commons-pool2:2.4.2
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.0
-|    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.0
 |    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -1146,7 +1146,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.apache.activemq:activemq-stomp:5.13.0
 |    |    |    \--- org.apache.activemq:activemq-broker:5.13.0 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.13.0 (*)
-|    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.httpcomponents:httpclient:4.5.1 (*)
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
@@ -1154,7 +1154,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5.1 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    +--- org.apache.sshd:sshd-core:+ -> 1.0.0
-|    |    \--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
 |    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
@@ -1178,7 +1178,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    \--- org.codehaus.woodstox:stax2-api:3.1.4
 |    |    +--- com.wordnik:swagger-core:1.5.3-M1
 |    |    |    +--- org.apache.commons:commons-lang3:3.2.1 -> 3.4
-|    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.13
+|    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.14
 |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.5
 |    |    |    +--- com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2 -> 2.5.5
 |    |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.5
@@ -1188,7 +1188,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 -> 2.5.5 (*)
 |    |    |    +--- com.wordnik:swagger-models:1.5.3-M1
 |    |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.5
-|    |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.13
+|    |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.14
 |    |    |    |    \--- com.wordnik:swagger-annotations:1.5.3-M1
 |    |    |    \--- javax.validation:validation-api:1.1.0.Final
 |    |    +--- javax.ws.rs:jsr311-api:1.1.1
@@ -1203,18 +1203,18 @@ testCompile - Compile classpath for source set 'test'.
 |    |    |    \--- org.ow2.asm:asm:5.0.3
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
-|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2
-|    +--- org.jinq:jinq-jpa:+ -> 1.8.6
-|    |    +--- org.jinq:jinq-asm-rebased:1.8.6
-|    |    +--- org.jinq:api:1.8.6
-|    |    \--- org.jinq:analysis:1.8.6
-|    |         +--- org.jinq:jinq-asm-rebased:1.8.6
-|    |         \--- org.jinq:api:1.8.6
+|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
+|    +--- org.jinq:jinq-jpa:+ -> 1.8.9
+|    |    +--- org.jinq:jinq-asm-rebased:1.8.9
+|    |    +--- org.jinq:api:1.8.9
+|    |    \--- org.jinq:analysis:1.8.9
+|    |         +--- org.jinq:jinq-asm-rebased:1.8.9
+|    |         \--- org.jinq:api:1.8.9
 |    \--- com.jcraft:jsch:+ -> 0.1.53
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
-+--- org.jooq:jooq:3.+ -> 3.7.1
++--- org.jooq:jooq:3.+ -> 3.7.2
 +--- junit:junit:4.+ -> 4.12
 |    \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- org.jboss.resteasy:resteasy-client:3.+ -> 3.0.14.Final
@@ -1234,42 +1234,42 @@ testCompile - Compile classpath for source set 'test'.
 
 testRuntime - Runtime classpath for source set 'test'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-3595
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-beta-4589
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.3
 |    |    +--- ch.qos.logback:logback-core:1.1.3
-|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.13
-|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.13
-|    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.14
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.14
+|    |    \--- org.slf4j:slf4j-api:1.7.14
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
-|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.13 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 +--- project :leoz-node
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:leoz-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 |    +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
 |    |    +--- org.springframework.data:spring-data-commons:1.10.3.BUILD-SNAPSHOT
 |    |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    |    \--- commons-logging:commons-logging:1.2
 |    |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    |    \--- org.springframework:spring-core:4.1.7.RELEASE (*)
-|    |    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
-|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
+|    |    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
+|    |    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
 |    |    +--- org.springframework:spring-orm:4.0.9.RELEASE -> 4.1.7.RELEASE
 |    |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
 |    |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
@@ -1294,8 +1294,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.springframework:spring-beans:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-core:4.0.9.RELEASE -> 4.1.7.RELEASE (*)
 |    |    +--- org.aspectj:aspectjrt:1.8.6
-|    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
-|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
+|    |    +--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
+|    |    \--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
 |    +--- org.springframework.data:spring-data-commons:1.10.+ -> 1.10.3.BUILD-SNAPSHOT (*)
 |    +--- org.springframework:spring-web:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
@@ -1310,11 +1310,11 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    +--- org.springframework.boot:spring-boot:1.2.5.RELEASE (*)
 |    |    |    \--- org.yaml:snakeyaml:1.14 -> 1.16
 |    |    +--- org.springframework.boot:spring-boot-starter-logging:1.2.5.RELEASE
-|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.13 (*)
-|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.12 -> 1.7.13
-|    |    |    |    \--- org.slf4j:slf4j-api:1.7.13
-|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.12 -> 1.7.13
-|    |    |    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    |    +--- org.slf4j:jcl-over-slf4j:1.7.12 -> 1.7.14 (*)
+|    |    |    +--- org.slf4j:jul-to-slf4j:1.7.12 -> 1.7.14
+|    |    |    |    \--- org.slf4j:slf4j-api:1.7.14
+|    |    |    +--- org.slf4j:log4j-over-slf4j:1.7.12 -> 1.7.14
+|    |    |    |    \--- org.slf4j:slf4j-api:1.7.14
 |    |    |    \--- ch.qos.logback:logback-classic:1.1.3 (*)
 |    |    +--- org.springframework:spring-core:4.1.7.RELEASE (*)
 |    |    \--- org.yaml:snakeyaml:1.14 -> 1.16
@@ -1351,8 +1351,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    \--- org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec:1.1.0.Final
 |    |    +--- javax.servlet:javax.servlet-api:3.1.0
 |    |    \--- org.glassfish:javax.el:3.0.0
-|    +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.13 (*)
-|    +--- org.slf4j:log4j-over-slf4j:1.+ -> 1.7.13 (*)
+|    +--- org.slf4j:jul-to-slf4j:1.+ -> 1.7.14 (*)
+|    +--- org.slf4j:log4j-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- javax.servlet:javax.servlet-api:3.1.+ -> 3.1.0
 |    +--- org.jboss.resteasy:resteasy-jaxrs:3.+ -> 3.0.14.Final
@@ -1399,8 +1399,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
 |    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
-|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.1
-|    |    +--- org.eclipse.persistence:javax.persistence:2.1.0 -> 2.1.1
+|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.2
+|    |    +--- org.eclipse.persistence:javax.persistence:2.1.1
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
 |    |    \--- org.glassfish:javax.json:1.0.4
@@ -1411,7 +1411,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- com.infradna.tool:bridge-method-annotation:1.13
 |    +--- com.mysema.querydsl:querydsl-jpa:3.+ -> 3.7.0
 |    |    +--- com.mysema.querydsl:querydsl-core:3.7.0 (*)
-|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.14
 |    +--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.7.0
 |    |    \--- com.mysema.querydsl:querydsl-codegen:3.7.0
 |    |         +--- com.mysema.querydsl:querydsl-core:3.7.0 (*)
@@ -1422,15 +1422,15 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- com.mysema.querydsl:querydsl-collections:3.+ -> 3.7.0
 |    |    +--- com.mysema.querydsl:querydsl-codegen:3.7.0 (*)
 |    |    +--- com.mysema.querydsl:querydsl-apt:3.7.0 (*)
-|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.6.1 -> 1.7.14
 |    +--- org.flywaydb:flyway-core:3.+ -> 3.2.1
 |    +--- javax.inject:javax.inject:+ -> 1
-|    +--- com.h2database:h2:1.+ -> 1.4.190
+|    +--- com.h2database:h2:1.+ -> 1.4.191
 |    +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.+ -> 2.1.1
 |    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.0
 |    |    +--- org.apache.activemq:activemq-client:5.13.0
-|    |    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -1442,12 +1442,12 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
 |    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.0
-|    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- org.apache.commons:commons-pool2:2.4.2
 |    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.0
-|    |    \--- org.slf4j:slf4j-api:1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.0
 |    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -1462,7 +1462,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.apache.activemq:activemq-stomp:5.13.0
 |    |    |    \--- org.apache.activemq:activemq-broker:5.13.0 (*)
 |    |    +--- org.apache.activemq:activemq-mqtt:5.13.0 (*)
-|    |    +--- org.slf4j:slf4j-api:1.7.13
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.httpcomponents:httpclient:4.5.1 (*)
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.8
 |    |         +--- xmlpull:xmlpull:1.1.3.1
@@ -1470,7 +1470,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.apache.httpcomponents:httpclient:4.+ -> 4.5.1 (*)
 |    +--- com.thoughtworks.xstream:xstream:1.+ -> 1.4.8 (*)
 |    +--- org.apache.sshd:sshd-core:+ -> 1.0.0
-|    |    \--- org.slf4j:slf4j-api:1.7.12 -> 1.7.13
+|    |    \--- org.slf4j:slf4j-api:1.7.12 -> 1.7.14
 |    +--- org.springframework:spring-jms:4.1.7.+ -> 4.1.7.RELEASE
 |    |    +--- org.springframework:spring-aop:4.1.7.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.1.7.RELEASE (*)
@@ -1494,7 +1494,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    \--- org.codehaus.woodstox:stax2-api:3.1.4
 |    |    +--- com.wordnik:swagger-core:1.5.3-M1
 |    |    |    +--- org.apache.commons:commons-lang3:3.2.1 -> 3.4
-|    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.13
+|    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.14
 |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.5
 |    |    |    +--- com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2 -> 2.5.5
 |    |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.5.0 -> 2.5.5
@@ -1504,7 +1504,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.4.2 -> 2.5.5 (*)
 |    |    |    +--- com.wordnik:swagger-models:1.5.3-M1
 |    |    |    |    +--- com.fasterxml.jackson.core:jackson-annotations:2.4.2 -> 2.5.5
-|    |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.13
+|    |    |    |    +--- org.slf4j:slf4j-api:1.6.3 -> 1.7.14
 |    |    |    |    \--- com.wordnik:swagger-annotations:1.5.3-M1
 |    |    |    \--- javax.validation:validation-api:1.1.0.Final
 |    |    +--- javax.ws.rs:jsr311-api:1.1.1
@@ -1519,18 +1519,18 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    |    \--- org.ow2.asm:asm:5.0.3
 |    |    +--- com.esotericsoftware:minlog:1.3.0
 |    |    \--- org.objenesis:objenesis:2.1
-|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2
-|    +--- org.jinq:jinq-jpa:+ -> 1.8.6
-|    |    +--- org.jinq:jinq-asm-rebased:1.8.6
-|    |    +--- org.jinq:api:1.8.6
-|    |    \--- org.jinq:analysis:1.8.6
-|    |         +--- org.jinq:jinq-asm-rebased:1.8.6
-|    |         \--- org.jinq:api:1.8.6
+|    +--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
+|    +--- org.jinq:jinq-jpa:+ -> 1.8.9
+|    |    +--- org.jinq:jinq-asm-rebased:1.8.9
+|    |    +--- org.jinq:api:1.8.9
+|    |    \--- org.jinq:analysis:1.8.9
+|    |         +--- org.jinq:jinq-asm-rebased:1.8.9
+|    |         \--- org.jinq:api:1.8.9
 |    \--- com.jcraft:jsch:+ -> 0.1.53
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-3595
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-3595 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
-+--- org.jooq:jooq:3.+ -> 3.7.1
++--- org.jooq:jooq:3.+ -> 3.7.2
 +--- junit:junit:4.+ -> 4.12
 |    \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 +--- org.jboss.resteasy:resteasy-client:3.+ -> 3.0.14.Final
