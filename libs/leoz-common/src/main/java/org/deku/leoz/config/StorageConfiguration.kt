@@ -107,10 +107,10 @@ abstract class StorageConfiguration(
         this.baseDirectory = File(basePath, baseDirectoryName)
         this.log.info("Home directory [${baseDirectory}]")
 
-        var baseDirectory = this.baseDirectory.exists()
+        var baseDirectoryExists = this.baseDirectory.exists()
         this.baseDirectory.mkdirs()
         // Set permissions if the directory was created
-        if (!baseDirectory) {
+        if (!baseDirectoryExists) {
             if (SystemUtils.IS_OS_WINDOWS) {
                 // Get file attribute view
                 var fav = Files.getFileAttributeView(this.baseDirectory.toPath(), AclFileAttributeView::class.java)
