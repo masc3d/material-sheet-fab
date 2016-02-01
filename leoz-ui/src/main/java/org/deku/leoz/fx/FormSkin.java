@@ -44,7 +44,7 @@ public class FormSkin extends FXFormSkin {
     private Node createTitleNode() {
         Label label = new AutoHidableLabel();
         label.getStyleClass().add("form-title");
-        label.textProperty().bind(fxForm.titleProperty());
+        label.textProperty().bind(this.getSkinnable().titleProperty());
         return label;
     }
 
