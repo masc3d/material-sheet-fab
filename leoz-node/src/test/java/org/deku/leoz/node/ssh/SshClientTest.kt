@@ -2,7 +2,6 @@ package org.deku.leoz.node.ssh
 
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.client.auth.UserAuth
-import org.apache.sshd.client.auth.UserAuthPasswordFactory
 import org.apache.sshd.common.NamedFactory
 import org.apache.sshd.common.SshdSocketAddress
 import org.apache.sshd.common.forward.DefaultTcpipForwarder
@@ -21,7 +20,10 @@ class SshClientTest {
         val ssh = SshClient.setUpDefaultClient()
 
         ssh.start()
-        val session = ssh.connect("leoz", "localhost", 13005).await().session
+
+        val connectFuture = ssh.connect("leoz", "localhost", 13005)
+        connectFuture.await()
+        val session = connectFuture.session
         session.addPasswordIdentity("leoz")
         session.auth()
 
