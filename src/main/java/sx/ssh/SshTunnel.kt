@@ -88,14 +88,16 @@ class SshTunnel(
                 if (!sshFuture.await(connectionTimeout.toMillis(), TimeUnit.MILLISECONDS))
                     throw TimeoutException("Timeout while connecting [${this}]")
 
-                session = sshFuture.await().session
+                sshFuture.await()
+                session = sshFuture.session
 
                 // Prepare session and authenticate
-                session.addListener(this.sessionListener)
+                session.addSessionListener(this.sessionListener)
                 session.addPasswordIdentity(this.sshHost.password)
 
-                val result = session.auth().await()
-                if (result.isFailure)
+                val authFuture = session.auth()
+                authFuture.await()
+                if (authFuture.isFailure)
                     throw AuthenticationException()
 
                 // Start port forwarding for tunneled connections
@@ -124,7 +126,7 @@ class SshTunnel(
                 } catch(e: Exception) {
                     log.error(e.message, e)
                 } finally {
-                    session.removeListener(this.sessionListener)
+                    session.removeSessionListener(this.sessionListener)
                     this.session = null
                 }
             }
