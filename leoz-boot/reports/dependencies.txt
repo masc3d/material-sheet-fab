@@ -38,6 +38,8 @@ compile - Compile classpath for source set 'main'.
 +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 +--- com.beust:jcommander:+ -> 1.48
 +--- org.ini4j:ini4j:+ -> 0.5.4
++--- org.apache.sshd:sshd-core:+ -> 1.1.0
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -78,6 +80,8 @@ default - Configuration for default artifacts.
 +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 +--- com.beust:jcommander:+ -> 1.48
 +--- org.ini4j:ini4j:+ -> 0.5.4
++--- org.apache.sshd:sshd-core:+ -> 1.1.0
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -128,6 +132,8 @@ runtime - Runtime classpath for source set 'main'.
 +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 +--- com.beust:jcommander:+ -> 1.48
 +--- org.ini4j:ini4j:+ -> 0.5.4
++--- org.apache.sshd:sshd-core:+ -> 1.1.0
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -168,6 +174,8 @@ testCompile - Compile classpath for source set 'test'.
 +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 +--- com.beust:jcommander:+ -> 1.48
 +--- org.ini4j:ini4j:+ -> 0.5.4
++--- org.apache.sshd:sshd-core:+ -> 1.1.0
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -210,6 +218,8 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 +--- com.beust:jcommander:+ -> 1.48
 +--- org.ini4j:ini4j:+ -> 0.5.4
++--- org.apache.sshd:sshd-core:+ -> 1.1.0
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
