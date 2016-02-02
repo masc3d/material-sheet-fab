@@ -3,12 +3,11 @@ package org.deku.leoz.node.config
 import org.apache.commons.logging.LogFactory
 import org.apache.sshd.common.NamedFactory
 import org.apache.sshd.common.channel.Channel
-import org.apache.sshd.common.future.CloseFuture
 import org.apache.sshd.server.SshServer
 import org.apache.sshd.server.auth.password.PasswordAuthenticator
 import org.apache.sshd.server.forward.AcceptAllForwardingFilter
 import org.apache.sshd.server.forward.DirectTcpipFactory
-import org.apache.sshd.server.forward.TcpipServerChannel
+import org.apache.sshd.server.forward.DirectTcpipFactoryFixed
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
 import org.apache.sshd.server.session.ServerSession
 import org.deku.leoz.config.SshConfiguration
@@ -59,22 +58,8 @@ open class SshServerConfiguration {
         channelFactories.addAll(sshd.channelFactories.filter { cf -> !(cf is DirectTcpipFactory) })
         // Add customized DirectTcpIpFactory, closing SSH session when the tunneled connection breaks.
         // Fixes rsync client stalling over SSH tunnel in case of specific errors, eg. directory doesn't exist
-        channelFactories.add(object : DirectTcpipFactory() {
-            override fun create(): Channel? {
-                return object : TcpipServerChannel(this.type) {
-                    override fun close(immediately: Boolean): CloseFuture? {
-                        val closeFuture = super.close(immediately)
-                        if (immediately) {
-                            closeFuture.addListener({
-                                // Trigger graceful close of SSH session when tunnel connection closes
-                                this.session.close(false)
-                            })
-                        }
-                        return closeFuture
-                    }
-                }
-            }
-        })
+        channelFactories.add(DirectTcpipFactoryFixed())
+
         sshd.channelFactories = channelFactories
 
         log.info("Starting ssh server")
