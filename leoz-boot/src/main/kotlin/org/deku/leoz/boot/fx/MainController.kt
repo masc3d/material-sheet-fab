@@ -81,8 +81,6 @@ class MainController : Initializable {
                     // Printing jar manifest will fail when running from IDE eg. that's ok.
                 }
 
-                log.info("Initializing")
-
                 // Parse command line params
                 JCommander(Application.Parameters, *Application.instance.parameters.raw.toTypedArray())
                 if (Strings.isNullOrEmpty(Application.Parameters.bundle)) {

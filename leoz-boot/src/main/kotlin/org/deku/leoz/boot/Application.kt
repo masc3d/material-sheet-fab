@@ -85,7 +85,7 @@ class Application : javafx.application.Application() {
             return
 
         val nativeBundlePath = StorageConfiguration.nativeBundleBasePath!!
-        log.info(nativeBundlePath)
+        log.info("Native bundle path [${nativeBundlePath}")
 
         if (nativeBundlePath.parentFile.equals(StorageConfiguration.bundleInstallationDirectory))
             return

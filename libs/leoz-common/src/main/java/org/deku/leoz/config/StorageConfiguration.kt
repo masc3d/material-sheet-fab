@@ -105,7 +105,7 @@ abstract class StorageConfiguration(
             throw UnsupportedOperationException("Basepath is empty");
 
         this.baseDirectory = File(basePath, baseDirectoryName)
-        this.log.info("Home directory [${baseDirectory}]")
+        this.log.info("Storage configuration base directory [${baseDirectory}]")
 
         // Set permissions if the directory was created
         if (!this.baseDirectory.exists()) {
@@ -119,7 +119,7 @@ abstract class StorageConfiguration(
                     // Lookup principal
                     var fs = FileSystems.getDefault()
                     var ups: UserPrincipalLookupService = fs.userPrincipalLookupService
-                    var gp = ups.lookupPrincipalByGroupName("Users")
+                    var gp = ups.lookupPrincipalByGroupName("Everyone")
 
                     // Set ACL
                     var aclb = AclEntry.newBuilder()
