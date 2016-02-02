@@ -68,7 +68,8 @@ class PackagerPlugin implements Plugin<Project> {
         // Bundle task
         project.tasks.create('buildNativeBundle', PackagerNativeBundleTask) {
             extension = ext
-            jvmOptions = "-XX:+UseCompressedOops"
+            //masc20160202. Seen sporadic/failures related to Compress Oops (heap too large)
+            //jvmOptions = "-XX:+UseCompressedOops"
         }
         project.tasks.buildNativeBundle.dependsOn(project.tasks.jar)
 
