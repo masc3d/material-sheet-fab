@@ -36,25 +36,11 @@ class SshTunnelProvider(
 
     /**
      * SSH tunnel resource, handed out to the requestor for providing
-     * connection information (local port). Should be released using
-     * {@link #release}.
-     * Automatically triggers release/closes tunnel when finalized/gc'ed
+     * connection information (local port).
      */
     inner class TunnelResource(
             val key: TunnelKey,
-            val localPort: Int)
-    :
-            AutoCloseable {
-        init {
-        }
-
-        override fun close() {
-            this@SshTunnelProvider.release(this)
-        }
-
-        protected fun finalize() {
-            this.close()
-        }
+            val localPort: Int) {
     }
 
     /** c'tor */
@@ -92,6 +78,7 @@ class SshTunnelProvider(
                                 sshHost = sshHost,
                                 remotePort = port,
                                 localPort = localPort,
+                                // Free tunnel resource/local port when connection is closed
                                 onClosed = { it ->
                                     this.release(tunnelResource!!)
                                 }
@@ -104,7 +91,6 @@ class SshTunnelProvider(
             tunnel.open()
 
             return tunnelResource!!
-
         }
     }
 
@@ -131,6 +117,8 @@ class SshTunnelProvider(
         synchronized(sync) {
             if (!this.tunnels.contains(resource.key))
                 throw IllegalArgumentException("Unknown tunnel resource [${resource}]")
+
+            this.close(resource);
 
             // Remove tunnel record and push local port back into pool
             this.tunnels.remove(resource.key)
