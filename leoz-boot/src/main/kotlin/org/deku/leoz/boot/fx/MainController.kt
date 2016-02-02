@@ -1,5 +1,7 @@
 package org.deku.leoz.boot.fx
 
+import com.beust.jcommander.JCommander
+import com.google.common.base.Strings
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.fxml.FXML
@@ -10,7 +12,9 @@ import org.deku.leoz.boot.Application
 import org.deku.leoz.boot.config.BundleInstallerConfiguration
 import org.deku.leoz.boot.config.BundleRepositoryConfiguration
 import org.deku.leoz.boot.config.LogConfiguration
+import org.deku.leoz.boot.config.StorageConfiguration
 import sx.fx.TextAreaLogAppender
+import sx.rsync.Rsync
 import java.awt.GraphicsEnvironment
 import java.net.URL
 import java.util.*
@@ -50,23 +54,7 @@ class MainController : Initializable {
      * Initialize
      */
     override fun initialize(location: URL?, resources: ResourceBundle?) {
-        LogConfiguration.addAppender(TextAreaLogAppender(uxTextArea, 1000))
-
-        val bundleName = Application.instance.bundle
-        val verb: String
-        val verbPast: String
-
-        when (Application.Parameters.uninstall) {
-            true -> {
-                verb = "Uninstalling"
-                verbPast = "Uninstalled"
-            }
-            else -> {
-                verb = "Booting"
-                verbPast = "Booted"
-            }
-        }
-        uxTitle.text = "${verb} ${bundleName}"
+        uxTitle.text = ""
         uxProgressBar.progressProperty().addListener { v, o, n ->
             uxProgressIndicator.isVisible = (n.toDouble() == ProgressBar.INDETERMINATE_PROGRESS || (n.toDouble() >= 0.0 && n.toDouble() < 1))
         }
@@ -76,10 +64,63 @@ class MainController : Initializable {
             }
         }
         uxClose.visibleProperty().value = false
-        uxProgressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
+        uxProgressBar.progress = 0.0
 
         thread {
+            var verb: String = "Initializing"
+            var verbPast: String = "Initialized"
+
             try {
+                LogConfiguration.initialize()
+                LogConfiguration.addAppender(TextAreaLogAppender(uxTextArea, 1000))
+                LogConfiguration.logFile = StorageConfiguration.logFile
+
+                try {
+                    log.info("leoz-boot v${Application.instance.jarManifest.implementationVersion}")
+                } catch(e: Exception) {
+                    // Printing jar manifest will fail when running from IDE eg. that's ok.
+                }
+
+                log.info("Initializing")
+
+                // Parse command line params
+                JCommander(Application.Parameters, *Application.instance.parameters.raw.toTypedArray())
+                if (Strings.isNullOrEmpty(Application.Parameters.bundle)) {
+                    // Nothing to do
+                    throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting");
+                }
+
+                // Initialize rsync
+                Rsync.executable.baseFilename = "leoz-rsync"
+
+                val bundleName = Application.instance.bundle
+
+                when (Application.Parameters.uninstall) {
+                    true -> {
+                        verb = "Uninstalling"
+                        verbPast = "Uninstalled"
+                    }
+                    else -> {
+                        verb = "Booting"
+                        verbPast = "Booted"
+                    }
+                }
+                verb += " ${bundleName}"
+
+                log.info("${verb}")
+
+                uxTitle.text = "${verb}"
+                uxProgressBar.progressProperty().addListener { v, o, n ->
+                    uxProgressIndicator.isVisible = (n.toDouble() == ProgressBar.INDETERMINATE_PROGRESS || (n.toDouble() >= 0.0 && n.toDouble() < 1))
+                }
+                uxClose.onMouseClicked = object : EventHandler<MouseEvent> {
+                    override fun handle(event: MouseEvent?) {
+                        Application.instance.primaryStage.close()
+                    }
+                }
+                uxClose.visibleProperty().value = false
+                uxProgressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
+
                 var startProgress = 0.0
                 var endProgress = 0.3
                 Application.instance.selfInstall(onProgress = { p ->
@@ -126,13 +167,14 @@ class MainController : Initializable {
 
                 Platform.runLater {
                     uxProgressBar.styleClass.add("leoz-green-bar")
-                    uxTitle.text = "${verbPast} ${bundleName} succesfully."
+                    uxTitle.text = "${verbPast} succesfully."
                 }
-            } catch(e: Exception) {
+            } catch(e: Throwable) {
+                Application.instance.exitCode = -1
                 log.error(e.message, e)
                 Platform.runLater {
                     uxProgressBar.styleClass.add("leoz-red-bar")
-                    uxTitle.text = "${verb} ${bundleName} failed."
+                    uxTitle.text = "${verb} failed."
                 }
             } finally {
                 Platform.runLater {
@@ -141,8 +183,9 @@ class MainController : Initializable {
                 }
             }
 
-            if (Application.Parameters.hideUi || GraphicsEnvironment.isHeadless())
-                System.exit(0)
+            if (Application.Parameters.hideUi || GraphicsEnvironment.isHeadless()) {
+                System.exit(Application.instance.exitCode)
+            }
         }
     }
 }

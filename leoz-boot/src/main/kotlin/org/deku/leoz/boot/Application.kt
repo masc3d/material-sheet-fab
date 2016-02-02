@@ -1,8 +1,6 @@
 package org.deku.leoz.boot
 
-import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
-import com.google.common.base.Strings
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
@@ -11,7 +9,7 @@ import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.boot.config.LogConfiguration
+import org.deku.leoz.JarManifest
 import org.deku.leoz.boot.config.StorageConfiguration
 import org.deku.leoz.boot.fx.ResizeHelper
 import org.deku.leoz.bundle.Bundle
@@ -74,6 +72,14 @@ class Application : javafx.application.Application() {
     var primaryStage: Stage by Delegates.notNull()
         private set
 
+    /** Application jar manifest */
+    val jarManifest: JarManifest by lazy({
+        JarManifest(this.javaClass)
+    })
+
+    /** Application process exit code */
+    var exitCode: Int = 0
+
     fun selfInstall(onProgress: ((p: Double) -> Unit) = {}) {
         if (StorageConfiguration.nativeBundleBasePath == null)
             return
@@ -110,11 +116,7 @@ class Application : javafx.application.Application() {
     override fun start(primaryStage: Stage) {
         Application.set(this)
 
-        LogConfiguration.initialize()
-
         try {
-            log.info("Initializing")
-
             this.primaryStage = primaryStage
 
             // Uncaught threaded exception handler
@@ -124,18 +126,6 @@ class Application : javafx.application.Application() {
                     System.exit(-1)
                 }
             })
-
-            // Parse command line params
-            JCommander(Parameters, *this.parameters.raw.toTypedArray())
-            if (Strings.isNullOrEmpty(Parameters.bundle)) {
-                // Nothing to do
-                log.warn("Missing or empty bundle parameter. Nothing to do, exiting")
-                System.exit(0)
-                return
-            }
-
-            // Initialize rsync
-            Rsync.executable.baseFilename = "leoz-rsync"
 
             // Show splash screen
             var splash = SplashScreen.getSplashScreen()
@@ -162,9 +152,13 @@ class Application : javafx.application.Application() {
             }
         } catch(e: Exception) {
             log.error(e.message, e)
-            System.exit(-1)
+            this.exitCode = -1
         }
+    }
 
+    override fun stop() {
+        super.stop()
+        System.exit(this.exitCode)
     }
 
     companion object {
