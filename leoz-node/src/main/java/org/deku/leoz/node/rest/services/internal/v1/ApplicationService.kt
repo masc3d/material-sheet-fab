@@ -7,7 +7,6 @@ import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.StorageConfiguration
-import org.deku.leoz.node.data.sync.v1.EntityStateMessage
 import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
 import sx.jms.Channel
 import sx.jms.converters.DefaultConverter
@@ -51,7 +50,7 @@ class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationSe
         // TODO. centralize channel(s) into common configuration
         val mc = Channel(
                 ActiveMQConfiguration.instance.broker.connectionFactory,
-                ActiveMQConfiguration.instance.nodeEntitySyncTopic,
+                ActiveMQConfiguration.instance.nodeNotificationTopic,
                 DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP),
