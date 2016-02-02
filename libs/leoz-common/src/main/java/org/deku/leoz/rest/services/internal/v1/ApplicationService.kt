@@ -2,10 +2,12 @@ package org.deku.leoz.rest.services.internal.v1
 
 import com.wordnik.swagger.annotations.Api
 import com.wordnik.swagger.annotations.ApiOperation
+import com.wordnik.swagger.annotations.ApiParam
 import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
 import javax.ws.rs.Path
+import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
 
 /**
@@ -30,7 +32,12 @@ interface ApplicationService {
     fun restart()
 
     @GET
-    @Path("/update-bundles")
+    @Path("/bundle-update")
     @ApiOperation(value = "Trigger application bundle udpates")
-    fun updateBundles()
+    fun bundleUpdate()
+
+    @GET
+    @Path("/notify-bundle-update")
+    @ApiOperation(value = "Notify remote nodes about bundle update")
+    fun notifyBundleUpdate(@ApiParam(value = "Bundle name") @QueryParam("bundle-name") bundleName: String)
 }
