@@ -45,10 +45,10 @@ class StationService : org.deku.leoz.rest.services.internal.v1.StationService {
          */
         internal fun convert(d: org.deku.leoz.node.data.entities.master.Station): Station {
             val rStation = Station()
-            rStation.depotMatchcode = d.getuStId()
             rStation.depotNr = d.stationNr
-            rStation.firma1 = d.billingAddress1
-            rStation.firma2 = d.billingAddress2
+            rStation.depotMatchcode = d.getuStId()
+            rStation.address1 = d.address1
+            rStation.address2= d.address2
             rStation.lkz = d.country
             rStation.ort = d.city
             rStation.plz = d.zip

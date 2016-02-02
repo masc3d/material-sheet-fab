@@ -33,7 +33,7 @@ public class WebserviceFactory {
         }
 
         if (mWebTarget == null) {
-            mWebTarget = mClient.target("http://10.0.10.10:8080/leoz/rs/api");
+            mWebTarget = mClient.target("http://127.0.0.1:13000/rs/api");
             //mWebTarget = mClient.target("http://localhost:8080/leo2");
         }
 

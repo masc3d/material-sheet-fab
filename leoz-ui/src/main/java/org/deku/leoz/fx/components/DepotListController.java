@@ -16,6 +16,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.Main;
 import org.deku.leoz.WebserviceFactory;
 import org.deku.leoz.bridge.LeoBridge;
@@ -34,6 +36,8 @@ import java.util.concurrent.Executors;
  * Created by masc on 22.09.14.
  */
 public class DepotListController extends Controller implements Initializable {
+    private Log mLogger = LogFactory.getLog(this.getClass());
+
     @FXML
     private TextField mSearchText;
     @FXML
@@ -77,6 +81,9 @@ public class DepotListController extends Controller implements Initializable {
                 return FXCollections.observableArrayList(
                         Arrays.asList(
                                 WebserviceFactory.depotService().find(mSearchText.getText())));
+            } catch (Exception e) {
+                mLogger.error(e.getMessage(), e);
+                throw(e);
             } finally {
                 Platform.runLater(() -> Main.instance().getMainController().releaseProgressIndicator());
             }
@@ -96,7 +103,7 @@ public class DepotListController extends Controller implements Initializable {
             mSearchText.getStyleClass().add("leoz-error");
         }
     }
-    
+
     public Listener getListener() {
         return mListener;
     }
@@ -133,9 +140,10 @@ public class DepotListController extends Controller implements Initializable {
         });
 
         // Bind depotlist columns
-        mDepotTableMatchcodeColumn.setCellValueFactory(new PropertyValueFactory<Station, String>("depotMatchcode"));
-        mDepotTableCompany1Column.setCellValueFactory(new PropertyValueFactory<Station, String>("firma1"));
-        mDepotTableCompany2Column.setCellValueFactory(new PropertyValueFactory<Station, String>("firma2"));
+        // TODO. needs strong typing!
+        mDepotTableMatchcodeColumn.setCellValueFactory(new PropertyValueFactory<Station, String>("depotNr"));
+        mDepotTableCompany1Column.setCellValueFactory(new PropertyValueFactory<Station, String>("address1"));
+        mDepotTableCompany2Column.setCellValueFactory(new PropertyValueFactory<Station, String>("address2"));
         mDepotTableCountryColumn.setCellValueFactory(new PropertyValueFactory<Station, String>("lkz"));
         mDepotTableZipCodeColumn.setCellValueFactory(new PropertyValueFactory<Station, String>("plz"));
         mDepotTableCityColumn.setCellValueFactory(new PropertyValueFactory<Station, String>("ort"));
