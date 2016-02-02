@@ -107,17 +107,19 @@ class MainController : Initializable {
 
                 log.info("${verb}")
 
-                uxTitle.text = "${verb}"
-                uxProgressBar.progressProperty().addListener { v, o, n ->
-                    uxProgressIndicator.isVisible = (n.toDouble() == ProgressBar.INDETERMINATE_PROGRESS || (n.toDouble() >= 0.0 && n.toDouble() < 1))
-                }
-                uxClose.onMouseClicked = object : EventHandler<MouseEvent> {
-                    override fun handle(event: MouseEvent?) {
-                        Application.instance.primaryStage.close()
+                Platform.runLater {
+                    uxTitle.text = "${verb}"
+                    uxProgressBar.progressProperty().addListener { v, o, n ->
+                        uxProgressIndicator.isVisible = (n.toDouble() == ProgressBar.INDETERMINATE_PROGRESS || (n.toDouble() >= 0.0 && n.toDouble() < 1))
                     }
+                    uxClose.onMouseClicked = object : EventHandler<MouseEvent> {
+                        override fun handle(event: MouseEvent?) {
+                            Application.instance.primaryStage.close()
+                        }
+                    }
+                    uxClose.visibleProperty().value = false
+                    uxProgressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
                 }
-                uxClose.visibleProperty().value = false
-                uxProgressBar.progress = ProgressBar.INDETERMINATE_PROGRESS
 
                 var startProgress = 0.0
                 var endProgress = 0.3
