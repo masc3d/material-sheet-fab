@@ -30,7 +30,10 @@ compile - Compile classpath for source set 'main'.
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
-|    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
+|    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
+|         \--- net.java.dev.jna:jna:4.2.1
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
@@ -323,7 +326,10 @@ default - Configuration for default artifacts.
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
-|    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
+|    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
+|         \--- net.java.dev.jna:jna:4.2.1
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
@@ -648,7 +654,10 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
-|    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
+|    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
+|         \--- net.java.dev.jna:jna:4.2.1
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
@@ -941,7 +950,10 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
-|    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
+|    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
+|         \--- net.java.dev.jna:jna:4.2.1
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
@@ -1241,7 +1253,10 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.3 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.14 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
-|    \--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
+|    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
+|         \--- net.java.dev.jna:jna:4.2.1
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-beta-4589
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-beta-4589 (*)
 +--- org.springframework.data:spring-data-jpa:1.8.+ -> 1.8.3.BUILD-SNAPSHOT
