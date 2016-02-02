@@ -14,6 +14,9 @@ class App private constructor() : org.deku.leoz.node.App() {
     override val name: String
         get() = "leoz-central"
 
+    override val applicationClass: Class<out Any>
+        get() = App::class.java
+
     override fun initialize() {
         // No JMS logging for leoz-central
         super.initialize(PROFILE_CENTRAL)

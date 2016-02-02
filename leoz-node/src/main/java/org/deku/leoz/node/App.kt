@@ -75,9 +75,12 @@ open class App :
     open val name: String
         get() = "leoz-node"
 
+    open val applicationClass: Class<out Any>
+        get() = App::class.java
+
     /** Application jar manifest */
     val jarManifest: JarManifest by lazy({
-        JarManifest(this.javaClass)
+        JarManifest(this.applicationClass)
     })
 
     private var bundlePathLock: FileLock by Delegates.notNull()

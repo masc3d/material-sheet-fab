@@ -7,7 +7,7 @@ import java.util.jar.Manifest
 /**
  * Created by masc on 09.10.15.
  */
-class JarManifest(type: Class<Any>) {
+class JarManifest(type: Class<out Any>) {
     private val manifest: Manifest
 
     init {
