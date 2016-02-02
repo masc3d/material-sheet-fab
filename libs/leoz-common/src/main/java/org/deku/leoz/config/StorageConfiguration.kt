@@ -119,7 +119,7 @@ abstract class StorageConfiguration(
                     // Lookup principal
                     var fs = FileSystems.getDefault()
                     var ups: UserPrincipalLookupService = fs.userPrincipalLookupService
-                    var gp = ups.lookupPrincipalByGroupName("Everyone")
+                    var gp = ups.lookupPrincipalByGroupName("\\Everyone")
 
                     // Set ACL
                     var aclb = AclEntry.newBuilder()
