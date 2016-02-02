@@ -1,6 +1,7 @@
 package org.deku.leoz.config
 
 import com.google.common.base.Strings
+import com.sun.jna.platform.win32.Advapi32Util
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -119,7 +120,9 @@ abstract class StorageConfiguration(
                     // Lookup principal
                     var fs = FileSystems.getDefault()
                     var ups: UserPrincipalLookupService = fs.userPrincipalLookupService
-                    var gp = ups.lookupPrincipalByGroupName("\\Everyone")
+
+                    val account = Advapi32Util.getAccountBySid("S-1-1-0")
+                    var gp = ups.lookupPrincipalByGroupName(account.fqn)
 
                     // Set ACL
                     var aclb = AclEntry.newBuilder()
