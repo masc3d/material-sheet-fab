@@ -107,26 +107,32 @@ abstract class StorageConfiguration(
         this.baseDirectory = File(basePath, baseDirectoryName)
         this.log.info("Home directory [${baseDirectory}]")
 
-        var baseDirectoryExists = this.baseDirectory.exists()
-        this.baseDirectory.mkdirs()
         // Set permissions if the directory was created
-        if (!baseDirectoryExists) {
-            if (SystemUtils.IS_OS_WINDOWS) {
-                // Get file attribute view
-                var fav = Files.getFileAttributeView(this.baseDirectory.toPath(), AclFileAttributeView::class.java)
+        if (!this.baseDirectory.exists()) {
+            try {
+                this.baseDirectory.mkdirs()
 
-                // Lookup principal
-                var fs = FileSystems.getDefault()
-                var ups: UserPrincipalLookupService = fs.userPrincipalLookupService
-                var gp = ups.lookupPrincipalByGroupName("Everyone")
+                if (SystemUtils.IS_OS_WINDOWS) {
+                    // Get file attribute view
+                    var fav = Files.getFileAttributeView(this.baseDirectory.toPath(), AclFileAttributeView::class.java)
 
-                // Set ACL
-                var aclb = AclEntry.newBuilder()
-                aclb.setPermissions(EnumSet.allOf(AclEntryPermission::class.java))
-                aclb.setPrincipal(gp)
-                aclb.setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT)
-                aclb.setType(AclEntryType.ALLOW)
-                fav.acl = Collections.singletonList(aclb.build())
+                    // Lookup principal
+                    var fs = FileSystems.getDefault()
+                    var ups: UserPrincipalLookupService = fs.userPrincipalLookupService
+                    var gp = ups.lookupPrincipalByGroupName("Users")
+
+                    // Set ACL
+                    var aclb = AclEntry.newBuilder()
+                    aclb.setPermissions(EnumSet.allOf(AclEntryPermission::class.java))
+                    aclb.setPrincipal(gp)
+                    aclb.setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT)
+                    aclb.setType(AclEntryType.ALLOW)
+                    fav.acl = Collections.singletonList(aclb.build())
+                }
+            } catch(e: Exception) {
+                if (this.baseDirectory.exists()) {
+                    this.baseDirectory.deleteRecursively()
+                }
             }
         }
 
