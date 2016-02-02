@@ -133,6 +133,7 @@ abstract class StorageConfiguration(
                 if (this.baseDirectory.exists()) {
                     this.baseDirectory.deleteRecursively()
                 }
+                throw e
             }
         }
 
