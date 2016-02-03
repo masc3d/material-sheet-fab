@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationListener
 import sx.Disposable
 import sx.Dispose
 import sx.LazyInstance
+import sx.platform.JvmUtil
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
@@ -78,9 +79,23 @@ open class App :
     open val applicationClass: Class<out Any>
         get() = App::class.java
 
-    /** Application jar manifest */
-    val jarManifest: JarManifest by lazy({
+    /**
+     * Application jar manifest
+     */
+    private val jarManifest: JarManifest by lazy({
         JarManifest(this.applicationClass)
+    })
+
+    /**
+     * Application version.
+     * As the version is read from jar manifest, property will be not aailable when run from anywhere else than jar
+     */
+    val version: String by lazy({
+        try {
+            this.jarManifest.implementationVersion
+        } catch(e: Exception) {
+            "n/a"
+        }
     })
 
     private var bundlePathLock: FileLock by Delegates.notNull()
@@ -97,7 +112,7 @@ open class App :
 
         // Acquire lock on bundle path
         val bundlePath = StorageConfiguration.instance.bundleLockFile
-        log.info("Acquiring lock on bundle path [${bundlePath}]")
+        log.trace("Acquiring lock on bundle path [${bundlePath}]")
         this.bundlePathLock = FileChannel
                 .open(bundlePath.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)
                 .lock()
@@ -111,7 +126,7 @@ open class App :
         LogConfiguration.instance().initialize()
         disposables.add(LogConfiguration.instance())
 
-        log.info("Leoz node initialize")
+        log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
 
         // Uncaught threaded exception handler
         Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {

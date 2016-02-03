@@ -102,7 +102,7 @@ abstract class StorageConfiguration(
             throw UnsupportedOperationException("Basepath is empty");
 
         this.baseDirectory = File(basePath, baseDirectoryName)
-        this.log.info("Storage configuration base directory [${baseDirectory}]")
+        this.log.trace("Storage configuration base directory [${baseDirectory}]")
 
         // Set permissions if the directory was created
         if (!this.baseDirectory.exists()) {
@@ -123,6 +123,13 @@ abstract class StorageConfiguration(
         if (!this.bundleLockFile.exists()) {
             this.bundleLockFile.createNewFile()
         }
+    }
+
+    /**
+     * Initialize storage configuration
+     */
+    fun initalize() {
+        // All intialization is passive (via c'tor) for now
     }
 
     protected fun finalize() {

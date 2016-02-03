@@ -67,7 +67,7 @@ open class Main {
      * */
      protected fun run(args: Array<String>?) {
         try {
-            log.info("Main arguments [${args!!.joinToString(", ")}]")
+            log.trace("Main arguments [${args!!.joinToString(", ")}]")
 
             // Support for command line parameters, setup commands
             if (args.size > 0) {

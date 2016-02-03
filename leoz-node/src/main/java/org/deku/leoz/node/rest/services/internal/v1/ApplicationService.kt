@@ -38,8 +38,8 @@ class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationSe
 
     override fun getVersion(): ApplicationVersion {
         return ApplicationVersion(
-                App.instance.jarManifest.implementationName,
-                App.instance.jarManifest.implementationVersion)
+                App.instance.name,
+                App.instance.version)
     }
 
     override fun bundleUpdate() {
