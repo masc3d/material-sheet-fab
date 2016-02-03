@@ -107,6 +107,10 @@ public abstract class Broker implements Disposable {
         private Integer mPort;
     }
 
+    /**
+     * Broker name
+     */
+    private String mBrokerName;
     /** Native tcp port for this broker to listen to */
     private Integer mNativeTcpPort;
     /** Peer brokers */
@@ -187,6 +191,14 @@ public abstract class Broker implements Disposable {
 
     public boolean isStarted() {
         return this.isStartedImpl();
+    }
+
+    public String getBrokerName() {
+        return mBrokerName;
+    }
+
+    public void setBrokerName(String brokerName) {
+        mBrokerName = brokerName;
     }
 
     /** Broker data directory */
