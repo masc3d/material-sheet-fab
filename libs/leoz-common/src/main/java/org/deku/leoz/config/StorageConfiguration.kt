@@ -110,7 +110,11 @@ abstract class StorageConfiguration(
                 this.baseDirectory.mkdirs()
 
                 if (SystemUtils.IS_OS_WINDOWS) {
-                    PermissionUtil.setAclAllowEverything(this.baseDirectory, principals = PermissionUtil.Win32.fqnEveryone)
+                    PermissionUtil.setAclAllowEverything(
+                            path = this.baseDirectory,
+                            principals = *arrayOf(
+                                    PermissionUtil.Win32.SID.Users.fqn,
+                                    PermissionUtil.Win32.SID.LocalSystem.fqn))
                 }
             } catch(e: Exception) {
                 if (this.baseDirectory.exists()) {
