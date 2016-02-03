@@ -13,7 +13,10 @@ import java.util.*
  */
 object PermissionUtil {
     object Win32 {
+        // Windows account SIDs https://support.microsoft.com/en-us/kb/243330
         val SID_EVERYONE = "S-1-1-0"
+        val SID_USERS = "S-1-5-32-545"
+        val SID_LOCALSYSTEM = " S-1-5-18"
 
         /**
          * Returns FQN for a sid
