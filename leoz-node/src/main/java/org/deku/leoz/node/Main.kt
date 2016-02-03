@@ -62,10 +62,17 @@ open class Main {
     private val app = App.instance
 
     /**
+     * Application/service setup
+     */
+    private val setup by lazy({
+        Setup(App.instance.name)
+    })
+
+    /**
      * Main instance entry point
      * @param args process arguments
      * */
-     protected fun run(args: Array<String>?) {
+    protected fun run(args: Array<String>?) {
         try {
             log.trace("Main arguments [${args!!.joinToString(", ")}]")
 
@@ -74,11 +81,18 @@ open class Main {
                 val command = args[0].toLowerCase().trim()
 
                 var rCommand: Runnable? = null
+
                 when (command) {
-                    "install" -> rCommand = Runnable { Setup.instance().install("LeoZ Service", this.javaClass) }
-                    "uninstall" -> rCommand = Runnable { Setup.instance().uninstall() }
-                    "start" -> rCommand = Runnable { Setup.instance().start() }
-                    "stop" -> rCommand = Runnable { Setup.instance().stop() }
+                    "install" -> rCommand = Runnable {
+                        this.setup.install(
+                                serviceName = "Leoz service (${App.instance.name})",
+                                description = "Leoz system service (${App.instance.name})",
+                                mainClass = this.javaClass)
+                    }
+
+                    "uninstall" -> rCommand = Runnable { this.setup.uninstall() }
+                    "start" -> rCommand = Runnable { this.setup.start() }
+                    "stop" -> rCommand = Runnable { this.setup.stop() }
                 }
 
                 if (rCommand != null) {

@@ -9,28 +9,23 @@ import sx.ProcessExecutor
 import sx.platform.PlatformId
 import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.text.Regex
 
 /**
  * Local Storage
  * Created by masc on 26.06.15.
- */
-class Setup {
-    private var log: Log = LogFactory.getLog(this.javaClass)
+ * @param serviceId Short service id, used for leoz-svc identifier: //IS/<serviceId>
+ **/
+class Setup(
+        val serviceId: String) {
 
-    companion object Singleton {
-        private val instance: Setup = Setup()
-        @JvmStatic fun instance(): Setup {
-            return this.instance;
-        }
-    }
+    private var log: Log = LogFactory.getLog(this.javaClass)
 
     private var basePath: Path
     private var binPath: Path
     private var codeSourcePath: Path
     private val leozsvcExecutable: EmbeddedExecutable
 
-    private constructor() {
+    init {
         this.codeSourcePath = Paths.get(this.javaClass.protectionDomain.codeSource.location.toURI())
         if (this.codeSourcePath.toString().endsWith(".jar")) {
             // Running from within jar. Parent directory is supposed to contain bin\ directory for service installation
@@ -86,16 +81,18 @@ class Setup {
 
     /**
      * Installs node as a system service
+     * @param serviceName Service name
+     * @param description Service description
      */
-    fun install(serviceName: String, mainClass: Class<*>) {
+    fun install(serviceName: String, description: String, mainClass: Class<*>) {
         log.info("Installing service")
 
         var classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
 
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
-                "//IS/LeoZ",
+                "//IS/${this.serviceId}",
                 "--DisplayName=${serviceName}",
-                "--Description=LeoZ node system service",
+                "--Description=${description}",
                 "--Install=${this.leozsvcExecutable.file.toString()}",
                 "--Startup=auto",
                 "--LogPath=${StorageConfiguration.instance.logDirectory}",
@@ -125,7 +122,7 @@ class Setup {
      * Determimes service status
      */
     private fun serviceStatus(): ServiceStatus {
-        val pb: ProcessBuilder = ProcessBuilder("sc", "query", "LeoZ")
+        val pb: ProcessBuilder = ProcessBuilder("sc", "query", "${serviceId}")
 
         var output = StringBuffer()
         var error = StringBuffer()
@@ -170,7 +167,7 @@ class Setup {
         log.info("Uninstalling service")
 
         var pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
-                "//DS/LeoZ")
+                "//DS/${serviceId}")
 
         this.execute(pb)
 
@@ -183,7 +180,7 @@ class Setup {
     fun start() {
         log.info("Starting service")
 
-        var pb: ProcessBuilder = ProcessBuilder("net", "start", "LeoZ")
+        var pb: ProcessBuilder = ProcessBuilder("net", "start", "${serviceId}")
         this.execute(pb)
 
         log.info("Started sucessfully")
@@ -200,7 +197,7 @@ class Setup {
 
         log.info("Stopping service")
 
-        var pb: ProcessBuilder = ProcessBuilder("net", "stop", "LeoZ")
+        var pb: ProcessBuilder = ProcessBuilder("net", "stop", "${serviceId}")
         this.execute(pb)
 
         log.info("Stopped successfully")
