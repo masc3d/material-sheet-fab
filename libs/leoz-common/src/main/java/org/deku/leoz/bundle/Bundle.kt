@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.XmlAttribute
 import javax.xml.bind.annotation.XmlElement
 import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
-import kotlin.text.Regex
 
 
 /**
@@ -447,7 +446,7 @@ class Bundle : Serializable {
                 for (entry in entries) {
                     val outputLine = if (entry is Pair<*, *>) {
                         // Get current entry value from entry map
-                        val v = this.entryMap.getRaw(entry.first)
+                        val v = this.entryMap[entry.first]
                         "${entry.first}=${v}"
                     } else entry.toString()
                     writer.write(outputLine)

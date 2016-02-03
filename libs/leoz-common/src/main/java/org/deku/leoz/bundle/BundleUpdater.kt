@@ -91,6 +91,11 @@ class BundleUpdater(
     }
 
     /**
+     * Updater enabled/disabled
+     */
+    var enabled: Boolean = true
+
+    /**
      * Start update for all bundle presets
      * @param presets Presets to update, defaults to internal list of presets
      */
@@ -159,6 +164,12 @@ class BundleUpdater(
         val bundleName = preset.bundleName
 
         log.info("Starting update sequence for bundle [${bundleName}]")
+
+        if (!this.enabled) {
+            log.warn("Updates have been disabled")
+            return
+        }
+
         val nodeId = this.identity.id
         if (nodeId == null) {
             log.warn("Identity not available, aborting update for bundle [${bundleName}]")

@@ -31,6 +31,7 @@ open class UpdaterConfiguration {
     @Named
     @ConfigurationProperties(prefix = "update")
     class Settings {
+        var enabled: Boolean = false
         var rsyncUri: String by Delegates.notNull()
         var rsyncPassword: String by Delegates.notNull()
     }
@@ -73,7 +74,7 @@ open class UpdaterConfiguration {
         val installer = BundleInstaller(
                 StorageConfiguration.instance.bundleInstallationDirectory)
 
-        return BundleUpdater(
+        val updater = BundleUpdater(
                 identity = this.identityConfiguration.identity,
                 installer = installer,
                 remoteRepository = this.updateRepository,
@@ -92,6 +93,8 @@ open class UpdaterConfiguration {
                 jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
                 jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue
         )
+        updater.enabled = this.settings.enabled
+        return updater
     }
 
     /** Broker listener  */
