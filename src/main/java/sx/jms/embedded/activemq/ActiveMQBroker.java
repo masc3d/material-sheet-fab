@@ -25,12 +25,10 @@ import javax.jms.IllegalStateException;
 import javax.jms.Queue;
 import javax.jms.Topic;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /**
@@ -151,7 +149,7 @@ public class ActiveMQBroker extends Broker {
                 throw new IllegalStateException(String.format("Unknown store type [%s]", mStoreType));
         }
 
-
+        mBrokerService.setBrokerName(this.getBrokerName());
         // Required for redelivery plugin/policy
         mBrokerService.setSchedulerSupport(true);
         // Disabling activemq's integrated  shutdown hook, favoring consumer side ordered shutdown
