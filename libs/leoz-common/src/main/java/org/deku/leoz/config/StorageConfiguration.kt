@@ -1,16 +1,11 @@
 package org.deku.leoz.config
 
 import com.google.common.base.Strings
-import com.sun.jna.platform.win32.Advapi32Util
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import sx.io.PermissionUtil
 import java.io.File
-import java.nio.file.FileSystems
-import java.nio.file.Files
-import java.nio.file.attribute.*
-import java.util.*
 import kotlin.properties.Delegates
 
 /**
@@ -115,23 +110,7 @@ abstract class StorageConfiguration(
                 this.baseDirectory.mkdirs()
 
                 if (SystemUtils.IS_OS_WINDOWS) {
-                    // Get file attribute view
-                    var fav = Files.getFileAttributeView(this.baseDirectory.toPath(), AclFileAttributeView::class.java)
-
-                    // Lookup principal
-                    var fs = FileSystems.getDefault()
-                    var ups: UserPrincipalLookupService = fs.userPrincipalLookupService
-
-                    val account = Advapi32Util.getAccountBySid(PermissionUtil.SID_EVERYONE)
-                    var gp = ups.lookupPrincipalByGroupName(account.fqn)
-
-                    // Set ACL
-                    var aclb = AclEntry.newBuilder()
-                    aclb.setPermissions(EnumSet.allOf(AclEntryPermission::class.java))
-                    aclb.setPrincipal(gp)
-                    aclb.setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT)
-                    aclb.setType(AclEntryType.ALLOW)
-                    fav.acl = Collections.singletonList(aclb.build())
+                    PermissionUtil.setAclAllowEverything(this.baseDirectory, principals = PermissionUtil.Win32.fqnEveryone)
                 }
             } catch(e: Exception) {
                 if (this.baseDirectory.exists()) {
