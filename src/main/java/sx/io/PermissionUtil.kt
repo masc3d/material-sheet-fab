@@ -13,24 +13,23 @@ import java.util.*
  */
 object PermissionUtil {
     object Win32 {
-        // Windows account SIDs https://support.microsoft.com/en-us/kb/243330
-        val SID_EVERYONE = "S-1-1-0"
-        val SID_USERS = "S-1-5-32-545"
-        val SID_LOCALSYSTEM = " S-1-5-18"
-
         /**
-         * Returns FQN for a sid
-         * @param sid Account SID
+         * Windows account SIDs
+         * https://support.microsoft.com/en-us/kb/243330
          */
-        fun sidToFqn(sid: String): String {
-            return Advapi32Util.getAccountBySid(sid).fqn
+        enum class SID(val sid: String) {
+            Everyone("S-1-1-0"),
+            Users("S-1-5-32-545"),
+            LocalSystem("S-1-5-18");
+
+            private val account: Advapi32Util.Account by lazy({
+                Advapi32Util.getAccountBySid(sid)
+            })
+
+            val fqn: String by lazy({
+                this.account.fqn
+            })
         }
-
-        /**
-         * FQN of the win32 `Everyone` account
-         */
-        val fqnEveryone: String
-            get() = sidToFqn(SID_EVERYONE)
     }
 
     /**
