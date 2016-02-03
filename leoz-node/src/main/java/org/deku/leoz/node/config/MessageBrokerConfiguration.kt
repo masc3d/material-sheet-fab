@@ -25,6 +25,9 @@ open class MessageBrokerConfiguration {
     @Inject
     private lateinit var peerSettings: RemotePeerSettings
 
+    @Inject
+    private lateinit var identityConfiguration: IdentityConfiguration
+
     // Configuration properties
     var nativePort: Int? = null
     var httpContextPath: String? = null
@@ -34,6 +37,7 @@ open class MessageBrokerConfiguration {
 
         // Broker configuration, must occur before tunnel servlet starts
         log.info("Configuring messaging broker")
+        ActiveMQBroker.instance().brokerName = "leoz-aq-${identityConfiguration.identity.key}"
         ActiveMQBroker.instance().dataDirectory = StorageConfiguration.instance.activeMqDataDirectory
         ActiveMQBroker.instance().nativeTcpPort = this.nativePort
 
