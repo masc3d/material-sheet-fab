@@ -42,6 +42,7 @@ open class EntitySyncConfiguration {
             entityConsumer.request(Country::class.java)
             entityConsumer.request(HolidayCtrl::class.java)
             entityConsumer.request(Route::class.java)
+            entityConsumer.request(RoutingLayer::class.java)
             entityConsumer.request(Sector::class.java)
         }
 
