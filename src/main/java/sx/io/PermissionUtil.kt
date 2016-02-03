@@ -3,13 +3,15 @@ package sx.io
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.attribute.*
+import java.nio.file.attribute.AclFileAttributeView
 
 /**
  * Permission utility functions
  * Created by n3 on 25-Oct-15.
  */
 object PermissionUtil {
+    val SID_EVERYONE = "S-1-1-0"
+
     /**
      * Applies acl and owner of given path to all child objects (files and folders)
      * @param path Root path
