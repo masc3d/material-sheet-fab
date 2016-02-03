@@ -16,11 +16,25 @@ class JarManifest(type: Class<out Any>) {
         this.manifest = jar.manifest
     }
 
+    /**
+     * Implementation name or empty string if it doesn't exist
+     */
     val implementationName: String by lazy({
-        manifest.mainAttributes.getValue("Implementation-Name")
+        try {
+            manifest.mainAttributes.getValue("Implementation-Name")
+        } catch(e: IllegalArgumentException) {
+            ""
+        }
     })
 
+    /**
+     * Implementation version or empty string if it doesn't exist
+     */
     val implementationVersion: String by lazy({
-        manifest.mainAttributes.getValue("Implementation-Version")
+        try {
+            manifest.mainAttributes.getValue("Implementation-Version")
+        } catch(e: IllegalArgumentException) {
+            ""
+        }
     })
 }

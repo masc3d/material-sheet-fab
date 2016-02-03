@@ -1,5 +1,6 @@
 package org.deku.leoz.boot
 
+import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
@@ -50,7 +51,7 @@ class Application : javafx.application.Application() {
         @Parameter(names = arrayOf("--force-download"), description = "Force download")
         var forceDownload: Boolean = false
 
-        @Parameter(names = arrayOf("--version-pattern"), description = "Version pattern override")
+        @Parameter(names = arrayOf("--version"), description = "Version pattern override")
         var versionPattern: String = "+RELEASE"
 
         @Parameter(names = arrayOf("--uninstall"), description = "Uninstall bundle")
@@ -80,6 +81,10 @@ class Application : javafx.application.Application() {
     /** Application process exit code */
     var exitCode: Int = 0
 
+    /**
+     * Performs self-instllation of leoz-boot (into leoz bundles directory)
+     * @param onProgress Progress callback
+     */
     fun selfInstall(onProgress: ((p: Double) -> Unit) = {}) {
         if (StorageConfiguration.nativeBundleBasePath == null)
             return
@@ -117,6 +122,26 @@ class Application : javafx.application.Application() {
         Application.set(this)
 
         try {
+            // Leoz bundle command interface
+            if (this.parameters.raw.size == 1) {
+                val command = this.parameters.raw[0].toLowerCase().trim()
+
+                var rCommand: Runnable? = null
+                when (command) {
+                    "install" -> rCommand = Runnable { }
+                    "uninstall" -> rCommand = Runnable { }
+                    "start" -> rCommand = Runnable { }
+                    "stop" -> rCommand = Runnable { }
+                }
+
+                // No implementation (needed) just yet
+                if (rCommand != null)
+                    System.exit(0)
+            }
+
+            // Parse command line params
+            JCommander(Parameters, *instance.parameters.raw.toTypedArray())
+
             this.primaryStage = primaryStage
 
             // Uncaught threaded exception handler
@@ -144,7 +169,11 @@ class Application : javafx.application.Application() {
             primaryStage.initStyle(StageStyle.UNDECORATED)
             primaryStage.y = (screenBounds.height - rootBounds.height) / 2
             primaryStage.x = (screenBounds.width - rootBounds.width) / 2
-            primaryStage.show()
+            if (Parameters.hideUi) {
+                primaryStage.hide()
+            } else {
+                primaryStage.show()
+            }
 
             // Dismiss splash
             if (splash != null) {
@@ -153,6 +182,7 @@ class Application : javafx.application.Application() {
         } catch(e: Exception) {
             log.error(e.message, e)
             this.exitCode = -1
+            this.stop()
         }
     }
 

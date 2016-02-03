@@ -1,6 +1,5 @@
 package org.deku.leoz.boot.fx
 
-import com.beust.jcommander.JCommander
 import com.google.common.base.Strings
 import javafx.application.Platform
 import javafx.event.EventHandler
@@ -14,6 +13,7 @@ import org.deku.leoz.boot.config.BundleRepositoryConfiguration
 import org.deku.leoz.boot.config.LogConfiguration
 import org.deku.leoz.boot.config.StorageConfiguration
 import sx.fx.TextAreaLogAppender
+import sx.platform.JvmUtil
 import sx.rsync.Rsync
 import java.awt.GraphicsEnvironment
 import java.net.URL
@@ -66,6 +66,7 @@ class MainController : Initializable {
         uxClose.visibleProperty().value = false
         uxProgressBar.progress = 0.0
 
+        // TODO. separate main installation logic from UI controller
         thread {
             var verb: String = "Initializing"
             var verbPast: String = "Initialized"
@@ -73,16 +74,19 @@ class MainController : Initializable {
             try {
                 LogConfiguration.initialize()
                 LogConfiguration.addAppender(TextAreaLogAppender(uxTextArea, 1000))
+
+                StorageConfiguration.initalize()
                 LogConfiguration.logFile = StorageConfiguration.logFile
 
+                log.info(JvmUtil.shortInfoText)
+
                 try {
-                    log.info("leoz-boot v${Application.instance.jarManifest.implementationVersion}")
+                    log.info("leoz-boot [${Application.instance.jarManifest.implementationVersion}] ${JvmUtil.shortInfoText}")
                 } catch(e: Exception) {
                     // Printing jar manifest will fail when running from IDE eg. that's ok.
                 }
 
-                // Parse command line params
-                JCommander(Application.Parameters, *Application.instance.parameters.raw.toTypedArray())
+
                 if (Strings.isNullOrEmpty(Application.Parameters.bundle)) {
                     // Nothing to do
                     throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting");

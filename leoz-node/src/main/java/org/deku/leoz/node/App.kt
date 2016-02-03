@@ -90,13 +90,8 @@ open class App :
      * Application version.
      * As the version is read from jar manifest, property will be not aailable when run from anywhere else than jar
      */
-    val version: String by lazy({
-        try {
-            this.jarManifest.implementationVersion
-        } catch(e: Exception) {
-            "n/a"
-        }
-    })
+    val version: String
+        get() = this.jarManifest.implementationVersion
 
     private var bundlePathLock: FileLock by Delegates.notNull()
 
