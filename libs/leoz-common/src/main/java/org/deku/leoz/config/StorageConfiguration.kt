@@ -5,6 +5,7 @@ import com.sun.jna.platform.win32.Advapi32Util
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import sx.io.PermissionUtil
 import java.io.File
 import java.nio.file.FileSystems
 import java.nio.file.Files
@@ -121,7 +122,7 @@ abstract class StorageConfiguration(
                     var fs = FileSystems.getDefault()
                     var ups: UserPrincipalLookupService = fs.userPrincipalLookupService
 
-                    val account = Advapi32Util.getAccountBySid("S-1-1-0")
+                    val account = Advapi32Util.getAccountBySid(PermissionUtil.SID_EVERYONE)
                     var gp = ups.lookupPrincipalByGroupName(account.fqn)
 
                     // Set ACL
