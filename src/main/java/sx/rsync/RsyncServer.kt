@@ -129,13 +129,13 @@ class RsyncServer(
 
             for (module in this.modules) {
                 var section = ini.add(module.name)
-                section.add("path", Rsync.URI(module.path, asDirectory = false).toString())
+                section.add("path", Rsync.URI(module.path, asDirectory = false))
                 if (module.secretsFile != null)
-                    section.add("secrets file", Rsync.URI(module.secretsFile!!, asDirectory = false).toString())
+                    section.add("secrets file", Rsync.URI(module.secretsFile!!, asDirectory = false))
                 section.add("auth users", module.permissions
                         .asSequence()
                         .map { entry -> "${entry.key}:${entry.value}" }
-                        .joinToString(" "))
+                        .joinToString(" ") as Any)
             }
 
             ini.store(os)
