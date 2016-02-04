@@ -33,7 +33,7 @@ buildscript {
         v_jna = "4.+"
         v_jooq = "3.+"
         v_junit = "4.+"
-        v_kotlin = "1.+"
+        v_kotlin = "1.0.0-beta-4589"
         v_kryo = "3.+"
         v_leveldb = "+"
         v_logback = "1.+"
@@ -193,6 +193,9 @@ subprojects {
                 } else
                 if (details.requested.group == 'org.javassist') {
                     details.useVersion '3.+'
+                } else
+                if (details.requested.group == 'org.jetbrains.kotlin') {
+                    details.useVersion v_kotlin
                 } else
                 if (details.requested.group == 'org.jboss.resteasy') {
                     details.useVersion v_resteasy
