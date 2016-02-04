@@ -122,24 +122,16 @@ class Application : javafx.application.Application() {
         Application.set(this)
 
         try {
-            // Leoz bundle command interface
-            if (this.parameters.raw.size == 1) {
-                val command = this.parameters.raw[0].toLowerCase().trim()
-
-                var rCommand: Runnable? = null
-                when (command) {
-                    "install" -> rCommand = Runnable { }
-                    "uninstall" -> rCommand = Runnable { }
-                    "start" -> rCommand = Runnable { }
-                    "stop" -> rCommand = Runnable { }
-                }
-
-                // No implementation (needed) just yet
-                if (rCommand != null)
-                    System.exit(0)
+            // Leoz bundle process commandline interface
+            val setup = Setup()
+            val command = setup.parse(this.parameters.raw.toTypedArray())
+            if (command != null) {
+                command.run()
+                System.exit(0)
+                return
             }
 
-            // Parse command line params
+            // Parse leoz-boot command line params
             JCommander(Parameters, *instance.parameters.raw.toTypedArray())
 
             this.primaryStage = primaryStage

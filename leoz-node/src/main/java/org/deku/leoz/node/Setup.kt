@@ -4,6 +4,7 @@ import com.google.common.base.Strings
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.config.StorageConfiguration
+import org.deku.leoz.bundle.BundleProcessInterface
 import sx.EmbeddedExecutable
 import sx.ProcessExecutor
 import sx.platform.PlatformId
@@ -16,20 +17,29 @@ import java.nio.file.Paths
  * @param serviceId Short service id, used for leoz-svc identifier: //IS/<serviceId>
  **/
 class Setup(
-        val serviceId: String) {
+        val serviceId: String,
+        val mainClass: Class<*>) : BundleProcessInterface() {
 
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     private var basePath: Path
-    private var binPath: Path
-    private var codeSourcePath: Path
-    private val leozsvcExecutable: EmbeddedExecutable
+    private val binPath: Path
+
+    private val leozsvcExecutable: EmbeddedExecutable by lazy({
+        EmbeddedExecutable("leoz-svc")
+    })
+
+    private enum class ServiceStatus {
+        STOPPED,
+        NOT_STOPPED,
+        NOT_FOUND
+    }
 
     init {
-        this.codeSourcePath = Paths.get(this.javaClass.protectionDomain.codeSource.location.toURI())
-        if (this.codeSourcePath.toString().endsWith(".jar")) {
+        val codeSourcePath = Paths.get(this.javaClass.protectionDomain.codeSource.location.toURI())
+        if (codeSourcePath.toString().endsWith(".jar")) {
             // Running from within jar. Parent directory is supposed to contain bin\ directory for service installation
-            this.basePath = this.codeSourcePath.parent.parent
+            this.basePath = codeSourcePath.parent.parent
             this.binPath = this.basePath.resolve("bin");
         } else {
             // Assume running from ide, working dir plus arch bin path
@@ -37,9 +47,89 @@ class Setup(
             this.binPath = this.basePath.resolve("bin").resolve(PlatformId.current().toString())
         }
 
-        leozsvcExecutable = EmbeddedExecutable("leoz-svc")
+        log.trace("Setup base path [${basePath}] bin path [${binPath}]")
+    }
 
-        log.info("Setup base path [${basePath}] bin path [${binPath}]")
+    /**
+     * Installs node as a system service
+     * @param serviceName Service name
+     * @param description Service description
+     */
+    override fun install() {
+        log.info("Installing service")
+
+        var classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
+
+        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
+                "//IS/${this.serviceId}",
+                "--DisplayName=Leoz service (${this.serviceId})",
+                "--Description=Leoz system service (${this.serviceId})",
+                "--Install=${this.leozsvcExecutable.file.toString()}",
+                "--Startup=auto",
+                "--LogPath=${StorageConfiguration.instance.logDirectory}",
+                "--LogPrefix=leoz-svc",
+                "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
+                "--StartMode=jvm",
+                "--StopMode=jvm",
+                "--StartClass=${mainClass.canonicalName}",
+                "--StartMethod=main",
+                "--StopClass=${mainClass.canonicalName}",
+                "--StopMethod=stop",
+                "--Classpath=${classPath}")
+
+        log.trace("Command ${java.lang.String.join(" ", pb.command())}")
+        this.execute(pb)
+
+        log.info("Installed successfully")
+    }
+
+
+    /**
+     * Uninstalls node system service
+     */
+    override fun uninstall() {
+        if (serviceStatus() == ServiceStatus.NOT_FOUND) {
+            log.info("Service not found. That's ok")
+            return
+        }
+
+        log.info("Uninstalling service")
+
+        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
+                "//DS/${serviceId}")
+
+        this.execute(pb)
+
+        log.info("Uninstalled successfully")
+    }
+
+    /**
+     * Start
+     */
+    override fun start() {
+        log.info("Starting service")
+
+        var pb: ProcessBuilder = ProcessBuilder("net", "start", "${serviceId}")
+        this.execute(pb)
+
+        log.info("Started sucessfully")
+    }
+
+    /**
+     * Stop
+     */
+    override fun stop() {
+        if (serviceStatus() != ServiceStatus.NOT_STOPPED) {
+            log.info("Service does not need to be stopped")
+            return
+        }
+
+        log.info("Stopping service")
+
+        var pb: ProcessBuilder = ProcessBuilder("net", "stop", "${serviceId}")
+        this.execute(pb)
+
+        log.info("Stopped successfully")
     }
 
     /**
@@ -80,45 +170,6 @@ class Setup(
     }
 
     /**
-     * Installs node as a system service
-     * @param serviceName Service name
-     * @param description Service description
-     */
-    fun install(serviceName: String, description: String, mainClass: Class<*>) {
-        log.info("Installing service")
-
-        var classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
-
-        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
-                "//IS/${this.serviceId}",
-                "--DisplayName=${serviceName}",
-                "--Description=${description}",
-                "--Install=${this.leozsvcExecutable.file.toString()}",
-                "--Startup=auto",
-                "--LogPath=${StorageConfiguration.instance.logDirectory}",
-                "--LogPrefix=leoz-svc",
-                "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
-                "--StartMode=jvm",
-                "--StopMode=jvm",
-                "--StartClass=${mainClass.canonicalName}",
-                "--StartMethod=main",
-                "--StopClass=${mainClass.canonicalName}",
-                "--StopMethod=stop",
-                "--Classpath=${classPath}")
-
-        log.trace("Command ${java.lang.String.join(" ", pb.command())}")
-        this.execute(pb)
-
-        log.info("Installed successfully")
-    }
-
-    private enum class ServiceStatus {
-        STOPPED,
-        NOT_STOPPED,
-        NOT_FOUND
-    }
-
-    /**
      * Determimes service status
      */
     private fun serviceStatus(): ServiceStatus {
@@ -153,53 +204,5 @@ class Setup(
         }
 
         return ServiceStatus.NOT_STOPPED
-    }
-
-    /**
-     * Uninstalls node system service
-     */
-    fun uninstall() {
-        if (serviceStatus() == ServiceStatus.NOT_FOUND) {
-            log.info("Service not found. That's ok")
-            return
-        }
-
-        log.info("Uninstalling service")
-
-        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
-                "//DS/${serviceId}")
-
-        this.execute(pb)
-
-        log.info("Uninstalled successfully")
-    }
-
-    /**
-     * Start
-     */
-    fun start() {
-        log.info("Starting service")
-
-        var pb: ProcessBuilder = ProcessBuilder("net", "start", "${serviceId}")
-        this.execute(pb)
-
-        log.info("Started sucessfully")
-    }
-
-    /**
-     * Stop
-     */
-    fun stop() {
-        if (serviceStatus() != ServiceStatus.NOT_STOPPED) {
-            log.info("Service does not need to be stopped")
-            return
-        }
-
-        log.info("Stopping service")
-
-        var pb: ProcessBuilder = ProcessBuilder("net", "stop", "${serviceId}")
-        this.execute(pb)
-
-        log.info("Stopped successfully")
     }
 }

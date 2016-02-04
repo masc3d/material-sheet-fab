@@ -4,6 +4,7 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
+import org.deku.leoz.bundle.BundleProcessInterface
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration
 import org.springframework.boot.builder.SpringApplicationBuilder
@@ -62,13 +63,6 @@ open class Main {
     private val app = App.instance
 
     /**
-     * Application/service setup
-     */
-    private val setup by lazy({
-        Setup(App.instance.name)
-    })
-
-    /**
      * Main instance entry point
      * @param args process arguments
      * */
@@ -76,48 +70,31 @@ open class Main {
         try {
             log.trace("Main arguments [${args!!.joinToString(", ")}]")
 
-            // Support for command line parameters, setup commands
-            if (args.size > 0) {
-                val command = args[0].toLowerCase().trim()
-
-                var rCommand: Runnable? = null
-
-                when (command) {
-                    "install" -> rCommand = Runnable {
-                        this.setup.install(
-                                serviceName = "Leoz service (${App.instance.name})",
-                                description = "Leoz system service (${App.instance.name})",
-                                mainClass = this.javaClass)
-                    }
-
-                    "uninstall" -> rCommand = Runnable { this.setup.uninstall() }
-                    "start" -> rCommand = Runnable { this.setup.start() }
-                    "stop" -> rCommand = Runnable { this.setup.stop() }
+            // Support for leoz bundle process commandline interface
+            val setup = Setup(serviceId = App.instance.name, mainClass = App.instance.applicationClass)
+            val command = setup.parse(args)
+            if (command != null) {
+                try {
+                    // Setup should write to dedicated logfile
+                    LogConfiguration.instance().logFile = StorageConfiguration.instance.setupLogFile
+                    LogConfiguration.instance().initialize()
+                    // Run setup command
+                    command.run()
+                } catch (e: Exception) {
+                    log.error(e.message, e)
+                    System.exit(-1)
+                } finally {
+                    LogConfiguration.instance().close()
                 }
-
-                if (rCommand != null) {
-                    try {
-                        LogConfiguration.instance().logFile = StorageConfiguration.instance.setupLogFile
-                        LogConfiguration.instance().initialize()
-                        rCommand.run()
-                    } catch (e: Exception) {
-                        log.error(e.message, e)
-                        System.exit(-1)
-                        throw e
-                    } finally {
-                        LogConfiguration.instance().close()
-                    }
-                    System.exit(0)
-                }
+            } else {
+                // Initialize and start application
+                App.instance.initialize()
+                SpringApplicationBuilder()
+                        .showBanner(false)
+                        .sources(this.javaClass)
+                        .profiles(this.app.profile)
+                        .listeners(this.app).run(*args)
             }
-
-            // Initialize and start application
-            App.instance.initialize()
-            SpringApplicationBuilder()
-                    .showBanner(false)
-                    .sources(this.javaClass)
-                    .profiles(this.app.profile)
-                    .listeners(this.app).run(*args)
         } catch (e: Exception) {
             e.printStackTrace()
         }
