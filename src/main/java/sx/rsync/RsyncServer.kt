@@ -20,7 +20,7 @@ class RsyncServer(
         /** Path containing configuration files */
         val configurationPath: File,
         /** Embedded configuration */
-        val configuration: RsyncServer.Configuration? = null) : Rsync(), Disposable {
+        val configuration: RsyncServer.Configuration? = null) : Disposable {
 
     val log = LogFactory.getLog(RsyncClient::class.java)
     var processExecutor: ProcessExecutor? = null
