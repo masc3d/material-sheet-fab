@@ -10,7 +10,7 @@ import java.util.*
 /**
  * Created by masc on 15.08.15.
  */
-open class Rsync() {
+class Rsync() {
     companion object {
         val log = LogFactory.getLog(Rsync::class.java)
 
