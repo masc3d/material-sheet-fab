@@ -1,8 +1,4 @@
 buildscript {
-    ext {
-        v_kotlin = "1.+"
-        v_jna = "4.+"
-    }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
@@ -18,10 +14,6 @@ apply plugin: 'kotlin'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 version = '1.0'
-
-ext {
-    v_activemq = "5.+"
-}
 
 repositories {
     mavenCentral()
