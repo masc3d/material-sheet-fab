@@ -1,4 +1,3 @@
-import sx.platform.*
 import org.gradle.logging.ShowStacktrace
 
 import java.nio.file.Paths
@@ -33,7 +32,7 @@ buildscript {
         v_jna = "4.+"
         v_jooq = "3.+"
         v_junit = "4.+"
-        v_kotlin = "1.0.0-beta-4589"
+        v_kotlin = "1.+"
         v_kryo = "3.+"
         v_leveldb = "+"
         v_logback = "1.+"

@@ -235,7 +235,7 @@ class Bundle : Serializable {
         val nPath = Paths.get(this.path!!.toURI())
 
         // Hashed check list to verify left-overs
-        var checkList = this.fileEntries.toMapBy({ s -> s.uriPath }) as HashMap
+        var checkList = this.fileEntries.associateBy { s -> s.uriPath } as HashMap
 
         for (entry in this.fileEntries.asSequence().filter { e -> !e.uriPath!!.equals(MANIFEST_FILENAME) }) {
             val path = Paths.get(nPath.toUri().resolve(entry.uriPath))

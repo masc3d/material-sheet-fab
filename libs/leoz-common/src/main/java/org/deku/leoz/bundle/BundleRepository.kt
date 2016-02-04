@@ -153,7 +153,7 @@ class BundleRepository(
         return filenames
                 .filter { f -> this.isValidFilename(f) }
                 .map { f -> PlatformId.parse(f) }
-                .toArrayList()
+                .toMutableList()
     }
 
     /**
@@ -294,7 +294,7 @@ class BundleRepository(
                 File(destPath, osxBundleName).mkdirs()
         }
 
-        rc.copyDestinations = copyDestinations.toArrayList()
+        rc.copyDestinations = copyDestinations.toMutableList()
 
         log.info("Synchronizing [${source}] -> [${destination}]")
 

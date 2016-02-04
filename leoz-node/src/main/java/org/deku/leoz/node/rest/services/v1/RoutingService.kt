@@ -115,7 +115,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
                     "Sender: ")
 
             for (s in senderParticipants) {
-                if (!possibleSenderSectors.containsRaw(s))
+                if (!possibleSenderSectors.contains(s.sector))
                     possibleSenderSectors.add(s.sector)
             }
 
@@ -141,7 +141,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
                     "Consignee: ")
 
             for (c in consigneeParticipants) {
-                if (!possibleSenderSectors.containsRaw(c))
+                if (!possibleSenderSectors.contains(c.sector))
                     possibleSenderSectors.add(c.sector)
             }
 
