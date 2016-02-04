@@ -5,16 +5,22 @@ import org.apache.commons.logging.LogFactory
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 /**
  * Process executor with threaded stream reading support.
  * Unlike with process builder, process executor will attempt to destroy the process instance when it's disposed
  * or the jvm shutdowns down.
  * @param processBuilder Process builder
+ * @param terminationTimeout Timeout on graceful termination before terminating process forcibly.
+ * This timeout is applied when the process is terminated passively via shutdown hook or actively
+ * when calling the stop method.
  * @param outputHandler Stream handler implementation
  */
 class ProcessExecutor @JvmOverloads constructor(
         private val processBuilder: ProcessBuilder,
+        private val terminationTimeout: Duration = Duration.ofSeconds(10),
         private val outputHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler(),
         private val errorHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler())
 :
@@ -87,10 +93,7 @@ class ProcessExecutor @JvmOverloads constructor(
             val shutdownHook = object : Thread("ProcessExecutor shutdown hook") {
                 override fun run() {
                     shutdownHookInvoked = true
-                    if (process!!.isAlive) {
-                        log.warn("Terminating process [${processBuilder.command().get(0)}]")
-                        process!!.destroy()
-                    }
+                    process!!.destroyReliably(terminationTimeout)
                 }
             }
 
@@ -190,13 +193,33 @@ class ProcessExecutor @JvmOverloads constructor(
     }
 
     /**
+     * Destroys a process reliably.
+     * Attempts to terminate the process gracefully, but will destroy forcible after timeout elapsed
+     */
+    fun Process.destroyReliably(timeout: Duration) {
+        if (this.isAlive) {
+            val processExecutable = processBuilder.command().get(0)
+            log.info("Terminating process gracefully [${processExecutable}]")
+            this.destroy()
+            if (!this.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
+                log.warn("Failed to terminate gracefully, destroying forcibly [${processExecutable}")
+                this.destroyForcibly()
+                this.waitFor()
+                log.info("Process terminated forcibly [${processExecutable}]")
+            } else {
+                log.info("Process terminated gracefully [${processExecutable}]")
+            }
+        }
+    }
+
+    /**
      * Stop/destroy process
      */
     @Synchronized fun stop() {
         this.stopping = true
 
-        if (process != null && process!!.isAlive) {
-            process!!.destroy()
+        if (process != null) {
+            process!!.destroyReliably(terminationTimeout)
         }
 
         // Wait for stream reader threads to terminate
