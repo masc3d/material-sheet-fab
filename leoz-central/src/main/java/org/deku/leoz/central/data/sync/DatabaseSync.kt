@@ -165,6 +165,7 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
         private fun convert(sr: MstRouteRecord): Route {
             val d = Route()
 
+            d.id = sr.id.toLong()
             d.layer = sr.layer
             d.country = sr.country
             d.zipFrom = sr.zipfrom

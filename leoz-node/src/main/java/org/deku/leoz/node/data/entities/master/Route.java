@@ -1,7 +1,5 @@
 package org.deku.leoz.node.data.entities.master;
 
-import org.eclipse.persistence.annotations.CacheIndex;
-import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.config.QueryHints;
 
@@ -62,7 +60,6 @@ public class Route implements Serializable {
     }
 
     @Id
-    @GeneratedValue
     public Long getId() {
         return id;
     }
