@@ -60,18 +60,18 @@ public class EntityPublisher extends SpringJmsListener {
      * @param timestamp
      */
     public void publish(Class entityType, Timestamp timestamp) throws JMSException {
-        Channel mc = new Channel(
+        try (Channel mc = new Channel(
                 ActiveMQConfiguration.getInstance().getBroker().getConnectionFactory(),
                 ActiveMQConfiguration.getInstance().getNodeEntitySyncTopic(),
                 this.getConverter(),
-                Duration.ofSeconds(10),
                 false,
                 Channel.DeliveryMode.NonPersistent,
-                Duration.ofMinutes(5));
+                Duration.ofMinutes(5),
+                null,
+                Duration.ofSeconds(10))) {
 
-        mc.send(new EntityStateMessage(entityType, timestamp));
-
-        mc.close();
+            mc.send(new EntityStateMessage(entityType, timestamp));
+        }
     }
 
     @Override
@@ -104,8 +104,6 @@ public class EntityPublisher extends SpringJmsListener {
         mLog.debug(euMessage);
 
         MessageProducer mp = session.createProducer(message.getJMSReplyTo());
-        //mp.setPriority(1);
-        mp.setTimeToLive(TimeUnit.MINUTES.toMillis(1));
         mp.send(messageConverter.toMessage(euMessage, session));
 
         if (count > 0) {

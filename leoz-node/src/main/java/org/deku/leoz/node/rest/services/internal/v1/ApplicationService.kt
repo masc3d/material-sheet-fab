@@ -49,15 +49,12 @@ class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationSe
     override fun notifyBundleUpdate(bundleName: String) {
         // TODO. centralize channel(s) into common configuration
         val mc = Channel(
-                ActiveMQConfiguration.instance.broker.connectionFactory,
-                ActiveMQConfiguration.instance.nodeNotificationTopic,
-                DefaultConverter(
+                connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
+                destination = ActiveMQConfiguration.instance.nodeNotificationTopic,
+                converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP),
-                Duration.ofSeconds(10),
-                false,
-                Channel.DeliveryMode.NonPersistent,
-                Duration.ofMinutes(5))
+                jmsTtl = Duration.ofMinutes(5))
 
         mc.send(UpdateInfo(bundleName))
     }

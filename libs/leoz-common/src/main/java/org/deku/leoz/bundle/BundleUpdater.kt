@@ -181,8 +181,7 @@ class BundleUpdater(
         // Request currently assigned version for this bundle and node
         val updateInfo = this.updateInfoRequestChannel.sendReceive(
                 UpdateInfoRequest(nodeId, bundleName),
-                UpdateInfo::class.java,
-                useTemporaryResponseQueue = true)
+                UpdateInfo::class.java)
 
         log.info("Update info [${updateInfo}]")
 

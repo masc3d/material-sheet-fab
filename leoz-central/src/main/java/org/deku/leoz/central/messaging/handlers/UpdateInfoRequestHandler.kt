@@ -25,9 +25,7 @@ class UpdateInfoRequestHandler
         val channel = Channel(
                 session = session,
                 destination = jmsMessage.jmsReplyTo,
-                converter = converter,
-                jmsDeliveryMode = Channel.DeliveryMode.NonPersistent,
-                jmsTtl = Duration.ofSeconds(10))
+                converter = converter)
 
         channel.send(UpdateInfo(
                 updateInfoRequest.bundleName,

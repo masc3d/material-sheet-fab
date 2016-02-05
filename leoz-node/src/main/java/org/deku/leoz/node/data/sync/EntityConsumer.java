@@ -86,6 +86,7 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
             Function<String, String> lfmt = s -> "[" + entityType.getCanonicalName() + "]" + " " + s;
 
             TemporaryQueue receiveQueue = null;
+            MessageConsumer mc = null;
             try {
                 mConverter.resetStatistics();
 
@@ -120,10 +121,12 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
                 mp.send(msg);
 
                 // Receive entity update message
-                MessageConsumer mc = session.createConsumer(receiveQueue);
+                session.createConsumer(receiveQueue);
                 msg = mc.receive(RECEIVE_TIMEOUT);
+
                 if (msg == null)
                     throw new TimeoutException("Timeout while waiting for entity update message");
+
                 EntityUpdateMessage euMessage = (EntityUpdateMessage) mConverter.fromMessage(msg);
 
                 mLog.debug(lfmt.apply(euMessage.toString()));
@@ -205,6 +208,11 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
                 mLog.error(lfmt.apply(e.getMessage()));
             } catch (Exception e) {
                 mLog.error(lfmt.apply(e.getMessage()), e);
+            } finally {
+                if (mc != null)
+                    mc.close();
+                if (receiveQueue != null)
+                    receiveQueue.delete();
             }
 
             return null;
