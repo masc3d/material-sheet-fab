@@ -4,40 +4,39 @@ import org.apache.commons.logging.LogFactory
 import sx.Action
 import sx.Disposable
 import sx.LazyInstance
+import java.io.Closeable
 import java.time.Duration
 import java.util.concurrent.TimeoutException
+import java.util.function.Supplier
 import javax.jms.*
 
 /**
  * Lightweight messaging channel with send/receive and automatic message conversion capabilities.
  * Caches session and message consumer/producer.
  * Created by masc on 06.07.15.
+ * @param connectionFactory JMS connection factory
+ * @param session JMS sesssion. Optional, if omitted a dedicated session will be created for this channel.
+ * @param destination JMS destination
+ * @param converter Message converter
+ * @param jmsSessionTransacted Dedicated session for this channel should be transacted. Defaults to true
+ * @param jmsTtl Time to live for messages sent through this channel
+ * @param jmsPriority Priority for messages sent through this channel
+ * @param receiveTimeout Default receive timeout for receive/sendReceive calls. Defaults to 10 seconds.
+ * A timeout of zero blocks indefinitely.
  */
 class Channel private constructor(
         private val connectionFactory: ConnectionFactory? = null,
         session: Session? = null,
         private val destination: Destination,
         private val converter: Converter,
-        private val receiveTimeout: Duration = Duration.ofSeconds(10),
-        private val jmsSessionTransacted: Boolean,
-        private val jmsDeliveryMode: Channel.DeliveryMode,
-        private val jmsTtl: Duration,
-        private val jmsPriority: Int? = null)
+        private val jmsSessionTransacted: Boolean = Channel.JMS_TRANSACTED,
+        private val jmsDeliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE,
+        private val jmsTtl: Duration = Channel.JMS_TTL,
+        private val jmsPriority: Int? = null,
+        private val receiveTimeout: Duration = Channel.RECEIVE_TIMEOUT)
 :
         Disposable,
-        AutoCloseable {
-    private val log = LogFactory.getLog(this.javaClass)
-    private val connection = LazyInstance<Connection>()
-    private val session = LazyInstance<Session>()
-    private val consumer = LazyInstance<MessageConsumer>()
-    private var sessionCreated = false
-
-    private val temporaryResponseQueue: Destination by lazy ({
-        this.session.get().createTemporaryQueue()
-    })
-    private val temporaryResponseQueueConsumer: MessageConsumer by lazy ({
-        this.session.get().createConsumer(this.temporaryResponseQueue)
-    })
+        Closeable {
 
     /**
      * c'tor for creating channel using a new connection created via connection factory
@@ -45,11 +44,11 @@ class Channel private constructor(
     @JvmOverloads constructor(connectionFactory: ConnectionFactory,
                               destination: Destination,
                               converter: Converter,
-                              receiveTimeout: Duration = Duration.ofSeconds(10),
-                              jmsSessionTransacted: Boolean = true,
-                              jmsDeliveryMode: Channel.DeliveryMode,
-                              jmsTtl: Duration,
-                              jmsPriority: Int? = null) : this(
+                              jmsSessionTransacted: Boolean = Channel.JMS_TRANSACTED,
+                              jmsDeliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE,
+                              jmsTtl: Duration = Channel.JMS_TTL,
+                              jmsPriority: Int? = null,
+                              receiveTimeout: Duration = Channel.RECEIVE_TIMEOUT) : this(
             connectionFactory = connectionFactory,
             session = null,
             destination = destination,
@@ -65,12 +64,12 @@ class Channel private constructor(
      * c'tor for creating channel using an existing session
      */
     @JvmOverloads constructor(session: Session,
-                destination: Destination,
-                converter: Converter,
-                receiveTimeout: Duration = Duration.ofSeconds(10),
-                jmsDeliveryMode: Channel.DeliveryMode,
-                jmsTtl: Duration,
-                jmsPriority: Int? = null) : this(
+                              destination: Destination,
+                              converter: Converter,
+                              jmsDeliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE,
+                              jmsTtl: Duration = Channel.JMS_TTL,
+                              jmsPriority: Int? = null,
+                              receiveTimeout: Duration = Channel.RECEIVE_TIMEOUT) : this(
             connectionFactory = null,
             session = session,
             destination = destination,
@@ -82,6 +81,36 @@ class Channel private constructor(
             jmsPriority = jmsPriority) {
     }
 
+    companion object {
+        private val RECEIVE_TIMEOUT = Duration.ofSeconds(10)
+        private val JMS_TTL = Duration.ZERO
+        private val JMS_TRANSACTED = true
+        private val JMS_DELIVERY_MODE = Channel.DeliveryMode.NonPersistent
+    }
+
+    private val log = LogFactory.getLog(this.javaClass)
+    private val connection = LazyInstance<Connection>()
+    private val session = LazyInstance<Session>()
+    private val consumer = LazyInstance<MessageConsumer>()
+    private var sessionCreated = false
+
+    /**
+     * Temporary response queue
+     */
+    private val temporaryResponseQueue = LazyInstance<TemporaryQueue>({
+        this.session.get().createTemporaryQueue()
+    })
+
+    /**
+     * Temporary response queue consumer
+     */
+    private var temporaryResponseQueueConsumer = LazyInstance<MessageConsumer>({
+        this.session.get().createConsumer(this.temporaryResponseQueue.get())
+    })
+
+    /**
+     * Delivery modes
+     */
     enum class DeliveryMode(val value: Int) {
         NonPersistent(javax.jms.DeliveryMode.NON_PERSISTENT),
         Persistent(javax.jms.DeliveryMode.PERSISTENT)
@@ -94,6 +123,7 @@ class Channel private constructor(
         this.connection.set(fun(): Connection {
             if (this.connectionFactory == null)
                 throw IllegalStateException("Channel does not have connection factory")
+
             var cn = connectionFactory.createConnection()
             cn!!.start()
             return cn
@@ -114,6 +144,17 @@ class Channel private constructor(
         this.consumer.set(fun(): MessageConsumer {
             return this.session.get().createConsumer(destination)
         })
+    }
+
+    /**
+     * Deletes temporary response queue and its consumer
+     */
+    private fun deleteTemporaryResponseQueue() {
+        if (this.temporaryResponseQueue.isSet) {
+            this.temporaryResponseQueue.get().delete()
+            this.temporaryResponseQueue.reset()
+            this.temporaryResponseQueueConsumer.reset()
+        }
     }
 
     /**
@@ -152,8 +193,14 @@ class Channel private constructor(
         return this.receive(this.consumer.get(), messageType)
     }
 
+    /**
+     * Receive message
+     */
     private fun <T> receive(consumer: MessageConsumer, messageType: Class<T>): T {
-        val jmsMessage = consumer.receive(this.receiveTimeout.toMillis())
+        val jmsMessage = if (this.receiveTimeout == null)
+            consumer.receive()
+        else
+            consumer.receive(this.receiveTimeout.toMillis())
 
         if (jmsMessage == null)
             throw TimeoutException("Timeout while waiting for message [${messageType.simpleName}]")
@@ -162,26 +209,34 @@ class Channel private constructor(
     }
 
     /**
-     * Request/response type send and receive
+     * Request/response type send and receive using a temporary response queue
      * @param request Request message
      * @param responseType Response class type
      * @param requestMessageConfigurer Request message configurer
-     * @param useTemporaryResponseQueue Use a temporary response queue
+     * @param preserveTemporaryResponseQueue Preserve temporary response queue (more efficient when channel is reused)
      */
     @Throws(TimeoutException::class)
     fun <T> sendReceive(
             request: Any,
             responseType: Class<T>,
             requestMessageConfigurer: Action<Message>? = null,
-            useTemporaryResponseQueue: Boolean = false): T {
-        this.send(request, Action { m ->
-            m.jmsReplyTo = this.temporaryResponseQueue
-            requestMessageConfigurer?.perform(m)
-        })
+            preserveTemporaryResponseQueue: Boolean = false): T {
 
-        return this.receive(
-                consumer = if (useTemporaryResponseQueue) this.temporaryResponseQueueConsumer else this.consumer.get(),
-                messageType = responseType)
+        try {
+            this.send(request, Action { m ->
+                m.jmsReplyTo = this.temporaryResponseQueue.get()
+                requestMessageConfigurer?.perform(m)
+            })
+
+            return this.receive(
+                    consumer = this.temporaryResponseQueueConsumer.get(),
+                    messageType = responseType)
+        } finally {
+            // Delete temporary response queue if it should not be preserved
+            if (!preserveTemporaryResponseQueue) {
+                this.deleteTemporaryResponseQueue()
+            }
+        }
     }
 
     /**
@@ -193,7 +248,20 @@ class Channel private constructor(
             session.commit()
     }
 
+    /**
+     * Close channel
+     */
     override fun close() {
+        // Close temporary response queue
+        temporaryResponseQueue.ifSet({ q ->
+            try {
+                q.delete()
+            } catch(e: JMSException) {
+                log.error(e.message, e)
+            }
+        })
+
+        // Close message consumer
         consumer.ifSet({ c ->
             try {
                 c.close()
@@ -202,13 +270,14 @@ class Channel private constructor(
             }
         })
 
+        // Commit session
         try {
             this.commit()
         } catch (e: JMSException) {
             log.error(e.message, e)
         }
 
-
+        // Close session if approrpriate
         if (sessionCreated) {
             session.ifSet({ s ->
                 try {
@@ -219,6 +288,7 @@ class Channel private constructor(
             })
         }
 
+        // Close connection
         connection.ifSet({ c ->
             try {
                 c.close()
