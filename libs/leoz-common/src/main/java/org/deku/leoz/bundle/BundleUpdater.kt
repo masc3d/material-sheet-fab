@@ -9,7 +9,6 @@ import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
-import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.jms.ConnectionFactory
@@ -70,8 +69,7 @@ class BundleUpdater(
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP),
-                jmsDeliveryMode = Channel.DeliveryMode.NonPersistent,
-                jmsTtl = Duration.ofSeconds(10))
+                jmsDeliveryMode = Channel.DeliveryMode.NonPersistent)
 
         // Bundle(s) requiring (re)boot go last
         this.presets = presets.sortedBy { p -> p.requiresBoot }

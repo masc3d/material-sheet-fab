@@ -1,5 +1,6 @@
 package org.deku.leoz.node.rest.services.internal.v1
 
+import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleUpdater
 import org.deku.leoz.bundle.boot
@@ -26,6 +27,8 @@ import javax.ws.rs.core.MediaType
 @Path("internal/v1/application")
 @Produces(MediaType.APPLICATION_JSON)
 class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationService {
+    private val log = LogFactory.getLog(this.javaClass)
+
     @Inject
     lateinit var bundleUpdater: BundleUpdater
 
@@ -47,15 +50,18 @@ class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationSe
     }
 
     override fun notifyBundleUpdate(bundleName: String) {
+        val message = UpdateInfo(bundleName)
         // TODO. centralize channel(s) into common configuration
-        val mc = Channel(
+        Channel(
                 connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
                 destination = ActiveMQConfiguration.instance.nodeNotificationTopic,
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP),
-                jmsTtl = Duration.ofMinutes(5))
+                jmsTtl = Duration.ofMinutes(5)).use { c ->
+            c.send(UpdateInfo(bundleName))
+        }
 
-        mc.send(UpdateInfo(bundleName))
+        log.info("Sent [${message}]")
     }
 }
