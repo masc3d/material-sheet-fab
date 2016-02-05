@@ -121,7 +121,7 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
                 mp.send(msg);
 
                 // Receive entity update message
-                session.createConsumer(receiveQueue);
+                mc = session.createConsumer(receiveQueue);
                 msg = mc.receive(RECEIVE_TIMEOUT);
 
                 if (msg == null)
@@ -137,6 +137,7 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
                         Runtime.getRuntime().availableProcessors());
 
                 if (euMessage.getAmount() > 0) {
+                    final MessageConsumer tmc = mc;
                     PersistenceUtil.transaction(em, () -> {
                         if (!er.hasTimestampAttribute()) {
                             mLog.debug(lfmt.apply("No timestamp attribute found -> removing all entities"));
@@ -147,7 +148,7 @@ public class EntityConsumer extends SpringJmsListener implements Handler<EntityS
                         boolean eos = false;
                         long lastJmsTimestamp = 0;
                         do {
-                            Message tMsg = mc.receive(RECEIVE_TIMEOUT);
+                            Message tMsg = tmc.receive(RECEIVE_TIMEOUT);
                             if (tMsg == null)
                                 throw new TimeoutException("Timeout while waiting for next entities chunk");
 
