@@ -11,7 +11,6 @@ import org.deku.leoz.node.messaging.entities.IdentityMessage;
 import sx.jms.converters.DefaultConverter;
 
 import javax.jms.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -66,7 +65,6 @@ public class IdentityPublisher {
 
         // Message producer
         MessageProducer mp = session.createProducer(mMessagingConfiguration.getCentralQueue());
-        mp.setTimeToLive(TimeUnit.SECONDS.toMillis(10));
         mp.setPriority(8);
         mp.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 

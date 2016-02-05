@@ -32,6 +32,7 @@ open class UpdaterConfiguration {
     @ConfigurationProperties(prefix = "update")
     class Settings {
         var enabled: Boolean = false
+        var onStartup: Boolean = true
         var rsyncUri: String by Delegates.notNull()
         var rsyncPassword: String by Delegates.notNull()
     }
@@ -102,7 +103,9 @@ open class UpdaterConfiguration {
         val bundleUpdater by lazy({ this@UpdaterConfiguration.bundleUpdater() })
 
         override fun onStart() {
-            this.bundleUpdater.startUpdate()
+            // Run bundle updater initially/on startup
+            if (this@UpdaterConfiguration.settings.onStartup)
+                this.bundleUpdater.startUpdate()
         }
 
         override fun onStop() {
