@@ -79,4 +79,11 @@ public class LazyInstance<T> {
         if (this.isSet())
             action.perform(mInstance.get());
     }
+
+    /**
+     * Reset instance
+     */
+    public void reset() {
+        mInstance = null;
+    }
 }
