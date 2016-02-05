@@ -205,28 +205,28 @@ compile - Compile classpath for source set 'main'.
 |    +--- com.h2database:h2:1.+ -> 1.4.191
 |    +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.+ -> 2.1.1
-|    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-client:5.13.0
+|    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-client:5.13.1
 |    |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
-|    |    \--- org.apache.activemq:activemq-openwire-legacy:5.13.0
-|    |         \--- org.apache.activemq:activemq-client:5.13.0 (*)
-|    +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
+|    |    \--- org.apache.activemq:activemq-openwire-legacy:5.13.1
+|    |         \--- org.apache.activemq:activemq-client:5.13.1 (*)
+|    +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
-|    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.0
+|    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.1
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- org.apache.commons:commons-pool2:2.4.2
-|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.0
+|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.1
 |    |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
-|    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
+|    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.fusesource.mqtt-client:mqtt-client:1.12
 |    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 -> 1.22
@@ -235,10 +235,10 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.22 (*)
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
-|    +--- org.apache.activemq:activemq-http:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-stomp:5.13.0
-|    |    |    \--- org.apache.activemq:activemq-broker:5.13.0 (*)
-|    |    +--- org.apache.activemq:activemq-mqtt:5.13.0 (*)
+|    +--- org.apache.activemq:activemq-http:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-stomp:5.13.1
+|    |    |    \--- org.apache.activemq:activemq-broker:5.13.1 (*)
+|    |    +--- org.apache.activemq:activemq-mqtt:5.13.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.httpcomponents:httpclient:4.5.1 (*)
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.8
@@ -508,28 +508,28 @@ default - Configuration for default artifacts.
 |    +--- com.h2database:h2:1.+ -> 1.4.191
 |    +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.+ -> 2.1.1
-|    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-client:5.13.0
+|    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-client:5.13.1
 |    |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
-|    |    \--- org.apache.activemq:activemq-openwire-legacy:5.13.0
-|    |         \--- org.apache.activemq:activemq-client:5.13.0 (*)
-|    +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
+|    |    \--- org.apache.activemq:activemq-openwire-legacy:5.13.1
+|    |         \--- org.apache.activemq:activemq-client:5.13.1 (*)
+|    +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
-|    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.0
+|    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.1
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- org.apache.commons:commons-pool2:2.4.2
-|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.0
+|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.1
 |    |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
-|    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
+|    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.fusesource.mqtt-client:mqtt-client:1.12
 |    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 -> 1.22
@@ -538,10 +538,10 @@ default - Configuration for default artifacts.
 |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.22 (*)
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
-|    +--- org.apache.activemq:activemq-http:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-stomp:5.13.0
-|    |    |    \--- org.apache.activemq:activemq-broker:5.13.0 (*)
-|    |    +--- org.apache.activemq:activemq-mqtt:5.13.0 (*)
+|    +--- org.apache.activemq:activemq-http:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-stomp:5.13.1
+|    |    |    \--- org.apache.activemq:activemq-broker:5.13.1 (*)
+|    |    +--- org.apache.activemq:activemq-mqtt:5.13.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.httpcomponents:httpclient:4.5.1 (*)
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.8
@@ -821,28 +821,28 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- com.h2database:h2:1.+ -> 1.4.191
 |    +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.+ -> 2.1.1
-|    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-client:5.13.0
+|    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-client:5.13.1
 |    |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
-|    |    \--- org.apache.activemq:activemq-openwire-legacy:5.13.0
-|    |         \--- org.apache.activemq:activemq-client:5.13.0 (*)
-|    +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
+|    |    \--- org.apache.activemq:activemq-openwire-legacy:5.13.1
+|    |         \--- org.apache.activemq:activemq-client:5.13.1 (*)
+|    +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
-|    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.0
+|    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.1
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- org.apache.commons:commons-pool2:2.4.2
-|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.0
+|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.1
 |    |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
-|    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
+|    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.fusesource.mqtt-client:mqtt-client:1.12
 |    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 -> 1.22
@@ -851,10 +851,10 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.22 (*)
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
-|    +--- org.apache.activemq:activemq-http:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-stomp:5.13.0
-|    |    |    \--- org.apache.activemq:activemq-broker:5.13.0 (*)
-|    |    +--- org.apache.activemq:activemq-mqtt:5.13.0 (*)
+|    +--- org.apache.activemq:activemq-http:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-stomp:5.13.1
+|    |    |    \--- org.apache.activemq:activemq-broker:5.13.1 (*)
+|    |    +--- org.apache.activemq:activemq-mqtt:5.13.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.httpcomponents:httpclient:4.5.1 (*)
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.8
@@ -1124,28 +1124,28 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- com.h2database:h2:1.+ -> 1.4.191
 |    +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.+ -> 2.1.1
-|    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-client:5.13.0
+|    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-client:5.13.1
 |    |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
-|    |    \--- org.apache.activemq:activemq-openwire-legacy:5.13.0
-|    |         \--- org.apache.activemq:activemq-client:5.13.0 (*)
-|    +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
+|    |    \--- org.apache.activemq:activemq-openwire-legacy:5.13.1
+|    |         \--- org.apache.activemq:activemq-client:5.13.1 (*)
+|    +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
-|    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.0
+|    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.1
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- org.apache.commons:commons-pool2:2.4.2
-|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.0
+|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.1
 |    |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
-|    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
+|    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.fusesource.mqtt-client:mqtt-client:1.12
 |    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 -> 1.22
@@ -1154,10 +1154,10 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.22 (*)
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
-|    +--- org.apache.activemq:activemq-http:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-stomp:5.13.0
-|    |    |    \--- org.apache.activemq:activemq-broker:5.13.0 (*)
-|    |    +--- org.apache.activemq:activemq-mqtt:5.13.0 (*)
+|    +--- org.apache.activemq:activemq-http:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-stomp:5.13.1
+|    |    |    \--- org.apache.activemq:activemq-broker:5.13.1 (*)
+|    |    +--- org.apache.activemq:activemq-mqtt:5.13.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.httpcomponents:httpclient:4.5.1 (*)
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.8
@@ -1443,28 +1443,28 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- com.h2database:h2:1.+ -> 1.4.191
 |    +--- javax.jmdns:jmdns:3.+ -> 3.4.1
 |    +--- org.eclipse.persistence:javax.persistence:2.1.+ -> 2.1.1
-|    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-client:5.13.0
+|    +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-client:5.13.1
 |    |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
-|    |    \--- org.apache.activemq:activemq-openwire-legacy:5.13.0
-|    |         \--- org.apache.activemq:activemq-client:5.13.0 (*)
-|    +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
+|    |    \--- org.apache.activemq:activemq-openwire-legacy:5.13.1
+|    |         \--- org.apache.activemq:activemq-client:5.13.1 (*)
+|    +--- org.apache.activemq:activemq-kahadb-store:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
-|    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.0
+|    +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.1
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    |    \--- org.apache.commons:commons-pool2:2.4.2
-|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.0
+|    +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.1
 |    |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
-|    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-broker:5.13.0 (*)
+|    +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
 |    |    +--- org.fusesource.mqtt-client:mqtt-client:1.12
 |    |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.21 -> 1.22
@@ -1473,10 +1473,10 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.fusesource.hawtdispatch:hawtdispatch-transport:1.22 (*)
 |    |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    |    \--- commons-net:commons-net:3.3
-|    +--- org.apache.activemq:activemq-http:5.+ -> 5.13.0
-|    |    +--- org.apache.activemq:activemq-stomp:5.13.0
-|    |    |    \--- org.apache.activemq:activemq-broker:5.13.0 (*)
-|    |    +--- org.apache.activemq:activemq-mqtt:5.13.0 (*)
+|    +--- org.apache.activemq:activemq-http:5.+ -> 5.13.1
+|    |    +--- org.apache.activemq:activemq-stomp:5.13.1
+|    |    |    \--- org.apache.activemq:activemq-broker:5.13.1 (*)
+|    |    +--- org.apache.activemq:activemq-mqtt:5.13.1 (*)
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
 |    |    +--- org.apache.httpcomponents:httpclient:4.5.1 (*)
 |    |    \--- com.thoughtworks.xstream:xstream:1.4.8
