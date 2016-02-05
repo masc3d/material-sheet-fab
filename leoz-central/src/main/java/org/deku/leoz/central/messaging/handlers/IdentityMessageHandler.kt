@@ -27,14 +27,14 @@ class IdentityMessageHandler(private val mNodeRepository: NodeRepository) : Hand
     override fun onMessage(message: IdentityMessage, converter: Converter, jmsMessage: Message, session: Session) {
         try {
             log.info(message)
-4
-            val r = mNodeRepository.findByKeyOrCreateNew(message.key)
+
+            var r = mNodeRepository.findByKeyOrCreateNew(message.key)
 
             r.hostname = message.hardwareAddress
             r.key = message.key
             r.sysInfo = message.systemInfo
             r.store()
-            r.refresh()
+            r = mNodeRepository.findByKeyOrCreateNew(message.key)
 
             val replyTo = jmsMessage.jmsReplyTo
             if (replyTo != null) {
