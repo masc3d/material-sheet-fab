@@ -2,7 +2,7 @@ apply plugin: 'application'
 apply plugin: org.deku.gradle.PackagerPlugin
 
 sourceCompatibility = 1.8
-version = '0.2'
+version = '0.3'
 mainClassName = "org.deku.leoz.Main"
 
 dependencies {
