@@ -14,7 +14,7 @@ class App private constructor() : org.deku.leoz.node.App() {
     override val name: String
         get() = "leoz-central"
 
-    override val applicationClass: Class<out Any>
+    override val type: Class<out Any>
         get() = App::class.java
 
     override fun initialize() {

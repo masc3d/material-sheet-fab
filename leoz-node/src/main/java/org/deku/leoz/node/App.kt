@@ -50,6 +50,7 @@ open class App :
 
         /** Injectable lazy instance */
         @JvmStatic val injectableInstance = LazyInstance(Supplier { App() })
+        /** Convenience accessor */
         @JvmStatic val instance by lazy({ injectableInstance.get() })
     }
 
@@ -76,14 +77,18 @@ open class App :
     open val name: String
         get() = "leoz-node"
 
-    open val applicationClass: Class<out Any>
+    /**
+     * Application class type.
+     * Needs to be overridden in derived classes to reflect the actual derived type, for eg. JarManifest to work
+     */
+    open val type: Class<out Any>
         get() = App::class.java
 
     /**
      * Application jar manifest
      */
     private val jarManifest: JarManifest by lazy({
-        JarManifest(this.applicationClass)
+        JarManifest(this.type)
     })
 
     /**
@@ -119,7 +124,7 @@ open class App :
             LogConfiguration.instance().jmsAppenderEnabled = true
         }
         LogConfiguration.instance().initialize()
-        disposables.add(LogConfiguration.instance())
+        this.disposables.add(LogConfiguration.instance())
 
         log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
 
@@ -158,7 +163,7 @@ open class App :
         Runtime.getRuntime().addShutdownHook(object : Thread("App shutdown hook") {
             override fun run() {
                 log.info("Shutdown hook initiated")
-                App.injectableInstance.get().close()
+                this@App.close()
                 log.info("Shutdown hook completed")
             }
         })
@@ -181,16 +186,22 @@ open class App :
      * @param exitCode Exit code
      */
     fun shutdown(exitCode: Int) {
-        if (isShuttingDown) {
+        if (this.isShuttingDown) {
             log.warn("Already shutting down")
             return
         }
 
-        isShuttingDown = true
+        this.isShuttingDown = true
         log.info("Shutting down")
-        if (springApplicationContext != null)
-            SpringApplication.exit(springApplicationContext, ExitCodeGenerator { exitCode })
-        App.injectableInstance.get().close()
+
+        // Explicitly shutting down spring application context with specific exit code
+        if (this.springApplicationContext != null)
+            SpringApplication.exit(
+                    this.springApplicationContext,
+                    ExitCodeGenerator { exitCode })
+
+        // Close application/dispose resources
+        this.close()
     }
 
     fun shutdown() {
@@ -199,7 +210,7 @@ open class App :
 
     @Throws(BeansException::class)
     override fun setApplicationContext(applicationContext: ApplicationContext) {
-        springApplicationContext = applicationContext
+        this.springApplicationContext = applicationContext
     }
 
     override fun onApplicationEvent(event: ApplicationEvent) {

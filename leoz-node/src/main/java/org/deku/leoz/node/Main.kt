@@ -4,7 +4,6 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
-import org.deku.leoz.bundle.BundleProcessInterface
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration
 import org.springframework.boot.builder.SpringApplicationBuilder
@@ -47,7 +46,7 @@ open class Main {
          * Static main entry point
          * @param args process arguments
          */
-        @JvmStatic open fun main(args: Array<String>) {
+        @JvmStatic fun main(args: Array<String>) {
             Main().run(args)
         }
 
@@ -71,7 +70,10 @@ open class Main {
             log.trace("Main arguments [${args!!.joinToString(", ")}]")
 
             // Support for leoz bundle process commandline interface
-            val setup = Setup(serviceId = App.instance.name, mainClass = App.instance.applicationClass)
+            val setup = Setup(
+                    serviceId = this.app.name,
+                    mainClass = this.javaClass)
+
             val command = setup.parse(args)
             if (command != null) {
                 try {
