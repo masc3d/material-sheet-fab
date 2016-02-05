@@ -7,7 +7,6 @@ import sx.LazyInstance
 import java.io.Closeable
 import java.time.Duration
 import java.util.concurrent.TimeoutException
-import java.util.function.Supplier
 import javax.jms.*
 
 /**
@@ -150,11 +149,14 @@ class Channel private constructor(
      * Deletes temporary response queue and its consumer
      */
     private fun deleteTemporaryResponseQueue() {
-        if (this.temporaryResponseQueue.isSet) {
-            this.temporaryResponseQueue.get().delete()
-            this.temporaryResponseQueue.reset()
-            this.temporaryResponseQueueConsumer.reset()
+        this.temporaryResponseQueue.ifSet { q ->
+            this.temporaryResponseQueueConsumer.ifSet { c ->
+                c.close()
+            }
+            q.delete()
         }
+        this.temporaryResponseQueue.reset()
+        this.temporaryResponseQueueConsumer.reset()
     }
 
     /**
