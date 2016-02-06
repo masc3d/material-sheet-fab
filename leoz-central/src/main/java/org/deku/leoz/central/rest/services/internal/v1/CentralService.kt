@@ -1,6 +1,7 @@
 package org.deku.leoz.central.rest.services.internal.v1
 
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.central.config.DatabaseSyncConfiguration
 import org.deku.leoz.central.data.sync.DatabaseSync
 import sx.rs.ApiKey
 import javax.inject.Inject
@@ -16,16 +17,18 @@ import javax.ws.rs.core.MediaType
 @ApiKey(false)
 @Path("internal/v1/central")
 @Produces(MediaType.APPLICATION_JSON)
-class CentralService {
+class CentralService : org.deku.leoz.rest.services.internal.v1.CentralService {
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject
     lateinit var databaseSync: DatabaseSync
 
-    fun databaseSync()
-    {
+    @Inject
+    lateinit var databaseSyncConfiguration: DatabaseSyncConfiguration
+
+    override fun databaseSync() {
+
+        this.databaseSyncConfiguration.trigger()
         this.databaseSync.sync()
     }
-
-
 }

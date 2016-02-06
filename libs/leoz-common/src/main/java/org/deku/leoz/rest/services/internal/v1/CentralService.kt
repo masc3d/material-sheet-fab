@@ -19,7 +19,5 @@ interface CentralService {
     @GET
     @Path("/database-sync")
     @ApiOperation(value = "Push Databasesync") //, response = String::class)
-    fun databaseSync() {
-
-    }
+    fun databaseSync()
 }
