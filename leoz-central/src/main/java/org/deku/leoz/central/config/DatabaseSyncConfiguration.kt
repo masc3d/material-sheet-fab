@@ -40,20 +40,23 @@ open class DatabaseSyncConfiguration {
 
     @PostConstruct
     fun onInitialize() {
-        log.info("Starting database sync scheduler")
 
-        this.executorService.scheduleWithFixedDelay(
-                {
-                    try {
-                        databaseSync.sync()
-                    } catch (e: Exception) {
-                        log.error(e.message, e)
-                    }
-                },
-                // Initial delay
-                0,
-                // Interval
-                10, TimeUnit.MINUTES)
+                log.info("Starting database sync scheduler disabled")
+
+        //        log.info("Starting database sync scheduler")
+//
+//        this.executorService.scheduleWithFixedDelay(
+//                {
+//                    try {
+//                        databaseSync.sync()
+//                    } catch (e: Exception) {
+//                        log.error(e.message, e)
+//                    }
+//                },
+//                // Initial delay
+//                0,
+//                // Interval
+//                10, TimeUnit.MINUTES)
     }
 
     @PreDestroy

@@ -23,12 +23,13 @@ class CentralService : org.deku.leoz.rest.services.internal.v1.CentralService {
     @Inject
     lateinit var databaseSync: DatabaseSync
 
-    @Inject
-    lateinit var databaseSyncConfiguration: DatabaseSyncConfiguration
+//    @Inject
+//    lateinit var databaseSyncConfiguration: DatabaseSyncConfiguration
 
     override fun databaseSync() {
+        log.info("Manually database sync")
 
-        this.databaseSyncConfiguration.trigger()
+//        this.databaseSyncConfiguration.trigger()
         this.databaseSync.sync()
     }
 }
