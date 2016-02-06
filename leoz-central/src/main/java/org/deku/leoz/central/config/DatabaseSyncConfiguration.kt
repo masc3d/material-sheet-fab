@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 @Configuration
 @Lazy(false)
 open class DatabaseSyncConfiguration {
-    internal var log = LogFactory.getLog(DatabaseSyncConfiguration::class.java)
+    private var log = LogFactory.getLog(this.javaClass)
 
     @Inject
     private lateinit var databaseSync: DatabaseSync
@@ -30,6 +30,12 @@ open class DatabaseSyncConfiguration {
 
     init {
         this.executorService = Executors.newSingleThreadScheduledExecutor()
+    }
+
+    fun trigger() {
+        this.executorService.submit {
+            databaseSync.sync()
+        }
     }
 
     @PostConstruct

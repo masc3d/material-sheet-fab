@@ -31,7 +31,7 @@ public class SwaggerContextInternal implements SwaggerContext {
                 .description("LeoZ internal webservice API")
                 .version("1.0.1")
                 .contact(new Contact()
-                        .email("masc@disappear.de"));
+                        .email("wolfgang.drewelies@derkurier.de"));
 
         Swagger swagger = new Swagger().info(info);
         swagger.basePath("/rs/api");
