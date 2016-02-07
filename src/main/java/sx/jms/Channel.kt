@@ -199,7 +199,7 @@ class Channel private constructor(
      * Receive message
      */
     private fun <T> receive(consumer: MessageConsumer, messageType: Class<T>): T {
-        val jmsMessage = if (this.receiveTimeout == null)
+        val jmsMessage = if (this.receiveTimeout == Duration.ZERO)
             consumer.receive()
         else
             consumer.receive(this.receiveTimeout.toMillis())
