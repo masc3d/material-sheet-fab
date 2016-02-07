@@ -1,17 +1,15 @@
 package org.deku.leoz.central.config
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.data.sync.DatabaseSync
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-
-import javax.annotation.PostConstruct
-import javax.annotation.PreDestroy
-import javax.inject.Inject
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
+import javax.inject.Inject
 
 /**
  * Leoz-central database sync configuration
@@ -40,23 +38,20 @@ open class DatabaseSyncConfiguration {
 
     @PostConstruct
     fun onInitialize() {
+        log.info("Starting database sync scheduler")
 
-                log.info("Starting database sync scheduler disabled")
-
-        //        log.info("Starting database sync scheduler")
-//
-//        this.executorService.scheduleWithFixedDelay(
-//                {
-//                    try {
-//                        databaseSync.sync()
-//                    } catch (e: Exception) {
-//                        log.error(e.message, e)
-//                    }
-//                },
-//                // Initial delay
-//                0,
-//                // Interval
-//                10, TimeUnit.MINUTES)
+        this.executorService.scheduleWithFixedDelay(
+                {
+                    try {
+                        databaseSync.sync()
+                    } catch (e: Exception) {
+                        log.error(e.message, e)
+                    }
+                },
+                // Initial delay
+                0,
+                // Interval
+                10, TimeUnit.MINUTES)
     }
 
     @PreDestroy
