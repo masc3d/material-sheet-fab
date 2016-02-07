@@ -234,7 +234,7 @@ class Bundle : Serializable {
          */
         @JvmStatic fun load(c: Class<*>): Bundle {
             val jarFile = File(c.protectionDomain.codeSource.location.toURI())
-            val jar = JarFile(jarFile)
+            JarFile(jarFile)
             return load(jarFile.parentFile.parentFile)
         }
     }
