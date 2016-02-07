@@ -12,6 +12,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import java.util.function.BiPredicate
+import java.util.jar.JarFile
 import java.util.regex.Pattern
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller
@@ -226,6 +227,16 @@ class Bundle : Serializable {
                 inputStream.close()
             }
         }
+
+        /**
+         * Load current bundle by class.
+         * @param c Class contained in one of the native bzndle jars
+         */
+        @JvmStatic fun load(c: Class<*>): Bundle {
+            val jarFile = File(c.protectionDomain.codeSource.location.toURI())
+            val jar = JarFile(jarFile)
+            return load(jarFile.parentFile.parentFile)
+        }
     }
 
     /**
@@ -364,6 +375,7 @@ class Bundle : Serializable {
      * Created by masc on 10.09.15.
      */
     inner class Configuration() {
+        private val KEY_APP_NAME = "app.name"
         private val KEY_APP_MAINJAR = "app.mainjar"
         private val KEY_APP_VERSION = "app.version"
         private val KEY_APP_CLASSPATH = "app.classpath"
@@ -372,6 +384,15 @@ class Bundle : Serializable {
         /** Contains key/value pairs or plain strings (non parsable lines) */
         private val entries = ArrayList<Any>()
         private val entryMap = LinkedHashMap<String, String>()
+
+        /** Application name */
+        var appName: String
+            get() {
+                return entryMap.get(KEY_APP_NAME) ?: ""
+            }
+            set(value: String) {
+                entryMap.set(KEY_APP_NAME, value)
+            }
 
         /** Application main jar */
         var appMainJar: String

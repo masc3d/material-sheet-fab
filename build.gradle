@@ -164,6 +164,9 @@ subprojects {
                 if (details.requested.group == 'junit') {
                     details.useVersion v_junit
                 } else
+                if (details.requested.group == 'net.java.dev.jna') {
+                    details.useVersion v_jna
+                } else
                 if (details.requested.group == 'org.apache.activemq') {
                     details.useVersion v_activemq
                 } else

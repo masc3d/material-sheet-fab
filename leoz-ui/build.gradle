@@ -1,4 +1,5 @@
 apply plugin: 'application'
+apply plugin: 'kotlin'
 apply plugin: org.deku.gradle.PackagerPlugin
 
 sourceCompatibility = 1.8
@@ -8,6 +9,10 @@ mainClassName = "org.deku.leoz.Main"
 dependencies {
     compile project(':libs:sx-common')
     compile project(':libs:leoz-common')
+
+    // Kotlin
+    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
     // JSR-303 bean validation
     compile 'org.glassfish.web:el-impl:2.+'

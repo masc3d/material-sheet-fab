@@ -2,7 +2,6 @@ package org.deku.leoz.node
 
 import com.google.common.collect.Lists
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.JarManifest
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.springframework.beans.BeansException
@@ -18,6 +17,7 @@ import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationListener
 import sx.Disposable
 import sx.Dispose
+import sx.JarManifest
 import sx.LazyInstance
 import sx.platform.JvmUtil
 import java.io.IOException

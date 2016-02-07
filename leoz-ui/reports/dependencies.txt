@@ -34,6 +34,8 @@ compile - Compile classpath for source set 'main'.
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
 |    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
 |         \--- net.java.dev.jna:jna:4.2.1
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.3.Final
@@ -149,6 +151,8 @@ default - Configuration for default artifacts.
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
 |    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
 |         \--- net.java.dev.jna:jna:4.2.1
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.3.Final
@@ -236,6 +240,16 @@ default - Configuration for default artifacts.
 |    \--- javax.validation:validation-api:1.1.0.Final
 \--- org.controlsfx:controlsfx:8.+ -> 8.40.10
 
+kapt
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0-rc-1036
+     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0-rc-1036
+          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-rc-1036
+
+kaptTest
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0-rc-1036
+     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0-rc-1036
+          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-rc-1036
+
 runtime - Runtime classpath for source set 'main'.
 +--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
@@ -264,6 +278,8 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
 |    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
 |         \--- net.java.dev.jna:jna:4.2.1
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.3.Final
@@ -379,6 +395,8 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
 |    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
 |         \--- net.java.dev.jna:jna:4.2.1
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.3.Final
@@ -496,6 +514,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
 |    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
 |         \--- net.java.dev.jna:jna:4.2.1
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.3.Final

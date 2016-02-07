@@ -171,6 +171,20 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         mInstance = this;
+
+        Setup setup = new Setup();
+        Runnable command = setup.parse(this.getParameters().getRaw().toArray(new String[0]));
+        if (command != null) {
+            try {
+                command.run();
+                System.exit(0);
+            } catch (Exception e) {
+                mLogger.error(e.getMessage(), e);
+                System.exit(-1);
+            }
+            return;
+        }
+
         mPrimaryStage = primaryStage;
 
         // Load embedded fonts

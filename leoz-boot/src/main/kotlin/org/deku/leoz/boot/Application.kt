@@ -10,11 +10,11 @@ import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.JarManifest
 import org.deku.leoz.boot.config.StorageConfiguration
 import org.deku.leoz.boot.fx.ResizeHelper
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.Bundles
+import sx.JarManifest
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import java.awt.SplashScreen
