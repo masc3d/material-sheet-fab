@@ -134,10 +134,32 @@ public abstract class Broker implements Disposable {
     public interface EventListener extends sx.event.EventListener {
         void onStart();
         void onStop();
+
+        void onConnectedToBrokerNetwork();
+
+        void onDisconnectedFromBrokerNetwork();
+    }
+
+    public static abstract class DefaultEventListener implements EventListener {
+        @Override
+        public void onStart() {
+        }
+
+        @Override
+        public void onStop() {
+        }
+
+        @Override
+        public void onConnectedToBrokerNetwork() {
+        }
+
+        @Override
+        public void onDisconnectedFromBrokerNetwork() {
+        }
     }
 
     /** Broker event dispatcher/delegate */
-    private EventDispatcher<EventListener> mListenerEventDispatcher = EventDispatcher.createThreadSafe();
+    protected EventDispatcher<EventListener> mListenerEventDispatcher = EventDispatcher.createThreadSafe();
 
     public EventDelegate<EventListener> getDelegate() {
         return mListenerEventDispatcher;

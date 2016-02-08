@@ -3,11 +3,13 @@ package sx.jms.embedded.activemq;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.BrokerPlugin;
+import org.apache.activemq.broker.BrokerPluginSupport;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.broker.util.RedeliveryPlugin;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.apache.activemq.command.BrokerInfo;
 import org.apache.activemq.filter.DestinationMapEntry;
 import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.apache.activemq.leveldb.LevelDBStore;
@@ -258,6 +260,26 @@ public class ActiveMQBroker extends Broker {
 
         brokerPlugins.add(pRedelivery);
 
+        // Network/bridge connection notification plugin
+        brokerPlugins.add(new BrokerPluginSupport() {
+            @Override
+            public void networkBridgeStarted(BrokerInfo brokerInfo, boolean createdByDuplex, String remoteIp) {
+                super.networkBridgeStarted(brokerInfo, createdByDuplex, remoteIp);
+                mListenerEventDispatcher.emit((e) -> {
+                    e.onConnectedToBrokerNetwork();
+                });
+            }
+
+            @Override
+            public void networkBridgeStopped(BrokerInfo brokerInfo) {
+                super.networkBridgeStopped(brokerInfo);
+                mListenerEventDispatcher.emit((e) -> {
+                    e.onDisconnectedFromBrokerNetwork();
+                });
+            }
+        });
+
+        // Add all plugins to broker service
         mBrokerService.setPlugins(brokerPlugins.toArray(new BrokerPlugin[0]));
 
         try {
