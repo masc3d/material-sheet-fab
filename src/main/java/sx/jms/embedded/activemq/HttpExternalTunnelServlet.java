@@ -37,7 +37,7 @@ public class HttpExternalTunnelServlet extends HttpTunnelServlet {
     }
 
     /** Broker event listener */
-    private class BrokerEventListener implements Broker.EventListener {
+    private class BrokerEventListener extends Broker.DefaultEventListener {
 
         @Override
         public void onStart() {
