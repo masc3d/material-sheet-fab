@@ -38,7 +38,7 @@ public class LogAppender(
     /**
      * Broker listener, jms destination is automatically created when broker start is detected
      */
-    var brokerEventListener: Broker.EventListener = object : Broker.EventListener {
+    var brokerEventListener: Broker.EventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
             executorService!!.scheduleAtFixedRate(
                     { flush() },

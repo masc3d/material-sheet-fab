@@ -91,7 +91,7 @@ open class MessageListenerConfiguration {
     /**
      * Broker event listener
      */
-    private var brokerEventListener: Broker.EventListener = object : Broker.EventListener {
+    private var brokerEventListener: Broker.EventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
             startIfReady()
         }

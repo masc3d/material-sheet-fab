@@ -34,20 +34,23 @@ open class EntitySyncConfiguration {
     private var entityConsumer: EntityConsumer by Delegates.notNull()
 
     /** Broker listener  */
-    private val brokerEventListener = object : Broker.EventListener {
+    private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
             log.info("Detected broker start, initializing entity sync")
             entityConsumer.start()
+        }
+
+        override fun onStop() {
+            entityConsumer.stop()
+        }
+
+        override fun onConnectedToBrokerNetwork() {
             entityConsumer.request(Station::class.java)
             entityConsumer.request(Country::class.java)
             entityConsumer.request(HolidayCtrl::class.java)
             entityConsumer.request(Route::class.java)
             entityConsumer.request(RoutingLayer::class.java)
             entityConsumer.request(Sector::class.java)
-        }
-
-        override fun onStop() {
-            entityConsumer.stop()
         }
     }
 

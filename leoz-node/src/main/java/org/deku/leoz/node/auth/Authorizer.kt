@@ -32,7 +32,7 @@ class Authorizer(
     private var authorizationTask: Runnable? = null
 
     /** Broker event listener */
-    private val brokerEventListener = object : Broker.EventListener {
+    private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
             if (authorizationTask != null)
                 executorService.submit(authorizationTask)

@@ -30,7 +30,7 @@ open class EntitySyncConfiguration {
     lateinit private var databaseSync: DatabaseSync
 
     /** Broker listener  */
-    private val brokerEventListener = object : Broker.EventListener {
+    private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
             EntitySync.it().start()
         }

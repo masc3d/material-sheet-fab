@@ -99,7 +99,7 @@ open class UpdaterConfiguration {
     }
 
     /** Broker listener  */
-    private val brokerEventListener = object : Broker.EventListener {
+    private val brokerEventListener = object : Broker.DefaultEventListener() {
         val bundleUpdater by lazy({ this@UpdaterConfiguration.bundleUpdater() })
 
         override fun onStart() {

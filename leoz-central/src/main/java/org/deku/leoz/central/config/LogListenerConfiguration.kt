@@ -26,7 +26,7 @@ open class LogListenerConfiguration {
         logListener = LogListener(ActiveMQConfiguration.instance)
     }
 
-    private val brokerEventListener = object : Broker.EventListener {
+    private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
             logListener.start()
         }
