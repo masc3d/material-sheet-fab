@@ -77,7 +77,7 @@ open class MessageListenerConfiguration {
     @PostConstruct
     fun onInitialize() {
         // Register event listeners
-        ActiveMQBroker.instance().delegate.add(brokerEventListener)
+        ActiveMQBroker.instance.delegate.add(brokerEventListener)
         identityConfiguration.identity.delegate.add(identityEventListener)
 
         this.startIfReady()
@@ -85,7 +85,7 @@ open class MessageListenerConfiguration {
 
     @PreDestroy
     fun onDestroy() {
-        this.nodeQueueListener.stop()
+        this.stop()
     }
 
     /**

@@ -67,6 +67,9 @@ open class UpdaterConfiguration {
     @Inject
     lateinit var sshTunnelProvider: SshTunnelProvider
 
+    @Inject
+    lateinit var bundleUpdater: BundleUpdater
+
     /**
      * Updater instance
      */
@@ -100,16 +103,14 @@ open class UpdaterConfiguration {
 
     /** Broker listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
-        val bundleUpdater by lazy({ this@UpdaterConfiguration.bundleUpdater() })
-
         override fun onStart() {
             // Run bundle updater initially/on startup
             if (this@UpdaterConfiguration.settings.onStartup)
-                this.bundleUpdater.startUpdate()
+                this@UpdaterConfiguration.bundleUpdater.startUpdate()
         }
 
         override fun onStop() {
-            this.bundleUpdater.stop()
+            this@UpdaterConfiguration.bundleUpdater.stop()
         }
     }
 

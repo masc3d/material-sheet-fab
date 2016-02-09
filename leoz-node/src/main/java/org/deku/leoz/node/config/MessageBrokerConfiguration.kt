@@ -37,17 +37,17 @@ open class MessageBrokerConfiguration {
 
         // Broker configuration, must occur before tunnel servlet starts
         log.info("Configuring messaging broker")
-        ActiveMQBroker.instance().brokerName = "leoz-aq-${identityConfiguration.identity.key}"
-        ActiveMQBroker.instance().dataDirectory = StorageConfiguration.instance.activeMqDataDirectory
-        ActiveMQBroker.instance().nativeTcpPort = this.nativePort
+        ActiveMQBroker.instance.brokerName = "leoz-aq-${identityConfiguration.identity.key}"
+        ActiveMQBroker.instance.dataDirectory = StorageConfiguration.instance.activeMqDataDirectory
+        ActiveMQBroker.instance.nativeTcpPort = this.nativePort
 
         if (!Strings.isNullOrEmpty(peerSettings.host)) {
             // TODO: we could probe for available remote ports here, but this implies
             // init of peer brokers should also be threaded, as timeouts may occur
             log.info("Adding peer broker: ${peerSettings.host}")
 
-            ActiveMQBroker.instance().addPeerBroker(Broker.PeerBroker(
-                    peerSettings.host,
+            ActiveMQBroker.instance.addPeerBroker(Broker.PeerBroker(
+                    peerSettings.host!!,
                     Broker.TransportType.TCP,
                     peerSettings.broker.nativePort))
         }
@@ -57,6 +57,6 @@ open class MessageBrokerConfiguration {
 
     @PreDestroy
     fun onDestroy() {
-        ActiveMQBroker.instance().close()
+        ActiveMQBroker.instance.close()
     }
 }

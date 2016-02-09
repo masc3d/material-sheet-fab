@@ -22,6 +22,7 @@ open class IdentityConfiguration {
 
     /** Authorizer  */
     private var authorizer: Authorizer by Delegates.notNull()
+
     /**
      * Application wide Node identity
      * @retur

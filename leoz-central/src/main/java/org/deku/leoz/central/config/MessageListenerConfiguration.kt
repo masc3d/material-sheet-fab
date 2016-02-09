@@ -93,7 +93,7 @@ open class MessageListenerConfiguration {
         log.info("Initializing central message listener")
 
         // Hook up with broker events
-        ActiveMQBroker.instance().delegate.add(brokerEventListener)
+        ActiveMQBroker.instance.delegate.add(brokerEventListener)
 
         this.startIfReady()
     }

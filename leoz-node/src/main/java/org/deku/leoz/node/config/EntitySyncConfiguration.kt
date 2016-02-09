@@ -57,8 +57,8 @@ open class EntitySyncConfiguration {
     @PostConstruct
     fun onInitialize() {
         // Start when broker is started
-        ActiveMQBroker.instance().delegate.add(brokerEventListener)
-        if (ActiveMQBroker.instance().isStarted)
+        ActiveMQBroker.instance.delegate.add(brokerEventListener)
+        if (ActiveMQBroker.instance.isStarted)
             brokerEventListener.onStart()
 
         // Entity sync consumer

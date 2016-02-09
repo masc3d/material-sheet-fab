@@ -26,7 +26,7 @@ public abstract class MessagingTest {
         lMessaging.setLevel(Level.TRACE);
 
         // Start broker
-        mBroker = ActiveMQBroker.instance();
+        mBroker = ActiveMQBroker.getInstance();
         mBroker.start();
     }
 

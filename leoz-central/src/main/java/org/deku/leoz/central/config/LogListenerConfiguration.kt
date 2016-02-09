@@ -39,7 +39,7 @@ open class LogListenerConfiguration {
     @PostConstruct
     fun onInitialize() {
         // Register to broker start
-        ActiveMQBroker.instance().delegate.add(brokerEventListener)
+        ActiveMQBroker.instance.delegate.add(brokerEventListener)
     }
 
     @PreDestroy

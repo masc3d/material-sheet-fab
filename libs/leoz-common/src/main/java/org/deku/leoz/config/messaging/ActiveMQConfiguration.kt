@@ -29,7 +29,7 @@ class ActiveMQConfiguration private constructor() : MessagingConfiguration {
     }
 
     override val broker: Broker
-        get() = ActiveMQBroker.instance()
+        get() = ActiveMQBroker.instance
 
     override val centralQueue: Queue by lazy({
         this.broker.createQueue("leoz.central.queue")

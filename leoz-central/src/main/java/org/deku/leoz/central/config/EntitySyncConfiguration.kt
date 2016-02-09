@@ -46,8 +46,8 @@ open class EntitySyncConfiguration {
         EntitySync.it().databaseSync = databaseSync
 
         // Start when broker is started
-        ActiveMQBroker.instance().delegate.add(brokerEventListener)
-        if (ActiveMQBroker.instance().isStarted)
+        ActiveMQBroker.instance.delegate.add(brokerEventListener)
+        if (ActiveMQBroker.instance.isStarted)
             brokerEventListener.onStart()
     }
 }
