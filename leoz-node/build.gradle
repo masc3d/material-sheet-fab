@@ -4,7 +4,7 @@ apply plugin: org.deku.gradle.PackagerPlugin
 //apply plugin: 'flyway'
 
 sourceCompatibility = 1.8
-version = '0.27-RELEASE'
+version = '0.28-RELEASE'
 mainClassName = "org.deku.leoz.node.Main"
 
 dependencies {
