@@ -7,11 +7,6 @@ sourceCompatibility = 1.8
 version = '0.31-RELEASE'
 mainClassName = "org.deku.leoz.node.Main"
 
-repositories {
-    maven {
-        url 'https://repository-bubblecloud.forge.cloudbees.com/release/'
-    }
-}
 dependencies {
     // leoz webservice dependencies
     compile project(':libs:sx-common')

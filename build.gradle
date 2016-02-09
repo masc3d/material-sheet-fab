@@ -113,9 +113,8 @@ subprojects {
     // Global repositories
     repositories {
         jcenter()
-        maven {
-            url "http://repo.spring.io/snapshot"
-        }
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url 'https://repository-bubblecloud.forge.cloudbees.com/release/' }
         mavenCentral()
     }
 
