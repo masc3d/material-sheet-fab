@@ -4,7 +4,7 @@ apply plugin: org.deku.gradle.PackagerPlugin
 //apply plugin: 'flyway'
 
 sourceCompatibility = 1.8
-version = '0.29-RELEASE'
+version = '0.30-RELEASE'
 mainClassName = "org.deku.leoz.node.Main"
 
 dependencies {
@@ -184,7 +184,12 @@ task copyWebapp(type: Sync) {
     from 'src/main/webapp'
     into 'build/classes/main/webapp'
 }
+task copyVaadinWebapp(type: Sync) {
+    from 'src/main/webapp/VAADIN'
+    into 'build/classes/main/VAADIN'
+}
 tasks.compileJava.dependsOn(copyWebapp)
+tasks.compileJava.dependsOn(copyVaadinWebapp)
 
 tasks.classes.dependsOn(copySxBinariesToBuild)
 tasks.classes.dependsOn(copyGlobalBinariesToBuild)
