@@ -26,6 +26,7 @@ buildscript {
         v_javax_inject = "+"
         v_javax_servlet = "3.1.+"
         v_javax_persistence = "2.1.+"
+        v_javax_validation = "1.1.+"
         v_javax_ws_rs = "2.0.+"
         v_jersey = "2.+"
         v_jetty = "9.2.+"
@@ -47,6 +48,9 @@ buildscript {
         v_spring_data_commons = "1.10.+"
         v_springboot = "1.2.5.+"
         v_swagger = "+"
+        v_vaadin = "7.+"
+        v_vaadin_spring = "1.+"
+        v_vaadin_sass = "+"
         v_xstream = "1.+"
 
         // LeoZ release path, relative to root project
@@ -155,6 +159,15 @@ subprojects {
                 if (details.requested.group == 'com.mysema.querydsl') {
                     details.useVersion v_querydsl
                 } else
+                if (details.requested.group == 'com.vaadin') {
+                    if (details.requested.name.startsWith('vaadin-sass')) {
+                        details.useVersion v_vaadin_sass
+                    } else if (details.requested.name.startsWith('vaadin-spring')) {
+                        details.useVersion v_vaadin_spring
+                    } else {
+                        details.useVersion v_vaadin
+                    }
+                } else
                 if (details.requested.group == 'javax.activation') {
                     details.useVersion '1.+'
                 }
@@ -212,6 +225,9 @@ subprojects {
                 if (details.requested.group == 'org.springframework') {
                     details.useVersion v_spring
                 } else
+                if (details.requested.group == 'org.springframework.boot') {
+                    details.useVersion v_springboot
+                } else
                 if (details.requested.group == "org.springframework.data") {
                     if (details.requested.name == 'spring-data-commons') {
                         details.useVersion v_spring_data_commons
@@ -236,6 +252,7 @@ subprojects {
             force "com.google.guava:guava:$v_guava"
             force "com.esotericsoftware:kryo:$v_kryo"
             force "com.thoughtworks.xstream:xstream:1.+"
+            force "javax.validation:validation-api:$v_javax_validation"
             force "org.apache.commons:commons-lang3:$v_commons_lang"
             force "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
             force "org.jboss.logging:jboss-logging:3.+"

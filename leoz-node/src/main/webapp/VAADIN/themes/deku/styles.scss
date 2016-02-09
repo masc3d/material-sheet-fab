@@ -1,0 +1,11 @@
+@import "deku.scss";
+
+.deku {
+  @include deku;
+
+  &.v-app {
+    //@include linear-gradient(to bottom, #fff 0%, #CECECE, 100%);
+    //background-size: 100% 450px;
+    padding: 2em;
+  }
+}

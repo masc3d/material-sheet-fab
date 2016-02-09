@@ -22,13 +22,13 @@ public class StationRepositoryImpl implements StationRepositoryCustom {
         // QueryDSL
         QStation station = QStation.station;
         Iterable<Station> depots = mDepotRepository.findAll(
-                station.stationNr.stringValue().contains(query)
-                        .or(station.address1.contains(query))
-                        .or(station.address2.contains(query))
-                        .or(station.zip.startsWith(query))
-                        .or(station.country.startsWith(query))
-                        .or(station.city.contains(query))
-                        .or(station.street.contains(query)), station.stationNr.asc());
+                station.stationNr.stringValue().containsIgnoreCase(query)
+                        .or(station.address1.containsIgnoreCase(query))
+                        .or(station.address2.containsIgnoreCase(query))
+                        .or(station.zip.startsWithIgnoreCase(query))
+                        .or(station.country.startsWithIgnoreCase(query))
+                        .or(station.city.containsIgnoreCase(query))
+                        .or(station.street.containsIgnoreCase(query)), station.stationNr.asc());
 
         // JPQL
 //        String expStartsWith = query + "%";

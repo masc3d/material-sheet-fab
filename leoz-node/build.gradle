@@ -64,10 +64,6 @@ dependencies {
     // JSR-330
     compile "javax.inject:javax.inject:$v_javax_inject"
 
-    // JNA
-//    compile "net.java.dev.jna:jna:$v_jna"
-//    compile "net.java.dev.jna:jna-platform:$v_jna"
-
     // databases
     compile "com.h2database:h2:$v_h2"
 
@@ -115,6 +111,14 @@ dependencies {
     // TODO: For testing aspectj proxies with spring
 //    compile "org.aspectj:aspectjtools:+"
 //    compile "org.aspectj:aspectjweaver:+"
+
+    // TODO: for testing vaadin
+    compile "com.vaadin:vaadin-spring-boot:1.+"
+    compile "com.vaadin:vaadin-client:+"
+    compile "com.vaadin:vaadin-client-compiled:+"
+    compile "com.vaadin:vaadin-widgets:+"
+    compile "com.vaadin:vaadin-themes:+"
+    compile "commons-beanutils:commons-beanutils-core:1.8.+"
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: v_junit
@@ -176,7 +180,7 @@ run {
 }
 
 // Copy webapp content into classpath prior to compilation
-task copyWebapp(type: Copy) {
+task copyWebapp(type: Sync) {
     from 'src/main/webapp'
     into 'build/classes/main/webapp'
 }

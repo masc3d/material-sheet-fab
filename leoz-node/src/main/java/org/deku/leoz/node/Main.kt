@@ -1,5 +1,6 @@
 package org.deku.leoz.node
 
+import com.vaadin.spring.boot.VaadinAutoConfiguration
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
@@ -27,15 +28,17 @@ import org.springframework.core.annotation.Order
         /** Setups up embedded web server and servlet container  */
         EmbeddedServletContainerAutoConfiguration::class,
         /** Server properties support  */
-        ServerPropertiesAutoConfiguration::class, PersistenceConfiguration::class,
+        ServerPropertiesAutoConfiguration::class,
+        PersistenceConfiguration::class,
         /**
          * Resteasy configuration. Only used for base setup, not fully autowired
          * as we currently prefer to setup the classic resteasy servlet manually
          * @link WebContextInitializer
          */
-        ResteasyAutoConfiguration::class
+        ResteasyAutoConfiguration::class,
         /** Flyway database migration setup  */
         //FlywayAutoConfiguration.class
+        VaadinAutoConfiguration::class
 )
 @EnableConfigurationProperties
 open class Main {
