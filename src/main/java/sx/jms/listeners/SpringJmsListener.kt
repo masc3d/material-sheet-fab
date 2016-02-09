@@ -79,7 +79,7 @@ abstract class SpringJmsListener(
     @Synchronized override fun stop() {
         val lc = listenerContainer
         if (lc != null) {
-            log.info("Stopping %s".format(this.javaClass.simpleName))
+            log.info("Stopping ${this.description}")
             lc.shutdown()
             listenerContainer = null
         }
