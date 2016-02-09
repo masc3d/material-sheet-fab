@@ -4,9 +4,14 @@ apply plugin: org.deku.gradle.PackagerPlugin
 //apply plugin: 'flyway'
 
 sourceCompatibility = 1.8
-version = '0.30-RELEASE'
+version = '0.31-RELEASE'
 mainClassName = "org.deku.leoz.node.Main"
 
+repositories {
+    maven {
+        url 'https://repository-bubblecloud.forge.cloudbees.com/release/'
+    }
+}
 dependencies {
     // leoz webservice dependencies
     compile project(':libs:sx-common')
@@ -119,6 +124,7 @@ dependencies {
     compile "com.vaadin:vaadin-widgets:+"
     compile "com.vaadin:vaadin-themes:+"
     compile "commons-beanutils:commons-beanutils-core:1.8.+"
+    compile "org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:+"
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: v_junit

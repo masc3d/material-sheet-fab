@@ -3,6 +3,7 @@ package org.deku.leoz.node.web.ui
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
 import com.vaadin.data.util.BeanItemContainer
+import com.vaadin.server.ThemeResource
 import com.vaadin.server.VaadinRequest
 import com.vaadin.spring.annotation.SpringUI
 import com.vaadin.ui.*
@@ -45,26 +46,34 @@ public class DepotsUI : UI() {
         configureComponents();
 
         // Build layout
-        val actions = HorizontalLayout(filter);
-        actions.setWidth("100%");
+        val title = Label("Depots")
+        title.setSizeUndefined()
+        title.styleName = "title"
+        val logo = Image("", ThemeResource("img/logo.png"))
+        val titleBar = HorizontalLayout(logo, title)
+        titleBar.styleName = "title-bar"
+        titleBar.defaultComponentAlignment = Alignment.MIDDLE_CENTER
+        titleBar.setComponentAlignment(title, Alignment.MIDDLE_CENTER)
+
+        val actionBarLayout = HorizontalLayout(filter);
+        actionBarLayout.setWidth("100%");
         filter.setWidth("100%");
-        actions.setExpandRatio(filter, 1.0F);
+        actionBarLayout.setExpandRatio(filter, 1.0F);
 
-        val left = VerticalLayout(actions, grid);
-        left.setSizeFull();
+        val main = VerticalLayout(titleBar, actionBarLayout, grid);
+        main.setSizeFull();
         grid.setSizeFull();
-        left.setExpandRatio(grid, 1.0F);
+        main.setExpandRatio(grid, 1.0F);
 
-        val hLayout = HorizontalLayout(left)
+        val hLayout = HorizontalLayout(main)
         hLayout.setSizeFull();
-        hLayout.setExpandRatio(left, 1.0F);
+        hLayout.setExpandRatio(main, 1.0F);
 
         val mainLayout = CustomLayout("main")
         mainLayout.setSizeFull()
 
         val mainPanel = Panel("main-panel")
         mainPanel.content = mainLayout
-        mainPanel.setSizeFull()
         mainLayout.addComponent(hLayout, "main-container")
 
         // Split and allow resizing
