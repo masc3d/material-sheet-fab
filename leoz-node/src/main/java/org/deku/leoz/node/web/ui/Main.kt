@@ -9,8 +9,6 @@ import com.vaadin.ui.*
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.data.entities.master.Station
 import org.deku.leoz.node.data.repositories.master.StationRepository
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 import javax.inject.Inject
 
 /**
@@ -42,9 +40,6 @@ public class DepotsUI : UI() {
     val filter = TextField()
     val grid = Grid()
 
-    // ContactForm is an example of a custom component class
-    //ContactForm contactForm = new ContactForm();
-
     @Override
     override protected fun init(request: VaadinRequest) {
         configureComponents();
@@ -60,7 +55,7 @@ public class DepotsUI : UI() {
         grid.setSizeFull();
         left.setExpandRatio(grid, 1.0F);
 
-        val hLayout= HorizontalLayout(left)//, contactForm);
+        val hLayout = HorizontalLayout(left)
         hLayout.setSizeFull();
         hLayout.setExpandRatio(left, 1.0F);
 
@@ -79,7 +74,7 @@ public class DepotsUI : UI() {
     private fun configureComponents() {
         filter.textChangeEventMode = AbstractTextField.TextChangeEventMode.EAGER
         filter.setInputPrompt("Filter depots..");
-        filter.addTextChangeListener( { e -> refreshContacts(e.getText()) } )
+        filter.addTextChangeListener({ e -> refresh(e.getText()) })
 
         grid.setContainerDataSource(BeanItemContainer(Station::class.java));
         grid.setColumnOrder(
@@ -109,14 +104,14 @@ public class DepotsUI : UI() {
         grid.removeColumn("uStId")
 
         grid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        refreshContacts();
+        refresh();
     }
 
-    fun refreshContacts() {
-        refreshContacts(filter.getValue());
+    fun refresh() {
+        refresh(filter.getValue());
     }
 
-    private fun refreshContacts(stringFilter: String) {
+    private fun refresh(stringFilter: String) {
         grid.setContainerDataSource(BeanItemContainer(
                 Station::class.java, stationRepository.findWithQuery(stringFilter)));
     }
