@@ -13,9 +13,9 @@ compile - Compile classpath for source set 'main'.
 +--- commons-logging:commons-logging:1.+ -> 1.2
 +--- ch.qos.logback:logback-classic:+ -> 1.1.3
 |    +--- ch.qos.logback:logback-core:1.1.3
-|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.14
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.14
-|    \--- org.slf4j:slf4j-api:1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.15
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.15
+|    \--- org.slf4j:slf4j-api:1.7.15
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -24,7 +24,7 @@ compile - Compile classpath for source set 'main'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.1
 |    +--- org.apache.activemq:activemq-client:5.13.1
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -37,7 +37,7 @@ compile - Compile classpath for source set 'main'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.1
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.7
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -68,12 +68,12 @@ compile - Compile classpath for source set 'main'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.1
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.1
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.1
 |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -88,7 +88,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.1
 |    |    \--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.1 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.apache.httpcomponents:httpclient:4.5.1
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.3 -> 4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -97,7 +97,7 @@ compile - Compile classpath for source set 'main'.
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 +--- org.springframework:spring-jms:4.+ -> 4.1.7.RELEASE
 |    +--- org.springframework:spring-aop:4.1.7.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -139,9 +139,9 @@ default - Configuration for default artifacts.
 +--- commons-logging:commons-logging:1.+ -> 1.2
 +--- ch.qos.logback:logback-classic:+ -> 1.1.3
 |    +--- ch.qos.logback:logback-core:1.1.3
-|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.14
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.14
-|    \--- org.slf4j:slf4j-api:1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.15
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.15
+|    \--- org.slf4j:slf4j-api:1.7.15
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -162,7 +162,7 @@ provided
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.1
 |    +--- org.apache.activemq:activemq-client:5.13.1
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -175,7 +175,7 @@ provided
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.1
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.7
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -206,12 +206,12 @@ provided
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.1
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.1
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.1
 |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -226,7 +226,7 @@ provided
 |    +--- org.apache.activemq:activemq-stomp:5.13.1
 |    |    \--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.1 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.apache.httpcomponents:httpclient:4.5.1
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.3 -> 4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -235,7 +235,7 @@ provided
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 +--- org.springframework:spring-jms:4.+ -> 4.1.7.RELEASE
 |    +--- org.springframework:spring-aop:4.1.7.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -277,9 +277,9 @@ runtime - Runtime classpath for source set 'main'.
 +--- commons-logging:commons-logging:1.+ -> 1.2
 +--- ch.qos.logback:logback-classic:+ -> 1.1.3
 |    +--- ch.qos.logback:logback-core:1.1.3
-|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.14
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.14
-|    \--- org.slf4j:slf4j-api:1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.15
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.15
+|    \--- org.slf4j:slf4j-api:1.7.15
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -288,7 +288,7 @@ runtime - Runtime classpath for source set 'main'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.1
 |    +--- org.apache.activemq:activemq-client:5.13.1
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -301,7 +301,7 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.1
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.7
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -332,12 +332,12 @@ runtime - Runtime classpath for source set 'main'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.1
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.1
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.1
 |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -352,7 +352,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.1
 |    |    \--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.1 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.apache.httpcomponents:httpclient:4.5.1
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.3 -> 4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -361,7 +361,7 @@ runtime - Runtime classpath for source set 'main'.
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 +--- org.springframework:spring-jms:4.+ -> 4.1.7.RELEASE
 |    +--- org.springframework:spring-aop:4.1.7.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -403,9 +403,9 @@ testCompile - Compile classpath for source set 'test'.
 +--- commons-logging:commons-logging:1.+ -> 1.2
 +--- ch.qos.logback:logback-classic:+ -> 1.1.3
 |    +--- ch.qos.logback:logback-core:1.1.3
-|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.14
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.14
-|    \--- org.slf4j:slf4j-api:1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.15
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.15
+|    \--- org.slf4j:slf4j-api:1.7.15
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -414,7 +414,7 @@ testCompile - Compile classpath for source set 'test'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.1
 |    +--- org.apache.activemq:activemq-client:5.13.1
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -427,7 +427,7 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.1
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.7
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -458,12 +458,12 @@ testCompile - Compile classpath for source set 'test'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.1
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.1
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.1
 |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -478,7 +478,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.1
 |    |    \--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.1 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.apache.httpcomponents:httpclient:4.5.1
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.3 -> 4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -487,7 +487,7 @@ testCompile - Compile classpath for source set 'test'.
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 +--- org.springframework:spring-jms:4.+ -> 4.1.7.RELEASE
 |    +--- org.springframework:spring-aop:4.1.7.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -529,9 +529,9 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- commons-logging:commons-logging:1.+ -> 1.2
 +--- ch.qos.logback:logback-classic:+ -> 1.1.3
 |    +--- ch.qos.logback:logback-core:1.1.3
-|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.14
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.14
-|    \--- org.slf4j:slf4j-api:1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.7 -> 1.7.15
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.15
+|    \--- org.slf4j:slf4j-api:1.7.15
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -540,7 +540,7 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.1
 |    +--- org.apache.activemq:activemq-client:5.13.1
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -553,7 +553,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.1
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.7
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -584,12 +584,12 @@ testRuntime - Runtime classpath for source set 'test'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.1
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.1
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.1
 |    +--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -604,7 +604,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.1
 |    |    \--- org.apache.activemq:activemq-broker:5.13.1 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.1 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 |    +--- org.apache.httpcomponents:httpclient:4.5.1
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.3 -> 4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -613,7 +613,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.14
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.15
 +--- org.springframework:spring-jms:4.+ -> 4.1.7.RELEASE
 |    +--- org.springframework:spring-aop:4.1.7.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
