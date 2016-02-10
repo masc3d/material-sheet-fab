@@ -32,7 +32,11 @@ open class DatabaseSyncConfiguration {
 
     fun trigger() {
         this.executorService.submit {
-            databaseSync.sync()
+            try {
+                databaseSync.sync()
+            } catch(e: Exception) {
+                log.error(e.message, e)
+            }
         }
     }
 

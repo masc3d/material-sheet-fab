@@ -375,8 +375,6 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
             conversionFunction: (TCentralRecord) -> TEntity,
             deleteBeforeUpdate: Boolean) {
 
-        val query = JPAQuery(entityManager)
-
         // Stopwatch
         val sw = Stopwatch.createStarted()
         // Log formatter
@@ -397,7 +395,11 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
         // Get latest timestamp
         var timestamp: Timestamp? = null
         if (destQdslTimestampPath != null) {
-            timestamp = query.from(destQdslEntityPath).singleResult(destQdslTimestampPath.max())
+            // Query embedded database table for latest timestamp
+            timestamp = JPAQuery(entityManager)
+                    .from(destQdslEntityPath)
+                    .singleResult(destQdslTimestampPath.max())
+
             log.info(lfmt("Current destination timestamp ${timestamp}"))
         }
 
@@ -428,7 +430,17 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
                 log.info(lfmt("Inserted"))
 
                 // Emit update event
-                eventDispatcher.emit { e -> e.onUpdate(destQdslEntityPath.getType(), timestamp) }
+                eventDispatcher.emit { e ->
+                    var newTimestamp: Timestamp? = null
+                    if (destQdslTimestampPath != null) {
+                        // Query embedded database for updated latest timestamp
+                        newTimestamp = JPAQuery(entityManager)
+                                .from(destQdslEntityPath)
+                                .singleResult(destQdslTimestampPath.max())
+                    }
+                    // Emit event
+                    e.onUpdate(destQdslEntityPath.getType(), newTimestamp)
+                }
             }
             null
         }

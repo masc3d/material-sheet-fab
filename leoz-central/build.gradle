@@ -12,20 +12,16 @@ dependencies {
     compile project(':libs:sx-common')
     compile project(':libs:leoz-common')
     compile project(':leoz-node')
-
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
-
     // db
     compile "mysql:mysql-connector-java:$v_mysql"
-
     // jooq
     compile "org.jooq:jooq:$v_jooq"
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: v_junit
-
     // webservice client libraries for test cases
     testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
     testCompile "org.springframework.boot:spring-boot-starter-test:$v_springboot"
