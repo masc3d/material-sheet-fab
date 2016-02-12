@@ -357,7 +357,7 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
     /**
      * Generic updater for entites from jooq to jpa
      * @param sourceTable           JOOQ source table
-     * @param sourceTableField      JOOQ source timestamp field
+     * @param sourceTableTimestampField      JOOQ source timestamp field
      * @param destRepository        Destination JPA repository
      * @param destQdslEntityPath    Destination QueryDSL entity table path
      * @param destQdslTimestampPath Destination QueryDSL timestamp field path
@@ -368,7 +368,7 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
      */
     private fun <TCentralRecord : Record, TEntity> updateEntities(
             sourceTable: TableImpl<TCentralRecord>,
-            sourceTableField: TableField<TCentralRecord, Timestamp>,
+            sourceTableTimestampField: TableField<TCentralRecord, Timestamp>,
             destRepository: JpaRepository<TEntity, *>,
             destQdslEntityPath: EntityPathBase<TEntity>,
             destQdslTimestampPath: DateTimePath<Timestamp>?,
@@ -384,7 +384,7 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
 
         if (deleteBeforeUpdate || destQdslTimestampPath == null) {
             transaction.execute<Any> { ts ->
-                log.info(lfmt("Deleting"))
+                log.info(lfmt("Deleting all entities"))
                 destRepository.deleteAllInBatch()
                 entityManager.flush()
                 entityManager.clear()
@@ -393,57 +393,63 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
         }
 
         // Get latest timestamp
-        var timestamp: Timestamp? = null
+        var destMaxTimestamp: Timestamp? = null
         if (destQdslTimestampPath != null) {
             // Query embedded database table for latest timestamp
-            timestamp = JPAQuery(entityManager)
+            destMaxTimestamp = JPAQuery(entityManager)
                     .from(destQdslEntityPath)
                     .singleResult(destQdslTimestampPath.max())
-
-            log.info(lfmt("Current destination timestamp ${timestamp}"))
         }
 
         // Get newer records from central
         // masc20150530. JOOQ cursor requires an explicit transaction
         transactionJooq.execute<Any> { tsJooq ->
-            log.info(lfmt("Fetching"))
-            val source = syncRepository.findNewerThan(timestamp, sourceTable, sourceTableField)
-            log.info(lfmt("Fetched"))
+            // Read source records newer than destination timestamp
+            val source = syncRepository.findNewerThan(
+                    destMaxTimestamp,
+                    sourceTable,
+                    sourceTableTimestampField)
 
-            if (source.iterator().hasNext()) {
-                // Save to embedded
-                //TODO: saving/transaction commit gets very slow when deleting and inserting within the same transaction
-                //destRepository.save((Iterable<TEntity>) source.stream().map(d -> conversionFunction.apply(d))::iterator);
-                // It's also faster to flush and clear in between
-                log.info(lfmt("Inserting"))
+            if (source.hasNext()) {
+                // Save to destination/jpa
+                // REMARKS
+                // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
+                log.info(lfmt("Outdated [[${destMaxTimestamp}]"))
+                var count = 0
                 transaction.execute<Any> { ts ->
-                    var i = 0
-                    for (r in source.asSequence().map { d -> conversionFunction(d) }) {
-                        destRepository.save(r)
-                        if (i++ % 100 == 0) {
+                    while (source.hasNext()) {
+                        // Fetch next record
+                        val record = source.fetchOne()
+                        // Convert to entity
+                        val entity = conversionFunction(record)
+                        // Store entity
+                        destRepository.save(entity)
+                        // Flush every now and then (improves performance)
+                        if (count++ % 100 == 0) {
                             entityManager.flush()
                             entityManager.clear()
                         }
                     }
-                    null
                 }
-                log.info(lfmt("Inserted"))
+
+                // Re-query destination timestamp
+                if (destQdslTimestampPath != null) {
+                    // Query embedded database for updated latest timestamp
+                    destMaxTimestamp = JPAQuery(entityManager)
+                            .from(destQdslEntityPath)
+                            .singleResult(destQdslTimestampPath.max())
+                }
+                log.info(lfmt("Updated ${count} entities [${destMaxTimestamp}]"))
 
                 // Emit update event
                 eventDispatcher.emit { e ->
-                    var newTimestamp: Timestamp? = null
-                    if (destQdslTimestampPath != null) {
-                        // Query embedded database for updated latest timestamp
-                        newTimestamp = JPAQuery(entityManager)
-                                .from(destQdslEntityPath)
-                                .singleResult(destQdslTimestampPath.max())
-                    }
                     // Emit event
-                    e.onUpdate(destQdslEntityPath.getType(), newTimestamp)
+                    e.onUpdate(destQdslEntityPath.getType(), destMaxTimestamp)
                 }
+            } else {
+                log.info(lfmt("Uptodate [${destMaxTimestamp}]"))
             }
             null
         }
-        log.info(lfmt("Done"))
     }
 }
