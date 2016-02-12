@@ -23,8 +23,6 @@ class CentralService : org.deku.leoz.rest.services.internal.v1.CentralService {
     lateinit var databaseSyncConfiguration: DatabaseSyncConfiguration
 
     override fun databaseSync() {
-        log.info("Manually database sync")
-
         this.databaseSyncConfiguration.trigger()
     }
 }

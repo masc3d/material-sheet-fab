@@ -31,6 +31,7 @@ open class DatabaseSyncConfiguration {
     }
 
     fun trigger() {
+        log.info("Triggering database sync")
         this.executorService.submit {
             try {
                 databaseSync.sync()
