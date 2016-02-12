@@ -149,6 +149,9 @@ subprojects {
             // Force overrides for newer versions of (transitive) dependencies for all projects consistently
             // Version overrides
             resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                if (details.requested.group.startsWith('ch.qos.logback')) {
+                    details.useVersion v_logback
+                } else
                 if (details.requested.group.startsWith('com.fasterxml.jackson')) {
                     details.useVersion v_jackson
                 } else

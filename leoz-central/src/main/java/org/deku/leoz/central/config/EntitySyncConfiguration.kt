@@ -3,16 +3,20 @@ package org.deku.leoz.central.config
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.App
 import org.deku.leoz.central.data.sync.DatabaseSync
-import org.deku.leoz.central.data.sync.EntitySync
+import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
+import org.deku.leoz.node.data.sync.EntityPublisher
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
+import java.sql.Timestamp
 import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
 import javax.inject.Inject
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
+import kotlin.properties.Delegates
 
 /**
  * Leoz-central entity sync configuration
@@ -21,33 +25,55 @@ import javax.persistence.PersistenceUnit
 @Configuration(App.PROFILE_CENTRAL)
 @Lazy(false)
 open class EntitySyncConfiguration {
-    private val mLog = LogFactory.getLog(this.javaClass)
+    private val log = LogFactory.getLog(this.javaClass)
 
     @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
-    lateinit private var entityManagerFactory: EntityManagerFactory
+    private lateinit var entityManagerFactory: EntityManagerFactory
 
     @Inject
-    lateinit private var databaseSync: DatabaseSync
+    private lateinit var databaseSync: DatabaseSync
 
-    /** Broker listener  */
+    /** Entity publisher */
+    private lateinit var entityPublisher: EntityPublisher
+
+    /** Broker event listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
-            EntitySync.it().start()
+            this@EntitySyncConfiguration.entityPublisher.start()
         }
 
         override fun onStop() {
-            EntitySync.it().close()
+            this@EntitySyncConfiguration.entityPublisher.close()
+        }
+    }
+
+    /** Database sync event listener */
+    private val databaseSyncEvent = object : DatabaseSync.EventListener {
+        override fun onUpdate(entityType: Class<out Any?>, currentTimestamp: Timestamp?) {
+            // Publish notification to consumers on database sync update
+            this@EntitySyncConfiguration.entityPublisher.publish(entityType, currentTimestamp);
         }
     }
 
     @PostConstruct
     fun onInitialize() {
-        EntitySync.it().entityManagerFactory = entityManagerFactory
-        EntitySync.it().databaseSync = databaseSync
+        // Setup entity publisher
+        this.entityPublisher = EntityPublisher(
+                ActiveMQConfiguration.instance,
+                this.entityManagerFactory)
 
-        // Start when broker is started
+        // Wire database sync event
+        this.databaseSync.eventDelegate.add(databaseSyncEvent)
+
+        // Wire broker event
         ActiveMQBroker.instance.delegate.add(brokerEventListener)
+
         if (ActiveMQBroker.instance.isStarted)
             brokerEventListener.onStart()
+    }
+
+    @PreDestroy
+    fun onDestroy() {
+        this.entityPublisher.close()
     }
 }
