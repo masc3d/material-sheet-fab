@@ -62,8 +62,8 @@ abstract class LogConfiguration : Disposable {
                 fileAppender.triggeringPolicy = rollingPolicy
 
                 // Initialize file appender
-                fileAppender.start()
                 this.rootLogger.addAppender(fileAppender)
+                fileAppender.start()
 
                 this.fileAppender = fileAppender
             }
@@ -86,9 +86,12 @@ abstract class LogConfiguration : Disposable {
      * Initialize logging. This method is supposed to also reinitialize all configured loggers.
      */
     open fun initialize() {
-        if (this.fileAppender != null) {
-            this.fileAppender!!.start()
+        val fileAppender = this.fileAppender
+        if (fileAppender != null) {
             this.rootLogger.addAppender(fileAppender)
+            fileAppender.rollingPolicy.start()
+            fileAppender.triggeringPolicy.start()
+            fileAppender.start()
         }
     }
 
