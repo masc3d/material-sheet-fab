@@ -8,12 +8,12 @@ No dependencies
 
 compile - Compile classpath for source set 'main'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-rc-1036
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
-|    +--- ch.qos.logback:logback-classic:+ -> 1.1.4
-|    |    +--- ch.qos.logback:logback-core:1.1.4
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.5
+|    |    +--- ch.qos.logback:logback-core:1.1.5
 |    |    \--- org.slf4j:slf4j-api:1.7.16
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.16
 |    |    \--- org.slf4j:slf4j-api:1.7.16
@@ -23,23 +23,23 @@ compile - Compile classpath for source set 'main'.
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
-|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.4 (*)
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
 |    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
 |         \--- net.java.dev.jna:jna:4.2.1
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:1.+ -> 1.1.4 (*)
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
 +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
-+--- com.beust:jcommander:+ -> 1.48
++--- com.beust:jcommander:+ -> 1.54
 +--- org.ini4j:ini4j:+ -> 0.5.4
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
 |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.16
@@ -53,12 +53,12 @@ compile - Compile classpath for source set 'main'.
 
 default - Configuration for default artifacts.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-rc-1036
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
-|    +--- ch.qos.logback:logback-classic:+ -> 1.1.4
-|    |    +--- ch.qos.logback:logback-core:1.1.4
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.5
+|    |    +--- ch.qos.logback:logback-core:1.1.5
 |    |    \--- org.slf4j:slf4j-api:1.7.16
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.16
 |    |    \--- org.slf4j:slf4j-api:1.7.16
@@ -68,23 +68,23 @@ default - Configuration for default artifacts.
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
-|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.4 (*)
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
 |    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
 |         \--- net.java.dev.jna:jna:4.2.1
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:1.+ -> 1.1.4 (*)
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
 +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
-+--- com.beust:jcommander:+ -> 1.48
++--- com.beust:jcommander:+ -> 1.54
 +--- org.ini4j:ini4j:+ -> 0.5.4
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
 |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.16
@@ -97,23 +97,23 @@ default - Configuration for default artifacts.
      \--- javax.validation:validation-api:1.1.0.Final
 
 kapt
-\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0-rc-1036
-     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0-rc-1036
-          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-rc-1036
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0
+     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0
+          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 
 kaptTest
-\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0-rc-1036
-     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0-rc-1036
-          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-rc-1036
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0
+     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0
+          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 
 runtime - Runtime classpath for source set 'main'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-rc-1036
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
-|    +--- ch.qos.logback:logback-classic:+ -> 1.1.4
-|    |    +--- ch.qos.logback:logback-core:1.1.4
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.5
+|    |    +--- ch.qos.logback:logback-core:1.1.5
 |    |    \--- org.slf4j:slf4j-api:1.7.16
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.16
 |    |    \--- org.slf4j:slf4j-api:1.7.16
@@ -123,23 +123,23 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
-|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.4 (*)
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
 |    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
 |         \--- net.java.dev.jna:jna:4.2.1
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:1.+ -> 1.1.4 (*)
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
 +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
-+--- com.beust:jcommander:+ -> 1.48
++--- com.beust:jcommander:+ -> 1.54
 +--- org.ini4j:ini4j:+ -> 0.5.4
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
 |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.16
@@ -153,12 +153,12 @@ runtime - Runtime classpath for source set 'main'.
 
 testCompile - Compile classpath for source set 'test'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-rc-1036
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
-|    +--- ch.qos.logback:logback-classic:+ -> 1.1.4
-|    |    +--- ch.qos.logback:logback-core:1.1.4
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.5
+|    |    +--- ch.qos.logback:logback-core:1.1.5
 |    |    \--- org.slf4j:slf4j-api:1.7.16
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.16
 |    |    \--- org.slf4j:slf4j-api:1.7.16
@@ -168,23 +168,23 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
-|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.4 (*)
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
 |    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
 |         \--- net.java.dev.jna:jna:4.2.1
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:1.+ -> 1.1.4 (*)
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
 +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
-+--- com.beust:jcommander:+ -> 1.48
++--- com.beust:jcommander:+ -> 1.54
 +--- org.ini4j:ini4j:+ -> 0.5.4
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
 |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.16
@@ -200,12 +200,12 @@ testCompile - Compile classpath for source set 'test'.
 
 testRuntime - Runtime classpath for source set 'test'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0-rc-1036
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
-|    +--- ch.qos.logback:logback-classic:+ -> 1.1.4
-|    |    +--- ch.qos.logback:logback-core:1.1.4
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.5
+|    |    +--- ch.qos.logback:logback-core:1.1.5
 |    |    \--- org.slf4j:slf4j-api:1.7.16
 |    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.16
 |    |    \--- org.slf4j:slf4j-api:1.7.16
@@ -215,23 +215,23 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
-|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.4 (*)
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
 |    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
 |         \--- net.java.dev.jna:jna:4.2.1
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0-rc-1036
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0-rc-1036 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
-+--- ch.qos.logback:logback-classic:1.+ -> 1.1.4 (*)
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
 +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
-+--- com.beust:jcommander:+ -> 1.48
++--- com.beust:jcommander:+ -> 1.54
 +--- org.ini4j:ini4j:+ -> 0.5.4
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
 |    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.16

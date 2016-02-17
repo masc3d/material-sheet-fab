@@ -104,7 +104,6 @@ class EntityConsumer
                 // Send entity state message
                 val mp = session.createProducer(requestQueue)
                 mp.deliveryMode = DeliveryMode.NON_PERSISTENT
-                mp.timeToLive = TimeUnit.MINUTES.toMillis(3)
                 var msg: Message? = converter.toMessage(
                         EntityStateMessage(entityType, timestamp),
                         session)

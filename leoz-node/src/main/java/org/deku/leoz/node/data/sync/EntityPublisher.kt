@@ -68,67 +68,71 @@ class EntityPublisher(
 
     @Throws(JMSException::class)
     public override fun onMessage(message: Message, session: Session) {
-        log.debug(String.format("Message id [%s] %s",
-                message.jmsMessageID,
-                LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(
-                                message.jmsTimestamp), ZoneId.systemDefault())))
+        try {
+            log.debug(String.format("Message id [%s] %s",
+                    message.jmsMessageID,
+                    LocalDateTime.ofInstant(
+                            Instant.ofEpochMilli(
+                                    message.jmsTimestamp), ZoneId.systemDefault())))
 
-        val sw = Stopwatch.createStarted()
+            val sw = Stopwatch.createStarted()
 
-        // Create new message converter for this session, just for clean statistics sake
-        val messageConverter = this.converter as DefaultConverter
+            // Create new message converter for this session, just for clean statistics sake
+            val messageConverter = this.converter as DefaultConverter
 
-        // Entity state message
-        val esMessage = messageConverter.fromMessage(message) as EntityStateMessage
-        val entityType = esMessage.entityType
-        val timestamp = esMessage.timestamp
-        val lfmt = { s: String -> "[" + entityType!!.canonicalName + "]" + " " + s }
+            // Entity state message
+            val esMessage = messageConverter.fromMessage(message) as EntityStateMessage
+            val entityType = esMessage.entityType
+            val timestamp = esMessage.timestamp
+            val lfmt = { s: String -> "[" + entityType!!.canonicalName + "]" + " " + s }
 
-        val em = entityManagerFactory.createEntityManager()
-        val er = EntityRepository(em, entityType)
+            val em = entityManagerFactory.createEntityManager()
+            val er = EntityRepository(em, entityType)
 
-        // Count records
-        val count = er.countNewerThan(timestamp)
+            // Count records
+            val count = er.countNewerThan(timestamp)
 
-        val euMessage = EntityUpdateMessage(count)
-        log.debug(euMessage)
+            val euMessage = EntityUpdateMessage(count)
+            log.debug(euMessage)
 
-        val mp = session.createProducer(message.jmsReplyTo)
-        mp.send(messageConverter.toMessage(euMessage, session))
+            val mp = session.createProducer(message.jmsReplyTo)
+            mp.send(messageConverter.toMessage(euMessage, session))
 
-        if (count > 0) {
-            // Query with cursor
-            val cursor = er.findNewerThan(timestamp)
+            if (count > 0) {
+                // Query with cursor
+                val cursor = er.findNewerThan(timestamp)
 
-            val CHUNK_SIZE = 500
-            val buffer = ArrayList<Any?>(CHUNK_SIZE)
-            log.info(lfmt("Sending ${count}"))
-            while (true) {
-                var next: Any? = null
-                if (cursor.hasNext()) {
-                    next = cursor.next()
-                    buffer.add(next)
-                }
-                if (buffer.size >= CHUNK_SIZE || next == null) {
-                    if (buffer.size > 0) {
-                        mp.send(messageConverter.toMessage(buffer.toArray(), session))
-                        buffer.clear()
+                val CHUNK_SIZE = 500
+                val buffer = ArrayList<Any?>(CHUNK_SIZE)
+                log.info(lfmt("Sending ${count}"))
+                while (true) {
+                    var next: Any? = null
+                    if (cursor.hasNext()) {
+                        next = cursor.next()
+                        buffer.add(next)
                     }
+                    if (buffer.size >= CHUNK_SIZE || next == null) {
+                        if (buffer.size > 0) {
+                            mp.send(messageConverter.toMessage(buffer.toArray(), session))
+                            buffer.clear()
+                        }
 
-                    if (next == null)
-                        break
+                        if (next == null)
+                            break
+                    }
                 }
+
+                // Send empty array -> EOS
+                val eosMsg = messageConverter.toMessage(arrayOfNulls<Any>(0), session)
+                eosMsg.setBooleanProperty(EntityUpdateMessage.EOS_PROPERTY, true)
+                mp.send(eosMsg)
             }
+            session.commit()
+            log.info(lfmt("Sent ${count} in ${sw} (${messageConverter.bytesWritten} bytes)"))
 
-            // Send empty array -> EOS
-            val eosMsg = messageConverter.toMessage(arrayOfNulls<Any>(0), session)
-            eosMsg.setBooleanProperty(EntityUpdateMessage.EOS_PROPERTY, true)
-            mp.send(eosMsg)
+            em.close()
+        } catch(e: Exception) {
+            log.error(e.message, e);
         }
-        session.commit()
-        log.info(lfmt("Sent ${count} in ${sw} (${messageConverter.bytesWritten} bytes)"))
-
-        em.close()
     }
 }
