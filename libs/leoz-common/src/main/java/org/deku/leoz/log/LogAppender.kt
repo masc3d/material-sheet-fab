@@ -4,6 +4,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.spi.LoggingEvent
 import ch.qos.logback.core.AppenderBase
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.Identity
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import sx.Disposable
 import sx.Dispose
@@ -14,6 +15,7 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import javax.jms.DeliveryMode
 import javax.jms.Session
 
@@ -23,7 +25,8 @@ import javax.jms.Session
  */
 public class LogAppender(
         /** Messaging context */
-        private val messagingConfiguration: MessagingConfiguration)
+        private val messagingConfiguration: MessagingConfiguration,
+        private val idenity: Identity)
 :
         AppenderBase<ILoggingEvent>(),
         Disposable {
@@ -96,7 +99,10 @@ public class LogAppender(
     override fun append(eventObject: ILoggingEvent) {
         val le = eventObject as LoggingEvent
         synchronized (buffer) {
-            buffer.add(LogMessage(le))
+            buffer.add(LogMessage(
+                    nodeId = this.idenity.id,
+                    nodeKey = this.idenity.key,
+                    loggingEvent = le))
         }
     }
 

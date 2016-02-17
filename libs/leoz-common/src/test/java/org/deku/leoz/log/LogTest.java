@@ -1,7 +1,9 @@
 package org.deku.leoz.log;
 
 import ch.qos.logback.classic.Logger;
+import org.deku.leoz.Identity;
 import org.deku.leoz.MessagingTest;
+import org.deku.leoz.SystemInformation;
 import org.deku.leoz.config.messaging.ActiveMQConfiguration;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,7 +19,9 @@ public class LogTest extends MessagingTest {
     @Test
     public void testSend() throws JMSException {
         // Setup log appender
-        LogAppender lAppender = new LogAppender(ActiveMQConfiguration.getInstance());
+        LogAppender lAppender = new LogAppender(
+                ActiveMQConfiguration.getInstance(),
+                Identity.Companion.create(SystemInformation.create()));
         lAppender.start();
         Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         lRoot.addAppender(lAppender);

@@ -31,7 +31,9 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
             if (value) {
                 if (this.jmsLogAppender == null) {
                     // Setup message log appender
-                    this.jmsLogAppender = LogAppender(ActiveMQConfiguration.instance)
+                    this.jmsLogAppender = LogAppender(
+                            ActiveMQConfiguration.instance,
+                            IdentityConfiguration.instance.identity)
                     this.jmsLogAppender!!.context = loggerContext
                 }
             } else {

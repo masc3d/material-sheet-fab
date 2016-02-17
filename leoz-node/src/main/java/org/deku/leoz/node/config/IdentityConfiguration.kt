@@ -15,33 +15,43 @@ import kotlin.properties.Delegates
  * Responsible for setting up identity of the node and initiating remote authorization task(s)
  * Created by masc on 30.06.15.
  */
-@Configuration
-@Lazy(false)
-open class IdentityConfiguration {
+class IdentityConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
     /** Authorizer  */
-    private var authorizer: Authorizer by Delegates.notNull()
+    private var authorizer: Authorizer
 
     /**
      * Application wide Node identity
      * @retur
      */
-    var identity: Identity by Delegates.notNull()
+    var identity: Identity
         private set
 
     /**
      * Application wide system information
      * @return
      */
-    var systemInformation: SystemInformation by Delegates.notNull()
+    var systemInformation: SystemInformation
         private set
 
+    companion object Singleton {
+        @JvmStatic val instance by lazy {
+            IdentityConfiguration()
+        }
+    }
+
     /**
-     * Initialize identity
+     * Initialize
      */
-    @PostConstruct
-    fun onInitialize() {
+    fun initialize() {
+        // Actual initialization done by c'tor
+    }
+
+    /**
+     * c'tor
+     */
+    init {
         var identity: Identity? = null
 
         // Collect system information

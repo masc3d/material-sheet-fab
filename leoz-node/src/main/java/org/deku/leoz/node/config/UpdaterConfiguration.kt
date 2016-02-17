@@ -38,10 +38,9 @@ open class UpdaterConfiguration {
     }
 
     @Inject
-    lateinit var settings: Settings
+    private lateinit var settings: Settings
 
-    @Inject
-    lateinit var identityConfiguration: IdentityConfiguration
+    private val identityConfiguration by lazy { IdentityConfiguration.instance }
 
     /**
      * Local bundle repository

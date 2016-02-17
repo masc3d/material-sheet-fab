@@ -2,6 +2,7 @@ package org.deku.leoz.node
 
 import com.google.common.collect.Lists
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.node.config.IdentityConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.springframework.beans.BeansException
@@ -111,6 +112,7 @@ open class App :
         isInitialized = true
 
         // Acquire lock on bundle path
+        StorageConfiguration.instance.initalize()
         val bundlePath = StorageConfiguration.instance.bundleLockFile
         log.trace("Acquiring lock on bundle path [${bundlePath}]")
         this.bundlePathLock = FileChannel
@@ -124,7 +126,9 @@ open class App :
             LogConfiguration.instance().jmsAppenderEnabled = true
         }
         LogConfiguration.instance().initialize()
-        this.disposables.add(LogConfiguration.instance())
+
+        // Initialize identity
+        IdentityConfiguration.instance.initialize()
 
         log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
 
@@ -157,16 +161,18 @@ open class App :
 
             System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY,
                     Lists.reverse(configLocations).asSequence().map({ u -> u.toString() }).joinToString(","))
+
+            // Register shutdown hook
+            Runtime.getRuntime().addShutdownHook(object : Thread("App shutdown hook") {
+                override fun run() {
+                    log.info("Shutdown hook initiated")
+                    this@App.close()
+                    log.info("Shutdown hook completed")
+                }
+            })
+
         }
         //endregion
-
-        Runtime.getRuntime().addShutdownHook(object : Thread("App shutdown hook") {
-            override fun run() {
-                log.info("Shutdown hook initiated")
-                this@App.close()
-                log.info("Shutdown hook completed")
-            }
-        })
     }
 
     /** Initialize application. supposed to be overridden in derived applications */

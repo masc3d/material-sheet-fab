@@ -29,8 +29,7 @@ import javax.inject.Inject
 open class MessageListenerConfiguration {
     private val log = LogFactory.getLog(MessageListenerConfiguration::class.java)
 
-    @Inject
-    lateinit private var identityConfiguration: IdentityConfiguration
+    private val identityConfiguration by lazy { IdentityConfiguration.instance }
 
     @Inject
     lateinit private var updaterConfiguration: UpdaterConfiguration

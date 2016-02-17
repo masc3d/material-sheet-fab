@@ -25,8 +25,7 @@ open class MessageBrokerConfiguration {
     @Inject
     private lateinit var peerSettings: RemotePeerSettings
 
-    @Inject
-    private lateinit var identityConfiguration: IdentityConfiguration
+    private val identityConfiguration by lazy { IdentityConfiguration.instance }
 
     // Configuration properties
     var nativePort: Int? = null

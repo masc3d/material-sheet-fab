@@ -14,6 +14,8 @@ public class LogMessage : Serializable {
         private const val serialVersionUID = -8027400236775552276L
     }
 
+    public var nodeId: Int? = null
+    public var nodeKey: String = ""
     public var level: String = ""
     public var loggerName: String = ""
     public var threadName: String = ""
@@ -22,14 +24,16 @@ public class LogMessage : Serializable {
 
     public constructor() { }
 
-    public constructor(le: LoggingEvent) {
-        level = le.level.toString()
-        loggerName = le.loggerName
-        threadName = le.threadName
-        message = if ((le.argumentArray != null))
-            MessageFormatter.arrayFormat(le.message, le.argumentArray).message
+    public constructor(nodeId: Int?, nodeKey: String, loggingEvent: LoggingEvent) {
+        this.nodeId = nodeId
+        this.nodeKey = nodeKey
+        this.level = loggingEvent.level.toString()
+        this.loggerName = loggingEvent.loggerName
+        this.threadName = loggingEvent.threadName
+        this.message = if ((loggingEvent.argumentArray != null))
+            MessageFormatter.arrayFormat(loggingEvent.message, loggingEvent.argumentArray).message
         else
-            le.message
-        timestamp = le.timeStamp
+            loggingEvent.message
+        this.timestamp = loggingEvent.timeStamp
     }
 }
