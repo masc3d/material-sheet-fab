@@ -11,13 +11,13 @@ import javax.ws.rs.core.MediaType
 /**
  * Created by JT on 05.02.16.
  */
-@Path("internal/v1/central")
+@Path("internal/v1/node")
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "Central operations")
-interface CentralService {
+@Api(value = "Node operations")
+interface NodeService {
 
     @GET
-    @Path("/database-sync")
-    @ApiOperation(value = "Trigger central database sync")
-    fun databaseSync()
+    @Path("/entity-sync")
+    @ApiOperation(value = "Trigger entity sync")
+    fun entitySync()
 }

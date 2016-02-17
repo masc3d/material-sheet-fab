@@ -45,13 +45,20 @@ open class EntitySyncConfiguration {
         }
 
         override fun onConnectedToBrokerNetwork() {
-            entityConsumer.request(Station::class.java)
-            entityConsumer.request(Country::class.java)
-            entityConsumer.request(HolidayCtrl::class.java)
-            entityConsumer.request(Route::class.java)
-            entityConsumer.request(RoutingLayer::class.java)
-            entityConsumer.request(Sector::class.java)
+            this@EntitySyncConfiguration.requestEntities()
         }
+    }
+
+    /**
+     * Starts entity requests for all entity types
+     */
+    fun requestEntities() {
+        entityConsumer.request(Station::class.java)
+        entityConsumer.request(Country::class.java)
+        entityConsumer.request(HolidayCtrl::class.java)
+        entityConsumer.request(Route::class.java)
+        entityConsumer.request(RoutingLayer::class.java)
+        entityConsumer.request(Sector::class.java)
     }
 
     @PostConstruct
@@ -62,7 +69,9 @@ open class EntitySyncConfiguration {
             brokerEventListener.onStart()
 
         // Entity sync consumer
-        this.entityConsumer = EntityConsumer(ActiveMQConfiguration.instance, this.entityManagerFactory)
+        this.entityConsumer = EntityConsumer(
+                messagingConfiguration = ActiveMQConfiguration.instance,
+                entityManagerFactory = this.entityManagerFactory)
     }
 
     @PreDestroy
