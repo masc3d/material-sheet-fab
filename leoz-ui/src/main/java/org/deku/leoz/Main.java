@@ -195,7 +195,7 @@ public class Main extends Application {
 
         // Main scene
         Scene scene = new Scene(this.getMainPane(), 1600, 800);
-        primaryStage.setTitle("LeoZ UI");
+        primaryStage.setTitle("Leoz UI");
         primaryStage.getIcons().add(new Image(this.getClass().getResourceAsStream("/images/DEKU.icon.256px.png")));
         primaryStage.setScene(scene);
         primaryStage.show();

@@ -88,7 +88,7 @@ distributions {
 
 // Packager task
 packager {
-    title = "LeoZ Central"
+    title = "Leoz Central"
     releaseBasePath = g_release_path
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon

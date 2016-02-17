@@ -204,7 +204,7 @@ distributions {
 }
 
 packager {
-    title = "LeoZ Node"
+    title = "Leoz Node"
     releaseBasePath = g_release_path
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon

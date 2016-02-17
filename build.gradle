@@ -53,7 +53,7 @@ buildscript {
         v_vaadin_sass = "+"
         v_xstream = "1.+"
 
-        // LeoZ release path, relative to root project
+        // Leoz release path, relative to root project
         g_platform_identifier = PlatformId.current().toString()
 
         g_release_path = Paths.get(project.rootDir.toURI())

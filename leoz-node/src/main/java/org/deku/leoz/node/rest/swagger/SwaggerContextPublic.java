@@ -27,8 +27,8 @@ public class SwaggerContextPublic implements SwaggerContext {
 
     public SwaggerContextPublic() {
         Info info = new Info()
-                .title("LeoZ public webservice")
-                .description("LeoZ public webservice API")
+                .title("Leoz public webservice")
+                .description("Leoz public webservice API")
                 .version("1.0.2")
                 .contact(new Contact()
                         .email("wolfgang.drewelies@derkurier.de"))

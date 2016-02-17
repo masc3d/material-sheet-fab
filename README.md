@@ -1,4 +1,4 @@
-# LeoZ #
+# Leoz #
 
 ## Setup ##
 

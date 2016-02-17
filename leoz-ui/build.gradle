@@ -78,7 +78,7 @@ sourceSets.main.resources.srcDir 'src/main/java'
 tasks.classes.dependsOn(copySxBinariesToBuild)
 
 packager {
-    title = "LeoZ UI"
+    title = "Leoz UI"
     releaseBasePath = g_release_path
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
