@@ -99,7 +99,7 @@ class Application : javafx.application.Application() {
         Bundle.load(nativeBundlePath).verify()
 
         val srcPath = nativeBundlePath
-        val destPath = File(StorageConfiguration.bundleInstallationDirectory, Bundles.LEOZ_BOOT)
+        val destPath = File(StorageConfiguration.bundleInstallationDirectory, Bundles.LEOZ_BOOT.value)
 
         val rc = RsyncClient()
         val source = Rsync.URI(srcPath)

@@ -44,16 +44,16 @@ class BundleRepositoryTest {
 
     @Test
     fun testUpload() {
-        BundleTestConfiguration.remoteRepository.upload(Bundles.LEOZ_BOOT, BundleTestConfiguration.releasePath)
+        BundleTestConfiguration.remoteRepository.upload(Bundles.LEOZ_BOOT.value, BundleTestConfiguration.releasePath)
     }
 
     @Test
     fun testDownload() {
-        val path = File(StorageTestConfiguration.bundlesTestDirectory, Bundles.LEOZ_BOOT)
+        val path = File(StorageTestConfiguration.bundlesTestDirectory, Bundles.LEOZ_BOOT.value)
 
         BundleTestConfiguration.remoteRepository.download(
-                Bundles.LEOZ_BOOT,
-                BundleTestConfiguration.remoteRepository.listVersions(Bundles.LEOZ_BOOT).sortedDescending().first(),
+                Bundles.LEOZ_BOOT.value,
+                BundleTestConfiguration.remoteRepository.listVersions(Bundles.LEOZ_BOOT.value).sortedDescending().first(),
                 BundleTestConfiguration.releasePath)
     }
 }

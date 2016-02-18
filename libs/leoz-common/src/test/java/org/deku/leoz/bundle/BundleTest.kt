@@ -47,7 +47,7 @@ class BundleTest {
     fun testCreate() {
         var path = BundleTestConfiguration.releasePath.resolve(PlatformId.current().toString())
 
-        Bundle.create(path, Bundles.LEOZ_BOOT, PlatformId.current(), Bundle.Version.parse("0.1"))
+        Bundle.create(path, Bundles.LEOZ_BOOT.value, PlatformId.current(), Bundle.Version.parse("0.1"))
     }
 
     @Test

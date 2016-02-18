@@ -89,7 +89,7 @@ open class UpdaterConfiguration {
                                 storeInLocalRepository = false,
                                 requiresBoot = true),
                         BundleUpdater.Preset(
-                                bundleName = Bundles.LEOZ_BOOT,
+                                bundleName = Bundles.LEOZ_BOOT.value,
                                 install = true,
                                 storeInLocalRepository = true)
                 ),
