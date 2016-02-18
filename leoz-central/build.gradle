@@ -4,7 +4,7 @@ apply plugin: 'jooq'
 apply plugin: org.deku.gradle.PackagerPlugin
 
 sourceCompatibility = 1.8
-version = '0.37-RELEASE'
+version = '0.38-RELEASE'
 mainClassName = "org.deku.leoz.central.Main"
 
 dependencies {
