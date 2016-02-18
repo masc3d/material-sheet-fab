@@ -70,18 +70,20 @@ class EntityConsumer
      * @param entityType Entity type
      * @param remoteTimestamp Optional remote timestamp, usually provided via notification
      */
-    fun request(entityType: Class<*>, remoteTimestamp: Timestamp?) {
+    @Synchronized fun request(entityType: Class<*>, remoteTimestamp: Timestamp?) {
         executorService.submit<Unit> {
             // Log formatting with entity type
             val lfmt = { s: String -> "[" + entityType.canonicalName + "]" + " " + s }
 
             var receiveQueue: TemporaryQueue? = null
             var mc: MessageConsumer? = null
+            var em: EntityManager? = null
+            var cn: Connection? = null
             try {
                 val converter = this.converter as DefaultConverter
                 converter.resetStatistics()
 
-                val em = entityManagerFactory.createEntityManager()
+                em = entityManagerFactory.createEntityManager()
                 val er = EntityRepository(em, entityType)
 
                 val timestamp = er.findMaxTimestamp()
@@ -90,7 +92,7 @@ class EntityConsumer
                     return@submit
                 }
 
-                val cn = messagingConfiguration.broker.connectionFactory.createConnection()
+                cn = messagingConfiguration.broker.connectionFactory.createConnection()
                 cn.start()
                 val session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE)
 
@@ -127,6 +129,7 @@ class EntityConsumer
                         Runtime.getRuntime().availableProcessors())
 
                 if (euMessage.amount > 0) {
+                    val emv = em!!
                     val tmc = mc
                     PersistenceUtil.transaction(em) {
                         if (!er.hasTimestampAttribute()) {
@@ -164,23 +167,23 @@ class EntityConsumer
                                     // If there's already entities, clean out existing first.
                                     // it's much faster than merging everything
                                     for (o in entities) {
-                                        val o2 = em.find(entityType,
-                                                em.entityManagerFactory.persistenceUnitUtil.getIdentifier(o))
+                                        val o2 = emv.find(entityType,
+                                                emv.entityManagerFactory.persistenceUnitUtil.getIdentifier(o))
 
                                         if (o2 != null) {
-                                            em.remove(o2)
+                                            emv.remove(o2)
                                         }
                                     }
-                                    em.flush()
-                                    em.clear()
+                                    emv.flush()
+                                    emv.clear()
                                 }
 
                                 // Persist entities
                                 for (o in entities) {
-                                    em.persist(o)
+                                    emv.persist(o)
                                 }
-                                em.flush()
-                                em.clear()
+                                emv.flush()
+                                emv.clear()
                                 count.getAndUpdate { c -> c + entities.size }
                             }
                         } while (!eos)
@@ -202,6 +205,10 @@ class EntityConsumer
                     mc.close()
                 if (receiveQueue != null)
                     receiveQueue.delete()
+                if (cn != null)
+                    cn.close()
+                if (em != null)
+                    em.close()
             }
         }
     }
