@@ -37,7 +37,7 @@ class Application : javafx.application.Application() {
 
     object Parameters {
         @Parameter(description = "Command args")
-        val args: List<String> = ArrayList()
+        var args: List<String> = ArrayList()
 
         @Parameter(names = arrayOf("--bundle"), description = "Bundle to boot")
         var bundle: String = ""
@@ -66,8 +66,10 @@ class Application : javafx.application.Application() {
     })
 
     /** Bundle repository URI */
-    val repositoryUri: Rsync.URI
-        get() = Rsync.URI(Parameters.repositoryUriString!!)
+    val repositoryUri: Rsync.URI?
+        get() = if (Parameters.repositoryUriString != null)
+            Rsync.URI(Parameters.repositoryUriString!!) else
+            null
 
     /** Primary stage */
     var primaryStage: Stage by Delegates.notNull()

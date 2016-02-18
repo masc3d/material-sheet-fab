@@ -12,6 +12,7 @@ import org.deku.leoz.boot.config.BundleInstallerConfiguration
 import org.deku.leoz.boot.config.BundleRepositoryConfiguration
 import org.deku.leoz.boot.config.LogConfiguration
 import org.deku.leoz.boot.config.StorageConfiguration
+import org.deku.leoz.bundle.BundleRepository
 import sx.fx.TextAreaLogAppender
 import sx.platform.JvmUtil
 import sx.rsync.Rsync
@@ -140,7 +141,9 @@ class MainController : Initializable {
                     installer.uninstall(bundleName)
                 } else {
                     if (!installer.hasBundle(bundleName) || Application.Parameters.forceDownload) {
-                        val repository = BundleRepositoryConfiguration.stagingRepository
+                        val repository = if (Application.instance.repositoryUri != null)
+                            BundleRepository(Application.instance.repositoryUri!!) else
+                            BundleRepositoryConfiguration.stagingRepository
 
                         // Query for version matching pattern
                         val version = repository.queryLatestMatchingVersion(
