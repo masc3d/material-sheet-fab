@@ -277,10 +277,12 @@ class ActiveMQBroker private constructor()
 
     override val connectionFactory: ConnectionFactory by lazy({
         val psf = PooledConnectionFactory()
-        psf.connectionFactory = ActiveMQConnectionFactory(
+        val cf = ActiveMQConnectionFactory(
                 this.user!!.userName,
                 this.user!!.password,
                 localUri!!.toString())
+        cf.isWatchTopicAdvisories = false
+        psf.connectionFactory = cf
         psf
     })
 
