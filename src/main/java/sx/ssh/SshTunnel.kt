@@ -27,7 +27,8 @@ class SshTunnel(
         val localPort: Int,
         val connectionTimeout: Duration = Duration.ofSeconds(6),
         val idleTimeout: Duration = Duration.ofSeconds(30),
-        val onClosed: (sshTunnel: SshTunnel) -> Unit = { })
+        val onClosed: (sshTunnel: SshTunnel) -> Unit = { },
+        val onCreated: (sshTunnel: SshTunnel) -> Unit = { })
 :
         AutoCloseable {
 
@@ -48,15 +49,18 @@ class SshTunnel(
      */
     private val sessionListener = object : SessionListener {
         override fun sessionClosed(session: Session?) {
-            log.info("SSH tunnel closed [${this@SshTunnel}]")
+            log.info("SSH session/tunnel closed [${this@SshTunnel}]")
             this@SshTunnel.close()
             this@SshTunnel.onClosed(this@SshTunnel)
         }
 
         override fun sessionCreated(session: Session?) {
+            log.info("SSH session created [${this@SshTunnel}]")
+            this@SshTunnel.onCreated(this@SshTunnel)
         }
 
         override fun sessionEvent(session: Session?, event: SessionListener.Event?) {
+            //log.info("SSH session event [${event}] [${this@SshTunnel}]")
         }
     }
 
@@ -90,6 +94,7 @@ class SshTunnel(
 
                 sshFuture.await()
                 session = sshFuture.session
+                this.session = session
 
                 // Prepare session and authenticate
                 session.addSessionListener(this.sessionListener)
@@ -105,7 +110,6 @@ class SshTunnel(
                         SshdSocketAddress("localhost", this.localPort),
                         SshdSocketAddress("localhost", this.remotePort))
 
-                this.session = session
                 log.info("Established tunnel connection to [${sshHost}]")
             }
         }
