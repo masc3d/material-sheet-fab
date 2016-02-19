@@ -44,3 +44,7 @@ leoz-node/bin
 leoz-bridge-com/Release*
 leoz-boot/bin
 leoz-ui/bin
+leoz-boot/platform/
+leoz-central/platform/
+leoz-node/platform/
+leoz-ui/platform/
