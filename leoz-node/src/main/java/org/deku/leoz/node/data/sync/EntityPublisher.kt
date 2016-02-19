@@ -84,7 +84,7 @@ class EntityPublisher(
             val count = er.countNewerThan(timestamp)
 
             val euMessage = EntityUpdateMessage(count)
-            log.debug(euMessage)
+            log.debug(lfmt(euMessage.toString()))
 
             val mp = session.createProducer(message.jmsReplyTo)
             mp.send(messageConverter.toMessage(euMessage, session))

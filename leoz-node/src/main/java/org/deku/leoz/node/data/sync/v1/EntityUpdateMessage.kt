@@ -8,13 +8,9 @@ import java.io.Serializable
  * @param amount Amount of entities/records to follow
  * Created by masc on 18.06.15.
  */
-class EntityUpdateMessage(
+data class EntityUpdateMessage(
         val amount: Long = 0)
 : Serializable {
-    override fun toString(): String {
-        return String.format("%s amount [%d]", this.javaClass.simpleName, this.amount)
-    }
-
     companion object {
         private val serialVersionUID = -8032738544698874536L
 
