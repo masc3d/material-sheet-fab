@@ -40,7 +40,7 @@ buildscript {
         v_logback = "1.+"
         v_querydsl = "3.+"
         v_mysql = "5.+"
-        v_resteasy = "3.+"
+        v_resteasy = "3.0.14.+"
         v_scala = "2.11.+"
         v_slf4j = "1.+"
         v_spring = "4.1.7.+"
@@ -264,40 +264,56 @@ subprojects {
     }
 
     ext {
-        globalBinDir = new File(project.rootDir, 'bin')
-        sxBinDir = new File(project(':libs:sx-common').projectDir, 'bin')
-        projectBuildSupplementalsDir= new File(project.buildDir, 'supplementals')
-        projectBuildBinDir = new File(projectBuildSupplementalsDir, 'bin')
-        projectBinDir = new File(project.projectDir, 'bin')
+        globalPlatformDir = new File(project.rootDir, 'platform')
+        sxPlatformDir = new File(project(':libs:sx-common').projectDir, 'platform')
+
+        projectBuildSupplementalsDir = new File(project.buildDir, 'supplementals')
+        projectBuildPlatformDir = new File(projectBuildSupplementalsDir, 'platform')
+        projectBuildCurrentPlatformDir = new File(projectBuildPlatformDir, g_platform_identifier)
+        currentPlatformDirRelative = new File('platform', g_platform_identifier)
+
+        projectPlatformDir = new File(project.projectDir, 'platform')
     }
 
-    task copySxBinariesToProject(type: Copy) {
-        from sxBinDir
-        into projectBinDir
+    /**
+     * Task copying platform specific files from sx-common to project dir
+     */
+    task copySxPlatformDirToProject(type: Copy) {
+        from sxPlatformDir
+        into projectPlatformDir
         // Rename generic name to leoz specific process name, as it's easier to handle,
         // when eg. looking at process names while leoz is running
         rename 'sx-rsync(.*)', 'leoz-rsync$1'
     }
 
-    task copySxBinariesToBuild(type: Copy) {
-        from sxBinDir
-        into projectBuildBinDir
+    /**
+     * Task copying platform specific files from sx-common to project build dir
+     */
+    task copySxPlatformDirToBuild(type: Copy) {
+        from sxPlatformDir
+        into projectBuildPlatformDir
         // Rename generic name to leoz specific process name, as it's easier to handle,
         // when eg. looking at process names while leoz is running
         rename 'sx-rsync(.*)', 'leoz-rsync$1'
     }
-    tasks.copySxBinariesToBuild.dependsOn(tasks.copySxBinariesToProject)
+    tasks.copySxPlatformDirToBuild.dependsOn(tasks.copySxPlatformDirToProject)
 
-    task copyGlobalBinariesToProject(type: Copy) {
-        from globalBinDir
-        into projectBinDir
+    /**
+     * Task copying architecture specific global files to project dri
+     */
+    task copyGlobalPlatformDirToProject(type: Copy) {
+        from globalPlatformDir
+        into projectPlatformDir
     }
 
-    task copyGlobalBinariesToBuild(type: Copy) {
-        from globalBinDir
-        into projectBuildBinDir
+    /**
+     * Task copying architecture specific global files to project build dir
+     */
+    task copyGlobalPlatformDirToBuild(type: Copy) {
+        from globalPlatformDir
+        into projectBuildPlatformDir
     }
-    tasks.copyGlobalBinariesToBuild.dependsOn(tasks.copyGlobalBinariesToProject)
+    tasks.copyGlobalPlatformDirToBuild.dependsOn(tasks.copyGlobalPlatformDirToProject)
 }
 
 // Data(base) sources in intellij contain hashes which are updated every time the IDE updates

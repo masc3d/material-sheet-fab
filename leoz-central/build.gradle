@@ -4,7 +4,7 @@ apply plugin: 'jooq'
 apply plugin: org.deku.gradle.PackagerPlugin
 
 sourceCompatibility = 1.8
-version = '0.39-RELEASE'
+version = '0.40-RELEASE'
 mainClassName = "org.deku.leoz.central.Main"
 
 dependencies {
@@ -75,8 +75,8 @@ run {
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
-tasks.classes.dependsOn(copySxBinariesToBuild)
-tasks.classes.dependsOn(copyGlobalBinariesToBuild)
+tasks.classes.dependsOn(copySxPlatformDirToBuild)
+tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
 
 distributions {
     main {
@@ -93,6 +93,6 @@ packager {
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
     supplementalPlatformDirs(
-            (projectBuildBinDir): new File('bin')
+            (projectBuildCurrentPlatformDir): (currentPlatformDirRelative)
     )
 }

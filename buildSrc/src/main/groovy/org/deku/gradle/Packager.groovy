@@ -164,11 +164,11 @@ abstract class PackagerReleaseTask extends PackagerTask {
     }
 
     /**
-     * Copy platform specific supplemental dirs
+     * Copy supplemental dirs (both regular and platform specific)
      * @param platformId
      * @return
      */
-    protected def copySupplementalPlatformDirs(PlatformId platformId) {
+    protected def copySupplementalDirs(PlatformId platformId) {
         def dstDirs = (this.extension.getSupplementalPlatformDirs().values() + this.extension.getSupplementalDirs().values())
 
         dstDirs.each { it ->
@@ -431,7 +431,7 @@ class PackagerReleaseNativeBundleTask extends PackagerReleaseTask {
             }
         }
 
-        this.copySupplementalPlatformDirs(PlatformId.current())
+        this.copySupplementalDirs(PlatformId.current())
 
         println "Creating bundle manifest"
         Bundle.create(
@@ -486,7 +486,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
                 into releaseBundleJarPath
             }
 
-            this.copySupplementalPlatformDirs(platformId)
+            this.copySupplementalDirs(platformId)
 
             // Update packager configuration file (main jar name, class path, start class)
             println("Updating bundle configuration")

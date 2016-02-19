@@ -4,7 +4,7 @@ apply plugin: org.deku.gradle.PackagerPlugin
 //apply plugin: 'flyway'
 
 sourceCompatibility = 1.8
-version = '0.31-RELEASE'
+version = '0.40-RELEASE'
 mainClassName = "org.deku.leoz.node.Main"
 
 dependencies {
@@ -192,8 +192,8 @@ task copyVaadinWebapp(type: Sync) {
 tasks.compileJava.dependsOn(copyWebapp)
 tasks.compileJava.dependsOn(copyVaadinWebapp)
 
-tasks.classes.dependsOn(copySxBinariesToBuild)
-tasks.classes.dependsOn(copyGlobalBinariesToBuild)
+tasks.classes.dependsOn(copySxPlatformDirToBuild)
+tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
 
 distributions {
     main {
@@ -209,7 +209,7 @@ packager {
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
     supplementalPlatformDirs(
-            (projectBuildBinDir): new File('bin')
+            (projectBuildCurrentPlatformDir): (currentPlatformDirRelative)
     )
 }
 
