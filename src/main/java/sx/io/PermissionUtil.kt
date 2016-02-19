@@ -43,7 +43,6 @@ object PermissionUtil {
             // Get file attribute view
             val fav = Files.getFileAttributeView(f.toPath(), AclFileAttributeView::class.java)
 
-            fav.owner = rootFav.owner
             fav.acl = rootFav.acl
         }
     }
