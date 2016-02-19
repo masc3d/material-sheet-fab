@@ -65,7 +65,6 @@ class BundleUpdater(
         this.updateInfoRequestChannel = Channel(
                 connectionFactory = jmsConnectionFactory,
                 destination = jmsUpdateRequestQueue,
-                jmsSessionTransacted = false,
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP),

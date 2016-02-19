@@ -46,7 +46,6 @@ class EntityPublisher(
                 connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
                 destination = ActiveMQConfiguration.instance.nodeEntitySyncTopic,
                 converter = this.converter!!,
-                jmsSessionTransacted = false,
                 jmsDeliveryMode = Channel.DeliveryMode.NonPersistent,
                 jmsTtl = Duration.ofMinutes(5),
                 receiveTimeout = Duration.ofSeconds(10)).use( {
