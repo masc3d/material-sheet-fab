@@ -97,7 +97,12 @@ class ProcessExecutor @JvmOverloads constructor(
                 }
             }
 
-            Runtime.getRuntime().addShutdownHook(shutdownHook)
+            try {
+                Runtime.getRuntime().addShutdownHook(shutdownHook)
+            } catch(e: Throwable) {
+                // Adding shutdown hook may fail if jvm is in the process of shutting down
+                log.error(e.message, e)
+            }
 
             var exception: Exception? = null
             try {
@@ -110,7 +115,12 @@ class ProcessExecutor @JvmOverloads constructor(
                 log.error(e.message, e)
             } finally {
                 if (!shutdownHookInvoked) {
-                    Runtime.getRuntime().removeShutdownHook(shutdownHook)
+                    try {
+                        Runtime.getRuntime().removeShutdownHook(shutdownHook)
+                    } catch (e: Throwable) {
+                        // Removing shutdown hook may fail if jvm is in the process of shutting down
+                        log.error(e.message, e)
+                    }
                     shutdownHook.run()
                 }
                 this@ProcessExecutor.onTermination(exception)
