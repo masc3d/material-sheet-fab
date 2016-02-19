@@ -18,6 +18,7 @@ import javax.jms.*
  * @param destination JMS destination
  * @param converter Message converter
  * @param jmsSessionTransacted Dedicated session for this channel should be transacted. Defaults to true
+ * @param autoCommit Auto-commit messages on send, defaults to true
  * @param jmsTtl Time to live for messages sent through this channel
  * @param jmsPriority Priority for messages sent through this channel
  * @param receiveTimeout Default receive timeout for receive/sendReceive calls. Defaults to 10 seconds.
@@ -32,6 +33,7 @@ class Channel private constructor(
         private val jmsDeliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE,
         private val jmsTtl: Duration = Channel.JMS_TTL,
         private val jmsPriority: Int? = null,
+        private val autoCommit: Boolean = true,
         private val receiveTimeout: Duration = Channel.RECEIVE_TIMEOUT)
 :
         Disposable,
@@ -184,6 +186,8 @@ class Channel private constructor(
      */
     @JvmOverloads fun send(message: Any, messageConfigurer: Action<Message>? = null) {
         this.send(converter.toMessage(message, session.get()), messageConfigurer)
+        if (this.jmsSessionTransacted && this.autoCommit)
+            this.session.get().commit()
     }
 
     /**
