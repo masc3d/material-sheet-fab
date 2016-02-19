@@ -34,19 +34,9 @@ class PackagerPluginExtension {
         mSupplementalDirs = dirs
     }
 
-    /** Map of source dirs containing arch subdirs -> (relative) destination directories to copy to bundle release directory */
-    def supplementalPlatformDirs(LinkedHashMap<File, File> dirs) {
-        mSupplementalPlatformDirs = dirs
-    }
-
     private def LinkedHashMap<File, File> mSupplementalDirs = new LinkedHashMap<>()
     public LinkedHashMap<File, File> getSupplementalDirs() {
         return mSupplementalDirs
-    }
-
-    private def LinkedHashMap<File, File> mSupplementalPlatformDirs = new LinkedHashMap<>()
-    public LinkedHashMap<File, File> getSupplementalPlatformDirs() {
-        return mSupplementalPlatformDirs
     }
 }
 
@@ -83,6 +73,11 @@ class PackagerPlugin implements Plugin<Project> {
             extension = ext
         }
         project.tasks.releaseUpdate.dependsOn(project.tasks.jar)
+
+        project.tasks.create('releaseSfx', PackagerReleaseSfxTask) {
+            extension = ext
+        }
+        project.tasks.releaseSfx.dependsOn(project.tasks.releaseUpdate)
 
         // Release push task
         project.tasks.create('releasePush', PackagerReleasePushTask) {

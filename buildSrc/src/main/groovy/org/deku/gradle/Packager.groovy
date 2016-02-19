@@ -169,7 +169,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
      * @return
      */
     protected def copySupplementalDirs(PlatformId platformId) {
-        def dstDirs = (this.extension.getSupplementalPlatformDirs().values() + this.extension.getSupplementalDirs().values())
+        def dstDirs = this.extension.getSupplementalDirs().values()
 
         dstDirs.each { it ->
             def path = this.getReleaseSupplementalPath(platformId, it)
@@ -185,104 +185,6 @@ abstract class PackagerReleaseTask extends PackagerTask {
             project.copy {
                 from src
                 into dst
-            }
-        }
-
-        this.extension.getSupplementalPlatformDirs().each { it ->
-            def src = new File(it.key, platformId.toString())
-            def dst = this.getReleaseSupplementalPath(platformId, it.value)
-
-            println "Copying supplemental platform dir [${src}] -> [${dst}]"
-            project.copy {
-                from src
-                into dst
-            }
-        }
-    }
-
-    protected def createSelfExtractingArchive(PlatformId platformId) {
-        if (this.extension.createSelfExtractingArchive) {
-            if (platformId.operatingSystem == OperatingSystem.WINDOWS) {
-                def sfxPath = project.projectDir.toPath().resolve("sfx").resolve("win").toFile()
-                if (!sfxPath.exists()) {
-                    logger.warn("Skipping sfx creation. Path [${sfxPath}] does not exist.")
-                    return
-                }
-
-                println "Creating self extracting archive(s)"
-
-                // Archive content path
-                def archiveContentPath = this.getReleasePlatformPath(platformId)
-                def nioArchiveContentPath = archiveContentPath.toPath()
-
-                // Prepare build and release destinations
-                def archiveDirectoryName = "${project.name}-sfx"
-                def buildArchivePath = new File(this.extension.packagerBaseDir, archiveDirectoryName)
-                buildArchivePath.mkdirs()
-                def releaseArchivePath = new File(this.extension.releaseBasePath, archiveDirectoryName)
-                releaseArchivePath.mkdirs()
-
-                def buildArchiveName = "${project.name}-${project.version}-${platformId}.7z"
-                def buildArchive = new File(buildArchivePath, buildArchiveName)
-
-                buildArchive.delete()
-
-                // Archive contents
-                def byte[] buffer = new byte[8*1024*1024]
-                def lzma2Options = new LZMA2Options()
-                lzma2Options.preset = 1
-                def lzma2Method = new SevenZMethodConfiguration(SevenZMethod.LZMA2, lzma2Options)
-
-                def szOut = new SevenZOutputFile(buildArchive)
-                try {
-                    szOut.setContentMethods(Collections.singletonList(lzma2Method))
-                    Files.walk(nioArchiveContentPath)
-                            .filter { p -> !p.equals(nioArchiveContentPath) }
-                            .each { p ->
-                        def entryName = nioArchiveContentPath.relativize(p).toString()
-                        def szEntry = szOut.createArchiveEntry(p.toFile(), entryName)
-                        szOut.putArchiveEntry(szEntry)
-                        if (Files.isRegularFile(p)) {
-                            def is = p.newInputStream()
-                            try {
-                                int length
-                                while((length = is.read(buffer, 0, buffer.length)) > 0) {
-                                    szOut.write(buffer, 0, length)
-                                }
-                            } finally {
-                                is.close()
-                            }
-                        }
-                        szOut.closeArchiveEntry()
-                    }
-                } finally {
-                    szOut.close()
-                }
-
-                // Join files to self executable
-                def CFG_EXTENSION = ".cfg"
-                Files.walk(sfxPath.toPath())
-                        .filter { p -> Files.isRegularFile(p) && p.fileName.toString().endsWith(CFG_EXTENSION)}
-                        .each { p ->
-
-                    def configName = p.fileName.toString()
-                    configName = configName.substring(0, configName.length() - CFG_EXTENSION.length())
-                    def releaseExecutable = new File(releaseArchivePath, "${project.name}-${project.version}-${configName}-${platformId}.exe")
-
-                    def os = releaseExecutable.newOutputStream()
-                    try {
-                        [new File(sfxPath, "7zsd.sfx"), p.toFile(), buildArchive].each {
-                            def is = it.newInputStream()
-                            try {
-                                IOUtils.copyLarge(is, os, buffer)
-                            } finally {
-                                is.close()
-                            }
-                        }
-                    } finally {
-                        os.close()
-                    }
-                }
             }
         }
     }
@@ -504,8 +406,108 @@ class PackagerReleaseUpdateTask extends PackagerReleaseTask {
                     project.name,
                     platformId,
                     Bundle.Version.parse(project.version))
+        }
+    }
+}
 
-            this.createSelfExtractingArchive(platformId)
+/**
+ * Release self extracting archive/installer task
+ */
+class PackagerReleaseSfxTask extends PackagerReleaseTask {
+    @TaskAction
+    def packagerReleaseSfx() {
+        if (this.extension.createSelfExtractingArchive) {
+            // Release jars for all architectures which are present within the release path for this project
+            Files.walk(Paths.get(releasePath.toURI()), 1)
+                    .filter({ !it.toString().equals(releasePath.toString()) && it.toFile().isDirectory() })
+                    .each {
+
+                def File releasePlatformPath = it.toFile()
+                def PlatformId platformId = PlatformId.parse(releasePlatformPath.name)
+
+                if (platformId.operatingSystem == OperatingSystem.WINDOWS) {
+                    def sfxPath = project.projectDir.toPath().resolve("sfx").resolve("win").toFile()
+                    if (!sfxPath.exists()) {
+                        logger.warn("Skipping sfx creation. Path [${sfxPath}] does not exist.")
+                        return
+                    }
+
+                    println "Creating self extracting archive(s)"
+
+                    // Archive content path
+                    def archiveContentPath = this.getReleasePlatformPath(platformId)
+                    def nioArchiveContentPath = archiveContentPath.toPath()
+
+                    // Prepare build and release destinations
+                    def archiveDirectoryName = "${project.name}-sfx"
+                    def buildArchivePath = new File(this.extension.packagerBaseDir, archiveDirectoryName)
+                    buildArchivePath.mkdirs()
+                    def releaseArchivePath = new File(this.extension.releaseBasePath, archiveDirectoryName)
+                    releaseArchivePath.mkdirs()
+
+                    def buildArchiveName = "${project.name}-${project.version}-${platformId}.7z"
+                    def buildArchive = new File(buildArchivePath, buildArchiveName)
+
+                    buildArchive.delete()
+
+                    // Archive contents
+                    def byte[] buffer = new byte[8 * 1024 * 1024]
+                    def lzma2Options = new LZMA2Options()
+                    lzma2Options.preset = 1
+                    def lzma2Method = new SevenZMethodConfiguration(SevenZMethod.LZMA2, lzma2Options)
+
+                    def szOut = new SevenZOutputFile(buildArchive)
+                    try {
+                        szOut.setContentMethods(Collections.singletonList(lzma2Method))
+                        Files.walk(nioArchiveContentPath)
+                                .filter { p -> !p.equals(nioArchiveContentPath) }
+                                .each { p ->
+                            def entryName = nioArchiveContentPath.relativize(p).toString()
+                            def szEntry = szOut.createArchiveEntry(p.toFile(), entryName)
+                            szOut.putArchiveEntry(szEntry)
+                            if (Files.isRegularFile(p)) {
+                                def is = p.newInputStream()
+                                try {
+                                    int length
+                                    while ((length = is.read(buffer, 0, buffer.length)) > 0) {
+                                        szOut.write(buffer, 0, length)
+                                    }
+                                } finally {
+                                    is.close()
+                                }
+                            }
+                            szOut.closeArchiveEntry()
+                        }
+                    } finally {
+                        szOut.close()
+                    }
+
+                    // Join files to self executable
+                    def CFG_EXTENSION = ".cfg"
+                    Files.walk(sfxPath.toPath())
+                            .filter { p -> Files.isRegularFile(p) && p.fileName.toString().endsWith(CFG_EXTENSION) }
+                            .each { p ->
+
+                        def configName = p.fileName.toString()
+                        configName = configName.substring(0, configName.length() - CFG_EXTENSION.length())
+                        def releaseExecutable = new File(releaseArchivePath, "${project.name}-${project.version}-${configName}-${platformId}.exe")
+
+                        def os = releaseExecutable.newOutputStream()
+                        try {
+                            [new File(sfxPath, "7zsd.sfx"), p.toFile(), buildArchive].each {
+                                def is = it.newInputStream()
+                                try {
+                                    IOUtils.copyLarge(is, os, buffer)
+                                } finally {
+                                    is.close()
+                                }
+                            }
+                        } finally {
+                            os.close()
+                        }
+                    }
+                }
+            }
         }
     }
 }
