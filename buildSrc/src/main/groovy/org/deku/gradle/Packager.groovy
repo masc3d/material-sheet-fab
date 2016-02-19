@@ -432,7 +432,7 @@ class PackagerReleaseSfxTask extends PackagerReleaseTask {
                         return
                     }
 
-                    println "Creating self extracting archive(s)"
+                    println "Creating self extracting archive(s) for ${project.name}, ${platformId}"
 
                     // Archive content path
                     def archiveContentPath = this.getReleasePlatformPath(platformId)
