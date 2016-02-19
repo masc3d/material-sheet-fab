@@ -37,8 +37,6 @@ dependencies {
 }
 
 sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
-
     // Add resources (like .fxml files) from souce path.
     // Non-standard, but nicer to keep .fxml files together with classes
     main.resources.srcDir 'src/main/java'
