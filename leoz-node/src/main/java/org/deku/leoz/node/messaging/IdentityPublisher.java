@@ -60,7 +60,7 @@ public class IdentityPublisher {
         // Connection and session
         Connection cn = mMessagingConfiguration.getBroker().getConnectionFactory().createConnection();
         cn.start();
-        Session session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session session = cn.createSession(true, Session.AUTO_ACKNOWLEDGE);
         TemporaryQueue receiveQueue = null;
 
         // Message producer
@@ -91,6 +91,7 @@ public class IdentityPublisher {
             message.setJMSReplyTo(receiveQueue);
         }
         mp.send(message);
+        session.commit();
 
         // Receive authorization message (on demand)
         if (receive) {

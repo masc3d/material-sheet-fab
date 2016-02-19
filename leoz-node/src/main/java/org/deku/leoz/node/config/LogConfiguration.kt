@@ -28,6 +28,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
      * */
     var jmsAppenderEnabled: Boolean = false
         set(value: Boolean) {
+            field = value
             if (value) {
                 if (this.jmsLogAppender == null) {
                     // Setup message log appender
@@ -35,6 +36,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
                             ActiveMQConfiguration.instance,
                             IdentityConfiguration.instance.identity)
                     this.jmsLogAppender!!.context = loggerContext
+                    this.jmsLogAppender!!.start()
                 }
             } else {
                 if (this.jmsLogAppender != null) {
@@ -65,7 +67,6 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
      * Dispose loggers
      */
     override fun close() {
-        this.jmsAppenderEnabled = false
         super.close()
     }
 }
