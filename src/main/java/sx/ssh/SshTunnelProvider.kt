@@ -1,6 +1,7 @@
 package sx.ssh
 
 import org.apache.commons.logging.LogFactory
+import java.net.BindException
 import java.util.*
 
 /**
@@ -66,29 +67,51 @@ class SshTunnelProvider(
             val key = TunnelKey(Thread.currentThread().id, hostname, port)
 
             var tunnelResource: TunnelResource? = null
-            val tunnel = this.tunnels
-                    .getOrPut(key, {
-                        // Get free local port from range
-                        val localPort = this.localPorts.pop()
+            do {
+                // Get existing tunnel for host or create new one
+                val tunnel = this.tunnels
+                        .getOrPut(key, {
+                            if (this.localPorts.count() == 0)
+                                throw IllegalStateException("Local port range exhausted")
 
-                        tunnelResource = TunnelResource(key, localPort)
+                            // Get free local port from range
+                            val localPort = this.localPorts.pop()
 
-                        // Create new SSH tunnel for connection request
-                        SshTunnel(
-                                sshHost = sshHost,
-                                remotePort = port,
-                                localPort = localPort,
-                                // Free tunnel resource/local port when connection is closed
-                                onClosed = { it ->
-                                    this.release(tunnelResource!!)
-                                }
-                        )
-                    })
+                            tunnelResource = TunnelResource(key, localPort)
 
-            if (tunnelResource == null)
-                tunnelResource = TunnelResource(key, tunnel.localPort)
+                            // Create new SSH tunnel for connection request
+                            SshTunnel(
+                                    sshHost = sshHost,
+                                    remotePort = port,
+                                    localPort = localPort,
+                                    // Free tunnel resource/local port when connection is closed
+                                    onClosed = { it ->
+                                        this.release(tunnelResource!!)
+                                    }
+                            )
+                        })
 
-            tunnel.open()
+                // Create new tunnel resource for existing tunnel
+                if (tunnelResource == null)
+                    tunnelResource = TunnelResource(key, tunnel.localPort)
+
+                try {
+                    tunnel.open()
+                } catch(e: Throwable) {
+                    tunnel.close()
+                    this.release(tunnelResource!!)
+
+                    if (e is BindException) {
+                        // Local port in use, remove from port range and retry
+                        log.warn("Local port [${tunnelResource!!.localPort}] in use externally. Removing from port range.")
+                        this.localPorts.removeFirstOccurrence(tunnelResource!!.localPort)
+                        tunnelResource = null
+                    } else {
+                        // Anything else is fatal
+                        throw e
+                    }
+                }
+            } while (tunnelResource == null)
 
             return tunnelResource!!
         }
@@ -115,8 +138,10 @@ class SshTunnelProvider(
      */
     private fun release(resource: TunnelResource) {
         synchronized(sync) {
-            if (!this.tunnels.contains(resource.key))
-                throw IllegalArgumentException("Unknown tunnel resource [${resource}]")
+            if (!this.tunnels.contains(resource.key)) {
+                log.warn("Cannot release unknown tunnel resource [${resource}]")
+                return
+            }
 
             this.close(resource);
 

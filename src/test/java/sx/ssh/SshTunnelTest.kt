@@ -12,11 +12,7 @@ class SshTunnelTest {
     @Test
     fun testConnection() {
         val tunnel = SshTunnel(
-                sshHost = SshHost(
-                        hostname = "10.211.55.7",
-                        port = 13003,
-                        username = "leoz",
-                        password = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"),
+                sshHost = SshHosts.testHost,
                 remotePort = 13002,
                 localPort = 13050)
 
@@ -27,11 +23,7 @@ class SshTunnelTest {
     @Test
     fun testAuthenticationFailure() {
         val tunnel = SshTunnel(
-                sshHost = SshHost(
-                        hostname = "10.211.55.7",
-                        port = 13003,
-                        username = "leoz",
-                        password = "meh"),
+                sshHost = SshHosts.testHostWithInvalidCredentials,
                 remotePort = 13002,
                 localPort = 13050)
         try {
