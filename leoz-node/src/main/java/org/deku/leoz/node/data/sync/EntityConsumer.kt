@@ -1,31 +1,26 @@
 package org.deku.leoz.node.data.sync
 
 import com.google.common.base.Stopwatch
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repositories.EntityRepository
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage
-import org.springframework.jms.core.JmsTemplate
 import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
 import sx.jms.listeners.SpringJmsListener
-
-import javax.jms.*
-import javax.persistence.EntityManager
-import javax.persistence.EntityManagerFactory
 import java.lang.IllegalStateException
 import java.sql.Timestamp
-import java.util.Arrays
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicLong
-import java.util.function.Function
+import javax.jms.*
+import javax.persistence.EntityManager
+import javax.persistence.EntityManagerFactory
 
 /**
  * Entity consumer
@@ -94,7 +89,7 @@ class EntityConsumer
 
                 cn = messagingConfiguration.broker.connectionFactory.createConnection()
                 cn.start()
-                val session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE)
+                val session = cn.createSession(true, Session.AUTO_ACKNOWLEDGE)
 
                 val sw = Stopwatch.createStarted()
 
@@ -111,6 +106,7 @@ class EntityConsumer
                         session)
                 msg!!.jmsReplyTo = receiveQueue
                 mp.send(msg)
+                session.commit()
 
                 // Receive entity update message
                 mc = session.createConsumer(receiveQueue)
