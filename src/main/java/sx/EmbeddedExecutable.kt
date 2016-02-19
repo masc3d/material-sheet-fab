@@ -6,7 +6,6 @@ import sx.platform.PlatformId
 import sx.rsync.Rsync
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.attribute.AclEntry
 import java.nio.file.attribute.AclEntryPermission
@@ -34,21 +33,26 @@ class EmbeddedExecutable(
      */
     private fun findExecutable(): File? {
         // Search for executable in current and parent paths
-        var binPlatformRelPath = Paths.get("platform")
-                .resolve(PlatformId.current().toString())
-                .resolve("bin")
-                .resolve(filename)
+        var relativePaths = arrayOf(
+                Paths.get("platform")
+                        .resolve(PlatformId.current().toString())
+                        .resolve("bin")
+                        .resolve(filename),
+                Paths.get("platform")
+                        .resolve("bin")
+                        .resolve(filename)
+        )
 
         var path = Paths.get("").toAbsolutePath()
         do {
-            var binPath: Path
-
-            binPath = path.resolve(binPlatformRelPath)
-            if (Files.exists(binPath))
-                return binPath.toFile()
+            relativePaths.forEach {
+                val binPath = path.resolve(it)
+                if (Files.exists(binPath))
+                    return binPath.toFile()
+            }
 
             path = path.parent
-        } while (path!=null)
+        } while (path != null)
 
         return null
     }
@@ -67,7 +71,7 @@ class EmbeddedExecutable(
                     // Get file attribute view
                     var fav = Files.getFileAttributeView(p, AclFileAttributeView::class.java)
 
-                    if (fav!=null) {
+                    if (fav != null) {
                         log.debug("Verifying executable permission for [${p}]")
 
                         var oldAcls = fav.acl
