@@ -47,6 +47,8 @@ class RsyncServer(
         var logFile: File? = null
         /** Rsync port */
         var port: Int? = null
+        /** Strict modes */
+        var strictModes: Boolean = false
         /** Rsync modules */
         val modules: ArrayList<Rsync.Module> = ArrayList<Rsync.Module>()
 
@@ -122,6 +124,7 @@ class RsyncServer(
             ini.put(globalSection, "use chroot", convertBoolean(this.useChroot))
             ini.put(globalSection, "reverse lookup", convertBoolean(this.reverseLookup))
             ini.put(globalSection, "forward lookup", convertBoolean(this.forwardLookup))
+            ini.put(globalSection, "strict modes", convertBoolean(this.strictModes))
             if (this.port != null)
                 ini.put(globalSection, "port", port!!.toString())
             if (this.logFile != null)
