@@ -40,7 +40,7 @@ buildscript {
         v_logback = "1.+"
         v_querydsl = "3.+"
         v_mysql = "5.+"
-        v_resteasy = "3.0.14.+"
+        v_resteasy = "3.0.+"
         v_scala = "2.11.+"
         v_slf4j = "1.+"
         v_spring = "4.1.7.+"
