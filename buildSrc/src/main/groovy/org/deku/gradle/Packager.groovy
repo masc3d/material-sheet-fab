@@ -443,9 +443,10 @@ class PackagerReleaseNativeBundleTask extends PackagerReleaseTask {
 }
 
 /**
- * Release jars task
+ * Release update task
+ * Updates native bundle with current jars and supplementals
  */
-class PackagerReleaseJarsTask extends PackagerReleaseTask {
+class PackagerReleaseUpdateTask extends PackagerReleaseTask {
     @TaskAction
     def packagerReleaseJars() {
         def releasePath = this.getReleasePath()
@@ -463,7 +464,7 @@ class PackagerReleaseJarsTask extends PackagerReleaseTask {
             if (!releaseBundle.javaVersion.equals(SystemUtils.JAVA_VERSION))
                 throw new IllegalStateException("Java version of bundle [${releaseBundle}] does not match currently active java version [${SystemUtils.JAVA_VERSION}]")
 
-            println "Releasing jars and binaries for [${platformId}]"
+            println "Updating jars and supplementals for [${platformId}]"
 
             def releaseBundleJarPath = releaseBundle.jarPath
 

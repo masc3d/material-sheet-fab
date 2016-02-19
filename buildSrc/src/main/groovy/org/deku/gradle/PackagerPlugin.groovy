@@ -79,16 +79,16 @@ class PackagerPlugin implements Plugin<Project> {
         project.tasks.releaseNativeBundle.dependsOn(project.tasks.buildNativeBundle)
 
         // Release jars task
-        project.tasks.create('releaseJars', PackagerReleaseJarsTask) {
+        project.tasks.create('releaseUpdate', PackagerReleaseUpdateTask) {
             extension = ext
         }
-        project.tasks.releaseJars.dependsOn(project.tasks.jar)
+        project.tasks.releaseUpdate.dependsOn(project.tasks.jar)
 
         // Release push task
         project.tasks.create('releasePush', PackagerReleasePushTask) {
             extension = ext
         }
-        project.tasks.releasePush.dependsOn(project.tasks.releaseJars)
+        project.tasks.releasePush.dependsOn(project.tasks.releaseUpdate)
 
         // Release pull task
         project.tasks.create('releasePull', PackagerReleasePullTask) {

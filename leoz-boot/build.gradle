@@ -68,7 +68,7 @@ packager {
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
     supplementalDirs(
-            (projectBuildCurrentPlatformDir): (currentPlatformDirRelative)
+            (projectBuildCurrentPlatformDir): (platformDirRelative)
     )
     createSelfExtractingArchive = true
 }

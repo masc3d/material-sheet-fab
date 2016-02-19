@@ -82,7 +82,7 @@ packager {
     releaseBasePath = g_release_path
     osxIcon = g_osx_icon
     windowsIcon = g_windows_icon
-    supplementalPlatformDirs(
-            (projectBuildCurrentPlatformDir): (currentPlatformDirRelative)
+    supplementalDirs(
+            (projectBuildCurrentPlatformDir): (platformDirRelative)
     )
 }

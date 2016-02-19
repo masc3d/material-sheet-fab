@@ -270,7 +270,7 @@ subprojects {
         projectBuildSupplementalsDir = new File(project.buildDir, 'supplementals')
         projectBuildPlatformDir = new File(projectBuildSupplementalsDir, 'platform')
         projectBuildCurrentPlatformDir = new File(projectBuildPlatformDir, g_platform_identifier)
-        currentPlatformDirRelative = new File('platform', g_platform_identifier)
+        platformDirRelative = new File('platform')
 
         projectPlatformDir = new File(project.projectDir, 'platform')
     }
