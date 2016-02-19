@@ -34,11 +34,9 @@ class EmbeddedExecutable(
      */
     private fun findExecutable(): File? {
         // Search for executable in current and parent paths
-        var binPlatformRelPath = Paths.get("bin")
+        var binPlatformRelPath = Paths.get("platform")
                 .resolve(PlatformId.current().toString())
-                .resolve(filename)
-
-        var binRelPath = Paths.get("bin")
+                .resolve("bin")
                 .resolve(filename)
 
         var path = Paths.get("").toAbsolutePath()
@@ -46,10 +44,6 @@ class EmbeddedExecutable(
             var binPath: Path
 
             binPath = path.resolve(binPlatformRelPath)
-            if (Files.exists(binPath))
-                return binPath.toFile()
-
-            binPath = path.resolve(binRelPath)
             if (Files.exists(binPath))
                 return binPath.toFile()
 
