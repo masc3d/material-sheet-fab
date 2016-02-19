@@ -127,10 +127,10 @@ open class App :
         }
         LogConfiguration.instance().initialize()
 
+        log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
+
         // Initialize identity
         IdentityConfiguration.instance.initialize()
-
-        log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
 
         // Uncaught threaded exception handler
         Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {

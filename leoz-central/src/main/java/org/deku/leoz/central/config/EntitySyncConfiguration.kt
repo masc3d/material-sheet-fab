@@ -16,7 +16,6 @@ import javax.annotation.PreDestroy
 import javax.inject.Inject
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
-import kotlin.properties.Delegates
 
 /**
  * Leoz-central entity sync configuration
@@ -50,7 +49,6 @@ open class EntitySyncConfiguration {
     /** Database sync event listener */
     private val databaseSyncEvent = object : DatabaseSync.EventListener {
         override fun onUpdate(entityType: Class<out Any?>, currentTimestamp: Timestamp?) {
-            // Publish notification to consumers on database sync update
             this@EntitySyncConfiguration.entityPublisher.publish(entityType, currentTimestamp);
         }
     }

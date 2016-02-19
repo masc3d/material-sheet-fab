@@ -4,11 +4,12 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.data.sync.DatabaseSync
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
+import sx.jms.embedded.Broker
+import sx.jms.embedded.activemq.ActiveMQBroker
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import javax.annotation.PostConstruct
-import javax.annotation.PreDestroy
 import javax.inject.Inject
 
 /**
@@ -26,8 +27,22 @@ open class DatabaseSyncConfiguration {
     /** Scheduler  */
     private val executorService: ScheduledExecutorService
 
+    /** Indicates if scheduler has been started */
+    private var isStarted = false
+
     init {
         this.executorService = Executors.newSingleThreadScheduledExecutor()
+    }
+
+    /** Broker event listener  */
+    private val brokerEventListener = object : Broker.DefaultEventListener() {
+        override fun onStart() {
+            this@DatabaseSyncConfiguration.start()
+        }
+
+        override fun onStop() {
+            this@DatabaseSyncConfiguration.stop()
+        }
     }
 
     fun trigger() {
@@ -41,10 +56,14 @@ open class DatabaseSyncConfiguration {
         }
     }
 
-    @PostConstruct
-    fun onInitialize() {
-        log.info("Starting database sync scheduler")
+    /**
+     * Start database sync scheduler
+     */
+    @Synchronized private fun start() {
+        if (this.isStarted)
+            return
 
+        log.info("Starting database sync scheduler")
         this.executorService.scheduleWithFixedDelay(
                 {
                     try {
@@ -57,10 +76,14 @@ open class DatabaseSyncConfiguration {
                 0,
                 // Interval
                 10, TimeUnit.MINUTES)
+
+        this.isStarted = true
     }
 
-    @PreDestroy
-    fun onDestroy() {
+    /**
+     * Stop database sync scheduler
+     */
+    @Synchronized private fun stop() {
         log.info("Shutting down database sync scheduler")
         this.executorService.shutdown()
         try {
@@ -68,6 +91,17 @@ open class DatabaseSyncConfiguration {
         } catch (e: InterruptedException) {
             log.error(e.message, e)
         }
+    }
 
+    /**
+     * On initialization
+     */
+    @PostConstruct
+    fun onInitialize() {
+        // Wire broker event
+        ActiveMQBroker.instance.delegate.add(brokerEventListener)
+
+        if (ActiveMQBroker.instance.isStarted)
+            brokerEventListener.onStart()
     }
 }

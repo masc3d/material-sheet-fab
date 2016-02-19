@@ -12,7 +12,7 @@ import java.sql.Timestamp
  * @param entityType Entity type this state message refers to
  * @param timestamp Latest entity timestamp
  */
-class EntityStateMessage(
+data class EntityStateMessage(
         val entityType: Class<*>? = null,
         val timestamp: Timestamp? = null
 ) : Serializable {

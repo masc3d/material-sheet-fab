@@ -1,32 +1,21 @@
 package org.deku.leoz.node.data.sync
 
 import com.google.common.base.Stopwatch
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.data.repositories.EntityRepository
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage
-import org.eclipse.persistence.queries.ScrollableCursor
 import sx.jms.Channel
 import sx.jms.converters.DefaultConverter
 import sx.jms.listeners.SpringJmsListener
-
-import javax.jms.JMSException
-import javax.jms.Message
-import javax.jms.MessageProducer
-import javax.jms.Session
-import javax.persistence.EntityManager
-import javax.persistence.EntityManagerFactory
 import java.sql.Timestamp
 import java.time.Duration
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.util.ArrayList
-import java.util.concurrent.TimeUnit
-import java.util.function.Function
+import java.util.*
+import javax.jms.JMSException
+import javax.jms.Message
+import javax.jms.Session
+import javax.persistence.EntityManagerFactory
 
 /**
  * Entity publisher
@@ -60,20 +49,22 @@ class EntityPublisher(
                 jmsSessionTransacted = false,
                 jmsDeliveryMode = Channel.DeliveryMode.NonPersistent,
                 jmsTtl = Duration.ofMinutes(5),
-                receiveTimeout = Duration.ofSeconds(10)).use({ mc ->
+                receiveTimeout = Duration.ofSeconds(10)).use( {
 
-            mc.send(EntityStateMessage(entityType, timestamp))
+            val msg = EntityStateMessage(entityType, timestamp)
+            log.info("Publishing [${msg}]")
+            it.send(msg)
         })
     }
 
     @Throws(JMSException::class)
     public override fun onMessage(message: Message, session: Session) {
         try {
-            log.debug(String.format("Message id [%s] %s",
-                    message.jmsMessageID,
-                    LocalDateTime.ofInstant(
-                            Instant.ofEpochMilli(
-                                    message.jmsTimestamp), ZoneId.systemDefault())))
+//            log.debug(String.format("Message id [%s] %s",
+//                    message.jmsMessageID,
+//                    LocalDateTime.ofInstant(
+//                            Instant.ofEpochMilli(
+//                                    message.jmsTimestamp), ZoneId.systemDefault())))
 
             val sw = Stopwatch.createStarted()
 
