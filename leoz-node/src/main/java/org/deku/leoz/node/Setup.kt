@@ -3,11 +3,10 @@ package org.deku.leoz.node
 import com.google.common.base.Strings
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.bundle.BundleProcessInterface
+import org.deku.leoz.node.config.StorageConfiguration
 import sx.EmbeddedExecutable
 import sx.ProcessExecutor
-import sx.platform.PlatformId
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -23,7 +22,6 @@ class Setup(
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     private var basePath: Path
-    private val binPath: Path
 
     private val leozsvcExecutable: EmbeddedExecutable by lazy({
         EmbeddedExecutable("leoz-svc")
@@ -40,14 +38,12 @@ class Setup(
         if (codeSourcePath.toString().endsWith(".jar")) {
             // Running from within jar. Parent directory is supposed to contain bin\ directory for service installation
             this.basePath = codeSourcePath.parent.parent
-            this.binPath = this.basePath.resolve("bin");
         } else {
             // Assume running from ide, working dir plus arch bin path
             this.basePath =  Paths.get("").toAbsolutePath()
-            this.binPath = this.basePath.resolve("bin").resolve(PlatformId.current().toString())
         }
 
-        log.trace("Setup base path [${basePath}] bin path [${binPath}]")
+        log.trace("Setup base path [${basePath}]")
     }
 
     /**
