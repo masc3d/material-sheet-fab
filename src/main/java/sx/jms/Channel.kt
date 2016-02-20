@@ -155,6 +155,9 @@ class Channel private constructor(
             this.temporaryResponseQueueConsumer.ifSet { c ->
                 c.close()
             }
+            // Commit before deleting temporary response queue
+            this.commit()
+
             q.delete()
         }
         this.temporaryResponseQueue.reset()
@@ -177,6 +180,9 @@ class Channel private constructor(
         messageConfigurer?.perform(message)
 
         mp.send(destination, message)
+
+        if (this.autoCommit)
+            this.commit()
     }
 
     /**
@@ -186,8 +192,6 @@ class Channel private constructor(
      */
     @JvmOverloads fun send(message: Any, messageConfigurer: Action<Message>? = null) {
         this.send(converter.toMessage(message, session.get()), messageConfigurer)
-        if (this.jmsSessionTransacted && this.autoCommit)
-            this.session.get().commit()
     }
 
     /**
@@ -246,7 +250,8 @@ class Channel private constructor(
     }
 
     /**
-     * Explicitly commit transaction
+     * Explicitly commit transaction if the session is transacted.
+     * If the session is not transacted invoking this method has no effect.
      */
     fun commit() {
         val session = session.get()
