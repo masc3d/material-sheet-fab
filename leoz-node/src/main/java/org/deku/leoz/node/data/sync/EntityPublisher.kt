@@ -118,6 +118,7 @@ class EntityPublisher(
                 mp.send(eosMsg)
             }
             session.commit()
+            mp.close()
             log.info(lfmt("Sent ${count} in ${sw} (${messageConverter.bytesWritten} bytes)"))
 
             em.close()
