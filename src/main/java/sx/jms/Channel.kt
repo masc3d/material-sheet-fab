@@ -205,18 +205,34 @@ class Channel private constructor(
     }
 
     /**
+     * Receive jms message
+     */
+    fun receive(): Message? {
+        return this.receive(this.consumer.get())
+    }
+
+    /**
      * Receive message
+     * @return Message
      */
     private fun <T> receive(consumer: MessageConsumer, messageType: Class<T>): T {
-        val jmsMessage = if (this.receiveTimeout == Duration.ZERO)
-            consumer.receive()
-        else
-            consumer.receive(this.receiveTimeout.toMillis())
+        val jmsMessage = this.receive(consumer)
 
         if (jmsMessage == null)
             throw TimeoutException("Timeout while waiting for message [${messageType.simpleName}]")
 
         return messageType.cast(this.converter.fromMessage(jmsMessage))
+    }
+
+    /**
+     * Receive jms message.
+     * @return Jms message or null on timeout
+     */
+    private fun receive(consumer: MessageConsumer): Message? {
+        return if (this.receiveTimeout == Duration.ZERO)
+            consumer.receive()
+        else
+            consumer.receive(this.receiveTimeout.toMillis())
     }
 
     /**
