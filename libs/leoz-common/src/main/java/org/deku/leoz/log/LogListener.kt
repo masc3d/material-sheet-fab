@@ -8,6 +8,7 @@ import sx.jms.listeners.SpringJmsListener
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import javax.jms.ConnectionFactory
 import javax.jms.Message
 import javax.jms.Session
 
@@ -29,7 +30,7 @@ class LogListener(
         this.addDelegate(Array<LogMessage>::class.java, this)
     }
 
-    override fun onMessage(message: Array<LogMessage>, converter: Converter, jmsMessage: Message, session: Session) {
+    override fun onMessage(message: Array<LogMessage>, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
         val timestamp = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(
                         jmsMessage.jmsTimestamp), ZoneId.systemDefault())

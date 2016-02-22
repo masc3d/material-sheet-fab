@@ -6,6 +6,7 @@ import org.deku.leoz.bundle.entities.UpdateInfoRequest
 import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.Handler
+import javax.jms.ConnectionFactory
 import javax.jms.Message
 import javax.jms.Session
 
@@ -19,14 +20,15 @@ class UpdateInfoRequestHandler
 {
     private val log = LogFactory.getLog(this.javaClass)
 
-    override fun onMessage(message: UpdateInfoRequest, converter: Converter, jmsMessage: Message, session: Session) {
+    override fun onMessage(message: UpdateInfoRequest, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
         val updateInfoRequest = message
         // TODO: Query bundle name/version against db
         val versionPattern = "+RELEASE"
 
         try {
             val channel = Channel(
-                    session = session,
+                    connectionFactory = connectionFactory,
+                    jmsSessionTransacted = false,
                     destination = jmsMessage.jmsReplyTo,
                     converter = converter)
 

@@ -56,7 +56,7 @@ class EntityConsumer
     /**
      * Entity state message handler
      */
-    override fun onMessage(message: EntityStateMessage, converter: Converter, jmsMessage: Message, session: Session) {
+    override fun onMessage(message: EntityStateMessage, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
         this.request(message.entityType!!, message.timestamp)
     }
 
@@ -88,8 +88,7 @@ class EntityConsumer
                 }
 
                 cn = messagingConfiguration.broker.connectionFactory.createConnection()
-                cn.start()
-                val session = cn.createSession(true, Session.AUTO_ACKNOWLEDGE)
+                val session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE)
 
                 val sw = Stopwatch.createStarted()
 

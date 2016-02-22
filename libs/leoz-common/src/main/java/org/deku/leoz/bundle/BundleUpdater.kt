@@ -77,7 +77,7 @@ class BundleUpdater(
     /**
      * Update notification message handler
      */
-    override fun onMessage(message: UpdateInfo, converter: Converter, jmsMessage: Message, session: Session) {
+    override fun onMessage(message: UpdateInfo, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
         val updateInfo = message
         log.info("Received update notification [${updateInfo}]")
 

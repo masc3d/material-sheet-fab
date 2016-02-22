@@ -5,53 +5,14 @@ import java.nio.file.Paths
 
 version = '0.1'
 
+apply from: 'versions.gradle'
+
 buildscript {
     ext {
         // Versions
-        v_activemq = "5.+"
-        v_apache_httpclient = "4.+"
-        v_apache_mina = "3.+"
-        v_commons_lang = "3.+"
-        v_commons_io = "2.+"
-        v_eclipselink = "2.+"
-        v_flyway = "3.+"
-        v_guava = "18.+"
-        v_hawtdispatch = "1.+"
-        v_hawtbuf = "1.+"
-        v_h2 = "1.+"
-        v_hk2 = "2.+"
-        v_hibernate = "5.2.+"
-        v_jackson = "2.5.+"
-        v_javassist = "3.+"
-        v_javax_inject = "+"
-        v_javax_servlet = "3.1.+"
-        v_javax_persistence = "2.1.+"
-        v_javax_validation = "1.1.+"
-        v_javax_ws_rs = "2.0.+"
-        v_jersey = "2.+"
-        v_jetty = "9.2.+"
-        v_jgit = "4.+"
-        v_jna = "4.+"
         v_jooq = "3.+"
-        v_junit = "4.+"
         v_kotlin = "1.+"
-        v_kryo = "3.+"
-        v_leveldb = "+"
-        v_logback = "1.+"
-        v_querydsl = "3.+"
         v_mysql = "5.+"
-        v_resteasy = "3.0.+"
-        v_scala = "2.11.+"
-        v_slf4j = "1.+"
-        v_spring = "4.1.7.+"
-        v_spring_data_jpa = "1.8.+"
-        v_spring_data_commons = "1.10.+"
-        v_springboot = "1.2.5.+"
-        v_swagger = "+"
-        v_vaadin = "7.+"
-        v_vaadin_spring = "1.+"
-        v_vaadin_sass = "+"
-        v_xstream = "1.+"
 
         // Leoz release path, relative to root project
         g_platform_identifier = PlatformId.current().toString()

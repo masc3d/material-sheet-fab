@@ -8,6 +8,7 @@ import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
+import javax.jms.ConnectionFactory
 import javax.jms.Message
 import javax.jms.Session
 
@@ -24,7 +25,7 @@ class IdentityMessageHandler(private val mNodeRepository: NodeRepository) : Hand
                 DefaultConverter.CompressionType.GZIP)
     }
 
-    override fun onMessage(message: IdentityMessage, converter: Converter, jmsMessage: Message, session: Session) {
+    override fun onMessage(message: IdentityMessage, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
         try {
             log.info(message)
 
@@ -44,7 +45,8 @@ class IdentityMessageHandler(private val mNodeRepository: NodeRepository) : Hand
                 am.key = r.key
                 am.authorized = r.authorized != null && r.authorized !== 0
 
-                Channel(session = session,
+                Channel(connectionFactory = connectionFactory,
+                        jmsSessionTransacted = false,
                         destination = replyTo,
                         converter = this.converter).use { c ->
                     c.send(am)

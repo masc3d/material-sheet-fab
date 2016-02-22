@@ -85,7 +85,9 @@ class EntityPublisher(
             val euMessage = EntityUpdateMessage(count)
             log.debug(lfmt(euMessage.toString()))
 
-            val mp = session.createProducer(message.jmsReplyTo)
+            val tconnection = this.connectionFactory.createConnection()
+            val tsession = tconnection.createSession(false, Session.AUTO_ACKNOWLEDGE)
+            val mp = tsession.createProducer(message.jmsReplyTo)
             mp.send(messageConverter.toMessage(euMessage, session))
 
             if (count > 0) {
