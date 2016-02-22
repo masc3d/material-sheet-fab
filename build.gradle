@@ -60,6 +60,7 @@ gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
 
 // Common configuration for subprojects
 subprojects {
+    apply plugin: 'base'
     apply plugin: 'java'
     apply plugin: 'project-report'
 
