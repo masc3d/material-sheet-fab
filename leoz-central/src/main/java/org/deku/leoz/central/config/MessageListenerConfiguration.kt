@@ -4,8 +4,10 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.entities.UpdateInfoRequest
 import org.deku.leoz.central.data.repositories.NodeRepository
 import org.deku.leoz.central.messaging.handlers.IdentityMessageHandler
+import org.deku.leoz.central.messaging.handlers.LogMessageHandler
 import org.deku.leoz.central.messaging.handlers.UpdateInfoRequestHandler
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.log.LogMessage
 import org.deku.leoz.node.messaging.entities.IdentityMessage
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -32,11 +34,22 @@ open class MessageListenerConfiguration {
     /** Central message listener  */
     private val centralQueueListener: SpringJmsListener
 
+    private val logListener: SpringJmsListener
+
     init {
         // Configure and create listeners
         centralQueueListener = object : SpringJmsListener(
                 connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
                 destination = { ActiveMQConfiguration.instance.centralQueue },
+                converter = DefaultConverter(
+                        DefaultConverter.SerializationType.KRYO,
+                        DefaultConverter.CompressionType.GZIP))
+        {
+        }
+
+        logListener = object : SpringJmsListener(
+                connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
+                destination = { ActiveMQConfiguration.instance.centralLogQueue },
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP))
@@ -53,6 +66,10 @@ open class MessageListenerConfiguration {
         centralQueueListener.addDelegate(
                 UpdateInfoRequest::class.java,
                 UpdateInfoRequestHandler())
+
+        logListener.addDelegate(
+                LogMessage::class.java,
+                LogMessageHandler())
     }
 
     //region Lifecycle
@@ -77,7 +94,8 @@ open class MessageListenerConfiguration {
 
         if (ActiveMQConfiguration.instance.broker.isStarted) {
             this.initializeListener()
-            centralQueueListener.start()
+            this.centralQueueListener.start()
+            this.logListener.start()
         }
     }
 
@@ -85,7 +103,8 @@ open class MessageListenerConfiguration {
      * Stop message listener
      */
     private fun stop() {
-        centralQueueListener.stop()
+        this.centralQueueListener.stop()
+        this.logListener.stop()
     }
 
     @PostConstruct
@@ -100,7 +119,8 @@ open class MessageListenerConfiguration {
 
     @PreDestroy
     fun onDestroy() {
-        centralQueueListener.close()
+        this.centralQueueListener.close()
+        this.logListener.close()
     }
     //endregion
 }
