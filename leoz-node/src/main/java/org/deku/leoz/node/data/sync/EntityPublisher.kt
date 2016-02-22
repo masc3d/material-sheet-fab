@@ -6,6 +6,7 @@ import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.data.repositories.EntityRepository
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage
+import sx.Action
 import sx.jms.Channel
 import sx.jms.converters.DefaultConverter
 import sx.jms.listeners.SpringJmsListener
@@ -15,6 +16,7 @@ import java.util.*
 import javax.jms.JMSException
 import javax.jms.Message
 import javax.jms.Session
+import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 
 /**
@@ -58,6 +60,7 @@ class EntityPublisher(
 
     @Throws(JMSException::class)
     public override fun onMessage(message: Message, session: Session) {
+        var em: EntityManager? = null
         try {
 //            log.debug(String.format("Message id [%s] %s",
 //                    message.jmsMessageID,
@@ -76,7 +79,7 @@ class EntityPublisher(
             val timestamp = esMessage.timestamp
             val lfmt = { s: String -> "[" + entityType!!.canonicalName + "]" + " " + s }
 
-            val em = entityManagerFactory.createEntityManager()
+            em = entityManagerFactory.createEntityManager()
             val er = EntityRepository(em, entityType)
 
             // Count records
@@ -85,47 +88,49 @@ class EntityPublisher(
             val euMessage = EntityUpdateMessage(count)
             log.debug(lfmt(euMessage.toString()))
 
-            val tconnection = this.connectionFactory.createConnection()
-            val tsession = tconnection.createSession(false, Session.AUTO_ACKNOWLEDGE)
-            val mp = tsession.createProducer(message.jmsReplyTo)
-            mp.send(messageConverter.toMessage(euMessage, session))
+            val channel = Channel(connectionFactory = this.connectionFactory,
+                    destination = message.jmsReplyTo,
+                    converter = this.converter,
+                    jmsSessionTransacted = false).use {
 
-            if (count > 0) {
-                // Query with cursor
-                val cursor = er.findNewerThan(timestamp)
+                it.send(euMessage)
 
-                val CHUNK_SIZE = 500
-                val buffer = ArrayList<Any?>(CHUNK_SIZE)
-                log.info(lfmt("Sending ${count}"))
-                while (true) {
-                    var next: Any? = null
-                    if (cursor.hasNext()) {
-                        next = cursor.next()
-                        buffer.add(next)
-                    }
-                    if (buffer.size >= CHUNK_SIZE || next == null) {
-                        if (buffer.size > 0) {
-                            mp.send(messageConverter.toMessage(buffer.toArray(), session))
-                            buffer.clear()
+                if (count > 0) {
+                    // Query with cursor
+                    val cursor = er.findNewerThan(timestamp)
+
+                    val CHUNK_SIZE = 500
+                    val buffer = ArrayList<Any?>(CHUNK_SIZE)
+                    log.info(lfmt("Sending ${count}"))
+                    while (true) {
+                        var next: Any? = null
+                        if (cursor.hasNext()) {
+                            next = cursor.next()
+                            buffer.add(next)
                         }
+                        if (buffer.size >= CHUNK_SIZE || next == null) {
+                            if (buffer.size > 0) {
+                                it.send(buffer.toArray())
+                                buffer.clear()
+                            }
 
-                        if (next == null)
-                            break
+                            if (next == null)
+                                break
+                        }
                     }
+
+                    // Send empty array -> EOS
+                    it.send(arrayOfNulls<Any>(0), messageConfigurer = Action {
+                        it.setBooleanProperty(EntityUpdateMessage.EOS_PROPERTY, true)
+                    })
                 }
-
-                // Send empty array -> EOS
-                val eosMsg = messageConverter.toMessage(arrayOfNulls<Any>(0), session)
-                eosMsg.setBooleanProperty(EntityUpdateMessage.EOS_PROPERTY, true)
-                mp.send(eosMsg)
+                log.info(lfmt("Sent ${count} in ${sw} (${messageConverter.bytesWritten} bytes)"))
             }
-            session.commit()
-            mp.close()
-            log.info(lfmt("Sent ${count} in ${sw} (${messageConverter.bytesWritten} bytes)"))
-
-            em.close()
         } catch(e: Exception) {
             log.error(e.message, e);
+        } finally {
+            if (em != null)
+                em.close()
         }
     }
 }

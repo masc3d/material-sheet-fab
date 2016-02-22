@@ -6,12 +6,15 @@ import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repositories.EntityRepository
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage
+import sx.Action
+import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
 import sx.jms.listeners.SpringJmsListener
 import java.lang.IllegalStateException
 import java.sql.Timestamp
+import java.time.Duration
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -70,8 +73,9 @@ class EntityConsumer
             // Log formatting with entity type
             val lfmt = { s: String -> "[" + entityType.canonicalName + "]" + " " + s }
 
-            var receiveQueue: TemporaryQueue? = null
-            var mc: MessageConsumer? = null
+            var replyQueue: TemporaryQueue? = null
+            var replyChannel: Channel? = null
+            var entitySyncChannel: Channel? = null
             var em: EntityManager? = null
             var cn: Connection? = null
             try {
@@ -90,31 +94,30 @@ class EntityConsumer
                 cn = messagingConfiguration.broker.connectionFactory.createConnection()
                 val session = cn.createSession(false, Session.AUTO_ACKNOWLEDGE)
 
+                entitySyncChannel = Channel(
+                        session = session,
+                        destination = messagingConfiguration.centralEntitySyncQueue,
+                        converter = this.converter)
+
                 val sw = Stopwatch.createStarted()
 
-                val requestQueue = messagingConfiguration.centralEntitySyncQueue
-                receiveQueue = session.createTemporaryQueue()
+                replyQueue = session.createTemporaryQueue()
+
+                replyChannel = Channel(
+                        session = session,
+                        destination = replyQueue,
+                        converter = this.converter,
+                        receiveTimeout = Duration.ofSeconds(5))
 
                 log.info(lfmt("Requesting entities"))
 
                 // Send entity state message
-                val mp = session.createProducer(requestQueue)
-                mp.deliveryMode = DeliveryMode.NON_PERSISTENT
-                var msg: Message? = converter.toMessage(
-                        EntityStateMessage(entityType, timestamp),
-                        session)
-                msg!!.jmsReplyTo = receiveQueue
-                mp.send(msg)
-                session.commit()
+                entitySyncChannel.send(EntityStateMessage(entityType, timestamp), messageConfigurer = Action {
+                    it.jmsReplyTo = replyQueue
+                })
 
                 // Receive entity update message
-                mc = session.createConsumer(receiveQueue)
-                msg = mc!!.receive(RECEIVE_TIMEOUT.toLong())
-
-                if (msg == null)
-                    throw TimeoutException("Timeout while waiting for entity update message")
-
-                val euMessage = converter.fromMessage(msg) as EntityUpdateMessage
+                val euMessage = replyChannel.receive(EntityUpdateMessage::class.java)
 
                 log.debug(lfmt(euMessage.toString()))
                 val count = AtomicLong()
@@ -125,7 +128,6 @@ class EntityConsumer
 
                 if (euMessage.amount > 0) {
                     val emv = em!!
-                    val tmc = mc
                     PersistenceUtil.transaction(em) {
                         if (!er.hasTimestampAttribute()) {
                             log.debug(lfmt("No timestamp attribute found -> removing all entities"))
@@ -136,7 +138,7 @@ class EntityConsumer
                         var eos = false
                         var lastJmsTimestamp: Long = 0
                         do {
-                            val tMsg = tmc.receive(RECEIVE_TIMEOUT.toLong()) ?: throw TimeoutException("Timeout while waiting for next entities chunk")
+                            val tMsg = replyChannel!!.receive() ?: throw TimeoutException("Timeout while waiting for next entities chunk")
 
                             // Verify message order
                             if (tMsg.jmsTimestamp < lastJmsTimestamp)
@@ -189,17 +191,17 @@ class EntityConsumer
                 executorService.shutdown()
                 executorService.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
                 log.info(lfmt("Received and stored ${count.get()} in ${sw} (${converter.bytesRead} bytes)"))
-
-                em.close()
             } catch (e: TimeoutException) {
                 log.error(lfmt(e.message ?: ""))
             } catch (e: Exception) {
                 log.error(lfmt(e.message ?: ""), e)
             } finally {
-                if (mc != null)
-                    mc.close()
-                if (receiveQueue != null)
-                    receiveQueue.delete()
+                if (replyChannel != null)
+                    replyChannel.close()
+                if (entitySyncChannel != null)
+                    entitySyncChannel.close()
+                if (replyQueue != null)
+                    replyQueue.delete()
                 if (cn != null)
                     cn.close()
                 if (em != null)
@@ -225,10 +227,5 @@ class EntityConsumer
         }
 
         super.close()
-    }
-
-    companion object {
-
-        private val RECEIVE_TIMEOUT = 5000
     }
 }
