@@ -55,6 +55,16 @@ buildscript {
         mavenCentral()
     }}
 
+// TODO. sometimes packager creates corrupt archives, presumably since intellij's make confuses gradle's uptodate detectino
+// TODO. thus forcing rerun of all tasks when running a release task
+println gradle.startParameter.taskNames
+if (gradle.startParameter.taskNames.contains("releaseUpdate") ||
+        gradle.startParameter.taskNames.contains("releasePush") ||
+        gradle.startParameter.taskNames.contains("releaseSfx")) {
+    println "Forcing re-run of all tasks"
+    gradle.startParameter.rerunTasks = true
+}
+
 // Start parameters
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
 
