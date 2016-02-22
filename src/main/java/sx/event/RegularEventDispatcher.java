@@ -41,6 +41,7 @@ public class RegularEventDispatcher<T extends EventListener> extends EventDispat
     private final ArrayList<ListenerReference> _listeners = new ArrayList<ListenerReference>();
 
     @Override
+    @SuppressWarnings("unchecked")
     public void add(T listener) {
         _listeners.add(new ListenerReference(listener, (Class<T>)listener.getClass()));
     }
