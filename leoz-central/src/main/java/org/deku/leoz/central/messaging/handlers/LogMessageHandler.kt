@@ -1,5 +1,6 @@
 package org.deku.leoz.central.messaging.handlers
 
+import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
@@ -11,7 +12,6 @@ import org.deku.leoz.central.config.StorageConfiguration
 import org.deku.leoz.log.LogMessage
 import org.slf4j.LoggerFactory
 import org.slf4j.Marker
-import org.slf4j.event.Level
 import sx.jms.Converter
 import sx.jms.Handler
 import java.io.File
@@ -30,7 +30,7 @@ class LogMessageHandler : Handler<LogMessage> {
     /** Loggers by node id */
     private val loggers = HashMap<String, Logger>()
 
-    private class LoggingEvent(val logEntry: LogMessage.LogEntry) : org.slf4j.event.LoggingEvent {
+    private class LoggingEvent(val logEntry: LogMessage.LogEntry) : ch.qos.logback.classic.spi.LoggingEvent() {
         val levels = mapOf(
                 Level.ERROR.toString() to Level.ERROR,
                 Level.DEBUG.toString() to Level.DEBUG,
@@ -39,6 +39,10 @@ class LogMessageHandler : Handler<LogMessage> {
                 Level.TRACE.toString() to Level.TRACE)
 
         override fun getMessage(): String? {
+            return this.logEntry.message
+        }
+
+        override fun getFormattedMessage(): String? {
             return this.logEntry.message
         }
 
@@ -62,12 +66,8 @@ class LogMessageHandler : Handler<LogMessage> {
             return this.logEntry.loggerName
         }
 
-        override fun getThrowable(): Throwable? {
-            return null
-        }
-
-        override fun getLevel(): Level? {
-            return this.levels.get(this.logEntry.level)
+        override fun getLevel(): Level {
+            return this.levels.get(this.logEntry.level) ?: Level.ALL
         }
     }
 
@@ -86,7 +86,7 @@ class LogMessageHandler : Handler<LogMessage> {
         // Encoder
         val encoder = PatternLayoutEncoder()
         encoder.context = logger.loggerContext
-        encoder.pattern = "%d %r %thread %logger %level - %msg%n"
+        encoder.pattern = "%d %thread %logger %level - %msg%n"
         encoder.start()
         fileAppender.encoder = encoder
 
@@ -182,7 +182,7 @@ class LogMessageHandler : Handler<LogMessage> {
             }
 
             message.logEntries.forEach {
-                logger!!.log(LoggingEvent(it))
+                logger!!.callAppenders(LoggingEvent(it))
             }
         } catch(e: Exception) {
             log.error(e.message, e)
