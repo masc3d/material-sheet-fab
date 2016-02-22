@@ -180,6 +180,7 @@ class Channel private constructor(
         messageConfigurer?.perform(message)
 
         mp.send(destination, message)
+        mp.close()
 
         if (this.autoCommit)
             this.commit()

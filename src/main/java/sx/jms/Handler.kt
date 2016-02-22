@@ -1,5 +1,6 @@
 package sx.jms
 
+import javax.jms.ConnectionFactory
 import javax.jms.Message
 import javax.jms.Session
 
@@ -9,5 +10,5 @@ import javax.jms.Session
  */
 interface Handler<in T> {
     /** Override for serialized/object message handling */
-    fun onMessage(message: T, converter: Converter, jmsMessage: Message, session: Session)
+    fun onMessage(message: T, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory)
 }

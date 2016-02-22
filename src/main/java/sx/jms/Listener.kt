@@ -59,7 +59,7 @@ abstract class Listener(
         }
 
         if (messageObject != null)
-            handler.onMessage(messageObject, converter!!, message, session)
+            handler.onMessage(messageObject, converter!!, message, session, this.connectionFactory)
     }
 
     /**
