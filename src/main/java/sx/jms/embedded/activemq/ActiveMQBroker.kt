@@ -201,17 +201,17 @@ class ActiveMQBroker private constructor()
         //region Redelivery policy
         val pRedelivery = RedeliveryPlugin()
         // TODO: verify if those plugin options are really needed
-        pRedelivery.isFallbackToDeadLetter = false
-        pRedelivery.isSendToDlqIfMaxRetriesExceeded = false
+        pRedelivery.isFallbackToDeadLetter = true
+        pRedelivery.isSendToDlqIfMaxRetriesExceeded = true
 
         val rpm = RedeliveryPolicyMap()
 
         // TODO: define sensible values for redelivery of messages
         val rp = RedeliveryPolicy()
-        rp.maximumRedeliveries = -1
+        rp.maximumRedeliveries = 3
         rp.initialRedeliveryDelay = 2000
-        //        rp.setBackOffMultiplier(2);
-        //        rp.setUseExponentialBackOff(true);
+        rp.backOffMultiplier = 2.0
+        rp.isUseExponentialBackOff = true
 
         rpm.defaultEntry = rp
         pRedelivery.redeliveryPolicyMap = rpm
