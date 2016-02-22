@@ -26,17 +26,17 @@ class UpdateInfoRequestHandler
         val versionPattern = "+RELEASE"
 
         try {
-            val channel = Channel(
+            Channel(
                     connectionFactory = connectionFactory,
                     jmsSessionTransacted = false,
                     destination = jmsMessage.jmsReplyTo,
-                    converter = converter)
+                    converter = converter).use {
 
-            channel.send(UpdateInfo(
-                    updateInfoRequest.bundleName,
-                    versionPattern))
+                it.send(UpdateInfo(
+                        updateInfoRequest.bundleName,
+                        versionPattern))
 
-            channel.commit()
+            }
         } catch(e: Exception) {
             log.error(e.message, e)
         }
