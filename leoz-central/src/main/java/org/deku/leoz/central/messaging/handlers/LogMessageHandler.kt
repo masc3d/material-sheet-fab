@@ -154,7 +154,7 @@ class LogMessageHandler : Handler<LogMessage> {
      */
     override fun onMessage(message: LogMessage, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
         try {
-            log.info("Received ${message.logEntries.count()} log messages from node [${message.nodeId}] key [${message.nodeKey}]")
+            log.debug("Received ${message.logEntries.count()} log messages from node [${message.nodeId}] key [${message.nodeKey}]")
 
             if (message.logEntries.count() == 0)
                 return
