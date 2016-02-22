@@ -8,6 +8,7 @@ import org.deku.leoz.Identity
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import sx.Disposable
 import sx.Dispose
+import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.converters.DefaultConverter
 import sx.jms.embedded.Broker
@@ -15,9 +16,6 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
-import javax.jms.DeliveryMode
-import javax.jms.Session
 
 /**
  * Log appender sending log messages via jms
@@ -34,7 +32,7 @@ public class LogAppender(
     /** Message converter  */
     private val converter: Converter
     /** Log message buffer  */
-    private val buffer = ArrayList<LogMessage>()
+    private val buffer = ArrayList<LogMessage.LogEntry>()
     /** Flush scheduler  */
     private var executorService: ScheduledExecutorService? = null
 
@@ -65,7 +63,7 @@ public class LogAppender(
      * Flush log messages to underlying jms broker
      */
     private fun flush() {
-        var logMessageBuffer = ArrayList<LogMessage>()
+        var logMessageBuffer = ArrayList<LogMessage.LogEntry>()
 
         synchronized (this.buffer) {
             logMessageBuffer.addAll(this.buffer)
@@ -75,34 +73,24 @@ public class LogAppender(
         if (logMessageBuffer.size > 0) {
             log.trace("Flushing [${logMessageBuffer.size}]")
             try {
-                val cn = messagingConfiguration.broker.connectionFactory.createConnection()
-                cn.start()
-                val session = cn.createSession(true, Session.AUTO_ACKNOWLEDGE)
+                Channel(connectionFactory = messagingConfiguration.broker.connectionFactory,
+                        destination = messagingConfiguration.centralLogQueue,
+                        converter = this.converter,
+                        jmsDeliveryMode = Channel.DeliveryMode.Persistent,
+                        jmsPriority = 1).use {
 
-                val mp = session.createProducer(messagingConfiguration.centralLogQueue)
-                mp.deliveryMode = DeliveryMode.PERSISTENT
-                // Log messages live a few days before they are purged by the broker
-                mp.timeToLive = TimeUnit.DAYS.toMillis(2)
-                mp.priority = 1
-                mp.send(converter.toMessage(
-                        logMessageBuffer.toArray<LogMessage>(arrayOfNulls<LogMessage>(0)),
-                        session))
-
-                session.commit()
+                    it.send(LogMessage(this.idenity.id, this.idenity.key, logMessageBuffer.toTypedArray()))
+                }
             } catch (e: Exception) {
                 log.error(e.message, e)
             }
-
         }
     }
 
     override fun append(eventObject: ILoggingEvent) {
         val le = eventObject as LoggingEvent
         synchronized (buffer) {
-            buffer.add(LogMessage(
-                    nodeId = this.idenity.id,
-                    nodeKey = this.idenity.key,
-                    loggingEvent = le))
+            buffer.add(LogMessage.LogEntry(le))
         }
     }
 
@@ -154,6 +142,5 @@ public class LogAppender(
         } catch (e: Exception) {
             log.error(e.message, e)
         }
-
     }
 }

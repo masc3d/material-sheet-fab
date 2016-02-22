@@ -16,24 +16,36 @@ public class LogMessage : Serializable {
 
     public var nodeId: Int? = null
     public var nodeKey: String = ""
-    public var level: String = ""
-    public var loggerName: String = ""
-    public var threadName: String = ""
-    public var message: String = ""
-    public var timestamp: Long = 0
+    public var logEntries: Array<LogEntry> = arrayOf()
+
+    class LogEntry {
+        public constructor() {
+        }
+
+        public constructor(loggingEvent: LoggingEvent) {
+            val it = loggingEvent
+            this.level = it.level.toString()
+            this.loggerName = it.loggerName
+            this.threadName = it.threadName
+            this.message = if ((it.argumentArray != null))
+                MessageFormatter.arrayFormat(it.message, it.argumentArray).message
+            else
+                it.message
+            this.timestamp = it.timeStamp
+        }
+
+        public var level: String = ""
+        public var loggerName: String = ""
+        public var threadName: String = ""
+        public var message: String = ""
+        public var timestamp: Long = 0
+    }
 
     public constructor() { }
 
-    public constructor(nodeId: Int?, nodeKey: String, loggingEvent: LoggingEvent) {
+    public constructor(nodeId: Int?, nodeKey: String, logEntries: Array<LogEntry>) {
         this.nodeId = nodeId
         this.nodeKey = nodeKey
-        this.level = loggingEvent.level.toString()
-        this.loggerName = loggingEvent.loggerName
-        this.threadName = loggingEvent.threadName
-        this.message = if ((loggingEvent.argumentArray != null))
-            MessageFormatter.arrayFormat(loggingEvent.message, loggingEvent.argumentArray).message
-        else
-            loggingEvent.message
-        this.timestamp = loggingEvent.timeStamp
+        this.logEntries = logEntries
     }
 }
