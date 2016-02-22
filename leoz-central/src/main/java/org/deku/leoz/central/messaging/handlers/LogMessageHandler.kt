@@ -14,19 +14,21 @@ import org.slf4j.Marker
 import org.slf4j.event.Level
 import sx.jms.Converter
 import sx.jms.Handler
+import java.io.File
 import java.util.*
 import javax.jms.ConnectionFactory
 import javax.jms.Message
 import javax.jms.Session
 
 /**
+ * Log message handler
  * Created by masc on 19/02/16.
  */
 class LogMessageHandler : Handler<LogMessage> {
     private val log = LogFactory.getLog(this.javaClass)
 
     /** Loggers by node id */
-    private val loggers = HashMap<Int, Logger>()
+    private val loggers = HashMap<String, Logger>()
 
     private class LoggingEvent(val logEntry: LogMessage.LogEntry) : org.slf4j.event.LoggingEvent {
         val levels = mapOf(
@@ -71,15 +73,15 @@ class LogMessageHandler : Handler<LogMessage> {
 
     /**
      * Creatze new logger for node
-     * @param nodeId Node id
+     * @param name Name of the logger and log file
      */
-    private fun createLogger(nodeId: Int): Logger {
-        val logger = LoggerFactory.getLogger("leoz-node-1") as Logger
+    private fun createLogger(name: String): Logger {
+        val logger = LoggerFactory.getLogger(name) as Logger
         logger.isAdditive = false
 
         val fileAppender: RollingFileAppender<ILoggingEvent> = RollingFileAppender()
         fileAppender.context = logger.loggerContext
-        fileAppender.file = StorageConfiguration.instance.logDirectory.resolve("nodes").resolve("leoz-node-${nodeId}.log").toString()
+        fileAppender.file = this.getLogFile(name).toString()
 
         // Encoder
         val encoder = PatternLayoutEncoder()
@@ -111,20 +113,72 @@ class LogMessageHandler : Handler<LogMessage> {
     }
 
     /**
+     * Get logger
+     * @param name Base name
+     */
+    private fun getLogger(name: String): Logger {
+        return this.loggers.getOrPut(name, {
+            this.createLogger(name)
+        })
+    }
+
+    /**
+     * Remove logger and stop appenders
+     * @param name Base name
+     */
+    private fun removeLogger(name: String) {
+        val logger = this.loggers.get(name)
+        if (logger != null) {
+            logger.detachAndStopAllAppenders()
+            this.loggers.remove(name)
+        }
+    }
+
+    /**
+     * Create logger name
+     */
+    private fun createName(nodeId: Int? = null, nodeKey: String): String {
+        return "leoz-node-${if (nodeId != null) nodeId.toString() else nodeKey}"
+    }
+
+    /**
+     * Get log file
+     * @param baseName Base name without extension
+     */
+    private fun getLogFile(baseName: String): File {
+        return StorageConfiguration.instance.logDirectory.resolve("nodes").resolve("${baseName}.log")
+    }
+
+    /**
      * Message handler
      */
     override fun onMessage(message: LogMessage, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
         try {
-            log.info("Received ${message.logEntries.count()} log messages from node [${message.nodeId}]")
+            log.info("Received ${message.logEntries.count()} log messages from node [${message.nodeId}] key [${message.nodeKey}]")
 
             if (message.logEntries.count() == 0)
                 return
 
             var logger: Logger? = null
-            synchronized(this.loggers) {
-                logger = this.loggers.getOrPut(message.nodeId!!, {
-                    this.createLogger(message.nodeId!!)
-                })
+
+            val keyBasedName = this.createName(nodeKey = message.nodeKey)
+            val keyBasedFile = this.getLogFile(keyBasedName)
+
+            synchronized(loggers) {
+                if (message.nodeId != null) {
+                    val idBasedName = this.createName(message.nodeId, message.nodeKey)
+                    val idBasedFile = this.getLogFile(idBasedName)
+
+                    if (keyBasedFile.exists()) {
+                        this.removeLogger(idBasedName)
+                        this.removeLogger(keyBasedName)
+                        keyBasedFile.renameTo(idBasedFile)
+                    }
+
+                    logger = this.getLogger(idBasedName)
+                } else {
+                    logger = this.getLogger(keyBasedName)
+                }
             }
 
             message.logEntries.forEach {
