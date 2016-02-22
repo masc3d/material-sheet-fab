@@ -79,7 +79,10 @@ public class LogAppender(
                         jmsDeliveryMode = Channel.DeliveryMode.Persistent,
                         jmsPriority = 1).use {
 
-                    it.send(LogMessage(this.idenity.id, this.idenity.key, logMessageBuffer.toTypedArray()))
+                    it.send(LogMessage(
+                            this.idenity.id,
+                            this.idenity.key,
+                            logMessageBuffer.toTypedArray()))
                 }
             } catch (e: Exception) {
                 log.error(e.message, e)

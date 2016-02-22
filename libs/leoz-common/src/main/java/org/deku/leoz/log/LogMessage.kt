@@ -1,6 +1,8 @@
 package org.deku.leoz.log
 
+import ch.qos.logback.classic.pattern.ThrowableProxyConverter
 import ch.qos.logback.classic.spi.LoggingEvent
+import ch.qos.logback.core.CoreConstants
 import org.slf4j.helpers.MessageFormatter
 
 import java.io.Serializable
@@ -32,6 +34,12 @@ public class LogMessage : Serializable {
             else
                 it.message
             this.timestamp = it.timeStamp
+
+            if (loggingEvent.throwableProxy != null) {
+                val tc = ThrowableProxyConverter()
+                tc.start()
+                this.message += CoreConstants.LINE_SEPARATOR + tc.convert(loggingEvent)
+            }
         }
 
         public var level: String = ""
