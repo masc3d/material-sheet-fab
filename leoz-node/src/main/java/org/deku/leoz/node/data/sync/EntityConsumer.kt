@@ -135,7 +135,7 @@ class EntityConsumer
                         }
 
                         // Receive entities
-                        var eos = false
+                        var eos: Boolean
                         var lastJmsTimestamp: Long = 0
                         do {
                             val tMsg = replyChannel!!.receive() ?: throw TimeoutException("Timeout while waiting for next entities chunk")
@@ -152,7 +152,7 @@ class EntityConsumer
 
                             if (!eos) {
                                 // Deserialize entities
-                                val entities = Arrays.asList(*converter.fromMessage(tMsg) as Array<Any>)
+                                val entities = Arrays.asList(*converter.fromMessage(tMsg) as Array<*>)
 
                                 // TODO: exceptions within transactions behave in a strange way.
                                 // data of transactions that were committed may not be there and h2 may report

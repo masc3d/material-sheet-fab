@@ -234,6 +234,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     /**
      * Query route layer
      */
+    @Suppress("UNUSED_PARAMETER")
     private fun queryRouteLayer(sendDelivery: String,
                                 requestParticipant: RoutingRequest.RequestParticipant?,
                                 queryZipCode: String,

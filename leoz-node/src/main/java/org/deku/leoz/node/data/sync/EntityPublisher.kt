@@ -88,7 +88,7 @@ class EntityPublisher(
             val euMessage = EntityUpdateMessage(count)
             log.debug(lfmt(euMessage.toString()))
 
-            val channel = Channel(connectionFactory = this.connectionFactory,
+            Channel(connectionFactory = this.connectionFactory,
                     destination = message.jmsReplyTo,
                     converter = this.converter,
                     jmsSessionTransacted = false).use {
