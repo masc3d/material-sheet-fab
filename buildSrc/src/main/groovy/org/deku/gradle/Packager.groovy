@@ -169,7 +169,7 @@ abstract class PackagerReleaseTask extends PackagerTask {
      * @return
      */
     protected def copySupplementalDirs(PlatformId platformId) {
-        def dstDirs = this.extension.getSupplementalDirs().values()
+        def dstDirs = (this.extension.getSupplementalPlatformDirs().values() + this.extension.getSupplementalDirs().values())
 
         dstDirs.each { it ->
             def path = this.getReleaseSupplementalPath(platformId, it)
@@ -182,6 +182,17 @@ abstract class PackagerReleaseTask extends PackagerTask {
             def dst = this.getReleaseSupplementalPath(platformId, it.value)
 
             println "Copying supplemental dir [${src}] -> [${dst}]"
+            project.copy {
+                from src
+                into dst
+            }
+        }
+
+        this.extension.getSupplementalPlatformDirs().each { it ->
+            def src = new File(it.key, platformId.toString())
+            def dst = this.getReleaseSupplementalPath(platformId, it.value)
+
+            println "Copying supplemental platform dir [${src}] -> [${dst}]"
             project.copy {
                 from src
                 into dst

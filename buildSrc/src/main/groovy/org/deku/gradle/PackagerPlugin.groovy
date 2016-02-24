@@ -34,10 +34,22 @@ class PackagerPluginExtension {
         mSupplementalDirs = dirs
     }
 
+    /** Map of source dirs containing arch subdirs -> (relative) destination directories to copy to bundle release directory */
+    def supplementalPlatformDirs(LinkedHashMap<File, File> dirs) {
+        mSupplementalPlatformDirs = dirs
+    }
+
     private def LinkedHashMap<File, File> mSupplementalDirs = new LinkedHashMap<>()
     public LinkedHashMap<File, File> getSupplementalDirs() {
         return mSupplementalDirs
     }
+
+    private def LinkedHashMap<File, File> mSupplementalPlatformDirs = new LinkedHashMap<>()
+
+    public LinkedHashMap<File, File> getSupplementalPlatformDirs() {
+        return mSupplementalPlatformDirs
+    }
+
 }
 
 /**
