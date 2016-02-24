@@ -64,7 +64,7 @@ protected constructor(
     /**
      * Broker name
      */
-    var brokerName: String? = null
+    var brokerName: String = "localhost"
 
     /** Peer brokers  */
     protected val peerBrokers = ArrayList<PeerBroker>()

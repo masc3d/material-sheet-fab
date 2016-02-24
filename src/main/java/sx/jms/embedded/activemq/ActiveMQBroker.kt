@@ -57,26 +57,14 @@ class ActiveMQBroker private constructor()
     internal var externalTransportServers: MutableList<TransportServer> = ArrayList()
 
     /** Url for establishing connection to local/embedded broker  */
-    private var localUri: URI? = null
-
-    init {
-        localUri = URI("vm://localhost?create=false")
-    }
+    private val localUri: URI
+        get() = URI("vm://${brokerName}?create=false")
 
     /**
      * Add transport server, eg. from servlet
      */
     fun addConnector(transportServer: TransportServer) {
         externalTransportServers.add(transportServer)
-    }
-
-    /**
-     * For (performance) testing purposes: override local/embedded connection URI.
-     * Must be called before connection factory is retrieved for the first time.
-     * @param uri
-     */
-    fun setLocalUri(uri: URI) {
-        localUri = uri
     }
 
     /**
@@ -92,6 +80,13 @@ class ActiveMQBroker private constructor()
 
         // Broker initialization
         brokerService = BrokerService()
+
+        // Basic options (order is very relevant, eg. not setting broker name will result in borker data directory for persistence adapters)
+        brokerService!!.brokerName = this.brokerName
+        // Required for redelivery plugin/policy
+        brokerService!!.isSchedulerSupport = true
+        // Disabling activemq's integrated  shutdown hook, favoring consumer side ordered shutdown
+        brokerService!!.isUseShutdownHook = false
 
         // Persistence setup
         val persistenceStoreDirectory = File(this.dataDirectory, storeType.toString())
@@ -110,15 +105,9 @@ class ActiveMQBroker private constructor()
             else -> throw IllegalStateException(String.format("Unknown store type [%s]", storeType))
         }
 
-        brokerService!!.brokerName = this.brokerName
-        // Required for redelivery plugin/policy
-        brokerService!!.isSchedulerSupport = true
-        // Disabling activemq's integrated  shutdown hook, favoring consumer side ordered shutdown
-        brokerService!!.isUseShutdownHook = false
-
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect
-        brokerService!!.addConnector("vm://localhost")
+        brokerService!!.addConnector("vm://${this.brokerName}")
 
         // Statically defined transport connectors for native clients to connect to
         brokerService!!.addConnector(String.format("tcp://0.0.0.0:%d",
