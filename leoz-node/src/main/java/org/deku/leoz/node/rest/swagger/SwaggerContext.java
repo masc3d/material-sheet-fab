@@ -1,7 +1,7 @@
 package org.deku.leoz.node.rest.swagger;
 
-import com.wordnik.swagger.config.Scanner;
-import com.wordnik.swagger.models.Swagger;
+import io.swagger.config.Scanner;
+import io.swagger.models.Swagger;
 
 /**
  * Context of swagger used in @link SwaggerListingResource

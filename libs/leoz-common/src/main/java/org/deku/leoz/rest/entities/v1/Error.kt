@@ -1,6 +1,6 @@
 package org.deku.leoz.rest.entities.v1
 
-import com.wordnik.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModel
 
 /**
  * REST service error

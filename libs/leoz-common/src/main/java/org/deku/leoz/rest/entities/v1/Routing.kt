@@ -1,8 +1,8 @@
 package org.deku.leoz.rest.entities.v1
 
 import com.google.common.base.Strings
-import com.wordnik.swagger.annotations.ApiModel
-import com.wordnik.swagger.annotations.ApiModelProperty
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
 import org.deku.leoz.rest.entities.ShortDate
 import org.deku.leoz.rest.entities.ShortTime
 

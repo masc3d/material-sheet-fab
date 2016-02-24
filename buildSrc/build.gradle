@@ -65,7 +65,6 @@ dependencies {
     provided 'org.springframework:spring-jms:4.1.7.+'
     provided 'com.esotericsoftware:kryo:3.+'
     provided 'org.xerial.snappy:snappy-java:+'
-    provided "com.wordnik:swagger-annotations:+"
 
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
@@ -92,6 +91,7 @@ sourceSets {
 task syncClasses(type: Sync) {
     from '../libs/leoz-common/src/main/java', '../libs/sx-common/src/main/java'
     into srcdir_import
+    exclude '**/rest/**'
     //include '**/bundle/**', '**/rsync/**', '**/system/**', '**/ProcessExecutor*', '**/Disposable*/', '**/EmbeddedExecutable*/', '**/Action*/', '**/platform/**', '**/Bundle'
     includeEmptyDirs = false
 }

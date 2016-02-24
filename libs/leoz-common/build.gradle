@@ -34,7 +34,7 @@ dependencies {
     provided "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
 
     // swagger for json doc
-    provided "com.wordnik:swagger-annotations:$v_swagger"
+    provided "io.swagger:swagger-annotations:$v_swagger"
     provided "com.fasterxml.jackson.core:jackson-databind:$v_jackson"
 
     // messaging

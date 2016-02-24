@@ -1,6 +1,6 @@
 package org.deku.leoz.rest.services.v1
 
-import com.wordnik.swagger.annotations.*
+import io.swagger.annotations.*
 import org.deku.leoz.rest.entities.v1.Routing
 import org.deku.leoz.rest.entities.v1.RoutingRequest
 

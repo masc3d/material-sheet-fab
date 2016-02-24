@@ -1,6 +1,6 @@
 package org.deku.leoz.rest.services.internal.v1
 
-import com.wordnik.swagger.annotations.*
+import io.swagger.annotations.*
 import org.deku.leoz.rest.entities.internal.v1.Station
 
 import javax.ws.rs.Consumes

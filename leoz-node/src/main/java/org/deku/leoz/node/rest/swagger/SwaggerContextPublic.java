@@ -1,10 +1,10 @@
 package org.deku.leoz.node.rest.swagger;
 
-import com.wordnik.swagger.config.Scanner;
-import com.wordnik.swagger.jaxrs.config.ReflectiveJaxrsScanner;
-import com.wordnik.swagger.models.Contact;
-import com.wordnik.swagger.models.Info;
-import com.wordnik.swagger.models.Swagger;
+import io.swagger.config.Scanner;
+import io.swagger.jaxrs.config.ReflectiveJaxrsScanner;
+import io.swagger.models.Contact;
+import io.swagger.models.Info;
+import io.swagger.models.Swagger;
 import sx.LazyInstance;
 
 import java.util.concurrent.atomic.AtomicReference;

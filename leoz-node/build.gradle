@@ -95,7 +95,7 @@ dependencies {
     compile ("org.springframework:spring-jms:$v_spring")
 
     // json doc
-    compile "com.wordnik:swagger-jaxrs:$v_swagger"
+    compile "io.swagger:swagger-jaxrs:$v_swagger"
     compile "org.javassist:javassist:$v_javassist"
 
     // serialization

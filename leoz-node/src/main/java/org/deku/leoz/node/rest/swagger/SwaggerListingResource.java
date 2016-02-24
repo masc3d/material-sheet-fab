@@ -1,15 +1,15 @@
 package org.deku.leoz.node.rest.swagger;
 
-import com.wordnik.swagger.config.FilterFactory;
-import com.wordnik.swagger.config.Scanner;
-import com.wordnik.swagger.core.filter.SpecFilter;
-import com.wordnik.swagger.core.filter.SwaggerSpecFilter;
-import com.wordnik.swagger.jaxrs.Reader;
-import com.wordnik.swagger.jaxrs.config.JaxrsScanner;
-import com.wordnik.swagger.jaxrs.listing.ApiListingResource;
-import com.wordnik.swagger.jaxrs.listing.SwaggerSerializers;
-import com.wordnik.swagger.models.Swagger;
-import com.wordnik.swagger.util.Yaml;
+import io.swagger.config.FilterFactory;
+import io.swagger.config.Scanner;
+import io.swagger.core.filter.SpecFilter;
+import io.swagger.core.filter.SwaggerSpecFilter;
+import io.swagger.jaxrs.Reader;
+import io.swagger.jaxrs.config.JaxrsScanner;
+import io.swagger.jaxrs.listing.ApiListingResource;
+import io.swagger.jaxrs.listing.SwaggerSerializers;
+import io.swagger.models.Swagger;
+import io.swagger.util.Yaml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This is a modified version of com.wordnik.swagger.jaxrs.listing.ApiListingResource with support
+ * This is a modified version of io.swagger.jaxrs.listing.ApiListingResource with support
  * for non-static context/configuration, instead of storing swagger context within global servlet context.
- *
+ * <p>
  * IMPORTANT: this class may require compatibility maintenance when swagger is updated
  */
 @Path("/")
@@ -47,35 +47,33 @@ public abstract class SwaggerListingResource {
         mConfig = config;
     }
 
-    protected synchronized Swagger scan (Application app, ServletConfig sc) {
+    protected synchronized Swagger scan(Application app, ServletConfig sc) {
         Swagger swagger = mConfig.getSwagger();
         Scanner scanner = mConfig.getScanner();
         LOGGER.debug("using scanner " + scanner);
 
-        if(scanner != null) {
+        if (scanner != null) {
             SwaggerSerializers.setPrettyPrint(scanner.getPrettyPrint());
             swagger = mConfig.getSwagger();
 
             Set<Class<?>> classes = null;
             if (scanner instanceof JaxrsScanner) {
-                JaxrsScanner jaxrsScanner = (JaxrsScanner)scanner;
+                JaxrsScanner jaxrsScanner = (JaxrsScanner) scanner;
                 classes = jaxrsScanner.classesFromContext(app, sc);
-            }
-            else {
+            } else {
                 classes = scanner.classes();
             }
-            if(classes != null) {
+            if (classes != null) {
                 Reader reader = new Reader(swagger);
                 swagger = reader.read(classes);
-                if(scanner instanceof com.wordnik.swagger.config.SwaggerConfig)
-                    swagger = ((com.wordnik.swagger.config.SwaggerConfig)scanner).configure(swagger);
+                if (scanner instanceof io.swagger.config.SwaggerConfig)
+                    swagger = ((io.swagger.config.SwaggerConfig) scanner).configure(swagger);
                 else {
-                    com.wordnik.swagger.config.SwaggerConfig configurator = (com.wordnik.swagger.config.SwaggerConfig)context.getAttribute("reader");
-                    if(configurator != null) {
+                    io.swagger.config.SwaggerConfig configurator = (io.swagger.config.SwaggerConfig) context.getAttribute("reader");
+                    if (configurator != null) {
                         LOGGER.debug("configuring swagger with " + configurator);
                         configurator.configure(swagger);
-                    }
-                    else
+                    } else
                         LOGGER.debug("no configurator");
                 }
                 context.setAttribute("swagger", swagger);
@@ -93,11 +91,11 @@ public abstract class SwaggerListingResource {
             @Context HttpHeaders headers,
             @Context UriInfo uriInfo) {
         Swagger swagger = mConfig.getSwagger();
-        if(swagger.getPaths() == null)
+        if (swagger.getPaths() == null)
             swagger = scan(app, sc);
-        if(swagger != null) {
+        if (swagger != null) {
             SwaggerSpecFilter filterImpl = FilterFactory.getFilter();
-            if(filterImpl != null) {
+            if (filterImpl != null) {
                 SpecFilter f = new SpecFilter();
                 swagger = f.filter(swagger,
                         filterImpl,
@@ -106,8 +104,7 @@ public abstract class SwaggerListingResource {
                         getHeaders(headers));
             }
             return Response.ok().entity(swagger).build();
-        }
-        else
+        } else
             return Response.status(404).build();
     }
 
@@ -120,13 +117,13 @@ public abstract class SwaggerListingResource {
             @Context HttpHeaders headers,
             @Context UriInfo uriInfo) {
         Swagger swagger = mConfig.getSwagger();
-        if(swagger.getPaths() == null)
+        if (swagger.getPaths() == null)
             swagger = scan(app, sc);
-        try{
-            if(swagger != null) {
+        try {
+            if (swagger != null) {
                 SwaggerSpecFilter filterImpl = FilterFactory.getFilter();
                 LOGGER.debug("using filter " + filterImpl);
-                if(filterImpl != null) {
+                if (filterImpl != null) {
                     SpecFilter f = new SpecFilter();
                     swagger = f.filter(swagger,
                             filterImpl,
@@ -138,7 +135,7 @@ public abstract class SwaggerListingResource {
                 String yaml = Yaml.mapper().writeValueAsString(swagger);
                 String[] parts = yaml.split("\n");
                 StringBuilder b = new StringBuilder();
-                for(String part : parts) {
+                for (String part : parts) {
                     int pos = part.indexOf("!<");
                     int endPos = part.indexOf(">");
                     b.append(part);
@@ -146,8 +143,7 @@ public abstract class SwaggerListingResource {
                 }
                 return Response.ok().entity(b.toString()).type("text/plain").build();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return Response.status(404).build();
@@ -155,8 +151,8 @@ public abstract class SwaggerListingResource {
 
     protected Map<String, List<String>> getQueryParams(MultivaluedMap<String, String> params) {
         Map<String, List<String>> output = new HashMap<String, List<String>>();
-        if(params != null) {
-            for(String key: params.keySet()) {
+        if (params != null) {
+            for (String key : params.keySet()) {
                 List<String> values = params.get(key);
                 output.put(key, values);
             }
@@ -166,8 +162,8 @@ public abstract class SwaggerListingResource {
 
     protected Map<String, String> getCookies(HttpHeaders headers) {
         Map<String, String> output = new HashMap<String, String>();
-        if(headers != null) {
-            for(String key: headers.getCookies().keySet()) {
+        if (headers != null) {
+            for (String key : headers.getCookies().keySet()) {
                 Cookie cookie = headers.getCookies().get(key);
                 output.put(key, cookie.getValue());
             }
@@ -178,8 +174,8 @@ public abstract class SwaggerListingResource {
 
     protected Map<String, List<String>> getHeaders(HttpHeaders headers) {
         Map<String, List<String>> output = new HashMap<String, List<String>>();
-        if(headers != null) {
-            for(String key: headers.getRequestHeaders().keySet()) {
+        if (headers != null) {
+            for (String key : headers.getRequestHeaders().keySet()) {
                 List<String> values = headers.getRequestHeaders().get(key);
                 output.put(key, values);
             }

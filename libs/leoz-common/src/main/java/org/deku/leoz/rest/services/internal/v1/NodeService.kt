@@ -1,8 +1,7 @@
 package org.deku.leoz.rest.services.internal.v1
 
-import com.wordnik.swagger.annotations.Api
-import com.wordnik.swagger.annotations.ApiOperation
-import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
 import javax.ws.rs.Consumes
 import javax.ws.rs.GET
 import javax.ws.rs.Path
