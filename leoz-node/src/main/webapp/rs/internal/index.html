@@ -42,6 +42,8 @@
             }
             window.swaggerUi = new SwaggerUi({
                 url: url,
+                // masc20160224. disabled validator, as schema does not contain support for position attribute, resulting in error
+                validatorUrl: false,
                 dom_id: "swagger-ui-container",
                 supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
                 onComplete: function(swaggerApi, swaggerUi){
