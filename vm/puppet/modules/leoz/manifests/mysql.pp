@@ -1,5 +1,5 @@
 #
-class leo2::mysql (
+class leoz::mysql (
     $dev = false ) {
   # masc20140721. mysql server setup
   class { ::mysql::server:
@@ -27,8 +27,8 @@ class leo2::mysql (
 
 # masc20140721. mysql database setup
   ::mysql::db { 'dekuclient':
-    user => 'leo2',
-    password => 'leo2',
+    user => 'leoz',
+    password => 'leoz',
     host => '%',
     sql => '/vagrant/mysql/dekuclient.sql'
   }

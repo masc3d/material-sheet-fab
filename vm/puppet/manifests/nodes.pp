@@ -1,17 +1,17 @@
-# leo2 base system
-node leo2-base {
-	include leo2::mysql
-	include leo2::java
+# leoz base system
+node leoz-base {
+	include leoz::mysql
+	include leoz::java
 }
 
 # leoz developer configuration
-node leo2-dev inherits leo2-base {
-  class { leo2::tomcat:
+node leoz-dev inherits leoz-base {
+  class { leoz::tomcat:
   	debug => true 
   }
 }
 
 # leoz productive configuration
-node leo2-prod inherits leo2-base {
-	include leo2::tomcat
+node leoz-prod inherits leoz-base {
+	include leoz::tomcat
 }

@@ -18,7 +18,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # masc20140721. basic settings, like box url, hostname etc.
   # config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/debian-73-x64-virtualbox-puppet.box"
   #config.vm.box_url = "https://oss-binaries.phusionpassenger.com/vagrant/boxes/latest/ubuntu-14.04-amd64-vbox.box"
-  config.vm.hostname = "leo2-dev"
+  config.vm.hostname = "leoz-dev"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -68,7 +68,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # masc20140721. virtual box specific machine changes
   config.vm.provider "virtualbox" do |v|
     # Don't boot with headless mode
-    v.name = "leo2-dev"
+    v.name = "leoz-dev"
     v.gui = true
     v.memory = 2048
     v.cpus = 1
@@ -77,7 +77,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # masc20140722. parallels base box
   config.vm.provider "parallels" do |v, override|
     override.vm.box = "parallels/ubuntu-14.04"
-    v.name = "leo2-dev"
+    v.name = "leoz-dev"
     v.memory = 2048
     v.cpus = 1
   end

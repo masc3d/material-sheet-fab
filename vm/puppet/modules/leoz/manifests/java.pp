@@ -1,5 +1,5 @@
 #
-class leo2::java {
+class leoz::java {
   include ::java::oracle_1_8_0
 
   # masc20140721. setup java environment var

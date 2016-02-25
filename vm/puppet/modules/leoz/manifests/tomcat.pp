@@ -1,8 +1,8 @@
 #
-class leo2::tomcat ( 
+class leoz::tomcat (
   $debug = false 
 ) {
-  contain leo2::java
+  contain leoz::java
 
   # masc20140721. setup tomcat
   class { ::tomcat::params:

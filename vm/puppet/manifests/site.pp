@@ -1,4 +1,4 @@
-# masc20140723 leo2 site definition
+# masc20140723 leoz site definition
 
 # globals
 Exec { path => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/'] }
