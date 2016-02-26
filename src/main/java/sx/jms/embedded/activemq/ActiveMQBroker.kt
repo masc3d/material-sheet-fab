@@ -269,7 +269,7 @@ class ActiveMQBroker private constructor()
         val cf = ActiveMQConnectionFactory(
                 this.user!!.userName,
                 this.user!!.password,
-                localUri!!.toString())
+                localUri.toString())
         cf.isWatchTopicAdvisories = false
         psf.connectionFactory = cf
         psf
