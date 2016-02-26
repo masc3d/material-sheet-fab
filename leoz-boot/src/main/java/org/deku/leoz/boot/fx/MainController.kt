@@ -70,7 +70,7 @@ class MainController : Initializable {
         // TODO. separate main installation logic from UI controller
         thread {
             var verb: String = "Initializing"
-            var verbPast: String = "Initialized"
+            var verbPast: String
 
             try {
                 LogConfiguration.initialize()

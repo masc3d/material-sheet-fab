@@ -11,8 +11,6 @@ import org.deku.leoz.central.data.entities.jooq.tables.records.*
 import org.deku.leoz.central.data.repositories.GenericRepository
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.entities.master.*
-import org.deku.leoz.node.data.entities.system.Property
-import org.deku.leoz.node.data.entities.system.QProperty
 import org.deku.leoz.node.data.repositories.master.*
 import org.deku.leoz.node.data.repositories.system.PropertyRepository
 import org.jooq.Record
@@ -189,25 +187,6 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
         }
 
         /**
-         * Convert mysql properties record to jpa entity
-         * @param sp
-         * @return
-         */
-        private fun convert(sp: SysPropertyRecord): Property {
-            val p = Property()
-            p.id = sp.id
-
-            p.station = sp.station
-
-            p.description = sp.description
-            p.value = sp.value
-            p.isEnabled = sp.enabled !== 0
-            p.timestamp = sp.timestamp
-
-            return p
-        }
-
-        /**
          * Convert mysql stationsectors record to jpa entity
          * @param ss
          * @return
@@ -329,15 +308,6 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
                 routingLayerRepository,
                 QRoutingLayer.routingLayer,
                 QRoutingLayer.routingLayer.timestamp,
-                { s -> convert(s) },
-                alwaysDelete)
-
-        this.updateEntities(
-                Tables.SYS_PROPERTY,
-                SysProperty.SYS_PROPERTY.TIMESTAMP,
-                propertyRepository,
-                QProperty.property,
-                QProperty.property.timestamp,
                 { s -> convert(s) },
                 alwaysDelete)
 

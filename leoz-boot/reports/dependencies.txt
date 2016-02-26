@@ -14,9 +14,9 @@ compile - Compile classpath for source set 'main'.
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.5
 |    |    +--- ch.qos.logback:logback-core:1.1.5
-|    |    \--- org.slf4j:slf4j-api:1.7.16
-|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.16
-|    |    \--- org.slf4j:slf4j-api:1.7.16
+|    |    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.18
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.18
+|    |    \--- org.slf4j:slf4j-api:1.7.18
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -28,7 +28,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
-|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.18 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
@@ -38,11 +38,11 @@ compile - Compile classpath for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
 +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
-+--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.18 (*)
 +--- com.beust:jcommander:+ -> 1.54
 +--- org.ini4j:ini4j:+ -> 0.5.4
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.16
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -59,9 +59,9 @@ default - Configuration for default artifacts.
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.5
 |    |    +--- ch.qos.logback:logback-core:1.1.5
-|    |    \--- org.slf4j:slf4j-api:1.7.16
-|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.16
-|    |    \--- org.slf4j:slf4j-api:1.7.16
+|    |    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.18
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.18
+|    |    \--- org.slf4j:slf4j-api:1.7.18
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -73,7 +73,7 @@ default - Configuration for default artifacts.
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
-|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.18 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
@@ -83,11 +83,11 @@ default - Configuration for default artifacts.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
 +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
-+--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.18 (*)
 +--- com.beust:jcommander:+ -> 1.54
 +--- org.ini4j:ini4j:+ -> 0.5.4
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.16
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -114,9 +114,9 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.5
 |    |    +--- ch.qos.logback:logback-core:1.1.5
-|    |    \--- org.slf4j:slf4j-api:1.7.16
-|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.16
-|    |    \--- org.slf4j:slf4j-api:1.7.16
+|    |    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.18
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.18
+|    |    \--- org.slf4j:slf4j-api:1.7.18
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -128,7 +128,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
-|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.18 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
@@ -138,11 +138,11 @@ runtime - Runtime classpath for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
 +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
-+--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.18 (*)
 +--- com.beust:jcommander:+ -> 1.54
 +--- org.ini4j:ini4j:+ -> 0.5.4
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.16
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -159,9 +159,9 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.5
 |    |    +--- ch.qos.logback:logback-core:1.1.5
-|    |    \--- org.slf4j:slf4j-api:1.7.16
-|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.16
-|    |    \--- org.slf4j:slf4j-api:1.7.16
+|    |    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.18
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.18
+|    |    \--- org.slf4j:slf4j-api:1.7.18
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -173,7 +173,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
-|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.18 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
@@ -183,11 +183,11 @@ testCompile - Compile classpath for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
 +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
-+--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.18 (*)
 +--- com.beust:jcommander:+ -> 1.54
 +--- org.ini4j:ini4j:+ -> 0.5.4
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.16
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
@@ -206,9 +206,9 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.5
 |    |    +--- ch.qos.logback:logback-core:1.1.5
-|    |    \--- org.slf4j:slf4j-api:1.7.16
-|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.16
-|    |    \--- org.slf4j:slf4j-api:1.7.16
+|    |    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.18
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.18
+|    |    \--- org.slf4j:slf4j-api:1.7.18
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
@@ -220,7 +220,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
-|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.18 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
@@ -230,11 +230,11 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- commons-logging:commons-logging:+ -> 1.2
 +--- ch.qos.logback:logback-classic:1.+ -> 1.1.5 (*)
-+--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.16 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.18 (*)
 +--- com.beust:jcommander:+ -> 1.54
 +--- org.ini4j:ini4j:+ -> 0.5.4
 +--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.16
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 +--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
 |    \--- org.jfxtras:jfxtras-agenda:8.0-r4
 |         \--- org.jfxtras:jfxtras-controls:8.0-r4
