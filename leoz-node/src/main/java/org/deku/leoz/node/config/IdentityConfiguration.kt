@@ -4,11 +4,8 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.node.App
 import org.deku.leoz.node.auth.Authorizer
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Lazy
-import javax.annotation.PostConstruct
-import kotlin.properties.Delegates
 
 /**
  * Leoz-node identity configuration
@@ -70,7 +67,7 @@ class IdentityConfiguration {
         }
         // Create identity if it doesn't exist or could not be read/parsed
         if (identity == null) {
-            identity = Identity.create(systemInformation)
+            identity = Identity.create(App.instance.name, systemInformation)
 
             // Store updates/created identity
             try {

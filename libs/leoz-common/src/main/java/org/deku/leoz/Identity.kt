@@ -1,15 +1,15 @@
 package org.deku.leoz
 
 import com.google.common.base.Charsets
-import com.google.common.base.Strings
 import com.google.common.io.BaseEncoding
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
-
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.security.MessageDigest
 import java.security.SecureRandom
-import java.util.Properties
+import java.util.*
 
 /**
  * Holds all identity information for a leoz node including system information
@@ -21,6 +21,7 @@ import java.util.Properties
 class Identity private constructor(
         id: Int?,
         val key: String,
+        val name: String,
         val systemInformation: SystemInformation) {
 
     //region Event
@@ -51,13 +52,14 @@ class Identity private constructor(
     companion object {
         // Property keys for file storage
         private val PROP_ID = "id"
+        private val PROP_NAME = "name"
         private val PROP_KEY = "key"
 
         /**
          * Creates an identity with a random key and current system information
          * @return
          */
-        fun create(systemInformation: SystemInformation): Identity {
+        fun create(name: String, systemInformation: SystemInformation): Identity {
             try {
                 // Generate key
                 val sr = SecureRandom()
@@ -76,7 +78,7 @@ class Identity private constructor(
                 // Calculate digest and format to hex
                 val key = BaseEncoding.base16().encode(m.digest()).toLowerCase()
 
-                return Identity(null, key, systemInformation)
+                return Identity(null, key, name, systemInformation)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
@@ -94,9 +96,10 @@ class Identity private constructor(
             p.load(FileInputStream(source))
             val id = p.getProperty(PROP_ID)
             return Identity(
-                    if ((id != null)) Integer.valueOf(id) else null,
-                    p.getProperty(PROP_KEY),
-                    systemInfo)
+                    id = if ((id != null)) Integer.valueOf(id) else null,
+                    key = p.getProperty(PROP_KEY),
+                    name = p.getProperty(PROP_NAME),
+                    systemInformation = systemInfo)
         }
     }
 
@@ -119,6 +122,7 @@ class Identity private constructor(
 
         if (id != null)
             p.put(PROP_ID, id.toString())
+        p.put(PROP_NAME, name)
         p.put(PROP_KEY, key)
 
         val os = FileOutputStream(destination)
@@ -127,6 +131,6 @@ class Identity private constructor(
     }
 
     override fun toString(): String {
-        return "Identity id [${id}] key [${key}]"
+        return "Identity id [${id}] name [${name}] key [${key}]"
     }
 }

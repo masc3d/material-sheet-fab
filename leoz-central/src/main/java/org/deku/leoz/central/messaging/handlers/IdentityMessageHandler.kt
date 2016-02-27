@@ -33,6 +33,7 @@ class IdentityMessageHandler(private val mNodeRepository: NodeRepository) : Hand
 
             r.hostname = message.hardwareAddress
             r.key = message.key
+            r.bundle = message.name
             r.sysInfo = message.systemInfo
             r.store()
             r = mNodeRepository.findByKeyOrCreateNew(message.key)

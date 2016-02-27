@@ -4,7 +4,7 @@ import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleUpdater
-import org.deku.leoz.config.BundleRepositoryConfiguration
+import org.deku.leoz.bundle.Bundles
 import org.deku.leoz.config.BundleTestConfiguration
 import org.deku.leoz.config.StorageTestConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
@@ -15,7 +15,7 @@ import org.junit.Test
  */
 class UpdateTest {
     val updater = BundleUpdater(
-            identity = Identity.create(SystemInformation()),
+            identity = Identity.create(Bundles.LEOZ_BOOT.value, SystemInformation()),
             installer = BundleInstaller(
                     StorageTestConfiguration.bundlesTestDirectory),
             remoteRepository = BundleTestConfiguration.remoteRepository,

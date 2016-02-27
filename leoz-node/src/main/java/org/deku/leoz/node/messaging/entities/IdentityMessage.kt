@@ -13,10 +13,11 @@ class IdentityMessage : Serializable {
 
     var id: Int? = null
     var key: String = ""
+    var name: String = ""
     var hardwareAddress: String = ""
     var systemInfo: String = ""
 
     override fun toString(): String {
-        return "Identity message node id [%s] key [%s] hw address [%s] system info [%s]".format(id, key, hardwareAddress, systemInfo)
+        return "Identity message node id [${id}] name [${name}] key [${key}] hw address [${hardwareAddress}] system info [${systemInfo}]"
     }
 }
