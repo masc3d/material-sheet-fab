@@ -8,6 +8,8 @@ import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
+import javax.inject.Inject
+import javax.inject.Named
 import javax.jms.ConnectionFactory
 import javax.jms.Message
 import javax.jms.Session
@@ -15,9 +17,13 @@ import javax.jms.Session
 /**
  * Created by masc on 01.07.15.
  */
-class IdentityMessageHandler(private val mNodeRepository: NodeRepository) : Handler<IdentityMessage> {
+@Named
+class IdentityMessageHandler : Handler<IdentityMessage> {
     private val log = LogFactory.getLog(this.javaClass)
     private val converter: Converter
+
+    @Inject
+    private lateinit var nodeRepository: NodeRepository
 
     init {
         converter = DefaultConverter(
@@ -29,14 +35,14 @@ class IdentityMessageHandler(private val mNodeRepository: NodeRepository) : Hand
         try {
             log.info(message)
 
-            var r = mNodeRepository.findByKeyOrCreateNew(message.key)
+            var r = nodeRepository.findByKeyOrCreateNew(message.key)
 
             r.hostname = message.hardwareAddress
             r.key = message.key
             r.bundle = message.name
             r.sysInfo = message.systemInfo
             r.store()
-            r = mNodeRepository.findByKeyOrCreateNew(message.key)
+            r = nodeRepository.findByKeyOrCreateNew(message.key)
 
             val replyTo = jmsMessage.jmsReplyTo
             if (replyTo != null) {

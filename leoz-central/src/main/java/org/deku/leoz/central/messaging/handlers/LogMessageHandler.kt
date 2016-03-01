@@ -16,6 +16,7 @@ import sx.jms.Converter
 import sx.jms.Handler
 import java.io.File
 import java.util.*
+import javax.inject.Named
 import javax.jms.ConnectionFactory
 import javax.jms.Message
 import javax.jms.Session
@@ -24,6 +25,7 @@ import javax.jms.Session
  * Log message handler
  * Created by masc on 19/02/16.
  */
+@Named
 class LogMessageHandler : Handler<LogMessage> {
     private val log = LogFactory.getLog(this.javaClass)
 

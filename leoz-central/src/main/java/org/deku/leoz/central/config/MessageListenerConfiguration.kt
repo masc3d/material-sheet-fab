@@ -2,7 +2,6 @@ package org.deku.leoz.central.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.entities.UpdateInfoRequest
-import org.deku.leoz.central.data.repositories.NodeRepository
 import org.deku.leoz.central.messaging.handlers.IdentityMessageHandler
 import org.deku.leoz.central.messaging.handlers.LogMessageHandler
 import org.deku.leoz.central.messaging.handlers.UpdateInfoRequestHandler
@@ -29,7 +28,13 @@ open class MessageListenerConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject
-    private lateinit var nodeRepository: NodeRepository
+    private lateinit var identityMessageHandler: IdentityMessageHandler
+
+    @Inject
+    private lateinit var updateInfoRequestHandler: UpdateInfoRequestHandler
+
+    @Inject
+    private lateinit var logMessageHandler: LogMessageHandler
 
     /** Central message listener  */
     private val centralQueueListener: SpringJmsListener
@@ -61,15 +66,15 @@ open class MessageListenerConfiguration {
         // Add message handler delegatess
         centralQueueListener.addDelegate(
                 IdentityMessage::class.java,
-                IdentityMessageHandler(nodeRepository))
+                identityMessageHandler)
 
         centralQueueListener.addDelegate(
                 UpdateInfoRequest::class.java,
-                UpdateInfoRequestHandler())
+                updateInfoRequestHandler)
 
         logListener.addDelegate(
                 LogMessage::class.java,
-                LogMessageHandler())
+                logMessageHandler)
     }
 
     //region Lifecycle

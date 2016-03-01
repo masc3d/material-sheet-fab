@@ -17,7 +17,7 @@ import javax.inject.Named
 @Named
 class GenericRepository {
     @Inject
-    private lateinit var mDSLContext: DSLContext
+    private lateinit var dslContext: DSLContext
 
     /**
      * Generic find newer function
@@ -31,7 +31,7 @@ class GenericRepository {
             table: TableImpl<TRecord>,
             field: TableField<out Record, Timestamp>?): Cursor<TRecord> {
 
-        return mDSLContext.selectFrom(table)
+        return dslContext.selectFrom(table)
                 .where(if ((timestamp != null && field != null)) field.gt(timestamp) else DSL.trueCondition())
                 .fetchLazy()
     }
