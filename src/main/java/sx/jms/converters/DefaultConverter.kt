@@ -3,6 +3,8 @@ package sx.jms.converters
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
+import com.esotericsoftware.kryo.pool.KryoPool
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer
 import org.xerial.snappy.SnappyInputStream
 import org.xerial.snappy.SnappyOutputStream
 import sx.jms.Converter
@@ -19,8 +21,8 @@ import javax.jms.Session
  * Created by masc on 19.06.15.
  */
 class DefaultConverter(
-        var mSerializationType: DefaultConverter.SerializationType,
-        var mCompressionType: DefaultConverter.CompressionType)
+        var serializationType: DefaultConverter.SerializationType,
+        var compressionType: DefaultConverter.CompressionType)
 :
         Converter {
     enum class SerializationType {
@@ -39,56 +41,86 @@ class DefaultConverter(
     var bytesRead: Long = 0
         private set
 
-    //    private interface StreamSupplier<T> {
-    //        throws(Exception::class)
-    //        fun get(stream: T): T
-    //    }
+    companion object {
+        /**
+         * Lazy kryo pool, providing and caching (soft) kryo instances
+         */
+        private val kryoPool by lazy {
+            KryoPool.Builder({
+                val k = Kryo()
+                // Setting the default serializer to CompatibleFieldSerializer is crucial here
+                // as the default FiedldSerializer relies solely in order and may cause breakage as classes evolve
+                k.setDefaultSerializer(CompatibleFieldSerializer::class.java)
+                k
+            })
+                    .softReferences()
+                    .build()
+        }
+    }
 
-    private var mSerializationStreamSupplier: (o: OutputStream) -> OutputStream
-    private var mDeserializationStreamSupplier: (i: InputStream) -> InputStream
-    private var mSerializer: (outStream: OutputStream, o: Any) -> Unit
-    private var mDeserializer: (inStream: InputStream) -> Any
+    private var serializationStreamSupplier: (o: OutputStream) -> OutputStream
+    private var deserializationStreamSupplier: (i: InputStream) -> InputStream
+    private var serializer: (outStream: OutputStream, o: Any) -> Unit
+    private var deserializer: (inStream: InputStream) -> Any
 
     init {
         // Inject mechanisms for (de)serialization and (de)compression
-        when (mCompressionType) {
+        when (compressionType) {
             DefaultConverter.CompressionType.GZIP -> {
-                mSerializationStreamSupplier = { o -> GZIPOutputStream(o) }
-                mDeserializationStreamSupplier = { i -> GZIPInputStream(i) }
+                serializationStreamSupplier = { o -> GZIPOutputStream(o) }
+                deserializationStreamSupplier = { i -> GZIPInputStream(i) }
             }
             DefaultConverter.CompressionType.SNAPPY -> {
-                mSerializationStreamSupplier = { o -> SnappyOutputStream(o) }
-                mDeserializationStreamSupplier = { i -> SnappyInputStream(i) }
+                serializationStreamSupplier = { o -> SnappyOutputStream(o) }
+                deserializationStreamSupplier = { i -> SnappyInputStream(i) }
             }
             else -> {
-                mSerializationStreamSupplier = { o -> o }
-                mDeserializationStreamSupplier = { i -> i }
+                serializationStreamSupplier = { o -> o }
+                deserializationStreamSupplier = { i -> i }
             }
         }
 
-        when (mSerializationType) {
+        when (serializationType) {
             DefaultConverter.SerializationType.KRYO -> {
-                mSerializer = fun (outStream, o) {
-                    val k = Kryo()
-                    val out = Output(outStream)
-                    k.writeClassAndObject(out, o)
-                    out.close()
+                // Serialization using kryo
+                serializer = fun(outStream, o) {
+                    var k: Kryo? = null
+                    var out: Output? = null
+                    try {
+                        k = kryoPool.borrow()
+                        out = Output(outStream)
+                        k.writeClassAndObject(out, o)
+                    } finally {
+                        if (out != null)
+                            out.close()
+                        if (k != null)
+                            kryoPool.release(k)
+                    }
                 }
-                mDeserializer = fun (inStream): Any {
-                    val k = Kryo()
-                    val i = Input(inStream)
-                    val o = k.readClassAndObject(i)
-                    i.close()
-                    return o
+                deserializer = fun(inStream): Any {
+                    var k: Kryo? = null
+                    var i: Input? = null
+                    try {
+                        k = kryoPool.borrow()
+                        i = Input(inStream)
+                        return k!!.readClassAndObject(i)
+                    } finally {
+                        if (i != null)
+                            i.close()
+                        if (k != null)
+                            kryoPool.release(k)
+                    }
                 }
             }
+
             DefaultConverter.SerializationType.JAVA -> {
-                mSerializer = fun (outStream, o) {
+                // Serialization using (standard) java object streams
+                serializer = fun(outStream, o) {
                     val oos = ObjectOutputStream(outStream)
                     oos.writeObject(o)
                     oos.close()
                 }
-                mDeserializer = fun (inStream): Any {
+                deserializer = fun(inStream): Any {
                     val ois = ObjectInputStream(inStream)
                     val o = ois.readObject()
                     ois.close()
@@ -103,8 +135,8 @@ class DefaultConverter(
         val baos = ByteArrayOutputStream()
 
         // Apply intermediate stream if applicable (compression eg.) and serialize
-        val serializerStream = mSerializationStreamSupplier(baos)
-        mSerializer(serializerStream, obj)
+        val serializerStream = serializationStreamSupplier(baos)
+        serializer(serializerStream, obj)
 
         // Create jms byte message from binary stream
         val bm = session.createBytesMessage()
@@ -126,8 +158,8 @@ class DefaultConverter(
         val bais = ByteArrayInputStream(buf)
 
         // Apply intermediate stream if applicable (compression eg.) and deserialize
-        val deserializerStream = mDeserializationStreamSupplier(bais)
-        val obj = mDeserializer(deserializerStream)
+        val deserializerStream = deserializationStreamSupplier(bais)
+        val obj = deserializer(deserializerStream)
 
         bytesRead += size.toLong()
 
