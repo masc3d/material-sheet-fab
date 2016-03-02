@@ -29,12 +29,12 @@ class Channel private constructor(
         session: Session? = null,
         private val destination: Destination,
         private val converter: Converter,
-        private val jmsSessionTransacted: Boolean = Channel.JMS_TRANSACTED,
-        private val jmsDeliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE,
-        private val jmsTtl: Duration = Channel.JMS_TTL,
+        private val jmsSessionTransacted: Boolean = Defaults.JMS_TRANSACTED,
+        private val jmsDeliveryMode: Channel.DeliveryMode = Defaults.JMS_DELIVERY_MODE,
+        private val jmsTtl: Duration = Defaults.JMS_TTL,
         private val jmsPriority: Int? = null,
         private val autoCommit: Boolean = true,
-        private val receiveTimeout: Duration = Channel.RECEIVE_TIMEOUT)
+        private val receiveTimeout: Duration = Defaults.RECEIVE_TIMEOUT)
 :
         Disposable,
         Closeable {
@@ -82,7 +82,7 @@ class Channel private constructor(
             jmsPriority = jmsPriority) {
     }
 
-    companion object {
+    companion object Defaults {
         private val RECEIVE_TIMEOUT = Duration.ofSeconds(10)
         private val JMS_TTL = Duration.ZERO
         private val JMS_TRANSACTED = true
