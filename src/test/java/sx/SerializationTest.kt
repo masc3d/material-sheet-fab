@@ -3,6 +3,7 @@ package sx
 import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
+import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer
 import org.junit.Assert
 import org.junit.Test
 import java.io.*
@@ -22,7 +23,7 @@ class SerializationTest {
     }
 
     data class TestClass2(
-            var field1: String = "Hello")
+            var field2: String = "Hello")
     :
             Serializable {
         companion object {
@@ -32,6 +33,9 @@ class SerializationTest {
 
     val kryo = Kryo()
 
+    init {
+        kryo.setDefaultSerializer(CompatibleFieldSerializer::class.java)
+    }
     /**
      * Mainly for testing readability of serialUID of a kotlin class
      */
@@ -71,7 +75,7 @@ class SerializationTest {
         var objIn = TestClass1()
 
         var out = ByteArrayOutputStream()
-        this.serializeKryo(out, TestClass1())
+        this.serializeKryo(out, TestClass1("meh"))
 
         var content = out.toByteArray()
 
