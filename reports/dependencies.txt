@@ -11,9 +11,9 @@ compile - Compile classpath for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.5
-|    +--- ch.qos.logback:logback-core:1.1.5
-|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.18
++--- ch.qos.logback:logback-classic:+ -> 1.1.6
+|    +--- ch.qos.logback:logback-core:1.1.6
+|    \--- org.slf4j:slf4j-api:1.7.18
 +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.18
 |    \--- org.slf4j:slf4j-api:1.7.18
 +--- com.google.guava:guava:18.+ -> 18.0
@@ -137,9 +137,9 @@ default - Configuration for default artifacts.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.5
-|    +--- ch.qos.logback:logback-core:1.1.5
-|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.18
++--- ch.qos.logback:logback-classic:+ -> 1.1.6
+|    +--- ch.qos.logback:logback-core:1.1.6
+|    \--- org.slf4j:slf4j-api:1.7.18
 +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.18
 |    \--- org.slf4j:slf4j-api:1.7.18
 +--- com.google.guava:guava:18.+ -> 18.0
@@ -275,9 +275,9 @@ runtime - Runtime classpath for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.5
-|    +--- ch.qos.logback:logback-core:1.1.5
-|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.18
++--- ch.qos.logback:logback-classic:+ -> 1.1.6
+|    +--- ch.qos.logback:logback-core:1.1.6
+|    \--- org.slf4j:slf4j-api:1.7.18
 +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.18
 |    \--- org.slf4j:slf4j-api:1.7.18
 +--- com.google.guava:guava:18.+ -> 18.0
@@ -401,9 +401,9 @@ testCompile - Compile classpath for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.5
-|    +--- ch.qos.logback:logback-core:1.1.5
-|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.18
++--- ch.qos.logback:logback-classic:+ -> 1.1.6
+|    +--- ch.qos.logback:logback-core:1.1.6
+|    \--- org.slf4j:slf4j-api:1.7.18
 +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.18
 |    \--- org.slf4j:slf4j-api:1.7.18
 +--- com.google.guava:guava:18.+ -> 18.0
@@ -527,9 +527,9 @@ testRuntime - Runtime classpath for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.5
-|    +--- ch.qos.logback:logback-core:1.1.5
-|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.18
++--- ch.qos.logback:logback-classic:+ -> 1.1.6
+|    +--- ch.qos.logback:logback-core:1.1.6
+|    \--- org.slf4j:slf4j-api:1.7.18
 +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.18
 |    \--- org.slf4j:slf4j-api:1.7.18
 +--- com.google.guava:guava:18.+ -> 18.0
