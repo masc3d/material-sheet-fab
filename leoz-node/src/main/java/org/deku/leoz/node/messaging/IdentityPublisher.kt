@@ -63,7 +63,6 @@ class IdentityPublisher(
         identityMessage.id = identity.id
         identityMessage.name = identity.name
         identityMessage.key = identity.key
-        identityMessage.hardwareAddress = identity.systemInformation.hardwareAddress
 
         // Serialize system info to json
         val jsonMapper = ObjectMapper()

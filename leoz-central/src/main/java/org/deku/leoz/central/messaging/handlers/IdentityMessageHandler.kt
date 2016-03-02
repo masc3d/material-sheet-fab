@@ -37,7 +37,6 @@ class IdentityMessageHandler : Handler<IdentityMessage> {
 
             var r = nodeRepository.findByKeyOrCreateNew(message.key)
 
-            r.hostname = message.hardwareAddress
             r.key = message.key
             r.bundle = message.name
             r.sysInfo = message.systemInfo
