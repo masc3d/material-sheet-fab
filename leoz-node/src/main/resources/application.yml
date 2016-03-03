@@ -1,0 +1,72 @@
+spring:
+    application:
+        name: leoz-node
+
+logging:
+    level:
+        # Global log level
+        ROOT: INFO
+        # Application logic log level
+        org.deku.leoz: INFO
+        # Shows config loading details on DEBUG log level
+        org.springframework.boot.context.config: INFO
+        # Entity sync log level
+        org.deku.leoz.node.data.sync: INFO
+
+server:
+    # Spring web server port
+    port: 13000
+    # Path for spring dispatcher servlet
+    servlet-path: /spring
+    ssl:
+        # SSL is disabled by default for egular leoz-nodes
+        enabled: false
+
+# Broker settings
+broker:
+    native-port: 13001
+    # This context path is relative to server.context-path
+    http-context-path: /jms
+
+# Peer node connectivity settings
+remote:
+    host: leoz.derkurier.de
+    # Remote peer web service
+    http-path: /
+    http-port: 13000
+    # Remote peer message broker
+    broker:
+       http-path: /jms
+       native-port: 13001
+
+# Rsync server
+rsync:
+    server:
+        port: 13002
+
+# Updater configuration
+update:
+    enabled: true
+    on-startup: true
+    rsync-password: 2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x
+    rsync-uri: rsync://leoz@leoz.derkurier.de:13002/bundles
+
+# Vaadin configuration
+vaadin:
+    servlet:
+        production-mode: false
+        url-mapping: /ui/*
+
+# SSH tunnel configuration
+ssh:
+    server:
+        port: 13003
+    tunnel:
+        hosts:
+            central:
+                hostname: leoz.derkurier.de
+                password: MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8
+                port: 13003
+                username: leoz
+        local-port-range-end: 13150
+        local-port-range-start: 13100

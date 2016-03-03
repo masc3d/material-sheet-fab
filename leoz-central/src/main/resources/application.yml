@@ -1,0 +1,36 @@
+spring:
+    application:
+        name: leoz-central
+
+# Log levels
+logging:
+    level:
+        # Global log level
+        ROOT: INFO
+        # Application logic log level
+        org.deku.leoz: INFO
+        # Shows config loading details on DEBUG log level
+        org.springframework.boot.context.config: INFO
+
+# Central datasource
+datasource:
+    central:
+        url: jdbc:mysql://10.0.10.10:3306/dekuclient
+        username: leoz
+        password: leoz
+
+# leoz-central is final destination, doesn't have a peer
+remote:
+    host: ''
+
+server:
+    ssl:
+        # SSL is enabled for leoz-central
+        enabled: true
+        key-store: classpath:keystore.jks
+        key-store-password: FzgPjlHg4We3
+        # SSL certificate. somehow alias seems to be ignored (at least for undertow)
+        # and the wrong certificate may be provided in case of multiple entries
+        # Resolved by simply just having one certificate in the keystore (removed self-signed)
+        key-alias: le-1d4811c9-e696-4106-bfb2-03eb9d72bf6b
+        key-password: FzgPjlHg4We3

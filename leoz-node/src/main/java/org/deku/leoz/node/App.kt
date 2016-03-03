@@ -154,7 +154,7 @@ open class App :
             // Add application.properties from all classpaths
             // TODO: needs refinement, should only read application.properties from specific jars
             try {
-                configLocations.addAll(Collections.list(Thread.currentThread().contextClassLoader.getResources("application.properties")))
+                configLocations.addAll(Collections.list(Thread.currentThread().contextClassLoader.getResources("application.yml")))
             } catch (e: IOException) {
                 log.error(e.message, e)
             }
