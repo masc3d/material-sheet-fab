@@ -19,7 +19,6 @@ compile - Compile classpath for source set 'main'.
 |    |    \--- org.slf4j:slf4j-api:1.7.18
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
-|    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
@@ -136,7 +135,6 @@ default - Configuration for default artifacts.
 |    |    \--- org.slf4j:slf4j-api:1.7.18
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
-|    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
@@ -263,7 +261,6 @@ runtime - Runtime classpath for source set 'main'.
 |    |    \--- org.slf4j:slf4j-api:1.7.18
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
-|    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
@@ -380,7 +377,6 @@ testCompile - Compile classpath for source set 'test'.
 |    |    \--- org.slf4j:slf4j-api:1.7.18
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
-|    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
@@ -499,7 +495,6 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    \--- org.slf4j:slf4j-api:1.7.18
 |    +--- com.google.guava:guava:18.+ -> 18.0
 |    +--- org.apache.commons:commons-lang3:+ -> 3.4
-|    +--- javax.ws.rs:javax.ws.rs-api:2.+ -> 2.0.1
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)

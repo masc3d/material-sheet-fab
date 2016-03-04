@@ -31,12 +31,12 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
-    compile "org.apache.commons:commons-lang3:3.+"
+    compile "org.apache.commons:commons-lang3:$v_commons_lang"
     compile "org.apache.commons:commons-compress:+"
-    compile "commons-io:commons-io:2.+"
+    compile "commons-io:commons-io:$v_commons_io"
     compile "org.tukaani:xz:+"
-    compile "org.eclipse.jgit:org.eclipse.jgit:4.+"
-    compile 'com.google.guava:guava:18.+'
+    compile "org.eclipse.jgit:org.eclipse.jgit:$v_jgit"
+    compile "com.google.guava:guava:$v_guava"
     compile 'org.ini4j:ini4j:+'
 
     // For authenticating ssh/jgit against key agent
@@ -46,9 +46,9 @@ dependencies {
     compile 'com.jcraft:jsch.agentproxy.pageant:+'
 
     // Unused deps required for compilation
-    provided "javax.ws.rs:javax.ws.rs-api:2.+"
-    provided "ch.qos.logback:logback-classic:+"
-    provided "javax.servlet:javax.servlet-api:+"
+    provided "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs"
+    provided "ch.qos.logback:logback-classic:$v_logback"
+    provided "javax.servlet:javax.servlet-api:$v_javax_servlet"
     provided "org.apache.activemq:activemq-broker:$v_activemq"
     provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
     provided "org.apache.activemq:activemq-leveldb-store:$v_activemq"
@@ -62,8 +62,8 @@ dependencies {
     }
     provided 'org.apache.sshd:sshd-core:+'
 
-    provided 'org.springframework:spring-jms:4.1.7.+'
-    provided 'com.esotericsoftware:kryo:3.+'
+    provided "org.springframework:spring-jms:$v_spring"
+    provided "com.esotericsoftware:kryo:$v_kryo"
     provided 'org.xerial.snappy:snappy-java:+'
 
     testCompile group: 'junit', name: 'junit', version: '4.+'
