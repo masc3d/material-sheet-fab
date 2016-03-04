@@ -48,7 +48,7 @@ open class StorageConfiguration protected constructor(appName: String)
 
     /** Local identity configuration file */
     val identityConfigurationFile: File by lazy({
-        File(this.dataDirectory, "identity.properties")
+        File(this.dataDirectory, "identity.yml")
     })
 
     /** Local h2 database file */

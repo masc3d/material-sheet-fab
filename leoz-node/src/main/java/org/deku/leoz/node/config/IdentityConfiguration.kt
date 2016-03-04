@@ -71,7 +71,7 @@ class IdentityConfiguration {
 
             // Store updates/created identity
             try {
-                identity.store(identityFile)
+                identity.storeYml(identityFile)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }

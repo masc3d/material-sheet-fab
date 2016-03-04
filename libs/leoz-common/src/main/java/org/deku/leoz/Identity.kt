@@ -2,14 +2,15 @@ package org.deku.leoz
 
 import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
+import org.yaml.snakeyaml.Yaml
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import java.security.MessageDigest
 import java.security.SecureRandom
-import java.util.*
 
 /**
  * Holds all identity information for a leoz node including system information
@@ -92,13 +93,17 @@ class Identity private constructor(
          * @return Identity instance
          */
         fun createFromFile(systemInfo: SystemInformation, source: File): Identity {
-            val p = Properties()
-            p.load(FileInputStream(source))
-            val id = p.getProperty(PROP_ID)
+            val yaml = Yaml()
+
+            var data: Map<String, Object> = mapOf()
+            FileInputStream(source).use {
+                data = yaml.load(it) as Map<String, Object>
+            }
+
             return Identity(
-                    id = if ((id != null)) Integer.valueOf(id) else null,
-                    key = p.getProperty(PROP_KEY),
-                    name = p.getProperty(PROP_NAME),
+                    id = data.get(PROP_ID) as Int?,
+                    key = data.get(PROP_KEY) as String,
+                    name = data.get(PROP_NAME) as String,
                     systemInformation = systemInfo)
         }
     }
@@ -112,22 +117,24 @@ class Identity private constructor(
     }
 
     /**
-     * Store identity locally
+     * Store identity in yml file
      * @param destination Destination file
      * @throws IOException
      */
     @Synchronized
-    fun store(destination: File) {
-        val p = Properties()
+    fun storeYml(destination: File) {
+        val yaml = Yaml()
+        val data = mutableMapOf<String, Any>()
 
+        val id = this.id
         if (id != null)
-            p.put(PROP_ID, id.toString())
-        p.put(PROP_NAME, name)
-        p.put(PROP_KEY, key)
+            data.put(PROP_ID, id)
+        data.put(PROP_NAME, name)
+        data.put(PROP_KEY, key)
 
-        val os = FileOutputStream(destination)
-        p.store(os, "Identity")
-        os.close()
+        OutputStreamWriter(FileOutputStream(destination)).use {
+            yaml.dump(data, it)
+        }
     }
 
     override fun toString(): String {

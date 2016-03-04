@@ -56,6 +56,9 @@ dependencies {
     compile "net.java.dev.jna:jna:$v_jna"
     compile "net.java.dev.jna:jna-platform:$v_jna"
 
+    // SnakeYAML
+    compile "org.yaml:snakeyaml:$v_snakeyaml"
+
     // spring
     provided ("org.springframework:spring-jms:$v_spring")
 

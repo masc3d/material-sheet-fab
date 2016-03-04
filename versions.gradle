@@ -36,6 +36,7 @@ buildscript {
         v_resteasy = "3.0.+"
         v_scala = "2.11.+"
         v_slf4j = "1.+"
+        v_snakeyaml = "1.+"
         v_spring = "4.2.5.+"
         v_spring_data_jpa = "1.8.+"
         v_spring_data_commons = "1.10.+"
