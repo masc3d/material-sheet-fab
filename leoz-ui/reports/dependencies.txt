@@ -31,8 +31,9 @@ compile - Compile classpath for source set 'main'.
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
-|    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
-|         \--- net.java.dev.jna:jna:4.2.1
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
+|    |    \--- net.java.dev.jna:jna:4.2.1
+|    \--- org.yaml:snakeyaml:1.+ -> 1.17
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
@@ -147,8 +148,9 @@ default - Configuration for default artifacts.
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
-|    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
-|         \--- net.java.dev.jna:jna:4.2.1
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
+|    |    \--- net.java.dev.jna:jna:4.2.1
+|    \--- org.yaml:snakeyaml:1.+ -> 1.17
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
@@ -273,8 +275,9 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
-|    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
-|         \--- net.java.dev.jna:jna:4.2.1
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
+|    |    \--- net.java.dev.jna:jna:4.2.1
+|    \--- org.yaml:snakeyaml:1.+ -> 1.17
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
@@ -389,8 +392,9 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
-|    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
-|         \--- net.java.dev.jna:jna:4.2.1
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
+|    |    \--- net.java.dev.jna:jna:4.2.1
+|    \--- org.yaml:snakeyaml:1.+ -> 1.17
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
@@ -507,8 +511,9 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
 |    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
-|    \--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
-|         \--- net.java.dev.jna:jna:4.2.1
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
+|    |    \--- net.java.dev.jna:jna:4.2.1
+|    \--- org.yaml:snakeyaml:1.+ -> 1.17
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05

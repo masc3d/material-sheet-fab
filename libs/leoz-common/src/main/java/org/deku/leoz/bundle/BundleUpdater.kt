@@ -68,7 +68,7 @@ class BundleUpdater(
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP),
-                jmsDeliveryMode = Channel.DeliveryMode.NonPersistent)
+                deliveryMode = Channel.DeliveryMode.NonPersistent)
 
         // Bundle(s) requiring (re)boot go last
         this.presets = presets.sortedBy { p -> p.requiresBoot }

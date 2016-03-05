@@ -48,9 +48,9 @@ class EntityPublisher(
                 connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
                 destination = ActiveMQConfiguration.instance.nodeEntitySyncTopic,
                 converter = this.converter!!,
-                jmsDeliveryMode = Channel.DeliveryMode.NonPersistent,
-                jmsTtl = Duration.ofMinutes(5),
-                receiveTimeout = Duration.ofSeconds(10)).use( {
+                deliveryMode = Channel.DeliveryMode.NonPersistent).use({
+
+            it.receiveTimeout = Duration.ofSeconds(10)
 
             val msg = EntityStateMessage(entityType, timestamp)
             log.info("Publishing [${msg}]")
@@ -91,7 +91,7 @@ class EntityPublisher(
             Channel(connectionFactory = this.connectionFactory,
                     destination = message.jmsReplyTo,
                     converter = this.converter,
-                    jmsSessionTransacted = false).use {
+                    sessionTransacted = false).use {
 
                 it.send(euMessage)
 

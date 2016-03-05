@@ -106,8 +106,9 @@ class EntityConsumer
                 replyChannel = Channel(
                         session = session,
                         destination = replyQueue,
-                        converter = this.converter,
-                        receiveTimeout = Duration.ofSeconds(5))
+                        converter = this.converter)
+
+                replyChannel.receiveTimeout = Duration.ofSeconds(5)
 
                 log.info(lfmt("Requesting entities"))
 

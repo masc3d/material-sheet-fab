@@ -39,7 +39,7 @@ class UpdateInfoRequestHandler
         try {
             Channel(
                     connectionFactory = connectionFactory,
-                    jmsSessionTransacted = false,
+                    sessionTransacted = false,
                     destination = jmsMessage.jmsReplyTo,
                     converter = converter).use {
 

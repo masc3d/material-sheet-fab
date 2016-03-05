@@ -76,8 +76,9 @@ public class LogAppender(
                 Channel(connectionFactory = messagingConfiguration.broker.connectionFactory,
                         destination = messagingConfiguration.centralLogQueue,
                         converter = this.converter,
-                        jmsDeliveryMode = Channel.DeliveryMode.Persistent,
-                        jmsPriority = 1).use {
+                        deliveryMode = Channel.DeliveryMode.Persistent).use {
+
+                    it.priority = 1
 
                     it.send(LogMessage(
                             this.idenity.id,

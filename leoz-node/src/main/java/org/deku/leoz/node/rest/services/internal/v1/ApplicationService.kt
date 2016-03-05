@@ -12,7 +12,6 @@ import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
 import sx.jms.Channel
 import sx.jms.converters.DefaultConverter
 import sx.rs.ApiKey
-import java.time.Duration
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -57,8 +56,7 @@ class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationSe
                 destination = ActiveMQConfiguration.instance.nodeNotificationTopic,
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP),
-                jmsTtl = Duration.ofMinutes(5)).use { c ->
+                        DefaultConverter.CompressionType.GZIP)).use { c ->
             c.send(UpdateInfo(bundleName))
         }
 

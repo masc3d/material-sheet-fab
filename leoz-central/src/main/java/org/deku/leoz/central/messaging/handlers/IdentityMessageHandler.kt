@@ -52,7 +52,7 @@ class IdentityMessageHandler : Handler<IdentityMessage> {
                 am.authorized = r.authorized != null && r.authorized !== 0
 
                 Channel(connectionFactory = connectionFactory,
-                        jmsSessionTransacted = false,
+                        sessionTransacted = false,
                         destination = replyTo,
                         converter = this.converter).use { c ->
                     c.send(am)

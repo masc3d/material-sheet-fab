@@ -92,12 +92,13 @@ class Identity private constructor(
          * @param source
          * @return Identity instance
          */
+        @Suppress("UNCHECKED_CAST")
         fun createFromFile(systemInfo: SystemInformation, source: File): Identity {
             val yaml = Yaml()
 
-            var data: Map<String, Object> = mapOf()
+            var data: Map<String, Any> = mapOf()
             FileInputStream(source).use {
-                data = yaml.load(it) as Map<String, Object>
+                data = yaml.load(it) as Map<String, Any>
             }
 
             return Identity(

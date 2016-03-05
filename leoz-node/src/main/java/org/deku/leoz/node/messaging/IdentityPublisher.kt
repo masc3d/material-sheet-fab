@@ -55,7 +55,7 @@ class IdentityPublisher(
         val centralChannel = Channel(
                 connectionFactory = messagingConfiguration.broker.connectionFactory,
                 destination = messagingConfiguration.centralQueue,
-                jmsSessionTransacted = true,
+                sessionTransacted = true,
                 converter = this.converter)
 
         // Setup message
