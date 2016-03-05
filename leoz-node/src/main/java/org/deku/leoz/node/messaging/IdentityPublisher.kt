@@ -77,7 +77,9 @@ class IdentityPublisher(
 
         // Convert and send
         if (receive) {
-            return centralChannel.sendReceive(identityMessage, AuthorizationMessage::class.java)
+            centralChannel.sendWithReplyChannel(identityMessage).use {
+                return it.receive(AuthorizationMessage::class.java)
+            }
         } else {
             centralChannel.send(identityMessage)
             return null
