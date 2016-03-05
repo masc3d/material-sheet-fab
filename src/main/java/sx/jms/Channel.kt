@@ -7,6 +7,7 @@ import sx.LazyInstance
 import java.io.Closeable
 import java.time.Duration
 import java.util.concurrent.TimeoutException
+import java.util.function.Supplier
 import javax.jms.*
 
 /**
@@ -74,7 +75,9 @@ class Channel private constructor(
     private val connection = LazyInstance<Connection>()
     private val session = LazyInstance<Session>()
     private val consumer = LazyInstance<MessageConsumer>()
+    private val producer = LazyInstance<MessageProducer>()
     private var sessionCreated = false
+    private var deleteDestinationonClose = false
 
     /** Time to live for messages sent through this channel */
     var ttl: Duration = Defaults.JMS_TTL
@@ -84,20 +87,6 @@ class Channel private constructor(
     var autoCommit: Boolean = true
     /** Default receive timeout for receive/sendReceive calls. Defaults to 10 seconds. */
     var receiveTimeout: Duration = Defaults.RECEIVE_TIMEOUT
-
-    /**
-     * Temporary response queue
-     */
-    private val temporaryResponseQueue = LazyInstance<TemporaryQueue>({
-        this.session.get().createTemporaryQueue()
-    })
-
-    /**
-     * Temporary response queue consumer
-     */
-    private var temporaryResponseQueueConsumer = LazyInstance<MessageConsumer>({
-        this.session.get().createConsumer(this.temporaryResponseQueue.get())
-    })
 
     /**
      * Delivery modes
@@ -111,60 +100,67 @@ class Channel private constructor(
         // Initialize lazy properties
 
         // JMS connection
-        this.connection.set(fun(): Connection {
+        this.connection.set(Supplier {
             if (this.connectionFactory == null)
                 throw IllegalStateException("Channel does not have connection factory")
 
-            var cn = connectionFactory.createConnection()
-            cn!!.start()
-            return cn
+            val cn = connectionFactory.createConnection()
+            cn.start()
+            cn
         })
 
         // JMS session
-        this.session.set(fun(): Session {
+        this.session.set(Supplier {
+            var finalSession: Session
             // Return c'tor provided session if applicable
-            if (session != null)
-                return session
-
-            // Create session
-            sessionCreated = true
-            return connection.get().createSession(this.sessionTransacted, Session.AUTO_ACKNOWLEDGE)
+            if (session != null) {
+                finalSession = session
+            } else {
+                // Create session
+                sessionCreated = true
+                finalSession = connection.get().createSession(this.sessionTransacted, Session.AUTO_ACKNOWLEDGE)
+            }
+            finalSession
         })
 
         // JMS consumer
-        this.consumer.set(fun(): MessageConsumer {
-            return this.session.get().createConsumer(destination)
+        this.consumer.set(Supplier {
+            this.session.get().createConsumer(destination)
+        })
+
+        // JMS producer
+        this.producer.set(Supplier {
+            this.session.get().createProducer(destination)
         })
     }
 
     /**
-     * Deletes temporary response queue and its consumer
+     * Create temporary queue channel replicating this channel's properties
+     * @return Temporary channel
      */
-    private fun deleteTemporaryResponseQueue() {
-        this.temporaryResponseQueue.ifSet { q ->
-            this.temporaryResponseQueueConsumer.ifSet { c ->
-                c.close()
-            }
-            // Commit before deleting temporary response queue
-            this.commit()
+    private fun createTemporaryQueueChannel(): Channel {
+        val c = Channel(session = this.session.get(),
+                sessionTransacted = this.sessionTransacted,
+                deliveryMode = this.deliveryMode,
+                converter = this.converter,
+                destination = this.session.get().createTemporaryQueue())
 
-            q.delete()
-        }
-        this.temporaryResponseQueue.reset()
-        this.temporaryResponseQueueConsumer.reset()
+        c.priority = this.priority
+        c.ttl = this.ttl
+        c.receiveTimeout = this.receiveTimeout
+        c.autoCommit = this.autoCommit
+        c.deleteDestinationonClose = true
+
+        return c
     }
 
     /**
      * Send jms message
      * @param message Message to send
-     * @param replyDestination Optional reply destination. If given, send will return a temporary channel
      * @param messageConfigurer Callback for customizing the message before sending
-     * @return Optional: temporary channel, depending on replyDestination
      */
-    @JvmOverloads fun send(message: Message,
-                           replyDestination: Destination? = null,
-                           messageConfigurer: Action<Message>? = null): Channel? {
-        val mp = session.get().createProducer(destination)
+    @JvmOverloads fun send(message: Message, messageConfigurer: Action<Message>? = null) {
+        val mp = this.producer.get()
 
         mp.deliveryMode = deliveryMode.value
         mp.timeToLive = ttl.toMillis()
@@ -175,12 +171,9 @@ class Channel private constructor(
         messageConfigurer?.perform(message)
 
         mp.send(destination, message)
-        mp.close()
 
         if (this.autoCommit)
             this.commit()
-
-        return null
     }
 
     /**
@@ -190,6 +183,18 @@ class Channel private constructor(
      */
     @JvmOverloads fun send(message: Any, messageConfigurer: Action<Message>? = null) {
         this.send(converter.toMessage(message, session.get()), messageConfigurer)
+    }
+
+    /**
+     */
+    fun sendWithReplyChannel(message: Any, messageConfigurer: Action<Message>? = null): Channel {
+        val replyChannel = this.createTemporaryQueueChannel()
+
+        this.send(message, Action {
+            it.jmsReplyTo = replyChannel.destination
+        })
+
+        return replyChannel
     }
 
     /**
@@ -233,37 +238,6 @@ class Channel private constructor(
     }
 
     /**
-     * Request/response type send and receive using a temporary response queue
-     * @param request Request message
-     * @param responseType Response class type
-     * @param requestMessageConfigurer Request message configurer
-     * @param preserveTemporaryResponseQueue Preserve temporary response queue (more efficient when channel is reused)
-     */
-    @Throws(TimeoutException::class)
-    fun <T> sendReceive(
-            request: Any,
-            responseType: Class<T>,
-            requestMessageConfigurer: Action<Message>? = null,
-            preserveTemporaryResponseQueue: Boolean = false): T {
-
-        try {
-            this.send(request, Action { m ->
-                m.jmsReplyTo = this.temporaryResponseQueue.get()
-                requestMessageConfigurer?.perform(m)
-            })
-
-            return this.receive(
-                    consumer = this.temporaryResponseQueueConsumer.get(),
-                    messageType = responseType)
-        } finally {
-            // Delete temporary response queue if it should not be preserved
-            if (!preserveTemporaryResponseQueue) {
-                this.deleteTemporaryResponseQueue()
-            }
-        }
-    }
-
-    /**
      * Explicitly commit transaction if the session is transacted.
      * If the session is not transacted invoking this method has no effect.
      */
@@ -277,29 +251,42 @@ class Channel private constructor(
      * Close channel
      */
     override fun close() {
-        // Close temporary response queue
-        temporaryResponseQueue.ifSet({ q ->
-            try {
-                q.delete()
-            } catch(e: JMSException) {
-                log.error(e.message, e)
-            }
-        })
-
         // Close message consumer
         consumer.ifSet({ c ->
             try {
                 c.close()
-            } catch (e: JMSException) {
+            } catch (e: Exception) {
                 log.error(e.message, e)
             }
         })
 
-        // Commit session
+        // Close message producer
+        producer.ifSet({ p ->
+            try {
+                p.close()
+            } catch (e: Exception) {
+                log.error(e.message, e)
+            }
+        })
+
+        // Commit session (must occur after closing consumer(s))
         try {
             this.commit()
-        } catch (e: JMSException) {
+        } catch (e: Exception) {
             log.error(e.message, e)
+        }
+
+        if (deleteDestinationonClose) {
+            try {
+                if (this.destination is TemporaryQueue) {
+                    this.destination.delete()
+                } else if (this.destination is TemporaryTopic) {
+                    this.destination.delete()
+                }
+                this.commit()
+            } catch(e: Exception) {
+                log.error(e.message, e)
+            }
         }
 
         // Close session if approrpriate
@@ -307,7 +294,7 @@ class Channel private constructor(
             session.ifSet({ s ->
                 try {
                     s.close()
-                } catch (e: JMSException) {
+                } catch (e: Exception) {
                     log.error(e.message, e)
                 }
             })
@@ -317,7 +304,7 @@ class Channel private constructor(
         connection.ifSet({ c ->
             try {
                 c.close()
-            } catch (e: JMSException) {
+            } catch (e: Exception) {
                 log.error(e.message, e)
             }
         })
