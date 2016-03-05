@@ -17,11 +17,7 @@ import javax.jms.*
  * @param session JMS sesssion. Optional, if omitted a dedicated session will be created for this channel.
  * @param destination JMS destination
  * @param converter Message converter
- * @param jmsSessionTransacted Dedicated session for this channel should be transacted. Defaults to true
- * @param autoCommit Auto-commit messages on send, defaults to true
- * @param jmsTtl Time to live for messages sent through this channel
- * @param jmsPriority Priority for messages sent through this channel
- * @param receiveTimeout Default receive timeout for receive/sendReceive calls. Defaults to 10 seconds.
+ * @param sessionTransacted Dedicated session for this channel should be transacted. Defaults to true
  * A timeout of zero blocks indefinitely.
  */
 class Channel private constructor(
@@ -29,57 +25,42 @@ class Channel private constructor(
         session: Session? = null,
         private val destination: Destination,
         private val converter: Converter,
-        private val jmsSessionTransacted: Boolean = Defaults.JMS_TRANSACTED,
-        private val jmsDeliveryMode: Channel.DeliveryMode = Defaults.JMS_DELIVERY_MODE,
-        private val jmsTtl: Duration = Defaults.JMS_TTL,
-        private val jmsPriority: Int? = null,
-        private val autoCommit: Boolean = true,
-        private val receiveTimeout: Duration = Defaults.RECEIVE_TIMEOUT)
+        private val sessionTransacted: Boolean = Defaults.JMS_TRANSACTED,
+        private val deliveryMode: Channel.DeliveryMode = Defaults.JMS_DELIVERY_MODE)
 :
         Disposable,
-        Closeable {
+        Closeable,
+        Cloneable {
 
     /**
      * c'tor for creating channel using a new connection created via connection factory
      */
     @JvmOverloads constructor(connectionFactory: ConnectionFactory,
+                              sessionTransacted: Boolean = Channel.JMS_TRANSACTED,
+                              deliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE,
                               destination: Destination,
-                              converter: Converter,
-                              jmsSessionTransacted: Boolean = Channel.JMS_TRANSACTED,
-                              jmsDeliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE,
-                              jmsTtl: Duration = Channel.JMS_TTL,
-                              jmsPriority: Int? = null,
-                              receiveTimeout: Duration = Channel.RECEIVE_TIMEOUT) : this(
+                              converter: Converter) : this(
             connectionFactory = connectionFactory,
             session = null,
+            sessionTransacted = sessionTransacted,
             destination = destination,
             converter = converter,
-            receiveTimeout = receiveTimeout,
-            jmsSessionTransacted = jmsSessionTransacted,
-            jmsDeliveryMode = jmsDeliveryMode,
-            jmsTtl = jmsTtl,
-            jmsPriority = jmsPriority) {
+            deliveryMode = deliveryMode) {
     }
 
     /**
      * c'tor for creating channel using an existing session
      */
     @JvmOverloads constructor(session: Session,
-                              destination: Destination,
-                              converter: Converter,
                               jmsDeliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE,
-                              jmsTtl: Duration = Channel.JMS_TTL,
-                              jmsPriority: Int? = null,
-                              receiveTimeout: Duration = Channel.RECEIVE_TIMEOUT) : this(
+                              destination: Destination,
+                              converter: Converter) : this(
             connectionFactory = null,
             session = session,
             destination = destination,
             converter = converter,
-            receiveTimeout = receiveTimeout,
-            jmsSessionTransacted = session.transacted,
-            jmsDeliveryMode = jmsDeliveryMode,
-            jmsTtl = jmsTtl,
-            jmsPriority = jmsPriority) {
+            sessionTransacted = session.transacted,
+            deliveryMode = jmsDeliveryMode) {
     }
 
     companion object Defaults {
@@ -94,6 +75,15 @@ class Channel private constructor(
     private val session = LazyInstance<Session>()
     private val consumer = LazyInstance<MessageConsumer>()
     private var sessionCreated = false
+
+    /** Time to live for messages sent through this channel */
+    var ttl: Duration = Defaults.JMS_TTL
+    /** Time to live for messages sent through this channel */
+    var priority: Int? = null
+    /** Auto-commit messages on send, defaults to true */
+    var autoCommit: Boolean = true
+    /** Default receive timeout for receive/sendReceive calls. Defaults to 10 seconds. */
+    var receiveTimeout: Duration = Defaults.RECEIVE_TIMEOUT
 
     /**
      * Temporary response queue
@@ -138,7 +128,7 @@ class Channel private constructor(
 
             // Create session
             sessionCreated = true
-            return connection.get().createSession(this.jmsSessionTransacted, Session.AUTO_ACKNOWLEDGE)
+            return connection.get().createSession(this.sessionTransacted, Session.AUTO_ACKNOWLEDGE)
         })
 
         // JMS consumer
@@ -167,15 +157,20 @@ class Channel private constructor(
     /**
      * Send jms message
      * @param message Message to send
+     * @param replyDestination Optional reply destination. If given, send will return a temporary channel
      * @param messageConfigurer Callback for customizing the message before sending
+     * @return Optional: temporary channel, depending on replyDestination
      */
-    @JvmOverloads fun send(message: Message, messageConfigurer: Action<Message>? = null) {
+    @JvmOverloads fun send(message: Message,
+                           replyDestination: Destination? = null,
+                           messageConfigurer: Action<Message>? = null): Channel? {
         val mp = session.get().createProducer(destination)
 
-        mp.deliveryMode = jmsDeliveryMode.value
-        mp.timeToLive = jmsTtl.toMillis()
-        if (jmsPriority != null)
-            mp.priority = jmsPriority
+        mp.deliveryMode = deliveryMode.value
+        mp.timeToLive = ttl.toMillis()
+        val priority = priority
+        if (priority != null)
+            mp.priority = priority
 
         messageConfigurer?.perform(message)
 
@@ -184,6 +179,8 @@ class Channel private constructor(
 
         if (this.autoCommit)
             this.commit()
+
+        return null
     }
 
     /**
