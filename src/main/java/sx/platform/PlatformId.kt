@@ -4,7 +4,6 @@ package sx.platform
  * Created by masc on 15.08.15.
  */
 import org.apache.commons.lang3.SystemUtils
-import kotlin.text.Regex
 
 /**
  * Platform/architecture

@@ -9,7 +9,6 @@ import java.io.File
 import java.net.URI
 import java.time.LocalDateTime
 import java.util.*
-import kotlin.text.Regex
 
 /**
  * Created by masc on 15.08.15.

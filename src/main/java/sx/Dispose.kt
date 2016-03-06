@@ -1,7 +1,6 @@
 package sx
 
 import com.google.common.base.Stopwatch
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 /**

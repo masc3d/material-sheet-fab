@@ -1,7 +1,6 @@
 package sx.platform
 
 import org.junit.Test
-import sx.platform.PlatformId
 
 /**
  * Created by masc on 15.08.15.
