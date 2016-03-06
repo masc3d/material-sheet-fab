@@ -2,7 +2,6 @@ package org.deku.leoz.node.rest.services.internal.v1
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.config.EntitySyncConfiguration
-import org.deku.leoz.rest.services.internal.v1.NodeService
 import sx.rs.ApiKey
 import javax.inject.Inject
 import javax.inject.Named

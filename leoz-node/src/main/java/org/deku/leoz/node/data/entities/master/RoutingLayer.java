@@ -1,6 +1,6 @@
 package org.deku.leoz.node.data.entities.master;
 
-import org.eclipse.persistence.annotations.*;
+import org.eclipse.persistence.annotations.CacheIndex;
 
 import javax.persistence.*;
 import java.io.Serializable;

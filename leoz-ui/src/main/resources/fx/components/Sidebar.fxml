@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.geometry.Rectangle2D?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.geometry.Rectangle2D?><?import javafx.scene.control.*?><?import javafx.scene.image.*?><?import javafx.scene.layout.*?>
 <VBox maxHeight="1.7976931348623157E308" prefHeight="233.0" prefWidth="167.0" stylesheets="@../../css/leoz.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leoz.fx.components.SidebarController">
    <children>
       <Accordion fx:id="mMenuAccordion" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">

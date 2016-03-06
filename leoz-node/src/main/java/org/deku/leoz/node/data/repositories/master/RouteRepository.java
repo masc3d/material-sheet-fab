@@ -4,11 +4,7 @@ import com.mysema.query.types.Predicate;
 import org.deku.leoz.node.data.entities.master.Route;
 import org.deku.leoz.node.data.repositories.master.custom.RouteRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.QueryHints;
-import org.springframework.data.jpa.repository.support.QueryDslJpaRepository;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
-
-import javax.persistence.QueryHint;
 
 /**
  * Created by masc on 16.05.15.

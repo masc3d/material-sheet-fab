@@ -1,12 +1,7 @@
 package org.deku.leoz.node.ssh
 
 import org.apache.sshd.client.SshClient
-import org.apache.sshd.client.auth.UserAuth
-import org.apache.sshd.common.NamedFactory
 import org.apache.sshd.common.SshdSocketAddress
-import org.apache.sshd.common.forward.DefaultTcpipForwarder
-import org.apache.sshd.common.forward.DefaultTcpipForwarderFactory
-import org.apache.sshd.common.forward.TcpipForwarderFactory
 import org.junit.Ignore
 import org.junit.Test
 

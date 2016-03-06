@@ -1,17 +1,14 @@
 package org.deku.leoz.node.rest.services.internal.v1
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.data.repositories.master.StationRepository
 import org.deku.leoz.rest.entities.internal.v1.Station
 import sx.rs.ApiKey
-
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
-import java.util.stream.StreamSupport
 
 /**
  * Created by masc on 17.09.14.
