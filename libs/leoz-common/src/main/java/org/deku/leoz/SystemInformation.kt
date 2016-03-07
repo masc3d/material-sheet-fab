@@ -2,19 +2,13 @@ package org.deku.leoz
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.google.common.base.CharMatcher
-import com.google.common.collect.Lists
-import org.apache.commons.lang3.ArrayUtils
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-
 import java.io.Serializable
 import java.net.Inet4Address
 import java.net.Inet6Address
 import java.net.InetAddress
 import java.net.NetworkInterface
-import java.util.ArrayList
-import java.util.Collections
-import java.util.stream.Collectors
+import java.util.*
 
 /**
  * Generic system information

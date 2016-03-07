@@ -2,7 +2,6 @@ package org.deku.leoz.config
 
 import org.apache.commons.lang3.SystemUtils
 import sx.rsync.Rsync
-import sx.rsync.RsyncClient
 import java.nio.file.Paths
 
 /**

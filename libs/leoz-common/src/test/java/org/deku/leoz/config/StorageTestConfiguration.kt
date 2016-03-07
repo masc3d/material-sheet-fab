@@ -1,7 +1,5 @@
 package org.deku.leoz.config
 
-import org.deku.leoz.config.StorageConfiguration
-import org.deku.leoz.bundle.Bundles
 import java.io.File
 
 /**
