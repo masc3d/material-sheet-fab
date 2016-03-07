@@ -9,8 +9,6 @@ import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
-import sx.jms.Channel
-import sx.jms.converters.DefaultConverter
 import sx.rs.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
@@ -50,14 +48,9 @@ class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationSe
 
     override fun notifyBundleUpdate(bundleName: String) {
         val message = UpdateInfo(bundleName)
-        // TODO. centralize channel(s) into common configuration
-        Channel(
-                connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
-                destination = ActiveMQConfiguration.instance.nodeNotificationTopic,
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP)).use { c ->
-            c.send(UpdateInfo(bundleName))
+
+        ActiveMQConfiguration.instance.nodeNotificationChannel().use {
+            it.send(UpdateInfo(bundleName))
         }
 
         log.info("Sent [${message}]")

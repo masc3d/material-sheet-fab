@@ -8,11 +8,9 @@ import sx.Disposable
 import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.Handler
-import sx.jms.converters.DefaultConverter
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.jms.ConnectionFactory
-import javax.jms.Destination
 import javax.jms.Message
 import javax.jms.Session
 
@@ -34,8 +32,7 @@ class BundleUpdater(
         public val remoteRepository: BundleRepository,
         public val localRepository: BundleRepository? = null,
         presets: List<BundleUpdater.Preset>,
-        private val jmsConnectionFactory: ConnectionFactory,
-        private val jmsUpdateRequestQueue: Destination)
+        private val updateInfoRequestChannel: Channel)
 :
         Handler<UpdateInfo>,
         Disposable {
@@ -57,19 +54,10 @@ class BundleUpdater(
     private val log = LogFactory.getLog(this.javaClass)
 
     private val executor = Executors.newScheduledThreadPool(2)
-    private val updateInfoRequestChannel: Channel
 
     val presets: List<Preset>
 
     init {
-        this.updateInfoRequestChannel = Channel(
-                connectionFactory = jmsConnectionFactory,
-                destination = jmsUpdateRequestQueue,
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP),
-                deliveryMode = Channel.DeliveryMode.NonPersistent)
-
         // Bundle(s) requiring (re)boot go last
         this.presets = presets.sortedBy { p -> p.requiresBoot }
     }

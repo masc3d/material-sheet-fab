@@ -93,8 +93,7 @@ open class UpdaterConfiguration {
                                 install = true,
                                 storeInLocalRepository = true)
                 ),
-                jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
-                jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue
+                updateInfoRequestChannel = ActiveMQConfiguration.instance.centralQueueChannel()
         )
         updater.enabled = this.settings.enabled
         return updater

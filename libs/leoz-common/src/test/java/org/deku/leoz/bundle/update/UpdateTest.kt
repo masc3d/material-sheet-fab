@@ -20,8 +20,7 @@ class UpdateTest {
                     StorageTestConfiguration.bundlesTestDirectory),
             remoteRepository = BundleTestConfiguration.remoteRepository,
             presets = listOf(),
-            jmsConnectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
-            jmsUpdateRequestQueue = ActiveMQConfiguration.instance.centralQueue)
+            updateInfoRequestChannel = ActiveMQConfiguration.instance.centralQueueChannel())
 
     @Test
     fun testRun() {

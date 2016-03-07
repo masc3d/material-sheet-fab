@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
+import org.springframework.boot.Banner
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration
 import org.springframework.boot.builder.SpringApplicationBuilder
@@ -95,7 +96,7 @@ open class Main {
                 // Initialize and start application
                 App.instance.initialize()
                 SpringApplicationBuilder()
-                        .showBanner(false)
+                        .bannerMode(Banner.Mode.OFF)
                         .sources(this.javaClass)
                         .profiles(this.app.profile)
                         .listeners(this.app).run(*args)

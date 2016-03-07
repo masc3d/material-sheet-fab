@@ -32,27 +32,27 @@ class ActiveMQConfiguration private constructor() : MessagingConfiguration {
     override val broker: Broker
         get() = ActiveMQBroker.instance
 
-    val centralQueue: Queue by lazy({
+    private val centralQueue: Queue by lazy({
         this.broker.createQueue("leoz.central.queue")
     })
 
-    val centralEntitySyncQueue: Queue by lazy({
+    private val centralEntitySyncQueue: Queue by lazy({
         this.broker.createQueue("leoz.entity-sync.queue")
     })
 
-    val nodeEntitySyncTopic: Topic by lazy({
+    private val nodeEntitySyncTopic: Topic by lazy({
         this.broker.createTopic("leoz.entity-sync.topic")
     })
 
-    val centralLogQueue: Queue by lazy({
+    private val centralLogQueue: Queue by lazy({
         this.broker.createQueue("leoz.log.queue")
     })
 
-    fun nodeQueue(id: Int): Queue {
+    private fun nodeQueue(id: Int): Queue {
         return this.broker.createQueue("leoz.node.queue." + id.toString())
     }
 
-    val nodeNotificationTopic: Topic by lazy({
+    private val nodeNotificationTopic: Topic by lazy({
         this.broker.createTopic("leoz.node.notification.topic")
     })
 

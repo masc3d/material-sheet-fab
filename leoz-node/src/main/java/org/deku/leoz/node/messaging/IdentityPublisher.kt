@@ -7,7 +7,6 @@ import org.deku.leoz.Identity
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.entities.IdentityMessage
-import sx.jms.converters.DefaultConverter
 
 /**
  * Created by masc on 01.07.15.
@@ -16,10 +15,6 @@ import sx.jms.converters.DefaultConverter
 class IdentityPublisher(
         private val messagingConfiguration: MessagingConfiguration) {
     private val log = LogFactory.getLog(this.javaClass)
-
-    private val converter = DefaultConverter(
-            DefaultConverter.SerializationType.KRYO,
-            DefaultConverter.CompressionType.GZIP)
 
     /**
      * Publishes client node idenity to the central system
@@ -50,9 +45,6 @@ class IdentityPublisher(
             identity: Identity,
             receive: Boolean): AuthorizationMessage? {
 
-        // Connection and session
-        val centralChannel = messagingConfiguration.centralQueueChannel()
-
         // Setup message
         val identityMessage = IdentityMessage()
         identityMessage.id = identity.id
@@ -70,14 +62,17 @@ class IdentityPublisher(
 
         identityMessage.systemInfo = systemInformationJson
 
-        // Convert and send
-        if (receive) {
-            centralChannel.sendRequest(identityMessage).use {
-                return it.receive(AuthorizationMessage::class.java)
+        // Connection and session
+        messagingConfiguration.centralQueueChannel().use {
+            // Convert and send
+            if (receive) {
+                it.sendRequest(identityMessage).use {
+                    return it.receive(AuthorizationMessage::class.java)
+                }
+            } else {
+                it.send(identityMessage)
+                return null
             }
-        } else {
-            centralChannel.send(identityMessage)
-            return null
         }
     }
 }
