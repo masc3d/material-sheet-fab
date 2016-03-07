@@ -14,8 +14,7 @@ import javax.jms.*
  */
 abstract class Listener(
         /** Connection factory  */
-        protected val connectionFactory: ConnectionFactory,
-        protected val converter: Converter? = null)
+        protected val channel: () -> Channel)
 :
         Disposable,
         ExceptionListener {
@@ -35,6 +34,18 @@ abstract class Listener(
     abstract fun stop()
 
     /**
+     * Converter
+     */
+    protected val converter: Converter?
+        get() = this.channel().converter
+
+    /**
+     * Connection factory
+     */
+    protected val connectionFactory: ConnectionFactory?
+        get() = this.channel().connectionFactory
+
+    /**
      * Default message handler with support for object message delegates
      * @param message
      * @param session
@@ -46,8 +57,9 @@ abstract class Listener(
 
         var handler: Handler<Any?>? = null
 
-        if (this.converter != null) {
-            messageObject = this.converter.fromMessage(message)
+        val converter = this.converter
+        if (converter != null) {
+            messageObject = converter.fromMessage(message)
             handler = this.handlerDelegates.getOrDefault(messageObject.javaClass, null)
         }
 
@@ -59,7 +71,7 @@ abstract class Listener(
         }
 
         if (messageObject != null)
-            handler.onMessage(messageObject, converter!!, message, session, this.connectionFactory)
+            handler.onMessage(messageObject, converter!!, message, session, this.channel().connectionFactory!!)
     }
 
     /**
