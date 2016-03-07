@@ -30,7 +30,7 @@ class EntityPublisher(
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory)
 :
-        SpringJmsListener( { messagingConfiguration.centralEntitySyncChannel() } )
+        SpringJmsListener({ Channel(messagingConfiguration.entitySyncQueue) })
 {
     /**
      * Publish entity update notification
@@ -40,7 +40,7 @@ class EntityPublisher(
      */
     @Throws(JMSException::class)
     fun publish(entityType: Class<*>, timestamp: Timestamp?) {
-        ActiveMQConfiguration.instance.nodeEntitySyncBroadcastChannel().use {
+        Channel(ActiveMQConfiguration.instance.entitySyncTopic).use {
             val msg = EntityStateMessage(entityType, timestamp)
             log.info("Publishing [${msg}]")
             it.send(msg)

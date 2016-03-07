@@ -32,98 +32,57 @@ class ActiveMQConfiguration private constructor() : MessagingConfiguration {
     override val broker: Broker
         get() = ActiveMQBroker.instance
 
-    private val centralQueue: Queue by lazy({
-        this.broker.createQueue("leoz.central.queue")
-    })
-
-    private val centralEntitySyncQueue: Queue by lazy({
-        this.broker.createQueue("leoz.entity-sync.queue")
-    })
-
-    private val nodeEntitySyncTopic: Topic by lazy({
-        this.broker.createTopic("leoz.entity-sync.topic")
-    })
-
-    private val centralLogQueue: Queue by lazy({
-        this.broker.createQueue("leoz.log.queue")
-    })
-
-    private fun nodeQueue(id: Int): Queue {
-        return this.broker.createQueue("leoz.node.queue." + id.toString())
-    }
-
-    private val nodeNotificationTopic: Topic by lazy({
-        this.broker.createTopic("leoz.node.notification.topic")
-    })
-
-    /**
-     *
-     */
-    override fun centralQueueChannel(): Channel {
-        return Channel(connectionFactory = this.broker.connectionFactory,
-                destination = this.centralQueue,
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP))
-    }
-
-    /**
-     *
-     */
-    fun nodeQueueChannel(id: Int): Channel {
-        return Channel(connectionFactory = this.broker.connectionFactory,
-                destination = this.nodeQueue(id),
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP))
-    }
-
-    /**
-     *
-     */
-    fun nodeNotificationChannel(): Channel {
-        return Channel(connectionFactory = this.broker.connectionFactory,
-                destination = this.nodeNotificationTopic,
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP))
-    }
-
-    /**
-     * Central log channel
-     */
-    override fun centralLogChannel(): Channel {
-        val c = Channel(
+    override val centralQueue: Channel.Configuration by lazy({
+        Channel.Configuration(
                 connectionFactory = this.broker.connectionFactory,
-                destination = this.centralLogQueue,
+                destination = this.broker.createQueue("leoz.central.queue"),
+                converter = DefaultConverter(
+                        DefaultConverter.SerializationType.KRYO,
+                        DefaultConverter.CompressionType.GZIP))
+    })
+
+    override val centralLogQueue: Channel.Configuration by lazy {
+        val c = Channel.Configuration(
+                connectionFactory = this.broker.connectionFactory,
+                destination = this.broker.createQueue("leoz.log.queue"),
                 deliveryMode = Channel.DeliveryMode.Persistent,
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP))
 
         c.priority = 1
-        return c
+        c
     }
 
-    /**
-     * Central entity sync channel
-     */
-    override fun centralEntitySyncChannel(): Channel {
-        return Channel(
+    override val entitySyncQueue: Channel.Configuration by lazy {
+        Channel.Configuration(
                 connectionFactory = this.broker.connectionFactory,
-                destination = this.centralEntitySyncQueue,
+                destination = this.broker.createQueue("leoz.entity-sync.queue"),
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP))
     }
 
-    /**
-     * Entity sync broadcast channel
-     */
-    override fun nodeEntitySyncBroadcastChannel(): Channel {
-        return Channel(
+    override val entitySyncTopic: Channel.Configuration by lazy {
+        Channel.Configuration(
                 connectionFactory = this.broker.connectionFactory,
-                destination = this.nodeEntitySyncTopic,
+                destination = this.broker.createTopic("leoz.entity-sync.topic"),
+                converter = DefaultConverter(
+                        DefaultConverter.SerializationType.KRYO,
+                        DefaultConverter.CompressionType.GZIP))
+    }
+
+    override fun nodeQueue(id: Int): Channel.Configuration {
+        return Channel.Configuration(connectionFactory = this.broker.connectionFactory,
+                destination = this.broker.createQueue("leoz.node.queue." + id.toString()),
+                converter = DefaultConverter(
+                        DefaultConverter.SerializationType.KRYO,
+                        DefaultConverter.CompressionType.GZIP))
+    }
+
+    override val nodeNotificationTopic: Channel.Configuration by lazy {
+        Channel.Configuration(connectionFactory = this.broker.connectionFactory,
+                destination = this.broker.createTopic("leoz.node.notification.topic"),
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP))

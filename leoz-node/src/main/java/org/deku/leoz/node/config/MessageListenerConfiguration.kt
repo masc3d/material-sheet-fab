@@ -10,6 +10,7 @@ import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
+import sx.jms.Channel
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
 import sx.jms.listeners.SpringJmsListener
@@ -39,10 +40,10 @@ open class MessageListenerConfiguration {
 
     init {
         nodeQueueListener = object : SpringJmsListener(
-                { ActiveMQConfiguration.instance.nodeQueueChannel(identityConfiguration.identity.id!!) } ) { }
+                { Channel(ActiveMQConfiguration.instance.nodeQueue(identityConfiguration.identity.id!!)) }) {}
 
         nodeNotificationListener = object : SpringJmsListener(
-                { ActiveMQConfiguration.instance.nodeNotificationChannel() } ) { }
+                { Channel(ActiveMQConfiguration.instance.nodeNotificationTopic) }) {}
     }
     private fun initializeListener() {
 

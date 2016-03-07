@@ -1,6 +1,7 @@
 package org.deku.leoz.log
 
 import org.deku.leoz.config.messaging.MessagingConfiguration
+import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener
@@ -19,7 +20,7 @@ class LogListener(
         /** Messaging context */
         private val messagingConfiguration: MessagingConfiguration)
 :
-        SpringJmsListener( { messagingConfiguration.centralLogChannel() } ),
+        SpringJmsListener({ Channel(messagingConfiguration.centralLogQueue) }),
         Handler<Array<LogMessage>>
 {
     init {

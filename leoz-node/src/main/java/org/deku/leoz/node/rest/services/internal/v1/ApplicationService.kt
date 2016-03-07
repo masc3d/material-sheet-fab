@@ -9,6 +9,7 @@ import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
+import sx.jms.Channel
 import sx.rs.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
@@ -49,7 +50,7 @@ class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationSe
     override fun notifyBundleUpdate(bundleName: String) {
         val message = UpdateInfo(bundleName)
 
-        ActiveMQConfiguration.instance.nodeNotificationChannel().use {
+        Channel(ActiveMQConfiguration.instance.nodeNotificationTopic).use {
             it.send(UpdateInfo(bundleName))
         }
 

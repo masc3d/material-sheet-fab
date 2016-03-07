@@ -9,6 +9,7 @@ import org.deku.leoz.config.BundleTestConfiguration
 import org.deku.leoz.config.StorageTestConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.junit.Test
+import sx.jms.Channel
 
 /**
  * Created by masc on 12.10.15.
@@ -20,7 +21,7 @@ class UpdateTest {
                     StorageTestConfiguration.bundlesTestDirectory),
             remoteRepository = BundleTestConfiguration.remoteRepository,
             presets = listOf(),
-            updateInfoRequestChannel = ActiveMQConfiguration.instance.centralQueueChannel())
+            updateInfoRequestChannel = Channel(ActiveMQConfiguration.instance.centralQueue))
 
     @Test
     fun testRun() {

@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
+import sx.jms.Channel
 import sx.jms.embedded.Broker
 import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
@@ -93,7 +94,7 @@ open class UpdaterConfiguration {
                                 install = true,
                                 storeInLocalRepository = true)
                 ),
-                updateInfoRequestChannel = ActiveMQConfiguration.instance.centralQueueChannel()
+                updateInfoRequestChannel = Channel(ActiveMQConfiguration.instance.centralQueue)
         )
         updater.enabled = this.settings.enabled
         return updater

@@ -8,6 +8,7 @@ import org.deku.leoz.Identity
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import sx.Disposable
 import sx.Dispose
+import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.converters.DefaultConverter
 import sx.jms.embedded.Broker
@@ -72,7 +73,7 @@ public class LogAppender(
         if (logMessageBuffer.size > 0) {
             log.trace("Flushing [${logMessageBuffer.size}]")
             try {
-                messagingConfiguration.centralLogChannel().use {
+                Channel(messagingConfiguration.centralLogQueue).use {
                     it.send(LogMessage(
                             this.idenity.id,
                             this.idenity.key,

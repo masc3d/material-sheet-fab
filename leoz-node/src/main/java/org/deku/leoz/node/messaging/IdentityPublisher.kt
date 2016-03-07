@@ -7,6 +7,7 @@ import org.deku.leoz.Identity
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.entities.IdentityMessage
+import sx.jms.Channel
 
 /**
  * Created by masc on 01.07.15.
@@ -35,9 +36,7 @@ class IdentityPublisher(
     }
 
     /**
-
      * @param identity
-     * *
      * @param receive
      */
     @Throws(Exception::class)
@@ -63,7 +62,7 @@ class IdentityPublisher(
         identityMessage.systemInfo = systemInformationJson
 
         // Connection and session
-        messagingConfiguration.centralQueueChannel().use {
+        Channel(messagingConfiguration.centralQueue).use {
             // Convert and send
             if (receive) {
                 it.sendRequest(identityMessage).use {

@@ -11,11 +11,33 @@ interface MessagingConfiguration {
     /** Broker for this messaging context  */
     val broker: Broker
 
-    fun centralQueueChannel(): Channel
+    /**
+     * Common central queue
+     */
+    val centralQueue: Channel.Configuration
 
-    fun centralLogChannel(): Channel
+    /**
+     * Central log queue
+     */
+    val centralLogQueue: Channel.Configuration
 
-    fun centralEntitySyncChannel(): Channel
+    /**
+     * Entity sync queue
+     */
+    val entitySyncQueue: Channel.Configuration
 
-    fun nodeEntitySyncBroadcastChannel(): Channel
+    /**
+     * Entity sync notification topic
+     */
+    val entitySyncTopic: Channel.Configuration
+
+    /**
+     * Node notification topic
+     */
+    val nodeNotificationTopic: Channel.Configuration
+
+    /**
+     * Node queue
+     */
+    fun nodeQueue(id: Int): Channel.Configuration
 }

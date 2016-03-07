@@ -10,6 +10,7 @@ import org.deku.leoz.log.LogMessage
 import org.deku.leoz.node.messaging.entities.IdentityMessage
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
+import sx.jms.Channel
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
 import sx.jms.listeners.SpringJmsListener
@@ -43,11 +44,11 @@ open class MessageListenerConfiguration {
     init {
         // Central queue listener
         centralQueueListener = object : SpringJmsListener(
-                channel = { ActiveMQConfiguration.instance.centralQueueChannel() }) { }
+                channel = { Channel(ActiveMQConfiguration.instance.centralQueue) }) { }
 
         // Log queue listener
         logListener = object : SpringJmsListener(
-                channel = { ActiveMQConfiguration.instance.centralLogChannel() } ) { }
+                channel = { Channel(ActiveMQConfiguration.instance.centralLogQueue) } ) { }
     }
 
     private fun initializeListener() {

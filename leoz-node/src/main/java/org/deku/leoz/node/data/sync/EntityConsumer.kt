@@ -6,6 +6,7 @@ import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repositories.EntityRepository
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage
+import sx.jms.Channel
 import sx.jms.Converter
 import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
@@ -35,7 +36,7 @@ class EntityConsumer
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory)
 :
-        SpringJmsListener({ messagingConfiguration.nodeEntitySyncBroadcastChannel() }),
+        SpringJmsListener({ Channel(messagingConfiguration.entitySyncTopic) }),
         Handler<EntityStateMessage> {
     private var executorService: ExecutorService
 
@@ -80,7 +81,7 @@ class EntityConsumer
                     return@submit
                 }
 
-                this.messagingConfiguration.centralEntitySyncChannel().use { entitySyncChannel ->
+                Channel(this.messagingConfiguration.entitySyncQueue).use { entitySyncChannel ->
                     val sw = Stopwatch.createStarted()
 
                     // Send entity state message
