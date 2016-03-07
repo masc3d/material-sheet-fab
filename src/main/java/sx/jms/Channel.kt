@@ -16,12 +16,8 @@ import javax.jms.*
  * TODO: add support for actively supporting correlation id for reusing temporary queues/channels in a request/response scheme
  * TODO: add support for temporary queue pooling, to prevent creation of temporary queues per request (sendRequest)
  * Created by masc on 06.07.15.
- * @param connectionFactory JMS connection factory
- * @param sessionTransacted Dedicated session for this channel should be transacted. Defaults to true
- * @param session JMS sesssion. Optional, if omitted a dedicated session will be created for this channel.
- * @param destination JMS destination
- * @param converter Message converter
- * @param deliveryMode JMS delivery mode (eg. persistent/non-persistent)
+ * @param configuration Channel configuration
+ * @param session Optional: jms session to use
  */
 class Channel private constructor(
         configuration: Configuration,
@@ -32,12 +28,18 @@ class Channel private constructor(
 
     /**
      * c'tor for creating channel using a new connection created via connection factory
+     * @param connectionFactory JMS connection factory
+     * @param sessionTransacted Dedicated session for this channel should be transacted. Defaults to true
+     * @param destination JMS destination
+     * @param converter Message converter
+     * @param deliveryMode JMS delivery mode (eg. persistent/non-persistent)
      */
     @JvmOverloads constructor(connectionFactory: ConnectionFactory,
                               sessionTransacted: Boolean = Channel.JMS_TRANSACTED,
-                              deliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE,
                               destination: Destination,
-                              converter: Converter) : this(
+                              converter: Converter,
+                              deliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE
+    ) : this(
             configuration = Configuration(connectionFactory = connectionFactory,
                     sessionTransacted = sessionTransacted,
                     destination = destination,
@@ -48,6 +50,10 @@ class Channel private constructor(
 
     /**
      * c'tor for creating channel using an existing session
+     * @param session JMS sesssion. Optional, if omitted a dedicated session will be created for this channel.
+     * @param destination JMS destination
+     * @param converter Message converter
+     * @param deliveryMode JMS delivery mode (eg. persistent/non-persistent)
      */
     @JvmOverloads constructor(session: Session,
                               destination: Destination,
