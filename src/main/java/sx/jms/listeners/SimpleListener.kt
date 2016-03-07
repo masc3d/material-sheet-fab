@@ -1,8 +1,7 @@
 package sx.jms.listeners
 
-import sx.jms.Converter
+import sx.jms.Channel
 import sx.jms.Listener
-
 import javax.jms.*
 
 /**
@@ -11,11 +10,11 @@ import javax.jms.*
  * @param connectionFactory Connection factory
  * @param converter Message converter
  */
-abstract class SimpleListener(connectionFactory: ConnectionFactory, converter: Converter? = null)
+abstract class SimpleListener(channel: () -> Channel)
 :
-        Listener(connectionFactory, converter) {
+        Listener(channel) {
     protected val connection: Connection by lazy({
-        this.connectionFactory.createConnection()
+        this.channel().connectionFactory!!.createConnection()
     })
 
     /**

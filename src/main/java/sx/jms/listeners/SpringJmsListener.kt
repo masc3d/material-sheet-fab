@@ -4,9 +4,11 @@ import org.springframework.jms.connection.JmsTransactionManager
 import org.springframework.jms.listener.DefaultMessageListenerContainer
 import org.springframework.jms.listener.SessionAwareMessageListener
 import org.springframework.util.ErrorHandler
-import sx.jms.Converter
+import sx.jms.Channel
 import sx.jms.Listener
-import javax.jms.*
+import javax.jms.JMSException
+import javax.jms.Message
+import javax.jms.Session
 
 /**
  * Spring listener implementation
@@ -16,12 +18,9 @@ import javax.jms.*
  * @param converter Message converter
  */
 abstract class SpringJmsListener(
-        connectionFactory: ConnectionFactory,
-        /** Destination this listener will be attached to  */
-        val destination: () -> Destination,
-        converter: Converter? = null)
+        channel: () -> Channel)
 :
-        Listener(connectionFactory, converter),
+        Listener(channel),
         ErrorHandler {
     /** Spring message listener container  */
     private var listenerContainer: DefaultMessageListenerContainer? = null
@@ -36,7 +35,7 @@ abstract class SpringJmsListener(
     }
 
     private val description by lazy({
-        "[${this.javaClass.simpleName}] for [${this.destination().toString()}]"
+        "[${this.javaClass.simpleName}] for [${this.channel()}]"
     })
 
     /**
@@ -48,7 +47,7 @@ abstract class SpringJmsListener(
         if (lc == null) {
             lc = DefaultMessageListenerContainer()
 
-            lc.connectionFactory = this.connectionFactory
+            lc.connectionFactory = this.channel().connectionFactory
             lc.messageListener = object : SessionAwareMessageListener<Message> {
                 @Throws(JMSException::class)
                 override fun onMessage(message: Message, session: Session) {
@@ -57,7 +56,7 @@ abstract class SpringJmsListener(
             }
             lc.isSessionTransacted = true
             lc.errorHandler = this
-            lc.destination = this.destination()
+            lc.destination = this.channel().destination
             this.configure(lc)
             lc.afterPropertiesSet()
             this.listenerContainer = lc
