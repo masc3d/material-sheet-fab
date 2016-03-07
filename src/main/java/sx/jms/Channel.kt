@@ -19,7 +19,7 @@ import javax.jms.*
  * @param configuration Channel configuration
  * @param session Optional: jms session to use
  */
-class Channel private constructor(
+class Channel constructor(
         configuration: Configuration,
         session: Session? = null)
 :
@@ -80,11 +80,11 @@ class Channel private constructor(
      * All common channel configuration settings are grouped into this shallow structure which
      * can be easily (and automatically) replicated
      */
-    class Configuration(val connectionFactory: ConnectionFactory?,
-                        val sessionTransacted: Boolean,
+    class Configuration @JvmOverloads constructor (val connectionFactory: ConnectionFactory?,
+                        val sessionTransacted: Boolean = Defaults.JMS_TRANSACTED,
                         destination: Destination,
                         val converter: Converter,
-                        deliveryMode: Channel.DeliveryMode)
+                        deliveryMode: Channel.DeliveryMode = Defaults.JMS_DELIVERY_MODE)
     :
             Cloneable {
         var destination: Destination
