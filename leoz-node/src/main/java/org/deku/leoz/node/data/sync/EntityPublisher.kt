@@ -11,7 +11,6 @@ import sx.jms.Channel
 import sx.jms.converters.DefaultConverter
 import sx.jms.listeners.SpringJmsListener
 import java.sql.Timestamp
-import java.time.Duration
 import java.util.*
 import javax.jms.JMSException
 import javax.jms.Message
@@ -31,10 +30,7 @@ class EntityPublisher(
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory)
 :
-        SpringJmsListener(
-                connectionFactory = messagingConfiguration.broker.connectionFactory,
-                destination = { messagingConfiguration.centralEntitySyncQueue },
-                converter = DefaultConverter(DefaultConverter.SerializationType.KRYO, DefaultConverter.CompressionType.GZIP))
+        SpringJmsListener( { messagingConfiguration.centralEntitySyncChannel() } )
 {
     /**
      * Publish entity update notification
@@ -44,18 +40,11 @@ class EntityPublisher(
      */
     @Throws(JMSException::class)
     fun publish(entityType: Class<*>, timestamp: Timestamp?) {
-        Channel(
-                connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
-                destination = ActiveMQConfiguration.instance.nodeEntitySyncTopic,
-                converter = this.converter!!,
-                deliveryMode = Channel.DeliveryMode.NonPersistent).use({
-
-            it.receiveTimeout = Duration.ofSeconds(10)
-
+        ActiveMQConfiguration.instance.nodeEntitySyncBroadcastChannel().use {
             val msg = EntityStateMessage(entityType, timestamp)
             log.info("Publishing [${msg}]")
             it.send(msg)
-        })
+        }
     }
 
     @Throws(JMSException::class)
@@ -88,9 +77,9 @@ class EntityPublisher(
             val euMessage = EntityUpdateMessage(count)
             log.debug(lfmt(euMessage.toString()))
 
-            Channel(connectionFactory = this.connectionFactory,
+            Channel(connectionFactory = this.connectionFactory!!,
                     destination = message.jmsReplyTo,
-                    converter = this.converter,
+                    converter = this.converter!!,
                     sessionTransacted = false).use {
 
                 it.send(euMessage)

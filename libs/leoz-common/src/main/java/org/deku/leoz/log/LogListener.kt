@@ -3,7 +3,6 @@ package org.deku.leoz.log
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import sx.jms.Converter
 import sx.jms.Handler
-import sx.jms.converters.DefaultConverter
 import sx.jms.listeners.SpringJmsListener
 import java.time.Instant
 import java.time.LocalDateTime
@@ -20,10 +19,7 @@ class LogListener(
         /** Messaging context */
         private val messagingConfiguration: MessagingConfiguration)
 :
-        SpringJmsListener(
-                connectionFactory = messagingConfiguration.broker.connectionFactory,
-                destination = { messagingConfiguration.centralLogQueue },
-                converter = DefaultConverter(DefaultConverter.SerializationType.KRYO, DefaultConverter.CompressionType.GZIP)),
+        SpringJmsListener( { messagingConfiguration.centralLogChannel() } ),
         Handler<Array<LogMessage>>
 {
     init {

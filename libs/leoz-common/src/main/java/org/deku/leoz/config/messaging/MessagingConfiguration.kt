@@ -1,9 +1,7 @@
 package org.deku.leoz.config.messaging
 
+import sx.jms.Channel
 import sx.jms.embedded.Broker
-
-import javax.jms.Queue
-import javax.jms.Topic
 
 /**
  * Messaging configuration base interface
@@ -13,20 +11,11 @@ interface MessagingConfiguration {
     /** Broker for this messaging context  */
     val broker: Broker
 
-    /** Central message queue for lightweight message exchange  */
-    val centralQueue: Queue
+    fun centralQueueChannel(): Channel
 
-    /** Central message queue for logs  */
-    val centralLogQueue: Queue
+    fun centralLogChannel(): Channel
 
-    /** Central message queue for entity sync  */
-    val centralEntitySyncQueue: Queue
-    /** Node topic for entity sync broadcastss  */
-    val nodeEntitySyncTopic: Topic
+    fun centralEntitySyncChannel(): Channel
 
-    /** Queue for sending messages to a specific node */
-    fun nodeQueue(id: Int): Queue
-
-    /** Topci for notifications for all nodes */
-    val nodeNotificationTopic: Topic
+    fun nodeEntitySyncBroadcastChannel(): Channel
 }

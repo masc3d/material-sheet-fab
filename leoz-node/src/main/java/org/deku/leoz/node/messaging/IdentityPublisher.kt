@@ -7,7 +7,6 @@ import org.deku.leoz.Identity
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.entities.IdentityMessage
-import sx.jms.Channel
 import sx.jms.converters.DefaultConverter
 
 /**
@@ -52,11 +51,7 @@ class IdentityPublisher(
             receive: Boolean): AuthorizationMessage? {
 
         // Connection and session
-        val centralChannel = Channel(
-                connectionFactory = messagingConfiguration.broker.connectionFactory,
-                destination = messagingConfiguration.centralQueue,
-                sessionTransacted = true,
-                converter = this.converter)
+        val centralChannel = messagingConfiguration.centralQueueChannel()
 
         // Setup message
         val identityMessage = IdentityMessage()
@@ -77,7 +72,7 @@ class IdentityPublisher(
 
         // Convert and send
         if (receive) {
-            centralChannel.sendWithReplyChannel(identityMessage).use {
+            centralChannel.sendRequest(identityMessage).use {
                 return it.receive(AuthorizationMessage::class.java)
             }
         } else {

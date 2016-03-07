@@ -10,7 +10,6 @@ import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
-import sx.jms.converters.DefaultConverter
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
 import sx.jms.listeners.SpringJmsListener
@@ -34,32 +33,19 @@ open class MessageListenerConfiguration {
     @Inject
     lateinit private var updaterConfiguration: UpdaterConfiguration
 
-    private var nodeQueueListener: SpringJmsListener
+    private val nodeQueueListener: SpringJmsListener
 
-    private var nodeNotificationListener: SpringJmsListener
+    private val nodeNotificationListener: SpringJmsListener
 
     init {
-        // Configure and create listeners
         nodeQueueListener = object : SpringJmsListener(
-                connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
-                destination = { ActiveMQConfiguration.instance.nodeQueue(identityConfiguration.identity.id!!) },
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP)
-        ) {}
+                { ActiveMQConfiguration.instance.nodeQueueChannel(identityConfiguration.identity.id!!) } ) { }
 
-        // Configure and create listeners
         nodeNotificationListener = object : SpringJmsListener(
-                connectionFactory = ActiveMQConfiguration.instance.broker.connectionFactory,
-                destination = { ActiveMQConfiguration.instance.nodeNotificationTopic },
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP)
-        ) {
-        }
+                { ActiveMQConfiguration.instance.nodeNotificationChannel() } ) { }
     }
-
     private fun initializeListener() {
+
         // Add message handler delegatess
         nodeQueueListener.addDelegate(
                 AuthorizationMessage::class.java,
