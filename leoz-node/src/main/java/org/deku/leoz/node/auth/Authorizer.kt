@@ -61,21 +61,13 @@ class Authorizer(
                 try {
                     val isc = IdentityPublisher(ActiveMQConfiguration.instance)
 
-                    if (identity.hasId()) {
-                        // Simply publish id
-                        log.info("Publishing [%s]".format(identity))
+                    // Synchronous request for id
+                    log.info("Requesting id for [%s]".format(identity))
+                    val authorizationMessage = isc.requestId(identity)
 
-                        isc.publish(identity)
-                    } else {
-                        // Synchronous request for id
-                        log.info("Requesting id for [%s]".format(identity))
-                        val authorizationMessage = isc.requestId(identity)
-
-                        // Set id based on response and store identity
-                        log.info("Received authorization update [%s]".format(authorizationMessage))
-                        identity.id = authorizationMessage.id
-                        identity.storeYml(StorageConfiguration.instance.identityConfigurationFile)
-                    }
+                    // Set id based on response and store identity
+                    log.info("Received authorization [%s]".format(authorizationMessage))
+                    identity.save(StorageConfiguration.instance.identityConfigurationFile)
                     success = true
                 } catch (e: TimeoutException) {
                     log.error(e.message)

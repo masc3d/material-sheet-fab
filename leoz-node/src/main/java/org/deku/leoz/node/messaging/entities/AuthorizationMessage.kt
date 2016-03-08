@@ -11,11 +11,10 @@ class AuthorizationMessage : Serializable {
         private val serialVersionUID = 941655435886909768L
     }
 
-    var id: Int? = null
     var key: String = ""
     var authorized: Boolean? = null
 
     override fun toString(): String {
-        return "Authorization id [%s] key [%s] authorized [%s]".format(id, key, authorized)
+        return "Authorization key [${key}] authorized [${authorized}]"
     }
 }

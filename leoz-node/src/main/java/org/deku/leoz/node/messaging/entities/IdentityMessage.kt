@@ -7,7 +7,6 @@ import java.io.Serializable
  * Created by masc on 30.06.15.
  */
 data class IdentityMessage(
-        var id: Int? = null,
         var key: String = "",
         var name: String = "",
         var systemInfo: String = ""

@@ -155,16 +155,10 @@ class BundleUpdater(
             return
         }
 
-        val nodeId = this.identity.id
-        if (nodeId == null) {
-            log.warn("Identity not available, aborting update for bundle [${bundleName}]")
-            return
-        }
-
         log.info("Requesting version info for [${bundleName}]")
 
         // Request currently assigned version for this bundle and node
-        val updateInfo = this.updateInfoRequestChannel.sendRequest(UpdateInfoRequest(nodeId, bundleName)).use {
+        val updateInfo = this.updateInfoRequestChannel.sendRequest(UpdateInfoRequest(this.identity.key, bundleName)).use {
             it.receive(UpdateInfo::class.java)
         }
 

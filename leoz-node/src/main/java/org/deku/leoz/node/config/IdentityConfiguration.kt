@@ -15,7 +15,7 @@ import org.deku.leoz.node.auth.Authorizer
 class IdentityConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
-    /** Authorizer  */
+    /** Authorizer */
     private var authorizer: Authorizer
 
     /**
@@ -59,7 +59,7 @@ class IdentityConfiguration {
         val identityFile = StorageConfiguration.instance.identityConfigurationFile
         if (identityFile.exists()) {
             try {
-                identity = Identity.createFromFile(systemInformation, identityFile)
+                identity = Identity.load(systemInformation, identityFile)
             } catch (e: Exception) {
                 log.error(e.message, e)
             }
@@ -71,7 +71,7 @@ class IdentityConfiguration {
 
             // Store updates/created identity
             try {
-                identity.storeYml(identityFile)
+                identity.save(identityFile)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }

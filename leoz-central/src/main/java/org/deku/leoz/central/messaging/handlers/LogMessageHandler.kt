@@ -8,6 +8,7 @@ import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.Identity
 import org.deku.leoz.central.config.StorageConfiguration
 import org.deku.leoz.log.LogMessage
 import org.slf4j.LoggerFactory
@@ -125,22 +126,10 @@ class LogMessageHandler : Handler<LogMessage> {
     }
 
     /**
-     * Remove logger and stop appenders
-     * @param name Base name
-     */
-    private fun removeLogger(name: String) {
-        val logger = this.loggers.get(name)
-        if (logger != null) {
-            logger.detachAndStopAllAppenders()
-            this.loggers.remove(name)
-        }
-    }
-
-    /**
      * Create logger name
      */
-    private fun createName(nodeId: Int? = null, nodeKey: String): String {
-        return "leoz-node-${if (nodeId != null) nodeId.toString() else nodeKey}"
+    private fun createName(key: String): String {
+        return "leoz-node-${key}"
     }
 
     /**
@@ -156,31 +145,18 @@ class LogMessageHandler : Handler<LogMessage> {
      */
     override fun onMessage(message: LogMessage, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
         try {
-            log.debug("Received ${message.logEntries.count()} log messages from node [${message.nodeId}] key [${message.nodeKey}]")
+            val identityKey = Identity.Key(message.nodeKey)
+            log.debug("Received ${message.logEntries.count()} log messages from node [${identityKey}]")
 
             if (message.logEntries.count() == 0)
                 return
 
             var logger: Logger? = null
 
-            val keyBasedName = this.createName(nodeKey = message.nodeKey)
-            val keyBasedFile = this.getLogFile(keyBasedName)
+            val keyBasedName = this.createName(key = identityKey.short)
 
             synchronized(loggers) {
-                if (message.nodeId != null) {
-                    val idBasedName = this.createName(message.nodeId, message.nodeKey)
-                    val idBasedFile = this.getLogFile(idBasedName)
-
-                    if (keyBasedFile.exists()) {
-                        this.removeLogger(idBasedName)
-                        this.removeLogger(keyBasedName)
-                        keyBasedFile.renameTo(idBasedFile)
-                    }
-
-                    logger = this.getLogger(idBasedName)
-                } else {
-                    logger = this.getLogger(keyBasedName)
-                }
+                logger = this.getLogger(keyBasedName)
             }
 
             message.logEntries.forEach {

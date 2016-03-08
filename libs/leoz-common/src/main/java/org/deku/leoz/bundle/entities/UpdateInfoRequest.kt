@@ -6,7 +6,7 @@ package org.deku.leoz.bundle.entities
  */
 data class UpdateInfoRequest(
         /** Id of the node requesting the update */
-        val nodeId: Int = 0,
+        val nodeKey: String = "",
         /** Name of bundle to request update info for */
         val bundleName: String = "") {
     companion object {

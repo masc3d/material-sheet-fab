@@ -4,8 +4,6 @@ import sx.jms.Channel
 import sx.jms.converters.DefaultConverter
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
-import javax.jms.Queue
-import javax.jms.Topic
 
 /**
  * ActiveMQ specific messaging configuration
@@ -72,7 +70,7 @@ class ActiveMQConfiguration private constructor() : MessagingConfiguration {
                         DefaultConverter.CompressionType.GZIP))
     }
 
-    override fun nodeQueue(id: Int): Channel.Configuration {
+    override fun nodeQueue(id: String): Channel.Configuration {
         return Channel.Configuration(connectionFactory = this.broker.connectionFactory,
                 destination = this.broker.createQueue("leoz.node.queue." + id.toString()),
                 converter = DefaultConverter(

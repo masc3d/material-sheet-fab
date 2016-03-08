@@ -39,5 +39,5 @@ interface MessagingConfiguration {
     /**
      * Node queue
      */
-    fun nodeQueue(id: Int): Channel.Configuration
+    fun nodeQueue(id: String): Channel.Configuration
 }

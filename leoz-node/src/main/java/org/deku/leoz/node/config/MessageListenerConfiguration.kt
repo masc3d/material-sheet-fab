@@ -1,7 +1,6 @@
 package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.Identity
 import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
@@ -40,7 +39,7 @@ open class MessageListenerConfiguration {
 
     init {
         nodeQueueListener = object : SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.nodeQueue(identityConfiguration.identity.id!!)) }) {}
+                { Channel(ActiveMQConfiguration.instance.nodeQueue(identityConfiguration.identity.shortKey)) }) {}
 
         nodeNotificationListener = object : SpringJmsListener(
                 { Channel(ActiveMQConfiguration.instance.nodeNotificationTopic) }) {}
@@ -64,7 +63,6 @@ open class MessageListenerConfiguration {
     fun onInitialize() {
         // Register event listeners
         ActiveMQBroker.instance.delegate.add(brokerEventListener)
-        identityConfiguration.identity.delegate.add(identityEventListener)
 
         this.startIfReady()
     }
@@ -88,20 +86,11 @@ open class MessageListenerConfiguration {
     }
 
     /**
-     * Identity event listener
-     */
-    private var identityEventListener: Identity.Listener = object : Identity.Listener {
-        override fun onIdUpdated(identity: Identity) {
-            startIfReady()
-        }
-    }
-
-    /**
      * Indicates if message listener is ready to start (prerequisites are met)
      * @return
      */
     private val isReadyToStart: Boolean
-        get() = ActiveMQConfiguration.instance.broker.isStarted && identityConfiguration.identity.id != null
+        get() = ActiveMQConfiguration.instance.broker.isStarted
 
     /**
      * Start message listener

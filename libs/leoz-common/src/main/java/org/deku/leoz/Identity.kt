@@ -2,48 +2,60 @@ package org.deku.leoz
 
 import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
-import sx.event.EventDelegate
-import sx.event.EventDispatcher
 import java.io.File
 import java.security.MessageDigest
 import java.security.SecureRandom
 
 /**
  * Holds all identity information for a leoz node including system information
- * @property id Node id
  * @property key Authorization key
+ * @property name Name
  * @property systemInformation System information
  * Created by masc on 26.06.15.
  */
 class Identity private constructor(
-        id: Int?,
         val key: String,
         val name: String,
         val systemInformation: SystemInformation) {
 
-    //region Event
-    interface Listener : sx.event.EventListener {
-        fun onIdUpdated(identity: Identity)
-    }
-
-    private val eventDispatcher = EventDispatcher.createThreadSafe<Listener>()
-    val delegate: EventDelegate<Listener> = eventDispatcher
-    //endregion
-
     /**
-     * Id property, emitting event on update
+     * Identity key
      */
-    var id: Int? = null
-        @Synchronized set(id: Int?) {
-            field = id
-            this.eventDispatcher.emit { listener -> listener.onIdUpdated(this) }
+    class Key(val value: String) {
+        /**
+         * Short key
+         */
+        val short: String by lazy {
+            val max = 8
+            val short: String
+            if (value.length == 0)
+                short = ""
+            else {
+                val length = if (value.length > max) max else value.length
+                short = this.value.substring(0, length - 1)
+            }
+            short
         }
 
+        override fun toString(): String {
+            return this.value
+        }
+    }
+
     /**
-     * c'tor
+     * Key
+     * TODO: should become .key property/refactor all consumers carefully
      */
+    val keyInstance: Key
+
+    /**
+     * Id/short key
+     */
+    val shortKey: String
+        get() = keyInstance.short
+
     init {
-        this.id = id
+        this.keyInstance = Key(key)
     }
 
     companion object {
@@ -75,7 +87,7 @@ class Identity private constructor(
                 // Calculate digest and format to hex
                 val key = BaseEncoding.base16().encode(m.digest()).toLowerCase()
 
-                return Identity(null, key, name, systemInformation)
+                return Identity(key, name, systemInformation)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
@@ -88,11 +100,10 @@ class Identity private constructor(
          * @param source
          * @return Identity instance
          */
-        fun createFromFile(systemInfo: SystemInformation, sourceFile: File): Identity {
+        fun load(systemInfo: SystemInformation, sourceFile: File): Identity {
             val data = FilePersistence.loadMap(sourceFile)
 
             return Identity(
-                    id = data.get(PROP_ID) as Int?,
                     key = data.get(PROP_KEY) as String,
                     name = data.get(PROP_NAME) as String,
                     systemInformation = systemInfo)
@@ -100,32 +111,22 @@ class Identity private constructor(
     }
 
     /**
-     * Indicates if identity has an id
-     * @return
-     */
-    fun hasId(): Boolean {
-        return this.id != null
-    }
-
-    /**
-     * Store identity in yml file
+     * Store identity to file
      * @param destination Destination file
      * @throws IOException
      */
     @Synchronized
-    fun storeYml(destinationFile: File) {
+    fun save(destinationFile: File) {
         val data = mutableMapOf<String, Any>()
 
-        val id = this.id
-        if (id != null)
-            data.put(PROP_ID, id)
-        data.put(PROP_NAME, name)
-        data.put(PROP_KEY, key)
+        data.put(PROP_ID, this.shortKey)
+        data.put(PROP_NAME, this.name)
+        data.put(PROP_KEY, this.key)
 
         FilePersistence.dump(data, destinationFile)
     }
 
     override fun toString(): String {
-        return "Identity id [${id}] name [${name}] key [${key}]"
+        return "Identity name [${name}] key [${key}]"
     }
 }

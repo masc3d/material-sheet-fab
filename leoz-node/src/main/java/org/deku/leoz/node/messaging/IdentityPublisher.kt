@@ -46,7 +46,6 @@ class IdentityPublisher(
 
         // Setup message
         val identityMessage = IdentityMessage()
-        identityMessage.id = identity.id
         identityMessage.name = identity.name
         identityMessage.key = identity.key
 

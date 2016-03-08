@@ -16,7 +16,6 @@ public class LogMessage : Serializable {
         private const val serialVersionUID = -8027400236775552276L
     }
 
-    public var nodeId: Int? = null
     public var nodeKey: String = ""
     public var logEntries: Array<LogEntry> = arrayOf()
 
@@ -51,8 +50,7 @@ public class LogMessage : Serializable {
 
     public constructor() { }
 
-    public constructor(nodeId: Int?, nodeKey: String, logEntries: Array<LogEntry>) {
-        this.nodeId = nodeId
+    public constructor(nodeKey: String, logEntries: Array<LogEntry>) {
         this.nodeKey = nodeKey
         this.logEntries = logEntries
     }

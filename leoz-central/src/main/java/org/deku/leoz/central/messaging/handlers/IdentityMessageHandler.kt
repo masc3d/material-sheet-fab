@@ -47,7 +47,6 @@ class IdentityMessageHandler : Handler<IdentityMessage> {
             if (replyTo != null) {
                 // Create authorization message
                 val am = AuthorizationMessage()
-                am.id = r.nodeId
                 am.key = r.key
                 am.authorized = r.authorized != null && r.authorized !== 0
 

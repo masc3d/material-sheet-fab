@@ -75,7 +75,6 @@ public class LogAppender(
             try {
                 Channel(messagingConfiguration.centralLogQueue).use {
                     it.send(LogMessage(
-                            this.idenity.id,
                             this.idenity.key,
                             logMessageBuffer.toTypedArray()))
                 }
