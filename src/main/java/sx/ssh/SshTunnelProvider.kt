@@ -2,6 +2,7 @@ package sx.ssh
 
 import org.apache.commons.logging.LogFactory
 import java.net.BindException
+import java.time.Duration
 import java.util.*
 
 /**
@@ -25,6 +26,8 @@ class SshTunnelProvider(
     private val sshHosts = HashMap<String, SshHost>()
     /** SSH tunnel maps by composite tunnel key */
     private val tunnels = HashMap<TunnelKey, SshTunnel>()
+    /** Idle timeout for ssh tunnels */
+    var idleTimeout: Duration = Duration.ofSeconds(30)
 
     /**
      * SSH tunnel composite key for record/tunnel lookups.
@@ -84,6 +87,7 @@ class SshTunnelProvider(
                                     sshHost = sshHost,
                                     remotePort = port,
                                     localPort = localPort,
+                                    idleTimeout = this.idleTimeout,
                                     // Free tunnel resource/local port when connection is closed
                                     onClosed = { it ->
                                         this.release(tunnelResource!!)
