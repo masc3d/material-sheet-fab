@@ -20,7 +20,6 @@ open class RsyncModuleConfiguration {
     @Bean
     open fun bundlesModule(): Rsync.Module {
         // Create bundle entry directories
-
         Bundles.values()
                 .map { StorageConfiguration.instance.bundleRepositoryDirectory.resolve(it.value) }
                 .forEach { it.mkdirs() }

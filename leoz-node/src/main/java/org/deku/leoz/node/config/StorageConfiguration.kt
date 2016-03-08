@@ -55,4 +55,10 @@ open class StorageConfiguration protected constructor(appName: String)
     val h2DatabaseFile: File by lazy({
         this.dataDirectory.toPath().resolve("h2").resolve("leoz").toFile()
     })
+
+    val transferDataDirectory by lazy({
+        val d = File(this.dataDirectory, "transfer")
+        d.mkdirs()
+        d
+    })
 }

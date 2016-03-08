@@ -24,7 +24,7 @@ import kotlin.properties.Delegates
 @Configuration
 @ConfigurationProperties(prefix = "rsync")
 @Lazy(false)
-open class RsyncConfiguration {
+open class RsyncServerConfiguration {
     /** Server properties holder */
     inner class Server {
         var port: Int? = null
@@ -46,7 +46,6 @@ open class RsyncConfiguration {
     @PostConstruct
     fun onInitialize() {
         // Initialize rsync executable path
-        Rsync.executable.baseFilename = "leoz-rsync"
         try {
             log.info(Rsync.executable.file)
 

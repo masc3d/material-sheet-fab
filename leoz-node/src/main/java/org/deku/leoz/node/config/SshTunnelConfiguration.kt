@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.ssh.SshHost
 import sx.ssh.SshTunnelProvider
+import java.time.Duration
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.inject.Inject
@@ -47,7 +48,7 @@ open class SshTunnelConfiguration {
     @Bean
     open fun tunnelProvider(): SshTunnelProvider {
         // Create SSH tunnel provider from settings/application.properties
-        return SshTunnelProvider(
+        val s = SshTunnelProvider(
                 localPortRange = IntRange(
                         this.settings.localPortRangeStart,
                         this.settings.localPortRangeEnd),
@@ -58,6 +59,9 @@ open class SshTunnelConfiguration {
                             username = it.username,
                             password = it.password)
                 }.toTypedArray())
+
+        s.idleTimeout = Duration.ofMinutes(3)
+        return s
     }
 
     @PostConstruct

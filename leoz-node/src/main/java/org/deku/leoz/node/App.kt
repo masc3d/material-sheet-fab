@@ -2,6 +2,7 @@ package org.deku.leoz.node
 
 import com.google.common.collect.Lists
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.config.IdentityConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
@@ -126,6 +127,7 @@ open class App :
             LogConfiguration.instance().jmsAppenderEnabled = true
         }
         LogConfiguration.instance().initialize()
+        RsyncConfiguration.initialize()
 
         log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
 
