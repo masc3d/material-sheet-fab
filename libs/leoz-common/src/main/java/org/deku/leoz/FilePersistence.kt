@@ -55,6 +55,7 @@ object FilePersistence {
      * Load map from file
      * @return Deserialized map
      */
+    @Suppress("UNCHECKED_CAST")
     fun loadMap(fromFile: File): Map<String, Any> {
         val y = this.createYaml()
 

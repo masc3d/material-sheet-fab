@@ -2,13 +2,9 @@ package org.deku.leoz
 
 import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
-import org.yaml.snakeyaml.Yaml
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.OutputStreamWriter
 import java.security.MessageDigest
 import java.security.SecureRandom
 
@@ -92,14 +88,8 @@ class Identity private constructor(
          * @param source
          * @return Identity instance
          */
-        @Suppress("UNCHECKED_CAST")
-        fun createFromFile(systemInfo: SystemInformation, source: File): Identity {
-            val yaml = Yaml()
-
-            var data: Map<String, Any> = mapOf()
-            FileInputStream(source).use {
-                data = yaml.load(it) as Map<String, Any>
-            }
+        fun createFromFile(systemInfo: SystemInformation, sourceFile: File): Identity {
+            val data = FilePersistence.loadMap(sourceFile)
 
             return Identity(
                     id = data.get(PROP_ID) as Int?,
@@ -123,8 +113,7 @@ class Identity private constructor(
      * @throws IOException
      */
     @Synchronized
-    fun storeYml(destination: File) {
-        val yaml = Yaml()
+    fun storeYml(destinationFile: File) {
         val data = mutableMapOf<String, Any>()
 
         val id = this.id
@@ -133,9 +122,7 @@ class Identity private constructor(
         data.put(PROP_NAME, name)
         data.put(PROP_KEY, key)
 
-        OutputStreamWriter(FileOutputStream(destination)).use {
-            yaml.dump(data, it)
-        }
+        FilePersistence.dump(data, destinationFile)
     }
 
     override fun toString(): String {
