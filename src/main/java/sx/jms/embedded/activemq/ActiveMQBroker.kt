@@ -16,6 +16,7 @@ import org.apache.activemq.leveldb.LevelDBStore
 import org.apache.activemq.leveldb.LevelDBStoreFactory
 import org.apache.activemq.network.DiscoveryNetworkConnector
 import org.apache.activemq.security.*
+import org.apache.activemq.store.PersistenceAdapter
 import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter
 import org.apache.activemq.transport.TransportServer
 import sx.jms.embedded.Broker
@@ -92,18 +93,21 @@ class ActiveMQBroker private constructor()
         val persistenceStoreDirectory = File(this.dataDirectory, storeType.toString())
         brokerService!!.dataDirectoryFile = persistenceStoreDirectory
 
+        val pa: PersistenceAdapter
         when (storeType) {
             ActiveMQBroker.StoreType.KahaDb -> {
-                val pa = brokerService!!.persistenceAdapter as KahaDBPersistenceAdapter
+                pa = brokerService!!.persistenceAdapter as KahaDBPersistenceAdapter
                 pa.isCheckForCorruptJournalFiles = true
             }
             ActiveMQBroker.StoreType.LevelDb -> {
                 brokerService!!.persistenceFactory = LevelDBStoreFactory()
-                val pa = brokerService!!.persistenceAdapter as LevelDBStore
-                pa.directory = persistenceStoreDirectory
+                pa = brokerService!!.persistenceAdapter as LevelDBStore
             }
             else -> throw IllegalStateException(String.format("Unknown store type [%s]", storeType))
         }
+        // Enforce our own persistence store directory for both regular store and scheduler, overriding the default which has broker name in its path
+        pa.directory = persistenceStoreDirectory
+        brokerService!!.setSchedulerDirectory(persistenceStoreDirectory.resolve("scheduler").toString())
 
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect
