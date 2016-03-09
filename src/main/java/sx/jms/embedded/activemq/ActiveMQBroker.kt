@@ -276,7 +276,7 @@ class ActiveMQBroker private constructor()
                 localUri.toString())
         cf.isWatchTopicAdvisories = false
         psf.connectionFactory = cf
-        psf.maxConnections = 100
+        psf.maxConnections = 32
         psf
     })
 
