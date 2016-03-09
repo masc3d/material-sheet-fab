@@ -39,8 +39,8 @@ compile - Compile classpath for source set 'main'.
 |    +--- project :libs:leoz-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
-|    +--- org.springframework.data:spring-data-jpa:1.9.+ -> 1.9.5.BUILD-SNAPSHOT
-|    |    +--- org.springframework.data:spring-data-commons:1.11.5.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
+|    |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
 |    |    |    |    \--- commons-logging:commons-logging:1.2
 |    |    |    +--- org.springframework:spring-beans:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -73,7 +73,7 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.aspectj:aspectjrt:1.8.7
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 |    |    \--- org.slf4j:jcl-over-slf4j:1.7.13 -> 1.7.18 (*)
-|    +--- org.springframework.data:spring-data-commons:1.11.+ -> 1.11.5.BUILD-SNAPSHOT (*)
+|    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE (*)
 |    +--- org.springframework:spring-web:4.2.5.+ -> 4.2.5.RELEASE
 |    |    +--- org.springframework:spring-aop:4.2.5.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.2.5.RELEASE (*)
@@ -177,7 +177,7 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
 |    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
-|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.3-M1
+|    +--- org.eclipse.persistence:eclipselink:2.6.2
 |    |    +--- org.eclipse.persistence:javax.persistence:2.1.1
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
@@ -375,8 +375,8 @@ default - Configuration for default artifacts.
 |    +--- project :libs:leoz-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
-|    +--- org.springframework.data:spring-data-jpa:1.9.+ -> 1.9.5.BUILD-SNAPSHOT
-|    |    +--- org.springframework.data:spring-data-commons:1.11.5.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
+|    |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
 |    |    |    |    \--- commons-logging:commons-logging:1.2
 |    |    |    +--- org.springframework:spring-beans:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -409,7 +409,7 @@ default - Configuration for default artifacts.
 |    |    +--- org.aspectj:aspectjrt:1.8.7
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 |    |    \--- org.slf4j:jcl-over-slf4j:1.7.13 -> 1.7.18 (*)
-|    +--- org.springframework.data:spring-data-commons:1.11.+ -> 1.11.5.BUILD-SNAPSHOT (*)
+|    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE (*)
 |    +--- org.springframework:spring-web:4.2.5.+ -> 4.2.5.RELEASE
 |    |    +--- org.springframework:spring-aop:4.2.5.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.2.5.RELEASE (*)
@@ -513,7 +513,7 @@ default - Configuration for default artifacts.
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
 |    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
-|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.3-M1
+|    +--- org.eclipse.persistence:eclipselink:2.6.2
 |    |    +--- org.eclipse.persistence:javax.persistence:2.1.1
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
@@ -721,8 +721,8 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- project :libs:leoz-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
-|    +--- org.springframework.data:spring-data-jpa:1.9.+ -> 1.9.5.BUILD-SNAPSHOT
-|    |    +--- org.springframework.data:spring-data-commons:1.11.5.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
+|    |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
 |    |    |    |    \--- commons-logging:commons-logging:1.2
 |    |    |    +--- org.springframework:spring-beans:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -755,7 +755,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.aspectj:aspectjrt:1.8.7
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 |    |    \--- org.slf4j:jcl-over-slf4j:1.7.13 -> 1.7.18 (*)
-|    +--- org.springframework.data:spring-data-commons:1.11.+ -> 1.11.5.BUILD-SNAPSHOT (*)
+|    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE (*)
 |    +--- org.springframework:spring-web:4.2.5.+ -> 4.2.5.RELEASE
 |    |    +--- org.springframework:spring-aop:4.2.5.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.2.5.RELEASE (*)
@@ -859,7 +859,7 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
 |    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
-|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.3-M1
+|    +--- org.eclipse.persistence:eclipselink:2.6.2
 |    |    +--- org.eclipse.persistence:javax.persistence:2.1.1
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
@@ -1057,8 +1057,8 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- project :libs:leoz-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
-|    +--- org.springframework.data:spring-data-jpa:1.9.+ -> 1.9.5.BUILD-SNAPSHOT
-|    |    +--- org.springframework.data:spring-data-commons:1.11.5.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
+|    |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
 |    |    |    |    \--- commons-logging:commons-logging:1.2
 |    |    |    +--- org.springframework:spring-beans:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -1091,7 +1091,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.aspectj:aspectjrt:1.8.7
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 |    |    \--- org.slf4j:jcl-over-slf4j:1.7.13 -> 1.7.18 (*)
-|    +--- org.springframework.data:spring-data-commons:1.11.+ -> 1.11.5.BUILD-SNAPSHOT (*)
+|    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE (*)
 |    +--- org.springframework:spring-web:4.2.5.+ -> 4.2.5.RELEASE
 |    |    +--- org.springframework:spring-aop:4.2.5.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.2.5.RELEASE (*)
@@ -1195,7 +1195,7 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
 |    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
-|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.3-M1
+|    +--- org.eclipse.persistence:eclipselink:2.6.2
 |    |    +--- org.eclipse.persistence:javax.persistence:2.1.1
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
@@ -1409,8 +1409,8 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- project :libs:leoz-common (*)
 |    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
-|    +--- org.springframework.data:spring-data-jpa:1.9.+ -> 1.9.5.BUILD-SNAPSHOT
-|    |    +--- org.springframework.data:spring-data-commons:1.11.5.BUILD-SNAPSHOT
+|    +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
+|    |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
 |    |    |    |    \--- commons-logging:commons-logging:1.2
 |    |    |    +--- org.springframework:spring-beans:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -1443,7 +1443,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.aspectj:aspectjrt:1.8.7
 |    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 |    |    \--- org.slf4j:jcl-over-slf4j:1.7.13 -> 1.7.18 (*)
-|    +--- org.springframework.data:spring-data-commons:1.11.+ -> 1.11.5.BUILD-SNAPSHOT (*)
+|    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE (*)
 |    +--- org.springframework:spring-web:4.2.5.+ -> 4.2.5.RELEASE
 |    |    +--- org.springframework:spring-aop:4.2.5.RELEASE (*)
 |    |    +--- org.springframework:spring-beans:4.2.5.RELEASE (*)
@@ -1547,7 +1547,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- com.fasterxml.jackson.core:jackson-core:2.5.5
 |    |    \--- com.fasterxml.jackson.core:jackson-databind:2.5.5 (*)
 |    +--- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.5.+ -> 2.5.5 (*)
-|    +--- org.eclipse.persistence:eclipselink:2.+ -> 2.6.3-M1
+|    +--- org.eclipse.persistence:eclipselink:2.6.2
 |    |    +--- org.eclipse.persistence:javax.persistence:2.1.1
 |    |    +--- org.eclipse.persistence:commonj.sdo:2.1.1
 |    |    +--- javax.validation:validation-api:1.1.0.Final
