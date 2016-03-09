@@ -27,16 +27,22 @@ object FilePersistence {
      * Dump object to file
      * @param obj Object to dump
      */
-    fun dump(obj: Any, toFile: File) {
-        throw NotImplementedError()
+    fun dumpObject(obj: Any, toFile: File) {
+        val y = this.createYaml()
+        OutputStreamWriter(FileOutputStream(toFile)).use {
+            y.dump(obj, it)
+        }
     }
 
     /**
      * Load object from file
      * @return Object
      */
-    fun loadObject(fromFile: File): Any? {
-        throw NotImplementedError()
+    fun <T> loadObject(fromFile: File, type: Class<T>): T {
+        val y = this.createYaml()
+        FileInputStream(fromFile).use {
+            return y.loadAs(it, type)
+        }
     }
 
     /**
@@ -44,7 +50,7 @@ object FilePersistence {
      * @param map
      * @param toFile Destination file
      */
-    fun dump(map: Map<String, Any>, toFile: File) {
+    fun dumpMap(map: Map<String, Any>, toFile: File) {
         val y = this.createYaml()
         OutputStreamWriter(FileOutputStream(toFile)).use {
             y.dump(map, it)
@@ -58,8 +64,6 @@ object FilePersistence {
     @Suppress("UNCHECKED_CAST")
     fun loadMap(fromFile: File): Map<String, Any> {
         val y = this.createYaml()
-
-        var data: Map<String, Any> = mapOf()
         FileInputStream(fromFile).use {
             return y.load(it) as Map<String, Any>
         }

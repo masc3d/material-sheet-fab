@@ -113,7 +113,7 @@ class Identity private constructor(
         data.put(PROP_NAME, this.name)
         data.put(PROP_KEY, this.key)
 
-        FilePersistence.dump(data, destinationFile)
+        FilePersistence.dumpMap(data, destinationFile)
     }
 
     override fun toString(): String {
