@@ -35,7 +35,7 @@ abstract class SpringJmsListener(
     }
 
     private val description by lazy({
-        "[${this.javaClass.simpleName}] for [${this.channel()}]"
+        "[${this.javaClass.simpleName}] for [${this.channel}]"
     })
 
     /**
@@ -47,7 +47,7 @@ abstract class SpringJmsListener(
         if (lc == null) {
             lc = DefaultMessageListenerContainer()
 
-            lc.connectionFactory = this.channel().connectionFactory
+            lc.connectionFactory = this.channel.connectionFactory
             lc.messageListener = object : SessionAwareMessageListener<Message> {
                 @Throws(JMSException::class)
                 override fun onMessage(message: Message, session: Session) {
@@ -56,7 +56,7 @@ abstract class SpringJmsListener(
             }
             lc.isSessionTransacted = true
             lc.errorHandler = this
-            lc.destination = this.channel().destination
+            lc.destination = this.channel.destination
             this.configure(lc)
             lc.afterPropertiesSet()
             this.listenerContainer = lc

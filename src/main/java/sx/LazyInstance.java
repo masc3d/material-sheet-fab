@@ -1,41 +1,88 @@
 package sx;
 
 import java.util.Optional;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 /**
- * Lazy instance supporting external injection
+ * Lazy instance supporting external injection.
  * Created by masc on 14.04.15.
  */
 public class LazyInstance<T> {
-    private final Object mLock = new Object();
+    private volatile ReentrantLock mLock;
     private Supplier<T> mSupplier;
     private volatile Optional<T> mInstance = null;
 
-    public LazyInstance(Supplier<T> supplier) {
-        mSupplier = supplier;
+    /**
+     * Threadsafe modes
+     */
+    public enum ThreadSafeMode {
+        None,
+        Synchronized
     }
 
+    /**
+     * Designated c'tor
+     * @param supplier Supplier
+     */
+    public LazyInstance(Supplier<T> supplier, ThreadSafeMode threadSafeMode) {
+        mSupplier = supplier;
+        switch(threadSafeMode) {
+            case Synchronized:
+                mLock = new ReentrantLock();
+            case None:
+                break;
+            default:
+                throw new UnsupportedOperationException(String.format("Unsupported thread safety mode [%s]", threadSafeMode));
+        }
+    }
+
+    /**
+     * c'tor creating thread safe lazy instance
+     * @param supplier Supplier
+     */
+    public LazyInstance(Supplier<T> supplier) {
+        this(supplier, ThreadSafeMode.Synchronized);
+    }
+
+    /**
+     * C'tor
+     * @param threadSafeMode Thread safe mode
+     */
+    public LazyInstance(ThreadSafeMode threadSafeMode) {
+        this(null, threadSafeMode);
+    }
+
+    /**
+     * c'tor creating thread safe lazy instance without supplier
+     */
     public LazyInstance() {
-        this(null);
+        this(null, ThreadSafeMode.Synchronized);
     }
 
     /**
      * Set instance
-     * @param supplier
+     * @param supplier Supplier
      * @param ignoreExisting Does not throw if instance is already set
      */
     public void set(Supplier<T> supplier, boolean ignoreExisting) {
-        synchronized (mLock) {
+        if (mLock != null) {
+            mLock.lock();
+        }
+        try {
             if (!ignoreExisting && mInstance != null)
                 throw new IllegalStateException("Instance already set");
             mSupplier = supplier;
+        } finally {
+            if (mLock != null) {
+                mLock.unlock();
+            }
         }
     }
 
     /**
      * Set instance
-     * @param supplier
+     * @param supplier Supplier
      */
     public void set(Supplier<T> supplier) {
         this.set(supplier, false);
@@ -54,9 +101,16 @@ public class LazyInstance<T> {
      */
     public T get(Supplier<T> supplier) {
         if (mInstance == null) {
-            synchronized (mLock) {
+            if (mLock != null) {
+                mLock.lock();
+            }
+            try {
                 mSupplier = supplier;
                 mInstance = Optional.ofNullable(mSupplier.get());
+            } finally {
+                if (mLock != null) {
+                    mLock.unlock();
+                }
             }
         }
         return mInstance.orElse(null);
@@ -64,7 +118,7 @@ public class LazyInstance<T> {
 
     /**
      * Indicates if instance was set
-     * @return
+     * @return Instance has been set or not
      */
     public boolean isSet() {
         return mInstance != null;

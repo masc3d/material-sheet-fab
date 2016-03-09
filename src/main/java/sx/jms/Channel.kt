@@ -7,6 +7,7 @@ import sx.LazyInstance
 import java.io.Closeable
 import java.time.Duration
 import java.util.concurrent.TimeoutException
+import java.util.function.Supplier
 import javax.jms.*
 
 /**
@@ -76,26 +77,44 @@ class Channel constructor(
     }
 
     /**
+     * Delivery modes
+     */
+    enum class DeliveryMode(val value: Int) {
+        NonPersistent(javax.jms.DeliveryMode.NON_PERSISTENT),
+        Persistent(javax.jms.DeliveryMode.PERSISTENT)
+    }
+
+    /**
      * Channel configuration
      * All common channel configuration settings are grouped into this shallow structure which
      * can be easily (and automatically) replicated
+     * @param connectionFactory Connection factory
+     * @param sessionTransacted Sessions created through connection factory should be transacted
+     * @param destination Destination
+     * @param converter Message converter
+     * @param deliveryMode JMS delivery mode
      */
     class Configuration @JvmOverloads constructor (val connectionFactory: ConnectionFactory?,
-                        val sessionTransacted: Boolean = Defaults.JMS_TRANSACTED,
-                        destination: Destination,
-                        val converter: Converter,
-                        deliveryMode: Channel.DeliveryMode = Defaults.JMS_DELIVERY_MODE)
+                                                   sessionTransacted: Boolean = Defaults.JMS_TRANSACTED,
+                                                   destination: Destination,
+                                                   val converter: Converter,
+                                                   deliveryMode: Channel.DeliveryMode = Defaults.JMS_DELIVERY_MODE)
     :
             Cloneable {
+
         var destination: Destination
             private set
 
         var deliveryMode: DeliveryMode
             private set
 
+        var sessionTransacted: Boolean
+            private set
+
         init {
             this.destination = destination
             this.deliveryMode = deliveryMode
+            this.sessionTransacted = sessionTransacted
         }
 
         /** Time to live for messages sent through this channel */
@@ -109,17 +128,27 @@ class Channel constructor(
 
         /**
          * Clone channel configuration, optionally overriding properties
+         * @param sessionTransacted Override session transaction mode
          * @param destination Override destination
          * @param deliveryMode Override delivery mode
+         * @return Cloned configuration
          */
         fun clone(
+                sessionTransacted: Boolean? = null,
                 destination: Destination? = null,
-                deliveryMode: Channel.DeliveryMode? = null): Configuration {
+                deliveryMode: Channel.DeliveryMode? = null
+        ): Configuration {
+
+            // Clone configuration field by field
             val newChannel = this.clone() as Configuration
+            // Override settings
+            if (sessionTransacted != null)
+                newChannel.sessionTransacted = sessionTransacted
             if (destination != null)
                 newChannel.destination = destination
             if (deliveryMode != null)
                 newChannel.deliveryMode = deliveryMode
+
             return newChannel
         }
 
@@ -128,14 +157,82 @@ class Channel constructor(
         }
     }
 
+    /**
+     * Channel statistics
+     * Due to a restriction in jms, message sizes can only be determined when using a
+     * converter implementation which supports it. Sizes of pure jms messages can usually not be determined reliably.
+     */
+    class Statistics {
+        var bytesSent: Long = 0
+            private set
+
+        var bytesReceived: Long = 0
+            private set
+
+        var enabled: Boolean = false
+
+        fun reset() {
+            bytesSent = 0
+            bytesReceived = 0
+        }
+
+        /**
+         * Callback to account sent bytes, to be provided to a converter
+         */
+        val accountSent: ((size: Long) -> Unit)?
+            get() {
+                if (!this.enabled)
+                    return null
+                return { size -> bytesSent += size }
+            }
+
+        /**
+         * Callback to account received bytes, to be provided to a converter
+         */
+        val accountReceived: ((size: Long) -> Unit)?
+            get() {
+                if (!this.enabled)
+                    return null
+
+                return { size -> bytesReceived += size }
+            }
+
+    }
+
     private val log = LogFactory.getLog(this.javaClass)
-    private val configuration: Configuration
-    private val connection = LazyInstance<Connection>()
-    private val sessionInstance = LazyInstance<Session>()
-    private val consumer = LazyInstance<MessageConsumer>()
-    private val producer = LazyInstance<MessageProducer>()
-    private var sessionCreated = false
-    /** Indicates if this channel owns this destination, eg. when creating a response channel without explcitly providing
+    val configuration: Configuration
+
+    /**
+     * Lazy connection instance
+     */
+    private val connection = LazyInstance<Connection>(
+            LazyInstance.ThreadSafeMode.None)
+
+    /**
+     * Lazy session instance
+     */
+    private val sessionInstance = LazyInstance<Session>(
+            LazyInstance.ThreadSafeMode.None)
+
+    /**
+     * Lazy consumer instance
+     */
+    private val consumer = LazyInstance<MessageConsumer>(
+            LazyInstance.ThreadSafeMode.None)
+
+    /**
+     * Lazy producer instance
+     */
+    private val producer = LazyInstance<MessageProducer>(
+            LazyInstance.ThreadSafeMode.None)
+
+    /**
+     * Indicates if this channel owns the session. If true, session will be properly closed with the channel
+     */
+    private var ownsSession = false
+
+    /**
+     * Indicates if this channel owns this destination, eg. when creating a response channel without explcitly providing
      * a destination. In this case the destination will be deleted when the channel is closed.
      */
     private var ownsDestination = false
@@ -183,19 +280,19 @@ class Channel constructor(
         }
 
     /**
-     * Delivery modes
+     * Channel statistics
      */
-    enum class DeliveryMode(val value: Int) {
-        NonPersistent(javax.jms.DeliveryMode.NON_PERSISTENT),
-        Persistent(javax.jms.DeliveryMode.PERSISTENT)
-    }
+    val statistics: Statistics = Statistics()
 
+    /**
+     * init
+     */
     init {
         this.configuration = configuration
         // Initialize lazy properties
 
         // JMS connection
-        this.connection.set({
+        this.connection.set(Supplier {
             val cnf = this.connectionFactory
             if (cnf == null)
                 throw IllegalStateException("Channel does not have connection factory")
@@ -206,68 +303,79 @@ class Channel constructor(
         })
 
         // JMS session
-        this.sessionInstance.set({
+        this.sessionInstance.set(Supplier {
             var finalSession: Session
             // Return c'tor provided session if applicable
             if (session != null) {
                 finalSession = session
             } else {
                 // Create session
-                sessionCreated = true
+                ownsSession = true
                 finalSession = connection.get().createSession(this.sessionTransacted, Session.AUTO_ACKNOWLEDGE)
             }
             finalSession
         })
 
         // JMS consumer
-        this.consumer.set({
+        this.consumer.set(Supplier {
             this.sessionInstance.get().createConsumer(destination)
         })
 
         // JMS producer
-        this.producer.set({
+        this.producer.set(Supplier {
             this.sessionInstance.get().createProducer(destination)
         })
     }
 
     /**
      * Create temporary queue channel replicating this channel's basic properties
-
+     * @param destination: Optinoal destination. If not provided an internal one will be created and destroyed on channel close
      * @return Temporary queue channel
      */
-    private fun createReplyChannel(): Channel {
-        // Temporary queue channels should not be transacted.
-        // EG. ActiveMQ has a problem with temporary destinations and transacted sessions, resulting in wrong message count
-        // and (non-fatal) messages about pending queue entries when deleting transacted temporary queues
-
+    private fun createReplyChannelInternal(session: Session = this.sessionInstance.get(), destination: Destination? = null): Channel {
         val replyChannel: Channel
         var replySession: Session? = null
-        if (!this.sessionTransacted) {
+        if (!session.transacted) {
             // Session is not transacted, simply reuse it
-            replySession = this.sessionInstance.get()
+            replySession = session
         } else {
             if (this.connectionFactory == null)
                 throw java.lang.IllegalStateException("Cannot create response channel from transacted channel without connection factory")
         }
+        val replyDestination = destination ?: session.createTemporaryQueue()
 
         replyChannel = Channel(
                 configuration = this.configuration.clone(
-                        destination = this.sessionInstance.get().createTemporaryQueue(),
+                        // Temporary queue channels should not be transacted.
+                        // EG. ActiveMQ has a problem with temporary destinations and transacted sessions, resulting in wrong message count
+                        // and (non-fatal) messages about pending queue entries when deleting transacted temporary queues
+                        sessionTransacted = false,
+                        destination = replyDestination,
+                        // Reply messages are never persistent
                         deliveryMode = DeliveryMode.NonPersistent),
                 session = replySession)
 
         // As this channel has ownership over destination, should close and delete appropriately
-        replyChannel.ownsDestination = true
+        replyChannel.ownsDestination = (destination == null)
 
         return replyChannel
     }
 
     /**
+     * Create reply channel
+     * @param session Session
+     * @param destination Destination
+     */
+    fun createReplyChannel(session: Session, destination: Destination): Channel {
+        return this.createReplyChannelInternal(session, destination)
+    }
+
+    /**
      * Send jms message
-     * @param message Message to send
+     * @param jmsMessage Message to send
      * @param messageConfigurer Callback for customizing the message before sending
      */
-    @JvmOverloads fun send(message: Message, messageConfigurer: Action<Message>? = null) {
+    @JvmOverloads fun send(jmsMessage: Message, messageConfigurer: Action<Message>? = null) {
         val mp = this.producer.get()
 
         mp.deliveryMode = deliveryMode.value
@@ -276,9 +384,11 @@ class Channel constructor(
         if (priority != null)
             mp.priority = priority
 
-        messageConfigurer?.perform(message)
+        // Customize message if applicable
+        messageConfigurer?.perform(jmsMessage)
 
-        mp.send(destination, message)
+        // Send actual message
+        mp.send(destination, jmsMessage)
 
         if (this.autoCommit)
             this.commit()
@@ -286,13 +396,13 @@ class Channel constructor(
 
     /**
      * Sends jms message as a request, attaching a replyTo queue
-     * @param message Message to send
+     * @param jmsMessage Message to send
      * @param messageConfigurer Callback for customizing the message before sending
      */
-    @JvmOverloads fun sendRequest(message: Message, messageConfigurer: Action<Message>? = null): Channel {
-        val replyChannel = this.createReplyChannel()
+    @JvmOverloads fun sendRequest(jmsMessage: Message, messageConfigurer: Action<Message>? = null): Channel {
+        val replyChannel = this.createReplyChannelInternal()
 
-        this.send(message, Action {
+        this.send(jmsMessage, Action {
             messageConfigurer?.perform(it)
             it.jmsReplyTo = replyChannel.destination
         })
@@ -308,8 +418,9 @@ class Channel constructor(
     @JvmOverloads fun send(message: Any, messageConfigurer: Action<Message>? = null) {
         this.send(
                 this.converter.toMessage(
-                        message,
-                        sessionInstance.get()),
+                        obj = message,
+                        session = sessionInstance.get(),
+                        onSize = statistics.accountSent),
                 messageConfigurer)
     }
 
@@ -323,8 +434,9 @@ class Channel constructor(
     @JvmOverloads fun sendRequest(message: Any, messageConfigurer: Action<Message>? = null): Channel {
         return this.sendRequest(
                 this.converter.toMessage(
-                        message,
-                        sessionInstance.get()),
+                        obj = message,
+                        session = sessionInstance.get(),
+                        onSize = statistics.accountSent),
                 messageConfigurer)
     }
 
@@ -354,7 +466,10 @@ class Channel constructor(
         if (jmsMessage == null)
             throw TimeoutException("Timeout while waiting for message [${messageType.simpleName}]")
 
-        return messageType.cast(this.converter.fromMessage(jmsMessage))
+        return messageType.cast(
+                this.converter.fromMessage(
+                        message = jmsMessage,
+                        onSize = this.statistics.accountReceived))
     }
 
     /**
@@ -383,7 +498,7 @@ class Channel constructor(
      */
     override fun close() {
         // Close message consumer
-        consumer.ifSet({ c ->
+        consumer.ifSet(Action { c ->
             try {
                 c.close()
             } catch (e: Exception) {
@@ -392,7 +507,7 @@ class Channel constructor(
         })
 
         // Close message producer
-        producer.ifSet({ p ->
+        producer.ifSet(Action { p ->
             try {
                 p.close()
             } catch (e: Exception) {
@@ -422,8 +537,8 @@ class Channel constructor(
         }
 
         // Close session if approrpriate
-        if (sessionCreated) {
-            sessionInstance.ifSet({ s ->
+        if (ownsSession) {
+            sessionInstance.ifSet(Action { s ->
                 try {
                     s.close()
                 } catch (e: Exception) {
@@ -433,7 +548,7 @@ class Channel constructor(
         }
 
         // Close connection
-        connection.ifSet({ c ->
+        connection.ifSet(Action { c ->
             try {
                 c.close()
             } catch (e: Exception) {
