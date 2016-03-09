@@ -29,12 +29,24 @@ class UpdateInfoRequestHandler
     private lateinit var nodeRepository: NodeRepository
 
     @Inject
-    private lateinit var bundleAliasRepository: BundleVersionRepository
+    private lateinit var bundleVersionRepository: BundleVersionRepository
 
     override fun onMessage(message: UpdateInfoRequest, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
         val updateInfoRequest = message
-        // TODO: Query bundle name/version against db
-        val versionPattern = "+RELEASE"
+
+        val rNode = nodeRepository.findByKey(message.nodeKey)
+        if (rNode == null)
+            throw IllegalArgumentException("Unknown node [${message.nodeKey}}")
+
+        val versionAlias = rNode.versionAlias ?: "release"
+        val rVersion = bundleVersionRepository.findByAlias(
+                bundleName = updateInfoRequest.bundleName,
+                versionAlias = versionAlias)
+
+        if (rVersion == null)
+            throw IllegalArgumentException("No version recxord for node [${updateInfoRequest.nodeKey}] bundle [${updateInfoRequest.bundleName}] version alias [${versionAlias}]")
+
+        val versionPattern = rVersion.version
 
         try {
             Channel(
