@@ -237,6 +237,11 @@ class Channel constructor(
      */
     private var ownsDestination = false
 
+    /**
+     * Indicates if this channels owns the connection, thus has to close it accordingly
+     */
+    private var ownsConnection = false
+
     val connectionFactory: ConnectionFactory?
         get() = this.configuration.connectionFactory
 
@@ -299,6 +304,9 @@ class Channel constructor(
 
             val cn = cnf.createConnection()
             cn.start()
+
+            this.ownsConnection = true
+
             cn
         })
 
@@ -310,7 +318,7 @@ class Channel constructor(
                 finalSession = session
             } else {
                 // Create session
-                ownsSession = true
+                this.ownsSession = true
                 finalSession = connection.get().createSession(this.sessionTransacted, Session.AUTO_ACKNOWLEDGE)
             }
             finalSession
@@ -354,6 +362,10 @@ class Channel constructor(
                         // Reply messages are never persistent
                         deliveryMode = DeliveryMode.NonPersistent),
                 session = replySession)
+
+        if (destination == null) {
+            replyChannel.connection.set({ this.connection.get() })
+        }
 
         // As this channel has ownership over destination, should close and delete appropriately
         replyChannel.ownsDestination = (destination == null)
@@ -548,13 +560,15 @@ class Channel constructor(
         }
 
         // Close connection
-        connection.ifSet(Action { c ->
-            try {
-                c.close()
-            } catch (e: Exception) {
-                log.error(e.message, e)
-            }
-        })
+        if (ownsConnection) {
+            connection.ifSet(Action { c ->
+                try {
+                    c.close()
+                } catch (e: Exception) {
+                    log.error(e.message, e)
+                }
+            })
+        }
     }
 
     override fun toString(): String {
