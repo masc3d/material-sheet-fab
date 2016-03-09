@@ -16,30 +16,25 @@ import org.deku.leoz.node.auth.Authorizer
 class AuthorizationConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
-    /** Authorizer */
-    private var authorizer: Authorizer
-
-    /**
-     * Application wide Node identity
-     * @retur
-     */
-    var identity: Identity
-        @Synchronized private set
-
-
-    /**
-     * Application wide system information
-     * @return
-     */
-    val systemInformation: SystemInformation by lazy {
-        SystemInformation.create()
-    }
-
+    /** Singleton */
     companion object Singleton {
         @JvmStatic val instance by lazy {
             AuthorizationConfiguration()
         }
     }
+
+    /** Authorizer */
+    private var authorizer: Authorizer
+
+    /** Application wide Node identity */
+    var identity: Identity
+        @Synchronized private set
+
+    /** Application wide system information */
+    val systemInformation: SystemInformation by lazy {
+        SystemInformation.create()
+    }
+
 
     /**
      * Initialize
@@ -50,6 +45,7 @@ class AuthorizationConfiguration {
 
     /**
      * Creates and stores new identity
+     * @return Identity
      */
     private fun createIdentity(): Identity {
         val identity = Identity.create(
@@ -72,7 +68,7 @@ class AuthorizationConfiguration {
     private fun startAuthorization() {
         this.authorizer.start(this.identity, onRejected = { identity ->
             log.warn("Authorization rejected for identity [${identity}]")
-            // If rejected, create new identity and retry authorization
+            // If rejected, create new identity and restart
             this.identity = this.createIdentity()
 
             log.warn("Rebooting due to identity change")
@@ -114,4 +110,3 @@ class AuthorizationConfiguration {
         this.startAuthorization()
     }
 }
-/** c'tor  */
