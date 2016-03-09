@@ -7,9 +7,7 @@ import org.deku.leoz.node.data.repositories.EntityRepository
 import org.deku.leoz.node.data.sync.v1.EntityStateMessage
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage
 import sx.jms.Channel
-import sx.jms.Converter
 import sx.jms.Handler
-import sx.jms.converters.DefaultConverter
 import sx.jms.listeners.SpringJmsListener
 import java.sql.Timestamp
 import java.util.*
@@ -18,9 +16,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicLong
-import javax.jms.ConnectionFactory
-import javax.jms.Message
-import javax.jms.Session
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 
@@ -38,6 +33,7 @@ class EntityConsumer
 :
         SpringJmsListener({ Channel(messagingConfiguration.entitySyncTopic) }),
         Handler<EntityStateMessage> {
+
     private var executorService: ExecutorService
 
     init {
@@ -53,7 +49,7 @@ class EntityConsumer
     /**
      * Entity state message handler
      */
-    override fun onMessage(message: EntityStateMessage, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
+    override fun onMessage(message: EntityStateMessage, replyChannel: Channel?) {
         this.request(message.entityType!!, message.timestamp)
     }
 
@@ -69,9 +65,6 @@ class EntityConsumer
 
             var em: EntityManager? = null
             try {
-                val converter = this.converter as DefaultConverter
-                converter.resetStatistics()
-
                 em = entityManagerFactory.createEntityManager()
                 val er = EntityRepository(em, entityType)
 
@@ -87,6 +80,9 @@ class EntityConsumer
                     // Send entity state message
                     entitySyncChannel.sendRequest(EntityStateMessage(entityType, timestamp)).use { replyChannel ->
                         log.info(lfmt("Requesting entities"))
+
+                        // Enable statistics for this channel
+                        replyChannel.statistics.enabled = true
 
                         // Receive entity update message
                         val euMessage = replyChannel.receive(EntityUpdateMessage::class.java)
@@ -124,13 +120,12 @@ class EntityConsumer
 
                                     if (!eos) {
                                         // Deserialize entities
-                                        val entities = Arrays.asList(*converter.fromMessage(tMsg) as Array<*>)
+                                        val entities = Arrays.asList(replyChannel.converter.fromMessage(tMsg) as Array<*>)
 
                                         // TODO: exceptions within transactions behave in a strange way.
                                         // data of transactions that were committed may not be there and h2 may report
                                         // cache level state nio exceptions.
                                         // Data seems to remain consistent though
-
                                         if (timestamp != null) {
                                             log.trace(lfmt("Removing existing entities"))
                                             // If there's already entities, clean out existing first.
@@ -162,7 +157,7 @@ class EntityConsumer
                         log.trace(lfmt("Joining transaction threads"))
                         executorService.shutdown()
                         executorService.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
-                        log.info(lfmt("Received and stored ${count.get()} in ${sw} (${converter.bytesRead} bytes)"))
+                        log.info(lfmt("Received and stored ${count.get()} in ${sw} (${replyChannel.statistics.bytesReceived} bytes)"))
                     }
                 }
             } catch (e: TimeoutException) {

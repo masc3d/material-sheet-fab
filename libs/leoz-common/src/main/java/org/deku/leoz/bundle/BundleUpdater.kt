@@ -6,13 +6,9 @@ import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.bundle.entities.UpdateInfoRequest
 import sx.Disposable
 import sx.jms.Channel
-import sx.jms.Converter
 import sx.jms.Handler
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import javax.jms.ConnectionFactory
-import javax.jms.Message
-import javax.jms.Session
 
 /**
  * Updater suoporting async/background updates of bundles.
@@ -65,7 +61,7 @@ class BundleUpdater(
     /**
      * Update notification message handler
      */
-    override fun onMessage(message: UpdateInfo, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
+    override fun onMessage(message: UpdateInfo, replyChannel: Channel?) {
         val updateInfo = message
         log.info("Received update notification [${updateInfo}]")
 

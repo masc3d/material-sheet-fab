@@ -13,14 +13,11 @@ import org.deku.leoz.central.config.StorageConfiguration
 import org.deku.leoz.log.LogMessage
 import org.slf4j.LoggerFactory
 import org.slf4j.Marker
-import sx.jms.Converter
+import sx.jms.Channel
 import sx.jms.Handler
 import java.io.File
 import java.util.*
 import javax.inject.Named
-import javax.jms.ConnectionFactory
-import javax.jms.Message
-import javax.jms.Session
 
 /**
  * Log message handler
@@ -143,7 +140,7 @@ class LogHandler : Handler<LogMessage> {
     /**
      * Message handler
      */
-    override fun onMessage(message: LogMessage, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
+    override fun onMessage(message: LogMessage, replyChannel: Channel?) {
         try {
             val identityKey = Identity.Key(message.nodeKey)
             log.debug("Received ${message.logEntries.count()} log messages from node [${identityKey}]")

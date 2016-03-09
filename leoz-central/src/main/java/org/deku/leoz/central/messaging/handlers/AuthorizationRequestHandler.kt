@@ -11,9 +11,6 @@ import sx.jms.Handler
 import sx.jms.converters.DefaultConverter
 import javax.inject.Inject
 import javax.inject.Named
-import javax.jms.ConnectionFactory
-import javax.jms.Message
-import javax.jms.Session
 
 /**
  * Created by masc on 01.07.15.
@@ -32,7 +29,7 @@ class AuthorizationRequestHandler : Handler<AuthorizationRequestMessage> {
                 DefaultConverter.CompressionType.GZIP)
     }
 
-    override fun onMessage(message: AuthorizationRequestMessage, converter: Converter, jmsMessage: Message, session: Session, connectionFactory: ConnectionFactory) {
+    override fun onMessage(message: AuthorizationRequestMessage, replyChannel: Channel?) {
         try {
             log.info(message)
 
@@ -58,16 +55,10 @@ class AuthorizationRequestHandler : Handler<AuthorizationRequestMessage> {
                 }
             }
 
-            val replyTo = jmsMessage.jmsReplyTo
-            if (replyTo != null) {
+            if (replyChannel != null) {
                 am.authorized = record != null && record.authorized != null && record.authorized !== 0
 
-                Channel(connectionFactory = connectionFactory,
-                        sessionTransacted = false,
-                        destination = replyTo,
-                        converter = this.converter).use { c ->
-                    c.send(am)
-                }
+                replyChannel.send(am)
 
                 log.info("Sent authorization [%s]".format(am))
             }

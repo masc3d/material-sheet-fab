@@ -8,13 +8,11 @@ import org.deku.leoz.node.data.sync.v1.EntityStateMessage
 import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage
 import sx.Action
 import sx.jms.Channel
-import sx.jms.converters.DefaultConverter
+import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener
 import java.sql.Timestamp
 import java.util.*
 import javax.jms.JMSException
-import javax.jms.Message
-import javax.jms.Session
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 
@@ -30,8 +28,12 @@ class EntityPublisher(
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory)
 :
-        SpringJmsListener({ Channel(messagingConfiguration.entitySyncQueue) })
-{
+        SpringJmsListener({ Channel(messagingConfiguration.entitySyncQueue) }),
+        Handler<EntityStateMessage> {
+    init {
+        this.addDelegate(EntityStateMessage::class.java, this)
+    }
+
     /**
      * Publish entity update notification
      * @param entityType
@@ -48,22 +50,13 @@ class EntityPublisher(
     }
 
     @Throws(JMSException::class)
-    public override fun onMessage(message: Message, session: Session) {
+    override fun onMessage(message: EntityStateMessage, replyChannel: Channel?) {
         var em: EntityManager? = null
         try {
-//            log.debug(String.format("Message id [%s] %s",
-//                    message.jmsMessageID,
-//                    LocalDateTime.ofInstant(
-//                            Instant.ofEpochMilli(
-//                                    message.jmsTimestamp), ZoneId.systemDefault())))
-
             val sw = Stopwatch.createStarted()
 
-            // Create new message converter for this session, just for clean statistics sake
-            val messageConverter = this.converter as DefaultConverter
-
             // Entity state message
-            val esMessage = messageConverter.fromMessage(message) as EntityStateMessage
+            val esMessage = message
             val entityType = esMessage.entityType
             val timestamp = esMessage.timestamp
             val lfmt = { s: String -> "[" + entityType!!.canonicalName + "]" + " " + s }
@@ -74,47 +67,44 @@ class EntityPublisher(
             // Count records
             val count = er.countNewerThan(timestamp)
 
+            replyChannel!!.statistics.enabled = true
+
+            // Send entity update message
             val euMessage = EntityUpdateMessage(count)
             log.debug(lfmt(euMessage.toString()))
+            replyChannel.send(euMessage)
 
-            Channel(connectionFactory = this.connectionFactory!!,
-                    destination = message.jmsReplyTo,
-                    converter = this.converter!!,
-                    sessionTransacted = false).use {
+            if (count > 0) {
+                // Query with cursor
+                val cursor = er.findNewerThan(timestamp)
 
-                it.send(euMessage)
-
-                if (count > 0) {
-                    // Query with cursor
-                    val cursor = er.findNewerThan(timestamp)
-
-                    val CHUNK_SIZE = 500
-                    val buffer = ArrayList<Any?>(CHUNK_SIZE)
-                    log.info(lfmt("Sending ${count}"))
-                    while (true) {
-                        var next: Any? = null
-                        if (cursor.hasNext()) {
-                            next = cursor.next()
-                            buffer.add(next)
-                        }
-                        if (buffer.size >= CHUNK_SIZE || next == null) {
-                            if (buffer.size > 0) {
-                                it.send(buffer.toArray())
-                                buffer.clear()
-                            }
-
-                            if (next == null)
-                                break
-                        }
+                val CHUNK_SIZE = 500
+                val buffer = ArrayList<Any?>(CHUNK_SIZE)
+                log.info(lfmt("Sending ${count}"))
+                while (true) {
+                    var next: Any? = null
+                    if (cursor.hasNext()) {
+                        next = cursor.next()
+                        buffer.add(next)
                     }
+                    if (buffer.size >= CHUNK_SIZE || next == null) {
+                        if (buffer.size > 0) {
+                            replyChannel.send(buffer.toArray())
+                            buffer.clear()
+                        }
 
-                    // Send empty array -> EOS
-                    it.send(arrayOfNulls<Any>(0), messageConfigurer = Action {
-                        it.setBooleanProperty(EntityUpdateMessage.EOS_PROPERTY, true)
-                    })
+                        if (next == null)
+                            break
+                    }
                 }
-                log.info(lfmt("Sent ${count} in ${sw} (${messageConverter.bytesWritten} bytes)"))
+
+                // Send empty array -> EOS
+                replyChannel.send(arrayOfNulls<Any>(0), messageConfigurer = Action {
+                    it.setBooleanProperty(EntityUpdateMessage.EOS_PROPERTY, true)
+                })
             }
+            log.info(lfmt("Sent ${count} in ${sw} (${replyChannel.statistics.bytesSent} bytes)"))
+
         } catch(e: Exception) {
             log.error(e.message, e);
         } finally {
