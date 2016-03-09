@@ -1,7 +1,6 @@
 package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.BundleUpdater
 import org.deku.leoz.bundle.Bundles
@@ -41,7 +40,7 @@ open class UpdaterConfiguration {
     @Inject
     private lateinit var settings: Settings
 
-    private val identityConfiguration by lazy { IdentityConfiguration.instance }
+    private val authorizationConfiguration by lazy { AuthorizationConfiguration.instance }
 
     /**
      * Local bundle repository
@@ -75,11 +74,10 @@ open class UpdaterConfiguration {
      */
     @Bean
     open fun bundleUpdater(): BundleUpdater {
-        val installer = BundleInstaller(
-                StorageConfiguration.instance.bundleInstallationDirectory)
+        val installer = BundleConfiguration.bundleInstaller()
 
         val updater = BundleUpdater(
-                identity = this.identityConfiguration.identity,
+                identity = this.authorizationConfiguration.identity,
                 installer = installer,
                 remoteRepository = this.updateRepository,
                 localRepository = this.localRepository,

@@ -4,8 +4,8 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.node.messaging.AuthorizationMessageHandler
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
+import org.deku.leoz.node.messaging.handlers.AuthorizationHandler
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
@@ -28,7 +28,7 @@ import javax.inject.Inject
 open class MessageListenerConfiguration {
     private val log = LogFactory.getLog(MessageListenerConfiguration::class.java)
 
-    private val identityConfiguration by lazy { IdentityConfiguration.instance }
+    private val authorizationConfiguration by lazy { AuthorizationConfiguration.instance }
 
     @Inject
     lateinit private var updaterConfiguration: UpdaterConfiguration
@@ -39,7 +39,7 @@ open class MessageListenerConfiguration {
 
     init {
         nodeQueueListener = object : SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.nodeQueue(identityConfiguration.identity.shortKey)) }) {}
+                { Channel(ActiveMQConfiguration.instance.nodeQueue(authorizationConfiguration.identity.shortKey)) }) {}
 
         nodeNotificationListener = object : SpringJmsListener(
                 { Channel(ActiveMQConfiguration.instance.nodeNotificationTopic) }) {}
@@ -49,7 +49,7 @@ open class MessageListenerConfiguration {
         // Add message handler delegatess
         nodeQueueListener.addDelegate(
                 AuthorizationMessage::class.java,
-                AuthorizationMessageHandler()
+                AuthorizationHandler()
         )
 
         nodeNotificationListener.addDelegate(

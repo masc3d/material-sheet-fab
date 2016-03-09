@@ -2,12 +2,12 @@ package org.deku.leoz.central.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.entities.UpdateInfoRequest
-import org.deku.leoz.central.messaging.handlers.IdentityMessageHandler
-import org.deku.leoz.central.messaging.handlers.LogMessageHandler
+import org.deku.leoz.central.messaging.handlers.AuthorizationRequestHandler
+import org.deku.leoz.central.messaging.handlers.LogHandler
 import org.deku.leoz.central.messaging.handlers.UpdateInfoRequestHandler
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.log.LogMessage
-import org.deku.leoz.node.messaging.entities.IdentityMessage
+import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.Channel
@@ -28,13 +28,13 @@ open class MessageListenerConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject
-    private lateinit var identityMessageHandler: IdentityMessageHandler
+    private lateinit var authorizationHandler: AuthorizationRequestHandler
 
     @Inject
     private lateinit var updateInfoRequestHandler: UpdateInfoRequestHandler
 
     @Inject
-    private lateinit var logMessageHandler: LogMessageHandler
+    private lateinit var logHandler: LogHandler
 
     /** Central message listener  */
     private val centralQueueListener: SpringJmsListener
@@ -55,8 +55,8 @@ open class MessageListenerConfiguration {
 
         // Add message handler delegatess
         centralQueueListener.addDelegate(
-                IdentityMessage::class.java,
-                identityMessageHandler)
+                AuthorizationRequestMessage::class.java,
+                authorizationHandler)
 
         centralQueueListener.addDelegate(
                 UpdateInfoRequest::class.java,
@@ -64,7 +64,7 @@ open class MessageListenerConfiguration {
 
         logListener.addDelegate(
                 LogMessage::class.java,
-                logMessageHandler)
+                logHandler)
     }
 
     //region Lifecycle

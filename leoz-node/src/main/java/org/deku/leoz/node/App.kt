@@ -3,7 +3,7 @@ package org.deku.leoz.node
 import com.google.common.collect.Lists
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.RsyncConfiguration
-import org.deku.leoz.node.config.IdentityConfiguration
+import org.deku.leoz.node.config.AuthorizationConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.springframework.beans.BeansException
@@ -132,7 +132,7 @@ open class App :
         log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
 
         // Initialize identity
-        IdentityConfiguration.instance.initialize()
+        AuthorizationConfiguration.instance.initialize()
 
         // Uncaught threaded exception handler
         Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {

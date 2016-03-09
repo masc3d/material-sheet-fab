@@ -1,19 +1,21 @@
 package org.deku.leoz.node.auth
 
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
-import org.deku.leoz.node.messaging.IdentityPublisher
+import org.deku.leoz.node.messaging.entities.AuthorizationMessage
+import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
 import sx.Disposable
 import sx.Dispose
+import sx.jms.Channel
 import sx.jms.embedded.Broker
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import kotlin.properties.Delegates
 
 /**
  * Authorizer
@@ -21,21 +23,25 @@ import kotlin.properties.Delegates
  */
 class Authorizer(
         /** Messaging context  */
-        private val mMessagingConfiguration: MessagingConfiguration)
+        private val messagingConfiguration: MessagingConfiguration)
 :
-        Disposable {
+        Disposable
+{
     private val log = LogFactory.getLog(this.javaClass)
     /** Executor service for authorization task  */
-    // TODO: change back to val once kotlin bug complaining about uninitialized val (even though it's initialized in init) is resolved
-    private var executorService: ExecutorService by Delegates.notNull()
+    private var executorService: ExecutorService? = null
     /** Authorization task  */
     private var authorizationTask: Runnable? = null
+
+    /** c'or */
+    init {
+    }
 
     /** Broker event listener */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
             if (authorizationTask != null)
-                executorService.submit(authorizationTask)
+                this@Authorizer.executorService!!.submit(authorizationTask)
         }
 
         override fun onStop() {
@@ -43,31 +49,54 @@ class Authorizer(
         }
     }
 
-    /** c'or */
-    init {
-        executorService = Executors.newSingleThreadExecutor()
-    }
-
     /**
-     * Start authorization process
+     * Start authorization process.
      * @param identity Identity to use to authorize
+     * @param onRejected Rejection callback
      */
-    fun start(identity: Identity) {
+    @Synchronized fun start(identity: Identity, onRejected: (identity: Identity) -> Unit = {}) {
+        this.stop()
+        this.executorService = Executors.newSingleThreadExecutor()
+
         // Define authorization task.
         // Start will be deferred until the message broker is up.
         authorizationTask = Runnable {
             var success = false
+            val executorService = this.executorService!!
             while (!success && !executorService.isShutdown) {
                 try {
-                    val isc = IdentityPublisher(ActiveMQConfiguration.instance)
+                    // Setup message
+                    val authorizationRequest = AuthorizationRequestMessage()
+                    authorizationRequest.name = identity.name
+                    authorizationRequest.key = identity.key
 
-                    // Synchronous request for id
-                    log.info("Requesting id for [%s]".format(identity))
-                    val authorizationMessage = isc.requestId(identity)
+                    // Serialize system info to json
+                    val jsonMapper = ObjectMapper()
+                    val systemInformationJson: String
+                    try {
+                        systemInformationJson = jsonMapper.writeValueAsString(identity.systemInformation)
+                    } catch (e: JsonProcessingException) {
+                        throw RuntimeException(e)
+                    }
+
+                    authorizationRequest.systemInfo = systemInformationJson
+
+                    log.info("Sending ${authorizationRequest}")
+
+                    // Connection and session
+                    val authorizationMessage = Channel(messagingConfiguration.centralQueue).use {
+                        it.sendRequest(authorizationRequest).use {
+                            it.receive(AuthorizationMessage::class.java)
+                        }
+                    }
 
                     // Set id based on response and store identity
                     log.info("Received authorization [%s]".format(authorizationMessage))
-                    identity.save(StorageConfiguration.instance.identityConfigurationFile)
+                    if (authorizationMessage.rejected) {
+                        onRejected(identity)
+                    } else {
+                        identity.save(StorageConfiguration.instance.identityConfigurationFile)
+                    }
                     success = true
                 } catch (e: TimeoutException) {
                     log.error(e.message)
@@ -94,17 +123,26 @@ class Authorizer(
         }
 
         // Register broker event
-        mMessagingConfiguration.broker.delegate.add(brokerEventListener)
-        if (mMessagingConfiguration.broker.isStarted)
-            executorService.submit(authorizationTask)
+        messagingConfiguration.broker.delegate.add(brokerEventListener)
+        if (messagingConfiguration.broker.isStarted)
+            executorService!!.submit(authorizationTask)
+    }
+
+    /**
+     * Stop executor/authorizer and wait for shutdown
+     */
+    @Synchronized private fun stop() {
+        val executorService = this.executorService
+        if (executorService != null) {
+            executorService.shutdownNow()
+            try {
+                executorService.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
+            } catch (e: InterruptedException) { }
+            this.executorService = null
+        }
     }
 
     override fun close() {
-        executorService.shutdownNow()
-        try {
-            executorService.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
-        } catch (e: InterruptedException) {
-            log.error(e.message, e)
-        }
+        this.stop()
     }
 }

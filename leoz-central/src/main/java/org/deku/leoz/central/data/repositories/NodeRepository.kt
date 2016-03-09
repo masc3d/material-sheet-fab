@@ -17,12 +17,27 @@ class NodeRepository {
     private lateinit var dslContext: DSLContext
 
     /**
+     * Create new record
+     */
+    fun createNew(): MstNodeRecord {
+        return dslContext.newRecord(Tables.MST_NODE)
+    }
+
+    /**
      * Find node record by key
      * @param key Key
      * @return Node record
      */
     fun findByKey(key: String): MstNodeRecord? {
         return dslContext.fetchOne(MstNode.MST_NODE, Tables.MST_NODE.KEY.eq(key))
+    }
+
+    /**
+     * Find node record by key starting with
+     * @param partialKey Partial key
+     */
+    fun findByKeyStartingWith(partialKey: String): MstNodeRecord? {
+        return dslContext.fetchOne(MstNode.MST_NODE, Tables.MST_NODE.KEY.startsWith(partialKey))
     }
 
     /**

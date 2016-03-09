@@ -27,7 +27,7 @@ import javax.jms.Session
  * Created by masc on 19/02/16.
  */
 @Named
-class LogMessageHandler : Handler<LogMessage> {
+class LogHandler : Handler<LogMessage> {
     private val log = LogFactory.getLog(this.javaClass)
 
     /** Loggers by node id */

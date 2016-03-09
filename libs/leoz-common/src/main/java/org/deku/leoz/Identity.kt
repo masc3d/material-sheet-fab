@@ -26,15 +26,7 @@ class Identity private constructor(
          * Short key
          */
         val short: String by lazy {
-            val max = 8
-            val short: String
-            if (value.length == 0)
-                short = ""
-            else {
-                val length = if (value.length > max) max else value.length
-                short = this.value.substring(0, length - 1)
-            }
-            short
+            this.value.substring(0, 8)
         }
 
         override fun toString(): String {
@@ -60,7 +52,6 @@ class Identity private constructor(
 
     companion object {
         // Property keys for file storage
-        private val PROP_ID = "id"
         private val PROP_NAME = "name"
         private val PROP_KEY = "key"
 
@@ -119,7 +110,6 @@ class Identity private constructor(
     fun save(destinationFile: File) {
         val data = mutableMapOf<String, Any>()
 
-        data.put(PROP_ID, this.shortKey)
         data.put(PROP_NAME, this.name)
         data.put(PROP_KEY, this.key)
 
