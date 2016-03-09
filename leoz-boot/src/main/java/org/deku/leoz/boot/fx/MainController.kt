@@ -8,7 +8,7 @@ import javafx.fxml.Initializable
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import org.deku.leoz.boot.Application
-import org.deku.leoz.boot.config.BundleInstallerConfiguration
+import org.deku.leoz.boot.config.BundleConfiguration
 import org.deku.leoz.boot.config.BundleRepositoryConfiguration
 import org.deku.leoz.boot.config.LogConfiguration
 import org.deku.leoz.boot.config.StorageConfiguration
@@ -135,7 +135,7 @@ class MainController : Initializable {
                         }
                 })
 
-                val installer = BundleInstallerConfiguration.installer()
+                val installer = BundleConfiguration.installer()
 
                 if (Application.Parameters.uninstall) {
                     installer.uninstall(bundleName)
