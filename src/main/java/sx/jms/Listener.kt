@@ -4,7 +4,10 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import sx.Disposable
 import java.util.*
-import javax.jms.*
+import javax.jms.ExceptionListener
+import javax.jms.JMSException
+import javax.jms.Message
+import javax.jms.Session
 
 /**
  * Lightweight jms message listener abstraction.
@@ -14,7 +17,7 @@ import javax.jms.*
  */
 abstract class Listener(
         /** Connection factory  */
-        protected val channel: () -> Channel)
+        channel: () -> Channel)
 :
         Disposable,
         ExceptionListener {
@@ -33,17 +36,15 @@ abstract class Listener(
     @Throws(JMSException::class)
     abstract fun stop()
 
-    /**
-     * Converter
-     */
-    protected val converter: Converter?
-        get() = this.channel().converter
+    private val lazyChannel: () -> Channel
 
-    /**
-     * Connection factory
-     */
-    protected val connectionFactory: ConnectionFactory?
-        get() = this.channel().connectionFactory
+    init {
+        this.lazyChannel = channel
+    }
+
+    val channel: Channel by lazy {
+        this.lazyChannel()
+    }
 
     /**
      * Default message handler with support for object message delegates
@@ -57,21 +58,28 @@ abstract class Listener(
 
         var handler: Handler<Any?>? = null
 
-        val converter = this.converter
-        if (converter != null) {
-            messageObject = converter.fromMessage(message)
-            handler = this.handlerDelegates.getOrDefault(messageObject.javaClass, null)
-        }
+        // Deserialize if there's a converter and determine handler
+        val converter = this.channel.converter
+        messageObject = converter.fromMessage(message)
+        handler = this.handlerDelegates.getOrDefault(messageObject.javaClass, null)
 
         if (handler == null) {
-            if (messageObject != null)
-                throw HandlingException("No delegate for message object type [%s]".format(messageObject.javaClass, Message::class.java))
-
-            throw HandlingException("No message converter nor generic delegate for jms messages")
+            throw HandlingException("No delegate for message object type [%s]".format(messageObject.javaClass, Message::class.java))
         }
 
-        if (messageObject != null)
-            handler.onMessage(messageObject, converter!!, message, session, this.channel().connectionFactory!!)
+        // Prepare reply channel if applicable
+        var replyChannel: Channel? = null
+        if (message.jmsReplyTo != null) {
+            replyChannel = this.channel.createReplyChannel(session, message.jmsReplyTo)
+        }
+
+        // Delegate to handler
+        try {
+            handler.onMessage(messageObject, replyChannel)
+        } finally {
+            if (replyChannel != null)
+                replyChannel.close()
+        }
     }
 
     /**

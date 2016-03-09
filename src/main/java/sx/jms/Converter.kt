@@ -12,20 +12,22 @@ interface Converter {
     /**
      * Convert a Java object to a JMS Message using the supplied session
      * to create the message object.
-     * @param obj  the object to convert
-     * @param session the Session to use for creating a JMS Message
+     * @param obj Object to convert
+     * @param session Session to use for creating a JMS Message
+     * @param onSize Optional callback passing byte size of the serialized message for statistics
      * @return the JMS Message
      * @throws javax.jms.JMSException     if thrown by JMS API methods
      */
     @Throws(JMSException::class)
-    fun toMessage(obj: Any, session: Session): Message
+    fun toMessage(obj: Any, session: Session, onSize: ((size: Long) -> Unit)? = null): Message
 
     /**
      * Convert from a JMS Message to a Java object.
      * @param message the message to convert
+     * @param onSize Optional callback passing byte size of the serialized message for statistics
      * @return the converted Java object
      * @throws javax.jms.JMSException     if thrown by JMS API methods
      */
     @Throws(JMSException::class)
-    fun fromMessage(message: Message): Any
+    fun fromMessage(message: Message, onSize: ((size: Long) -> Unit)? = null): Any
 }

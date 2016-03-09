@@ -36,11 +36,6 @@ class DefaultConverter(
         SNAPPY
     }
 
-    var bytesWritten: Long = 0
-        private set
-    var bytesRead: Long = 0
-        private set
-
     companion object {
         /**
          * Lazy kryo pool, providing and caching (soft) kryo instances
@@ -131,7 +126,7 @@ class DefaultConverter(
     }
 
     @Throws(JMSException::class)
-    override fun toMessage(obj: Any, session: Session): Message {
+    override fun toMessage(obj: Any, session: Session, onSize: ((size: Long) -> Unit)?): Message {
         val baos = ByteArrayOutputStream()
 
         // Apply intermediate stream if applicable (compression eg.) and serialize
@@ -143,17 +138,18 @@ class DefaultConverter(
         val buffer = baos.toByteArray()
         bm.writeBytes(buffer)
 
-        bytesWritten += buffer.size.toLong()
+        if (onSize != null)
+            onSize(buffer.size.toLong())
 
         return bm
     }
 
     @Throws(JMSException::class)
-    override fun fromMessage(message: Message): Any {
+    override fun fromMessage(message: Message, onSize: ((size: Long) -> Unit)?): Any {
         // Create binary stream from jms bytes message
         val bm = message as BytesMessage
-        val size = bm.bodyLength.toInt()
-        val buf = ByteArray(size)
+        val size = bm.bodyLength
+        val buf = ByteArray(size.toInt())
         bm.readBytes(buf)
         val bais = ByteArrayInputStream(buf)
 
@@ -161,13 +157,9 @@ class DefaultConverter(
         val deserializerStream = deserializationStreamSupplier(bais)
         val obj = deserializer(deserializerStream)
 
-        bytesRead += size.toLong()
+        if (onSize != null)
+            onSize(size)
 
         return obj
-    }
-
-    fun resetStatistics() {
-        bytesRead = 0
-        bytesWritten = 0
     }
 }

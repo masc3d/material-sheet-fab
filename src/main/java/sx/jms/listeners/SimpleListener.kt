@@ -12,10 +12,11 @@ import javax.jms.*
  */
 abstract class SimpleListener(channel: () -> Channel)
 :
-        Listener(channel) {
-    protected val connection: Connection by lazy({
-        this.channel().connectionFactory!!.createConnection()
-    })
+        Listener(channel)
+{
+    protected val connection: Connection by lazy {
+        this.channel.connectionFactory!!.createConnection()
+    }
 
     /**
      * Override to create customized session
