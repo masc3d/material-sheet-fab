@@ -10,7 +10,6 @@ import sx.jms.Channel
 import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener
 import java.sql.Timestamp
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -120,7 +119,7 @@ class EntityConsumer
 
                                     if (!eos) {
                                         // Deserialize entities
-                                        val entities = Arrays.asList(replyChannel.converter.fromMessage(tMsg) as Array<*>)
+                                        val entities = replyChannel.converter.fromMessage(tMsg) as Array<*>
 
                                         // TODO: exceptions within transactions behave in a strange way.
                                         // data of transactions that were committed may not be there and h2 may report
