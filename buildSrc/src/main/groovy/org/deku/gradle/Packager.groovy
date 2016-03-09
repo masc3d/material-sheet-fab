@@ -36,10 +36,10 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
 
-class BundleRepositoryConfiguration extends org.deku.leoz.config.BundleRepositoryConfiguration {
-    private static BundleRepositoryConfiguration instance = new BundleRepositoryConfiguration()
+class BundleConfiguration extends org.deku.leoz.config.BundleConfiguration {
+    private static BundleConfiguration instance = new BundleConfiguration()
 
-    public static BundleRepositoryConfiguration instance() {
+    public static BundleConfiguration instance() {
         return this.instance
     }
 }
@@ -632,7 +632,7 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         }
 
         // Upload to bundle repository
-        BundleRepository ar = BundleRepositoryConfiguration.instance().stagingRepository
+        BundleRepository ar = BundleConfiguration.instance().stagingRepository
         ar.upload(project.name, this.getReleasePath(), true)
     }
 }
@@ -647,7 +647,7 @@ class PackagerReleasePullTask extends PackagerReleaseTask {
         def releasePath = this.getReleasePath()
 
         def version = Bundle.Version.parse(project.version)
-        BundleRepository repository = BundleRepositoryConfiguration.instance().stagingRepository
+        BundleRepository repository = BundleConfiguration.instance().stagingRepository
 
         def remoteVersions = repository.listVersions(project.name)
                 .stream()
