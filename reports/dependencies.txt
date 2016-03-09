@@ -36,7 +36,7 @@ compile - Compile classpath for source set 'main'.
 |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
-|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.7
 |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
@@ -174,7 +174,7 @@ provided
 |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
-|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.7
 |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
@@ -300,7 +300,7 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
-|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.7
 |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
@@ -426,7 +426,7 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
-|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.7
 |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
@@ -552,7 +552,7 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
-|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
+|    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.7
 |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.18
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
