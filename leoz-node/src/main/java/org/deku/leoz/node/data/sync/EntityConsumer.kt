@@ -52,6 +52,14 @@ class EntityConsumer
         this.request(message.entityType!!, message.timestamp)
     }
 
+    val entitySyncChannel by lazy {
+        Channel(this.messagingConfiguration.entitySyncQueue)
+    }
+
+    val replyChannel by lazy {
+        entitySyncChannel.createReplyChannel()
+    }
+
     /**
      * Request entity update
      * @param entityType Entity type
@@ -73,92 +81,84 @@ class EntityConsumer
                     return@submit
                 }
 
-                Channel(this.messagingConfiguration.entitySyncQueue).use { entitySyncChannel ->
-                    val sw = Stopwatch.createStarted()
+                val sw = Stopwatch.createStarted()
 
-                    // Send entity state message
-                    entitySyncChannel.sendRequest(EntityStateMessage(entityType, timestamp)).use { replyChannel ->
-                        log.info(lfmt("Requesting entities"))
+                // Send entity state message
+                entitySyncChannel.sendRequest(EntityStateMessage(entityType, timestamp), replyChannel = this.replyChannel)
 
-                        // Enable statistics for this channel
-                        replyChannel.statistics.enabled = true
+                log.info(lfmt("Requesting entities"))
 
-                        // Receive entity update message
-                        val euMessage = replyChannel.receive(EntityUpdateMessage::class.java)
+                // Enable statistics for this channel
+                // TODO. statistics are broken, as converters are used externally (see below)
+                replyChannel.statistics.enabled = true
 
-                        log.debug(lfmt(euMessage.toString()))
-                        val count = AtomicLong()
+                // Receive entity update message
+                val euMessage = replyChannel.receive(EntityUpdateMessage::class.java)
 
-                        // Transaction processing thread pool
-                        val executorService = Executors.newFixedThreadPool(
-                                Runtime.getRuntime().availableProcessors())
+                log.debug(lfmt(euMessage.toString()))
+                val count = AtomicLong()
 
-                        if (euMessage.amount > 0) {
-                            val emv = em!!
-                            PersistenceUtil.transaction(em) {
-                                if (!er.hasTimestampAttribute()) {
-                                    log.debug(lfmt("No timestamp attribute found -> removing all entities"))
-                                    er.removeAll()
+                if (euMessage.amount > 0) {
+                    val emv = em!!
+                    PersistenceUtil.transaction(em) {
+                        if (!er.hasTimestampAttribute()) {
+                            log.debug(lfmt("No timestamp attribute found -> removing all entities"))
+                            er.removeAll()
+                        }
+
+                        // Receive entities
+                        var eos: Boolean
+                        var lastJmsTimestamp: Long = 0
+                        do {
+                            val tMsg = replyChannel.receive() ?: throw TimeoutException("Timeout while waiting for next entities chunk")
+
+                            // Verify message order
+                            if (tMsg.jmsTimestamp < lastJmsTimestamp)
+                                throw IllegalStateException(
+                                        String.format("Inconsistent message order (%d < %d)", tMsg.jmsTimestamp, timestamp))
+
+                            // Store last timestamp
+                            lastJmsTimestamp = tMsg.jmsTimestamp
+
+                            eos = tMsg.propertyExists(EntityUpdateMessage.EOS_PROPERTY)
+
+                            if (!eos) {
+                                // Deserialize entities
+                                val entities = replyChannel.converter.fromMessage(tMsg) as Array<*>
+
+                                // TODO: exceptions within transactions behave in a strange way.
+                                // data of transactions that were committed may not be there and h2 may report
+                                // cache level state nio exceptions.
+                                // Data seems to remain consistent though
+                                if (timestamp != null) {
+                                    log.trace(lfmt("Removing existing entities"))
+                                    // If there's already entities, clean out existing first.
+                                    // it's much faster than merging everything
+                                    for (o in entities) {
+                                        val o2 = emv.find(entityType,
+                                                emv.entityManagerFactory.persistenceUnitUtil.getIdentifier(o))
+
+                                        if (o2 != null) {
+                                            emv.remove(o2)
+                                        }
+                                    }
+                                    emv.flush()
+                                    emv.clear()
                                 }
 
-                                // Receive entities
-                                var eos: Boolean
-                                var lastJmsTimestamp: Long = 0
-                                do {
-                                    val tMsg = replyChannel.receive() ?: throw TimeoutException("Timeout while waiting for next entities chunk")
-
-                                    // Verify message order
-                                    if (tMsg.jmsTimestamp < lastJmsTimestamp)
-                                        throw IllegalStateException(
-                                                String.format("Inconsistent message order (%d < %d)", tMsg.jmsTimestamp, timestamp))
-
-                                    // Store last timestamp
-                                    lastJmsTimestamp = tMsg.jmsTimestamp
-
-                                    eos = tMsg.propertyExists(EntityUpdateMessage.EOS_PROPERTY)
-
-                                    if (!eos) {
-                                        // Deserialize entities
-                                        val entities = replyChannel.converter.fromMessage(tMsg) as Array<*>
-
-                                        // TODO: exceptions within transactions behave in a strange way.
-                                        // data of transactions that were committed may not be there and h2 may report
-                                        // cache level state nio exceptions.
-                                        // Data seems to remain consistent though
-                                        if (timestamp != null) {
-                                            log.trace(lfmt("Removing existing entities"))
-                                            // If there's already entities, clean out existing first.
-                                            // it's much faster than merging everything
-                                            for (o in entities) {
-                                                val o2 = emv.find(entityType,
-                                                        emv.entityManagerFactory.persistenceUnitUtil.getIdentifier(o))
-
-                                                if (o2 != null) {
-                                                    emv.remove(o2)
-                                                }
-                                            }
-                                            emv.flush()
-                                            emv.clear()
-                                        }
-
-                                        // Persist entities
-                                        for (o in entities) {
-                                            emv.persist(o)
-                                        }
-                                        emv.flush()
-                                        emv.clear()
-                                        count.getAndUpdate { c -> c + entities.size }
-                                    }
-                                } while (!eos)
+                                // Persist entities
+                                for (o in entities) {
+                                    emv.persist(o)
+                                }
+                                emv.flush()
+                                emv.clear()
+                                count.getAndUpdate { c -> c + entities.size }
                             }
-
-                        }
-                        log.trace(lfmt("Joining transaction threads"))
-                        executorService.shutdown()
-                        executorService.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
-                        log.info(lfmt("Received and stored ${count.get()} in ${sw} (${replyChannel.statistics.bytesReceived} bytes)"))
+                        } while (!eos)
                     }
+
                 }
+                log.info(lfmt("Received and stored ${count.get()} in ${sw} (${replyChannel.statistics.bytesReceived} bytes)"))
             } catch (e: TimeoutException) {
                 log.error(lfmt(e.message ?: ""))
             } catch (e: Exception) {
