@@ -6,6 +6,7 @@ import sx.Disposable
 import sx.LazyInstance
 import java.io.Closeable
 import java.time.Duration
+import java.util.*
 import java.util.concurrent.TimeoutException
 import java.util.function.Supplier
 import javax.jms.*
@@ -15,7 +16,7 @@ import javax.jms.*
  * Caches session and message consumer/producer.
  * TODO: consider seperating channel configuration from actual implementation, as eg. listeners have their dedicated session transaction setting, so it may be slightly confusing
  * TODO: add support for actively supporting correlation id for reusing temporary queues/channels in a request/response scheme
- * TODO: add support for temporary queue pooling, to prevent creation of temporary queues per request (sendRequest)
+ * TODO: add support for temporary queue pooling, to prevent creation of temporary queues per request (sendRequest) @link TemporaryConnectionPool
  * Created by masc on 06.07.15.
  * @param configuration Channel configuration
  * @param session Optional: jms session to use
@@ -69,11 +70,14 @@ class Channel constructor(
             session = session) {
     }
 
-    companion object Defaults {
+    companion object {
         private val RECEIVE_TIMEOUT = Duration.ofSeconds(10)
         private val JMS_TTL = Duration.ZERO
         private val JMS_TRANSACTED = true
         private val JMS_DELIVERY_MODE = Channel.DeliveryMode.NonPersistent
+
+        // @see TemporaryQueuePool
+        // val temporaryQueuePool = TemporaryQueuePool()
     }
 
     /**
@@ -82,6 +86,68 @@ class Channel constructor(
     enum class DeliveryMode(val value: Int) {
         NonPersistent(javax.jms.DeliveryMode.NON_PERSISTENT),
         Persistent(javax.jms.DeliveryMode.PERSISTENT)
+    }
+
+    // TODO: currently unused, this needs more work as temporary queues cannot be shared across connections
+    // As connections may be pooled by the factory itself, it will become tricky to impossible to track
+    // connections, as this process is intransparent via jms API.
+    // To make this work properly, will have to implement our own connection pool we have
+    // control over, which may or should also support threadlocal pooling, replacing connection factory
+    // itself as a connection provider for all sx.jms classes
+    class TemporaryQueuePool {
+        private val log = LogFactory.getLog(this.javaClass)
+        private val queue = HashMap<String, LinkedList<TemporaryQueue>>()
+
+        private fun resolveKey(connection: Connection): String {
+            return connection.toString()
+        }
+
+        fun get(connection: Connection, session: Session): PooledTemporaryQueue {
+            synchronized(queue) {
+                val key = this.resolveKey(connection)
+                var list = queue.get(key)
+                if (list == null) {
+                    list = LinkedList<TemporaryQueue>()
+                    queue.put(key, list)
+                }
+
+                val temporaryQueue: TemporaryQueue
+                if (list.count() > 0) {
+                    temporaryQueue = list.poll()
+                    log.info("Polled from queue [${temporaryQueue}")
+                } else {
+                    temporaryQueue = session.createTemporaryQueue()
+                    log.info("Created queue [${temporaryQueue}")
+                }
+
+                return PooledTemporaryQueue(key, temporaryQueue, this)
+            }
+        }
+
+        fun release(t: PooledTemporaryQueue) {
+            synchronized(queue) {
+                var list = queue.get(t.key)
+                if (list == null)
+                    throw IllegalArgumentException("Unknown key")
+
+                log.info("Releasing queue [${t.temporaryQueue}")
+                if (!list.contains(t.temporaryQueue))
+                    list.offer(t.temporaryQueue)
+            }
+        }
+    }
+
+    /**
+     * Pooled temporary queue
+     */
+    class PooledTemporaryQueue(val key: String,
+                               val temporaryQueue: TemporaryQueue,
+                               val pool: TemporaryQueuePool)
+    :
+            TemporaryQueue by temporaryQueue {
+        override fun delete() {
+            pool.release(this)
+        }
     }
 
     /**
@@ -95,10 +161,10 @@ class Channel constructor(
      * @param deliveryMode JMS delivery mode
      */
     class Configuration @JvmOverloads constructor (val connectionFactory: ConnectionFactory?,
-                                                   sessionTransacted: Boolean = Defaults.JMS_TRANSACTED,
+                                                   sessionTransacted: Boolean = Channel.JMS_TRANSACTED,
                                                    destination: Destination,
                                                    val converter: Converter,
-                                                   deliveryMode: Channel.DeliveryMode = Defaults.JMS_DELIVERY_MODE)
+                                                   deliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE)
     :
             Cloneable {
 
@@ -118,13 +184,13 @@ class Channel constructor(
         }
 
         /** Time to live for messages sent through this channel */
-        var ttl: Duration = Defaults.JMS_TTL
+        var ttl: Duration = Channel.JMS_TTL
         /** Priority for messages sent through this channel */
         var priority: Int? = null
         /** Auto-commit messages on send, defaults to true */
         var autoCommit: Boolean = true
         /** Default receive timeout for receive/sendReceive calls. Defaults to 10 seconds. */
-        var receiveTimeout: Duration = Defaults.RECEIVE_TIMEOUT
+        var receiveTimeout: Duration = Channel.RECEIVE_TIMEOUT
 
         /**
          * Clone channel configuration, optionally overriding properties
@@ -337,6 +403,7 @@ class Channel constructor(
 
     /**
      * Create temporary queue channel replicating this channel's basic properties
+     * @param session: Optional session: If not provided this channel's session will be used
      * @param destination: Optinoal destination. If not provided an internal one will be created and destroyed on channel close
      * @return Temporary queue channel
      */
@@ -350,7 +417,8 @@ class Channel constructor(
             if (this.connectionFactory == null)
                 throw java.lang.IllegalStateException("Cannot create response channel from transacted channel without connection factory")
         }
-        val replyDestination = destination ?: session.createTemporaryQueue()
+        val replyDestination = destination ?:
+                session.createTemporaryQueue()
 
         replyChannel = Channel(
                 configuration = this.configuration.clone(
@@ -364,11 +432,9 @@ class Channel constructor(
                 session = replySession)
 
         if (destination == null) {
+            replyChannel.ownsDestination = true
             replyChannel.connection.set({ this.connection.get() })
         }
-
-        // As this channel has ownership over destination, should close and delete appropriately
-        replyChannel.ownsDestination = (destination == null)
 
         return replyChannel
     }
@@ -380,6 +446,13 @@ class Channel constructor(
      */
     fun createReplyChannel(session: Session, destination: Destination): Channel {
         return this.createReplyChannelInternal(session, destination)
+    }
+
+    /**
+     * Create reply channel
+     */
+    fun createReplyChannel(): Channel {
+        return this.createReplyChannelInternal(destination = null)
     }
 
     /**
@@ -411,9 +484,7 @@ class Channel constructor(
      * @param jmsMessage Message to send
      * @param messageConfigurer Callback for customizing the message before sending
      */
-    @JvmOverloads fun sendRequest(jmsMessage: Message, messageConfigurer: Action<Message>? = null): Channel {
-        val replyChannel = this.createReplyChannelInternal()
-
+    @JvmOverloads fun sendRequest(jmsMessage: Message, replyChannel: Channel = this.createReplyChannelInternal(), messageConfigurer: Action<Message>? = null): Channel {
         this.send(jmsMessage, Action {
             messageConfigurer?.perform(it)
             it.jmsReplyTo = replyChannel.destination
@@ -443,12 +514,13 @@ class Channel constructor(
      * @param messageConfigurer Optional callback to customize jms message
      * @return Response/reply channel
      */
-    @JvmOverloads fun sendRequest(message: Any, messageConfigurer: Action<Message>? = null): Channel {
+    @JvmOverloads fun sendRequest(message: Any, replyChannel: Channel = this.createReplyChannelInternal(), messageConfigurer: Action<Message>? = null): Channel {
         return this.sendRequest(
                 this.converter.toMessage(
                         obj = message,
                         session = sessionInstance.get(),
                         onSize = statistics.accountSent),
+                replyChannel,
                 messageConfigurer)
     }
 
@@ -515,6 +587,8 @@ class Channel constructor(
                 c.close()
             } catch (e: Exception) {
                 log.error(e.message, e)
+            } finally {
+                consumer.reset()
             }
         })
 
@@ -524,15 +598,19 @@ class Channel constructor(
                 p.close()
             } catch (e: Exception) {
                 log.error(e.message, e)
+            } finally {
+                producer.reset()
             }
         })
 
         // Commit session (must occur after closing consumer(s))
-        try {
-            this.commit()
-        } catch (e: Exception) {
-            log.error(e.message, e)
-        }
+        sessionInstance.ifSet({
+            try {
+                this.commit()
+            } catch (e: Exception) {
+                log.error(e.message, e)
+            }
+        })
 
         if (ownsDestination) {
             val destination = this.destination
@@ -555,6 +633,8 @@ class Channel constructor(
                     s.close()
                 } catch (e: Exception) {
                     log.error(e.message, e)
+                } finally {
+                    sessionInstance.reset()
                 }
             })
         }
@@ -566,6 +646,8 @@ class Channel constructor(
                     c.close()
                 } catch (e: Exception) {
                     log.error(e.message, e)
+                } finally {
+                    connection.reset()
                 }
             })
         }
@@ -573,5 +655,9 @@ class Channel constructor(
 
     override fun toString(): String {
         return this.configuration.toString()
+    }
+
+    protected fun finalize() {
+        this.close()
     }
 }
