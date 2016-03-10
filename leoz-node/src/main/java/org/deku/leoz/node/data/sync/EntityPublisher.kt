@@ -63,54 +63,54 @@ class EntityPublisher(
             val lfmt = { s: String -> "[" + entityType!!.canonicalName + "]" + " " + s }
 
             em = entityManagerFactory.createEntityManager()
-                val er = EntityRepository(em, entityType)
+            val er = EntityRepository(em, entityType)
 
-                // Count records
-                val count = er.countNewerThan(timestamp)
+            // Count records
+            val count = er.countNewerThan(timestamp)
 
-                replyChannel!!.statistics.enabled = true
+            replyChannel!!.statistics.enabled = true
 
-                // Send entity update message
-                val euMessage = EntityUpdateMessage(count)
-                log.debug(lfmt(euMessage.toString()))
-                replyChannel.send(euMessage)
+            // Send entity update message
+            val euMessage = EntityUpdateMessage(count)
+            log.debug(lfmt(euMessage.toString()))
+            replyChannel.send(euMessage)
 
-                if (count > 0) {
-                    // Query with cursor
-                    var cursor: ScrollableCursor? = null
-                    try {
-                        cursor = er.findNewerThan(timestamp)
+            if (count > 0) {
+                // Query with cursor
+                var cursor: ScrollableCursor? = null
+                try {
+                    cursor = er.findNewerThan(timestamp)
 
-                        val CHUNK_SIZE = 500
-                        val buffer = ArrayList<Any?>(CHUNK_SIZE)
-                        log.info(lfmt("Sending ${count}"))
-                        while (true) {
-                            var next: Any? = null
-                            if (cursor.hasNext()) {
-                                next = cursor.next()
-                                buffer.add(next)
-                            }
-                            if (buffer.size >= CHUNK_SIZE || next == null) {
-                                if (buffer.size > 0) {
-                                    replyChannel.send(buffer.toArray())
-                                    buffer.clear()
-                                }
-
-                                if (next == null)
-                                    break
-                            }
+                    val CHUNK_SIZE = 500
+                    val buffer = ArrayList<Any?>(CHUNK_SIZE)
+                    log.info(lfmt("Sending ${count}"))
+                    while (true) {
+                        var next: Any? = null
+                        if (cursor.hasNext()) {
+                            next = cursor.next()
+                            buffer.add(next)
                         }
+                        if (buffer.size >= CHUNK_SIZE || next == null) {
+                            if (buffer.size > 0) {
+                                replyChannel.send(buffer.toArray())
+                                buffer.clear()
+                            }
 
-                        // Send empty array -> EOS
-                        replyChannel.send(arrayOfNulls<Any>(0), messageConfigurer = Action {
-                            it.setBooleanProperty(EntityUpdateMessage.EOS_PROPERTY, true)
-                        })
-                    } finally {
-                        if (cursor != null)
-                            cursor.close()
+                            if (next == null)
+                                break
+                        }
                     }
+
+                    // Send empty array -> EOS
+                    replyChannel.send(arrayOfNulls<Any>(0), messageConfigurer = Action {
+                        it.setBooleanProperty(EntityUpdateMessage.EOS_PROPERTY, true)
+                    })
+                } finally {
+                    if (cursor != null)
+                        cursor.close()
                 }
-                log.info(lfmt("Sent ${count} in ${sw} (${replyChannel.statistics.bytesSent} bytes)"))
+            }
+            log.info(lfmt("Sent ${count} in ${sw} (${replyChannel.statistics.bytesSent} bytes)"))
         } catch(e: Exception) {
             log.error(e.message, e);
         } finally {
