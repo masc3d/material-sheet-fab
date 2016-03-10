@@ -308,13 +308,13 @@ compile - Compile classpath for source set 'main'.
 |    +--- com.vaadin:vaadin-spring-boot:1.+ -> 1.0.0
 |    |    +--- com.vaadin:vaadin-spring:1.0.0
 |    |    |    +--- org.springframework:spring-web:4.1.6.RELEASE -> 4.2.5.RELEASE (*)
-|    |    |    +--- com.vaadin:vaadin-server:7.4.4 -> 7.6.3
+|    |    |    +--- com.vaadin:vaadin-server:7.4.4 -> 7.6.4
 |    |    |    |    +--- com.vaadin:vaadin-sass-compiler:0.9.13
 |    |    |    |    |    +--- org.w3c.css:sac:1.3
 |    |    |    |    |    +--- com.vaadin.external.flute:flute:1.3.0.gg2
 |    |    |    |    |    \--- com.yahoo.platform.yui:yuicompressor:2.4.8
 |    |    |    |    |         \--- rhino:js:1.7R2
-|    |    |    |    +--- com.vaadin:vaadin-shared:7.6.3
+|    |    |    |    +--- com.vaadin:vaadin-shared:7.6.4
 |    |    |    |    |    +--- com.vaadin.external.flute:flute:1.3.0.gg2
 |    |    |    |    |    +--- com.vaadin.external.streamhtmlparser:streamhtmlparser-jsilver:0.0.10.vaadin1
 |    |    |    |    |    \--- com.vaadin.external.google:guava:16.0.1.vaadin1
@@ -323,20 +323,16 @@ compile - Compile classpath for source set 'main'.
 |    |    +--- org.springframework.boot:spring-boot:1.2.2.RELEASE -> 1.3.3.RELEASE (*)
 |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.2.RELEASE -> 1.3.3.RELEASE (*)
 |    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE -> 4.2.5.RELEASE (*)
-|    +--- com.vaadin:vaadin-client:+ -> 7.6.3
-|    |    +--- com.vaadin:vaadin-shared:7.6.3 (*)
-|    |    +--- com.vaadin:vaadin-server:7.6.3 (*)
+|    +--- com.vaadin:vaadin-client:+ -> 7.6.4
+|    |    +--- com.vaadin:vaadin-shared:7.6.4 (*)
+|    |    +--- com.vaadin:vaadin-server:7.6.4 (*)
 |    |    +--- org.w3c.css:sac:1.3
 |    |    \--- javax.validation:validation-api:1.0.0.GA -> 1.1.0.Final
-|    +--- com.vaadin:vaadin-client-compiled:+ -> 7.6.3
-|    +--- com.vaadin:vaadin-widgets:+ -> 7.6.3
-|    +--- com.vaadin:vaadin-themes:+ -> 7.6.3
-|    +--- commons-beanutils:commons-beanutils-core:1.8.+ -> 1.8.3
-|    |    \--- commons-logging:commons-logging:1.1.1 -> 1.2
-|    \--- org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:+ -> 7.6.1.3
-|         +--- com.vaadin:vaadin-server:7.6.1 -> 7.6.3 (*)
-|         +--- com.vaadin:vaadin-client-compiled:7.6.1 -> 7.6.3
-|         \--- com.vaadin:vaadin-themes:7.6.1 -> 7.6.3
+|    +--- com.vaadin:vaadin-client-compiled:+ -> 7.6.4
+|    +--- com.vaadin:vaadin-widgets:+ -> 7.6.4
+|    +--- com.vaadin:vaadin-themes:+ -> 7.6.4
+|    \--- commons-beanutils:commons-beanutils-core:1.8.+ -> 1.8.3
+|         \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
@@ -644,13 +640,13 @@ default - Configuration for default artifacts.
 |    +--- com.vaadin:vaadin-spring-boot:1.+ -> 1.0.0
 |    |    +--- com.vaadin:vaadin-spring:1.0.0
 |    |    |    +--- org.springframework:spring-web:4.1.6.RELEASE -> 4.2.5.RELEASE (*)
-|    |    |    +--- com.vaadin:vaadin-server:7.4.4 -> 7.6.3
+|    |    |    +--- com.vaadin:vaadin-server:7.4.4 -> 7.6.4
 |    |    |    |    +--- com.vaadin:vaadin-sass-compiler:0.9.13
 |    |    |    |    |    +--- org.w3c.css:sac:1.3
 |    |    |    |    |    +--- com.vaadin.external.flute:flute:1.3.0.gg2
 |    |    |    |    |    \--- com.yahoo.platform.yui:yuicompressor:2.4.8
 |    |    |    |    |         \--- rhino:js:1.7R2
-|    |    |    |    +--- com.vaadin:vaadin-shared:7.6.3
+|    |    |    |    +--- com.vaadin:vaadin-shared:7.6.4
 |    |    |    |    |    +--- com.vaadin.external.flute:flute:1.3.0.gg2
 |    |    |    |    |    +--- com.vaadin.external.streamhtmlparser:streamhtmlparser-jsilver:0.0.10.vaadin1
 |    |    |    |    |    \--- com.vaadin.external.google:guava:16.0.1.vaadin1
@@ -659,20 +655,16 @@ default - Configuration for default artifacts.
 |    |    +--- org.springframework.boot:spring-boot:1.2.2.RELEASE -> 1.3.3.RELEASE (*)
 |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.2.RELEASE -> 1.3.3.RELEASE (*)
 |    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE -> 4.2.5.RELEASE (*)
-|    +--- com.vaadin:vaadin-client:+ -> 7.6.3
-|    |    +--- com.vaadin:vaadin-shared:7.6.3 (*)
-|    |    +--- com.vaadin:vaadin-server:7.6.3 (*)
+|    +--- com.vaadin:vaadin-client:+ -> 7.6.4
+|    |    +--- com.vaadin:vaadin-shared:7.6.4 (*)
+|    |    +--- com.vaadin:vaadin-server:7.6.4 (*)
 |    |    +--- org.w3c.css:sac:1.3
 |    |    \--- javax.validation:validation-api:1.0.0.GA -> 1.1.0.Final
-|    +--- com.vaadin:vaadin-client-compiled:+ -> 7.6.3
-|    +--- com.vaadin:vaadin-widgets:+ -> 7.6.3
-|    +--- com.vaadin:vaadin-themes:+ -> 7.6.3
-|    +--- commons-beanutils:commons-beanutils-core:1.8.+ -> 1.8.3
-|    |    \--- commons-logging:commons-logging:1.1.1 -> 1.2
-|    \--- org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:+ -> 7.6.1.3
-|         +--- com.vaadin:vaadin-server:7.6.1 -> 7.6.3 (*)
-|         +--- com.vaadin:vaadin-client-compiled:7.6.1 -> 7.6.3
-|         \--- com.vaadin:vaadin-themes:7.6.1 -> 7.6.3
+|    +--- com.vaadin:vaadin-client-compiled:+ -> 7.6.4
+|    +--- com.vaadin:vaadin-widgets:+ -> 7.6.4
+|    +--- com.vaadin:vaadin-themes:+ -> 7.6.4
+|    \--- commons-beanutils:commons-beanutils-core:1.8.+ -> 1.8.3
+|         \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
@@ -990,13 +982,13 @@ runtime - Runtime classpath for source set 'main'.
 |    +--- com.vaadin:vaadin-spring-boot:1.+ -> 1.0.0
 |    |    +--- com.vaadin:vaadin-spring:1.0.0
 |    |    |    +--- org.springframework:spring-web:4.1.6.RELEASE -> 4.2.5.RELEASE (*)
-|    |    |    +--- com.vaadin:vaadin-server:7.4.4 -> 7.6.3
+|    |    |    +--- com.vaadin:vaadin-server:7.4.4 -> 7.6.4
 |    |    |    |    +--- com.vaadin:vaadin-sass-compiler:0.9.13
 |    |    |    |    |    +--- org.w3c.css:sac:1.3
 |    |    |    |    |    +--- com.vaadin.external.flute:flute:1.3.0.gg2
 |    |    |    |    |    \--- com.yahoo.platform.yui:yuicompressor:2.4.8
 |    |    |    |    |         \--- rhino:js:1.7R2
-|    |    |    |    +--- com.vaadin:vaadin-shared:7.6.3
+|    |    |    |    +--- com.vaadin:vaadin-shared:7.6.4
 |    |    |    |    |    +--- com.vaadin.external.flute:flute:1.3.0.gg2
 |    |    |    |    |    +--- com.vaadin.external.streamhtmlparser:streamhtmlparser-jsilver:0.0.10.vaadin1
 |    |    |    |    |    \--- com.vaadin.external.google:guava:16.0.1.vaadin1
@@ -1005,20 +997,16 @@ runtime - Runtime classpath for source set 'main'.
 |    |    +--- org.springframework.boot:spring-boot:1.2.2.RELEASE -> 1.3.3.RELEASE (*)
 |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.2.RELEASE -> 1.3.3.RELEASE (*)
 |    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE -> 4.2.5.RELEASE (*)
-|    +--- com.vaadin:vaadin-client:+ -> 7.6.3
-|    |    +--- com.vaadin:vaadin-shared:7.6.3 (*)
-|    |    +--- com.vaadin:vaadin-server:7.6.3 (*)
+|    +--- com.vaadin:vaadin-client:+ -> 7.6.4
+|    |    +--- com.vaadin:vaadin-shared:7.6.4 (*)
+|    |    +--- com.vaadin:vaadin-server:7.6.4 (*)
 |    |    +--- org.w3c.css:sac:1.3
 |    |    \--- javax.validation:validation-api:1.0.0.GA -> 1.1.0.Final
-|    +--- com.vaadin:vaadin-client-compiled:+ -> 7.6.3
-|    +--- com.vaadin:vaadin-widgets:+ -> 7.6.3
-|    +--- com.vaadin:vaadin-themes:+ -> 7.6.3
-|    +--- commons-beanutils:commons-beanutils-core:1.8.+ -> 1.8.3
-|    |    \--- commons-logging:commons-logging:1.1.1 -> 1.2
-|    \--- org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:+ -> 7.6.1.3
-|         +--- com.vaadin:vaadin-server:7.6.1 -> 7.6.3 (*)
-|         +--- com.vaadin:vaadin-client-compiled:7.6.1 -> 7.6.3
-|         \--- com.vaadin:vaadin-themes:7.6.1 -> 7.6.3
+|    +--- com.vaadin:vaadin-client-compiled:+ -> 7.6.4
+|    +--- com.vaadin:vaadin-widgets:+ -> 7.6.4
+|    +--- com.vaadin:vaadin-themes:+ -> 7.6.4
+|    \--- commons-beanutils:commons-beanutils-core:1.8.+ -> 1.8.3
+|         \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
@@ -1326,13 +1314,13 @@ testCompile - Compile classpath for source set 'test'.
 |    +--- com.vaadin:vaadin-spring-boot:1.+ -> 1.0.0
 |    |    +--- com.vaadin:vaadin-spring:1.0.0
 |    |    |    +--- org.springframework:spring-web:4.1.6.RELEASE -> 4.2.5.RELEASE (*)
-|    |    |    +--- com.vaadin:vaadin-server:7.4.4 -> 7.6.3
+|    |    |    +--- com.vaadin:vaadin-server:7.4.4 -> 7.6.4
 |    |    |    |    +--- com.vaadin:vaadin-sass-compiler:0.9.13
 |    |    |    |    |    +--- org.w3c.css:sac:1.3
 |    |    |    |    |    +--- com.vaadin.external.flute:flute:1.3.0.gg2
 |    |    |    |    |    \--- com.yahoo.platform.yui:yuicompressor:2.4.8
 |    |    |    |    |         \--- rhino:js:1.7R2
-|    |    |    |    +--- com.vaadin:vaadin-shared:7.6.3
+|    |    |    |    +--- com.vaadin:vaadin-shared:7.6.4
 |    |    |    |    |    +--- com.vaadin.external.flute:flute:1.3.0.gg2
 |    |    |    |    |    +--- com.vaadin.external.streamhtmlparser:streamhtmlparser-jsilver:0.0.10.vaadin1
 |    |    |    |    |    \--- com.vaadin.external.google:guava:16.0.1.vaadin1
@@ -1341,20 +1329,16 @@ testCompile - Compile classpath for source set 'test'.
 |    |    +--- org.springframework.boot:spring-boot:1.2.2.RELEASE -> 1.3.3.RELEASE (*)
 |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.2.RELEASE -> 1.3.3.RELEASE (*)
 |    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE -> 4.2.5.RELEASE (*)
-|    +--- com.vaadin:vaadin-client:+ -> 7.6.3
-|    |    +--- com.vaadin:vaadin-shared:7.6.3 (*)
-|    |    +--- com.vaadin:vaadin-server:7.6.3 (*)
+|    +--- com.vaadin:vaadin-client:+ -> 7.6.4
+|    |    +--- com.vaadin:vaadin-shared:7.6.4 (*)
+|    |    +--- com.vaadin:vaadin-server:7.6.4 (*)
 |    |    +--- org.w3c.css:sac:1.3
 |    |    \--- javax.validation:validation-api:1.0.0.GA -> 1.1.0.Final
-|    +--- com.vaadin:vaadin-client-compiled:+ -> 7.6.3
-|    +--- com.vaadin:vaadin-widgets:+ -> 7.6.3
-|    +--- com.vaadin:vaadin-themes:+ -> 7.6.3
-|    +--- commons-beanutils:commons-beanutils-core:1.8.+ -> 1.8.3
-|    |    \--- commons-logging:commons-logging:1.1.1 -> 1.2
-|    \--- org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:+ -> 7.6.1.3
-|         +--- com.vaadin:vaadin-server:7.6.1 -> 7.6.3 (*)
-|         +--- com.vaadin:vaadin-client-compiled:7.6.1 -> 7.6.3
-|         \--- com.vaadin:vaadin-themes:7.6.1 -> 7.6.3
+|    +--- com.vaadin:vaadin-client-compiled:+ -> 7.6.4
+|    +--- com.vaadin:vaadin-widgets:+ -> 7.6.4
+|    +--- com.vaadin:vaadin-themes:+ -> 7.6.4
+|    \--- commons-beanutils:commons-beanutils-core:1.8.+ -> 1.8.3
+|         \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
@@ -1678,13 +1662,13 @@ testRuntime - Runtime classpath for source set 'test'.
 |    +--- com.vaadin:vaadin-spring-boot:1.+ -> 1.0.0
 |    |    +--- com.vaadin:vaadin-spring:1.0.0
 |    |    |    +--- org.springframework:spring-web:4.1.6.RELEASE -> 4.2.5.RELEASE (*)
-|    |    |    +--- com.vaadin:vaadin-server:7.4.4 -> 7.6.3
+|    |    |    +--- com.vaadin:vaadin-server:7.4.4 -> 7.6.4
 |    |    |    |    +--- com.vaadin:vaadin-sass-compiler:0.9.13
 |    |    |    |    |    +--- org.w3c.css:sac:1.3
 |    |    |    |    |    +--- com.vaadin.external.flute:flute:1.3.0.gg2
 |    |    |    |    |    \--- com.yahoo.platform.yui:yuicompressor:2.4.8
 |    |    |    |    |         \--- rhino:js:1.7R2
-|    |    |    |    +--- com.vaadin:vaadin-shared:7.6.3
+|    |    |    |    +--- com.vaadin:vaadin-shared:7.6.4
 |    |    |    |    |    +--- com.vaadin.external.flute:flute:1.3.0.gg2
 |    |    |    |    |    +--- com.vaadin.external.streamhtmlparser:streamhtmlparser-jsilver:0.0.10.vaadin1
 |    |    |    |    |    \--- com.vaadin.external.google:guava:16.0.1.vaadin1
@@ -1693,20 +1677,16 @@ testRuntime - Runtime classpath for source set 'test'.
 |    |    +--- org.springframework.boot:spring-boot:1.2.2.RELEASE -> 1.3.3.RELEASE (*)
 |    |    +--- org.springframework.boot:spring-boot-autoconfigure:1.2.2.RELEASE -> 1.3.3.RELEASE (*)
 |    |    \--- org.springframework:spring-webmvc:4.1.6.RELEASE -> 4.2.5.RELEASE (*)
-|    +--- com.vaadin:vaadin-client:+ -> 7.6.3
-|    |    +--- com.vaadin:vaadin-shared:7.6.3 (*)
-|    |    +--- com.vaadin:vaadin-server:7.6.3 (*)
+|    +--- com.vaadin:vaadin-client:+ -> 7.6.4
+|    |    +--- com.vaadin:vaadin-shared:7.6.4 (*)
+|    |    +--- com.vaadin:vaadin-server:7.6.4 (*)
 |    |    +--- org.w3c.css:sac:1.3
 |    |    \--- javax.validation:validation-api:1.0.0.GA -> 1.1.0.Final
-|    +--- com.vaadin:vaadin-client-compiled:+ -> 7.6.3
-|    +--- com.vaadin:vaadin-widgets:+ -> 7.6.3
-|    +--- com.vaadin:vaadin-themes:+ -> 7.6.3
-|    +--- commons-beanutils:commons-beanutils-core:1.8.+ -> 1.8.3
-|    |    \--- commons-logging:commons-logging:1.1.1 -> 1.2
-|    \--- org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:+ -> 7.6.1.3
-|         +--- com.vaadin:vaadin-server:7.6.1 -> 7.6.3 (*)
-|         +--- com.vaadin:vaadin-client-compiled:7.6.1 -> 7.6.3
-|         \--- com.vaadin:vaadin-themes:7.6.1 -> 7.6.3
+|    +--- com.vaadin:vaadin-client-compiled:+ -> 7.6.4
+|    +--- com.vaadin:vaadin-widgets:+ -> 7.6.4
+|    +--- com.vaadin:vaadin-themes:+ -> 7.6.4
+|    \--- commons-beanutils:commons-beanutils-core:1.8.+ -> 1.8.3
+|         \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
