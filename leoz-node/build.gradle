@@ -119,7 +119,6 @@ dependencies {
     compile "com.vaadin:vaadin-widgets:+"
     compile "com.vaadin:vaadin-themes:+"
     compile "commons-beanutils:commons-beanutils-core:1.8.+"
-    compile "org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:+"
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: v_junit
