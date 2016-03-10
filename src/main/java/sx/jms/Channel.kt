@@ -587,10 +587,9 @@ class Channel constructor(
                 c.close()
             } catch (e: Exception) {
                 log.error(e.message, e)
-            } finally {
-                consumer.reset()
             }
         })
+        consumer.reset()
 
         // Close message producer
         producer.ifSet(Action { p ->
@@ -598,10 +597,9 @@ class Channel constructor(
                 p.close()
             } catch (e: Exception) {
                 log.error(e.message, e)
-            } finally {
-                producer.reset()
             }
         })
+        producer.reset()
 
         // Commit session (must occur after closing consumer(s))
         sessionInstance.ifSet({
@@ -612,7 +610,7 @@ class Channel constructor(
             }
         })
 
-        if (ownsDestination) {
+        if (ownsDestination && sessionInstance.isSet) {
             val destination = this.destination
             try {
                 if (destination is TemporaryQueue) {
@@ -633,11 +631,10 @@ class Channel constructor(
                     s.close()
                 } catch (e: Exception) {
                     log.error(e.message, e)
-                } finally {
-                    sessionInstance.reset()
                 }
             })
         }
+        sessionInstance.reset()
 
         // Close connection
         if (ownsConnection) {
@@ -646,11 +643,10 @@ class Channel constructor(
                     c.close()
                 } catch (e: Exception) {
                     log.error(e.message, e)
-                } finally {
-                    connection.reset()
                 }
             })
         }
+        connection.reset()
     }
 
     override fun toString(): String {
