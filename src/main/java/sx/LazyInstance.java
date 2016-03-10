@@ -9,6 +9,7 @@ import java.util.function.Supplier;
  * Created by masc on 14.04.15.
  */
 public class LazyInstance<T> {
+    private static final ThreadSafeMode DEFAULT_THREADSAFEMODE = ThreadSafeMode.Synchronized;
     private volatile ReentrantLock mLock;
     private Supplier<T> mSupplier;
     private volatile Optional<T> mInstance = null;
@@ -30,7 +31,9 @@ public class LazyInstance<T> {
         switch(threadSafeMode) {
             case Synchronized:
                 mLock = new ReentrantLock();
+                break;
             case None:
+                mLock = null;
                 break;
             default:
                 throw new UnsupportedOperationException(String.format("Unsupported thread safety mode [%s]", threadSafeMode));
@@ -42,7 +45,7 @@ public class LazyInstance<T> {
      * @param supplier Supplier
      */
     public LazyInstance(Supplier<T> supplier) {
-        this(supplier, ThreadSafeMode.Synchronized);
+        this(supplier, DEFAULT_THREADSAFEMODE);
     }
 
     /**
@@ -57,7 +60,7 @@ public class LazyInstance<T> {
      * c'tor creating thread safe lazy instance without supplier
      */
     public LazyInstance() {
-        this(null, ThreadSafeMode.Synchronized);
+        this(null, DEFAULT_THREADSAFEMODE);
     }
 
     /**
