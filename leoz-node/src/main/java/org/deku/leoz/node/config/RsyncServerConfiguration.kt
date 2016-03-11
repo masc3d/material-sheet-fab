@@ -22,24 +22,28 @@ import kotlin.properties.Delegates
  */
 @Named
 @Configuration
-@ConfigurationProperties(prefix = "rsync")
 @Lazy(false)
 open class RsyncServerConfiguration {
     /** Server properties holder */
-    inner class Server {
+    @Named
+    @ConfigurationProperties(prefix = "rsync.server")
+    class Settings {
         var port: Int? = null
     }
 
     private val log = LogFactory.getLog(this.javaClass)
 
-    // Properties
-    var server: Server = Server()
+    @Inject
+    private lateinit var settings: Settings
 
     /** Rsync server instance */
     private var rsyncServer: RsyncServer by Delegates.notNull()
 
     private val storageConfiguration by lazy({ StorageConfiguration.instance })
 
+    /**
+     * Pulls in all application wide rsync modules
+     */
     @Inject
     lateinit var rsyncModules: List<Rsync.Module>
 
@@ -53,7 +57,7 @@ open class RsyncServerConfiguration {
             val config = RsyncServer.Configuration()
             // Limit connections to loopback interface. Rsync server is only reachable via (ssh) tunneling
             config.address = InetAddress.getLoopbackAddress().hostAddress
-            config.port = this.server.port
+            config.port = this.settings.port
             config.logFile = File(this.storageConfiguration.logDirectory, "leoz-rsyncd.log")
             config.reverseLookup = false
             config.forwardLookup = false
