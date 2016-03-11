@@ -6,6 +6,7 @@ import org.springframework.jms.listener.SessionAwareMessageListener
 import org.springframework.util.ErrorHandler
 import sx.jms.Channel
 import sx.jms.Listener
+import java.util.concurrent.Executor
 import javax.jms.JMSException
 import javax.jms.Message
 import javax.jms.Session
@@ -17,11 +18,13 @@ import javax.jms.Session
  * @property destination
  * @param converter Message converter
  */
-abstract class SpringJmsListener(
-        channel: () -> Channel)
+abstract class SpringJmsListener
 :
-        Listener(channel),
+        Listener,
         ErrorHandler {
+
+    constructor (channel: () -> Channel, executor: Executor) : super(channel, executor)
+
     /** Spring message listener container  */
     private var listenerContainer: DefaultMessageListenerContainer? = null
     /** Transaction manager  */
@@ -57,6 +60,7 @@ abstract class SpringJmsListener(
             lc.isSessionTransacted = true
             lc.errorHandler = this
             lc.destination = this.channel.destination
+            lc.setTaskExecutor(this.executor)
             this.configure(lc)
             lc.afterPropertiesSet()
             this.listenerContainer = lc
