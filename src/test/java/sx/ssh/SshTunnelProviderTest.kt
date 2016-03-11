@@ -8,7 +8,7 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 
 /**
- * Created by n3 on 19-Feb-16.
+ * Created by masc on 19-Feb-16.
  */
 @Ignore
 class SshTunnelProviderTest {
