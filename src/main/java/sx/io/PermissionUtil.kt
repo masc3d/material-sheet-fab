@@ -9,7 +9,7 @@ import java.util.*
 
 /**
  * Permission utility functions
- * Created by n3 on 25-Oct-15.
+ * Created by masc on 25-Oct-15.
  */
 object PermissionUtil {
     object Win32 {

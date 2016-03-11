@@ -1,7 +1,7 @@
 package sx.ssh
 
 /**
- * Created by n3 on 19-Feb-16.
+ * Created by masc on 19-Feb-16.
  */
 object SshHosts {
     val testHost = SshHost(
