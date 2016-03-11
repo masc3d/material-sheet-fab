@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import sx.Disposable
 import java.util.*
+import java.util.concurrent.Executor
 import javax.jms.ExceptionListener
 import javax.jms.JMSException
 import javax.jms.Message
@@ -13,11 +14,13 @@ import javax.jms.Session
  * Lightweight jms message listener abstraction.
  * This is the top level abstract class, only binding a connection factory.
  * Created by masc on 16.04.15.
- * @property converter Message converter
+ * @property channel Messaging channel
+ * @property executor Thread executor
  */
 abstract class Listener(
         /** Connection factory  */
-        channel: () -> Channel)
+        channel: () -> Channel,
+        protected val executor: Executor)
 :
         Disposable,
         ExceptionListener {
@@ -42,6 +45,9 @@ abstract class Listener(
         this.lazyChannel = channel
     }
 
+    /**
+     * Messaging channel
+     */
     val channel: Channel by lazy {
         this.lazyChannel()
     }
@@ -54,9 +60,9 @@ abstract class Listener(
      */
     @Throws(JMSException::class)
     protected open fun onMessage(message: Message, session: Session) {
-        var messageObject: Any? = null
+        var messageObject: Any?
 
-        var handler: Handler<Any?>? = null
+        var handler: Handler<Any?>?
 
         // Deserialize if there's a converter and determine handler
         val converter = this.channel.converter
@@ -95,7 +101,6 @@ abstract class Listener(
      * Delegate handlers requires a converter to be set.
      * @param c Class of object/message to process
      * @param delegate Handler
-     * @param  Type of object/message to process
      */
     @Suppress("UNCHECKED_CAST")
     fun <T> addDelegate(c: Class<T>, delegate: Handler<T>) {

@@ -2,18 +2,21 @@ package sx.jms.listeners
 
 import sx.jms.Channel
 import sx.jms.Listener
+import java.util.concurrent.Executor
 import javax.jms.*
 
 /**
- * Simple single threaded jms listener
+ * Simple jms listener
  * Created by masc on 17.04.15.
  * @param connectionFactory Connection factory
  * @param converter Message converter
  */
-abstract class SimpleListener(channel: () -> Channel)
+abstract class SimpleListener
 :
-        Listener(channel)
+        Listener
 {
+    constructor (channel: () -> Channel, executor: Executor) : super(channel, executor)
+
     protected val connection: Connection by lazy {
         this.channel.connectionFactory!!.createConnection()
     }
@@ -56,24 +59,25 @@ abstract class SimpleListener(channel: () -> Channel)
             // Wrap message callback, adding jms transaction support
             mc.messageListener = object : MessageListener {
                 override fun onMessage(message: Message) {
-                    var transacted = false
-                    try {
-                        this@SimpleListener.onMessage(message, session)
-                        if (session.transacted)
-                            session.commit()
-                    } catch (e: Exception) {
-                        // TODO: verify if exception is routed to onException handler when not caught here
-                        log.error(e.message, e)
+                    this@SimpleListener.executor.execute {
+                        var transacted = session.transacted
+                        try {
+                            this@SimpleListener.onMessage(message, session)
+                            if (transacted)
+                                session.commit()
+                        } catch (e: Exception) {
+                            // TODO: verify if exception is routed to onException handler when not caught here
+                            log.error(e.message, e)
 
-                        if (transacted) {
-                            try {
-                                session.rollback()
-                            } catch (e1: JMSException) {
-                                log.error(e.message, e)
+                            if (transacted) {
+                                try {
+                                    session.rollback()
+                                } catch (e1: JMSException) {
+                                    log.error(e.message, e)
+                                }
                             }
                         }
                     }
-
                 }
             }
         }

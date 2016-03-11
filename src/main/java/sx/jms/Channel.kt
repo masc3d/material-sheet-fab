@@ -21,7 +21,7 @@ import javax.jms.*
  * @param configuration Channel configuration
  * @param session Optional: jms session to use
  */
-class Channel constructor(
+class Channel @JvmOverloads constructor(
         configuration: Configuration,
         session: Session? = null)
 :
