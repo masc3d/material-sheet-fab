@@ -9,7 +9,7 @@ import javax.inject.Named
 /**
  * Leoz-central rsync module configuration.
  * Rsync modules are consumed by the @link RsyncServerConfiguration (leoz-node)
- * Created by n3 on 10-Nov-15.
+ * Created by masc on 10-Nov-15.
  */
 @Named
 @Configuration(RsyncModuleConfiguration.QUALIFIER)

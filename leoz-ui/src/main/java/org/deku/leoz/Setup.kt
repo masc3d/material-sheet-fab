@@ -8,7 +8,7 @@ import sx.io.WindowsShellLink
 import java.io.File
 
 /**
- * Created by n3 on 05-Feb-16.
+ * Created by masc on 05-Feb-16.
  */
 class Setup : BundleProcessInterface() {
     private val log = LogFactory.getLog(this.javaClass)

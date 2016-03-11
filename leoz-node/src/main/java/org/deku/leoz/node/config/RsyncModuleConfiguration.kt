@@ -7,7 +7,7 @@ import sx.rsync.Rsync
 import javax.inject.Named
 
 /**
- * Created by n3 on 10-Nov-15.
+ * Created by masc on 10-Nov-15.
  */
 @Named
 @Configuration(RsyncModuleConfiguration.QUALIFIER)

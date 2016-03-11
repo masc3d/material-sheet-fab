@@ -6,7 +6,7 @@ import ch.qos.logback.core.AppenderBase
 import org.deku.leoz.config.LogConfiguration
 
 /**
- * Created by n3 on 01-Aug-15.
+ * Created by masc on 01-Aug-15.
  */
 object LogConfiguration : LogConfiguration() {
 

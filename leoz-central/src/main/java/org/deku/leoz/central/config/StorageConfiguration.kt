@@ -4,7 +4,7 @@ import org.deku.leoz.central.App
 
 /**
  * Leoz-central storage configuration (deriving from leoz-node's storage configuration)
- * Created by n3 on 10-Nov-15.
+ * Created by masc on 10-Nov-15.
  */
 class StorageConfiguration private constructor(appName: String)
 :

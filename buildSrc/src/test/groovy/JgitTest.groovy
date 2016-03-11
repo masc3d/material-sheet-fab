@@ -16,7 +16,7 @@ import org.junit.Ignore
 import org.junit.Test
 
 /**
- * Created by n3 on 13-Sep-15.
+ * Created by masc on 13-Sep-15.
  */
 @Ignore
 public class JgitTest {

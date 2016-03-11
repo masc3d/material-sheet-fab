@@ -22,7 +22,7 @@ import java.util.*
 import kotlin.concurrent.thread
 
 /**
- * Created by n3 on 29-Jul-15.
+ * Created by masc on 29-Jul-15.
  */
 class MainController : Initializable {
     private val log: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(this.javaClass)

@@ -21,7 +21,7 @@ import kotlin.properties.Delegates
 
 /**
  * Leoz updater configuration
- * Created by n3 on 30-Oct-15.
+ * Created by masc on 30-Oct-15.
  */
 @Configuration
 @Lazy(false)
