@@ -10,10 +10,7 @@ import sx.jms.Channel
 import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener
 import java.sql.Timestamp
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicLong
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
@@ -28,9 +25,10 @@ class EntityConsumer
         /** Messaging context  */
         private val messagingConfiguration: MessagingConfiguration,
         /** Entity manager factory  */
-        private val entityManagerFactory: EntityManagerFactory)
+        private val entityManagerFactory: EntityManagerFactory,
+        executor: Executor)
 :
-        SpringJmsListener({ Channel(messagingConfiguration.entitySyncTopic) }),
+        SpringJmsListener({ Channel(messagingConfiguration.entitySyncTopic) }, executor),
         Handler<EntityStateMessage> {
 
     private var executorService: ExecutorService

@@ -7,16 +7,20 @@ import org.deku.leoz.central.messaging.handlers.LogHandler
 import org.deku.leoz.central.messaging.handlers.UpdateInfoRequestHandler
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.log.LogMessage
+import org.deku.leoz.node.config.ExecutorConfiguration
 import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.Channel
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
 import sx.jms.listeners.SpringJmsListener
+import java.util.concurrent.ExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 /**
  * Leoz-central message listener configuration
@@ -28,6 +32,10 @@ open class MessageListenerConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject
+    @Qualifier(ExecutorConfiguration.CACHED)
+    private lateinit var executorService: ExecutorService
+
+    @Inject
     private lateinit var authorizationHandler: AuthorizationRequestHandler
 
     @Inject
@@ -37,18 +45,11 @@ open class MessageListenerConfiguration {
     private lateinit var logHandler: LogHandler
 
     /** Central message listener  */
-    private val centralQueueListener: SpringJmsListener
+    private var centralQueueListener: SpringJmsListener by Delegates.notNull()
 
-    private val logListener: SpringJmsListener
+    private var logListener: SpringJmsListener by Delegates.notNull()
 
     init {
-        // Central queue listener
-        centralQueueListener = object : SpringJmsListener(
-                channel = { Channel(ActiveMQConfiguration.instance.centralQueue) }) { }
-
-        // Log queue listener
-        logListener = object : SpringJmsListener(
-                channel = { Channel(ActiveMQConfiguration.instance.centralLogQueue) } ) { }
     }
 
     private fun initializeListener() {
@@ -105,6 +106,16 @@ open class MessageListenerConfiguration {
     @PostConstruct
     fun onInitialize() {
         log.info("Initializing central message listener")
+        // Central queue listener
+        centralQueueListener = object : SpringJmsListener(
+                channel = { Channel(ActiveMQConfiguration.instance.centralQueue) },
+                executor = this.executorService) {}
+
+        // Log queue listener
+        logListener = object : SpringJmsListener(
+                channel = { Channel(ActiveMQConfiguration.instance.centralLogQueue) },
+                executor = this.executorService) {}
+
 
         // Hook up with broker events
         ActiveMQBroker.instance.delegate.add(brokerEventListener)

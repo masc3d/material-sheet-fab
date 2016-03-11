@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
-import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import javax.annotation.PostConstruct
@@ -22,17 +21,13 @@ open class DatabaseSyncConfiguration {
     private var log = LogFactory.getLog(this.javaClass)
 
     @Inject
+    private lateinit var executorService: ScheduledExecutorService
+
+    @Inject
     private lateinit var databaseSync: DatabaseSync
 
-    /** Scheduler  */
-    private val executorService: ScheduledExecutorService
-
-    /** Indicates if scheduler has been started */
+    /** Indicates if sync has been started/scheduled */
     private var isStarted = false
-
-    init {
-        this.executorService = Executors.newSingleThreadScheduledExecutor()
-    }
 
     /** Broker event listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {

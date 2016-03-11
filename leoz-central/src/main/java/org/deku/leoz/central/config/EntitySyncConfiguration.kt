@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Lazy
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
 import java.sql.Timestamp
+import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
@@ -25,6 +26,9 @@ import javax.persistence.PersistenceUnit
 @Lazy(false)
 open class EntitySyncConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
+
+    @Inject
+    private lateinit var executorService: ScheduledExecutorService
 
     @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
     private lateinit var entityManagerFactory: EntityManagerFactory
@@ -58,7 +62,8 @@ open class EntitySyncConfiguration {
         // Setup entity publisher
         this.entityPublisher = EntityPublisher(
                 ActiveMQConfiguration.instance,
-                this.entityManagerFactory)
+                this.entityManagerFactory,
+                this.executorService)
 
         // Wire database sync event
         this.databaseSync.eventDelegate.add(databaseSyncEvent)

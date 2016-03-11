@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import java.util.concurrent.Executors;
 
 /**
  * Created by masc on 18.06.15.
@@ -41,8 +42,15 @@ public class EntitySyncTest extends DataTest {
         // Starting broker
         ActiveMQConfiguration.getInstance().getBroker().start();
 
-        mListener = new EntityPublisher(ActiveMQConfiguration.getInstance(), mEntityManagerFactory);
-        mClient = new EntityConsumer(ActiveMQConfiguration.getInstance(), mEntityManagerFactory);
+        mListener = new EntityPublisher(
+                ActiveMQConfiguration.getInstance(),
+                mEntityManagerFactory,
+                Executors.newSingleThreadExecutor());
+
+        mClient = new EntityConsumer(
+                ActiveMQConfiguration.getInstance(),
+                mEntityManagerFactory,
+                Executors.newSingleThreadExecutor());
     }
 
     @After

@@ -10,8 +10,10 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
+import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import javax.inject.Inject
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
 import kotlin.properties.Delegates
@@ -26,6 +28,9 @@ import kotlin.properties.Delegates
 @Lazy(false)
 open class EntitySyncConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
+
+    @Inject
+    private lateinit var executorService: ScheduledExecutorService
 
     @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
     private lateinit var entityManagerFactory: EntityManagerFactory
@@ -71,7 +76,8 @@ open class EntitySyncConfiguration {
         // Entity sync consumer
         this.entityConsumer = EntityConsumer(
                 messagingConfiguration = ActiveMQConfiguration.instance,
-                entityManagerFactory = this.entityManagerFactory)
+                entityManagerFactory = this.entityManagerFactory,
+                executor = this.executorService)
     }
 
     @PreDestroy

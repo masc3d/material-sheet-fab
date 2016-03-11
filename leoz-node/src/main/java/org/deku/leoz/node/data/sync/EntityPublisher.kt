@@ -13,6 +13,7 @@ import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener
 import java.sql.Timestamp
 import java.util.*
+import java.util.concurrent.Executor
 import javax.jms.JMSException
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
@@ -27,9 +28,10 @@ class EntityPublisher(
         /** Messaging context  */
         private val messagingConfiguration: MessagingConfiguration,
         /** Entity manager factory  */
-        private val entityManagerFactory: EntityManagerFactory)
+        private val entityManagerFactory: EntityManagerFactory,
+        executor: Executor)
 :
-        SpringJmsListener({ Channel(messagingConfiguration.entitySyncQueue) }),
+        SpringJmsListener({ Channel(messagingConfiguration.entitySyncQueue) }, executor),
         Handler<EntityStateMessage> {
     init {
         this.addDelegate(EntityStateMessage::class.java, this)
