@@ -336,7 +336,7 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
      * @param <TEntity>             Type of destiantion JPA entity
      * @param <TCentralRecord>      Type of source JOOQ record
      */
-    private fun <TCentralRecord : Record, TEntity> updateEntities(
+    open protected fun <TCentralRecord : Record, TEntity> updateEntities(
             sourceTable: TableImpl<TCentralRecord>,
             sourceTableTimestampField: TableField<TCentralRecord, Timestamp>,
             destRepository: JpaRepository<TEntity, *>,

@@ -1,22 +1,31 @@
 package org.deku.leoz.log;
 
 import ch.qos.logback.classic.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.Identity;
 import org.deku.leoz.MessagingTest;
 import org.deku.leoz.SystemInformation;
 import org.deku.leoz.bundle.Bundles;
 import org.deku.leoz.config.messaging.ActiveMQConfiguration;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
+import sx.jms.Channel;
+import sx.jms.Handler;
+import sx.jms.listeners.SpringJmsListener;
 
 import javax.jms.JMSException;
+import java.util.concurrent.Executors;
 
 /**
  * @author masc
  */
 @Ignore
 public class LogTest extends MessagingTest {
+    private Log mLog = LogFactory.getLog(this.getClass());
+
     @Test
     public void testSend() throws JMSException {
         // Setup log appender
@@ -38,7 +47,18 @@ public class LogTest extends MessagingTest {
     @Test
     public void testReceive() throws JMSException, InterruptedException {
         // Setup log message listener
-        LogListener mListener = new LogListener(ActiveMQConfiguration.getInstance());
+        SpringJmsListener mListener = new SpringJmsListener(
+                () -> new Channel(ActiveMQConfiguration.getInstance().getCentralLogQueue()),
+                Executors.newSingleThreadExecutor() ) {
+        };
+
+        mListener.addDelegate(LogMessage.class, new Handler<LogMessage>() {
+            @Override
+            public void onMessage(LogMessage message, @Nullable Channel replyChannel) {
+                mLog.info(message);
+            }
+        });
+
         mListener.start();
 
         // Wait for some messages to be received

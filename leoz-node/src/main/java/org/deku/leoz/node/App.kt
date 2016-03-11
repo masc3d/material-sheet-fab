@@ -124,9 +124,9 @@ open class App :
 
         // Initialize logging
         if (this.profile === PROFILE_CLIENT_NODE) {
-            LogConfiguration.instance().jmsAppenderEnabled = true
+            LogConfiguration.instance.jmsAppenderEnabled = true
         }
-        LogConfiguration.instance().initialize()
+        LogConfiguration.instance.initialize()
         RsyncConfiguration.initialize()
 
         log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
@@ -228,7 +228,7 @@ open class App :
             // Spring resets logging configuration.
             // As we don't want to supply a logging framework specific config file, simply reapplying
             // logging configuration after spring environment has been prepared.
-            LogConfiguration.instance().initialize()
+            LogConfiguration.instance.initialize()
         } else if (event is ApplicationPreparedEvent) {
         } else if (event is EmbeddedServletContainerInitializedEvent) {
             // Post spring initialization

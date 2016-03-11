@@ -82,15 +82,15 @@ open class Main {
             if (command != null) {
                 try {
                     // Setup should write to dedicated logfile
-                    LogConfiguration.instance().logFile = StorageConfiguration.instance.setupLogFile
-                    LogConfiguration.instance().initialize()
+                    LogConfiguration.instance.logFile = StorageConfiguration.instance.setupLogFile
+                    LogConfiguration.instance.initialize()
                     // Run setup command
                     command.run()
                 } catch (e: Exception) {
                     log.error(e.message, e)
                     System.exit(-1)
                 } finally {
-                    LogConfiguration.instance().close()
+                    LogConfiguration.instance.close()
                 }
             } else {
                 // Initialize and start application

@@ -14,10 +14,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     companion object Singleton {
-        private val instance: LogConfiguration = LogConfiguration()
-        @JvmStatic fun instance(): LogConfiguration {
-            return this.instance;
-        }
+        val instance by lazy { LogConfiguration() }
     }
 
     /** Jms log appender */
