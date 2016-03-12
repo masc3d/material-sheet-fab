@@ -14,7 +14,8 @@ import kotlin.concurrent.withLock
  * @param executorService Executor service to use
  */
 abstract class Service(
-        private val executorService: ScheduledExecutorService)
+        private val executorService: ScheduledExecutorService,
+        interval: Duration? = null)
 :
         ScheduledExecutorService,
         ExecutorService by executorService,
@@ -22,6 +23,7 @@ abstract class Service(
     private val log = LogFactory.getLog(this.javaClass)
     private val lock = ReentrantLock()
     private val futures = ArrayList<ScheduledFuture<*>>()
+    private var intervalInternal: Duration?
 
     private var hasBeenStarted = false
     private var isStarted = false
@@ -44,7 +46,7 @@ abstract class Service(
     var scheduledFuture: ScheduledFuture<*>? = null
 
     init {
-        this.assertScheduledExecutor()
+        this.intervalInternal = interval
     }
 
     private fun assertScheduledExecutor() {
@@ -90,11 +92,12 @@ abstract class Service(
     /**
      * Service interval. Will imply a service restart when changed during service runtime (requires dynamic scheduling)
      */
-    var interval: Duration? = null
+    var interval: Duration?
+        get() = this.intervalInternal
         set(value) {
             val wasStarted = this.isStarted
             this.stop()
-            field = value
+            this.intervalInternal = value
             if (wasStarted)
                 this.start()
         }
