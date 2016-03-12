@@ -159,7 +159,10 @@ abstract class Service(
      * Triggers the service logic to run once
      */
     fun trigger() {
-        this.executorService.submit({ this.runImpl() })
+        this.lock.withLock {
+            this.assertIsStarted()
+            this.executorService.submit({ this.runImpl() })
+        }
     }
 
     @Synchronized private fun runImpl() {
