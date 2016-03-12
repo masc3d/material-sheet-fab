@@ -1,12 +1,14 @@
 package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import java.util.*
-import java.util.concurrent.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
@@ -19,27 +21,14 @@ import javax.annotation.PreDestroy
 open class ExecutorConfiguration {
     val log = LogFactory.getLog(ExecutorConfiguration::class.java.name)
 
-    companion object {
-        const val CACHED = "CACHED"
-    }
-
     /**
      * Scheduled thread executor
      */
     @Bean
     open fun scheduledThreadPool(): ScheduledExecutorService {
-        return ScheduledThreadPoolExecutor(4);
-    }
-
-    @Bean
-    @Qualifier(CACHED)
-    open fun cachedThreadPool(): ExecutorService {
-        return ThreadPoolExecutor(
-                0,
-                Integer.MAX_VALUE,
-                60L,
-                TimeUnit.SECONDS,
-                SynchronousQueue<Runnable>())
+        val executor = ScheduledThreadPoolExecutor(4);
+        executor.setKeepAliveTime(60, TimeUnit.SECONDS)
+        return executor
     }
 
     private val pools = ArrayList<ExecutorService>()
@@ -47,7 +36,6 @@ open class ExecutorConfiguration {
     @PostConstruct
     fun onInitialize() {
         pools.add(scheduledThreadPool())
-        pools.add(cachedThreadPool())
     }
 
     @PreDestroy

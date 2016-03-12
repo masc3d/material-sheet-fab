@@ -6,7 +6,6 @@ import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.handlers.AuthorizationHandler
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
@@ -15,7 +14,7 @@ import sx.jms.Channel
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
 import sx.jms.listeners.SpringJmsListener
-import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.ExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
@@ -38,8 +37,7 @@ open class MessageListenerConfiguration {
     lateinit private var updaterConfiguration: UpdaterConfiguration
 
     @Inject
-    @Qualifier(ExecutorConfiguration.CACHED)
-    private lateinit var executorService: ThreadPoolExecutor
+    private lateinit var executorService: ExecutorService
 
     private lateinit var nodeQueueListener: SpringJmsListener
 

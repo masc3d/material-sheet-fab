@@ -7,9 +7,7 @@ import org.deku.leoz.central.messaging.handlers.LogHandler
 import org.deku.leoz.central.messaging.handlers.UpdateInfoRequestHandler
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.log.LogMessage
-import org.deku.leoz.node.config.ExecutorConfiguration
 import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.Channel
@@ -32,7 +30,6 @@ open class MessageListenerConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject
-    @Qualifier(ExecutorConfiguration.CACHED)
     private lateinit var executorService: ExecutorService
 
     @Inject
