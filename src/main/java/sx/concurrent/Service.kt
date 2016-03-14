@@ -3,7 +3,6 @@ package sx.concurrent
 import org.apache.commons.logging.LogFactory
 import sx.Disposable
 import java.time.Duration
-import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -14,19 +13,83 @@ import kotlin.concurrent.withLock
  * @param executorService Executor service to use
  */
 abstract class Service(
-        private val executorService: ScheduledExecutorService,
+        protected val executorService: ScheduledExecutorService,
         interval: Duration? = null)
 :
-        ScheduledExecutorService,
-        ExecutorService by executorService,
         Disposable {
     private val log = LogFactory.getLog(this.javaClass)
     private val lock = ReentrantLock()
-    private val futures = ArrayList<ScheduledFuture<*>>()
+
+    /** Primary service task */
+    var task: TaskFuture? = null
+
     private var intervalInternal: Duration?
 
     private var hasBeenStarted = false
     private var isStarted = false
+
+    /**
+     * Runnable task interface
+     */
+    interface RunnableTask : Runnable {
+        fun waitForCompletion()
+    }
+
+    /**
+     * Service task runnable  with completion event support
+     */
+    inner class Task(val command: () -> Unit) : RunnableTask {
+        val evt = ManualResetEvent(true)
+
+        override fun run() {
+            evt.reset()
+            try {
+                command()
+            } catch(e: Throwable) {
+                log.info(e.message, e)
+            } finally {
+                evt.set()
+            }
+        }
+
+        /**
+         * Wait for completion of runnable command
+         */
+        override fun waitForCompletion() {
+            this.evt.waitOne()
+        }
+    }
+
+    /**
+     * Service task, tying together and decorating Future and RunnableTask
+     */
+    @Suppress("UNCHECKED_CAST")
+    class TaskFuture(private val future: Future<*>,
+                     private val runnableTask: RunnableTask)
+    :
+            Future<Any?> by future as Future<Any?>,
+            RunnableTask by runnableTask {
+        fun cancel(interrupt: Boolean, wait: Boolean) {
+            this.cancel(interrupt)
+            if (wait) {
+                this.waitForCompletion()
+            }
+        }
+    }
+
+    fun ScheduledExecutorService.scheduleTask(command: () -> Unit, initialDelay: Duration = Duration.ZERO, period: Duration): TaskFuture {
+        val task = Task(command)
+        return TaskFuture(
+                future = this.scheduleAtFixedRate(task, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS),
+                runnableTask = task)
+    }
+
+    fun ExecutorService.submitTask(command: () -> Unit): TaskFuture {
+        val task = Task(command)
+        return TaskFuture(
+                future = this.submit(task),
+                runnableTask = task)
+    }
 
     /**
      * Indicates if dynamic scheduling is supported
@@ -35,15 +98,6 @@ abstract class Service(
     val isDynamicSchedulingSupported by lazy {
         this.executorService is ScheduledThreadPoolExecutor && this.executorService.removeOnCancelPolicy
     }
-
-    /**
-     *
-     */
-    val scheduledExecutor: ScheduledThreadPoolExecutor
-        get() = this.executorService as ScheduledThreadPoolExecutor
-
-
-    var scheduledFuture: ScheduledFuture<*>? = null
 
     init {
         this.intervalInternal = interval
@@ -59,53 +113,26 @@ abstract class Service(
             throw IllegalStateException("Service not started")
     }
 
-    private fun scheduleFuture(b: () -> ScheduledFuture<*>): ScheduledFuture<*> {
-        this.assertScheduledExecutor()
-
-        this.lock.withLock {
-            this.assertIsStarted()
-
-            val future = b()
-            this.futures.add(future)
-            return future
-        }
-    }
-
-    override fun schedule(command: Runnable, delay: Long, unit: TimeUnit): ScheduledFuture<*> {
-        return this.scheduleFuture { this.executorService.schedule(command, delay, unit) }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <V : Any?> schedule(command: Callable<V>, delay: Long, unit: TimeUnit): ScheduledFuture<V> {
-        return this.scheduleFuture { this.executorService.schedule(command, delay, unit) } as ScheduledFuture<V>
-    }
-
-    override fun scheduleAtFixedRate(command: Runnable, initialDelay: Long, period: Long, unit: TimeUnit): ScheduledFuture<*> {
-        return this.scheduleFuture { this.executorService.scheduleAtFixedRate(command, initialDelay, period, unit) }
-    }
-
-    override fun scheduleWithFixedDelay(command: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit): ScheduledFuture<*> {
-        this.assertScheduledExecutor()
-        return this.scheduleFuture { this.executorService.scheduleWithFixedDelay(command, initialDelay, delay, unit) }
-    }
-
     /**
      * Service interval. Will imply a service restart when changed during service runtime (requires dynamic scheduling)
      */
     var interval: Duration?
         get() = this.intervalInternal
         set(value) {
+            log.info("Changing interval to [${value}]")
             val wasStarted = this.isStarted
-            this.stop()
+            this.stop(log = false)
             this.intervalInternal = value
             if (wasStarted)
-                this.start()
+                this.start(log = false)
         }
 
     /**
      * Starts the service, running the service logic at the @link interval specified
      */
-    fun start() {
+    fun start(log: Boolean = true) {
+        if (log)
+            this.log.info("Starting service [${this.javaClass}]")
         this.lock.withLock {
             this.stop()
 
@@ -114,7 +141,9 @@ abstract class Service(
 
             val interval = this.interval
             if (interval != null) {
-                this.scheduledFuture = this.scheduleAtFixedRate({ this.runImpl() }, 0, interval.toMillis(), TimeUnit.MILLISECONDS)
+                this.task = this.executorService.scheduleTask({ this.runImpl() }, period = interval)
+            } else {
+                this.task = this.executorService.submitTask({ this.runImpl() })
             }
             this.isStarted = true
             this.hasBeenStarted = true
@@ -123,38 +152,25 @@ abstract class Service(
 
     /**
      * Stops the service
+     * @param interrupt Interrupt futures
+     * @param async Perform stopping asynchronously (required when called from within service thread)
      */
-    fun stop(interrupt: Boolean = false) {
-        this.lock.withLock {
-            /**
-             * Cancel future function
-             */
-            val cancel = fun(f: ScheduledFuture<*>) {
-                try {
-                    f.cancel(interrupt)
-                    f.get()
-                } catch(e: Throwable) {
-                    log.error(e.message, e)
-                }
+    fun stop(interrupt: Boolean = false, async: Boolean = false, log: Boolean = true) {
+        val stopRunnable = Runnable {
+            if (log && this.isStarted)
+                this.log.info("Stopping service [${this.javaClass}]")
+
+            this.lock.withLock {
+                this.task?.cancel(interrupt, wait = true)
+                this.task = null
+                this.isStarted = false
             }
+        }
 
-            val scheduledFuture = this.scheduledFuture
-
-            // Collect futures
-            val futures = ArrayList<ScheduledFuture<*>>()
-            if (scheduledFuture != null) {
-                futures.add(scheduledFuture)
-            }
-            futures.addAll(this.futures)
-
-            // Cancel futures
-            futures.forEach {
-                cancel(it)
-            }
-
-            this.futures.clear()
-            this.scheduledFuture = null
-            this.isStarted = false
+        if (async) {
+            this.executorService.submit(stopRunnable)
+        } else {
+            stopRunnable.run()
         }
     }
 
