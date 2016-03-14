@@ -15,33 +15,40 @@ public abstract class Task<V> implements RunnableFuture<V> {
     FutureTask<V> _futureTask;
     Callable<V> _callable;
     TaskCallback<V> _callback;
+    ManualResetEvent _completion = new ManualResetEvent(true);
 
     public Task(TaskCallback<V> callback) {
         _callback = callback;
         _futureTask = new FutureTask<V>(new Callable<V>() {
             @Override
             public V call() throws Exception {
-                Exception error = null;
-                V result = null;
-
-                if (_callback != null)
-                    _callback.onStart();
+                _completion.reset();
 
                 try {
-                    /** Perform actual task */
-                    result = perform();
-                } catch (Exception e) {
-                    error = e;
+                    Exception error = null;
+                    V result = null;
+
+                    if (_callback != null)
+                        _callback.onStart();
+
+                    try {
+                        /** Perform actual task */
+                        result = perform();
+                    } catch (Exception e) {
+                        error = e;
+                    }
+
+                    onCompletion(result, _futureTask.isCancelled(), error);
+                    if (_callback != null)
+                        _callback.onCompletion(result, _futureTask.isCancelled(), error);
+
+                    if (error != null)
+                        throw error;
+
+                    return result;
+                } finally {
+                    _completion.set();
                 }
-
-                onCompletion(result, _futureTask.isCancelled(), error);
-                if (_callback != null)
-                    _callback.onCompletion(result, _futureTask.isCancelled(), error);
-
-                if (error != null)
-                    throw error;
-
-                return result;
             }
         });
     }
@@ -77,5 +84,9 @@ public abstract class Task<V> implements RunnableFuture<V> {
     @Override
     public final void run() {
         _futureTask.run();
+    }
+
+    public void waitForCompletion() throws InterruptedException {
+        _completion.waitOne();
     }
 }
