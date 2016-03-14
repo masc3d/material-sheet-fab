@@ -16,8 +16,8 @@ import kotlin.concurrent.withLock
  * @param period Interval
  */
 abstract class Service(
-        protected val executorService: ScheduledExecutorService,
-        val initialDelay: Duration = Duration.ZERO,
+        open protected val executorService: ScheduledExecutorService,
+        open val initialDelay: Duration = Duration.ZERO,
         period: Duration? = null)
 :
         Disposable {
@@ -25,8 +25,8 @@ abstract class Service(
     private val lock = ReentrantLock()
 
     /** Primary service task */
-    var serviceTask: TaskFuture? = null
-    val supplementalTasks = ArrayList<TaskFuture>()
+    private var serviceTask: TaskFuture? = null
+    private val supplementalTasks = ArrayList<TaskFuture>()
 
     private var periodInternal: Duration?
 
@@ -69,11 +69,17 @@ abstract class Service(
      * Service task, tying together and decorating Future and RunnableTask
      */
     @Suppress("UNCHECKED_CAST")
-    class TaskFuture(private val future: Future<*>,
-                     private val runnableTask: RunnableTask)
+    open class TaskFuture(private val future: Future<*>,
+                          private val runnableTask: RunnableTask)
     :
             Future<Any?> by future as Future<Any?>,
             RunnableTask by runnableTask {
+
+        /**
+         * Cancel task
+         * @param interrupt Allow interruption
+         * @param wait Wait for task to finish
+         */
         fun cancel(interrupt: Boolean, wait: Boolean) {
             this.cancel(interrupt)
             if (wait) {
@@ -88,7 +94,7 @@ abstract class Service(
      * @param initialDelay Initial delay for schedule
      * @param period Period for schedule at a fixed rate
      */
-    fun ScheduledExecutorService.scheduleTask(command: () -> Unit, initialDelay: Duration = Duration.ZERO, period: Duration? = null): TaskFuture {
+    private fun ScheduledExecutorService.scheduleTask(command: () -> Unit, initialDelay: Duration = Duration.ZERO, period: Duration? = null): TaskFuture {
         val task = Task(command)
 
         val future: Future<*> =
@@ -107,7 +113,7 @@ abstract class Service(
      * Submit a task
      * @param command Task code bflock
      */
-    fun ExecutorService.submitTask(command: () -> Unit): TaskFuture {
+    private fun ExecutorService.submitTask(command: () -> Unit): TaskFuture {
         val task = Task(command)
         return TaskFuture(
                 future = this.submit(task),
@@ -118,8 +124,9 @@ abstract class Service(
      * Indicates if dynamic scheduling is supported
      * (eg. scheduling additional futures during service runtime and restarting the service)
      */
-    val isDynamicSchedulingSupported by lazy {
-        this.executorService is ScheduledThreadPoolExecutor && this.executorService.removeOnCancelPolicy
+    open val isDynamicSchedulingSupported by lazy {
+        val exc = this.executorService
+        exc is ScheduledThreadPoolExecutor && exc.removeOnCancelPolicy
     }
 
     init {
@@ -139,7 +146,7 @@ abstract class Service(
     /**
      * Service interval. Will imply a service restart when changed during service runtime (requires dynamic scheduling)
      */
-    var interval: Duration?
+    open var interval: Duration?
         get() = this.periodInternal
         set(value) {
             log.info("Changing interval to [${value}]")
@@ -154,7 +161,7 @@ abstract class Service(
      * Submit a supplemental task, which is tracked and also stopped together with the service
      * @param command Supplemental task code block
      */
-    protected fun submitSupplementalTask(command: () -> Unit) {
+    open protected fun submitSupplementalTask(command: () -> Unit) {
         this.assertIsStarted()
 
         this.lock.withLock {
@@ -166,7 +173,7 @@ abstract class Service(
     /**
      * Starts the service, running the service logic at the @link interval specified
      */
-    fun start(log: Boolean = true) {
+    open fun start(log: Boolean = true) {
         if (log)
             this.log.info("Starting service [${this.javaClass}]")
 
@@ -187,7 +194,7 @@ abstract class Service(
      * @param interrupt Interrupt futures
      * @param async Perform stopping asynchronously (required when called from within service thread)
      */
-    fun stop(interrupt: Boolean = false, async: Boolean = false, log: Boolean = true) {
+    open fun stop(interrupt: Boolean = false, async: Boolean = false, log: Boolean = true) {
         val stopRunnable = Runnable {
             if (log && this.isStarted)
                 this.log.info("Stopping service [${this.javaClass}]")
@@ -222,7 +229,7 @@ abstract class Service(
     /**
      * Triggers the service logic to run once
      */
-    fun trigger() {
+    open fun trigger() {
         this.submitSupplementalTask({ this.runImpl() })
     }
 
@@ -239,7 +246,7 @@ abstract class Service(
         this.stop()
     }
 
-    protected fun finalize() {
+    open protected fun finalize() {
         this.close()
     }
 }
