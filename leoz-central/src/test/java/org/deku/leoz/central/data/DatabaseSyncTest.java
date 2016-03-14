@@ -4,7 +4,7 @@ import com.google.common.base.Stopwatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.central.DataTest;
-import org.deku.leoz.central.data.sync.DatabaseSync;
+import org.deku.leoz.central.services.DatabaseSyncService;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -16,7 +16,7 @@ public class DatabaseSyncTest extends DataTest {
     private Log mLog = LogFactory.getLog(DatabaseSyncTest.class);
 
     @Inject
-    DatabaseSync mDatabaseSync;
+    DatabaseSyncService mDatabaseSync;
 
     @Test
     public void test() {

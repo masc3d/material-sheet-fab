@@ -2,7 +2,7 @@ package org.deku.leoz.central.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.App
-import org.deku.leoz.central.data.sync.DatabaseSync
+import org.deku.leoz.central.services.DatabaseSyncService
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.sync.EntityPublisher
@@ -34,7 +34,7 @@ open class EntitySyncConfiguration {
     private lateinit var entityManagerFactory: EntityManagerFactory
 
     @Inject
-    private lateinit var databaseSync: DatabaseSync
+    private lateinit var databaseSyncService: DatabaseSyncService
 
     /** Entity publisher */
     private lateinit var entityPublisher: EntityPublisher
@@ -51,7 +51,7 @@ open class EntitySyncConfiguration {
     }
 
     /** Database sync event listener */
-    private val databaseSyncEvent = object : DatabaseSync.EventListener {
+    private val databaseSyncEvent = object : DatabaseSyncService.EventListener {
         override fun onUpdate(entityType: Class<out Any?>, currentTimestamp: Timestamp?) {
             this@EntitySyncConfiguration.entityPublisher.publish(entityType, currentTimestamp);
         }
@@ -66,7 +66,7 @@ open class EntitySyncConfiguration {
                 this.executorService)
 
         // Wire database sync event
-        this.databaseSync.eventDelegate.add(databaseSyncEvent)
+        this.databaseSyncService.eventDelegate.add(databaseSyncEvent)
 
         // Wire broker event
         ActiveMQBroker.instance.delegate.add(brokerEventListener)

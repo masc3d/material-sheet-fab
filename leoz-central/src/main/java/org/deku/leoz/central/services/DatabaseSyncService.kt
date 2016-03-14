@@ -1,4 +1,4 @@
-package org.deku.leoz.central.data.sync
+package org.deku.leoz.central.services
 
 import com.google.common.base.Stopwatch
 import com.mysema.query.jpa.impl.JPAQuery
@@ -22,25 +22,34 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
+import sx.concurrent.Service
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import java.sql.Timestamp
+import java.time.Duration
+import java.util.concurrent.ScheduledExecutorService
 import javax.inject.Inject
 import javax.inject.Named
 import javax.persistence.EntityManager
 import javax.persistence.FlushModeType
+import javax.persistence.PersistenceContext
 
 /**
  * TODO: split configuration (which tables to sync and how) from actual implementation, move config to DatabaseSyncConfiguration
  * Created by masc on 15.05.15.
  */
 @Named
-open class DatabaseSync
+open class DatabaseSyncService
 @Inject
-constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
-            @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER) txJooq: PlatformTransactionManager) {
+constructor(
+        exceutorService: ScheduledExecutorService,
+        @Qualifier(PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
+        @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER) txJooq: PlatformTransactionManager)
+:
+        Service(exceutorService, period = Duration.ofMinutes(10))
+{
     companion object {
-        private val log = LogFactory.getLog(DatabaseSync::class.java)
+        private val log = LogFactory.getLog(DatabaseSyncService::class.java)
 
         /**
          * Convert mysql mst_station record to jpa entity
@@ -212,7 +221,7 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
         get() = eventDispatcher
     //endregion
 
-    @javax.persistence.PersistenceContext
+    @PersistenceContext
     private lateinit var entityManager: EntityManager
 
     // Transaction helpers
@@ -247,7 +256,7 @@ constructor(@Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIF
     }
 
     @Transactional(value = PersistenceConfiguration.QUALIFIER)
-    open fun sync() {
+    override fun run() {
         this.sync(false)
     }
 

@@ -1,13 +1,11 @@
 package org.deku.leoz.central.config
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.central.data.sync.DatabaseSync
+import org.deku.leoz.central.services.DatabaseSyncService
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.embedded.Broker
 import sx.jms.embedded.activemq.ActiveMQBroker
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 
@@ -21,71 +19,22 @@ open class DatabaseSyncConfiguration {
     private var log = LogFactory.getLog(this.javaClass)
 
     @Inject
-    private lateinit var executorService: ScheduledExecutorService
-
-    @Inject
-    private lateinit var databaseSync: DatabaseSync
-
-    /** Indicates if sync has been started/scheduled */
-    private var isStarted = false
+    private lateinit var databaseSyncService: DatabaseSyncService
 
     /** Broker event listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
-            this@DatabaseSyncConfiguration.start()
+            databaseSyncService.start()
         }
 
         override fun onStop() {
-            this@DatabaseSyncConfiguration.stop()
+            databaseSyncService.stop()
         }
     }
 
     fun trigger() {
         log.info("Triggering database sync")
-        this.executorService.submit {
-            try {
-                databaseSync.sync()
-            } catch(e: Exception) {
-                log.error(e.message, e)
-            }
-        }
-    }
-
-    /**
-     * Start database sync scheduler
-     */
-    @Synchronized private fun start() {
-        if (this.isStarted)
-            return
-
-        log.info("Starting database sync scheduler")
-        this.executorService.scheduleWithFixedDelay(
-                {
-                    try {
-                        databaseSync.sync()
-                    } catch (e: Exception) {
-                        log.error(e.message, e)
-                    }
-                },
-                // Initial delay
-                0,
-                // Interval
-                10, TimeUnit.MINUTES)
-
-        this.isStarted = true
-    }
-
-    /**
-     * Stop database sync scheduler
-     */
-    @Synchronized private fun stop() {
-        log.info("Shutting down database sync scheduler")
-        this.executorService.shutdown()
-        try {
-            this.executorService.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
-        } catch (e: InterruptedException) {
-            log.error(e.message, e)
-        }
+        this.databaseSyncService.trigger()
     }
 
     /**
