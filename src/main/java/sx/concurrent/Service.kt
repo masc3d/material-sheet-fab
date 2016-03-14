@@ -3,6 +3,7 @@ package sx.concurrent
 import org.apache.commons.logging.LogFactory
 import sx.Disposable
 import java.time.Duration
+import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -11,19 +12,23 @@ import kotlin.concurrent.withLock
  * Generic service base class
  * Created by masc on 12/03/16.
  * @param executorService Executor service to use
+ * @param initialDelay Initial delay
+ * @param period Interval
  */
 abstract class Service(
         protected val executorService: ScheduledExecutorService,
-        interval: Duration? = null)
+        val initialDelay: Duration = Duration.ZERO,
+        period: Duration? = null)
 :
         Disposable {
     private val log = LogFactory.getLog(this.javaClass)
     private val lock = ReentrantLock()
 
     /** Primary service task */
-    var task: TaskFuture? = null
+    var serviceTask: TaskFuture? = null
+    val supplementalTasks = ArrayList<TaskFuture>()
 
-    private var intervalInternal: Duration?
+    private var periodInternal: Duration?
 
     private var hasBeenStarted = false
     private var isStarted = false
@@ -77,13 +82,31 @@ abstract class Service(
         }
     }
 
-    fun ScheduledExecutorService.scheduleTask(command: () -> Unit, initialDelay: Duration = Duration.ZERO, period: Duration): TaskFuture {
+    /**
+     * Schedule a task
+     * @param command Task code block
+     * @param initialDelay Initial delay for schedule
+     * @param period Period for schedule at a fixed rate
+     */
+    fun ScheduledExecutorService.scheduleTask(command: () -> Unit, initialDelay: Duration = Duration.ZERO, period: Duration? = null): TaskFuture {
         val task = Task(command)
+
+        val future: Future<*> =
+                if (period != null) {
+                    this.scheduleAtFixedRate(task, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS)
+                } else {
+                    this.schedule(task, initialDelay.toMillis(), TimeUnit.MILLISECONDS)
+                }
+
         return TaskFuture(
-                future = this.scheduleAtFixedRate(task, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS),
+                future = future,
                 runnableTask = task)
     }
 
+    /**
+     * Submit a task
+     * @param command Task code bflock
+     */
     fun ExecutorService.submitTask(command: () -> Unit): TaskFuture {
         val task = Task(command)
         return TaskFuture(
@@ -100,7 +123,7 @@ abstract class Service(
     }
 
     init {
-        this.intervalInternal = interval
+        this.periodInternal = period
     }
 
     private fun assertScheduledExecutor() {
@@ -117,15 +140,28 @@ abstract class Service(
      * Service interval. Will imply a service restart when changed during service runtime (requires dynamic scheduling)
      */
     var interval: Duration?
-        get() = this.intervalInternal
+        get() = this.periodInternal
         set(value) {
             log.info("Changing interval to [${value}]")
             val wasStarted = this.isStarted
             this.stop(log = false)
-            this.intervalInternal = value
+            this.periodInternal = value
             if (wasStarted)
                 this.start(log = false)
         }
+
+    /**
+     * Submit a supplemental task, which is tracked and also stopped together with the service
+     * @param command Supplemental task code block
+     */
+    protected fun submitSupplementalTask(command: () -> Unit) {
+        this.assertIsStarted()
+
+        this.lock.withLock {
+            this.supplementalTasks.add(
+                    this.executorService.submitTask(command))
+        }
+    }
 
     /**
      * Starts the service, running the service logic at the @link interval specified
@@ -133,18 +169,14 @@ abstract class Service(
     fun start(log: Boolean = true) {
         if (log)
             this.log.info("Starting service [${this.javaClass}]")
+
         this.lock.withLock {
             this.stop()
 
             if (this.hasBeenStarted && !this.isDynamicSchedulingSupported)
                 throw IllegalStateException("This service has been stopped and cannot be restarted due to lack of dynamic scheduling")
 
-            val interval = this.interval
-            if (interval != null) {
-                this.task = this.executorService.scheduleTask({ this.runImpl() }, period = interval)
-            } else {
-                this.task = this.executorService.submitTask({ this.runImpl() })
-            }
+            this.serviceTask = this.executorService.scheduleTask({ this.runImpl() }, initialDelay = this.initialDelay, period = this.interval)
             this.isStarted = true
             this.hasBeenStarted = true
         }
@@ -161,8 +193,19 @@ abstract class Service(
                 this.log.info("Stopping service [${this.javaClass}]")
 
             this.lock.withLock {
-                this.task?.cancel(interrupt, wait = true)
-                this.task = null
+                val tasks = ArrayList<TaskFuture>()
+
+                this.serviceTask?.let {
+                    tasks.add(it)
+                }
+                tasks.addAll(this.supplementalTasks)
+
+                tasks.forEach {
+                    it.cancel(interrupt, wait = true)
+                }
+
+                this.supplementalTasks.clear()
+                this.serviceTask = null
                 this.isStarted = false
             }
             if (log)
@@ -180,10 +223,7 @@ abstract class Service(
      * Triggers the service logic to run once
      */
     fun trigger() {
-        this.lock.withLock {
-            this.assertIsStarted()
-            this.executorService.submit({ this.runImpl() })
-        }
+        this.submitSupplementalTask({ this.runImpl() })
     }
 
     @Synchronized private fun runImpl() {
