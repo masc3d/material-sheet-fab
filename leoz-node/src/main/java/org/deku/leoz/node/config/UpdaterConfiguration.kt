@@ -40,8 +40,6 @@ open class UpdaterConfiguration {
     @Inject
     private lateinit var settings: Settings
 
-    private val authorizationConfiguration by lazy { AuthorizationConfiguration.instance }
-
     /**
      * Local bundle repository
      * */
@@ -77,7 +75,7 @@ open class UpdaterConfiguration {
         val installer = BundleConfiguration.bundleInstaller()
 
         val updater = BundleUpdater(
-                identity = this.authorizationConfiguration.identity,
+                identity = App.instance.identity,
                 installer = installer,
                 remoteRepository = this.updateRepository,
                 localRepository = this.localRepository,

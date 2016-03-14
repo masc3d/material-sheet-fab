@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.log.LogAppender
+import org.deku.leoz.node.App
 
 /**
  * Log configuration.
@@ -31,7 +32,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
                     // Setup message log appender
                     this.jmsLogAppender = LogAppender(
                             ActiveMQConfiguration.instance,
-                            AuthorizationConfiguration.instance.identity)
+                            App.instance.identity)
                     this.jmsLogAppender!!.context = loggerContext
                     this.jmsLogAppender!!.start()
                 }

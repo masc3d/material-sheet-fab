@@ -31,8 +31,6 @@ import javax.inject.Inject
 open class MessageListenerConfiguration {
     private val log = LogFactory.getLog(MessageListenerConfiguration::class.java)
 
-    private val authorizationConfiguration by lazy { AuthorizationConfiguration.instance }
-
     @Inject
     lateinit private var updaterConfiguration: UpdaterConfiguration
 
@@ -66,7 +64,7 @@ open class MessageListenerConfiguration {
         ActiveMQBroker.instance.delegate.add(brokerEventListener)
 
         nodeQueueListener = object : SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.nodeQueue(authorizationConfiguration.identity.shortKey)) },
+                { Channel(ActiveMQConfiguration.instance.nodeQueue(App.instance.identity.shortKey)) },
                 executorService) {}
 
         nodeNotificationListener = object : SpringJmsListener(

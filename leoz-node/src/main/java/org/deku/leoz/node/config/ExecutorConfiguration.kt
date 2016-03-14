@@ -25,17 +25,18 @@ open class ExecutorConfiguration {
      * Scheduled thread executor
      */
     @Bean
-    open fun scheduledThreadPool(): ScheduledExecutorService {
+    open fun executorService(): ScheduledExecutorService {
         val executor = ScheduledThreadPoolExecutor(4);
         executor.setKeepAliveTime(60, TimeUnit.SECONDS)
+        executor.removeOnCancelPolicy = true
         return executor
     }
 
-    private val pools = ArrayList<ExecutorService>()
+    private val executorServices = ArrayList<ExecutorService>()
 
     @PostConstruct
     fun onInitialize() {
-        pools.add(scheduledThreadPool())
+        executorServices.add(executorService())
     }
 
     @PreDestroy
@@ -55,6 +56,6 @@ open class ExecutorConfiguration {
             }
         }
 
-        shutdown(this.pools)
+        shutdown(this.executorServices)
     }
 }

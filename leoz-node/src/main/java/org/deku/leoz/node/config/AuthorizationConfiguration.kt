@@ -1,112 +1,66 @@
 package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.Identity
-import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.node.auth.Authorizer
+import org.deku.leoz.node.services.AuthorizationService
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
+import sx.jms.embedded.Broker
+import java.util.concurrent.ScheduledExecutorService
+import javax.annotation.PostConstruct
+import javax.inject.Inject
 
 /**
  * Leoz-node authorization configuration
  * Responsible for setting up identity of the node and initiating remote authorization task(s)
  * Created by masc on 30.06.15.
  */
-class AuthorizationConfiguration {
+@Configuration
+@Lazy(false)
+open class AuthorizationConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
-    /** Singleton */
-    companion object Singleton {
-        @JvmStatic val instance by lazy {
-            AuthorizationConfiguration()
+    @Inject
+    private lateinit var executorService: ScheduledExecutorService
+
+    @Bean
+    open fun authorizationService(): AuthorizationService {
+        return AuthorizationService(
+                executorService = this.executorService,
+
+                messagingConfiguration = ActiveMQConfiguration.instance,
+                identitySupplier = { App.instance.identity },
+                onRejected = { identity ->
+                    log.warn("Authorization rejected for identity [${identity}]")
+                    // If rejected, create new identity and restart
+                    App.instance.initializeIdentity(recreate = true)
+
+                    log.warn("Rebooting due to identity change")
+                    val installer = BundleConfiguration.bundleInstaller()
+                    installer.boot(App.instance.name)
+                    App.instance.shutdown()
+                })
+    }
+
+    /** Broker event listener */
+    private val brokerEventListener = object : Broker.DefaultEventListener() {
+        private val authorizationService by lazy { authorizationService() }
+
+        override fun onStart() {
+            authorizationService.start()
+        }
+
+        override fun onStop() {
+            authorizationService.stop()
         }
     }
 
-    /** Authorizer */
-    private var authorizer: Authorizer
-
-    /** Application wide Node identity */
-    var identity: Identity
-        @Synchronized private set
-
-    /** Application wide system information */
-    val systemInformation: SystemInformation by lazy {
-        SystemInformation.create()
-    }
-
-
-    /**
-     * Initialize
-     */
-    fun initialize() {
-        // Actual initialization done by c'tor
-    }
-
-    /**
-     * Creates and stores new identity
-     * @return Identity
-     */
-    private fun createIdentity(): Identity {
-        val identity = Identity.create(
-                App.instance.name,
-                this.systemInformation)
-
-        // Store updates/created identity
-        try {
-            identity.save(StorageConfiguration.instance.identityConfigurationFile)
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
-
-        return identity
-    }
-
-    /**
-     * Starts authorization
-     */
-    private fun startAuthorization() {
-        this.authorizer.start(this.identity, onRejected = { identity ->
-            log.warn("Authorization rejected for identity [${identity}]")
-            // If rejected, create new identity and restart
-            this.identity = this.createIdentity()
-
-            log.warn("Rebooting due to identity change")
-            val installer = BundleConfiguration.bundleInstaller()
-            installer.boot(App.instance.name)
-            App.instance.shutdown()
-        })
-    }
-
-    /**
-     * c'tor
-     */
-    init {
-        var identity: Identity? = null
-
-        // Collect system information
-        log.info(this.systemInformation)
-
-        // Verify and read existing identity file
-        val identityFile = StorageConfiguration.instance.identityConfigurationFile
-        if (identityFile.exists()) {
-            try {
-                identity = Identity.load(this.systemInformation, identityFile)
-            } catch (e: Exception) {
-                log.error(e.message, e)
-            }
-        }
-
-        // Create identity if it doesn't exist or could not be read/parsed
-        if (identity == null) {
-            identity = this.createIdentity()
-        }
-
-        this.identity = identity
-        log.info(identity)
-
+    @PostConstruct
+    fun onInitialize() {
         // Start authorizer
-        this.authorizer = Authorizer(ActiveMQConfiguration.instance)
-        this.startAuthorization()
+        ActiveMQConfiguration.instance.broker.delegate.add(this.brokerEventListener)
     }
 }

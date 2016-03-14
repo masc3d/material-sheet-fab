@@ -2,8 +2,9 @@ package org.deku.leoz.node
 
 import com.google.common.collect.Lists
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.Identity
+import org.deku.leoz.SystemInformation
 import org.deku.leoz.config.RsyncConfiguration
-import org.deku.leoz.node.config.AuthorizationConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.springframework.beans.BeansException
@@ -100,7 +101,58 @@ open class App :
     val version: String
         get() = this.jarManifest.implementationVersion
 
+    /**
+     * Lock for preventing duplicate processes
+     */
     private var bundlePathLock: FileLock by Delegates.notNull()
+
+    /** Application wide Node identity */
+    var identity: Identity by Delegates.notNull()
+
+    /** Application wide system information */
+    val systemInformation: SystemInformation by lazy {
+        SystemInformation.create()
+    }
+
+    /**
+     * Initializes identity
+     * @return Identity
+     */
+    fun initializeIdentity(recreate: Boolean = false) {
+        var identity: Identity? = null
+
+        if (!recreate) {
+            // Verify and read existing identity file
+            val identityFile = StorageConfiguration.instance.identityConfigurationFile
+            if (identityFile.exists()) {
+                try {
+                    identity = Identity.load(this.systemInformation, identityFile)
+                } catch (e: Exception) {
+                    log.error(e.message, e)
+                }
+            }
+        }
+
+        // Create identity if it doesn't exist or could not be read/parsed
+        if (identity == null) {
+            identity = Identity.create(
+                    App.instance.name,
+                    this.systemInformation)
+
+            // Store updates/created identity
+            try {
+                identity.save(StorageConfiguration.instance.identityConfigurationFile)
+            } catch (e: Exception) {
+                throw RuntimeException(e)
+            }
+        }
+
+        this.identity = identity
+
+        // Start authorizer
+//        this.authorizationService = AuthorizationService(ActiveMQConfiguration.instance)
+//        this.startAuthorization()
+    }
 
     /**
      * Intialize application
@@ -131,8 +183,12 @@ open class App :
 
         log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
 
+        // Log system information
+        log.info(this.systemInformation)
+
         // Initialize identity
-        AuthorizationConfiguration.instance.initialize()
+        this.initializeIdentity()
+        log.info(identity)
 
         // Uncaught threaded exception handler
         Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {
