@@ -165,6 +165,8 @@ abstract class Service(
                 this.task = null
                 this.isStarted = false
             }
+            if (log)
+                this.log.info("Stopped service [${this.javaClass}]")
         }
 
         if (async) {
