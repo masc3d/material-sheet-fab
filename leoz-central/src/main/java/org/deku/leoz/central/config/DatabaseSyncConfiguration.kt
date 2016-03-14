@@ -32,11 +32,6 @@ open class DatabaseSyncConfiguration {
         }
     }
 
-    fun trigger() {
-        log.info("Triggering database sync")
-        this.databaseSyncService.trigger()
-    }
-
     /**
      * On initialization
      */

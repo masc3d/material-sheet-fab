@@ -1,7 +1,7 @@
 package org.deku.leoz.central.rest.services.internal.v1
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.central.config.DatabaseSyncConfiguration
+import org.deku.leoz.central.services.DatabaseSyncService
 import sx.rs.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
@@ -20,9 +20,9 @@ class CentralService : org.deku.leoz.rest.services.internal.v1.CentralService {
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject
-    lateinit var databaseSyncConfiguration: DatabaseSyncConfiguration
+    lateinit var databaseSyncService: DatabaseSyncService
 
     override fun databaseSync() {
-        this.databaseSyncConfiguration.trigger()
+        this.databaseSyncService.trigger()
     }
 }
