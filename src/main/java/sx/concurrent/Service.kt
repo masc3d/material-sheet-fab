@@ -196,7 +196,8 @@ abstract class Service(
      */
     open fun stop(interrupt: Boolean = false, async: Boolean = false, log: Boolean = true) {
         val stopRunnable = Runnable {
-            if (log && this.isStarted)
+            val wasStarted = this.isStarted
+            if (log && wasStarted)
                 this.log.info("Stopping service [${this.javaClass}]")
 
             this.lock.withLock {
@@ -215,7 +216,7 @@ abstract class Service(
                 this.serviceTask = null
                 this.isStarted = false
             }
-            if (log)
+            if (log && wasStarted)
                 this.log.info("Stopped service [${this.javaClass}]")
         }
 
