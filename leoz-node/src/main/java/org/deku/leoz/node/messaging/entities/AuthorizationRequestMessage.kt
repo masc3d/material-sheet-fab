@@ -3,7 +3,7 @@ package org.deku.leoz.node.messaging.entities
 import java.io.Serializable
 
 /**
- * Identity information message sent from node clients to central.
+ * Authorization request, sent from nodes to central
  * Created by masc on 30.06.15.
  */
 data class AuthorizationRequestMessage(

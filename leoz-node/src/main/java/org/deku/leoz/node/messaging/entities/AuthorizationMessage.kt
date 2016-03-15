@@ -3,7 +3,7 @@ package org.deku.leoz.node.messaging.entities
 import java.io.Serializable
 
 /**
- * Authorization message retrieved by node clients.
+ * Authorization message, sent to and consumed by nodes
  * Created by masc on 30.06.15.
  */
 data class AuthorizationMessage(

@@ -4,8 +4,8 @@ import com.google.common.base.Stopwatch
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repositories.EntityRepository
-import org.deku.leoz.node.data.sync.v1.EntityStateMessage
-import org.deku.leoz.node.data.sync.v1.EntityUpdateMessage
+import org.deku.leoz.node.messaging.entities.EntityStateMessage
+import org.deku.leoz.node.messaging.entities.EntityUpdateMessage
 import sx.jms.Channel
 import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener

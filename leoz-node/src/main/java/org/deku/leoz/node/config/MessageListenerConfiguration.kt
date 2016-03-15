@@ -5,7 +5,7 @@ import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
-import org.deku.leoz.node.messaging.handlers.AuthorizationHandler
+import org.deku.leoz.node.services.AuthorizationClientService
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
@@ -41,20 +41,20 @@ open class MessageListenerConfiguration {
 
     private lateinit var nodeNotificationListener: SpringJmsListener
 
-    init {
-    }
+    // Handlers
+    @Inject
+    private lateinit var authorizationClientService: AuthorizationClientService
+
     private fun initializeListener() {
 
         // Add message handler delegatess
         nodeQueueListener.addDelegate(
                 AuthorizationMessage::class.java,
-                AuthorizationHandler()
-        )
+                authorizationClientService)
 
         nodeNotificationListener.addDelegate(
                 UpdateInfo::class.java,
-                updaterConfiguration.bundleUpdater()
-        )
+                updaterConfiguration.bundleUpdater())
     }
 
     //region Lifecycle

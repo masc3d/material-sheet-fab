@@ -1,4 +1,4 @@
-package org.deku.leoz.node.messaging.sync;
+package org.deku.leoz.node.messaging.entities.sync;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;

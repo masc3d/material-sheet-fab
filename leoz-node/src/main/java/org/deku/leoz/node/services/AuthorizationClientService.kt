@@ -10,6 +10,7 @@ import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
 import sx.concurrent.Service
 import sx.jms.Channel
+import sx.jms.Handler
 import java.time.Duration
 import java.util.concurrent.ScheduledExecutorService
 
@@ -25,7 +26,8 @@ class AuthorizationClientService(
         private val onRejected: (identity: Identity) -> Unit)
 :
         Service(executorService,
-                period = Duration.ofSeconds(60))
+                period = Duration.ofSeconds(60)),
+        Handler<AuthorizationMessage>
 {
     private val log = LogFactory.getLog(this.javaClass)
 
@@ -70,5 +72,9 @@ class AuthorizationClientService(
 
         // Stop service when authorization process completed
         this.stop(async = true)
+    }
+
+    override fun onMessage(message: AuthorizationMessage, replyChannel: Channel?) {
+        // TODO: Push authorization update handling. May revoke the node's authorization key
     }
 }
