@@ -1,4 +1,4 @@
-package org.deku.leoz.central.messaging.handlers
+package org.deku.leoz.central.services
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.entities.UpdateInfo
@@ -15,9 +15,10 @@ import javax.inject.Named
  * Created by masc on 19.10.15.
  */
 @Named
-class UpdateInfoRequestHandler
+class UpdateService
 :
-        Handler<UpdateInfoRequest> {
+        Handler<UpdateInfoRequest>
+{
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject

@@ -17,7 +17,7 @@ import java.util.concurrent.ScheduledExecutorService
  * Authorization service
  * Created by masc on 01.07.15.
  */
-class AuthorizationService(
+class AuthorizationClientService(
         executorService: ScheduledExecutorService,
         /** Messaging context  */
         private val messagingConfiguration: MessagingConfiguration,

@@ -1,4 +1,4 @@
-package org.deku.leoz.central.messaging.handlers
+package org.deku.leoz.central.services
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
@@ -6,9 +6,7 @@ import org.deku.leoz.central.data.repositories.NodeRepository
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
 import sx.jms.Channel
-import sx.jms.Converter
 import sx.jms.Handler
-import sx.jms.converters.DefaultConverter
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -16,18 +14,13 @@ import javax.inject.Named
  * Created by masc on 01.07.15.
  */
 @Named
-class AuthorizationRequestHandler : Handler<AuthorizationRequestMessage> {
+class AuthorizationService
+:
+        Handler<AuthorizationRequestMessage> {
     private val log = LogFactory.getLog(this.javaClass)
-    private val converter: Converter
 
     @Inject
     private lateinit var nodeRepository: NodeRepository
-
-    init {
-        converter = DefaultConverter(
-                DefaultConverter.SerializationType.KRYO,
-                DefaultConverter.CompressionType.GZIP)
-    }
 
     override fun onMessage(message: AuthorizationRequestMessage, replyChannel: Channel?) {
         try {

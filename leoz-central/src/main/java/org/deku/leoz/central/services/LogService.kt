@@ -1,4 +1,4 @@
-package org.deku.leoz.central.messaging.handlers
+package org.deku.leoz.central.services
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
@@ -20,11 +20,11 @@ import java.util.*
 import javax.inject.Named
 
 /**
- * Log message handler
+ * Log message service
  * Created by masc on 19/02/16.
  */
 @Named
-class LogHandler : Handler<LogMessage> {
+class LogService : Handler<LogMessage> {
     private val log = LogFactory.getLog(this.javaClass)
 
     /** Loggers by node id */

@@ -4,7 +4,7 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.node.services.AuthorizationService
+import org.deku.leoz.node.services.AuthorizationClientService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -20,15 +20,15 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class AuthorizationConfiguration {
+open class AuthorizationClientConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject
     private lateinit var executorService: ScheduledExecutorService
 
     @Bean
-    open fun authorizationService(): AuthorizationService {
-        return AuthorizationService(
+    open fun authorizationClientService(): AuthorizationClientService {
+        return AuthorizationClientService(
                 executorService = this.executorService,
 
                 messagingConfiguration = ActiveMQConfiguration.instance,
@@ -47,14 +47,14 @@ open class AuthorizationConfiguration {
 
     /** Broker event listener */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
-        private val authorizationService by lazy { authorizationService() }
+        private val authorizationClientService by lazy { authorizationClientService() }
 
         override fun onStart() {
-            authorizationService.start()
+            authorizationClientService.start()
         }
 
         override fun onStop() {
-            authorizationService.stop()
+            authorizationClientService.stop()
         }
     }
 

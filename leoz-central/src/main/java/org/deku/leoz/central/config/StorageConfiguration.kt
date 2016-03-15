@@ -8,8 +8,10 @@ import org.deku.leoz.central.App
  */
 class StorageConfiguration private constructor(appName: String)
 :
-        org.deku.leoz.node.config.StorageConfiguration(appName) {
+        org.deku.leoz.node.config.StorageConfiguration(appName)
+{
     companion object {
+        /** Singleton instance */
         val instance by lazy({ StorageConfiguration(App.instance.name) })
     }
 }

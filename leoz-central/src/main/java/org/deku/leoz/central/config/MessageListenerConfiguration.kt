@@ -1,13 +1,7 @@
 package org.deku.leoz.central.config
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.bundle.entities.UpdateInfoRequest
-import org.deku.leoz.central.messaging.handlers.AuthorizationRequestHandler
-import org.deku.leoz.central.messaging.handlers.LogHandler
-import org.deku.leoz.central.messaging.handlers.UpdateInfoRequestHandler
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
-import org.deku.leoz.log.LogMessage
-import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.Channel
@@ -18,7 +12,6 @@ import java.util.concurrent.ExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 /**
  * Leoz-central message listener configuration
@@ -32,44 +25,29 @@ open class MessageListenerConfiguration {
     @Inject
     private lateinit var executorService: ExecutorService
 
-    @Inject
-    private lateinit var authorizationHandler: AuthorizationRequestHandler
-
-    @Inject
-    private lateinit var updateInfoRequestHandler: UpdateInfoRequestHandler
-
-    @Inject
-    private lateinit var logHandler: LogHandler
-
-    /** Central message listener  */
-    private var centralQueueListener: SpringJmsListener by Delegates.notNull()
-
-    private var logListener: SpringJmsListener by Delegates.notNull()
-
-    init {
+    /**
+     * Central queue listener
+     */
+    val centralQueueListener: SpringJmsListener by lazy {
+        object : SpringJmsListener(
+                channel = { Channel(ActiveMQConfiguration.instance.centralQueue) },
+                executor = this.executorService) {}
     }
 
-    private fun initializeListener() {
-
-        // Add message handler delegatess
-        centralQueueListener.addDelegate(
-                AuthorizationRequestMessage::class.java,
-                authorizationHandler)
-
-        centralQueueListener.addDelegate(
-                UpdateInfoRequest::class.java,
-                updateInfoRequestHandler)
-
-        logListener.addDelegate(
-                LogMessage::class.java,
-                logHandler)
+    /**
+     * Central log queue listener
+     */
+    val centralLogQueueListener: SpringJmsListener by lazy {
+        object : SpringJmsListener(
+                channel = { Channel(ActiveMQConfiguration.instance.centralLogQueue) },
+                executor = this.executorService) {}
     }
 
     //region Lifecycle
     /**
      * Broker event listener
      */
-    internal var brokerEventListener: Broker.EventListener = object : Broker.DefaultEventListener() {
+    private val brokerEventListener: Broker.EventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
             startIfReady()
         }
@@ -86,9 +64,8 @@ open class MessageListenerConfiguration {
         this.stop()
 
         if (ActiveMQConfiguration.instance.broker.isStarted) {
-            this.initializeListener()
             this.centralQueueListener.start()
-            this.logListener.start()
+            this.centralLogQueueListener.start()
         }
     }
 
@@ -97,33 +74,20 @@ open class MessageListenerConfiguration {
      */
     private fun stop() {
         this.centralQueueListener.stop()
-        this.logListener.stop()
+        this.centralLogQueueListener.stop()
     }
 
     @PostConstruct
     fun onInitialize() {
-        log.info("Initializing central message listener")
-        // Central queue listener
-        centralQueueListener = object : SpringJmsListener(
-                channel = { Channel(ActiveMQConfiguration.instance.centralQueue) },
-                executor = this.executorService) {}
-
-        // Log queue listener
-        logListener = object : SpringJmsListener(
-                channel = { Channel(ActiveMQConfiguration.instance.centralLogQueue) },
-                executor = this.executorService) {}
-
-
         // Hook up with broker events
         ActiveMQBroker.instance.delegate.add(brokerEventListener)
-
         this.startIfReady()
     }
 
     @PreDestroy
     fun onDestroy() {
         this.centralQueueListener.close()
-        this.logListener.close()
+        this.centralLogQueueListener.close()
     }
     //endregion
 }
