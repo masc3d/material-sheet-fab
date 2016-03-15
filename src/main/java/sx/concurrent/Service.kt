@@ -194,7 +194,7 @@ abstract class Service(
      * @param interrupt Interrupt futures
      * @param async Perform stopping asynchronously (required when called from within service thread)
      */
-    open fun stop(interrupt: Boolean = false, async: Boolean = false, log: Boolean = true) {
+    open fun stop(interrupt: Boolean = true, async: Boolean = false, log: Boolean = true) {
         val stopRunnable = Runnable {
             val wasStarted = this.isStarted
             if (log && wasStarted)
