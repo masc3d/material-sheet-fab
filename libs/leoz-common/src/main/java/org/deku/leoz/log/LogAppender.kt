@@ -7,15 +7,12 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import sx.Disposable
-import sx.Dispose
 import sx.jms.Channel
-import sx.jms.Converter
-import sx.jms.converters.DefaultConverter
 import sx.jms.embedded.Broker
+import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 
 /**
  * Log appender sending log messages via jms
@@ -24,65 +21,68 @@ import java.util.concurrent.TimeUnit
 public class LogAppender(
         /** Messaging context */
         private val messagingConfiguration: MessagingConfiguration,
-        private val idenity: Identity)
+        private val idenitySupplier: () -> Identity)
 :
         AppenderBase<ILoggingEvent>(),
         Disposable {
     private val log = LogFactory.getLog(this.javaClass)
-    /** Message converter  */
-    private val converter: Converter
     /** Log message buffer  */
     private val buffer = ArrayList<LogMessage.LogEntry>()
-    /** Flush scheduler  */
-    private var executorService: ScheduledExecutorService? = null
+
+    /**
+     * Flush Service
+     */
+    inner private class Service(executorService: ScheduledExecutorService)
+    :
+            sx.concurrent.Service(executorService, period = Duration.ofSeconds(5)) {
+        /**
+         * Flush service implementation
+         */
+        override fun run() {
+            // Flush log messages to underlying jms broker
+            var logMessageBuffer = ArrayList<LogMessage.LogEntry>()
+
+            synchronized (this@LogAppender.buffer) {
+                logMessageBuffer.addAll(this@LogAppender.buffer)
+                this@LogAppender.buffer.clear()
+            }
+
+            if (logMessageBuffer.size > 0) {
+                log.trace("Flushing [${logMessageBuffer.size}]")
+                try {
+                    Channel(messagingConfiguration.centralLogQueue).use {
+                        it.send(LogMessage(
+                                this@LogAppender.idenitySupplier().key,
+                                logMessageBuffer.toTypedArray()))
+                    }
+                } catch (e: Exception) {
+                    log.error(e.message, e)
+                }
+            }
+        }
+    }
+
+    private val service: Service = Service(Executors.newSingleThreadScheduledExecutor())
 
     /**
      * Broker listener, jms destination is automatically created when broker start is detected
      */
-    var brokerEventListener: Broker.EventListener = object : Broker.DefaultEventListener() {
+    val brokerEventListener: Broker.EventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
-            executorService!!.scheduleAtFixedRate(
-                    { flush() },
-                    0,
-                    5,
-                    TimeUnit.SECONDS)
+            if (this@LogAppender.isStarted)
+                service.start()
         }
 
         override fun onStop() {
-            Dispose.safely(this@LogAppender)
+            service.trigger()
+            service.stop()
         }
     }
 
     init {
-        converter = DefaultConverter(
-                DefaultConverter.SerializationType.KRYO,
-                DefaultConverter.CompressionType.GZIP)
+        messagingConfiguration.broker.delegate.add(brokerEventListener)
     }
 
-    /**
-     * Flush log messages to underlying jms broker
-     */
-    private fun flush() {
-        var logMessageBuffer = ArrayList<LogMessage.LogEntry>()
-
-        synchronized (this.buffer) {
-            logMessageBuffer.addAll(this.buffer)
-            this.buffer.clear()
-        }
-
-        if (logMessageBuffer.size > 0) {
-            log.trace("Flushing [${logMessageBuffer.size}]")
-            try {
-                Channel(messagingConfiguration.centralLogQueue).use {
-                    it.send(LogMessage(
-                            this.idenity.key,
-                            logMessageBuffer.toTypedArray()))
-                }
-            } catch (e: Exception) {
-                log.error(e.message, e)
-            }
-        }
-    }
 
     override fun append(eventObject: ILoggingEvent) {
         val le = eventObject as LoggingEvent
@@ -92,52 +92,17 @@ public class LogAppender(
     }
 
     @Synchronized override fun start() {
-        if (executorService != null) {
-            this.stop()
-        }
-
-        executorService = Executors.newScheduledThreadPool(1)
-
-        messagingConfiguration.broker.delegate.add(brokerEventListener)
+        super.start()
         if (messagingConfiguration.broker.isStarted)
             brokerEventListener.onStart()
-
-        super.start()
     }
 
     @Synchronized override fun stop() {
-        if (executorService != null) {
-            // Immediate flush and subsequent shutdown
-            executorService!!.shutdownNow()
-
-            // Wait for termination
-            try {
-                executorService!!.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
-            } catch (e: InterruptedException) {
-                log.error(e.message, e)
-            }
-
-            executorService = null
-        }
-
-        // Final flush
-        try {
-            if (messagingConfiguration.broker.isStarted)
-                this.flush()
-        } catch (e: Exception) {
-            log.error(e.message, e)
-        }
-
-        messagingConfiguration.broker.delegate.remove(brokerEventListener)
-
+        this.service.stop()
         super.stop()
     }
 
     override fun close() {
-        try {
-            this.stop()
-        } catch (e: Exception) {
-            log.error(e.message, e)
-        }
+        this.stop()
     }
 }

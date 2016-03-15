@@ -31,7 +31,9 @@ public class LogTest extends MessagingTest {
         // Setup log appender
         LogAppender lAppender = new LogAppender(
                 ActiveMQConfiguration.getInstance(),
-                Identity.Companion.create(Bundles.LEOZ_NODE.getValue(), SystemInformation.create()));
+                () -> {
+                    return Identity.Companion.create(Bundles.LEOZ_NODE.getValue(), SystemInformation.create());
+                });
         lAppender.start();
         Logger lRoot = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         lRoot.addAppender(lAppender);
