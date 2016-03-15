@@ -86,16 +86,13 @@ class EntityConsumer
 
                 log.info(lfmt("Requesting entities"))
 
-                // Enable statistics for this channel
-                // TODO. statistics are broken, as converters are used externally (see below)
-                replyChannel.statistics.enabled = true
-
                 // Receive entity update message
                 val euMessage = replyChannel.receive(EntityUpdateMessage::class.java)
 
                 log.debug(lfmt(euMessage.toString()))
                 val count = AtomicLong()
 
+                var bytesReceived = 0L
                 if (euMessage.amount > 0) {
                     val emv = em!!
                     PersistenceUtil.transaction(em) {
@@ -122,7 +119,9 @@ class EntityConsumer
 
                             if (!eos) {
                                 // Deserialize entities
-                                val entities = replyChannel.converter.fromMessage(tMsg) as Array<*>
+                                val entities = replyChannel.converter.fromMessage(tMsg, { size ->
+                                    bytesReceived += size
+                                }) as Array<*>
 
                                 // TODO: exceptions within transactions behave in a strange way.
                                 // data of transactions that were committed may not be there and h2 may report
@@ -156,7 +155,7 @@ class EntityConsumer
                     }
 
                 }
-                log.info(lfmt("Received and stored ${count.get()} in ${sw} (${replyChannel.statistics.bytesReceived} bytes)"))
+                log.info(lfmt("Received and stored ${count.get()} in ${sw} (${bytesReceived} bytes)"))
             } catch (e: TimeoutException) {
                 log.error(lfmt(e.message ?: ""))
             } catch (e: Exception) {
