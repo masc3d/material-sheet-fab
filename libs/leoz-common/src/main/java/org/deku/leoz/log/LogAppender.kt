@@ -98,7 +98,8 @@ public class LogAppender(
     }
 
     @Synchronized override fun stop() {
-        this.service.stop()
+        // Shutdown log flush gracefully
+        this.service.stop(interrupt = false)
         super.stop()
     }
 
