@@ -10,12 +10,14 @@ import org.deku.leoz.config.StorageTestConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.junit.Test
 import sx.jms.Channel
+import java.util.concurrent.Executors
 
 /**
  * Created by masc on 12.10.15.
  */
 class UpdateTest {
     val updater = BundleUpdateService(
+            executorService = Executors.newScheduledThreadPool(2),
             identity = Identity.create(Bundles.LEOZ_BOOT.value, SystemInformation()),
             installer = BundleInstaller(
                     StorageTestConfiguration.bundlesTestDirectory),
