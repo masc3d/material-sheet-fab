@@ -8,9 +8,9 @@ No dependencies
 
 compile - Compile classpath for source set 'main'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -22,20 +22,20 @@ compile - Compile classpath for source set 'main'.
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
-|    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
-|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
-|    |    \--- net.java.dev.jna:jna:4.2.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.2
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
+|    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.4.Final
@@ -125,9 +125,9 @@ compile - Compile classpath for source set 'main'.
 
 default - Configuration for default artifacts.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -139,20 +139,20 @@ default - Configuration for default artifacts.
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
-|    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
-|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
-|    |    \--- net.java.dev.jna:jna:4.2.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.2
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
+|    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.4.Final
@@ -241,20 +241,20 @@ default - Configuration for default artifacts.
 \--- org.controlsfx:controlsfx:8.+ -> 8.40.10
 
 kapt
-\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0
-     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0
-          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.1
+     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.1
+          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
 
 kaptTest
-\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.0
-     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.0
-          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.1
+     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.1
+          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
 
 runtime - Runtime classpath for source set 'main'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -266,20 +266,20 @@ runtime - Runtime classpath for source set 'main'.
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
-|    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
-|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
-|    |    \--- net.java.dev.jna:jna:4.2.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.2
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
+|    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.4.Final
@@ -369,9 +369,9 @@ runtime - Runtime classpath for source set 'main'.
 
 testCompile - Compile classpath for source set 'test'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -383,20 +383,20 @@ testCompile - Compile classpath for source set 'test'.
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
-|    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
-|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
-|    |    \--- net.java.dev.jna:jna:4.2.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.2
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
+|    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.4.Final
@@ -488,9 +488,9 @@ testCompile - Compile classpath for source set 'test'.
 
 testRuntime - Runtime classpath for source set 'test'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.0
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -502,20 +502,20 @@ testRuntime - Runtime classpath for source set 'test'.
 |    \--- org.ini4j:ini4j:+ -> 0.5.4
 +--- project :libs:leoz-common
 |    +--- project :libs:sx-common (*)
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
 |    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
 |    +--- commons-io:commons-io:2.+ -> 2.4
 |    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
-|    +--- net.java.dev.jna:jna:4.+ -> 4.2.1
-|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.1
-|    |    \--- net.java.dev.jna:jna:4.2.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.2
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
+|    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.0
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.0 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
 +--- org.glassfish.web:el-impl:2.+ -> 2.2.1-b05
 |    \--- javax.el:el-api:2.2.1-b04
 +--- org.hibernate:hibernate-validator:5.2.+ -> 5.2.4.Final
