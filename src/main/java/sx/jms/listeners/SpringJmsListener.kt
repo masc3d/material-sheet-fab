@@ -18,7 +18,7 @@ import javax.jms.Session
  * @property destination
  * @param converter Message converter
  */
-abstract class SpringJmsListener
+open class SpringJmsListener
 :
         Listener,
         ErrorHandler {
@@ -45,7 +45,7 @@ abstract class SpringJmsListener
      * Start listener
      */
     @Synchronized final override fun start() {
-        log.info("Starting jms listener ${this.description}")
+        log.info("Starting ${this.description}")
         var lc = listenerContainer
         if (lc == null) {
             lc = DefaultMessageListenerContainer()
