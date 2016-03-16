@@ -46,14 +46,14 @@ open class MessageListenerConfiguration {
 
     //region Lifecycle
     @PostConstruct
-    fun onInitialize() {
+    open fun onInitialize() {
         // Register event listeners
         ActiveMQBroker.instance.delegate.add(brokerEventListener)
         this.startIfReady()
     }
 
     @PreDestroy
-    fun onDestroy() {
+    open fun onDestroy() {
         this.stop()
     }
 
@@ -71,19 +71,12 @@ open class MessageListenerConfiguration {
     }
 
     /**
-     * Indicates if message listener is ready to start (prerequisites are met)
-     * @return
-     */
-    private val isReadyToStart: Boolean
-        get() = ActiveMQConfiguration.instance.broker.isStarted
-
-    /**
      * Start message listener
      */
     @Synchronized private fun startIfReady() {
         this.stop()
 
-        if (this.isReadyToStart) {
+        if (ActiveMQConfiguration.instance.broker.isStarted) {
             this.nodeQueueListener.start()
             this.nodeNotificationListener.start()
         }

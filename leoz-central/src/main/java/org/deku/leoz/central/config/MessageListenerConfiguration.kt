@@ -19,7 +19,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Lazy(false)
-open class MessageListenerConfiguration {
+open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListenerConfiguration() {
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject
@@ -78,16 +78,15 @@ open class MessageListenerConfiguration {
     }
 
     @PostConstruct
-    fun onInitialize() {
+    override fun onInitialize() {
         // Hook up with broker events
         ActiveMQBroker.instance.delegate.add(brokerEventListener)
         this.startIfReady()
     }
 
     @PreDestroy
-    fun onDestroy() {
-        this.centralQueueListener.close()
-        this.centralLogQueueListener.close()
+    override fun onDestroy() {
+        this.stop()
     }
     //endregion
 }
