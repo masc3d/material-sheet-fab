@@ -29,18 +29,18 @@ open class MessageListenerConfiguration {
      * Central queue listener
      */
     val centralQueueListener: SpringJmsListener by lazy {
-        object : SpringJmsListener(
+        SpringJmsListener(
                 channel = { Channel(ActiveMQConfiguration.instance.centralQueue) },
-                executor = this.executorService) {}
+                executor = this.executorService)
     }
 
     /**
      * Central log queue listener
      */
     val centralLogQueueListener: SpringJmsListener by lazy {
-        object : SpringJmsListener(
+        SpringJmsListener(
                 channel = { Channel(ActiveMQConfiguration.instance.centralLogQueue) },
-                executor = this.executorService) {}
+                executor = this.executorService)
     }
 
     //region Lifecycle

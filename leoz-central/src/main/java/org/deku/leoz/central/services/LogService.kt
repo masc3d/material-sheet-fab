@@ -24,7 +24,9 @@ import javax.inject.Named
  * Created by masc on 19/02/16.
  */
 @Named
-class LogService : Handler<LogMessage> {
+class LogService
+:
+        Handler<LogMessage> {
     private val log = LogFactory.getLog(this.javaClass)
 
     /** Loggers by node id */

@@ -42,12 +42,19 @@ import javax.persistence.PersistenceContext
 open class DatabaseSyncService
 @Inject
 constructor(
-        exceutorService: ScheduledExecutorService,
+        private val exceutorService: ScheduledExecutorService,
         @Qualifier(PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
         @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER) txJooq: PlatformTransactionManager)
-:
-        Service(exceutorService, period = Duration.ofMinutes(10))
 {
+    /**
+     * Embedded service class
+     */
+    private val service = object : Service(executorService = this.exceutorService, period = Duration.ofMinutes(1)) {
+        override fun run() {
+            this@DatabaseSyncService.sync(false)
+        }
+    }
+
     companion object {
         private val log = LogFactory.getLog(DatabaseSyncService::class.java)
 
@@ -256,11 +263,6 @@ constructor(
     }
 
     @Transactional(value = PersistenceConfiguration.QUALIFIER)
-    override fun run() {
-        this.sync(false)
-    }
-
-    @Transactional(value = PersistenceConfiguration.QUALIFIER)
     open fun sync(reload: Boolean) {
         val sw = Stopwatch.createStarted()
 
@@ -430,5 +432,17 @@ constructor(
             }
             null
         }
+    }
+
+    open fun start() {
+        this.service.start()
+    }
+
+    open fun stop() {
+        this.service.stop()
+    }
+
+    open fun trigger() {
+        this.service.trigger()
     }
 }
