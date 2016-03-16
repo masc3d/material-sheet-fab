@@ -29,7 +29,6 @@ open class ExecutorConfiguration {
         executor.removeOnCancelPolicy = true
         return executor
     }
-
     private val executorService by lazy { executorService() }
 
     @PreDestroy
