@@ -215,7 +215,7 @@ abstract class Service(
         val stopRunnable = Runnable {
             val wasStarted = this.isStarted
             if (log && wasStarted)
-                this.log.info("Stopping service [${this.javaClass}]")
+                this.log.info("Stopping service [${this.javaClass}] interrupt [${interrupt}]")
 
             this.lock.withLock {
                 val tasks = ArrayList<TaskFuture>()
