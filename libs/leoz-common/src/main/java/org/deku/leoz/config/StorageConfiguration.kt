@@ -90,13 +90,11 @@ abstract class StorageConfiguration(
     init {
         // Initialize directories
         var basePath: File
-        var baseDirectoryName: String
+        var baseDirectoryName: String = ".leoz"
         if (SystemUtils.IS_OS_WINDOWS) {
             basePath = File(System.getenv("ALLUSERSPROFILE"))
-            baseDirectoryName = "Leoz"
         } else {
             basePath = File(System.getProperty("user.home"))
-            baseDirectoryName = ".leoz"
         }
         if (Strings.isNullOrEmpty(basePath.name))
             throw UnsupportedOperationException("Basepath is empty");
