@@ -5,33 +5,36 @@ import org.deku.leoz.Identity
 import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.bundle.entities.UpdateInfoRequest
 import sx.Disposable
+import sx.concurrent.Service
 import sx.jms.Channel
 import sx.jms.Handler
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.ScheduledExecutorService
 
 /**
  * Updater suoporting async/background updates of bundles.
  * Can be added as a message handler to a notification topic message listener for push update notifications.
+ * @property executorService Executor service
+ * @property requestChannel The JMS channel to use to issue update info requests
  * @property identity Id of this leoz node
  * @property installer Bundle installer for installing bundles locally
  * @property remoteRepository Remote bundle repository. The bundle name of this repository has to match the installer name
  * @property localRepository Optional local repository
  * @property presets Bundke update presets
- * @property jmsConnectionFactory JMS connection factory
- * @property jmsUpdateRequestQueue JMS queue to use for update requests
  * Created by masc on 12.10.15.
  */
-class BundleUpdater(
+class BundleUpdateService(
+        private val executorService: ScheduledExecutorService,
+        private val requestChannel: Channel,
         public val identity: Identity,
         public val installer: BundleInstaller,
         public val remoteRepository: BundleRepository,
         public val localRepository: BundleRepository? = null,
-        presets: List<BundleUpdater.Preset>,
-        private val updateInfoRequestChannel: Channel)
+        presets: List<BundleUpdateService.Preset>)
 :
         Handler<UpdateInfo>,
         Disposable {
+
+    private val log = LogFactory.getLog(this.javaClass)
 
     /**
      * Bundle update preset
@@ -47,15 +50,24 @@ class BundleUpdater(
             val requiresBoot: Boolean = false
     ) { }
 
-    private val log = LogFactory.getLog(this.javaClass)
-
-    private val executor = Executors.newScheduledThreadPool(2)
-
+    /**
+     * Update presets
+     */
     val presets: List<Preset>
+
+    /**
+     * Background service
+     */
+    private val service = object : Service(executorService = this.executorService) {
+        override fun run() {
+            this@BundleUpdateService.startUpdate()
+        }
+    }
 
     init {
         // Bundle(s) requiring (re)boot go last
         this.presets = presets.sortedBy { p -> p.requiresBoot }
+        this.service.start()
     }
 
     /**
@@ -80,41 +92,30 @@ class BundleUpdater(
      * Start update for all bundle presets
      * @param presets Presets to update, defaults to internal list of presets
      */
-    public fun startUpdate(vararg presets: Preset = this.presets.toTypedArray()) {
-        this.executor.submit({
-            // Clean bundles before update
+    private fun startUpdate(vararg presets: Preset = this.presets.toTypedArray()) {
+        // Clean bundles before update
+        try {
+            this.clean()
+        } catch(e: Exception) {
+            log.error(e.message, e)
+        }
+
+        presets.forEach { p ->
             try {
-                this.clean()
+                this.update(p)
             } catch(e: Exception) {
                 log.error(e.message, e)
             }
 
-            presets.forEach { p ->
-                try {
-                    this.update(p)
-                } catch(e: Exception) {
-                    log.error(e.message, e)
-                }
-
-                // Clean bundle version after update
-                try {
-                    this.clean(p.bundleName)
-                } catch(e: Exception) {
-                    log.error(e.message, e)
-                }
+            // Clean bundle version after update
+            try {
+                this.clean(p.bundleName)
+            } catch(e: Exception) {
+                log.error(e.message, e)
             }
+        }
 
-            log.info("Update sequence complete")
-        })
-    }
-
-    /**
-     * Stop all bundle tasks
-     */
-    public fun stop() {
-        log.info("Stopping bundle updater")
-        this.executor.shutdownNow()
-        this.executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS)
+        log.info("Update sequence complete")
     }
 
     /**
@@ -154,7 +155,7 @@ class BundleUpdater(
         log.info("Requesting version info for [${bundleName}]")
 
         // Request currently assigned version for this bundle and node
-        val updateInfo = this.updateInfoRequestChannel.sendRequest(UpdateInfoRequest(this.identity.key, bundleName)).use {
+        val updateInfo = this.requestChannel.sendRequest(UpdateInfoRequest(this.identity.key, bundleName)).use {
             it.receive(UpdateInfo::class.java)
         }
 
@@ -206,7 +207,11 @@ class BundleUpdater(
         log.info("Update sequence for bundle [${bundleName}] complete")
     }
 
+    fun trigger() {
+        this.service.trigger()
+    }
+
     override fun close() {
-        this.stop()
+        this.service.stop()
     }
 }

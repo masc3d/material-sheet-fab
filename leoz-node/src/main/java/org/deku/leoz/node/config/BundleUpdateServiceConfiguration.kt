@@ -2,8 +2,9 @@ package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.bundle.BundleUpdater
+import org.deku.leoz.bundle.BundleUpdateService
 import org.deku.leoz.bundle.Bundles
+import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -14,6 +15,7 @@ import sx.jms.Channel
 import sx.jms.embedded.Broker
 import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
+import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 import javax.inject.Named
@@ -25,7 +27,7 @@ import kotlin.properties.Delegates
  */
 @Configuration
 @Lazy(false)
-open class UpdaterConfiguration {
+open class BundleUpdateServiceConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
     @Named
@@ -39,6 +41,12 @@ open class UpdaterConfiguration {
 
     @Inject
     private lateinit var settings: Settings
+
+    @Inject
+    private lateinit var executorService: ScheduledExecutorService
+
+    @Inject
+    private lateinit var messageListenerConfiguration: MessageListenerConfiguration
 
     /**
      * Local bundle repository
@@ -64,48 +72,48 @@ open class UpdaterConfiguration {
     @Inject
     lateinit var sshTunnelProvider: SshTunnelProvider
 
-    @Inject
-    lateinit var bundleUpdater: BundleUpdater
-
     /**
      * Updater instance
      */
     @Bean
-    open fun bundleUpdater(): BundleUpdater {
+    open fun bundleUpdater(): BundleUpdateService {
         val installer = BundleConfiguration.bundleInstaller()
 
-        val updater = BundleUpdater(
+        val updater = BundleUpdateService(
+                executorService = this.executorService,
                 identity = App.instance.identity,
                 installer = installer,
                 remoteRepository = this.updateRepository,
                 localRepository = this.localRepository,
                 presets = listOf(
-                        BundleUpdater.Preset(
+                        BundleUpdateService.Preset(
                                 bundleName = App.instance.name,
                                 install = true,
                                 storeInLocalRepository = false,
                                 requiresBoot = true),
-                        BundleUpdater.Preset(
+                        BundleUpdateService.Preset(
                                 bundleName = Bundles.LEOZ_BOOT.value,
                                 install = true,
                                 storeInLocalRepository = true)
                 ),
-                updateInfoRequestChannel = Channel(ActiveMQConfiguration.instance.centralQueue)
+                requestChannel = Channel(ActiveMQConfiguration.instance.centralQueue)
         )
         updater.enabled = this.settings.enabled
         return updater
     }
 
+    private val bundleUpdater by lazy { bundleUpdater() }
+
     /** Broker listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
             // Run bundle updater initially/on startup
-            if (this@UpdaterConfiguration.settings.onStartup)
-                this@UpdaterConfiguration.bundleUpdater.startUpdate()
+            if (this@BundleUpdateServiceConfiguration.settings.onStartup)
+                this@BundleUpdateServiceConfiguration.bundleUpdater.trigger()
         }
 
         override fun onStop() {
-            this@UpdaterConfiguration.bundleUpdater.stop()
+            this@BundleUpdateServiceConfiguration.bundleUpdater.close()
         }
     }
 
@@ -114,5 +122,10 @@ open class UpdaterConfiguration {
         ActiveMQConfiguration.instance.broker.delegate.add(brokerEventListener)
         if (ActiveMQConfiguration.instance.broker.isStarted)
             brokerEventListener.onStart()
+
+        this.messageListenerConfiguration.nodeNotificationListener.addDelegate(
+                UpdateInfo::class.java,
+                this.bundleUpdater)
+
     }
 }
