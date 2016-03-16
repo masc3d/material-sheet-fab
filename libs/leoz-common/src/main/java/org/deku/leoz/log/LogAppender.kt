@@ -75,7 +75,7 @@ public class LogAppender(
 
         override fun onStop() {
             service.trigger()
-            service.stop()
+            service.stop(interrupt = false)
         }
     }
 
