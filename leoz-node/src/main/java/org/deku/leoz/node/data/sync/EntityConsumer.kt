@@ -176,7 +176,7 @@ class EntityConsumer
     }
 
     override fun close() {
-        executorService.shutdown()
+        executorService.shutdownNow()
         try {
             executorService.awaitTermination(java.lang.Long.MAX_VALUE, TimeUnit.SECONDS)
         } catch (e: InterruptedException) {
