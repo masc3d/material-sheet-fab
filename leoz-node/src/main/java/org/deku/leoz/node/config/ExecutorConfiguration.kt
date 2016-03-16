@@ -24,7 +24,8 @@ open class ExecutorConfiguration {
      */
     @Bean
     open fun executorService(): ScheduledExecutorService {
-        val executor = ScheduledThreadPoolExecutor(4);
+        // TODO: ScheduledThreadPoolExecutor pool size is always fixed (so lame.). may require an additional caching thread pool alternatively for consumers of non-scheduled executor services
+        val executor = ScheduledThreadPoolExecutor(16);
         executor.setKeepAliveTime(60, TimeUnit.SECONDS)
         executor.removeOnCancelPolicy = true
         return executor
