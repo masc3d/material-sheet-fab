@@ -69,7 +69,7 @@ abstract class Service(
      * Service task, tying together and decorating Future and RunnableTask
      */
     @Suppress("UNCHECKED_CAST")
-    open class TaskFuture(private val future: Future<*>,
+    class TaskFuture(private val future: Future<*>,
                           private val runnableTask: RunnableTask)
     :
             Future<Any?> by future as Future<Any?>,
@@ -124,7 +124,7 @@ abstract class Service(
      * Indicates if dynamic scheduling is supported
      * (eg. scheduling additional futures during service runtime and restarting the service)
      */
-    open val isDynamicSchedulingSupported by lazy {
+    val isDynamicSchedulingSupported by lazy {
         val exc = this.executorService
         exc is ScheduledThreadPoolExecutor && exc.removeOnCancelPolicy
     }
@@ -146,7 +146,7 @@ abstract class Service(
     /**
      * Service interval. Will imply a service restart when changed during service runtime (requires dynamic scheduling)
      */
-    open var interval: Duration?
+    var interval: Duration?
         get() = this.periodInternal
         set(value) {
             log.info("Changing interval to [${value}]")
@@ -161,7 +161,7 @@ abstract class Service(
      * Submit a supplemental task, which is tracked and also stopped together with the service
      * @param command Supplemental task code block
      */
-    open protected fun submitSupplementalTask(command: () -> Unit) {
+    protected fun submitSupplementalTask(command: () -> Unit) {
         this.assertIsStarted()
 
         this.lock.withLock {
@@ -171,14 +171,25 @@ abstract class Service(
     }
 
     /**
+     * Restart service
+     */
+    fun restart() {
+        this.stop()
+        this.start()
+    }
+
+    /**
      * Starts the service, running the service logic at the @link interval specified
      */
-    open fun start(log: Boolean = true) {
-        if (log)
-            this.log.info("Starting service [${this.javaClass}]")
-
+    fun start(log: Boolean = true) {
         this.lock.withLock {
-            this.stop()
+            if (this.isStarted) {
+                this.log.info("Service [${this.javaClass}] has already been started")
+                return
+            }
+
+            if (log)
+                this.log.info("Starting service [${this.javaClass}]")
 
             if (this.hasBeenStarted && !this.isDynamicSchedulingSupported)
                 throw IllegalStateException("This service has been stopped and cannot be restarted due to lack of dynamic scheduling")
@@ -194,7 +205,7 @@ abstract class Service(
      * @param interrupt Interrupt futures
      * @param async Perform stopping asynchronously (required when called from within service thread)
      */
-    open fun stop(interrupt: Boolean = true, async: Boolean = false, log: Boolean = true) {
+    fun stop(interrupt: Boolean = true, async: Boolean = false, log: Boolean = true) {
         val stopRunnable = Runnable {
             val wasStarted = this.isStarted
             if (log && wasStarted)
@@ -230,7 +241,7 @@ abstract class Service(
     /**
      * Triggers the service logic to run once
      */
-    open fun trigger() {
+    fun trigger() {
         this.submitSupplementalTask({ this.runImpl() })
     }
 
@@ -247,7 +258,7 @@ abstract class Service(
         this.stop()
     }
 
-    open protected fun finalize() {
+    protected fun finalize() {
         this.close()
     }
 }
