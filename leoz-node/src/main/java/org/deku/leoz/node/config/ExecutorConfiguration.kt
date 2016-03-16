@@ -4,12 +4,10 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
-import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
 /**
@@ -32,15 +30,13 @@ open class ExecutorConfiguration {
         return executor
     }
 
-    private val executorServices = ArrayList<ExecutorService>()
-
-    @PostConstruct
-    fun onInitialize() {
-        executorServices.add(executorService())
-    }
+    private val executorService by lazy { executorService() }
 
     @PreDestroy
     fun onDestroy() {
+        /**
+         * Shutdown helper
+         */
         val shutdown = fun(exc: List<ExecutorService>) {
             exc.forEach {
                 log.info("Shutting down [${it}]")
@@ -56,6 +52,7 @@ open class ExecutorConfiguration {
             }
         }
 
-        shutdown(this.executorServices)
+        // Shutdown executors
+        shutdown(listOf(this.executorService))
     }
 }
