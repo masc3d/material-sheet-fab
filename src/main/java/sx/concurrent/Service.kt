@@ -9,15 +9,15 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /**
- * Generic service base class
+ * Generic service base class.
  * Created by masc on 12/03/16.
  * @param executorService Executor service to use
- * @param initialDelay Initial delay
- * @param period Interval
+ * @param initialDelay Initial delay. If not provided and period is not set either, the task will not initially execute (trigger only)
+ * @param period If provided the service task will be scheduled at a fixed rate.
  */
 abstract class Service(
         open protected val executorService: ScheduledExecutorService,
-        open val initialDelay: Duration = Duration.ZERO,
+        open val initialDelay: Duration? = null,
         period: Duration? = null)
 :
         Disposable {
@@ -146,7 +146,7 @@ abstract class Service(
     /**
      * Service interval. Will imply a service restart when changed during service runtime (requires dynamic scheduling)
      */
-    var interval: Duration?
+    var period: Duration?
         get() = this.periodInternal
         set(value) {
             log.info("Changing interval to [${value}]")
@@ -194,7 +194,13 @@ abstract class Service(
             if (this.hasBeenStarted && !this.isDynamicSchedulingSupported)
                 throw IllegalStateException("This service has been stopped and cannot be restarted due to lack of dynamic scheduling")
 
-            this.serviceTask = this.executorService.scheduleTask({ this.runImpl() }, initialDelay = this.initialDelay, period = this.interval)
+            // Only schedule initially if either period or initial delay is set (or both)
+            if (this.period != null || this.initialDelay != null) {
+                this.serviceTask = this.executorService.scheduleTask(
+                        command = { this.runImpl() },
+                        initialDelay = this.initialDelay ?: Duration.ZERO,
+                        period = this.period)
+            }
             this.isStarted = true
             this.hasBeenStarted = true
         }
