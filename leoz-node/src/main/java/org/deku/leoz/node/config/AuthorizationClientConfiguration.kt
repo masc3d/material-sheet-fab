@@ -4,6 +4,7 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
+import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.services.AuthorizationClientService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -26,6 +27,9 @@ open class AuthorizationClientConfiguration {
     @Inject
     private lateinit var executorService: ScheduledExecutorService
 
+    @Inject
+    private lateinit var messageListenerConfiguration : MessageListenerConfiguration
+
     @Bean
     open fun authorizationClientService(): AuthorizationClientService {
         return AuthorizationClientService(
@@ -44,13 +48,12 @@ open class AuthorizationClientConfiguration {
                     App.instance.shutdown()
                 })
     }
+    private val authorizationClientService by lazy { authorizationClientService() }
 
     /** Broker event listener */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
-        private val authorizationClientService by lazy { authorizationClientService() }
-
-        override fun onStart() {
-            authorizationClientService.start()
+        override fun onConnectedToBrokerNetwork() {
+            authorizationClientService.restart()
         }
 
         override fun onStop() {
@@ -62,5 +65,10 @@ open class AuthorizationClientConfiguration {
     fun onInitialize() {
         // Start authorizer
         ActiveMQConfiguration.instance.broker.delegate.add(this.brokerEventListener)
+
+        // Add message handler delegatess
+        this.messageListenerConfiguration.nodeQueueListener.addDelegate(
+                AuthorizationMessage::class.java,
+                this.authorizationClientService)
     }
 }

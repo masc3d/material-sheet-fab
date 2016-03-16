@@ -5,10 +5,12 @@ import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.deku.leoz.node.services.FileSyncClientService
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import sx.ssh.SshTunnelProvider
+import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
@@ -29,7 +31,13 @@ open class FileSyncClientConfiguration {
     private lateinit var sshTunnelProvider: SshTunnelProvider
 
     @Inject
-    private lateinit var fileSyncClientService: FileSyncClientService
+    private lateinit var executorService: ScheduledExecutorService
+
+    @Bean
+    open fun fileSyncClientService(): FileSyncClientService {
+        return FileSyncClientService(this.executorService)
+    }
+    private val fileSyncClientService by lazy { this.fileSyncClientService() }
 
     @PostConstruct
     fun onInitialize() {

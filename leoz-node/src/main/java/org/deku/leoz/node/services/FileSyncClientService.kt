@@ -9,14 +9,11 @@ import java.io.File
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
-import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Created by masc on 11/03/16.
  */
-@Named
-class FileSyncClientService @Inject constructor(
+class FileSyncClientService constructor(
         executorService: ScheduledExecutorService)
 :
         Service(executorService = executorService,
@@ -73,7 +70,7 @@ class FileSyncClientService @Inject constructor(
                             Rsync.URI(this.sourcePath),
                             rsyncModuleUri,
                             { r ->
-                                log.info("Synchronizing ${r.path}")
+                                log.info("Synchronizing [${r.path}]")
                             })
 
                     // Remove empty directories

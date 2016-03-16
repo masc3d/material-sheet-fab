@@ -2,7 +2,7 @@ package org.deku.leoz.node.rest.services.internal.v1
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleUpdater
+import org.deku.leoz.bundle.BundleUpdateService
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
@@ -28,7 +28,7 @@ class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationSe
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject
-    lateinit var bundleUpdater: BundleUpdater
+    lateinit var bundleUpdateService: BundleUpdateService
 
     override fun restart() {
         val bundleInstaller = BundleInstaller(
@@ -44,7 +44,7 @@ class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationSe
     }
 
     override fun bundleUpdate() {
-        this.bundleUpdater.startUpdate()
+        this.bundleUpdateService.trigger()
     }
 
     override fun notifyBundleUpdate(bundleName: String) {

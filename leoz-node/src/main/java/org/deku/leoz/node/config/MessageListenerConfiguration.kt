@@ -1,11 +1,8 @@
 package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
-import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.node.messaging.entities.AuthorizationMessage
-import org.deku.leoz.node.services.AuthorizationClientService
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
@@ -32,29 +29,19 @@ open class MessageListenerConfiguration {
     private val log = LogFactory.getLog(MessageListenerConfiguration::class.java)
 
     @Inject
-    lateinit private var updaterConfiguration: UpdaterConfiguration
-
-    @Inject
     private lateinit var executorService: ExecutorService
 
-    private lateinit var nodeQueueListener: SpringJmsListener
+    // Listeners
+    val nodeQueueListener by lazy {
+        SpringJmsListener(
+                { Channel(ActiveMQConfiguration.instance.nodeQueue(App.instance.identity.shortKey)) },
+                executorService)
+    }
 
-    private lateinit var nodeNotificationListener: SpringJmsListener
-
-    // Handlers
-    @Inject
-    private lateinit var authorizationClientService: AuthorizationClientService
-
-    private fun initializeListener() {
-
-        // Add message handler delegatess
-        nodeQueueListener.addDelegate(
-                AuthorizationMessage::class.java,
-                authorizationClientService)
-
-        nodeNotificationListener.addDelegate(
-                UpdateInfo::class.java,
-                updaterConfiguration.bundleUpdater())
+    val nodeNotificationListener by lazy {
+        SpringJmsListener(
+                { Channel(ActiveMQConfiguration.instance.nodeNotificationTopic) },
+                executorService)
     }
 
     //region Lifecycle
@@ -62,15 +49,6 @@ open class MessageListenerConfiguration {
     fun onInitialize() {
         // Register event listeners
         ActiveMQBroker.instance.delegate.add(brokerEventListener)
-
-        nodeQueueListener = object : SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.nodeQueue(App.instance.identity.shortKey)) },
-                executorService) {}
-
-        nodeNotificationListener = object : SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.nodeNotificationTopic) },
-                executorService) {}
-
         this.startIfReady()
     }
 
@@ -106,7 +84,6 @@ open class MessageListenerConfiguration {
         this.stop()
 
         if (this.isReadyToStart) {
-            this.initializeListener()
             this.nodeQueueListener.start()
             this.nodeNotificationListener.start()
         }
