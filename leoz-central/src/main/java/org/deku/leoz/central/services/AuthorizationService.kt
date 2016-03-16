@@ -5,6 +5,9 @@ import org.deku.leoz.Identity
 import org.deku.leoz.central.data.repositories.NodeRepository
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
+import sx.event.EventDelegate
+import sx.event.EventDispatcher
+import sx.event.EventListener
 import sx.jms.Channel
 import sx.jms.Handler
 import javax.inject.Inject
@@ -21,6 +24,13 @@ class AuthorizationService
 
     @Inject
     private lateinit var nodeRepository: NodeRepository
+
+    interface Listener : EventListener {
+        fun onAuthorized(nodeIdentityKey: String)
+    }
+
+    private val dispatcher = EventDispatcher.createThreadSafe<Listener>()
+    public val delegate: EventDelegate<Listener> = dispatcher
 
     override fun onMessage(message: AuthorizationRequestMessage, replyChannel: Channel?) {
         try {
@@ -48,12 +58,17 @@ class AuthorizationService
                 }
             }
 
-            if (replyChannel != null) {
-                am.authorized = record != null && record.authorized != null && record.authorized !== 0
+            if (record != null) {
+                val isAuthorized = record.authorized != null && record.authorized !== 0
 
-                replyChannel.send(am)
+                if (isAuthorized)
+                    this.dispatcher.emit { it.onAuthorized(message.key) }
 
-                log.info("Sent authorization [%s]".format(am))
+                if (replyChannel != null) {
+                    am.authorized = isAuthorized
+                    replyChannel.send(am)
+                    log.info("Sent authorization [%s]".format(am))
+                }
             }
         } catch (e: Exception) {
             log.error(e.message, e)
