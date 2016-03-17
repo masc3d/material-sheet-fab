@@ -16,22 +16,26 @@ import kotlin.concurrent.withLock
  * @param period If provided the service task will be scheduled at a fixed rate.
  */
 abstract class Service(
-        open protected val executorService: ScheduledExecutorService,
-        open val initialDelay: Duration? = null,
+        protected val executorService: ScheduledExecutorService,
+        val initialDelay: Duration? = null,
         period: Duration? = null)
 :
         Disposable {
     private val log = LogFactory.getLog(this.javaClass)
     private val lock = ReentrantLock()
 
-    /** Primary service task */
-    private var serviceTask: TaskFuture? = null
-    private val supplementalTasks = ArrayList<TaskFuture>()
+    /** Primary service task future */
+    private var serviceTaskFuture: TaskFuture? = null
+    /** Supplemental task futures */
+    private val supplementalTaskFutures = HashMap<Task, TaskFuture>()
 
+    /** Internal period holder */
     private var periodInternal: Duration?
 
     private var hasBeenStarted = false
     private var isStarted = false
+    /** Indicates if the service is currently triggered, to prevent multiple triggers stacking up */
+    @Volatile private var isTriggered: Boolean = false
 
     /**
      * Runnable task interface
@@ -43,16 +47,27 @@ abstract class Service(
     /**
      * Service task runnable  with completion event support
      */
-    inner class Task(val command: () -> Unit) : RunnableTask {
-        val evt = ManualResetEvent(true)
+    inner class Task(
+            private val command: () -> Unit,
+            private val onCompletion: ((task: Task) -> Unit)? = null) : RunnableTask {
+        private val evt = ManualResetEvent(true)
 
         override fun run() {
             evt.reset()
             try {
                 command()
             } catch(e: Throwable) {
-                log.info(e.message, e)
+                log.error(e.message, e)
             } finally {
+                val onCompletion = this.onCompletion
+                if (onCompletion != null) {
+                    try {
+                        onCompletion(this)
+                    } catch(e: Throwable) {
+                        log.error(e.message, e)
+                    }
+                }
+
                 evt.set()
             }
         }
@@ -69,11 +84,12 @@ abstract class Service(
      * Service task, tying together and decorating Future and RunnableTask
      */
     @Suppress("UNCHECKED_CAST")
-    class TaskFuture(private val future: Future<*>,
-                          private val runnableTask: RunnableTask)
+    class TaskFuture(
+            private val future: Future<*>,
+            val task: Task)
     :
             Future<Any?> by future as Future<Any?>,
-            RunnableTask by runnableTask {
+            RunnableTask by task {
 
         /**
          * Cancel task
@@ -94,8 +110,10 @@ abstract class Service(
      * @param initialDelay Initial delay for schedule
      * @param period Period for schedule at a fixed rate
      */
-    private fun ScheduledExecutorService.scheduleTask(command: () -> Unit, initialDelay: Duration = Duration.ZERO, period: Duration? = null): TaskFuture {
-        val task = Task(command)
+    private fun ScheduledExecutorService.scheduleTask(
+            task: Task,
+            initialDelay: Duration = Duration.ZERO,
+            period: Duration? = null): TaskFuture {
 
         val future: Future<*> =
                 if (period != null) {
@@ -106,18 +124,17 @@ abstract class Service(
 
         return TaskFuture(
                 future = future,
-                runnableTask = task)
+                task = task)
     }
 
     /**
      * Submit a task
      * @param command Task code bflock
      */
-    private fun ExecutorService.submitTask(command: () -> Unit): TaskFuture {
-        val task = Task(command)
+    private fun ExecutorService.submitTask(task: Task): TaskFuture {
         return TaskFuture(
                 future = this.submit(task),
-                runnableTask = task)
+                task = task)
     }
 
     /**
@@ -162,11 +179,18 @@ abstract class Service(
      * @param command Supplemental task code block
      */
     protected fun submitSupplementalTask(command: () -> Unit) {
-        this.assertIsStarted()
-
         this.lock.withLock {
-            this.supplementalTasks.add(
-                    this.executorService.submitTask(command))
+            this.assertIsStarted()
+            val task = Task(
+                    command = command,
+                    // Completion handler which will remove this task from the internal supplemental future map
+                    onCompletion = {
+                        synchronized(this.supplementalTaskFutures) {
+                            this.supplementalTaskFutures.remove(it)
+                        }
+                    })
+            // Add to supplemental future map
+            this.supplementalTaskFutures.put(task, this.executorService.submitTask(task))
         }
     }
 
@@ -196,8 +220,8 @@ abstract class Service(
 
             // Only schedule initially if either period or initial delay is set (or both)
             if (this.period != null || this.initialDelay != null) {
-                this.serviceTask = this.executorService.scheduleTask(
-                        command = { this.runImpl() },
+                this.serviceTaskFuture = this.executorService.scheduleTask(
+                        task = Task({ this.runImpl() }),
                         initialDelay = this.initialDelay ?: Duration.ZERO,
                         period = this.period)
             }
@@ -220,17 +244,19 @@ abstract class Service(
             this.lock.withLock {
                 val tasks = ArrayList<TaskFuture>()
 
-                this.serviceTask?.let {
+                this.serviceTaskFuture?.let {
                     tasks.add(it)
                 }
-                tasks.addAll(this.supplementalTasks)
+                synchronized(this.supplementalTaskFutures) {
+                    tasks.addAll(this.supplementalTaskFutures.values)
+                }
 
                 tasks.forEach {
                     it.cancel(interrupt, wait = true)
                 }
 
-                this.supplementalTasks.clear()
-                this.serviceTask = null
+                this.supplementalTaskFutures.clear()
+                this.serviceTaskFuture = null
                 this.isStarted = false
             }
             if (log && wasStarted)
@@ -245,14 +271,29 @@ abstract class Service(
     }
 
     /**
-     * Triggers the service logic to run once
+     * Triggers the service logic to run once.
+     * Puts the service in 'triggered' mode. All further triggers until the next schedule (which will execute asap) will be ignored.
      */
     fun trigger() {
-        this.submitSupplementalTask({ this.runImpl() })
+        this.lock.withLock {
+            this.assertIsStarted()
+
+            if (this.isTriggered)
+                return
+
+            // runImpl being synchronized will ensure triggered task will execute in order
+            this.submitSupplementalTask({ this.runImpl() })
+
+            this.isTriggered = true
+        }
     }
 
     @Synchronized private fun runImpl() {
-        this.run()
+        try {
+            this.run()
+        } finally {
+            this.isTriggered = false
+        }
     }
 
     /**
