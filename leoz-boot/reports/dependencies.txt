@@ -6,7 +6,97 @@ Project :leoz-boot
 archives - Configuration for archive artifacts.
 No dependencies
 
-compile - Compile classpath for source set 'main'.
+compile - Dependencies for source set 'main'.
++--- project :libs:sx-common
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
+|    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
+|    |    +--- ch.qos.logback:logback-core:1.1.6
+|    |    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
+|    |    \--- org.slf4j:slf4j-api:1.7.19
+|    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- org.apache.commons:commons-lang3:+ -> 3.4
+|    \--- org.ini4j:ini4j:+ -> 0.5.4
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
+|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
+|    +--- commons-io:commons-io:2.+ -> 2.4
+|    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.2
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
+|    |    \--- net.java.dev.jna:jna:4.2.2
+|    \--- org.yaml:snakeyaml:1.+ -> 1.17
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
++--- commons-logging:commons-logging:+ -> 1.2
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
++--- com.beust:jcommander:+ -> 1.55
++--- org.ini4j:ini4j:+ -> 0.5.4
++--- org.apache.sshd:sshd-core:+ -> 1.1.0
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
+|    \--- org.jfxtras:jfxtras-agenda:8.0-r4
+|         \--- org.jfxtras:jfxtras-controls:8.0-r4
+|              +--- org.jfxtras:jfxtras-fxml:8.0-r4
+|              \--- org.jfxtras:jfxtras-common:8.0-r4
+\--- com.dooapp.fxform2:core:8.+ -> 8.0.15
+     \--- javax.validation:validation-api:1.1.0.Final
+
+compileClasspath - Compile classpath for source set 'main'.
++--- project :libs:sx-common
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
+|    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
+|    |    +--- ch.qos.logback:logback-core:1.1.6
+|    |    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
+|    |    \--- org.slf4j:slf4j-api:1.7.19
+|    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- org.apache.commons:commons-lang3:+ -> 3.4
+|    \--- org.ini4j:ini4j:+ -> 0.5.4
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
+|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
+|    +--- commons-io:commons-io:2.+ -> 2.4
+|    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.2
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
+|    |    \--- net.java.dev.jna:jna:4.2.2
+|    \--- org.yaml:snakeyaml:1.+ -> 1.17
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
++--- commons-logging:commons-logging:+ -> 1.2
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
++--- com.beust:jcommander:+ -> 1.55
++--- org.ini4j:ini4j:+ -> 0.5.4
++--- org.apache.sshd:sshd-core:+ -> 1.1.0
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
+|    \--- org.jfxtras:jfxtras-agenda:8.0-r4
+|         \--- org.jfxtras:jfxtras-controls:8.0-r4
+|              +--- org.jfxtras:jfxtras-fxml:8.0-r4
+|              \--- org.jfxtras:jfxtras-common:8.0-r4
+\--- com.dooapp.fxform2:core:8.+ -> 8.0.15
+     \--- javax.validation:validation-api:1.1.0.Final
+
+compileOnly - Compile dependencies for source set 'main'.
 +--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
@@ -106,7 +196,7 @@ kaptTest
      \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.1
           \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
 
-runtime - Runtime classpath for source set 'main'.
+runtime - Runtime dependencies for source set 'main'.
 +--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
@@ -151,7 +241,7 @@ runtime - Runtime classpath for source set 'main'.
 \--- com.dooapp.fxform2:core:8.+ -> 8.0.15
      \--- javax.validation:validation-api:1.1.0.Final
 
-testCompile - Compile classpath for source set 'test'.
+testCompile - Dependencies for source set 'test'.
 +--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
@@ -198,7 +288,101 @@ testCompile - Compile classpath for source set 'test'.
 \--- junit:junit:4.+ -> 4.12
      \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
 
-testRuntime - Runtime classpath for source set 'test'.
+testCompileClasspath - Compile classpath for source set 'test'.
++--- project :libs:sx-common
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
+|    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
+|    |    +--- ch.qos.logback:logback-core:1.1.6
+|    |    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
+|    |    \--- org.slf4j:slf4j-api:1.7.19
+|    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- org.apache.commons:commons-lang3:+ -> 3.4
+|    \--- org.ini4j:ini4j:+ -> 0.5.4
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
+|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
+|    +--- commons-io:commons-io:2.+ -> 2.4
+|    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.2
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
+|    |    \--- net.java.dev.jna:jna:4.2.2
+|    \--- org.yaml:snakeyaml:1.+ -> 1.17
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
++--- commons-logging:commons-logging:+ -> 1.2
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
++--- com.beust:jcommander:+ -> 1.55
++--- org.ini4j:ini4j:+ -> 0.5.4
++--- org.apache.sshd:sshd-core:+ -> 1.1.0
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
+|    \--- org.jfxtras:jfxtras-agenda:8.0-r4
+|         \--- org.jfxtras:jfxtras-controls:8.0-r4
+|              +--- org.jfxtras:jfxtras-fxml:8.0-r4
+|              \--- org.jfxtras:jfxtras-common:8.0-r4
++--- com.dooapp.fxform2:core:8.+ -> 8.0.15
+|    \--- javax.validation:validation-api:1.1.0.Final
+\--- junit:junit:4.+ -> 4.12
+     \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
+
+testCompileOnly - Compile dependencies for source set 'test'.
++--- project :libs:sx-common
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1
+|    +--- commons-logging:commons-logging:1.+ -> 1.2
+|    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
+|    |    +--- ch.qos.logback:logback-core:1.1.6
+|    |    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
+|    +--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
+|    |    \--- org.slf4j:slf4j-api:1.7.19
+|    +--- com.google.guava:guava:18.+ -> 18.0
+|    +--- org.apache.commons:commons-lang3:+ -> 3.4
+|    \--- org.ini4j:ini4j:+ -> 0.5.4
++--- project :libs:leoz-common
+|    +--- project :libs:sx-common (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
+|    +--- commons-logging:commons-logging:+ -> 1.2
+|    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
+|    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
+|    +--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
+|    +--- commons-io:commons-io:2.+ -> 2.4
+|    +--- javax.ws.rs:javax.ws.rs-api:2.0.+ -> 2.0.1
+|    +--- net.java.dev.jna:jna:4.+ -> 4.2.2
+|    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
+|    |    \--- net.java.dev.jna:jna:4.2.2
+|    \--- org.yaml:snakeyaml:1.+ -> 1.17
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1 (*)
++--- commons-logging:commons-logging:+ -> 1.2
++--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
++--- org.slf4j:jcl-over-slf4j:1.+ -> 1.7.19 (*)
++--- com.beust:jcommander:+ -> 1.55
++--- org.ini4j:ini4j:+ -> 0.5.4
++--- org.apache.sshd:sshd-core:+ -> 1.1.0
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.jfxtras:jfxtras-all:8.+ -> 8.0-r4
+|    \--- org.jfxtras:jfxtras-agenda:8.0-r4
+|         \--- org.jfxtras:jfxtras-controls:8.0-r4
+|              +--- org.jfxtras:jfxtras-fxml:8.0-r4
+|              \--- org.jfxtras:jfxtras-common:8.0-r4
++--- com.dooapp.fxform2:core:8.+ -> 8.0.15
+|    \--- javax.validation:validation-api:1.1.0.Final
+\--- junit:junit:4.+ -> 4.12
+     \--- org.hamcrest:hamcrest-core:1.3 -> 1.4-atlassian-1
+
+testRuntime - Runtime dependencies for source set 'test'.
 +--- project :libs:sx-common
 |    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1
 |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1

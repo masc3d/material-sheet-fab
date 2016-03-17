@@ -7,10 +7,54 @@ sourceCompatibility = 1.8
 version = '0.44-RELEASE'
 mainClassName = "org.deku.leoz.node.Main"
 
+// Required for eclipse modelgen to find xml resources (eg. persistence.xml)
+sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+compileJava.dependsOn(processResources)
+
+// Location for generated sources
+// Directory for apt must be dedicated (no other generators may write here)
+// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+def srcdir_apt = file("$projectDir/src/generated/apt")
+
+// Add generated sources to a separate sourceset, so IDEs can see them
+// (Adding sources to main/java instead will cause subsequent builds to fail)
+sourceSets {
+    generated {
+        java {
+            srcDirs += srcdir_apt
+        }
+    }
+
+    main {
+        java {
+            srcDirs += 'src/main/kotlin'
+        }
+        kotlin  {
+            srcDirs += srcdir_apt
+        }
+    }
+}
+
+kapt {
+    generateStubs = true
+}
+
+compileJava {
+    doFirst {
+        // Source dir must exist
+        srcdir_apt.exists() || srcdir_apt.mkdirs()
+        // Tell javac about the generated sources location
+        options.compilerArgs = [
+                '-s', srcdir_apt.toString()
+        ]
+    }
+}
+
 dependencies {
     // leoz webservice dependencies
     compile project(':libs:sx-common')
     compile project(':libs:leoz-common')
+    generatedCompile this.project
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
@@ -52,6 +96,7 @@ dependencies {
 
     // queryDSL
     compile "com.mysema.querydsl:querydsl-core:$v_querydsl"
+    generatedCompile "com.mysema.querydsl:querydsl-core:$v_querydsl"
     compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
     compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
     compile "com.mysema.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
@@ -92,7 +137,7 @@ dependencies {
     compile 'org.apache.sshd:sshd-core:+'
 
     // spring
-    compile ("org.springframework:spring-jms:$v_spring")
+    compile("org.springframework:spring-jms:$v_spring")
 
     // json doc
     compile "io.swagger:swagger-jaxrs:$v_swagger"
@@ -128,49 +173,6 @@ dependencies {
     testCompile "org.springframework:spring-test"
 
     testCompile project(':libs:sx-common')
-}
-
-// Required for eclipse modelgen to find xml resources (eg. persistence.xml)
-sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
-compileJava.dependsOn(processResources)
-
-// Location for generated sources
-// Directory for apt must be dedicated (no other generators may write here)
-// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
-def srcdir_apt = file("$projectDir/src/generated/apt")
-
-// Add generated sources to a separate sourceset, so IDEs can see them
-// (Adding sources to main/java instead will cause subsequent builds to fail)
-sourceSets {
-    generated {
-        java {
-            srcDirs += srcdir_apt
-        }
-    }
-    // Support for optionally playinc kotlin sources into separate directory
-    main {
-        java {
-            srcDirs += 'src/main/kotlin'
-        }
-        kotlin  {
-            srcDirs += srcdir_apt
-        }
-    }
-}
-
-kapt {
-    generateStubs = true
-}
-
-compileJava {
-    doFirst {
-        // Source dir must exist
-        srcdir_apt.exists() || srcdir_apt.mkdirs()
-        // Tell javac about the generated sources location
-        options.compilerArgs = [
-                '-s', srcdir_apt.toString()
-        ]
-    }
 }
 
 run {

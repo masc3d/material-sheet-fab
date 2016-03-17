@@ -15,5 +15,24 @@
         <processorPath useClasspath="true" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="buildSrc_main" target="1.8" />
+      <module name="buildSrc_test" target="1.8" />
+      <module name="leoz-boot_main" target="1.8" />
+      <module name="leoz-boot_test" target="1.8" />
+      <module name="leoz-central_main" target="1.8" />
+      <module name="leoz-central_test" target="1.8" />
+      <module name="leoz-common_main" target="1.8" />
+      <module name="leoz-common_test" target="1.8" />
+      <module name="leoz-node_generated" target="1.8" />
+      <module name="leoz-node_main" target="1.8" />
+      <module name="leoz-node_test" target="1.8" />
+      <module name="leoz-ui_main" target="1.8" />
+      <module name="leoz-ui_test" target="1.8" />
+      <module name="libs_main" target="1.8" />
+      <module name="libs_test" target="1.8" />
+      <module name="sx-common_main" target="1.7" />
+      <module name="sx-common_test" target="1.7" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -10,7 +10,7 @@
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <module name="leoz-node" />
+    <module name="leoz-node_main" />
     <envs />
     <RunnerSettings RunnerId="Debug with VisualVM">
       <option name="visualVMId" value="1433364429030170000" />
