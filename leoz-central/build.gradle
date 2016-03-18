@@ -1,6 +1,6 @@
 apply plugin: 'kotlin'
 apply plugin: 'application'
-apply plugin: 'jooq'
+apply plugin: 'nu.studer.jooq'
 apply plugin: org.deku.gradle.PackagerPlugin
 
 sourceCompatibility = 1.8
@@ -38,32 +38,34 @@ def srcdir_jooq = file("$projectDir/src/generated/jooq")
 // tasks.compileJava.dependsOn(generateJooq)
 
 jooq {
-    jdbc {
-        url 'jdbc:mysql://10.0.10.10:3306'
-        driver 'com.mysql.jdbc.Driver'
-        user 'root'
-        password 'root'
-    }
-    generator {
-        database {
-            name 'org.jooq.util.mysql.MySQLDatabase'
-            inputSchema 'dekuclient'
-
-            includes 'tbldepotliste|mst_.*|sys_.*'
-            //excludes '.*'
-
-            // masc20140916. (almost) all tables
-            //includes '.*'
-            //excludes 'tbl_auftrag_info'
+    main(sourceSets.main) {
+        jdbc {
+            url = 'jdbc:mysql://10.0.10.10:3306'
+            driver = 'com.mysql.jdbc.Driver'
+            user = 'root'
+            password = 'root'
         }
+        generator {
+            database {
+                name = 'org.jooq.util.mysql.MySQLDatabase'
+                inputSchema = 'dekuclient'
 
-        target {
-            packageName 'org.deku.leoz.central.data.entities.jooq'
-            directory srcdir_jooq.toString()
+                includes = 'tbldepotliste|mst_.*|sys_.*'
+                //excludes '.*'
+
+                // masc20140916. (almost) all tables
+                //includes '.*'
+                //excludes 'tbl_auftrag_info'
+            }
+
+            target {
+                packageName = 'org.deku.leoz.central.data.entities.jooq'
+                directory = srcdir_jooq.toString()
+            }
         }
     }
 }
-tasks.generateJooq.outputs.upToDateWhen { false }
+tasks.generateMainJooqSchemaSource.outputs.upToDateWhen { false }
 
 run {
     errorOutput = System.err

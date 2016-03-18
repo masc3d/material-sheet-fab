@@ -35,12 +35,18 @@ buildscript {
                 .toFile()
     }
 
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
     dependencies {
         // Kotlin
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
 
         // jooq codegen gradle plugin
-        classpath 'com.github.ben-manes:gradle-jooq-plugin:+'
+        //classpath 'com.github.ben-manes:gradle-jooq-plugin:+'
+        classpath 'nu.studer:gradle-jooq-plugin:+'
 
         // override jooq dependencies of gradle-jooq-plugin with desired version
         classpath("org.jooq:jooq-codegen:$v_jooq") { force true }
@@ -49,11 +55,7 @@ buildscript {
         // mysql jdbc connector
         classpath "mysql:mysql-connector-java:$v_mysql"
     }
-
-    repositories {
-        jcenter()
-        mavenCentral()
-    }}
+}
 
 // TODO. sometimes packager creates corrupt archives, presumably since intellij's make confuses gradle's uptodate detectino
 // TODO. thus forcing rerun of all tasks when running a release task

@@ -1334,6 +1334,9 @@ default - Configuration for default artifacts.
 +--- mysql:mysql-connector-java:5.+ -> 5.1.38
 \--- org.jooq:jooq:3.+ -> 3.7.3
 
+jooq - Compile classpath for generated jOOQ sources.
+No dependencies
+
 kapt
 \--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.1
      \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.1
