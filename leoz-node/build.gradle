@@ -11,17 +11,26 @@ mainClassName = "org.deku.leoz.node.Main"
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
+// Location for generated sources
+// Directory for apt must be dedicated (no other generators may write here)
+// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+def srcdir_apt = file("$projectDir/src/generated/java")
+
 kapt {
     generateStubs = true
 }
 
-// Location for generated sources
-// Directory for apt must be dedicated (no other generators may write here)
-// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
-// TODO. generating source files into kotlin dir so IJ can work with them properly. this is ugly, but apparently the only sane way with IJ 2016.1
-// Normally it wouldn't be necessary to generate sources at all, as .class files are generated into classpath (build\classes)
-// However IJ doesn't recognize them. TODO create bug for IJ
-def srcdir_apt = file("$projectDir/src/main/kotlin")
+sourceSets {
+    main {
+        kotlin {
+            // TODO. bug, IJ doesn't see kapt generated sources/classes in build directory and refuses to make and/or shows errors in editor
+            // Cannot add apt generated path to java sourceset, as apt will be confused finding its generated files there
+            // reporting: java.lang.IllegalStateException: endPosTable already set.
+            // Workaround: add generated soruces to kotlin set, where IJ will recognize them, but apt will ignore them
+            srcDirs += srcdir_apt
+        }
+    }
+}
 
 compileJava {
     doFirst {
