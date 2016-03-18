@@ -25,6 +25,7 @@
       <module name="leoz-common_main" target="1.8" />
       <module name="leoz-common_test" target="1.8" />
       <module name="leoz-node_generated" target="1.8" />
+      <module name="leoz-node_generatedTarget" target="1.8" />
       <module name="leoz-node_main" target="1.8" />
       <module name="leoz-node_test" target="1.8" />
       <module name="leoz-ui_main" target="1.8" />

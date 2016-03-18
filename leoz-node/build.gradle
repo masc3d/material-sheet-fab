@@ -11,33 +11,17 @@ mainClassName = "org.deku.leoz.node.Main"
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
-// Location for generated sources
-// Directory for apt must be dedicated (no other generators may write here)
-// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
-def srcdir_apt = file("$projectDir/src/generated/apt")
-
-// Add generated sources to a separate sourceset, so IDEs can see them
-// (Adding sources to main/java instead will cause subsequent builds to fail)
-sourceSets {
-    generated {
-        java {
-            srcDirs += srcdir_apt
-        }
-    }
-
-    main {
-        java {
-            srcDirs += 'src/main/kotlin'
-        }
-        kotlin  {
-            srcDirs += srcdir_apt
-        }
-    }
-}
-
 kapt {
     generateStubs = true
 }
+
+// Location for generated sources
+// Directory for apt must be dedicated (no other generators may write here)
+// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+// TODO. generating source files into kotlin dir so IJ can work with them properly. this is ugly, but apparently the only sane way with IJ 2016.1
+// Normally it wouldn't be necessary to generate sources at all, as .class files are generated into classpath (build\classes)
+// However IJ doesn't recognize them. TODO create bug for IJ
+def srcdir_apt = file("$projectDir/src/main/kotlin")
 
 compileJava {
     doFirst {
@@ -54,7 +38,6 @@ dependencies {
     // leoz webservice dependencies
     compile project(':libs:sx-common')
     compile project(':libs:leoz-common')
-    generatedCompile this.project
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
@@ -96,7 +79,6 @@ dependencies {
 
     // queryDSL
     compile "com.mysema.querydsl:querydsl-core:$v_querydsl"
-    generatedCompile "com.mysema.querydsl:querydsl-core:$v_querydsl"
     compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
     compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
     compile "com.mysema.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
