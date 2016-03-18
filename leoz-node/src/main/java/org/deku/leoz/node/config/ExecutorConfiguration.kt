@@ -4,10 +4,8 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.ScheduledThreadPoolExecutor
-import java.util.concurrent.TimeUnit
+import sx.concurrent.task.CompositeExecutorService
+import java.util.concurrent.*
 import javax.annotation.PreDestroy
 
 /**
@@ -24,13 +22,32 @@ open class ExecutorConfiguration {
      */
     @Bean
     open fun executorService(): ScheduledExecutorService {
-        // TODO: ScheduledThreadPoolExecutor pool size is always fixed (so lame.). may require an additional caching thread pool alternatively for consumers of non-scheduled executor services
-        val executor = ScheduledThreadPoolExecutor(16);
-        executor.setKeepAliveTime(60, TimeUnit.SECONDS)
-        executor.removeOnCancelPolicy = true
-        return executor
+        return CompositeExecutorService(
+                this.scheduledExecutorService,
+                this.cachedExecutorService
+        )
     }
-    private val executorService by lazy { executorService() }
+
+    /**
+     * Scheduled executor service
+     */
+    private val scheduledExecutorService by lazy {
+        val executor = ScheduledThreadPoolExecutor(8);
+        executor.removeOnCancelPolicy = true
+        executor
+    }
+
+    /**
+     * Cached pool executor service
+     */
+    private val cachedExecutorService by lazy {
+        ThreadPoolExecutor(
+                0,
+                Integer.MAX_VALUE,
+                60L,
+                TimeUnit.SECONDS,
+                SynchronousQueue<Runnable>())
+    }
 
     @PreDestroy
     fun onDestroy() {
@@ -53,6 +70,6 @@ open class ExecutorConfiguration {
         }
 
         // Shutdown executors
-        shutdown(listOf(this.executorService))
+        shutdown(listOf(this.scheduledExecutorService, this.cachedExecutorService))
     }
 }
