@@ -26,7 +26,7 @@ class AuthorizationService
     private lateinit var nodeRepository: NodeRepository
 
     interface Listener : EventListener {
-        fun onAuthorized(nodeIdentityKey: String)
+        fun onAuthorized(nodeIdentityKey: Identity.Key)
     }
 
     private val dispatcher = EventDispatcher.createThreadSafe<Listener>()
@@ -40,9 +40,9 @@ class AuthorizationService
             val am = AuthorizationMessage()
             am.key = message.key
 
+            val identityKey = Identity.Key(message.key)
             var record = nodeRepository.findByKey(message.key)
             if (record == null) {
-                val identityKey = Identity.Key(message.key)
                 val conflictingRecord = nodeRepository.findByKeyStartingWith(identityKey.short)
                 if (conflictingRecord != null) {
                     // Short key conflict, reject
@@ -62,7 +62,7 @@ class AuthorizationService
                 val isAuthorized = record.authorized != null && record.authorized !== 0
 
                 if (isAuthorized)
-                    this.dispatcher.emit { it.onAuthorized(message.key) }
+                    this.dispatcher.emit { it.onAuthorized(identityKey) }
 
                 if (replyChannel != null) {
                     am.authorized = isAuthorized

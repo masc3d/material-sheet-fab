@@ -22,6 +22,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
+import sx.Disposable
 import sx.concurrent.Service
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
