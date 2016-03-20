@@ -3,6 +3,52 @@ package sx.concurrent.task
 import java.util.concurrent.*
 
 /**
+ * Interface for a dynamic scheduled executor service, which eg. supports dynamically removing scheduled tasks on cancel.
+ */
+interface DynamicScheduledExecutorService {
+    var removeOnCancelPolicy: Boolean
+}
+
+/**
+ * Delegating executor service, which will track and maintain tasks submitted via this instance.
+ * Specific behaviour applies to shutdown which will not shutdown the executor service itself,
+ * but only tasks that have been submitted through this instance.
+ * TODO: complete implementation, tracking
+ * Created by masc on 16/03/16.
+ */
+open class TaskExecutorService(
+        protected val executorService: ExecutorService)
+:
+        AbstractExecutorService(),
+        ExecutorService by executorService {
+
+    override fun <T : Any?> newTaskFor(p0: Runnable?, p1: T): RunnableFuture<T>? {
+        return super.newTaskFor(p0, p1)
+    }
+
+    override fun <T : Any?> newTaskFor(p0: Callable<T>?): RunnableFuture<T>? {
+        return super.newTaskFor(p0)
+    }
+}
+
+/**
+ * Delegating scheduled executor service, tracking scheduled tasks
+ * See base class {@link TaskExecutorService} for details.
+ * TODO: complete implementation/tracking
+ * Created by masc on 16/03/16.
+ * @param scheduledExecutorService A scheduled executor service to use (for scheduling only, except executorService is omitted)
+ * @param executorService Regular executor service for regular submit
+ */
+class ScheduledTaskExecutorService(
+        protected val compositeExecutorService: CompositeExecutorService,
+        executorService: ExecutorService = compositeExecutorService)
+:
+        TaskExecutorService(executorService),
+        ScheduledExecutorService by compositeExecutorService,
+        DynamicScheduledExecutorService by compositeExecutorService {
+}
+
+/**
  * Composite executor service, combining a scheduled executor service and an alternative executor service for
  * regularly submitting tasks.
  * This class does not take Ownership of provided executor services therefore any
@@ -16,7 +62,23 @@ class CompositeExecutorService(
         private val executorService: ExecutorService = scheduledExecutorService)
 :
         ScheduledExecutorService by scheduledExecutorService,
-        ExecutorService by executorService {
+        ExecutorService by executorService,
+        DynamicScheduledExecutorService {
+
+    override var removeOnCancelPolicy: Boolean
+        get() {
+            return when (this.scheduledExecutorService) {
+                is ScheduledThreadPoolExecutor -> scheduledExecutorService.removeOnCancelPolicy
+                else -> false
+            }
+        }
+        set(value) {
+            when (this.scheduledExecutorService) {
+                is ScheduledThreadPoolExecutor -> scheduledExecutorService.removeOnCancelPolicy = value
+                else -> throw UnsupportedOperationException()
+            }
+        }
+
     override fun submit(task: Runnable): Future<*> {
         return this.executorService.submit(task)
     }

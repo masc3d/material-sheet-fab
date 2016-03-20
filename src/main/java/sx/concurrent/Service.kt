@@ -2,6 +2,7 @@ package sx.concurrent
 
 import org.apache.commons.logging.LogFactory
 import sx.Disposable
+import sx.concurrent.task.DynamicScheduledExecutorService
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.*
@@ -143,7 +144,12 @@ abstract class Service(
      */
     val isDynamicSchedulingSupported by lazy {
         val exc = this.executorService
-        exc is ScheduledThreadPoolExecutor && exc.removeOnCancelPolicy
+        when (exc) {
+            is ScheduledThreadPoolExecutor -> exc.removeOnCancelPolicy
+            is DynamicScheduledExecutorService -> exc.removeOnCancelPolicy
+            else -> false
+        }
+
     }
 
     init {
