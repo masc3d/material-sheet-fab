@@ -6,6 +6,8 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import sx.io.PermissionUtil
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.attribute.DosFileAttributeView
 import kotlin.properties.Delegates
 
 /**
@@ -15,37 +17,55 @@ import kotlin.properties.Delegates
 abstract class StorageConfiguration(
         /** Base name for process specific files/directories */
         val appName: String) {
+    /** Logger */
     private var log: Log = LogFactory.getLog(this.javaClass)
 
     // Directories
-    /** Local home directory */
+
+    /**
+     * Common system application data path
+     */
+    var applicationDataPath: File by Delegates.notNull()
+
+    /**
+     * Private leoz directory
+     */
     // TODO: change back to val once kotlin bug complaining about uninitialized val (even though it's initialized in init) is resolved
-    var baseDirectory: File by Delegates.notNull()
+    var privateDirectory: File by Delegates.notNull()
+
+    /**
+     * Public leoz directory
+     */
+    val publicDirectory: File by lazy {
+        val d = File(this.applicationDataPath, "Leoz")
+        d.mkdirs()
+        d
+    }
 
     /** Local data directory */
     val dataDirectory: File by lazy({
-        val d = File(File(this.baseDirectory, "data"), this.appName)
+        val d = File(File(this.privateDirectory, "data"), this.appName)
         d.mkdirs()
         d
     })
 
     /** Etc/settings directory */
     val etcDirectory: File by lazy({
-        val d = File(File(this.baseDirectory, "etc"), this.appName)
+        val d = File(File(this.privateDirectory, "etc"), this.appName)
         d.mkdirs()
         d
     })
 
     /** Local log directory */
     val logDirectory: File by lazy({
-        val d = File(this.baseDirectory, "log");
+        val d = File(this.privateDirectory, "log");
         d.mkdirs()
         d
     })
 
     /** Local bundles directory */
     protected val bundlesDirectory: File by lazy({
-        val d = File(this.baseDirectory, "bundles")
+        val d = File(this.privateDirectory, "bundles")
         d.mkdirs()
         d
     })
@@ -58,7 +78,7 @@ abstract class StorageConfiguration(
 
     /** Run directory, containing runtime related files, eg. bundle lock files */
     val runDirectory: File by lazy({
-        val d = File(this.baseDirectory, "run")
+        val d = File(this.privateDirectory, "run")
         d.mkdirs()
         d
     })
@@ -89,34 +109,38 @@ abstract class StorageConfiguration(
     /** c'tor */
     init {
         // Initialize directories
-        var basePath: File
-        var baseDirectoryName: String = ".leoz"
         if (SystemUtils.IS_OS_WINDOWS) {
-            basePath = File(System.getenv("ALLUSERSPROFILE"))
+            this.applicationDataPath = File(System.getenv("ALLUSERSPROFILE"))
         } else {
-            basePath = File(System.getProperty("user.home"))
+            this.applicationDataPath = File(System.getProperty("user.home"))
         }
-        if (Strings.isNullOrEmpty(basePath.name))
-            throw UnsupportedOperationException("Basepath is empty");
+        if (Strings.isNullOrEmpty(this.applicationDataPath.name))
+            throw UnsupportedOperationException("Base application data path could not be determined");
 
-        this.baseDirectory = File(basePath, baseDirectoryName)
-        this.log.trace("Storage configuration base directory [${baseDirectory}]")
+        var baseDirectoryName: String = ".leoz"
+
+        this.privateDirectory = File(this.applicationDataPath, baseDirectoryName)
+        this.log.trace("Storage configuration base directory [${privateDirectory}]")
 
         // Set permissions if the directory was created
-        if (!this.baseDirectory.exists()) {
+        if (!this.privateDirectory.exists()) {
             try {
-                this.baseDirectory.mkdirs()
+                this.privateDirectory.mkdirs()
 
                 if (SystemUtils.IS_OS_WINDOWS) {
+                    Files.getFileAttributeView(
+                            this.privateDirectory.toPath(),
+                            DosFileAttributeView::class.java).setHidden(true)
+
                     PermissionUtil.setAclAllowEverything(
-                            path = this.baseDirectory,
+                            path = this.privateDirectory,
                             principals = *arrayOf(
                                     PermissionUtil.Win32.SID.Users.fqn,
                                     PermissionUtil.Win32.SID.LocalSystem.fqn))
                 }
             } catch(e: Exception) {
-                if (this.baseDirectory.exists()) {
-                    this.baseDirectory.deleteRecursively()
+                if (this.privateDirectory.exists()) {
+                    this.privateDirectory.deleteRecursively()
                 }
                 throw e
             }
@@ -132,9 +156,5 @@ abstract class StorageConfiguration(
      */
     fun initalize() {
         // All intialization is passive (via c'tor) for now
-    }
-
-    protected fun finalize() {
-        log.info("FINALIZED")
     }
 }

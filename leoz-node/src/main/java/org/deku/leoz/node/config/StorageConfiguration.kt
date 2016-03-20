@@ -23,42 +23,42 @@ open class StorageConfiguration protected constructor(appName: String)
 
     // Directories
     /** Local embedded activemq data directory */
-    val activeMqDataDirectory: File by lazy({
+    val activeMqDataDirectory by lazy {
         File(this.dataDirectory, "activemq")
-    })
+    }
 
     /** Bundle repository directory */
-    val bundleRepositoryDirectory: File by lazy({
+    val bundleRepositoryDirectory by lazy {
         val d = File(this.bundlesDirectory, "repository")
         d.mkdirs()
         d
-    })
+    }
 
-    val sshDataDirectory: File by lazy({
+    val sshDataDirectory by lazy {
         val d = File(this.dataDirectory, "ssh")
         d.mkdirs()
         d
-    })
+    }
+
+    val transferDirectory by lazy {
+        val d = File(this.publicDirectory, "transfer")
+        d.mkdirs()
+        d
+    }
 
     // Files
     /** Local application configuration file */
-    val applicationConfigurationFile: File by lazy({
+    val applicationConfigurationFile by lazy {
         File(this.etcDirectory, "${this.appName}.yml")
-    })
+    }
 
     /** Local identity configuration file */
-    val identityConfigurationFile: File by lazy({
+    val identityConfigurationFile: File by lazy {
         File(this.dataDirectory, "identity.yml")
-    })
+    }
 
     /** Local h2 database file */
-    val h2DatabaseFile: File by lazy({
+    val h2DatabaseFile: File by lazy {
         this.dataDirectory.toPath().resolve("h2").resolve("leoz").toFile()
-    })
-
-    val transferDataDirectory by lazy({
-        val d = File(this.dataDirectory, "transfer")
-        d.mkdirs()
-        d
-    })
+    }
 }

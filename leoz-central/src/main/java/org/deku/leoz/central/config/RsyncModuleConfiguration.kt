@@ -23,7 +23,6 @@ open class RsyncModuleConfiguration {
     open fun transferModule(): Rsync.Module {
         return Rsync.Module(
                 RsyncConfiguration.ModuleNames.TRANSFER,
-                StorageConfiguration.instance.transferDataDirectory)
+                StorageConfiguration.instance.transferDirectory)
     }
-
 }

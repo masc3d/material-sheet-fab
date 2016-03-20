@@ -38,6 +38,8 @@ remote:
     broker:
        http-path: /jms
        native-port: 13001
+    rsync:
+       port: 13002
 
 # Rsync server
 rsync:

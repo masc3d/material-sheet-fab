@@ -1,25 +1,38 @@
 package org.deku.leoz.node.services
 
 import org.apache.commons.logging.LogFactory
-import sx.concurrent.Service
+import org.deku.leoz.node.messaging.entities.FileSyncMessage
+import sx.jms.Channel
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
-import sx.ssh.SshTunnelProvider
 import java.io.File
-import java.time.Duration
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 
 /**
+ * File sync client service
+ * @param executorService Executor service
+ * @param baseDirectory Base directory
+ * @param rsyncEndpoint Rsync end point
  * Created by masc on 11/03/16.
  */
 class FileSyncClientService constructor(
-        executorService: ScheduledExecutorService)
+        executorService: ScheduledExecutorService,
+        baseDirectory: File,
+        private val rsyncEndpoint: Rsync.Endpoint)
 :
-        Service(executorService = executorService,
-                period = Duration.ofSeconds(10)) {
+        FileSyncServiceBase(
+                executorService = executorService,
+                baseDirectory = baseDirectory) {
+
     private val log = LogFactory.getLog(this.javaClass)
     private val tasks = ArrayList<Task>()
+
+    init {
+        this.addTask(FileSyncClientService.Task(
+                sourcePath = this.outDirectory,
+                rsyncEndpoint = this.rsyncEndpoint))
+    }
 
     /**
      * File synchronization task
@@ -30,11 +43,9 @@ class FileSyncClientService constructor(
      * @param rsyncPassword Destination rsync password
      * @param sshTunnelProvider SSH tunnel provider for rsync connections
      */
-    class Task(
+    private class Task(
             val sourcePath: File,
-            val rsyncModuleUri: Rsync.URI,
-            val rsyncPassword: String = "",
-            val sshTunnelProvider: SshTunnelProvider? = null)
+            val rsyncEndpoint: Rsync.Endpoint)
     :
             Runnable {
         private val log = LogFactory.getLog(this.javaClass)
@@ -44,7 +55,7 @@ class FileSyncClientService constructor(
          */
         private fun createRsyncClient(): RsyncClient {
             val rc = RsyncClient()
-            rc.password = this.rsyncPassword
+            rc.password = this.rsyncEndpoint.password
             rc.compression = 2
             rc.preservePermissions = false
             rc.preserveExecutability = true
@@ -54,7 +65,7 @@ class FileSyncClientService constructor(
             rc.removeSourceFiles = true
             // Do not remove destination files
             rc.delete = false
-            rc.sshTunnelProvider = this.sshTunnelProvider
+            rc.sshTunnelProvider = this.rsyncEndpoint.sshTunnelProvider
             return rc
         }
 
@@ -64,11 +75,11 @@ class FileSyncClientService constructor(
                     throw IllegalStateException("Source path does not exist [${sourcePath}]")
 
                 if (sourcePath.listFiles().count() > 0) {
-                    log.info("Synchronizing [${sourcePath}] -> [${rsyncModuleUri}]")
+                    log.info("Synchronizing [${sourcePath}] -> [${rsyncEndpoint.moduleUri}]")
                     val rsyncClient = this.createRsyncClient()
                     rsyncClient.sync(
                             Rsync.URI(this.sourcePath),
-                            rsyncModuleUri,
+                            rsyncEndpoint.moduleUri,
                             { r ->
                                 log.info("Synchronizing [${r.path}]")
                             })
@@ -88,7 +99,7 @@ class FileSyncClientService constructor(
         }
     }
 
-    fun addTask(task: Task) {
+    private fun addTask(task: Task) {
         synchronized(this.tasks) {
             this.tasks.add(task)
         }
@@ -112,5 +123,9 @@ class FileSyncClientService constructor(
                 log.error(e.message, e)
             }
         }
+    }
+
+    override fun onMessage(message: FileSyncMessage, replyChannel: Channel?) {
+        throw UnsupportedOperationException()
     }
 }

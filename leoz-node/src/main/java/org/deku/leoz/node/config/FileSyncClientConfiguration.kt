@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
+import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
@@ -35,21 +36,22 @@ open class FileSyncClientConfiguration {
 
     @Bean
     open fun fileSyncClientService(): FileSyncClientService {
-        return FileSyncClientService(this.executorService)
+        return FileSyncClientService(
+                executorService = this.executorService,
+                baseDirectory = StorageConfiguration.instance.transferDirectory,
+                rsyncEndpoint = Rsync.Endpoint(
+                        moduleUri = RsyncConfiguration.createRsyncUri(
+                                remotePeerSettings.host!!,
+                                remotePeerSettings.rsync.port!!,
+                                RsyncConfiguration.ModuleNames.TRANSFER),
+                        password = RsyncConfiguration.PASSWORD,
+                        sshTunnelProvider = this.sshTunnelProvider))
     }
+
     private val fileSyncClientService by lazy { this.fileSyncClientService() }
 
     @PostConstruct
     fun onInitialize() {
-        this.fileSyncClientService.addTask(FileSyncClientService.Task(
-                sourcePath = StorageConfiguration.instance.transferDataDirectory,
-                rsyncModuleUri = RsyncConfiguration.createRsyncUri(
-                        remotePeerSettings.host!!,
-                        13002,
-                        RsyncConfiguration.ModuleNames.TRANSFER),
-                rsyncPassword = RsyncConfiguration.PASSWORD,
-                sshTunnelProvider = this.sshTunnelProvider))
-
         this.fileSyncClientService.start()
     }
 

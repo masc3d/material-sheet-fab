@@ -10,13 +10,17 @@ import javax.inject.Named
 @ConfigurationProperties(prefix = "remote")
 class RemotePeerSettings {
     inner class Broker {
-
         var nativePort: Int? = null
         var httpPath: String? = null
+    }
+
+    inner class Rsync {
+        var port: Int? = null
     }
 
     var host: String? = null
     var httpPort: Int? = null
     var httpPath: String? = null
     var broker: Broker = Broker()
+    var rsync: Rsync = Rsync()
 }
