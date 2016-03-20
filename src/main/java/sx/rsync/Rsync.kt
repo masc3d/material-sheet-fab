@@ -3,6 +3,7 @@ package sx.rsync
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.logging.LogFactory
 import sx.EmbeddedExecutable
+import sx.ssh.SshTunnelProvider
 import java.io.File
 import java.nio.file.Paths
 import java.util.*
@@ -94,6 +95,21 @@ class Rsync() {
                 rsyncPath = rsyncPath.trimEnd('/')
 
             return rsyncPath
+        }
+    }
+
+    /**
+     * Rsync endpoint consists of a module uri, password and optional tunnel provider.
+     * Basically everything that is required to connect to an rsync server
+     * @param moduleUri Rsync module URI
+     * @param password Rsync module password
+     * @param sshTunnelProvider Optional ssh tunnel provider
+     */
+    class Endpoint(val moduleUri: Rsync.URI,
+                   val password: String,
+                   val sshTunnelProvider: SshTunnelProvider? = null) {
+        override fun toString(): String {
+            return "Module URI [${moduleUri}"
         }
     }
 
