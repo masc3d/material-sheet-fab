@@ -2,6 +2,7 @@ package org.deku.leoz.node.config
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.RsyncConfiguration
+import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.deku.leoz.node.services.FileSyncClientService
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
+import sx.jms.Channel
 import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
 import java.util.concurrent.ScheduledExecutorService
@@ -39,13 +41,15 @@ open class FileSyncClientConfiguration {
         return FileSyncClientService(
                 executorService = this.executorService,
                 baseDirectory = StorageConfiguration.instance.transferDirectory,
+                identity = App.instance.identity,
                 rsyncEndpoint = Rsync.Endpoint(
                         moduleUri = RsyncConfiguration.createRsyncUri(
                                 remotePeerSettings.host!!,
                                 remotePeerSettings.rsync.port!!,
                                 RsyncConfiguration.ModuleNames.TRANSFER),
                         password = RsyncConfiguration.PASSWORD,
-                        sshTunnelProvider = this.sshTunnelProvider))
+                        sshTunnelProvider = this.sshTunnelProvider),
+                centralChannelSupplier = { Channel(ActiveMQConfiguration.instance.centralQueue) })
     }
 
     private val fileSyncClientService by lazy { this.fileSyncClientService() }

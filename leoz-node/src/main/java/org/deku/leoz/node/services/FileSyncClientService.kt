@@ -1,6 +1,7 @@
 package org.deku.leoz.node.services
 
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.Identity
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import sx.jms.Channel
 import sx.rsync.Rsync
@@ -19,11 +20,14 @@ import java.util.concurrent.ScheduledExecutorService
 class FileSyncClientService constructor(
         executorService: ScheduledExecutorService,
         baseDirectory: File,
-        private val rsyncEndpoint: Rsync.Endpoint)
+        identity: Identity,
+        private val rsyncEndpoint: Rsync.Endpoint,
+        private val centralChannelSupplier: () -> Channel)
 :
         FileSyncServiceBase(
                 executorService = executorService,
-                baseDirectory = baseDirectory) {
+                baseDirectory = baseDirectory,
+                identity = identity) {
 
     private val log = LogFactory.getLog(this.javaClass)
     private val tasks = ArrayList<Task>()
