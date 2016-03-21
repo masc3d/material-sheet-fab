@@ -36,6 +36,13 @@ class Identity private constructor(
         override fun hashCode(): Int {
             return this.value.hashCode()
         }
+
+        override fun equals(other: Any?): Boolean {
+            if (other is Identity.Key)
+                return this.value.equals(other.value)
+            else
+                return super.equals(other)
+        }
     }
 
     /**
