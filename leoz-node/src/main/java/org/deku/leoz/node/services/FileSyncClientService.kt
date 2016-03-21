@@ -3,6 +3,7 @@ package org.deku.leoz.node.services
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
+import sx.concurrent.Service
 import sx.jms.Channel
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
@@ -44,6 +45,16 @@ class FileSyncClientService constructor(
                 sshTunnelProvider = rsyncEndpoint.sshTunnelProvider)
     }
 
+    private val incomingSyncService = object : Service(this.executorService) {
+        override fun run() {
+            try {
+                this@FileSyncClientService.syncIncoming()
+            } catch(e: Exception) {
+                log.error(e.message, e)
+            }
+        }
+    }
+
     /**
      * Rsync client factory helper
      */
@@ -64,38 +75,48 @@ class FileSyncClientService constructor(
     }
 
     /**
-     * Service implementation
+     * Synchronize outgoing files with host
      */
-    override fun run() {
-        try {
-            if (this.outDirectory.listFiles().count() > 0) {
-                this.ping()
+    private fun syncOutgoing() {
+        if (this.outDirectory.listFiles().count() > 0) {
+            this.ping()
 
-                log.info("Synchronizing [${this.outDirectory}] -> [${this.rsyncEndpointIn.moduleUri}]")
-                val rsyncClient = this.createRsyncClient(this.rsyncEndpointIn)
-                rsyncClient.sync(
-                        Rsync.URI(this.outDirectory),
-                        this.rsyncEndpointIn.moduleUri,
-                        { r ->
-                            log.info("Synchronizing out [${r.path}]")
-                        })
+            log.info("Synchronizing [${this.outDirectory}] -> [${this.rsyncEndpointIn.moduleUri}]")
+            val rsyncClient = this.createRsyncClient(this.rsyncEndpointIn)
+            rsyncClient.sync(
+                    Rsync.URI(this.outDirectory),
+                    this.rsyncEndpointIn.moduleUri,
+                    { r ->
+                        log.debug("out [${r.path}]")
+                    })
 
-                // Remove empty directories
-                this.outDirectory.walkBottomUp().forEach {
-                    if (!it.equals(this.outDirectory) &&
-                            it.isDirectory &&
-                            it.listFiles().count() == 0) {
-                        it.delete()
-                    }
+            // Remove empty directories
+            this.outDirectory.walkBottomUp().forEach {
+                if (!it.equals(this.outDirectory) &&
+                        it.isDirectory &&
+                        it.listFiles().count() == 0) {
+                    it.delete()
                 }
             }
-        } catch(e: Exception) {
-            log.error(e.message, e)
         }
     }
 
     /**
-     * Ping with FileSyncMessage
+     * Synchronize incoming files with host
+     */
+    private fun syncIncoming() {
+        log.info("Synchronizing [${this.rsyncEndpointOut.moduleUri}] -> [${this.inDirectory}]")
+        val rsyncClient = this.createRsyncClient(this.rsyncEndpointOut)
+        rsyncClient.sync(
+                this.rsyncEndpointOut.moduleUri,
+                Rsync.URI(this.inDirectory),
+                { r ->
+                    log.debug("in [${r.path}]")
+                })
+    }
+
+    /**
+     * Ping host (with message)
      */
     private fun ping() {
         this.centralChannelSupplier().use {
@@ -105,7 +126,25 @@ class FileSyncClientService constructor(
         }
     }
 
-    override fun onStart() {
+    /**
+     * Service implementation
+     */
+    override fun run() {
+        try {
+            this.syncOutgoing()
+        } catch(e: Exception) {
+            log.error(e.message, e)
+        }
+    }
+
+    /**
+     * On service start
+     */
+    override fun start() {
+        super.start()
+
+        this.incomingSyncService.start()
+
         try {
             this.ping()
         } catch(e: Exception) {
@@ -113,19 +152,16 @@ class FileSyncClientService constructor(
         }
     }
 
+    override fun stop(interrupt: Boolean, async: Boolean) {
+        this.incomingSyncService.stop()
+        super.stop(interrupt, async)
+    }
+
+    /**
+     * On file sync message
+     */
     override fun onMessage(message: FileSyncMessage, replyChannel: Channel?) {
-        try {
-            // TODO: perform sync of out/in in dedicated triggerable service to prevent concurrent notifications causing conflicts
-            log.info("Received file sync notification")
-            val rsyncClient = this.createRsyncClient(this.rsyncEndpointOut)
-            rsyncClient.sync(
-                    this.rsyncEndpointOut.moduleUri,
-                    Rsync.URI(this.inDirectory),
-                    { r ->
-                        log.info("Synchronizing in [${r.path}]")
-                    })
-        } catch(e: Exception) {
-            log.error(e.message, e)
-        }
+        log.info("Received notification, files available")
+        this.incomingSyncService.trigger()
     }
 }

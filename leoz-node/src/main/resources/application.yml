@@ -12,6 +12,8 @@ logging:
         org.springframework.boot.context.config: INFO
         # Entity sync log level
         org.deku.leoz.node.data.sync: INFO
+        # ActiveMQ
+        org.apache.activemq: INFO
 
 server:
     # Spring web server port
