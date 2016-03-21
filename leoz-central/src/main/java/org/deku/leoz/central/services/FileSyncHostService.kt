@@ -1,10 +1,12 @@
 package org.deku.leoz.central.services
 
+import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import org.deku.leoz.node.services.FileSyncServiceBase
 import sx.jms.Channel
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ScheduledExecutorService
 
 /**
@@ -21,23 +23,62 @@ class FileSyncHostService(
                 baseDirectory = baseDirectory,
                 identity = identity
         ) {
+
+    class Node(val identityKey: Identity.Key) {
+    }
+
+    val log = LogFactory.getLog(this.javaClass)
+    /** Known nodes */
+    val nodes = ConcurrentHashMap<Identity.Key, Node>()
+
+    /**
+     * Service logic
+     */
     override fun run() {
-        throw UnsupportedOperationException()
+        // All known nodes
+        val identityKeys = this.nodes.keys.toList()
+
+        identityKeys.forEach {
+            this.notifyNode(it)
+        }
     }
 
     /**
      * FileSyncMessage handler
      */
     override fun onMessage(message: FileSyncMessage, replyChannel: Channel?) {
-        val identityKey = Identity.Key(message.key)
+        try {
+            val identityKey = Identity.Key(message.key)
 
-        // Prepare directories
-        val inDirectory = this.nodeInDirectory(identityKey)
-        val outDirectory = this.nodeOutDirectory(identityKey)
+            val node: Node = this.nodes.getOrPut(identityKey, { Node(identityKey) })
 
-        // Send back empty file sync message as a confirmation
-        if (replyChannel != null) {
-            replyChannel.send(FileSyncMessage())
+            // Prepare directories
+            this.nodeInDirectory(identityKey)
+            this.nodeOutDirectory(identityKey)
+
+            // Send back empty file sync message as a confirmation
+            if (replyChannel != null) {
+                replyChannel.send(FileSyncMessage())
+            }
+
+            this.notifyNode(identityKey)
+        } catch(e: Exception) {
+            this.log.error(e.message, e)
+        }
+
+    }
+
+    /**
+     * Notify node about available files
+     * @param identityKey Node identity key
+     */
+    private fun notifyNode(identityKey: Identity.Key) {
+        val out = this.nodeOutDirectory(identityKey)
+        if (out.exists() && out.listFiles().count() > 0) {
+            log.info("Sending file sync notification")
+            this.nodeChannelSupplier(identityKey).use {
+                it.send(FileSyncMessage())
+            }
         }
     }
 }
