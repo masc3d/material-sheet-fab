@@ -75,7 +75,7 @@ class FileSyncHostService(
     private fun notifyNode(identityKey: Identity.Key) {
         val out = this.nodeOutDirectory(identityKey)
         if (out.exists() && out.listFiles().count() > 0) {
-            log.info("Sending file sync notification")
+            log.info("Outgoing files available for node [${identityKey}]")
             this.nodeChannelSupplier(identityKey).use {
                 it.send(FileSyncMessage())
             }
