@@ -32,6 +32,10 @@ class Identity private constructor(
         override fun toString(): String {
             return this.value
         }
+
+        override fun hashCode(): Int {
+            return this.value.hashCode()
+        }
     }
 
     /**
