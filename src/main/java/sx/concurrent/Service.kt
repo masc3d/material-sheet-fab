@@ -211,7 +211,7 @@ abstract class Service(
     /**
      * Starts the service, running the service logic at the @link interval specified
      */
-    fun start(log: Boolean = true) {
+    private fun start(log: Boolean = true) {
         this.lock.withLock {
             if (this.isStarted) {
                 this.log.info("Service [${this.javaClass}] has already been started")
@@ -223,8 +223,6 @@ abstract class Service(
 
             if (this.hasBeenStarted && !this.isDynamicSchedulingSupported)
                 throw IllegalStateException("This service has been stopped and cannot be restarted due to lack of dynamic scheduling")
-
-            this.onStart()
 
             // Only schedule initially if either period or initial delay is set (or both)
             if (this.period != null || this.initialDelay != null) {
@@ -238,10 +236,8 @@ abstract class Service(
         }
     }
 
-    /**
-     * On start handler, optional override
-     */
-    open fun onStart() {
+    open fun start() {
+        this.start(log = true)
     }
 
     /**
@@ -249,7 +245,7 @@ abstract class Service(
      * @param interrupt Interrupt futures
      * @param async Perform stopping asynchronously (required when called from within service thread)
      */
-    fun stop(interrupt: Boolean = true, async: Boolean = false, log: Boolean = true) {
+    private fun stop(interrupt: Boolean = true, async: Boolean = false, log: Boolean = true) {
         val stopRunnable = Runnable {
             val wasStarted = this.isStarted
             if (log && wasStarted)
@@ -282,6 +278,13 @@ abstract class Service(
         } else {
             stopRunnable.run()
         }
+    }
+
+    open fun stop(interrupt: Boolean = true, async: Boolean = false) {
+        this.stop(
+                interrupt = interrupt,
+                async = async,
+                log = true)
     }
 
     /**
