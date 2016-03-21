@@ -7,7 +7,6 @@ import sx.jms.Channel
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import java.io.File
-import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 
 /**
@@ -21,7 +20,7 @@ class FileSyncClientService constructor(
         executorService: ScheduledExecutorService,
         baseDirectory: File,
         identity: Identity,
-        private val rsyncEndpoint: Rsync.Endpoint,
+        rsyncEndpoint: Rsync.Endpoint,
         private val centralChannelSupplier: () -> Channel)
 :
         FileSyncServiceBase(
@@ -30,106 +29,103 @@ class FileSyncClientService constructor(
                 identity = identity) {
 
     private val log = LogFactory.getLog(this.javaClass)
-    private val tasks = ArrayList<Task>()
+    private val rsyncEndpointOut: Rsync.Endpoint
+    private val rsyncEndpointIn: Rsync.Endpoint
 
     init {
-        this.addTask(FileSyncClientService.Task(
-                sourcePath = this.outDirectory,
-                rsyncEndpoint = this.rsyncEndpoint))
+        this.rsyncEndpointOut = Rsync.Endpoint(
+                moduleUri = rsyncEndpoint.moduleUri.resolve(this.nodeOutRelativePath()),
+                password = rsyncEndpoint.password,
+                sshTunnelProvider = rsyncEndpoint.sshTunnelProvider)
+
+        this.rsyncEndpointIn = Rsync.Endpoint(
+                moduleUri = rsyncEndpoint.moduleUri.resolve(this.nodeInRelativePath()),
+                password = rsyncEndpoint.password,
+                sshTunnelProvider = rsyncEndpoint.sshTunnelProvider)
     }
 
     /**
-     * File synchronization task
-     * Created by masc on 07-Mar-16.
-     * @param sourcePath Source path
-     * @param destinationPath Destination path
-     * @param rsyncModuleUri Destination rsync module
-     * @param rsyncPassword Destination rsync password
-     * @param sshTunnelProvider SSH tunnel provider for rsync connections
+     * Rsync client factory helper
      */
-    private class Task(
-            val sourcePath: File,
-            val rsyncEndpoint: Rsync.Endpoint)
-    :
-            Runnable {
-        private val log = LogFactory.getLog(this.javaClass)
-
-        /**
-         * Rsync client factory helper
-         */
-        private fun createRsyncClient(): RsyncClient {
-            val rc = RsyncClient()
-            rc.password = this.rsyncEndpoint.password
-            rc.compression = 2
-            rc.preservePermissions = false
-            rc.preserveExecutability = true
-            rc.preserveGroup = false
-            rc.preserveOwner = false
-            // Remove tranferred files
-            rc.removeSourceFiles = true
-            // Do not remove destination files
-            rc.delete = false
-            rc.sshTunnelProvider = this.rsyncEndpoint.sshTunnelProvider
-            return rc
-        }
-
-        override fun run() {
-            try {
-                if (!sourcePath.exists())
-                    throw IllegalStateException("Source path does not exist [${sourcePath}]")
-
-                if (sourcePath.listFiles().count() > 0) {
-                    log.info("Synchronizing [${sourcePath}] -> [${rsyncEndpoint.moduleUri}]")
-                    val rsyncClient = this.createRsyncClient()
-                    rsyncClient.sync(
-                            Rsync.URI(this.sourcePath),
-                            rsyncEndpoint.moduleUri,
-                            { r ->
-                                log.info("Synchronizing [${r.path}]")
-                            })
-
-                    // Remove empty directories
-                    sourcePath.walkBottomUp().forEach {
-                        if (!it.equals(sourcePath) &&
-                                it.isDirectory &&
-                                it.listFiles().count() == 0) {
-                            it.delete()
-                        }
-                    }
-                }
-            } catch(e: Exception) {
-                log.error(e.message, e)
-            }
-        }
-    }
-
-    private fun addTask(task: Task) {
-        synchronized(this.tasks) {
-            this.tasks.add(task)
-        }
+    private fun createRsyncClient(rsyncEndpoint: Rsync.Endpoint): RsyncClient {
+        val rc = RsyncClient()
+        rc.password = rsyncEndpoint.password
+        rc.compression = 2
+        rc.preservePermissions = false
+        rc.preserveExecutability = true
+        rc.preserveGroup = false
+        rc.preserveOwner = false
+        // Remove tranferred files
+        rc.removeSourceFiles = true
+        // Do not remove destination files
+        rc.delete = false
+        rc.sshTunnelProvider = rsyncEndpoint.sshTunnelProvider
+        return rc
     }
 
     /**
      * Service implementation
      */
     override fun run() {
-        // Copy tasks
-        val tasks = ArrayList<Task>()
-        synchronized(this.tasks) {
-            tasks.addAll(this.tasks)
-        }
+        try {
+            if (this.outDirectory.listFiles().count() > 0) {
+                this.ping()
 
-        // Run tasks
-        tasks.forEach {
-            try {
-                it.run()
-            } catch(e: Exception) {
-                log.error(e.message, e)
+                log.info("Synchronizing [${this.outDirectory}] -> [${this.rsyncEndpointIn.moduleUri}]")
+                val rsyncClient = this.createRsyncClient(this.rsyncEndpointIn)
+                rsyncClient.sync(
+                        Rsync.URI(this.outDirectory),
+                        this.rsyncEndpointIn.moduleUri,
+                        { r ->
+                            log.info("Synchronizing out [${r.path}]")
+                        })
+
+                // Remove empty directories
+                this.outDirectory.walkBottomUp().forEach {
+                    if (!it.equals(this.outDirectory) &&
+                            it.isDirectory &&
+                            it.listFiles().count() == 0) {
+                        it.delete()
+                    }
+                }
+            }
+        } catch(e: Exception) {
+            log.error(e.message, e)
+        }
+    }
+
+    /**
+     * Ping with FileSyncMessage
+     */
+    private fun ping() {
+        this.centralChannelSupplier().use {
+            it.sendRequest(FileSyncMessage(this.identity.key)).use {
+                it.receive()
             }
         }
     }
 
+    override fun onStart() {
+        try {
+            this.ping()
+        } catch(e: Exception) {
+            log.error(e.message, e)
+        }
+    }
+
     override fun onMessage(message: FileSyncMessage, replyChannel: Channel?) {
-        throw UnsupportedOperationException()
+        try {
+            // TODO: perform sync of out/in in dedicated triggerable service to prevent concurrent notifications causing conflicts
+            log.info("Received file sync notification")
+            val rsyncClient = this.createRsyncClient(this.rsyncEndpointOut)
+            rsyncClient.sync(
+                    this.rsyncEndpointOut.moduleUri,
+                    Rsync.URI(this.inDirectory),
+                    { r ->
+                        log.info("Synchronizing in [${r.path}]")
+                    })
+        } catch(e: Exception) {
+            log.error(e.message, e)
+        }
     }
 }

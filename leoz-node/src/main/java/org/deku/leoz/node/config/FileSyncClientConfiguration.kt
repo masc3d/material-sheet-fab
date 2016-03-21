@@ -4,6 +4,7 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
+import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.deku.leoz.node.services.FileSyncClientService
 import org.springframework.context.annotation.Bean
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import sx.jms.Channel
+import sx.jms.embedded.Broker
 import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
 import java.util.concurrent.ScheduledExecutorService
@@ -28,13 +30,16 @@ open class FileSyncClientConfiguration {
     private val log = LogFactory.getLog(this.javaClass)
 
     @Inject
+    private lateinit var executorService: ScheduledExecutorService
+
+    @Inject
     private lateinit var remotePeerSettings: RemotePeerSettings
 
     @Inject
     private lateinit var sshTunnelProvider: SshTunnelProvider
 
     @Inject
-    private lateinit var executorService: ScheduledExecutorService
+    private lateinit var messageListenerConfiguration: MessageListenerConfiguration
 
     @Bean
     open fun fileSyncClientService(): FileSyncClientService {
@@ -51,12 +56,26 @@ open class FileSyncClientConfiguration {
                         sshTunnelProvider = this.sshTunnelProvider),
                 centralChannelSupplier = { Channel(ActiveMQConfiguration.instance.centralQueue) })
     }
-
     private val fileSyncClientService by lazy { this.fileSyncClientService() }
 
+    /** Broker event listener */
+    private val brokerEventListener = object : Broker.DefaultEventListener() {
+        override fun onConnectedToBrokerNetwork() {
+            fileSyncClientService.restart()
+        }
+
+        override fun onStop() {
+            fileSyncClientService.stop()
+        }
+    }
     @PostConstruct
     fun onInitialize() {
-        this.fileSyncClientService.start()
+        ActiveMQConfiguration.instance.broker.delegate.add(this.brokerEventListener)
+
+        messageListenerConfiguration.nodeQueueListener.addDelegate(
+                FileSyncMessage::class.java,
+                this.fileSyncClientService
+        )
     }
 
     @PreDestroy
