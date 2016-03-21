@@ -34,7 +34,7 @@ open class BundleUpdateServiceConfiguration {
     @ConfigurationProperties(prefix = "update")
     class Settings {
         var enabled: Boolean = false
-        var onStartup: Boolean = true
+        var automatic: Boolean = true
         var rsyncUri: String by Delegates.notNull()
         var rsyncPassword: String by Delegates.notNull()
     }
@@ -106,9 +106,11 @@ open class BundleUpdateServiceConfiguration {
 
     /** Broker listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
-        override fun onStart() {
+        val firstStart: Boolean = true
+
+        override fun onConnectedToBrokerNetwork() {
             // Run bundle updater initially/on startup
-            if (this@BundleUpdateServiceConfiguration.settings.onStartup)
+            if (this@BundleUpdateServiceConfiguration.settings.automatic)
                 this@BundleUpdateServiceConfiguration.bundleUpdater.trigger()
         }
 
@@ -123,9 +125,11 @@ open class BundleUpdateServiceConfiguration {
         if (ActiveMQConfiguration.instance.broker.isStarted)
             brokerEventListener.onStart()
 
-        this.messageListenerConfiguration.nodeNotificationListener.addDelegate(
-                UpdateInfo::class.java,
-                this.bundleUpdater)
-
+        // Register for update notifications (as long as automatic updates are enabled)
+        if (this@BundleUpdateServiceConfiguration.settings.automatic) {
+            this.messageListenerConfiguration.nodeNotificationListener.addDelegate(
+                    UpdateInfo::class.java,
+                    this.bundleUpdater)
+        }
     }
 }
