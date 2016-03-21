@@ -91,8 +91,23 @@ sourceSets {
 task syncClasses(type: Sync) {
     from '../libs/leoz-common/src/main/java', '../libs/sx-common/src/main/java'
     into srcdir_import
-    exclude '**/rest/**', '**/FilePersistence*', '**/Identity*', '**/BundleUpdateService*', '**/LogAppender*'
-    //include '**/bundle/**', '**/rsync/**', '**/system/**', '**/ProcessExecutor*', '**/Disposable*/', '**/EmbeddedExecutable*/', '**/Action*/', '**/platform/**', '**/Bundle'
+    include '**/bundle/Bundle.kt',
+            '**/bundle/BundleInstaller*',
+            '**/bundle/BundleRepository*',
+            '**/bundle/BundleProcess*',
+            '**/bundle/Bundles*',
+            '**/config/BundleConfiguration*',
+            '**/config/RsyncConfiguration*',
+            '**/config/SshConfiguration*',
+            '**/platform/**',
+            '**/rsync/**',
+            '**/system/**',
+            '**/io/PermissionUtil*',
+            '**/Action*/',
+            '**/Disposable*/',
+            '**/EmbeddedExecutable*/',
+            '**/ProcessExecutor*',
+            '**/ssh/**'
     includeEmptyDirs = false
 }
 
