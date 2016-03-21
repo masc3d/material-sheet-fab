@@ -55,11 +55,11 @@ abstract class FileSyncServiceBase(
         return d
     }
 
-    fun nodeInRelativePath(identityKey: Identity.Key): String {
+    fun nodeInRelativePath(identityKey: Identity.Key = this.identity.keyInstance): String {
         return "${this.inDirectoryName}/${identityKey.short}"
     }
 
-    fun nodeOutRelativePath(identityKey: Identity.Key): String {
+    fun nodeOutRelativePath(identityKey: Identity.Key = this.identity.keyInstance): String {
         return "${this.outDirectoryName}/${identityKey.short}"
     }
 }
