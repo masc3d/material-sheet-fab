@@ -224,6 +224,8 @@ abstract class Service(
             if (this.hasBeenStarted && !this.isDynamicSchedulingSupported)
                 throw IllegalStateException("This service has been stopped and cannot be restarted due to lack of dynamic scheduling")
 
+            this.onStart()
+
             // Only schedule initially if either period or initial delay is set (or both)
             if (this.period != null || this.initialDelay != null) {
                 this.serviceTaskFuture = this.executorService.scheduleTask(
@@ -234,6 +236,12 @@ abstract class Service(
             this.isStarted = true
             this.hasBeenStarted = true
         }
+    }
+
+    /**
+     * On start handler, optional override
+     */
+    open fun onStart() {
     }
 
     /**
