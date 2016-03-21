@@ -202,14 +202,22 @@ abstract class Service(
 
     /**
      * Restart service
+     * @param interrupt Interrupt futures on stop (if service needs to stop)
      */
-    fun restart() {
-        this.stop()
-        this.start()
+    fun restart(interrupt: Boolean = false) {
+        this.lock.withLock {
+            if (this.isStarted) {
+                this.log.info("Restarting service [${this.javaClass}]")
+                this.stop(interrupt = interrupt, log = false)
+                this.start(log = false)
+            } else {
+                this.start(log = true)
+            }
+        }
     }
 
     /**
-     * Starts the service, running the service logic at the @link interval specified
+     * Starts the service
      */
     private fun start(log: Boolean = true) {
         this.lock.withLock {
@@ -236,6 +244,9 @@ abstract class Service(
         }
     }
 
+    /**
+     * Starts the service
+     */
     open fun start() {
         this.start(log = true)
     }
@@ -270,7 +281,7 @@ abstract class Service(
                 this.isStarted = false
             }
             if (log && wasStarted)
-                this.log.info("Stopped service [${this.javaClass}]")
+                this.log.debug("Stopped service [${this.javaClass}]")
         }
 
         if (async) {
