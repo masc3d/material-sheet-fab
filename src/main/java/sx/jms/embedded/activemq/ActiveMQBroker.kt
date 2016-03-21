@@ -124,6 +124,7 @@ class ActiveMQBroker private constructor()
             nc.userName = this.user!!.userName
             nc.password = this.user!!.password
             nc.isDuplex = true
+
             brokerService!!.addNetworkConnector(nc)
         }
         for (ts in externalTransportServers) {
@@ -216,12 +217,16 @@ class ActiveMQBroker private constructor()
         brokerPlugins.add(object : BrokerPluginSupport() {
             override fun networkBridgeStarted(brokerInfo: BrokerInfo, createdByDuplex: Boolean, remoteIp: String) {
                 super.networkBridgeStarted(brokerInfo, createdByDuplex, remoteIp)
-                listenerEventDispatcher.emit { e -> e.onConnectedToBrokerNetwork() }
+                this.brokerService.taskRunnerFactory.execute {
+                    listenerEventDispatcher.emit { e -> e.onConnectedToBrokerNetwork() }
+                }
             }
 
             override fun networkBridgeStopped(brokerInfo: BrokerInfo) {
                 super.networkBridgeStopped(brokerInfo)
-                listenerEventDispatcher.emit { e -> e.onDisconnectedFromBrokerNetwork() }
+                this.brokerService.taskRunnerFactory.execute {
+                    listenerEventDispatcher.emit { e -> e.onDisconnectedFromBrokerNetwork() }
+                }
             }
         })
 
