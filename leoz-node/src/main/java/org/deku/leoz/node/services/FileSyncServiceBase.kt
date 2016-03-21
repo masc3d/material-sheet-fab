@@ -13,8 +13,9 @@ import java.util.concurrent.ScheduledExecutorService
  * Created by masc on 20/03/16.
  */
 abstract class FileSyncServiceBase(
+        executorService: ScheduledExecutorService,
         val baseDirectory: File,
-        executorService: ScheduledExecutorService)
+        val identity: Identity)
 :
         Service(executorService = executorService,
                 period = Duration.ofSeconds(10)),

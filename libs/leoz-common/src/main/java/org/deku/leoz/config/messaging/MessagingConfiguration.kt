@@ -1,5 +1,6 @@
 package org.deku.leoz.config.messaging
 
+import org.deku.leoz.Identity
 import sx.jms.Channel
 import sx.jms.embedded.Broker
 
@@ -39,5 +40,5 @@ interface MessagingConfiguration {
     /**
      * Node queue
      */
-    fun nodeQueue(id: String): Channel.Configuration
+    fun nodeQueue(identityKey: Identity.Key): Channel.Configuration
 }

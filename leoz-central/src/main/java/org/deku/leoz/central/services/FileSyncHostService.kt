@@ -1,7 +1,6 @@
 package org.deku.leoz.central.services
 
 import org.deku.leoz.Identity
-import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import org.deku.leoz.node.services.FileSyncServiceBase
 import sx.jms.Channel
@@ -12,13 +11,15 @@ import java.util.concurrent.ScheduledExecutorService
  * Created by masc on 17/03/16.
  */
 class FileSyncHostService(
-        baseDirectory: File,
         executorService: ScheduledExecutorService,
-        private val messagingConfiguration: MessagingConfiguration)
+        baseDirectory: File,
+        identity: Identity,
+        private val nodeChannelSupplier: (identityKey: Identity.Key) -> Channel)
 :
         FileSyncServiceBase(
+                executorService = executorService,
                 baseDirectory = baseDirectory,
-                executorService = executorService
+                identity = identity
         ) {
     override fun run() {
         throw UnsupportedOperationException()
@@ -33,5 +34,10 @@ class FileSyncHostService(
         // Prepare directories
         val inDirectory = this.nodeInDirectory(identityKey)
         val outDirectory = this.nodeOutDirectory(identityKey)
+
+        // Send back empty file sync message as a confirmation
+        if (replyChannel != null) {
+            replyChannel.send(FileSyncMessage())
+        }
     }
 }

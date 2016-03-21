@@ -1,5 +1,6 @@
 package org.deku.leoz.config.messaging
 
+import org.deku.leoz.Identity
 import sx.jms.Channel
 import sx.jms.converters.DefaultConverter
 import sx.jms.embedded.Broker
@@ -70,9 +71,9 @@ class ActiveMQConfiguration private constructor() : MessagingConfiguration {
                         DefaultConverter.CompressionType.GZIP))
     }
 
-    override fun nodeQueue(id: String): Channel.Configuration {
+    override fun nodeQueue(identityKey: Identity.Key): Channel.Configuration {
         return Channel.Configuration(connectionFactory = this.broker.connectionFactory,
-                destination = this.broker.createQueue("leoz.node.queue." + id.toString()),
+                destination = this.broker.createQueue("leoz.node.queue." + identityKey.short),
                 converter = DefaultConverter(
                         DefaultConverter.SerializationType.KRYO,
                         DefaultConverter.CompressionType.GZIP))
