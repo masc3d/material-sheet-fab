@@ -1,5 +1,6 @@
 package org.deku.leoz.node.services
 
+import com.google.common.base.Stopwatch
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
@@ -12,6 +13,7 @@ import java.nio.file.FileSystems
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchKey
 import java.nio.file.WatchService
+import java.time.Duration
 import java.util.concurrent.ScheduledExecutorService
 
 /**
@@ -62,7 +64,7 @@ class FileSyncClientService constructor(
         }
     }
 
-    private val outgoingSyncService = object : Service(this.executorService) {
+    private val outgoingSyncService = object : Service(this.executorService, initialDelay = Duration.ZERO) {
         override fun run() {
             var wk: WatchKey? = null
             try {
@@ -74,11 +76,20 @@ class FileSyncClientService constructor(
 
                 while (this.isStarted) {
                     this@FileSyncClientService.watchService.take()
+                    log.info("Detected files available for upload")
+                    // Wait for a short while for more events to arrive.
+                    Thread.sleep(100)
                     wk.pollEvents()
-                    this@FileSyncClientService.syncOutgoing()
+                    try {
+                        this@FileSyncClientService.syncOutgoing()
+                    } catch(e: InterruptedException) {
+                        throw e
+                    } catch(e: Exception) {
+                        log.error(e.message, e)
+                    }
+                    wk.reset()
                 }
             } catch(e: InterruptedException) {
-                log.info("Interrupted")
             } catch(e: Exception) {
                 log.error(e.message, e)
             } finally {
@@ -116,7 +127,8 @@ class FileSyncClientService constructor(
             this.ping()
 
         if (hasFiles) {
-            log.info("Synchronizing [${this.outDirectory}] -> [${this.rsyncEndpointIn.moduleUri}]")
+            val sw = Stopwatch.createStarted()
+            log.info("Uploading [${this.outDirectory}] -> [${this.rsyncEndpointIn.moduleUri}]")
             val rsyncClient = this.createRsyncClient(this.rsyncEndpointIn)
             rsyncClient.sync(
                     Rsync.URI(this.outDirectory),
@@ -133,6 +145,7 @@ class FileSyncClientService constructor(
                     it.delete()
                 }
             }
+            log.info("Upload complete [${sw}]")
         }
     }
 
@@ -140,7 +153,8 @@ class FileSyncClientService constructor(
      * Synchronize incoming files with host
      */
     private fun syncIncoming() {
-        log.info("Synchronizing [${this.rsyncEndpointOut.moduleUri}] -> [${this.inDirectory}]")
+        val sw = Stopwatch.createStarted()
+        log.info("Downloading [${this.rsyncEndpointOut.moduleUri}] -> [${this.inDirectory}]")
         val rsyncClient = this.createRsyncClient(this.rsyncEndpointOut)
         rsyncClient.sync(
                 this.rsyncEndpointOut.moduleUri,
@@ -148,6 +162,7 @@ class FileSyncClientService constructor(
                 { r ->
                     log.debug("in [${r.path}]")
                 })
+        log.info("Download complete [${sw}]")
     }
 
     /**
@@ -185,7 +200,7 @@ class FileSyncClientService constructor(
      * On file sync message
      */
     override fun onMessage(message: FileSyncMessage, replyChannel: Channel?) {
-        log.info("Received notification, files available")
+        log.info("Received notification, files available for download")
         try {
             this.incomingSyncService.trigger()
         } catch(e: Exception) {

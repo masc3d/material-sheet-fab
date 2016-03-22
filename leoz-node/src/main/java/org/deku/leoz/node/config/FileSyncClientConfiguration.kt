@@ -64,6 +64,10 @@ open class FileSyncClientConfiguration {
             fileSyncClientService.restart()
         }
 
+        override fun onDisconnectedFromBrokerNetwork() {
+            fileSyncClientService.stop()
+        }
+
         override fun onStop() {
             fileSyncClientService.stop()
         }
