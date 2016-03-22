@@ -34,7 +34,9 @@ abstract class Service(
     private var periodInternal: Duration?
 
     private var hasBeenStarted = false
-    private var isStarted = false
+    var isStarted = false
+        private set
+
     /** Indicates if the service is currently triggered, to prevent multiple triggers stacking up */
     @Volatile private var isTriggered: Boolean = false
 
