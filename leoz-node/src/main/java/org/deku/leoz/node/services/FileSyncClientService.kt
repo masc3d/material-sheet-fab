@@ -150,8 +150,8 @@ class FileSyncClientService constructor(
         }
     }
 
-    override fun onStop() {
-        this.incomingSyncService.stop()
+    override fun onStop(interrupted: Boolean) {
+        this.incomingSyncService.stop(interrupt = interrupted)
     }
 
     /**
