@@ -8,6 +8,10 @@ import sx.jms.Channel
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import java.io.File
+import java.nio.file.FileSystems
+import java.nio.file.StandardWatchEventKinds
+import java.nio.file.WatchKey
+import java.nio.file.WatchService
 import java.util.concurrent.ScheduledExecutorService
 
 /**
@@ -32,6 +36,7 @@ class FileSyncClientService constructor(
     private val log = LogFactory.getLog(this.javaClass)
     private val rsyncEndpointOut: Rsync.Endpoint
     private val rsyncEndpointIn: Rsync.Endpoint
+    private val watchService: WatchService
 
     init {
         this.rsyncEndpointOut = Rsync.Endpoint(
@@ -43,6 +48,8 @@ class FileSyncClientService constructor(
                 moduleUri = rsyncEndpoint.moduleUri.resolve(this.nodeInRelativePath()),
                 password = rsyncEndpoint.password,
                 sshTunnelProvider = rsyncEndpoint.sshTunnelProvider)
+
+        this.watchService = FileSystems.getDefault().newWatchService()
     }
 
     private val incomingSyncService = object : Service(this.executorService) {
@@ -51,6 +58,31 @@ class FileSyncClientService constructor(
                 this@FileSyncClientService.syncIncoming()
             } catch(e: Exception) {
                 log.error(e.message, e)
+            }
+        }
+    }
+
+    private val outgoingSyncService = object : Service(this.executorService) {
+        override fun run() {
+            var wk: WatchKey? = null
+            try {
+                wk = this@FileSyncClientService.outDirectory.toPath().register(this@FileSyncClientService.watchService,
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.OVERFLOW)
+
+                this@FileSyncClientService.syncOutgoing(pingAlways = true)
+
+                while (this.isStarted) {
+                    this@FileSyncClientService.watchService.take()
+                    wk.pollEvents()
+                    this@FileSyncClientService.syncOutgoing()
+                }
+            } catch(e: InterruptedException) {
+                log.info("Interrupted")
+            } catch(e: Exception) {
+                log.error(e.message, e)
+            } finally {
+                wk?.cancel()
             }
         }
     }
@@ -77,10 +109,13 @@ class FileSyncClientService constructor(
     /**
      * Synchronize outgoing files with host
      */
-    private fun syncOutgoing() {
-        if (this.outDirectory.listFiles().count() > 0) {
+    private fun syncOutgoing(pingAlways: Boolean = false) {
+        val hasFiles = this.outDirectory.listFiles().count() > 0
+
+        if (hasFiles || pingAlways)
             this.ping()
 
+        if (hasFiles) {
             log.info("Synchronizing [${this.outDirectory}] -> [${this.rsyncEndpointIn.moduleUri}]")
             val rsyncClient = this.createRsyncClient(this.rsyncEndpointIn)
             rsyncClient.sync(
@@ -126,32 +161,24 @@ class FileSyncClientService constructor(
         }
     }
 
-    /**
-     * Service implementation
-     */
-    override fun run() {
-        try {
-            this.syncOutgoing()
-        } catch(e: Exception) {
-            log.error(e.message, e)
-        }
-    }
-
-    /**
-     * On service start
-     */
-    override fun onStart() {
+    fun start() {
+        this.outgoingSyncService.start()
         this.incomingSyncService.start()
 
-        try {
-            this.ping()
-        } catch(e: Exception) {
-            log.error(e.message, e)
-        }
     }
 
-    override fun onStop(interrupted: Boolean) {
-        this.incomingSyncService.stop(interrupt = interrupted)
+    fun stop() {
+        this.outgoingSyncService.stop()
+        this.incomingSyncService.stop()
+    }
+
+    fun restart() {
+        this.outgoingSyncService.restart()
+        this.incomingSyncService.restart()
+    }
+
+    override fun close() {
+        this.stop()
     }
 
     /**
@@ -159,6 +186,10 @@ class FileSyncClientService constructor(
      */
     override fun onMessage(message: FileSyncMessage, replyChannel: Channel?) {
         log.info("Received notification, files available")
-        this.incomingSyncService.trigger()
+        try {
+            this.incomingSyncService.trigger()
+        } catch(e: Exception) {
+            log.error(e.message, e)
+        }
     }
 }

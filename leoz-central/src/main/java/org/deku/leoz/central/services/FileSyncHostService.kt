@@ -4,8 +4,10 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import org.deku.leoz.node.services.FileSyncServiceBase
+import sx.concurrent.Service
 import sx.jms.Channel
 import java.io.File
+import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ScheduledExecutorService
 
@@ -21,9 +23,7 @@ class FileSyncHostService(
         FileSyncServiceBase(
                 executorService = executorService,
                 baseDirectory = baseDirectory,
-                identity = identity
-        ) {
-
+                identity = identity) {
     class Node(val identityKey: Identity.Key) {
     }
 
@@ -31,16 +31,32 @@ class FileSyncHostService(
     /** Known nodes */
     val nodes = ConcurrentHashMap<Identity.Key, Node>()
 
-    /**
-     * Service logic
-     */
-    override fun run() {
-        // All known nodes
-        val identityKeys = this.nodes.keys.toList()
+    val service = object : Service(executorService = executorService,
+            period = Duration.ofSeconds(10)) {
+        override fun run() {
+            // All known nodes
+            val identityKeys = this@FileSyncHostService.nodes.keys.toList()
 
-        identityKeys.forEach {
-            this.notifyNode(it)
+            identityKeys.forEach {
+                this@FileSyncHostService.notifyNode(it)
+            }
         }
+    }
+
+    fun start() {
+        this.service.start()
+    }
+
+    fun stop() {
+        this.service.stop()
+    }
+
+    fun restart() {
+        this.service.restart()
+    }
+
+    override fun close() {
+        this.stop()
     }
 
     /**
