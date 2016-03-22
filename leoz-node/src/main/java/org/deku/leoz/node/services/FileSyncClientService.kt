@@ -140,9 +140,7 @@ class FileSyncClientService constructor(
     /**
      * On service start
      */
-    override fun start() {
-        super.start()
-
+    override fun onStart() {
         this.incomingSyncService.start()
 
         try {
@@ -152,9 +150,8 @@ class FileSyncClientService constructor(
         }
     }
 
-    override fun stop(interrupt: Boolean, async: Boolean) {
+    override fun onStop() {
         this.incomingSyncService.stop()
-        super.stop(interrupt, async)
     }
 
     /**
