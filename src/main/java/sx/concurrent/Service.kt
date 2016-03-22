@@ -255,9 +255,15 @@ abstract class Service(
         this.start(log = true)
     }
 
+    /**
+     * Called in the context of the thread starting the service before actually submitting/scheduling the task
+     */
     open fun onStart() {
     }
 
+    /**
+     * Called in the context of the thread stopping the service before actually cancelling the task
+     */
     open fun onStop(interrupted: Boolean) {
     }
 
@@ -273,6 +279,8 @@ abstract class Service(
                 this.log.info("Stopping service [${this.javaClass}] interrupt [${interrupt}]")
 
             this.lock.withLock {
+                this.onStop(interrupted = interrupt)
+
                 val tasks = ArrayList<TaskFuture>()
 
                 this.serviceTaskFuture?.let {
@@ -288,8 +296,6 @@ abstract class Service(
 
                 this.supplementalTaskFutures.clear()
                 this.serviceTaskFuture = null
-
-                this.onStop(interrupted = interrupt)
 
                 this.isStarted = false
             }
