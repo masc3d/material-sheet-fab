@@ -226,6 +226,8 @@ abstract class Service(
                 return
             }
 
+            this.onStart()
+
             if (log)
                 this.log.info("Starting service [${this.javaClass}]")
 
@@ -247,8 +249,14 @@ abstract class Service(
     /**
      * Starts the service
      */
-    open fun start() {
+    fun start() {
         this.start(log = true)
+    }
+
+    open fun onStart() {
+    }
+
+    open fun onStop(interrupted: Boolean) {
     }
 
     /**
@@ -278,6 +286,9 @@ abstract class Service(
 
                 this.supplementalTaskFutures.clear()
                 this.serviceTaskFuture = null
+
+                this.onStop(interrupted = interrupt)
+
                 this.isStarted = false
             }
             if (log && wasStarted)
@@ -291,7 +302,7 @@ abstract class Service(
         }
     }
 
-    open fun stop(interrupt: Boolean = true, async: Boolean = false) {
+    fun stop(interrupt: Boolean = true, async: Boolean = false) {
         this.stop(
                 interrupt = interrupt,
                 async = async,
