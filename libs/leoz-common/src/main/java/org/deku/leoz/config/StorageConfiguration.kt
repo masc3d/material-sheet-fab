@@ -28,6 +28,11 @@ abstract class StorageConfiguration(
     var applicationDataPath: File by Delegates.notNull()
 
     /**
+     * Common system public data path
+     */
+    var publicDataPath: File by Delegates.notNull()
+
+    /**
      * Private leoz directory
      */
     // TODO: change back to val once kotlin bug complaining about uninitialized val (even though it's initialized in init) is resolved
@@ -37,7 +42,7 @@ abstract class StorageConfiguration(
      * Public leoz directory
      */
     val publicDirectory: File by lazy {
-        val d = File(this.applicationDataPath, "Leoz")
+        val d = File(this.publicDataPath, "Leoz")
         d.mkdirs()
         d
     }
@@ -109,18 +114,23 @@ abstract class StorageConfiguration(
     /** c'tor */
     init {
         // Initialize directories
+        var baseDirectoryName: String
         if (SystemUtils.IS_OS_WINDOWS) {
             this.applicationDataPath = File(System.getenv("ALLUSERSPROFILE"))
+            baseDirectoryName = "Leoz"
+            this.publicDataPath = File(System.getenv("PUBLIC"))
         } else {
             this.applicationDataPath = File(System.getProperty("user.home"))
+            baseDirectoryName = ".leoz"
+            this.publicDataPath = this.applicationDataPath
         }
         if (Strings.isNullOrEmpty(this.applicationDataPath.name))
             throw UnsupportedOperationException("Base application data path could not be determined");
 
-        var baseDirectoryName: String = ".leoz"
-
         this.privateDirectory = File(this.applicationDataPath, baseDirectoryName)
         this.log.trace("Storage configuration base directory [${privateDirectory}]")
+
+        this.publicDataPath.mkdirs()
 
         // Set permissions if the directory was created
         if (!this.privateDirectory.exists()) {
