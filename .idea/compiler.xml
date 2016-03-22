@@ -16,6 +16,10 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="barabarywatchservice_main" target="1.8" />
+      <module name="barabarywatchservice_test" target="1.8" />
+      <module name="barbarywatchservice_main" target="1.7" />
+      <module name="barbarywatchservice_test" target="1.7" />
       <module name="buildSrc_main" target="1.8" />
       <module name="buildSrc_test" target="1.8" />
       <module name="leoz-boot_main" target="1.8" />

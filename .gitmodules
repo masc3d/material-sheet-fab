@@ -25,3 +25,6 @@ url=ssh://git@bitbucket.org/leo2/sx-common
 [submodule "leoz-bridge-com/Libraries/CLAP"]
 	path = leoz-bridge-com/Libraries/CLAP
 	url = https://github.com/masc3d/CLAP.git
+[submodule "libs/barbarywatchservice"]
+	path = libs/barbarywatchservice
+url=git@github.com:masc3d/BarbaryWatchService.git

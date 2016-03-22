@@ -14,6 +14,8 @@ configurations {
 
 dependencies {
     compile project(':libs:sx-common')
+    // Watchservice replacement for OSX
+    compile project(':libs:barbarywatchservice')
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
