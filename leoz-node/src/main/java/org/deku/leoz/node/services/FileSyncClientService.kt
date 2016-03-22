@@ -3,13 +3,13 @@ package org.deku.leoz.node.services
 import com.google.common.base.Stopwatch
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
+import org.deku.leoz.io.WatchServiceFactory
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import sx.concurrent.Service
 import sx.jms.Channel
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import java.io.File
-import java.nio.file.FileSystems
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchKey
 import java.nio.file.WatchService
@@ -51,7 +51,7 @@ class FileSyncClientService constructor(
                 password = rsyncEndpoint.password,
                 sshTunnelProvider = rsyncEndpoint.sshTunnelProvider)
 
-        this.watchService = FileSystems.getDefault().newWatchService()
+        this.watchService = WatchServiceFactory.newWatchService()
     }
 
     private val incomingSyncService = object : Service(this.executorService) {
@@ -68,9 +68,10 @@ class FileSyncClientService constructor(
         override fun run() {
             var wk: WatchKey? = null
             try {
-                wk = this@FileSyncClientService.outDirectory.toPath().register(this@FileSyncClientService.watchService,
-                        StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.OVERFLOW)
+                wk = WatchServiceFactory.newWatchable(file = this@FileSyncClientService.outDirectory, watchService = this@FileSyncClientService.watchService)
+                        .register(this@FileSyncClientService.watchService,
+                                StandardWatchEventKinds.ENTRY_CREATE,
+                                StandardWatchEventKinds.OVERFLOW)
 
                 this@FileSyncClientService.syncOutgoing(pingAlways = true)
 
