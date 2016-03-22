@@ -80,6 +80,7 @@ class FileSyncClientService constructor(
                     // Wait for a short while for more events to arrive.
                     Thread.sleep(100)
                     wk.pollEvents()
+                    wk.reset()
                     try {
                         this@FileSyncClientService.syncOutgoing()
                     } catch(e: InterruptedException) {
@@ -87,7 +88,6 @@ class FileSyncClientService constructor(
                     } catch(e: Exception) {
                         log.error(e.message, e)
                     }
-                    wk.reset()
                 }
             } catch(e: InterruptedException) {
             } catch(e: Exception) {
