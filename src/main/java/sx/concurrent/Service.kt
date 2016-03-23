@@ -34,7 +34,7 @@ abstract class Service(
     private var periodInternal: Duration?
 
     private var hasBeenStarted = false
-    var isStarted = false
+    @Volatile var isStarted = false
         private set
 
     /** Indicates if the service is currently triggered, to prevent multiple triggers stacking up */
@@ -236,6 +236,9 @@ abstract class Service(
             if (this.hasBeenStarted && !this.isDynamicSchedulingSupported)
                 throw IllegalStateException("This service has been stopped and cannot be restarted due to lack of dynamic scheduling")
 
+            this.isStarted = true
+            this.hasBeenStarted = true
+
             // Only schedule initially if either period or initial delay is set (or both)
             if (this.period != null || this.initialDelay != null) {
                 this.serviceTaskFuture = this.executorService.scheduleTask(
@@ -243,8 +246,6 @@ abstract class Service(
                         initialDelay = this.initialDelay ?: Duration.ZERO,
                         period = this.period)
             }
-            this.isStarted = true
-            this.hasBeenStarted = true
         }
     }
 
