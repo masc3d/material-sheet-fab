@@ -6,6 +6,7 @@ import sx.concurrent.task.DynamicScheduledExecutorService
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -38,7 +39,7 @@ abstract class Service(
         private set
 
     /** Indicates if the service is currently triggered, to prevent multiple triggers stacking up */
-    @Volatile private var isTriggered: Boolean = false
+    private val triggerCount = AtomicInteger(0)
 
     /**
      * Runnable task interface
@@ -109,7 +110,7 @@ abstract class Service(
 
     /**
      * Schedule a task
-     * @param command Task code block
+     * @param task Task code block
      * @param initialDelay Initial delay for schedule
      * @param period Period for schedule at a fixed rate
      */
@@ -132,7 +133,7 @@ abstract class Service(
 
     /**
      * Submit a task
-     * @param command Task code bflock
+     * @param task Task code bflock
      */
     private fun ExecutorService.submitTask(task: Task): TaskFuture {
         return TaskFuture(
@@ -326,13 +327,13 @@ abstract class Service(
         this.lock.withLock {
             this.assertIsStarted()
 
-            if (this.isTriggered)
+            if (this.triggerCount.get() > 1)
                 return
+
+            this.triggerCount.incrementAndGet()
 
             // runImpl being synchronized will ensure triggered task will execute in order
             this.submitSupplementalTask({ this.runImpl() })
-
-            this.isTriggered = true
         }
     }
 
@@ -340,7 +341,9 @@ abstract class Service(
         try {
             this.run()
         } finally {
-            this.isTriggered = false
+            this.triggerCount.getAndUpdate {
+                if (it > 0) it - 1 else 0
+            }
         }
     }
 
