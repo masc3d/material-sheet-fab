@@ -87,7 +87,6 @@ class FileSyncClientService constructor(
 
                 while (this.isStarted) {
                     this@FileSyncClientService.watchService.take()
-                    log.info("Detected files available for upload")
                     // Wait for a short while for more events to arrive.
                     Thread.sleep(100)
                     wk.pollEvents()
