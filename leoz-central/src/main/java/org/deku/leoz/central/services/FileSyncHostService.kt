@@ -2,16 +2,23 @@ package org.deku.leoz.central.services
 
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
+import org.deku.leoz.io.WatchServiceFactory
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import org.deku.leoz.node.services.FileSyncServiceBase
 import sx.concurrent.Service
 import sx.jms.Channel
 import java.io.File
+import java.nio.file.StandardWatchEventKinds
+import java.nio.file.WatchKey
+import java.nio.file.WatchService
 import java.time.Duration
-import java.util.concurrent.ConcurrentHashMap
+import java.util.*
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
+ * File sync host service
  * Created by masc on 17/03/16.
  */
 class FileSyncHostService(
@@ -24,21 +31,55 @@ class FileSyncHostService(
                 executorService = executorService,
                 baseDirectory = baseDirectory,
                 identity = identity) {
-    class Node(val identityKey: Identity.Key) {
+    /**
+     * Node metadata contianer
+     */
+    class Node(
+            val identityKey: Identity.Key,
+            val outDirectory: File) {
     }
 
-    val log = LogFactory.getLog(this.javaClass)
+    private val log = LogFactory.getLog(this.javaClass)
     /** Known nodes */
-    val nodes = ConcurrentHashMap<Identity.Key, Node>()
+    private val nodes = HashMap<Identity.Key, Node>()
+    /** Known nodes by watchkey */
+    private val nodesByWatchkey = HashMap<WatchKey, Node>()
+    /** Reentrant lock */
+    private val lock = ReentrantLock()
+    /** Filesystem watch service */
+    private val watchService: WatchService = WatchServiceFactory.newWatchService()
 
-    val service = object : Service(executorService = executorService,
-            period = Duration.ofSeconds(10)) {
+    /** Watch maintenance and notification service */
+    private val service = object : Service(
+            executorService = executorService,
+            initialDelay = Duration.ZERO) {
+
+        /**
+         * Service logic
+         */
         override fun run() {
-            // All known nodes
-            val identityKeys = this@FileSyncHostService.nodes.keys.toList()
+            try {
+                while (this.isStarted) {
+                    val wk = watchService.take()
+                    val node = lock.withLock {
+                        nodesByWatchkey.get(wk) ?: throw IllegalStateException("Unknown watch key")
+                    }
 
-            identityKeys.forEach {
-                this@FileSyncHostService.notifyNode(it)
+                    // Wait short while for other events to arrive
+                    Thread.sleep(100)
+                    wk.pollEvents()
+                    wk.reset()
+                    try {
+                        this@FileSyncHostService.notifyNode(node.identityKey)
+                    } catch(e: InterruptedException) {
+                        throw e
+                    } catch(e: Exception) {
+                        log.error(e.message, e)
+                    }
+                }
+            } catch(e: InterruptedException) {
+            } catch(e: Exception) {
+                log.error(e.message, e)
             }
         }
     }
@@ -65,12 +106,32 @@ class FileSyncHostService(
     override fun onMessage(message: FileSyncMessage, replyChannel: Channel?) {
         try {
             val identityKey = Identity.Key(message.key)
-
-            val node: Node = this.nodes.getOrPut(identityKey, { Node(identityKey) })
+            log.info("Received ping from [${identityKey}]")
 
             // Prepare directories
             this.nodeInDirectory(identityKey)
-            this.nodeOutDirectory(identityKey)
+            val nodeOutDirectory = this.nodeOutDirectory(identityKey)
+
+            var added: Boolean = false
+
+            lock.withLock {
+                this.nodes.getOrPut(identityKey, {
+                    val node = Node(
+                            identityKey = identityKey,
+                            outDirectory = nodeOutDirectory)
+
+                    val watchable = WatchServiceFactory.newWatchable(nodeOutDirectory, this.watchService)
+                    val wk = watchable.register(this.watchService,
+                            arrayOf(StandardWatchEventKinds.ENTRY_MODIFY,
+                                    StandardWatchEventKinds.ENTRY_CREATE,
+                                    StandardWatchEventKinds.OVERFLOW))
+
+                    this.nodesByWatchkey.put(wk, node)
+
+                    this@FileSyncHostService.notifyNode(identityKey)
+                    node
+                })
+            }
 
             // Send back empty file sync message as a confirmation
             if (replyChannel != null) {
@@ -81,7 +142,6 @@ class FileSyncHostService(
         } catch(e: Exception) {
             this.log.error(e.message, e)
         }
-
     }
 
     /**
@@ -91,7 +151,7 @@ class FileSyncHostService(
     private fun notifyNode(identityKey: Identity.Key) {
         val out = this.nodeOutDirectory(identityKey)
         if (out.exists() && out.listFiles().count() > 0) {
-            log.info("Outgoing files available for node [${identityKey}]")
+            log.info("Sending file sync notification to [${identityKey}]")
             this.nodeChannelSupplier(identityKey).use {
                 it.send(FileSyncMessage())
             }
