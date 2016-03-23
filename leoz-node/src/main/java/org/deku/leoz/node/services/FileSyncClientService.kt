@@ -35,6 +35,8 @@ class FileSyncClientService constructor(
                 baseDirectory = baseDirectory,
                 identity = identity) {
 
+    private final val RETRY_INTERVAL = Duration.ofSeconds(5)
+
     private val log = LogFactory.getLog(this.javaClass)
     private val rsyncEndpointOut: Rsync.Endpoint
     private val rsyncEndpointIn: Rsync.Endpoint
@@ -56,10 +58,18 @@ class FileSyncClientService constructor(
 
     private val incomingSyncService = object : Service(this.executorService) {
         override fun run() {
-            try {
-                this@FileSyncClientService.syncIncoming()
-            } catch(e: Exception) {
-                log.error(e.message, e)
+            var success = false
+            while (!success) {
+                try {
+                    this@FileSyncClientService.syncIncoming()
+                    success = true
+                } catch(e: InterruptedException) {
+                    throw e
+                } catch(e: Exception) {
+                    log.error(e.message, e)
+                    log.info("Retrying download in ${RETRY_INTERVAL}")
+                    Thread.sleep(RETRY_INTERVAL.toMillis())
+                }
             }
         }
     }
@@ -82,12 +92,18 @@ class FileSyncClientService constructor(
                     Thread.sleep(100)
                     wk.pollEvents()
                     wk.reset()
-                    try {
-                        this@FileSyncClientService.syncOutgoing()
-                    } catch(e: InterruptedException) {
-                        throw e
-                    } catch(e: Exception) {
-                        log.error(e.message, e)
+                    var success = false
+                    while (!success) {
+                        try {
+                            this@FileSyncClientService.syncOutgoing()
+                            success = true
+                        } catch(e: InterruptedException) {
+                            throw e
+                        } catch(e: Exception) {
+                            log.error(e.message, e)
+                            log.info("Retrying upload in ${RETRY_INTERVAL}")
+                            Thread.sleep(RETRY_INTERVAL.toMillis())
+                        }
                     }
                 }
             } catch(e: InterruptedException) {
