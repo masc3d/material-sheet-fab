@@ -1,7 +1,7 @@
 package sx.concurrent
 
 import org.apache.commons.logging.LogFactory
-import sx.Disposable
+import sx.Lifecycle
 import sx.concurrent.task.DynamicScheduledExecutorService
 import java.time.Duration
 import java.util.*
@@ -16,13 +16,15 @@ import kotlin.concurrent.withLock
  * @param executorService Executor service to use
  * @param initialDelay Initial delay. If not provided and period is not set either, the task will not initially execute (trigger only)
  * @param period If provided the service task will be scheduled at a fixed rate.
+ * @param interruptOnCancel If service task should be interrupted on cancel (eg. when service is stopped). Defaults to true.
  */
 abstract class Service(
         protected val executorService: ScheduledExecutorService,
         val initialDelay: Duration? = null,
-        period: Duration? = null)
+        period: Duration? = null,
+        private val interruptOnCancel: Boolean = true)
 :
-        Disposable {
+        Lifecycle {
     private val log = LogFactory.getLog(this.javaClass)
     private val lock = ReentrantLock()
 
@@ -205,13 +207,12 @@ abstract class Service(
 
     /**
      * Restart service
-     * @param interrupt Interrupt futures on stop (if service needs to stop)
      */
-    fun restart(interrupt: Boolean = false) {
+    override fun restart() {
         this.lock.withLock {
             if (this.isStarted) {
                 this.log.info("Restarting service [${this.javaClass}]")
-                this.stop(interrupt = interrupt, log = false)
+                this.stop(log = false)
                 this.start(log = false)
             } else {
                 this.start(log = true)
@@ -253,7 +254,7 @@ abstract class Service(
     /**
      * Starts the service
      */
-    fun start() {
+    override fun start() {
         this.start(log = true)
     }
 
@@ -274,14 +275,14 @@ abstract class Service(
      * @param interrupt Interrupt futures
      * @param async Perform stopping asynchronously (required when called from within service thread)
      */
-    private fun stop(interrupt: Boolean = true, async: Boolean = false, log: Boolean = true) {
+    private fun stop(async: Boolean = false, log: Boolean = true) {
         val stopRunnable = Runnable {
             val wasStarted = this.isStarted
             if (log && wasStarted)
-                this.log.info("Stopping service [${this.javaClass}] interrupt [${interrupt}]")
+                this.log.info("Stopping service [${this.javaClass}] interrupt [${this.interruptOnCancel}]")
 
             this.lock.withLock {
-                this.onStop(interrupted = interrupt)
+                this.onStop(interrupted = this.interruptOnCancel)
 
                 val tasks = ArrayList<TaskFuture>()
 
@@ -293,7 +294,7 @@ abstract class Service(
                 }
 
                 tasks.forEach {
-                    it.cancel(interrupt, wait = true)
+                    it.cancel(this.interruptOnCancel, wait = true)
                 }
 
                 this.supplementalTaskFutures.clear()
@@ -312,11 +313,18 @@ abstract class Service(
         }
     }
 
-    fun stop(interrupt: Boolean = true, async: Boolean = false) {
+    protected fun stop(async: Boolean = false) {
         this.stop(
-                interrupt = interrupt,
                 async = async,
                 log = true)
+    }
+
+    override fun stop() {
+        this.stop(async = false)
+    }
+
+    override fun isRunning(): Boolean {
+        return this.isStarted
     }
 
     /**
