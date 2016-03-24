@@ -35,12 +35,14 @@ class FileSyncClientService constructor(
                 baseDirectory = baseDirectory,
                 identity = identity) {
 
-    private final val RETRY_INTERVAL = Duration.ofSeconds(5)
+    private final val RETRY_INTERVAL = Duration.ofSeconds(3)
 
     private val log = LogFactory.getLog(this.javaClass)
     private val rsyncEndpointOut: Rsync.Endpoint
     private val rsyncEndpointIn: Rsync.Endpoint
     private val watchService: WatchService
+
+    private final val WATCHSERVICE_INTERVAL = Duration.ofSeconds(1)
 
     init {
         this.rsyncEndpointOut = Rsync.Endpoint(
@@ -88,9 +90,10 @@ class FileSyncClientService constructor(
                 while (this.isStarted) {
                     this@FileSyncClientService.watchService.take()
                     // Wait for a short while for more events to arrive.
-                    Thread.sleep(100)
+
                     wk.pollEvents()
                     wk.reset()
+
                     var success = false
                     while (!success) {
                         try {
@@ -104,6 +107,7 @@ class FileSyncClientService constructor(
                             Thread.sleep(RETRY_INTERVAL.toMillis())
                         }
                     }
+                    Thread.sleep(WATCHSERVICE_INTERVAL.toMillis())
                 }
             } catch(e: InterruptedException) {
             } catch(e: Exception) {
