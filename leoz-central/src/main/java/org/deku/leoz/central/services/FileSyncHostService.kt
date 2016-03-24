@@ -49,6 +49,8 @@ class FileSyncHostService(
     /** Filesystem watch service */
     private val watchService: WatchService = WatchServiceFactory.newWatchService()
 
+    private final val WATCHSERVICE_INTERVAL = Duration.ofSeconds(1)
+
     /** Watch maintenance and notification service */
     private val service = object : Service(
             executorService = executorService,
@@ -60,22 +62,44 @@ class FileSyncHostService(
         override fun run() {
             try {
                 while (this.isStarted) {
-                    val wk = watchService.take()
-                    val node = lock.withLock {
-                        nodesByWatchkey.get(wk) ?: throw IllegalStateException("Unknown watch key")
-                    }
+                    val wks = HashSet<WatchKey>()
 
-                    // Wait short while for other events to arrive
-                    Thread.sleep(100)
-                    wk.pollEvents()
-                    wk.reset()
                     try {
-                        this@FileSyncHostService.notifyNode(node.identityKey)
+                        wks.clear()
+                        var wk: WatchKey?
+
+                        // Wait for next and poll all watchkeys
+                        wk = watchService.take()
+                        while (wk != null) {
+                            wks.add(wk)
+                            wk = watchService.poll()
+                        }
+
+                        // Map watchkeys to node metadata
+                        val nodes = lock.withLock {
+                            wks.mapNotNull {
+                                nodesByWatchkey.get(it) ?: run { log.warn("Unknown watch key [${it}]"); null }
+                            }
+                        }
+
+                        // Poll all events of watchkeys and reset
+                        wks.forEach {
+                            it.pollEvents()
+                            it.reset()
+                        }
+
+                        // Notify nodes
+                        nodes.forEach {
+                            this@FileSyncHostService.notifyNode(it.identityKey)
+                        }
                     } catch(e: InterruptedException) {
                         throw e
                     } catch(e: Exception) {
                         log.error(e.message, e)
                     }
+
+                    // Wait short while for more events to arrive
+                    Thread.sleep(WATCHSERVICE_INTERVAL.toMillis())
                 }
             } catch(e: InterruptedException) {
             } catch(e: Exception) {
@@ -111,8 +135,6 @@ class FileSyncHostService(
             // Prepare directories
             this.nodeInDirectory(identityKey)
             val nodeOutDirectory = this.nodeOutDirectory(identityKey)
-
-            var added: Boolean = false
 
             lock.withLock {
                 this.nodes.getOrPut(identityKey, {
@@ -151,7 +173,7 @@ class FileSyncHostService(
     private fun notifyNode(identityKey: Identity.Key) {
         val out = this.nodeOutDirectory(identityKey)
         if (out.exists() && out.listFiles().count() > 0) {
-            log.info("Sending file sync notification to [${identityKey}]")
+            log.trace("Sending file sync notification to [${identityKey}]")
             this.nodeChannelSupplier(identityKey).use {
                 it.send(FileSyncMessage())
             }
