@@ -8,8 +8,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.io.PrintWriter
-import java.nio.file.Files
-import java.nio.file.attribute.*
 import java.util.*
 
 /**
@@ -74,27 +72,29 @@ class RsyncServer(
             }
 
             // Amend secrets file permissions
-            val nioSecretsFile = secretsFile.toPath()
-            var aclFav = Files.getFileAttributeView(nioSecretsFile, AclFileAttributeView::class.java)
-            if (aclFav != null) {
-                var fowner = Files.getOwner(nioSecretsFile)
-                val acls = ArrayList<AclEntry>()
-                acls.add(AclEntry.newBuilder()
-                        .setType(AclEntryType.ALLOW)
-                        .setPrincipal(fowner)
-                        .setPermissions(AclEntryPermission.values().toSet()).build())
-                aclFav.acl = acls
-            } else {
-                var posixFav = Files.getFileAttributeView(nioSecretsFile, PosixFileAttributeView::class.java)
-                if (posixFav != null) {
-                    val perms = HashSet<PosixFilePermission>()
-                    perms.add(PosixFilePermission.OWNER_READ)
-                    perms.add(PosixFilePermission.OWNER_WRITE)
-                    posixFav.setPermissions(perms)
-                } else {
-                    log.warn("Could not set secret file permissions")
-                }
-            }
+            // Skipping permissions for now. Should up tot he consumer to have this right (using acls/parent folder perms)
+            // Leaving this code here in case it's still needed for amending permissions in detail
+            //            val nioSecretsFile = secretsFile.toPath()
+            //            var aclFav = Files.getFileAttributeView(nioSecretsFile, AclFileAttributeView::class.java)
+            //            if (aclFav != null) {
+            //                var fowner = Files.getOwner(nioSecretsFile)
+            //                val acls = ArrayList<AclEntry>()
+            //                acls.add(AclEntry.newBuilder()
+            //                        .setType(AclEntryType.ALLOW)
+            //                        .setPrincipal(fowner)
+            //                        .setPermissions(AclEntryPermission.values().toSet()).build())
+            //                aclFav.acl = acls
+            //            } else {
+            //                var posixFav = Files.getFileAttributeView(nioSecretsFile, PosixFileAttributeView::class.java)
+            //                if (posixFav != null) {
+            //                    val perms = HashSet<PosixFilePermission>()
+            //                    perms.add(PosixFilePermission.OWNER_READ)
+            //                    perms.add(PosixFilePermission.OWNER_WRITE)
+            //                    posixFav.setPermissions(perms)
+            //                } else {
+            //                    log.warn("Could not set secret file permissions")
+            //                }
+            //            }
 
             // Save configuration file
             os = FileOutputStream(configFile).buffered()
