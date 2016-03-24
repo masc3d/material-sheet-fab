@@ -89,7 +89,6 @@ class FileSyncClientService constructor(
 
                 while (this.isStarted) {
                     this@FileSyncClientService.watchService.take()
-                    // Wait for a short while for more events to arrive.
 
                     wk.pollEvents()
                     wk.reset()
@@ -107,6 +106,8 @@ class FileSyncClientService constructor(
                             Thread.sleep(RETRY_INTERVAL.toMillis())
                         }
                     }
+
+                    // Wait for a short while for more events to arrive.
                     Thread.sleep(WATCHSERVICE_INTERVAL.toMillis())
                 }
             } catch(e: InterruptedException) {
