@@ -34,7 +34,10 @@ public class LogAppender(
      */
     inner private class Service(executorService: ScheduledExecutorService)
     :
-            sx.concurrent.Service(executorService, period = Duration.ofSeconds(5)) {
+            sx.concurrent.Service(
+                    executorService = executorService,
+                    period = Duration.ofSeconds(5),
+                    interruptOnCancel = false) {
         /**
          * Flush service implementation
          */
@@ -75,7 +78,7 @@ public class LogAppender(
 
         override fun onStop() {
             service.trigger()
-            service.stop(interrupt = false)
+            service.stop()
         }
     }
 
@@ -99,7 +102,7 @@ public class LogAppender(
 
     @Synchronized override fun stop() {
         // Shutdown log flush gracefully
-        this.service.stop(interrupt = false)
+        this.service.stop()
         super.stop()
     }
 
