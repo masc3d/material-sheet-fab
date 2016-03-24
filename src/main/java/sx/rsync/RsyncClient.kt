@@ -11,6 +11,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 /**
+ * Rsync client
  * Created by masc on 15.08.15.
  */
 class RsyncClient() {
@@ -31,7 +32,7 @@ class RsyncClient() {
     var partial: Boolean = true
     var wholeFile: Boolean = false
     /** Skip files based on checksum, not on timestamp/size */
-    var skipBasedOnChecksum: Boolean = true
+    var skipBasedOnChecksum: Boolean = false
     /** Fuzzy matching of compare/copy dests */
     var fuzzy: Boolean = true
     /** Preserve executable flag of files */
@@ -72,7 +73,6 @@ class RsyncClient() {
     //region Records
     /**
      * File entry record
-     * @param line Line to parse
      */
     data class FileRecord(val flags: String, val path: String) {
         companion object {
@@ -81,6 +81,7 @@ class RsyncClient() {
 
             /**
              * Try to parse file record line
+             * @param line Line to parse
              * @return FileRecord or null if it couldn't be parsed
              */
             fun tryParse(line: String): FileRecord? {
@@ -103,12 +104,12 @@ class RsyncClient() {
 
     /**
      * Progress record
-     * @param line Line to parse
      */
     data class ProgressRecord(val bytes: Int, val percentage: Int) {
         companion object {
             /**
              * Try to parse progress record line
+             * @param line Line to parse
              * @return ProgressRecord or null if it couldn't be parsed
              */
             fun tryParse(line: String): ProgressRecord? {
@@ -309,6 +310,8 @@ class RsyncClient() {
             if (this.pruneEmptyDirs) command.add("--prune-empty-dirs")
             if (this.partial) command.add("--partial")
             if (this.relative) command.add("--relative")
+            if (this.wholeFile) command.add("--whole-file")
+            if (this.skipBasedOnChecksum) command.add("--checksum")
             command.add(if (partial) "--whole-file" else "--no-whole-file")
             if (this.compression > 0) {
                 command.add("-zz")
