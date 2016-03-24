@@ -21,7 +21,7 @@ datasource:
 
 # leoz-central is final destination, doesn't have a peer
 remote:
-    host: ''
+    hostname: ''
 
 server:
     ssl:

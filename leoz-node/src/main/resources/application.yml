@@ -32,7 +32,7 @@ broker:
 
 # Peer node connectivity settings
 remote:
-    host: leoz.derkurier.de
+    hostname: leoz.derkurier.de
     # Remote peer web service
     http-path: /
     http-port: 13000

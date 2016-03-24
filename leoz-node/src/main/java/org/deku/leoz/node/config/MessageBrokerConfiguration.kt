@@ -39,13 +39,13 @@ open class MessageBrokerConfiguration {
         ActiveMQBroker.instance.dataDirectory = StorageConfiguration.instance.activeMqDataDirectory
         ActiveMQBroker.instance.nativeTcpPort = this.nativePort
 
-        if (!Strings.isNullOrEmpty(peerSettings.host)) {
+        if (!Strings.isNullOrEmpty(peerSettings.hostname)) {
             // TODO: we could probe for available remote ports here, but this implies
             // init of peer brokers should also be threaded, as timeouts may occur
-            log.info("Adding peer broker: ${peerSettings.host}")
+            log.info("Adding peer broker: ${peerSettings.hostname}")
 
             ActiveMQBroker.instance.addPeerBroker(Broker.PeerBroker(
-                    peerSettings.host!!,
+                    peerSettings.hostname!!,
                     Broker.TransportType.TCP,
                     peerSettings.broker.nativePort))
         }

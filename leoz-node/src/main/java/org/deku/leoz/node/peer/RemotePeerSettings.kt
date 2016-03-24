@@ -18,7 +18,7 @@ class RemotePeerSettings {
         var port: Int? = null
     }
 
-    var host: String? = null
+    var hostname: String? = null
     var httpPort: Int? = null
     var httpPath: String? = null
     var broker: Broker = Broker()
