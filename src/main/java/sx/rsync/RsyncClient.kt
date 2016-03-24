@@ -312,7 +312,6 @@ class RsyncClient() {
             if (this.relative) command.add("--relative")
             if (this.wholeFile) command.add("--whole-file")
             if (this.skipBasedOnChecksum) command.add("--checksum")
-            command.add(if (partial) "--whole-file" else "--no-whole-file")
             if (this.compression > 0) {
                 command.add("-zz")
                 command.add("--compress-level=${this.compression}")
