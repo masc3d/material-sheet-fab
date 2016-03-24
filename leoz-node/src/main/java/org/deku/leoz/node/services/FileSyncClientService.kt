@@ -134,6 +134,11 @@ class FileSyncClientService constructor(
         rc.removeSourceFiles = true
         // Do not remove destination files
         rc.delete = false
+        // Performance optimizations
+        // Disable checksum check
+        rc.skipBasedOnChecksum = false
+        // Disable delta transfer
+        rc.wholeFile = true
         rc.sshTunnelProvider = rsyncEndpoint.sshTunnelProvider
         return rc
     }
