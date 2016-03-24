@@ -24,6 +24,7 @@ import java.io.File
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import javax.jms.ConnectionFactory
 import javax.jms.IllegalStateException
 import javax.jms.Queue
@@ -215,17 +216,49 @@ class ActiveMQBroker private constructor()
 
         // Network/bridge connection notification plugin
         brokerPlugins.add(object : BrokerPluginSupport() {
+
+            private val peerBrokersByName = ConcurrentHashMap <String, PeerBroker>()
+
+            /**
+             * Convert remote ip string from ActiveMQ to valid URI
+             * @param remoteIp ActiveMQ remote ip string
+             * @return URI
+             */
+            private fun uriFromRemoteIp(remoteIp: String): URI {
+                return URI.create(remoteIp.replace("///", "//").substringBeforeLast("@"))
+            }
+
             override fun networkBridgeStarted(brokerInfo: BrokerInfo, createdByDuplex: Boolean, remoteIp: String) {
                 super.networkBridgeStarted(brokerInfo, createdByDuplex, remoteIp)
-                this.brokerService.taskRunnerFactory.execute {
-                    listenerEventDispatcher.emit { e -> e.onConnectedToBrokerNetwork() }
+
+                try {
+                    val remoteUri = this.uriFromRemoteIp(remoteIp)
+                    // Find peer broker matching hostname
+                    val peerBroker = this@ActiveMQBroker.peerBrokers.firstOrNull {
+                        it.hostname.equals(remoteUri.host)
+                    }
+                    if (peerBroker != null) {
+                        this.peerBrokersByName.put(brokerInfo.brokerName, peerBroker)
+
+                        this.brokerService.taskRunnerFactory.execute {
+                            listenerEventDispatcher.emit { e -> e.onConnectedToBrokerNetwork() }
+                        }
+                    }
+                } catch(e: Exception) {
+                    log.info(remoteIp)
+                    log.error(e.message, e)
                 }
             }
 
             override fun networkBridgeStopped(brokerInfo: BrokerInfo) {
                 super.networkBridgeStopped(brokerInfo)
-                this.brokerService.taskRunnerFactory.execute {
-                    listenerEventDispatcher.emit { e -> e.onDisconnectedFromBrokerNetwork() }
+
+                val peerBroker = this.peerBrokersByName.remove(brokerInfo.brokerName)
+
+                if (peerBroker != null) {
+                    this.brokerService.taskRunnerFactory.execute {
+                        listenerEventDispatcher.emit { e -> e.onDisconnectedFromBrokerNetwork() }
+                    }
                 }
             }
         })
