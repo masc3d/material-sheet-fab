@@ -23,6 +23,11 @@ class LifecycleController {
     @Inject
     private lateinit var peerSettings: RemotePeerSettings
 
+    /**
+     * Indiciates if a remote connection is required for network dependent lifecycles.
+     * An example where remote connectivity is not required is leoz-central, which basically communicates to itself
+     * if it needs to.
+     */
     private val requiresRemoteConnection by lazy { !peerSettings.hostname.isNullOrEmpty() }
 
     /**
@@ -30,6 +35,7 @@ class LifecycleController {
      */
     val brokerListener = object : Broker.EventListener {
         override fun onStart() {
+            // If remote connection is not required, lifecycles start when the broker starts
             if (!this@LifecycleController.requiresRemoteConnection) {
                 this@LifecycleController.lifecycles.iterator().forEach {
                     it.get()?.restart()
@@ -38,12 +44,14 @@ class LifecycleController {
         }
 
         override fun onStop() {
+            // All lifecycles end with the broker dying
             this@LifecycleController.lifecycles.iterator().forEach {
                 it.get()?.stop()
             }
         }
 
         override fun onConnectedToBrokerNetwork() {
+            // Network dependent lifecycles need to restart if this application instance relies on remote connectivity
             if (this@LifecycleController.requiresRemoteConnection) {
                 this@LifecycleController.lifecycles.iterator().forEach {
                     it.get()?.restart()
@@ -52,6 +60,7 @@ class LifecycleController {
         }
 
         override fun onDisconnectedFromBrokerNetwork() {
+            //  Network dependent lifecycles need to stop if this application instance relies on remote connectivity
             if (this@LifecycleController.requiresRemoteConnection) {
                 this@LifecycleController.lifecycles.iterator().forEach {
                     it.get()?.stop()
