@@ -4,12 +4,12 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
+import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.services.AuthorizationClientService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.jms.embedded.Broker
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.inject.Inject
@@ -28,7 +28,10 @@ open class AuthorizationClientConfiguration {
     private lateinit var executorService: ScheduledExecutorService
 
     @Inject
-    private lateinit var messageListenerConfiguration : MessageListenerConfiguration
+    private lateinit var messageListenerConfiguration: MessageListenerConfiguration
+
+    @Inject
+    private lateinit var lifecycleController: LifecycleController
 
     @Bean
     open fun authorizationClientService(): AuthorizationClientService {
@@ -50,21 +53,9 @@ open class AuthorizationClientConfiguration {
     }
     private val authorizationClientService by lazy { authorizationClientService() }
 
-    /** Broker event listener */
-    private val brokerEventListener = object : Broker.DefaultEventListener() {
-        override fun onConnectedToBrokerNetwork() {
-            authorizationClientService.restart()
-        }
-
-        override fun onStop() {
-            authorizationClientService.stop()
-        }
-    }
-
     @PostConstruct
     fun onInitialize() {
-        // Start authorizer
-        ActiveMQConfiguration.instance.broker.delegate.add(this.brokerEventListener)
+        this.lifecycleController.registerNetworkDependant(this.authorizationClientService)
 
         // Add message handler delegatess
         this.messageListenerConfiguration.nodeQueueListener.addDelegate(

@@ -1,31 +1,27 @@
 package org.deku.leoz.central.services
 
 import org.apache.commons.logging.LogFactory
+import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.bundle.entities.UpdateInfoRequest
 import org.deku.leoz.central.data.repositories.BundleVersionRepository
 import org.deku.leoz.central.data.repositories.NodeRepository
 import sx.jms.Channel
 import sx.jms.Handler
-import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Update info service, providing version pattern information to clients
  * Created by masc on 19.10.15.
  */
-@Named
-class UpdateService
+class UpdateService(
+        private val nodeRepository: NodeRepository,
+        private val bundleVersionRepository: BundleVersionRepository,
+        private val localBundleRepository: BundleRepository
+)
 :
         Handler<UpdateInfoRequest>
 {
     private val log = LogFactory.getLog(this.javaClass)
-
-    @Inject
-    private lateinit var nodeRepository: NodeRepository
-
-    @Inject
-    private lateinit var bundleVersionRepository: BundleVersionRepository
 
     override fun onMessage(message: UpdateInfoRequest, replyChannel: Channel?) {
         try {

@@ -7,12 +7,12 @@ import org.deku.leoz.bundle.Bundles
 import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
+import org.deku.leoz.node.LifecycleController
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.Channel
-import sx.jms.embedded.Broker
 import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
 import java.util.concurrent.ScheduledExecutorService
@@ -48,6 +48,9 @@ open class BundleUpdateServiceConfiguration {
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
 
+    @Inject
+    private lateinit var lifecycleController: LifecycleController
+
     /**
      * Local bundle repository
      * */
@@ -76,10 +79,10 @@ open class BundleUpdateServiceConfiguration {
      * Updater instance
      */
     @Bean
-    open fun bundleUpdater(): BundleUpdateService {
+    open fun bundleUpdateService(): BundleUpdateService {
         val installer = BundleConfiguration.bundleInstaller()
 
-        val updater = BundleUpdateService(
+        val updateService = BundleUpdateService(
                 executorService = this.executorService,
                 identity = App.instance.identity,
                 installer = installer,
@@ -98,38 +101,22 @@ open class BundleUpdateServiceConfiguration {
                 ),
                 requestChannel = Channel(ActiveMQConfiguration.instance.centralQueue)
         )
-        updater.enabled = this.settings.enabled
-        return updater
+        updateService.enabled = this.settings.enabled
+        return updateService
     }
 
-    private val bundleUpdater by lazy { bundleUpdater() }
+    private val bundleUpdateService by lazy { bundleUpdateService() }
 
-    /** Broker listener  */
-    private val brokerEventListener = object : Broker.DefaultEventListener() {
-        val firstStart: Boolean = true
-
-        override fun onConnectedToBrokerNetwork() {
-            // Run bundle updater initially/on startup
-            if (this@BundleUpdateServiceConfiguration.settings.automatic)
-                this@BundleUpdateServiceConfiguration.bundleUpdater.trigger()
-        }
-
-        override fun onStop() {
-            this@BundleUpdateServiceConfiguration.bundleUpdater.close()
-        }
-    }
 
     @PostConstruct
     fun onInitialize() {
-        ActiveMQConfiguration.instance.broker.delegate.add(brokerEventListener)
-        if (ActiveMQConfiguration.instance.broker.isStarted)
-            brokerEventListener.onStart()
+        this.lifecycleController.registerNetworkDependant(this.bundleUpdateService)
 
         // Register for update notifications (as long as automatic updates are enabled)
         if (this@BundleUpdateServiceConfiguration.settings.automatic) {
             this.messageListenerConfiguration.nodeNotificationListener.addDelegate(
                     UpdateInfo::class.java,
-                    this.bundleUpdater)
+                    this.bundleUpdateService)
         }
     }
 }

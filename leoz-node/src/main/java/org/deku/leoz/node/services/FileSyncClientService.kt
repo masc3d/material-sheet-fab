@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.io.WatchServiceFactory
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
+import sx.Lifecycle
 import sx.concurrent.Service
 import sx.jms.Channel
 import sx.rsync.Rsync
@@ -33,8 +34,8 @@ class FileSyncClientService constructor(
         FileSyncServiceBase(
                 executorService = executorService,
                 baseDirectory = baseDirectory,
-                identity = identity) {
-
+                identity = identity),
+        Lifecycle {
     private final val RETRY_INTERVAL = Duration.ofSeconds(3)
 
     private val log = LogFactory.getLog(this.javaClass)
@@ -202,20 +203,24 @@ class FileSyncClientService constructor(
         }
     }
 
-    fun start() {
+    override fun start() {
         this.outgoingSyncService.start()
         this.incomingSyncService.start()
 
     }
 
-    fun stop() {
+    override fun stop() {
         this.outgoingSyncService.stop()
         this.incomingSyncService.stop()
     }
 
-    fun restart() {
+    override fun restart() {
         this.outgoingSyncService.restart()
         this.incomingSyncService.restart()
+    }
+
+    override fun isRunning(): Boolean {
+        return this.incomingSyncService.isRunning()
     }
 
     override fun close() {

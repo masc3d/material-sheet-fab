@@ -4,10 +4,11 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.bundle.entities.UpdateInfoRequest
-import sx.Disposable
+import sx.Lifecycle
 import sx.concurrent.Service
 import sx.jms.Channel
 import sx.jms.Handler
+import java.time.Duration
 import java.util.concurrent.ScheduledExecutorService
 
 /**
@@ -32,7 +33,7 @@ class BundleUpdateService(
         presets: List<BundleUpdateService.Preset>)
 :
         Handler<UpdateInfo>,
-        Disposable {
+        Lifecycle {
 
     private val log = LogFactory.getLog(this.javaClass)
 
@@ -58,16 +59,39 @@ class BundleUpdateService(
     /**
      * Background service
      */
-    private val service = object : Service(executorService = this.executorService) {
+    private val service = object : Service(
+            executorService = this.executorService,
+            initialDelay = Duration.ZERO) {
         override fun run() {
-            this@BundleUpdateService.startUpdate()
+            // Clean bundles before update
+            try {
+                this@BundleUpdateService.clean()
+            } catch(e: Exception) {
+                log.error(e.message, e)
+            }
+
+            presets.forEach { p ->
+                try {
+                    this@BundleUpdateService.update(p)
+                } catch(e: Exception) {
+                    log.error(e.message, e)
+                }
+
+                // Clean bundle version after update
+                try {
+                    this@BundleUpdateService.clean(p.bundleName)
+                } catch(e: Exception) {
+                    log.error(e.message, e)
+                }
+            }
+
+            log.info("Update sequence complete")
         }
     }
 
     init {
         // Bundle(s) requiring (re)boot go last
         this.presets = presets.sortedBy { p -> p.requiresBoot }
-        this.service.start()
     }
 
     /**
@@ -79,7 +103,7 @@ class BundleUpdateService(
 
         val preset = this.presets.firstOrNull { s -> s.bundleName.compareTo(updateInfo.bundleName, ignoreCase = true) == 0 }
         if (preset != null) {
-            this.startUpdate(preset)
+            this.service.trigger()
         }
     }
 
@@ -87,36 +111,6 @@ class BundleUpdateService(
      * Updater enabled/disabled
      */
     var enabled: Boolean = true
-
-    /**
-     * Start update for all bundle presets
-     * @param presets Presets to update, defaults to internal list of presets
-     */
-    private fun startUpdate(vararg presets: Preset = this.presets.toTypedArray()) {
-        // Clean bundles before update
-        try {
-            this.clean()
-        } catch(e: Exception) {
-            log.error(e.message, e)
-        }
-
-        presets.forEach { p ->
-            try {
-                this.update(p)
-            } catch(e: Exception) {
-                log.error(e.message, e)
-            }
-
-            // Clean bundle version after update
-            try {
-                this.clean(p.bundleName)
-            } catch(e: Exception) {
-                log.error(e.message, e)
-            }
-        }
-
-        log.info("Update sequence complete")
-    }
 
     /**
      * Clean any local bundles that are not contained within remote repository.
@@ -205,6 +199,22 @@ class BundleUpdateService(
         }
 
         log.info("Update sequence for bundle [${bundleName}] complete")
+    }
+
+    override fun start() {
+        this.service.start()
+    }
+
+    override fun stop() {
+        this.service.stop()
+    }
+
+    override fun restart() {
+        this.service.restart()
+    }
+
+    override fun isRunning(): Boolean {
+        return this.service.isRunning()
     }
 
     fun trigger() {
