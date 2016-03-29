@@ -5,9 +5,11 @@ import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.BundleUpdateService
 import org.deku.leoz.bundle.Bundles
 import org.deku.leoz.bundle.entities.UpdateInfo
+import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.LifecycleController
+import org.deku.leoz.node.peer.RemotePeerSettings
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,7 +21,6 @@ import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 import javax.inject.Named
-import kotlin.properties.Delegates
 
 /**
  * Leoz updater configuration
@@ -35,12 +36,13 @@ open class BundleUpdateServiceConfiguration {
     class Settings {
         var enabled: Boolean = false
         var automatic: Boolean = true
-        var rsyncUri: String by Delegates.notNull()
-        var rsyncPassword: String by Delegates.notNull()
     }
 
     @Inject
     private lateinit var settings: Settings
+
+    @Inject
+    private lateinit var remotePeerSettings: RemotePeerSettings
 
     @Inject
     private lateinit var executorService: ScheduledExecutorService
@@ -62,12 +64,20 @@ open class BundleUpdateServiceConfiguration {
     /**
      * Remote bundle update repository
      * */
-    val updateRepository: BundleRepository by lazy({
-        BundleRepository(rsyncModuleUri = Rsync.URI(this.settings.rsyncUri),
-                rsyncPassword = this.settings.rsyncPassword,
-                sshTunnelProvider = this.sshTunnelProvider)
-
-    })
+    val updateRepository: BundleRepository by lazy {
+        val remoteHostname = remotePeerSettings.hostname
+        if (remoteHostname != null && remoteHostname.length > 0) {
+            BundleRepository(
+                    rsyncModuleUri = RsyncConfiguration.createRsyncUri(
+                            hostName = remoteHostname,
+                            port = remotePeerSettings.rsync.port,
+                            moduleName = RsyncConfiguration.ModuleNames.BUNDLES),
+                    rsyncPassword = RsyncConfiguration.PASSWORD,
+                    sshTunnelProvider = this.sshTunnelProvider)
+        } else {
+            this.localRepository
+        }
+    }
 
     /**
      * SSH tunnel provider

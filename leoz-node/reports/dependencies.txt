@@ -8,9 +8,9 @@ No dependencies
 
 compile - Dependencies for source set 'main'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -24,8 +24,8 @@ compile - Dependencies for source set 'main'.
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:barbarywatchservice
 |    |    \--- net.java.dev.jna:jna:3.2.2 -> 4.2.2
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
@@ -36,8 +36,8 @@ compile - Dependencies for source set 'main'.
 |    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -335,9 +335,9 @@ compile - Dependencies for source set 'main'.
 
 compileClasspath - Compile classpath for source set 'main'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -351,8 +351,8 @@ compileClasspath - Compile classpath for source set 'main'.
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:barbarywatchservice
 |    |    \--- net.java.dev.jna:jna:3.2.2 -> 4.2.2
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
@@ -363,8 +363,8 @@ compileClasspath - Compile classpath for source set 'main'.
 |    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -662,9 +662,9 @@ compileClasspath - Compile classpath for source set 'main'.
 
 compileOnly - Compile dependencies for source set 'main'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -678,8 +678,8 @@ compileOnly - Compile dependencies for source set 'main'.
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:barbarywatchservice
 |    |    \--- net.java.dev.jna:jna:3.2.2 -> 4.2.2
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
@@ -690,8 +690,8 @@ compileOnly - Compile dependencies for source set 'main'.
 |    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -989,9 +989,9 @@ compileOnly - Compile dependencies for source set 'main'.
 
 default - Configuration for default artifacts.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -1005,8 +1005,8 @@ default - Configuration for default artifacts.
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:barbarywatchservice
 |    |    \--- net.java.dev.jna:jna:3.2.2 -> 4.2.2
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
@@ -1017,8 +1017,8 @@ default - Configuration for default artifacts.
 |    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -1315,9 +1315,9 @@ default - Configuration for default artifacts.
      \--- commons-logging:commons-logging:1.1.1 -> 1.2
 
 kapt
-+--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.1-1
-|    \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.1-1
-|         \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
++--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.1-2
+|    \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.1-2
+|         \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 \--- com.mysema.querydsl:querydsl-apt:3.+ -> 3.7.2
      \--- com.mysema.querydsl:querydsl-codegen:3.7.2
           +--- com.mysema.querydsl:querydsl-core:3.7.2
@@ -1331,15 +1331,15 @@ kapt
           \--- javax.inject:javax.inject:1
 
 kaptTest
-\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.1-1
-     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.1-1
-          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
+\--- org.jetbrains.kotlin:kotlin-annotation-processing:1.0.1-2
+     \--- org.jetbrains.kotlin:kotlin-stdlib:1.0.1-2
+          \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 
 runtime - Runtime dependencies for source set 'main'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -1353,8 +1353,8 @@ runtime - Runtime dependencies for source set 'main'.
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:barbarywatchservice
 |    |    \--- net.java.dev.jna:jna:3.2.2 -> 4.2.2
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
@@ -1365,8 +1365,8 @@ runtime - Runtime dependencies for source set 'main'.
 |    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -1664,9 +1664,9 @@ runtime - Runtime dependencies for source set 'main'.
 
 testCompile - Dependencies for source set 'test'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -1680,8 +1680,8 @@ testCompile - Dependencies for source set 'test'.
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:barbarywatchservice
 |    |    \--- net.java.dev.jna:jna:3.2.2 -> 4.2.2
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
@@ -1692,8 +1692,8 @@ testCompile - Dependencies for source set 'test'.
 |    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -1998,9 +1998,9 @@ testCompile - Dependencies for source set 'test'.
 
 testCompileClasspath - Compile classpath for source set 'test'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -2014,8 +2014,8 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:barbarywatchservice
 |    |    \--- net.java.dev.jna:jna:3.2.2 -> 4.2.2
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
@@ -2026,8 +2026,8 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -2332,9 +2332,9 @@ testCompileClasspath - Compile classpath for source set 'test'.
 
 testCompileOnly - Compile dependencies for source set 'test'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -2348,8 +2348,8 @@ testCompileOnly - Compile dependencies for source set 'test'.
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:barbarywatchservice
 |    |    \--- net.java.dev.jna:jna:3.2.2 -> 4.2.2
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
@@ -2360,8 +2360,8 @@ testCompileOnly - Compile dependencies for source set 'test'.
 |    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE
@@ -2666,9 +2666,9 @@ testCompileOnly - Compile dependencies for source set 'test'.
 
 testRuntime - Runtime dependencies for source set 'test'.
 +--- project :libs:sx-common
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1
-|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-1
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
+|    |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 |    +--- commons-logging:commons-logging:1.+ -> 1.2
 |    +--- ch.qos.logback:logback-classic:+ -> 1.1.6
 |    |    +--- ch.qos.logback:logback-core:1.1.6
@@ -2682,8 +2682,8 @@ testRuntime - Runtime dependencies for source set 'test'.
 |    +--- project :libs:sx-common (*)
 |    +--- project :libs:barbarywatchservice
 |    |    \--- net.java.dev.jna:jna:3.2.2 -> 4.2.2
-|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
+|    +--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 |    +--- commons-logging:commons-logging:+ -> 1.2
 |    +--- org.apache.commons:commons-lang3:3.+ -> 3.4
 |    +--- ch.qos.logback:logback-classic:1.+ -> 1.1.6 (*)
@@ -2694,8 +2694,8 @@ testRuntime - Runtime dependencies for source set 'test'.
 |    +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    |    \--- net.java.dev.jna:jna:4.2.2
 |    \--- org.yaml:snakeyaml:1.+ -> 1.17
-+--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-1
-+--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-1 (*)
++--- org.jetbrains.kotlin:kotlin-runtime:1.+ -> 1.0.1-2
++--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2 (*)
 +--- org.springframework.data:spring-data-jpa:1.9.4.RELEASE
 |    +--- org.springframework.data:spring-data-commons:1.11.4.RELEASE
 |    |    +--- org.springframework:spring-core:4.1.9.RELEASE -> 4.2.5.RELEASE

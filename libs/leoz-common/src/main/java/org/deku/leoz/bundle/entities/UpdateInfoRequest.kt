@@ -8,7 +8,9 @@ data class UpdateInfoRequest(
         /** Id of the node requesting the update */
         val nodeKey: String = "",
         /** Name of bundle to request update info for */
-        val bundleName: String = "") {
+        val bundleName: String = "",
+        /** Optional version alias */
+        val versionAlias: String? = null) {
     companion object {
         private const val serialVersionUID = -1111506008152543276L
     }
