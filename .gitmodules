@@ -21,7 +21,7 @@
 	url = https://github.com/example42/puppet-tomcat.git
 [submodule "sx-common"]
 	path = libs/sx-common
-url=ssh://git@bitbucket.org/leo2/sx-common
+url=ssh://git@git.derkurier.de:13020/leoz/sx-common.git
 [submodule "leoz-bridge-com/Libraries/CLAP"]
 	path = leoz-bridge-com/Libraries/CLAP
 	url = https://github.com/masc3d/CLAP.git
