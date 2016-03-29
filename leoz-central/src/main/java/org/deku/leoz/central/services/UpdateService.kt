@@ -8,6 +8,7 @@ import org.deku.leoz.central.data.repositories.BundleVersionRepository
 import org.deku.leoz.central.data.repositories.NodeRepository
 import sx.jms.Channel
 import sx.jms.Handler
+import java.util.*
 
 /**
  * Update info service, providing version pattern information to clients
@@ -19,8 +20,7 @@ class UpdateService(
         private val localBundleRepository: BundleRepository
 )
 :
-        Handler<UpdateInfoRequest>
-{
+        Handler<UpdateInfoRequest> {
     private val log = LogFactory.getLog(this.javaClass)
 
     override fun onMessage(message: UpdateInfoRequest, replyChannel: Channel?) {
@@ -31,7 +31,7 @@ class UpdateService(
             if (rNode == null)
                 throw IllegalArgumentException("Unknown node [${message.nodeKey}}")
 
-            val versionAlias = rNode.versionAlias ?: "release"
+            val versionAlias = message.versionAlias ?: rNode.versionAlias ?: "release"
             val rVersion = bundleVersionRepository.findByAlias(
                     bundleName = updateInfoRequest.bundleName,
                     versionAlias = versionAlias)
@@ -39,11 +39,27 @@ class UpdateService(
             if (rVersion == null)
                 throw IllegalArgumentException("No version recxord for node [${updateInfoRequest.nodeKey}] bundle [${updateInfoRequest.bundleName}] version alias [${versionAlias}]")
 
+            // Try to determine latest matching bundle version and platforms
+            val bundleVersion = try {
+                this.localBundleRepository.queryLatestMatchingVersion(updateInfoRequest.bundleName, rVersion.version)
+            } catch (e: NoSuchElementException) {
+                log.warn(e.message)
+                null
+            }
+
+            val bundleVersionPlatforms =
+                    if (bundleVersion != null)
+                        this.localBundleRepository.listPlatforms(updateInfoRequest.bundleName, bundleVersion)
+                    else ArrayList<String>()
+
             val versionPattern = rVersion.version
 
             replyChannel!!.send(UpdateInfo(
-                    updateInfoRequest.bundleName,
-                    versionPattern))
+                    bundleName = updateInfoRequest.bundleName,
+                    bundleVersionPattern = versionPattern,
+                    // TODO: support for desired restart time
+                    latestDesignatedVersion = bundleVersion?.toString(),
+                    latestDesignatedVersionPlatforms = bundleVersionPlatforms.map { it.toString() }.toTypedArray()))
 
         } catch(e: Exception) {
             log.error(e.message, e)
