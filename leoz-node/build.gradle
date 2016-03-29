@@ -4,7 +4,7 @@ apply plugin: org.deku.gradle.PackagerPlugin
 //apply plugin: 'flyway'
 
 sourceCompatibility = 1.8
-version = '0.53-SNAPSHOT'
+version = '0.54-SNAPSHOT'
 mainClassName = "org.deku.leoz.node.Main"
 
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
