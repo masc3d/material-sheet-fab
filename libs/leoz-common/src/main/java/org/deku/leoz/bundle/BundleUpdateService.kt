@@ -27,10 +27,10 @@ import java.util.concurrent.ScheduledExecutorService
 class BundleUpdateService(
         private val executorService: ScheduledExecutorService,
         private val requestChannel: Channel,
-        public val identity: Identity,
-        public val installer: BundleInstaller,
-        public val remoteRepository: BundleRepository,
-        public val localRepository: BundleRepository? = null,
+        val identity: Identity,
+        val installer: BundleInstaller,
+        val remoteRepository: BundleRepository,
+        val localRepository: BundleRepository? = null,
         presets: List<BundleUpdateService.Preset>)
 :
         Handler<UpdateInfo>,
