@@ -75,8 +75,7 @@ public class DepotDetailsController implements Initializable {
         mFxFormMain = new FXForm();
 
         mFxFormMain.setSkin(new FormSkin(mFxFormMain));
-        mFxFormMain.addFilters(new IncludeFilter("depotNr", "depotMatchcode", "firma1", "firma2", "lkz", "ort", "strasse", "telefon1", "telefon2", "mobil", "telefax", "nottelefon1", "nottelefon2", "email",
-                "anprechpartner1", "anprechpartner2", "webemail", "webadresse", "region", "coloader", "webshopInit"));
+        mFxFormMain.addFilters(new IncludeFilter("depotNr", "depotMatchcode", "address1", "address2", "lkz", "plz", "ort", "strasse"));
         mMainPane.getChildren().add(mFxFormMain);
 
         mFxFormOps = new FXForm();
