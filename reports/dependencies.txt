@@ -11,11 +11,11 @@ compile - Dependencies for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.6
-|    +--- ch.qos.logback:logback-core:1.1.6
-|    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
-|    \--- org.slf4j:slf4j-api:1.7.19
++--- ch.qos.logback:logback-classic:+ -> 1.1.7
+|    +--- ch.qos.logback:logback-core:1.1.7
+|    \--- org.slf4j:slf4j-api:1.7.20
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.20
+|    \--- org.slf4j:slf4j-api:1.7.20
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- org.ini4j:ini4j:+ -> 0.5.4
@@ -24,7 +24,7 @@ compile - Dependencies for source set 'main'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-client:5.13.2
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -37,7 +37,7 @@ compile - Dependencies for source set 'main'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -49,7 +49,7 @@ compile - Dependencies for source set 'main'.
 |    +--- org.fusesource.leveldbjni:leveldbjni:1.8
 |    |    +--- org.fusesource.hawtjni:hawtjni-runtime:1.9
 |    |    \--- org.iq80.leveldb:leveldb-api:0.6 -> 0.7
-|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.1
+|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.4
 |    +--- org.iq80.snappy:snappy:0.2
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.3 -> 2.5.5
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.3 -> 2.5.5
@@ -68,12 +68,12 @@ compile - Dependencies for source set 'main'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.2
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.2
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -88,7 +88,7 @@ compile - Dependencies for source set 'main'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.2
 |    |    \--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.2 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.httpcomponents:httpclient:4.5.1 -> 4.5.2
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -96,8 +96,8 @@ compile - Dependencies for source set 'main'.
 |    \--- com.thoughtworks.xstream:xstream:1.4.8 -> 1.4.9
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
-+--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.apache.sshd:sshd-core:+ -> 1.2.0
+|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.20
 +--- org.springframework:spring-jms:4.+ -> 4.2.5.RELEASE
 |    +--- org.springframework:spring-aop:4.2.5.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -125,7 +125,7 @@ compile - Dependencies for source set 'main'.
 |    |    \--- org.ow2.asm:asm:5.0.3
 |    +--- com.esotericsoftware:minlog:1.3.0
 |    \--- org.objenesis:objenesis:2.1
-+--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
++--- org.xerial.snappy:snappy-java:+ -> 1.1.2.4
 +--- net.java.dev.jna:jna:4.+ -> 4.2.2
 +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    \--- net.java.dev.jna:jna:4.2.2
@@ -137,11 +137,11 @@ compileClasspath - Compile classpath for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.6
-|    +--- ch.qos.logback:logback-core:1.1.6
-|    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
-|    \--- org.slf4j:slf4j-api:1.7.19
++--- ch.qos.logback:logback-classic:+ -> 1.1.7
+|    +--- ch.qos.logback:logback-core:1.1.7
+|    \--- org.slf4j:slf4j-api:1.7.20
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.20
+|    \--- org.slf4j:slf4j-api:1.7.20
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- org.ini4j:ini4j:+ -> 0.5.4
@@ -150,7 +150,7 @@ compileClasspath - Compile classpath for source set 'main'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-client:5.13.2
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -163,7 +163,7 @@ compileClasspath - Compile classpath for source set 'main'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -175,7 +175,7 @@ compileClasspath - Compile classpath for source set 'main'.
 |    +--- org.fusesource.leveldbjni:leveldbjni:1.8
 |    |    +--- org.fusesource.hawtjni:hawtjni-runtime:1.9
 |    |    \--- org.iq80.leveldb:leveldb-api:0.6 -> 0.7
-|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.1
+|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.4
 |    +--- org.iq80.snappy:snappy:0.2
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.3 -> 2.5.5
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.3 -> 2.5.5
@@ -194,12 +194,12 @@ compileClasspath - Compile classpath for source set 'main'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.2
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.2
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -214,7 +214,7 @@ compileClasspath - Compile classpath for source set 'main'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.2
 |    |    \--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.2 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.httpcomponents:httpclient:4.5.1 -> 4.5.2
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -222,8 +222,8 @@ compileClasspath - Compile classpath for source set 'main'.
 |    \--- com.thoughtworks.xstream:xstream:1.4.8 -> 1.4.9
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
-+--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.apache.sshd:sshd-core:+ -> 1.2.0
+|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.20
 +--- org.springframework:spring-jms:4.+ -> 4.2.5.RELEASE
 |    +--- org.springframework:spring-aop:4.2.5.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -251,7 +251,7 @@ compileClasspath - Compile classpath for source set 'main'.
 |    |    \--- org.ow2.asm:asm:5.0.3
 |    +--- com.esotericsoftware:minlog:1.3.0
 |    \--- org.objenesis:objenesis:2.1
-+--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
++--- org.xerial.snappy:snappy-java:+ -> 1.1.2.4
 +--- net.java.dev.jna:jna:4.+ -> 4.2.2
 +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    \--- net.java.dev.jna:jna:4.2.2
@@ -263,11 +263,11 @@ compileOnly - Compile dependencies for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.6
-|    +--- ch.qos.logback:logback-core:1.1.6
-|    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
-|    \--- org.slf4j:slf4j-api:1.7.19
++--- ch.qos.logback:logback-classic:+ -> 1.1.7
+|    +--- ch.qos.logback:logback-core:1.1.7
+|    \--- org.slf4j:slf4j-api:1.7.20
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.20
+|    \--- org.slf4j:slf4j-api:1.7.20
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- org.ini4j:ini4j:+ -> 0.5.4
@@ -276,7 +276,7 @@ compileOnly - Compile dependencies for source set 'main'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-client:5.13.2
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -289,7 +289,7 @@ compileOnly - Compile dependencies for source set 'main'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -301,7 +301,7 @@ compileOnly - Compile dependencies for source set 'main'.
 |    +--- org.fusesource.leveldbjni:leveldbjni:1.8
 |    |    +--- org.fusesource.hawtjni:hawtjni-runtime:1.9
 |    |    \--- org.iq80.leveldb:leveldb-api:0.6 -> 0.7
-|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.1
+|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.4
 |    +--- org.iq80.snappy:snappy:0.2
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.3 -> 2.5.5
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.3 -> 2.5.5
@@ -320,12 +320,12 @@ compileOnly - Compile dependencies for source set 'main'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.2
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.2
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -340,7 +340,7 @@ compileOnly - Compile dependencies for source set 'main'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.2
 |    |    \--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.2 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.httpcomponents:httpclient:4.5.1 -> 4.5.2
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -348,8 +348,8 @@ compileOnly - Compile dependencies for source set 'main'.
 |    \--- com.thoughtworks.xstream:xstream:1.4.8 -> 1.4.9
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
-+--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.apache.sshd:sshd-core:+ -> 1.2.0
+|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.20
 +--- org.springframework:spring-jms:4.+ -> 4.2.5.RELEASE
 |    +--- org.springframework:spring-aop:4.2.5.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -377,7 +377,7 @@ compileOnly - Compile dependencies for source set 'main'.
 |    |    \--- org.ow2.asm:asm:5.0.3
 |    +--- com.esotericsoftware:minlog:1.3.0
 |    \--- org.objenesis:objenesis:2.1
-+--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
++--- org.xerial.snappy:snappy-java:+ -> 1.1.2.4
 +--- net.java.dev.jna:jna:4.+ -> 4.2.2
 +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    \--- net.java.dev.jna:jna:4.2.2
@@ -389,11 +389,11 @@ default - Configuration for default artifacts.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.6
-|    +--- ch.qos.logback:logback-core:1.1.6
-|    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
-|    \--- org.slf4j:slf4j-api:1.7.19
++--- ch.qos.logback:logback-classic:+ -> 1.1.7
+|    +--- ch.qos.logback:logback-core:1.1.7
+|    \--- org.slf4j:slf4j-api:1.7.20
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.20
+|    \--- org.slf4j:slf4j-api:1.7.20
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 \--- org.ini4j:ini4j:+ -> 0.5.4
@@ -414,7 +414,7 @@ provided
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-client:5.13.2
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -427,7 +427,7 @@ provided
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -439,7 +439,7 @@ provided
 |    +--- org.fusesource.leveldbjni:leveldbjni:1.8
 |    |    +--- org.fusesource.hawtjni:hawtjni-runtime:1.9
 |    |    \--- org.iq80.leveldb:leveldb-api:0.6 -> 0.7
-|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.1
+|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.4
 |    +--- org.iq80.snappy:snappy:0.2
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.3 -> 2.5.5
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.3 -> 2.5.5
@@ -458,12 +458,12 @@ provided
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.2
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.2
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -478,7 +478,7 @@ provided
 |    +--- org.apache.activemq:activemq-stomp:5.13.2
 |    |    \--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.2 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.httpcomponents:httpclient:4.5.1 -> 4.5.2
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -486,8 +486,8 @@ provided
 |    \--- com.thoughtworks.xstream:xstream:1.4.8 -> 1.4.9
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
-+--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.apache.sshd:sshd-core:+ -> 1.2.0
+|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.20
 +--- org.springframework:spring-jms:4.+ -> 4.2.5.RELEASE
 |    +--- org.springframework:spring-aop:4.2.5.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -515,7 +515,7 @@ provided
 |    |    \--- org.ow2.asm:asm:5.0.3
 |    +--- com.esotericsoftware:minlog:1.3.0
 |    \--- org.objenesis:objenesis:2.1
-+--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
++--- org.xerial.snappy:snappy-java:+ -> 1.1.2.4
 +--- net.java.dev.jna:jna:4.+ -> 4.2.2
 +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    \--- net.java.dev.jna:jna:4.2.2
@@ -527,11 +527,11 @@ runtime - Runtime dependencies for source set 'main'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.6
-|    +--- ch.qos.logback:logback-core:1.1.6
-|    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
-|    \--- org.slf4j:slf4j-api:1.7.19
++--- ch.qos.logback:logback-classic:+ -> 1.1.7
+|    +--- ch.qos.logback:logback-core:1.1.7
+|    \--- org.slf4j:slf4j-api:1.7.20
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.20
+|    \--- org.slf4j:slf4j-api:1.7.20
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- org.ini4j:ini4j:+ -> 0.5.4
@@ -540,7 +540,7 @@ runtime - Runtime dependencies for source set 'main'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-client:5.13.2
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -553,7 +553,7 @@ runtime - Runtime dependencies for source set 'main'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -565,7 +565,7 @@ runtime - Runtime dependencies for source set 'main'.
 |    +--- org.fusesource.leveldbjni:leveldbjni:1.8
 |    |    +--- org.fusesource.hawtjni:hawtjni-runtime:1.9
 |    |    \--- org.iq80.leveldb:leveldb-api:0.6 -> 0.7
-|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.1
+|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.4
 |    +--- org.iq80.snappy:snappy:0.2
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.3 -> 2.5.5
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.3 -> 2.5.5
@@ -584,12 +584,12 @@ runtime - Runtime dependencies for source set 'main'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.2
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.2
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -604,7 +604,7 @@ runtime - Runtime dependencies for source set 'main'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.2
 |    |    \--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.2 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.httpcomponents:httpclient:4.5.1 -> 4.5.2
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -612,8 +612,8 @@ runtime - Runtime dependencies for source set 'main'.
 |    \--- com.thoughtworks.xstream:xstream:1.4.8 -> 1.4.9
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
-+--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.apache.sshd:sshd-core:+ -> 1.2.0
+|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.20
 +--- org.springframework:spring-jms:4.+ -> 4.2.5.RELEASE
 |    +--- org.springframework:spring-aop:4.2.5.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -641,7 +641,7 @@ runtime - Runtime dependencies for source set 'main'.
 |    |    \--- org.ow2.asm:asm:5.0.3
 |    +--- com.esotericsoftware:minlog:1.3.0
 |    \--- org.objenesis:objenesis:2.1
-+--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
++--- org.xerial.snappy:snappy-java:+ -> 1.1.2.4
 +--- net.java.dev.jna:jna:4.+ -> 4.2.2
 +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    \--- net.java.dev.jna:jna:4.2.2
@@ -653,11 +653,11 @@ testCompile - Dependencies for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.6
-|    +--- ch.qos.logback:logback-core:1.1.6
-|    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
-|    \--- org.slf4j:slf4j-api:1.7.19
++--- ch.qos.logback:logback-classic:+ -> 1.1.7
+|    +--- ch.qos.logback:logback-core:1.1.7
+|    \--- org.slf4j:slf4j-api:1.7.20
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.20
+|    \--- org.slf4j:slf4j-api:1.7.20
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- org.ini4j:ini4j:+ -> 0.5.4
@@ -666,7 +666,7 @@ testCompile - Dependencies for source set 'test'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-client:5.13.2
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -679,7 +679,7 @@ testCompile - Dependencies for source set 'test'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -691,7 +691,7 @@ testCompile - Dependencies for source set 'test'.
 |    +--- org.fusesource.leveldbjni:leveldbjni:1.8
 |    |    +--- org.fusesource.hawtjni:hawtjni-runtime:1.9
 |    |    \--- org.iq80.leveldb:leveldb-api:0.6 -> 0.7
-|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.1
+|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.4
 |    +--- org.iq80.snappy:snappy:0.2
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.3 -> 2.5.5
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.3 -> 2.5.5
@@ -710,12 +710,12 @@ testCompile - Dependencies for source set 'test'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.2
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.2
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -730,7 +730,7 @@ testCompile - Dependencies for source set 'test'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.2
 |    |    \--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.2 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.httpcomponents:httpclient:4.5.1 -> 4.5.2
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -738,8 +738,8 @@ testCompile - Dependencies for source set 'test'.
 |    \--- com.thoughtworks.xstream:xstream:1.4.8 -> 1.4.9
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
-+--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.apache.sshd:sshd-core:+ -> 1.2.0
+|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.20
 +--- org.springframework:spring-jms:4.+ -> 4.2.5.RELEASE
 |    +--- org.springframework:spring-aop:4.2.5.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -767,7 +767,7 @@ testCompile - Dependencies for source set 'test'.
 |    |    \--- org.ow2.asm:asm:5.0.3
 |    +--- com.esotericsoftware:minlog:1.3.0
 |    \--- org.objenesis:objenesis:2.1
-+--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
++--- org.xerial.snappy:snappy-java:+ -> 1.1.2.4
 +--- net.java.dev.jna:jna:4.+ -> 4.2.2
 +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    \--- net.java.dev.jna:jna:4.2.2
@@ -779,11 +779,11 @@ testCompileClasspath - Compile classpath for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.6
-|    +--- ch.qos.logback:logback-core:1.1.6
-|    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
-|    \--- org.slf4j:slf4j-api:1.7.19
++--- ch.qos.logback:logback-classic:+ -> 1.1.7
+|    +--- ch.qos.logback:logback-core:1.1.7
+|    \--- org.slf4j:slf4j-api:1.7.20
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.20
+|    \--- org.slf4j:slf4j-api:1.7.20
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- org.ini4j:ini4j:+ -> 0.5.4
@@ -792,7 +792,7 @@ testCompileClasspath - Compile classpath for source set 'test'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-client:5.13.2
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -805,7 +805,7 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -817,7 +817,7 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    +--- org.fusesource.leveldbjni:leveldbjni:1.8
 |    |    +--- org.fusesource.hawtjni:hawtjni-runtime:1.9
 |    |    \--- org.iq80.leveldb:leveldb-api:0.6 -> 0.7
-|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.1
+|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.4
 |    +--- org.iq80.snappy:snappy:0.2
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.3 -> 2.5.5
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.3 -> 2.5.5
@@ -836,12 +836,12 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.2
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.2
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -856,7 +856,7 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.2
 |    |    \--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.2 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.httpcomponents:httpclient:4.5.1 -> 4.5.2
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -864,8 +864,8 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    \--- com.thoughtworks.xstream:xstream:1.4.8 -> 1.4.9
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
-+--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.apache.sshd:sshd-core:+ -> 1.2.0
+|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.20
 +--- org.springframework:spring-jms:4.+ -> 4.2.5.RELEASE
 |    +--- org.springframework:spring-aop:4.2.5.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -893,7 +893,7 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    |    \--- org.ow2.asm:asm:5.0.3
 |    +--- com.esotericsoftware:minlog:1.3.0
 |    \--- org.objenesis:objenesis:2.1
-+--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
++--- org.xerial.snappy:snappy-java:+ -> 1.1.2.4
 +--- net.java.dev.jna:jna:4.+ -> 4.2.2
 +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    \--- net.java.dev.jna:jna:4.2.2
@@ -905,11 +905,11 @@ testCompileOnly - Compile dependencies for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.6
-|    +--- ch.qos.logback:logback-core:1.1.6
-|    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
-|    \--- org.slf4j:slf4j-api:1.7.19
++--- ch.qos.logback:logback-classic:+ -> 1.1.7
+|    +--- ch.qos.logback:logback-core:1.1.7
+|    \--- org.slf4j:slf4j-api:1.7.20
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.20
+|    \--- org.slf4j:slf4j-api:1.7.20
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- org.ini4j:ini4j:+ -> 0.5.4
@@ -918,7 +918,7 @@ testCompileOnly - Compile dependencies for source set 'test'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-client:5.13.2
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -931,7 +931,7 @@ testCompileOnly - Compile dependencies for source set 'test'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -943,7 +943,7 @@ testCompileOnly - Compile dependencies for source set 'test'.
 |    +--- org.fusesource.leveldbjni:leveldbjni:1.8
 |    |    +--- org.fusesource.hawtjni:hawtjni-runtime:1.9
 |    |    \--- org.iq80.leveldb:leveldb-api:0.6 -> 0.7
-|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.1
+|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.4
 |    +--- org.iq80.snappy:snappy:0.2
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.3 -> 2.5.5
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.3 -> 2.5.5
@@ -962,12 +962,12 @@ testCompileOnly - Compile dependencies for source set 'test'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.2
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.2
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -982,7 +982,7 @@ testCompileOnly - Compile dependencies for source set 'test'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.2
 |    |    \--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.2 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.httpcomponents:httpclient:4.5.1 -> 4.5.2
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -990,8 +990,8 @@ testCompileOnly - Compile dependencies for source set 'test'.
 |    \--- com.thoughtworks.xstream:xstream:1.4.8 -> 1.4.9
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
-+--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.apache.sshd:sshd-core:+ -> 1.2.0
+|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.20
 +--- org.springframework:spring-jms:4.+ -> 4.2.5.RELEASE
 |    +--- org.springframework:spring-aop:4.2.5.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -1019,7 +1019,7 @@ testCompileOnly - Compile dependencies for source set 'test'.
 |    |    \--- org.ow2.asm:asm:5.0.3
 |    +--- com.esotericsoftware:minlog:1.3.0
 |    \--- org.objenesis:objenesis:2.1
-+--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
++--- org.xerial.snappy:snappy-java:+ -> 1.1.2.4
 +--- net.java.dev.jna:jna:4.+ -> 4.2.2
 +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    \--- net.java.dev.jna:jna:4.2.2
@@ -1031,11 +1031,11 @@ testRuntime - Runtime dependencies for source set 'test'.
 +--- org.jetbrains.kotlin:kotlin-stdlib:1.+ -> 1.0.1-2
 |    \--- org.jetbrains.kotlin:kotlin-runtime:1.0.1-2
 +--- commons-logging:commons-logging:1.+ -> 1.2
-+--- ch.qos.logback:logback-classic:+ -> 1.1.6
-|    +--- ch.qos.logback:logback-core:1.1.6
-|    \--- org.slf4j:slf4j-api:1.7.18 -> 1.7.19
-+--- org.slf4j:jcl-over-slf4j:+ -> 1.7.19
-|    \--- org.slf4j:slf4j-api:1.7.19
++--- ch.qos.logback:logback-classic:+ -> 1.1.7
+|    +--- ch.qos.logback:logback-core:1.1.7
+|    \--- org.slf4j:slf4j-api:1.7.20
++--- org.slf4j:jcl-over-slf4j:+ -> 1.7.20
+|    \--- org.slf4j:slf4j-api:1.7.20
 +--- com.google.guava:guava:18.+ -> 18.0
 +--- org.apache.commons:commons-lang3:+ -> 3.4
 +--- org.ini4j:ini4j:+ -> 0.5.4
@@ -1044,7 +1044,7 @@ testRuntime - Runtime dependencies for source set 'test'.
 +--- javax.servlet:javax.servlet-api:+ -> 3.1.0
 +--- org.apache.activemq:activemq-broker:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-client:5.13.2
-|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    |    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    |    +--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    |    \--- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:1.0.1
@@ -1057,7 +1057,7 @@ testRuntime - Runtime dependencies for source set 'test'.
 |    \--- commons-net:commons-net:3.3
 +--- org.apache.activemq:activemq-leveldb-store:5.+ -> 5.13.2
 |    +--- org.scala-lang:scala-library:2.11.0 -> 2.11.8
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.fusesource.hawtbuf:hawtbuf-proto:1.11
 |    |    \--- org.fusesource.hawtbuf:hawtbuf:1.11
 |    +--- org.fusesource.hawtdispatch:hawtdispatch-scala-2.11:1.22
@@ -1069,7 +1069,7 @@ testRuntime - Runtime dependencies for source set 'test'.
 |    +--- org.fusesource.leveldbjni:leveldbjni:1.8
 |    |    +--- org.fusesource.hawtjni:hawtjni-runtime:1.9
 |    |    \--- org.iq80.leveldb:leveldb-api:0.6 -> 0.7
-|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.1
+|    +--- org.xerial.snappy:snappy-java:1.1.2 -> 1.1.2.4
 |    +--- org.iq80.snappy:snappy:0.2
 |    +--- com.fasterxml.jackson.core:jackson-core:2.6.3 -> 2.5.5
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.6.3 -> 2.5.5
@@ -1088,12 +1088,12 @@ testRuntime - Runtime dependencies for source set 'test'.
 |              \--- commons-beanutils:commons-beanutils-core:1.8.0
 |                   \--- commons-logging:commons-logging:1.1.1 -> 1.2
 +--- org.apache.activemq:activemq-jms-pool:5.+ -> 5.13.2
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1
 |    +--- org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1
 |    \--- org.apache.commons:commons-pool2:2.4.2
 +--- org.apache.activemq:activemq-jaas:5.+ -> 5.13.2
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 +--- org.apache.activemq:activemq-mqtt:5.+ -> 5.13.2
 |    +--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq.protobuf:activemq-protobuf:1.1
@@ -1108,7 +1108,7 @@ testRuntime - Runtime dependencies for source set 'test'.
 |    +--- org.apache.activemq:activemq-stomp:5.13.2
 |    |    \--- org.apache.activemq:activemq-broker:5.13.2 (*)
 |    +--- org.apache.activemq:activemq-mqtt:5.13.2 (*)
-|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
+|    +--- org.slf4j:slf4j-api:1.7.13 -> 1.7.20
 |    +--- org.apache.httpcomponents:httpclient:4.5.1 -> 4.5.2
 |    |    +--- org.apache.httpcomponents:httpcore:4.4.4
 |    |    +--- commons-logging:commons-logging:1.2
@@ -1116,8 +1116,8 @@ testRuntime - Runtime dependencies for source set 'test'.
 |    \--- com.thoughtworks.xstream:xstream:1.4.8 -> 1.4.9
 |         +--- xmlpull:xmlpull:1.1.3.1
 |         \--- xpp3:xpp3_min:1.1.4c
-+--- org.apache.sshd:sshd-core:+ -> 1.1.0
-|    \--- org.slf4j:slf4j-api:1.7.13 -> 1.7.19
++--- org.apache.sshd:sshd-core:+ -> 1.2.0
+|    \--- org.slf4j:slf4j-api:1.7.16 -> 1.7.20
 +--- org.springframework:spring-jms:4.+ -> 4.2.5.RELEASE
 |    +--- org.springframework:spring-aop:4.2.5.RELEASE
 |    |    +--- aopalliance:aopalliance:1.0
@@ -1145,7 +1145,7 @@ testRuntime - Runtime dependencies for source set 'test'.
 |    |    \--- org.ow2.asm:asm:5.0.3
 |    +--- com.esotericsoftware:minlog:1.3.0
 |    \--- org.objenesis:objenesis:2.1
-+--- org.xerial.snappy:snappy-java:+ -> 1.1.2.1
++--- org.xerial.snappy:snappy-java:+ -> 1.1.2.4
 +--- net.java.dev.jna:jna:4.+ -> 4.2.2
 +--- net.java.dev.jna:jna-platform:4.+ -> 4.2.2
 |    \--- net.java.dev.jna:jna:4.2.2

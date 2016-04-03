@@ -4,9 +4,9 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.client.session.ClientSession
-import org.apache.sshd.common.SshdSocketAddress
 import org.apache.sshd.common.session.Session
 import org.apache.sshd.common.session.SessionListener
+import org.apache.sshd.common.util.net.SshdSocketAddress
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -48,6 +48,11 @@ class SshTunnel(
      * SSH session listener
      */
     private val sessionListener = object : SessionListener {
+        override fun sessionException(session: Session?, t: Throwable?) {
+            if (t != null)
+                log.error(t.message, t)
+        }
+
         override fun sessionClosed(session: Session?) {
             log.info("SSH session/tunnel closed [${this@SshTunnel}]")
             this@SshTunnel.close()
