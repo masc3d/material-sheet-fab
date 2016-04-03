@@ -1,7 +1,7 @@
 package org.deku.leoz.node.ssh
 
 import org.apache.sshd.client.SshClient
-import org.apache.sshd.common.SshdSocketAddress
+import org.apache.sshd.common.util.net.SshdSocketAddress
 import org.junit.Ignore
 import org.junit.Test
 
