@@ -278,7 +278,7 @@ open class App :
     }
 
     override fun onApplicationEvent(event: ApplicationEvent) {
-        log.info("Spring application event: ${event.javaClass.simpleName}")
+        log.trace("Spring application event: ${event.javaClass.simpleName}")
 
         if (event is ApplicationEnvironmentPreparedEvent) {
             // Spring resets logging configuration.
