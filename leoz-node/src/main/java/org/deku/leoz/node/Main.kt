@@ -8,8 +8,10 @@ import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.boot.Banner
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration
+import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration
+import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration
+import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration
+import org.springframework.boot.autoconfigure.web.*
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.resteasy.autoconfigure.ResteasyAutoConfiguration
@@ -32,15 +34,33 @@ import org.springframework.core.annotation.Order
         EmbeddedServletContainerAutoConfiguration::class,
         /** Server properties support  */
         ServerPropertiesAutoConfiguration::class,
+
+        /** Persistence configuration support */
         PersistenceConfiguration::class,
+
         /**
          * Resteasy configuration. Only used for base setup, not fully autowired
          * as we currently prefer to setup the classic resteasy servlet manually
          * @link WebContextInitializer
          */
         ResteasyAutoConfiguration::class,
+
+        /** Web mvc & dispatcher auto configuration */
+        HttpMessageConvertersAutoConfiguration::class,
+        WebMvcAutoConfiguration::class,
+        DispatcherServletAutoConfiguration::class,
+
+        /** Actuator endpoint configuration, required for automatically dispatching jolokia */
+        ManagementServerPropertiesAutoConfiguration::class,
+        EndpointWebMvcAutoConfiguration::class,
+
+        /** Jolokia */
+        JolokiaAutoConfiguration::class,
+
         /** Flyway database migration setup  */
         //FlywayAutoConfiguration.class
+
+        /** Vaadin */
         VaadinAutoConfiguration::class
 )
 @EnableConfigurationProperties

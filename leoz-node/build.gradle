@@ -63,6 +63,7 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
     }
     compile "org.springframework.boot:spring-boot-starter-undertow:$v_springboot"
+    compile "org.springframework.boot:spring-boot-actuator:$v_springboot"
     //optional "org.springframework.boot:spring-boot-configuration-processor"
 
     // logging
@@ -133,6 +134,10 @@ dependencies {
     // json doc
     compile "io.swagger:swagger-jaxrs:$v_swagger"
     compile "org.javassist:javassist:$v_javassist"
+
+    // hawt.io
+    compile "io.hawt:hawtio-springboot:$v_hawtio"
+    compile "org.jolokia:jolokia-spring:$v_jolokia"
 
     // serialization
     compile "com.esotericsoftware:kryo:$v_kryo"
