@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.2"
     }
     repositories {
         mavenCentral()
@@ -30,59 +30,58 @@ configurations {
 
 dependencies {
     // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+    compile "org.jetbrains.kotlin:kotlin-runtime:1.0.2"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:1.0.2"
 
     // Logging
-    compile 'commons-logging:commons-logging:1.+'
-    compile "ch.qos.logback:logback-classic:+"
-    compile "org.slf4j:jcl-over-slf4j:+"
+    compile 'commons-logging:commons-logging:1.1'
+    compile "ch.qos.logback:logback-classic:1.1.7"
+    compile "org.slf4j:jcl-over-slf4j:1.7.21"
 
     // Misc
-    compile 'com.google.guava:guava:18.+'
-    compile 'org.apache.commons:commons-lang3:+'
+    compile 'com.google.guava:guava:18.0'
+    compile 'org.apache.commons:commons-lang3:3.4'
 
     // JMS
     provided 'javax.jms:jms-api:1.1-rev-1'
 
     // JAX-RS
-    provided "javax.ws.rs:javax.ws.rs-api:2.+"
+    provided "javax.ws.rs:javax.ws.rs-api:2.0.1"
 
     // Ini/conf file support
-    compile 'org.ini4j:ini4j:+'
+    compile 'org.ini4j:ini4j:0.5.3'
 
-    provided "javax.servlet:javax.servlet-api:+"
+    provided "javax.servlet:javax.servlet-api:3.1.0"
 
     // ActiveMQ
-    provided "org.apache.activemq:activemq-broker:$v_activemq"
-    provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
-    provided "org.apache.activemq:activemq-leveldb-store:$v_activemq"
-    provided "org.apache.activemq:activemq-jms-pool:$v_activemq"
-    provided "org.apache.activemq:activemq-jaas:$v_activemq"
-    provided "org.apache.activemq:activemq-mqtt:$v_activemq"
-    provided("org.apache.activemq:activemq-http:$v_activemq") {
+    provided "org.apache.activemq:activemq-broker:5.13.3"
+    provided "org.apache.activemq:activemq-kahadb-store:5.13.3"
+    provided "org.apache.activemq:activemq-leveldb-store:5.13.3"
+    provided "org.apache.activemq:activemq-jms-pool:5.13.3"
+    provided "org.apache.activemq:activemq-jaas:5.13.3"
+    provided "org.apache.activemq:activemq-mqtt:5.13.3"
+    provided("org.apache.activemq:activemq-http:5.13.3") {
         exclude group: 'org.springframework'
         exclude group: 'org.apache.activemq', module: 'activemq-spring'
         exclude group: 'org.eclipse.jetty.aggregate'
     }
 
     // Mina/SSHD
-    provided 'org.apache.sshd:sshd-core:+'
+    provided 'org.apache.sshd:sshd-core:1.2.0'
 
     // Spring
-    provided 'org.springframework:spring-jms:4.+'
+    provided 'org.springframework:spring-jms:4.2.6.RELEASE'
 
     // Kryo
-    provided 'com.esotericsoftware:kryo:3.+'
+    provided 'com.esotericsoftware:kryo:3.0.3'
 
     // Snappy
-    provided 'org.xerial.snappy:snappy-java:+'
+    provided 'org.xerial.snappy:snappy-java:1.1.2.4'
 
     // JNA
-    provided "net.java.dev.jna:jna:$v_jna"
-    provided "net.java.dev.jna:jna-platform:$v_jna"
+    provided "net.java.dev.jna:jna:4.2.2"
+    provided "net.java.dev.jna:jna-platform:4.2.2"
 
-
-    provided 'junit:junit:4.+'
-    testCompile group: 'junit', name: 'junit', version: '4.+'
+    provided 'junit:junit:4.12'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
