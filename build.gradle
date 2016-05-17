@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.+'
+        classpath 'com.android.tools.build:gradle:2.1.0'
     }
 }
 apply plugin: 'com.android.library'
@@ -35,7 +35,10 @@ android {
 }
 
 dependencies {
-    compile project(':sx-common')
-    compile 'com.android.support:support-v4:+'
+    compile(project(':sx-common')) {
+        exclude group: 'commons-logging'
+    }
+    compile 'com.android.support:support-v4:23.3.0'
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
