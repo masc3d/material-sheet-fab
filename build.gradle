@@ -1,7 +1,12 @@
 buildscript {
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.2"
+    ext {
+        v_kotlin = '1.0.2'
     }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+
     repositories {
         mavenCentral()
     }
@@ -30,8 +35,8 @@ configurations {
 
 dependencies {
     // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:1.0.2"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:1.0.2"
+    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
     // Logging
     compile 'commons-logging:commons-logging:1.1'
@@ -49,18 +54,19 @@ dependencies {
     provided "javax.ws.rs:javax.ws.rs-api:2.0.1"
 
     // Ini/conf file support
-    compile 'org.ini4j:ini4j:0.5.3'
+    compile 'org.ini4j:ini4j:0.5.4'
 
     provided "javax.servlet:javax.servlet-api:3.1.0"
 
     // ActiveMQ
-    provided "org.apache.activemq:activemq-broker:5.13.3"
-    provided "org.apache.activemq:activemq-kahadb-store:5.13.3"
-    provided "org.apache.activemq:activemq-leveldb-store:5.13.3"
-    provided "org.apache.activemq:activemq-jms-pool:5.13.3"
-    provided "org.apache.activemq:activemq-jaas:5.13.3"
-    provided "org.apache.activemq:activemq-mqtt:5.13.3"
-    provided("org.apache.activemq:activemq-http:5.13.3") {
+    def v_activemq = '5.13.3'
+    provided "org.apache.activemq:activemq-broker:$v_activemq"
+    provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
+    provided "org.apache.activemq:activemq-leveldb-store:$v_activemq"
+    provided "org.apache.activemq:activemq-jms-pool:$v_activemq"
+    provided "org.apache.activemq:activemq-jaas:$v_activemq"
+    provided "org.apache.activemq:activemq-mqtt:$v_activemq"
+    provided("org.apache.activemq:activemq-http:$v_activemq") {
         exclude group: 'org.springframework'
         exclude group: 'org.apache.activemq', module: 'activemq-spring'
         exclude group: 'org.eclipse.jetty.aggregate'
