@@ -7,6 +7,12 @@ sourceCompatibility = 1.8
 version = '0.54-SNAPSHOT'
 mainClassName = "org.deku.leoz.node.Main"
 
+buildscript {
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+}
+
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
@@ -85,27 +91,28 @@ dependencies {
 
     // persistence framework(s)
     // eclipselink
-    compile "org.eclipse.persistence:eclipselink:$v_eclipselink"
+    compile "org.eclipse.persistence:eclipselink:2.6.3"
 
     // queryDSL
-    compile "com.mysema.querydsl:querydsl-core:$v_querydsl"
-    compile "com.mysema.querydsl:querydsl-jpa:$v_querydsl"
-    compile "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
-    compile "com.mysema.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
+    def v_querydsl = '4.1.2'
+    compile "com.querydsl:querydsl-core:$v_querydsl"
+    compile "com.querydsl:querydsl-jpa:$v_querydsl"
+    compile "com.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
+    compile "com.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
 
-    kapt "com.mysema.querydsl:querydsl-apt:$v_querydsl:jpa"
+    kapt "com.querydsl:querydsl-apt:$v_querydsl:jpa"
 
     // flyway
-    compile "org.flywaydb:flyway-core:$v_flyway"
+    compile "org.flywaydb:flyway-core:4.0.1"
 
     // JSR-330
-    compile "javax.inject:javax.inject:$v_javax_inject"
+    compile "javax.inject:javax.inject:1"
 
     // databases
-    compile "com.h2database:h2:$v_h2"
+    compile "com.h2database:h2:1.4.192"
 
     // discovery
-    compile "javax.jmdns:jmdns:3.+"
+    compile "javax.jmdns:jmdns:3.4.1"
 
     // persistence
     compile "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
@@ -126,7 +133,7 @@ dependencies {
     compile "com.thoughtworks.xstream:xstream:$v_xstream"
 
     // ssh support
-    compile 'org.apache.sshd:sshd-core:+'
+    compile "org.apache.sshd:sshd-core:$v_sshd"
 
     // spring
     compile("org.springframework:spring-jms:$v_spring")
@@ -136,12 +143,12 @@ dependencies {
     compile "org.javassist:javassist:$v_javassist"
 
     // hawt.io
-    compile "io.hawt:hawtio-springboot:$v_hawtio"
-    compile "org.jolokia:jolokia-spring:$v_jolokia"
+    compile "io.hawt:hawtio-springboot:1.4.65"
+    compile "org.jolokia:jolokia-spring:1.3.3"
 
     // serialization
     compile "com.esotericsoftware:kryo:$v_kryo"
-    compile "org.xerial.snappy:snappy-java:+"
+    compile "org.xerial.snappy:snappy-java:$v_snappy"
 
     // TODO: for testing jinq
     compile 'org.jinq:jinq-jpa:+'
@@ -154,12 +161,13 @@ dependencies {
 //    compile "org.aspectj:aspectjweaver:+"
 
     // TODO: for testing vaadin
-    compile "com.vaadin:vaadin-spring-boot:1.+"
-    compile "com.vaadin:vaadin-client:+"
-    compile "com.vaadin:vaadin-client-compiled:+"
-    compile "com.vaadin:vaadin-widgets:+"
-    compile "com.vaadin:vaadin-themes:+"
-    compile "commons-beanutils:commons-beanutils-core:1.8.+"
+    def v_vaadin = '7.6.6'
+    compile "com.vaadin:vaadin-spring-boot:1.0.0"
+    compile "com.vaadin:vaadin-client:$v_vaadin"
+    compile "com.vaadin:vaadin-client-compiled:$v_vaadin"
+    compile "com.vaadin:vaadin-widgets:$v_vaadin"
+    compile "com.vaadin:vaadin-themes:$v_vaadin"
+    compile "commons-beanutils:commons-beanutils-core:1.8.3"
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: v_junit

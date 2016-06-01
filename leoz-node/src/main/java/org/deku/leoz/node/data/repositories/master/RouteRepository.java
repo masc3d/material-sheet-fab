@@ -1,6 +1,6 @@
 package org.deku.leoz.node.data.repositories.master;
 
-import com.mysema.query.types.Predicate;
+import com.querydsl.core.types.Predicate;
 import org.deku.leoz.node.data.entities.master.Route;
 import org.deku.leoz.node.data.repositories.master.custom.RouteRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;

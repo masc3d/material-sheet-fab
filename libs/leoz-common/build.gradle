@@ -3,6 +3,12 @@ version = '1.0'
 
 apply plugin: 'kotlin'
 
+buildscript {
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+}
+
 configurations {
     provided {
         dependencies.all { dep ->
@@ -22,7 +28,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
     // logging
-    compile 'commons-logging:commons-logging:+'
+    compile "commons-logging:commons-logging:$v_commons_logging"
     compile "org.apache.commons:commons-lang3:$v_commons_lang"
     compile "ch.qos.logback:logback-classic:$v_logback"
     compile "org.slf4j:jcl-over-slf4j:$v_slf4j"

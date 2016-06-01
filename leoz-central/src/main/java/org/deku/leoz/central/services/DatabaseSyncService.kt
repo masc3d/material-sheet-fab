@@ -1,9 +1,9 @@
 package org.deku.leoz.central.services
 
 import com.google.common.base.Stopwatch
-import com.mysema.query.jpa.impl.JPAQuery
-import com.mysema.query.types.path.DateTimePath
-import com.mysema.query.types.path.EntityPathBase
+import com.querydsl.jpa.impl.JPAQuery
+import com.querydsl.core.types.dsl.DateTimePath
+import com.querydsl.core.types.dsl.EntityPathBase
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.data.entities.jooq.Tables
 import org.deku.leoz.central.data.entities.jooq.tables.*
@@ -378,9 +378,10 @@ constructor(
         var destMaxTimestamp: Timestamp? = null
         if (destQdslTimestampPath != null) {
             // Query embedded database table for latest timestamp
-            destMaxTimestamp = JPAQuery(entityManager)
+            destMaxTimestamp = JPAQuery<TEntity>(entityManager)
                     .from(destQdslEntityPath)
-                    .singleResult(destQdslTimestampPath.max())
+                    .select(destQdslTimestampPath.max())
+                    .fetchFirst()
         }
 
         // Get newer records from central
@@ -417,9 +418,10 @@ constructor(
                 // Re-query destination timestamp
                 if (destQdslTimestampPath != null) {
                     // Query embedded database for updated latest timestamp
-                    destMaxTimestamp = JPAQuery(entityManager)
+                    destMaxTimestamp = JPAQuery<TEntity>(entityManager)
                             .from(destQdslEntityPath)
-                            .singleResult(destQdslTimestampPath.max())
+                            .select(destQdslTimestampPath.max())
+                            .fetchFirst()
                 }
                 log.info(lfmt("Updated ${count} entities [${destMaxTimestamp}]"))
 

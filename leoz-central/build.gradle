@@ -7,18 +7,37 @@ sourceCompatibility = 1.8
 version = '0.54-SNAPSHOT'
 mainClassName = "org.deku.leoz.central.Main"
 
+buildscript {
+    ext {
+        v_mysql = '5.1.39'
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+
+        // JOOQ plugin
+        classpath "nu.studer:gradle-jooq-plugin:1.0.6"
+
+        // mysql jdbc connector
+        classpath "mysql:mysql-connector-java:$v_mysql"
+    }
+}
+
 dependencies {
     // leoz webservice dependencies
     compile project(':libs:sx-common')
     compile project(':libs:leoz-common')
     compile project(':leoz-node')
+
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+
     // db
     compile "mysql:mysql-connector-java:$v_mysql"
+
     // jooq
-    compile "org.jooq:jooq:$v_jooq"
+    compile "org.jooq:jooq:3.8.2"
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: v_junit

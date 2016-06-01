@@ -2,7 +2,7 @@ apply from: '../versions.gradle'
 
 buildscript {
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.+"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.2"
     }
 
     repositories {
@@ -32,18 +32,19 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
     compile "org.apache.commons:commons-lang3:$v_commons_lang"
-    compile "org.apache.commons:commons-compress:+"
+    compile "org.apache.commons:commons-compress:1.11"
     compile "commons-io:commons-io:$v_commons_io"
-    compile "org.tukaani:xz:+"
-    compile "org.eclipse.jgit:org.eclipse.jgit:$v_jgit"
+    compile "org.tukaani:xz:1.5"
+    compile "org.eclipse.jgit:org.eclipse.jgit:4.3.1.201605051710-r"
     compile "com.google.guava:guava:$v_guava"
-    compile 'org.ini4j:ini4j:+'
+    compile "org.ini4j:ini4j:$v_ini4j"
 
     // For authenticating ssh/jgit against key agent
-    compile 'com.jcraft:jsch.agentproxy.connector-factory:+'
-    compile 'com.jcraft:jsch.agentproxy.jsch:+'
-    compile 'com.jcraft:jsch.agentproxy.sshagent:+'
-    compile 'com.jcraft:jsch.agentproxy.pageant:+'
+    def v_jsch = '0.0.9'
+    compile "com.jcraft:jsch.agentproxy.connector-factory:$v_jsch"
+    compile "com.jcraft:jsch.agentproxy.jsch:$v_jsch"
+    compile "com.jcraft:jsch.agentproxy.sshagent:$v_jsch"
+    compile "com.jcraft:jsch.agentproxy.pageant:$v_jsch"
 
     // Unused deps required for compilation
     provided "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs"
@@ -64,9 +65,9 @@ dependencies {
 
     provided "org.springframework:spring-jms:$v_spring"
     provided "com.esotericsoftware:kryo:$v_kryo"
-    provided 'org.xerial.snappy:snappy-java:+'
+    provided "org.xerial.snappy:snappy-java:$v_snappy"
 
-    testCompile group: 'junit', name: 'junit', version: '4.+'
+    testCompile group: 'junit', name: 'junit', version: v_junit
 }
 
 sourceSets {

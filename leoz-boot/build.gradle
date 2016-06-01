@@ -8,6 +8,12 @@ version '0.20-RELEASE'
 sourceCompatibility = 1.8
 mainClassName = "org.deku.leoz.boot.ApplicationKt"
 
+buildscript {
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+}
+
 dependencies {
     compile project(':libs:sx-common')
     compile project(':libs:leoz-common')
@@ -17,21 +23,21 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
     // Logging
-    compile 'commons-logging:commons-logging:+'
+    compile "commons-logging:commons-logging:$v_commons_logging"
     compile "ch.qos.logback:logback-classic:$v_logback"
     compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
 
     // command line
-    compile "com.beust:jcommander:+"
+    compile "com.beust:jcommander:1.55"
 
     // ini/conf file
-    compile 'org.ini4j:ini4j:+'
+    compile "org.ini4j:ini4j:$v_ini4j"
 
     // ssh support
-    compile 'org.apache.sshd:sshd-core:+'
+    compile "org.apache.sshd:sshd-core:$v_sshd"
 
-    compile "org.jfxtras:jfxtras-all:8.+"
-    compile "com.dooapp.fxform2:core:8.+"
+    compile "com.dooapp.fxform2:core:$v_fxform2"
+    compile "org.jfxtras:jfxtras-all:8.0-r5"
 
     testCompile group: 'junit', name: 'junit', version: v_junit
 }
