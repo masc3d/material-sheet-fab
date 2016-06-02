@@ -373,7 +373,7 @@ class PackagerReleaseUpdateTask extends PackagerReleaseTask {
             def PlatformId platformId = PlatformId.parse(releasePlatformPath.name)
             def releaseBundle = Bundle.load(this.getReleasePlatformBundlePath(platformId))
 
-            // Kava version check here to prevent updating jars of a native bundle built with a different version
+            // Java version check here to prevent updating jars of a native bundle built with a different version
             if (!releaseBundle.javaVersion.equals(SystemUtils.JAVA_VERSION))
                 throw new IllegalStateException("Java version of bundle [${releaseBundle}] does not match currently active java version [${SystemUtils.JAVA_VERSION}]")
 
