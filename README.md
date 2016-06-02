@@ -22,12 +22,7 @@ Contains development host resources, eg. MYSQL and application server
 
 #### Get up and running ####
 * Go to <project directory>/vm
-* Run command 
-```
-#!bash
-vagrant up
-
-```
+* Run command `vagrant up`
 
 ## Contribution guidelines ##
 
