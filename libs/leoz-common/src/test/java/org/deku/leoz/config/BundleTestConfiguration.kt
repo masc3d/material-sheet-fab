@@ -14,8 +14,7 @@ object BundleTestConfiguration {
     val releasePath = Paths.get("").toAbsolutePath()
             .parent
             .parent
-            .parent
-            .resolve("leoz-release")
+            .resolve("release")
             .resolve("test")
             .toFile()
 

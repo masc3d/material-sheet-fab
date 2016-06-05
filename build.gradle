@@ -13,8 +13,7 @@ buildscript {
         g_platform_identifier = PlatformId.current().toString()
 
         g_release_path = Paths.get(project.rootDir.toURI())
-                .parent
-                .resolve("leoz-release")
+                .resolve("release")
                 .toFile()
 
         g_bin_path = new File(project.rootDir, 'bin')
