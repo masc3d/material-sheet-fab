@@ -15,8 +15,7 @@ class RsyncServerTest {
     private val modulePath = Paths.get("").toAbsolutePath()
             .parent
             .parent
-            .parent
-            .resolve("leoz-release")
+            .resolve("release")
 
     private fun createConfiguration(): RsyncServer.Configuration {
         var config = RsyncServer.Configuration()
