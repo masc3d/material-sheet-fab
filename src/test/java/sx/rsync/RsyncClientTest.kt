@@ -29,7 +29,7 @@ class RsyncClientTest {
                     username = "leoz",
                     password = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
 
-    val localPath = Paths.get("").toAbsolutePath().parent.parent.parent.resolve("leoz-release").resolve("test")
+    val localPath = Paths.get("").toAbsolutePath().parent.parent.resolve("release").resolve("test")
 
     init {
         val lRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
