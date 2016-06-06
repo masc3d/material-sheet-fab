@@ -53,6 +53,7 @@ update:
     enabled: true
     # Run updater on broker connection and message notification
     automatic: true
+    cleanup: true
 
 # Vaadin configuration
 vaadin:

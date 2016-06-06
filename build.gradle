@@ -13,8 +13,7 @@ buildscript {
         g_platform_identifier = PlatformId.current().toString()
 
         g_release_path = Paths.get(project.rootDir.toURI())
-                .parent
-                .resolve("leoz-release")
+                .resolve("release")
                 .toFile()
 
         g_bin_path = new File(project.rootDir, 'bin')
@@ -72,12 +71,6 @@ subprojects {
     apply plugin: 'ca.cutterslade.analyze'
     // Plugin for showing dependency updates
     apply plugin: 'com.github.ben-manes.versions'
-
-    // Reporting setup
-    // Dependency report depends on classes but only if compilation actually took place (not uptodate)
-    tasks.classes.finalizedBy(/*testTask, */tasks.dependencyReport, tasks.htmlDependencyReport)
-    tasks.dependencyReport.onlyIf { !tasks.classes.state.upToDate }
-    tasks.htmlDependencyReport.onlyIf { !tasks.classes.state.upToDate }
 
     projectReportDirName = new File(project.projectDir, 'reports').toString()
 

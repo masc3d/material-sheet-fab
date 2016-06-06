@@ -98,7 +98,9 @@ abstract class PackagerReleaseTask extends PackagerTask {
      * @return
      */
     def File getReleasePath() {
-        return new File(this.extension.getReleaseBasePath(), project.name)
+        def releasePath = new File(this.extension.getReleaseBasePath(), project.name)
+        releasePath.mkdirs()
+        return releasePath
     }
 
     /**
