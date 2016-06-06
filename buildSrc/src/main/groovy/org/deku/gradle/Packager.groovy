@@ -17,7 +17,7 @@ import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleRepository
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
-import org.eclipse.jgit.revwalk.RevCommit
+import org.eclipse.jgit.revwalk.RevObject
 import org.eclipse.jgit.revwalk.RevTag
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.submodule.SubmoduleWalk
@@ -603,12 +603,17 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
 
             if (tag != null) {
                 // Commit the tag points to
-                def RevCommit tagCommit = tag.getObject()
+                def RevObject tagCommit = tag.getObject()
                 // Current branch commit
-                def RevCommit currentCommit = walk.parseCommit(repo.getRef(repo.branch).objectId)
+                def currentCommitRefName = repo.branch
+                // Attempt to resolve a branch name (eg. master) to ref
+                def currentCommitRef = repo.findRef(repo.branch)
+                if (currentCommitRef != null) {
+                    currentCommitRefName = walk.parseCommit(currentCommitRef.objectId).name
+                }
 
-                if (this.extension.checkRepository && !currentCommit.name.equals(tagCommit.name))
-                    throw new IllegalStateException("Release tag [${tagName}] already exists for [${tagCommit.name}] but current branch is on different rev [${currentCommit.name}]. " +
+                if (this.extension.checkRepository && !currentCommitRefName.equals(tagCommit.name))
+                    throw new IllegalStateException("Release tag [${tagName}] already exists for [${tagCommit.name}] but current branch is on different rev [${currentCommitRefName}]. " +
                             "If you intend to change the java version for this release, please manually remove (old) platform bundles not matching this java version.")
             } else {
                 println "Creating tag [${tagName}]"
