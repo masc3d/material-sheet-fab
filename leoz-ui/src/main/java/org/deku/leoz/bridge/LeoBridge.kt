@@ -105,7 +105,7 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
                     mInstance = LeoBridge()
                 }
             }
-            return mInstance
+            return mInstance!!
         }
     }
 }

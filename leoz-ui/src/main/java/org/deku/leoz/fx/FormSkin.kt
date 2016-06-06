@@ -42,7 +42,7 @@ class FormSkin(fxForm: FXForm<Any>) : FXFormSkin(fxForm) {
         return label
     }
 
-    protected var gridPane: GridPane
+    protected var gridPane: GridPane? = null
     protected var row = 0
     private val categoryNode = HashMap<String, Node>()
 
@@ -70,9 +70,9 @@ class FormSkin(fxForm: FXForm<Any>) : FXFormSkin(fxForm) {
         val tooltip = createTooltip(element)
         GridPane.setHgrow(editor.node, Priority.SOMETIMES)
         GridPane.setHalignment(label.node, HPos.RIGHT)
-        gridPane.addRow(row++, label.node, editor.node)
-        gridPane.add(constraint.node, 1, row++)
-        gridPane.add(tooltip.node, 1, row++)
+        gridPane!!.addRow(row++, label.node, editor.node)
+        gridPane!!.add(constraint.node, 1, row++)
+        gridPane!!.add(tooltip.node, 1, row++)
         return FXFormSkin.ElementNodes(label, editor, tooltip, constraint)
     }
 
@@ -84,10 +84,10 @@ class FormSkin(fxForm: FXForm<Any>) : FXFormSkin(fxForm) {
 
     override fun addCategory(category: String?) {
         if (categoryMap.keys.size > 1) {
-            val node = createCategoryNode(category)
+            val node = createCategoryNode(category!!)
             categoryNode.put(category, node)
             GridPane.setColumnSpan(node, 2)
-            gridPane.add(node, 0, row++)
+            gridPane!!.add(node, 0, row++)
             row++
         }
     }
@@ -111,11 +111,11 @@ class FormSkin(fxForm: FXForm<Any>) : FXFormSkin(fxForm) {
      */
     protected fun removeRow(row: Int) {
         // copy children to another list since we are going to iterate on it and modify the children list
-        val children = LinkedList(gridPane.children)
+        val children = LinkedList(gridPane!!.children)
         for (node in children) {
             val nodeRow = GridPane.getRowIndex(node)!!
             if (nodeRow == row) {
-                gridPane.children.remove(node)
+                gridPane!!.children.remove(node)
             } else if (nodeRow > row) {
                 GridPane.setRowIndex(node, nodeRow - 1)
             }

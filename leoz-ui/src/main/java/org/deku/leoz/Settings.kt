@@ -20,7 +20,7 @@ class Settings private constructor() {
                     mInstance = Settings()
                 }
             }
-            return mInstance
+            return mInstance!!
         }
     }
 

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.DateSerializer
 import com.fasterxml.jackson.databind.util.StdDateFormat
+import org.omg.CORBA.Object
 
 import java.io.IOException
 import java.util.Date
@@ -112,7 +113,7 @@ class Message {
      * *
      * @return
      */
-    operator fun get(key: String): Any {
+    operator fun get(key: String): Any? {
         return mAttributes!![key]
     }
 
@@ -120,7 +121,7 @@ class Message {
      * Get default message parameter
      * @return
      */
-    fun get(): Any {
+    fun get(): Any? {
         return mAttributes!![DEFAULT_KEY]
     }
 

@@ -78,7 +78,7 @@ class Main : Application() {
             if (mLocalizedResourceBundle == null) {
                 this.initializeLanguage()
             }
-            return mLocalizedResourceBundle
+            return mLocalizedResourceBundle!!
         }
 
     /**
@@ -91,7 +91,7 @@ class Main : Application() {
                 this.initializeLanguage()
             }
 
-            return mLocale
+            return mLocale!!
         }
 
     /**
@@ -113,7 +113,7 @@ class Main : Application() {
             if (mMainPane == null) {
                 this.initializeMainPane()
             }
-            return mMainPane
+            return mMainPane!!
         }
 
     /**
@@ -125,7 +125,7 @@ class Main : Application() {
             if (mMainController == null) {
                 this.initializeMainPane()
             }
-            return mMainController
+            return mMainController!!
         }
 
     /**
@@ -237,7 +237,7 @@ class Main : Application() {
         private val mLogger = LogFactory.getLog(Main::class.java)
 
         fun instance(): Main {
-            return mInstance
+            return mInstance!!
         }
 
         /**

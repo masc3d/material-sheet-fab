@@ -10,7 +10,7 @@ object MessageFactory {
     fun createViewDepotMessage(station: Station): Message {
         val m = Message()
         m.put("view", "depot")
-        m.put("id", station.depotNr)
+        m.put("id", station.depotNr!!)
         return m
     }
 }

@@ -71,7 +71,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
             if (mDepotMaintenanceController == null) {
                 mDepotMaintenanceController = ModuleController.fromFxml<DepotMaintenanceController>("/fx/modules/DepotMaintenance.fxml")
             }
-            return mDepotMaintenanceController
+            return mDepotMaintenanceController!!
         }
 
     val homeModule: HomeController
@@ -79,7 +79,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
             if (mHomeController == null) {
                 mHomeController = ModuleController.fromFxml<HomeController>("/fx/modules/Home.fxml")
             }
-            return mHomeController
+            return mHomeController!!
         }
 
     val debugPane: DebugController
@@ -87,7 +87,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
             if (mDebugController == null) {
                 mDebugController = ModuleController.fromFxml<DebugController>("/fx/modules/Debug.fxml")
             }
-            return mDebugController
+            return mDebugController!!
         }
 
     /**
@@ -147,7 +147,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
             ftIn.setOnFinished { e -> mContentPaneTransition = null }
             animations.add(ftIn)
 
-            val evt = { e ->
+            val evt: EventHandler<ActionEvent> = EventHandler {
                 mContentPaneTransition = ParallelTransition(*animations.toTypedArray())
                 mContentPaneTransition!!.play()
             }
@@ -194,7 +194,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
             ftIn.setOnFinished { e -> mTitleTransition = null }
 
             // Create chained sequential transition
-            val evt = { e ->
+            val evt: EventHandler<ActionEvent> = EventHandler {
                 mTitleTransition = SequentialTransition(ftOut, ftIn)
                 mTitleTransition!!.play()
             }
@@ -213,7 +213,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
      * Each call to request requires release to be called for the indicator to disappear as soon as all consumers released it
      */
     fun requestProgressIndicator() {
-        mProgressIndicatorActivationCount++
+        mProgressIndicatorActivationCount!!+1
         mProgressIndicator!!.isVisible = true
     }
 

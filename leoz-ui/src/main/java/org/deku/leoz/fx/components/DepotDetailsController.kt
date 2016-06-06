@@ -56,30 +56,30 @@ class DepotDetailsController : Initializable {
         mTabPane!!.selectionModel.selectedItemProperty().addListener { obj, oldvalue, newValue -> this.updateTab() }
         mFxFormMain = FXForm()
 
-        mFxFormMain!!.skin = FormSkin(mFxFormMain)
+        mFxFormMain!!.skin = FormSkin(mFxFormMain!!)
         mFxFormMain!!.addFilters(IncludeFilter("depotNr", "depotMatchcode", "address1", "address2", "lkz", "plz", "ort", "strasse"))
         mMainPane!!.children.add(mFxFormMain)
 
         mFxFormOps = FXForm()
-        mFxFormOps!!.skin = FormSkin(mFxFormOps)
+        mFxFormOps!!.skin = FormSkin(mFxFormOps!!)
         mFxFormOps!!.addFilters(IncludeFilter("aktivierungsdatum", "deaktivierungsdatum", "istGueltig", "masterDepot", "ebSdgDepot", "ebDepotAd", "ebGen", "ebUmvDepot", "comCode", "qualitaet", "ladehilfeLinie",
                 "ladehilfeWas", "ladehilfeKg", "ladehilfeAb", "strang", "multiBag", "bagKontingent", "bagBemerkung", "bagCo"))
         mOpsPane!!.children.add(mFxFormOps)
 
         mFxFormAccounting = FXForm()
-        mFxFormAccounting!!.skin = FormSkin(mFxFormAccounting)
+        mFxFormAccounting!!.skin = FormSkin(mFxFormAccounting!!)
         mFxFormAccounting!!.addFilters(IncludeFilter("firmenverbund", "kondition", "konditionAbD", "konditionLd", "zahlungsbedingungen", "zahlungsbedingungenR", "verbundenesU", "debitorNr", "kreditorNr", "cod1",
                 "masterVertrag", "ustId", "ekStNr", "hanReg", /*"rName1", "rName2",*/ "rlkz" /*,"rOrt", "rStrasse"*/))
         mAccountingPane!!.children.add(mFxFormAccounting)
 
         mFxFormTransfer = FXForm()
-        mFxFormTransfer!!.skin = FormSkin(mFxFormTransfer)
+        mFxFormTransfer!!.skin = FormSkin(mFxFormTransfer!!)
         mFxFormTransfer!!.addFilters(IncludeFilter("intRoutingLkz", "exportEmail", "exportFtpServer", "exportFtpUser", "exportFtpPwd", "exportToGlo", "exportToXml", "qualiMail", "umRoutung", "xmlStammdaten", /*"eMailPas",*/
                 "paXml", "paPdf", "paDruck", "rgGutschrift", "rgRechnung", "mentorDepotNr", "trzProz", "rup", "password", "smspwd"))
         mTransferPane!!.children.add(mFxFormTransfer)
 
         mFxFormPermissions = FXForm()
-        mFxFormPermissions!!.skin = FormSkin(mFxFormPermissions)
+        mFxFormPermissions!!.skin = FormSkin(mFxFormPermissions!!)
         mFxFormPermissions!!.addFilters(IncludeFilter("nnOk", "valOk", "maxValwert", "maxHoeherhaftung", "maxWarenwert"))
         mPermissionsPane!!.children.add(mFxFormPermissions)
     }

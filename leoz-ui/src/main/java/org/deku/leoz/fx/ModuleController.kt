@@ -14,7 +14,7 @@ abstract class ModuleController : Controller() {
      * Root fx node
      * @return
      */
-    var rootNode: Node
+    var rootNode: Node? = null
         protected set
 
     /**

@@ -83,8 +83,8 @@ class SidebarController : Initializable {
     override fun initialize(location: URL, resources: ResourceBundle) {
         mMenuAccordion!!.expandedPane = mMenuPane
 
-        mButtons.add(mHomeButton)
-        mButtons.add(mDepotsButton)
-        mButtons.add(mDebugButton)
+        mButtons.add(mHomeButton!!)
+        mButtons.add(mDepotsButton!!)
+        mButtons.add(mDebugButton!!)
     }
 }
