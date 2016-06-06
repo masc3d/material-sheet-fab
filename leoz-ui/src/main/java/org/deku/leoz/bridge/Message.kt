@@ -32,7 +32,7 @@ class Message {
         @Throws(IOException::class)
         override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Message {
             var key = ""
-            val attributes = HashMap()
+            val attributes: HashMap<Any, Any> = HashMap()
             while (jp.hasCurrentToken()) {
                 val jt = jp.currentToken
                 if (jt.id() == JsonTokenId.ID_FIELD_NAME) {

@@ -125,7 +125,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
                 }
                 animations.add(ftOut)
 
-                node.opacity = 0.0
+                node!!.opacity = 0.0
             }
         } else {
             mContentPaneContainer!!.children.clear()
@@ -157,7 +157,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
             else
                 evt.handle(null)
         } else {
-            node.opacity = 1.0
+            node!!.opacity = 1.0
         }
 
         moduleController.activate()
@@ -221,7 +221,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
      * Release progress indication
      */
     fun releaseProgressIndicator() {
-        if (--mProgressIndicatorActivationCount <= 0) {
+        if (mProgressIndicatorActivationCount!!-1 <= 0) {
             mProgressIndicator!!.isVisible = false
             mProgressIndicatorActivationCount = 0
         }
