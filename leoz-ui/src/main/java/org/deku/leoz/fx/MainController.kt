@@ -52,7 +52,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     /**
      * Progress indicator request count
      */
-    private var mProgressIndicatorActivationCount: Int? = 0
+    private var mProgressIndicatorActivationCount: Int = 0
 
     override fun initialize(location: URL, resources: ResourceBundle) {
         mSidebarController!!.setListener(this)
@@ -213,7 +213,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
      * Each call to request requires release to be called for the indicator to disappear as soon as all consumers released it
      */
     fun requestProgressIndicator() {
-        mProgressIndicatorActivationCount!!+1
+        mProgressIndicatorActivationCount += 1
         mProgressIndicator!!.isVisible = true
     }
 
@@ -221,7 +221,8 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
      * Release progress indication
      */
     fun releaseProgressIndicator() {
-        if (mProgressIndicatorActivationCount!!-1 <= 0) {
+        mProgressIndicatorActivationCount -= 1
+        if (mProgressIndicatorActivationCount <= 0) {
             mProgressIndicator!!.isVisible = false
             mProgressIndicatorActivationCount = 0
         }
