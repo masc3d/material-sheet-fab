@@ -36,6 +36,7 @@ open class BundleUpdateServiceConfiguration {
     class Settings {
         var enabled: Boolean = false
         var automatic: Boolean = true
+        var cleanup: Boolean = true
     }
 
     @Inject
@@ -109,6 +110,7 @@ open class BundleUpdateServiceConfiguration {
                                 install = true,
                                 storeInLocalRepository = true)
                 ),
+                cleanup = this.settings.cleanup,
                 requestChannel = Channel(ActiveMQConfiguration.instance.centralQueue)
         )
         updateService.enabled = this.settings.enabled

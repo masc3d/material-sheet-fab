@@ -34,3 +34,10 @@ server:
         # Resolved by simply just having one certificate in the keystore (removed self-signed)
         key-alias: le-1d4811c9-e696-4106-bfb2-03eb9d72bf6b
         key-password: FzgPjlHg4We3
+
+# Updater configuration
+update:
+    enabled: true
+    # Run updater on broker connection and message notification
+    automatic: false
+    cleanup: false

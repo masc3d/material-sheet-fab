@@ -22,6 +22,7 @@ import java.util.concurrent.ScheduledExecutorService
  * @property remoteRepository Remote bundle repository. The bundle name of this repository has to match the installer name
  * @property localRepository Optional local repository
  * @property presets Bundke update presets
+ * @property cleanup Automatically clean out outdated and non-relevant bundles
  * Created by masc on 12.10.15.
  */
 class BundleUpdateService(
@@ -31,7 +32,8 @@ class BundleUpdateService(
         val installer: BundleInstaller,
         val remoteRepository: BundleRepository,
         val localRepository: BundleRepository? = null,
-        presets: List<BundleUpdateService.Preset>)
+        presets: List<BundleUpdateService.Preset>,
+        val cleanup: Boolean = true)
 :
         Handler<UpdateInfo>,
         Lifecycle {
@@ -66,7 +68,8 @@ class BundleUpdateService(
         override fun run() {
             // Clean bundles before update
             try {
-                this@BundleUpdateService.clean()
+                if (this@BundleUpdateService.cleanup)
+                    this@BundleUpdateService.clean()
             } catch(e: Exception) {
                 log.error(e.message, e)
             }
@@ -167,7 +170,7 @@ class BundleUpdateService(
             }
 
             // Clean older bundles
-            if (this.localRepository != null) {
+            if (this.localRepository != null && this.cleanup) {
                 this.localRepository.clean(bundleName, listOf(latestDesignatedVersion))
             }
 
