@@ -37,7 +37,7 @@ class UpdateService(
                     versionAlias = versionAlias)
 
             if (rVersion == null)
-                throw IllegalArgumentException("No version recxord for node [${updateInfoRequest.nodeKey}] bundle [${updateInfoRequest.bundleName}] version alias [${versionAlias}]")
+                throw IllegalArgumentException("No version record for node [${updateInfoRequest.nodeKey}] bundle [${updateInfoRequest.bundleName}] version alias [${versionAlias}]")
 
             // Try to determine latest matching bundle version and platforms
             val bundleVersion = try {
