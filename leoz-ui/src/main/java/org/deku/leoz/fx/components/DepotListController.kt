@@ -41,7 +41,7 @@ class DepotListController : Controller(), Initializable {
     @FXML
     private val mSearchText: TextField? = null
     @FXML
-    private val mDepotTableView: TableView<Station>? = null
+    private lateinit var mDepotTableView: TableView<Station>
     @FXML
     private val mDepotTableMatchcodeColumn: TableColumn<Any, Any>? = null
     @FXML
@@ -91,7 +91,7 @@ class DepotListController : Controller(), Initializable {
 
         override fun succeeded() {
             mStations = this.value
-            mDepotTableView!!.items = mStations
+            mDepotTableView.items = mStations
             if (mRequestedDepotId != null)
                 selectDepot(mRequestedDepotId)
             mSearchText!!.styleClass.remove("leoz-error")
@@ -121,20 +121,20 @@ class DepotListController : Controller(), Initializable {
     override fun initialize(location: URL, resources: ResourceBundle) {
         mSearchText!!.textProperty().addListener { obj, oldValue, newValue -> onSearchTextChanged(newValue) }
 
-        mDepotTableView!!.selectionModel.selectedItemProperty().addListener { obj, oldValue, newValue ->
+        mDepotTableView.selectionModel.selectedItemProperty().addListener { obj, oldValue, newValue ->
             if (listener != null)
                 listener!!.onDepotListItemSelected(newValue)
         }
 
         // Bind depotlist columns
         // TODO. needs strong typing!
-        mDepotTableMatchcodeColumn!!.setCellValueFactory(PropertyValueFactory<Station, String>("depotNr"))
-        mDepotTableCompany1Column!!.setCellValueFactory(PropertyValueFactory<Station, String>("address1"))
-        mDepotTableCompany2Column!!.setCellValueFactory(PropertyValueFactory<Station, String>("address2"))
-        mDepotTableCountryColumn!!.setCellValueFactory(PropertyValueFactory<Station, String>("lkz"))
-        mDepotTableZipCodeColumn!!.setCellValueFactory(PropertyValueFactory<Station, String>("plz"))
-        mDepotTableCityColumn!!.setCellValueFactory(PropertyValueFactory<Station, String>("ort"))
-        mDepotTableStreetColumn!!.setCellValueFactory(PropertyValueFactory<Station, String>("strasse"))
+        mDepotTableMatchcodeColumn!!.setCellValueFactory(PropertyValueFactory<Any, Any>("depotNr"))
+        mDepotTableCompany1Column!!.setCellValueFactory(PropertyValueFactory<Any, Any>("address1"))
+        mDepotTableCompany2Column!!.setCellValueFactory(PropertyValueFactory<Any, Any>("address2"))
+        mDepotTableCountryColumn!!.setCellValueFactory(PropertyValueFactory<Any, Any>("lkz"))
+        mDepotTableZipCodeColumn!!.setCellValueFactory(PropertyValueFactory<Any, Any>("plz"))
+        mDepotTableCityColumn!!.setCellValueFactory(PropertyValueFactory<Any, Any>("ort"))
+        mDepotTableStreetColumn!!.setCellValueFactory(PropertyValueFactory<Any, Any>("strasse"))
 
         // Cell factory for cell specific behaviour handling
         val cellFactory = Callback<javafx.scene.control.TableColumn<kotlin.Any, kotlin.Any>, javafx.scene.control.TableCell<kotlin.Any, kotlin.Any>> {
@@ -169,7 +169,7 @@ class DepotListController : Controller(), Initializable {
         for (i in mStations.indices) {
             val d = mStations[i]
             if (d.depotNr == id) {
-                mDepotTableView!!.selectionModel.select(d)
+                mDepotTableView.selectionModel.select(d)
                 mDepotTableView.scrollTo(d)
                 mDepotTableView.requestFocus()
             }
@@ -188,7 +188,7 @@ class DepotListController : Controller(), Initializable {
     }
 
     public override fun onActivation() {
-        if (!mDepotTableView!!.isFocused)
+        if (!mDepotTableView.isFocused)
             mSearchText!!.requestFocus()
     }
 
