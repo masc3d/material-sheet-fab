@@ -3,13 +3,13 @@
 <?import javafx.geometry.Rectangle2D?><?import javafx.scene.control.*?><?import javafx.scene.image.*?><?import javafx.scene.layout.*?>
 <VBox maxHeight="1.7976931348623157E308" prefHeight="233.0" prefWidth="167.0" stylesheets="@../../css/leoz.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leoz.fx.components.SidebarController">
    <children>
-      <Accordion fx:id="mMenuAccordion" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+      <Accordion fx:id="fxMenuAccordion" maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
         <panes>
-          <TitledPane fx:id="mMenuPane" text="%menu.title">
+          <TitledPane fx:id="fxMenuPane" text="%menu.title">
                <content>
                     <VBox alignment="TOP_CENTER" styleClass="leoz-menu-pane">
                         <children>
-                            <Button fx:id="mHomeButton" alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeButton" text="%menu.home" VBox.vgrow="ALWAYS">
+                            <Button fx:id="fxHomeButton" alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onHomeButton" text="%menu.home" VBox.vgrow="ALWAYS">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <viewport>
@@ -21,7 +21,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                            <Button fx:id="mDepotsButton" alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDepotButton" text="%menu.depots">
+                            <Button fx:id="fxDepotsButton" alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDepotButton" text="%menu.depots">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -30,7 +30,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="mDebugButton" alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDebugButton" text="Debug">
+                        <Button fx:id="fxDebugButton" alignment="CENTER_LEFT" graphicTextGap="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDebugButton" text="Debug">
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <image>

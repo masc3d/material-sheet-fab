@@ -11,7 +11,7 @@
                             <children>
                                 <TitledPane collapsible="false" minWidth="200.0" prefHeight="716.0" prefWidth="882.0" text="%global.search" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <content>
-                                        <fx:include fx:id="mDepotList" source="../components/DepotList.fxml" />
+                                        <fx:include fx:id="fxDepotList" source="../components/DepotList.fxml" />
                                     </content>
                                     <opaqueInsets>
                                         <Insets />
@@ -23,7 +23,7 @@
                             <children>
                                 <TitledPane collapsible="false" minWidth="0.0" text="%global.details" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <content>
-                                        <fx:include fx:id="mDepotDetails" source="../components/DepotDetails.fxml" />
+                                        <fx:include fx:id="fxDepotDetails" source="../components/DepotDetails.fxml" />
                                     </content>
                                 </TitledPane>
                             </children>

@@ -8,44 +8,43 @@ import org.deku.leoz.fx.ModuleController
 import org.deku.leoz.fx.components.DepotDetailsController
 import org.deku.leoz.fx.components.DepotListController
 import org.deku.leoz.rest.entities.internal.v1.Station
-
 import java.net.URL
-import java.util.ResourceBundle
+import java.util.*
 
 /**
  * Created by masc on 22.09.14.
  */
 class DepotMaintenanceController : ModuleController(), Initializable, DepotListController.Listener {
     @FXML
-    private val mDepotList: Node? = null
+    private lateinit var fxDepotList: Node
     @FXML
-    private val mDepotListController: DepotListController? = null
+    private lateinit var fxDepotListController: DepotListController
     @FXML
-    private val mDepotDetails: Node? = null
+    private lateinit var fxDepotDetails: Node
     @FXML
-    private val mDepotDetailsController: DepotDetailsController? = null
+    private lateinit var fxDepotDetailsController: DepotDetailsController
 
     override val title: String
         get() = Main.instance().getLocalizedString("menu.depots")
 
     override fun initialize(location: URL, resources: ResourceBundle) {
-        mDepotListController!!.listener = this
+        fxDepotListController.listener = this
     }
 
     public override fun onActivation() {
-        mDepotListController!!.activate()
+        fxDepotListController.activate()
     }
 
     override fun onDepotListItemSelected(station: Station) {
-        mDepotDetailsController!!.station = station
+        fxDepotDetailsController.station = station
     }
 
     fun selectDepot(id: Int?) {
-        mDepotListController!!.requestDepotSelection(id)
+        fxDepotListController.requestDepotSelection(id)
     }
 
     override fun close() {
         super.close()
-        mDepotListController!!.close()
+        fxDepotListController.close()
     }
 }

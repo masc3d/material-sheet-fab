@@ -2,7 +2,6 @@ package org.deku.leoz.bridge
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.JsonTokenId
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.SerializerProvider
@@ -10,12 +9,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.DateSerializer
 import com.fasterxml.jackson.databind.util.StdDateFormat
-import org.omg.CORBA.Object
-
 import java.io.IOException
-import java.util.Date
-import java.util.HashMap
-import java.util.Locale
+import java.util.*
 
 /**
  * LeoBridge message
@@ -66,7 +61,7 @@ class Message {
         @Throws(IOException::class)
         override fun serialize(value: Message, jgen: JsonGenerator, provider: SerializerProvider) {
             jgen.writeStartObject()
-            for (entry in value.mAttributes!!.entries) {
+            for (entry in value.attributes!!.entries) {
 
                 if (entry.value is Date) {
                     jgen.writeFieldName(entry.key.toString())
@@ -80,21 +75,21 @@ class Message {
         }
     }
 
-    private var mAttributes: HashMap<Any, Any>? = null
+    private var attributes: HashMap<Any, Any>? = null
 
     /**
      * c'tor
      */
     constructor() {
-        mAttributes = HashMap()
+        attributes = HashMap()
     }
 
     constructor(value: Any) : this() {
-        mAttributes!!.put(DEFAULT_KEY, value)
+        attributes!!.put(DEFAULT_KEY, value)
     }
 
     constructor(attributes: HashMap<Any, Any>) {
-        mAttributes = attributes
+        this.attributes = attributes
     }
 
     /**
@@ -104,7 +99,7 @@ class Message {
      * @param value
      */
     fun put(key: String, value: Any) {
-        mAttributes!!.put(key, value)
+        attributes!!.put(key, value)
     }
 
     /**
@@ -114,7 +109,7 @@ class Message {
      * @return
      */
     operator fun get(key: String): Any? {
-        return mAttributes!![key]
+        return attributes!![key]
     }
 
     /**
@@ -122,12 +117,12 @@ class Message {
      * @return
      */
     fun get(): Any? {
-        return mAttributes!![DEFAULT_KEY]
+        return attributes!![DEFAULT_KEY]
     }
 
     override fun toString(): String {
         var message = ""
-        for (entry in mAttributes!!.entries) {
+        for (entry in attributes!!.entries) {
             if (message.length > 0)
                 message += ", "
             message += String.format("%s:%s", entry.key, entry.value)

@@ -14,7 +14,7 @@ import java.io.IOException
 class MenuButton : Button() {
 
     @FXML
-    internal var mImageView: ImageView? = null
+    private lateinit var fxImageView: ImageView
 
     init {
         val fxmlLoader = FXMLLoader(javaClass.getResource("../../../../../../resources/fx/controls/MenuButton.fxml"))

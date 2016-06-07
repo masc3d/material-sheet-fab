@@ -6,7 +6,6 @@ import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
-import javafx.scene.Node
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressIndicator
 import javafx.scene.layout.AnchorPane
@@ -20,10 +19,8 @@ import org.deku.leoz.fx.components.SidebarController
 import org.deku.leoz.fx.modules.DebugController
 import org.deku.leoz.fx.modules.DepotMaintenanceController
 import org.deku.leoz.fx.modules.HomeController
-
 import java.net.URL
-import java.util.ArrayList
-import java.util.ResourceBundle
+import java.util.*
 
 /**
  * Main userinterface controller
@@ -31,31 +28,31 @@ import java.util.ResourceBundle
  */
 class MainController : Controller(), Initializable, SidebarController.Listener, LeoBridge.Listener {
     @FXML
-    private val mTitle: Label? = null
+    private lateinit var fxTitle: Label
     @FXML
-    private val mContentPaneContainer: AnchorPane? = null
+    private lateinit var fxContentPaneContainer: AnchorPane
     @FXML
-    private val mSidebar: Pane? = null
+    private lateinit var fxSidebar: Pane
     @FXML
-    private val mSidebarController: SidebarController? = null
+    private lateinit var fxSidebarController: SidebarController
     @FXML
-    private val mProgressIndicator: ProgressIndicator? = null
+    private lateinit var fxProgressIndicator: ProgressIndicator
 
-    private var mHomeController: HomeController? = null
-    private var mDepotMaintenanceController: DepotMaintenanceController? = null
-    private var mDebugController: DebugController? = null
+    private var homeController: HomeController? = null
+    private var depotMaintenanceController: DepotMaintenanceController? = null
+    private var debugController: DebugController? = null
 
     /**
      * Currently active module
      */
-    private var mCurrentModuleController: ModuleController? = null
+    private var currentModuleController: ModuleController? = null
     /**
      * Progress indicator request count
      */
-    private var mProgressIndicatorActivationCount: Int = 0
+    private var progressIndicatorActivationCount: Int = 0
 
     override fun initialize(location: URL, resources: ResourceBundle) {
-        mSidebarController!!.setListener(this)
+        fxSidebarController.setListener(this)
         LeoBridge.instance().listenerEventDelegate.add(this)
 
         this.showModule(this.homeModule, false)
@@ -64,30 +61,30 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     /**
      * Tracks current content pane transition
      */
-    internal var mContentPaneTransition: Transition? = null
+    internal var contentPaneTransition: Transition? = null
 
     val depotMaintenanceModule: DepotMaintenanceController
         get() {
-            if (mDepotMaintenanceController == null) {
-                mDepotMaintenanceController = ModuleController.fromFxml<DepotMaintenanceController>("/fx/modules/DepotMaintenance.fxml")
+            if (depotMaintenanceController == null) {
+                depotMaintenanceController = ModuleController.fromFxml<DepotMaintenanceController>("/fx/modules/DepotMaintenance.fxml")
             }
-            return mDepotMaintenanceController!!
+            return depotMaintenanceController!!
         }
 
     val homeModule: HomeController
         get() {
-            if (mHomeController == null) {
-                mHomeController = ModuleController.fromFxml<HomeController>("/fx/modules/Home.fxml")
+            if (homeController == null) {
+                homeController = ModuleController.fromFxml<HomeController>("/fx/modules/Home.fxml")
             }
-            return mHomeController!!
+            return homeController!!
         }
 
     val debugPane: DebugController
         get() {
-            if (mDebugController == null) {
-                mDebugController = ModuleController.fromFxml<DebugController>("/fx/modules/Debug.fxml")
+            if (debugController == null) {
+                debugController = ModuleController.fromFxml<DebugController>("/fx/modules/Debug.fxml")
             }
-            return mDebugController!!
+            return debugController!!
         }
 
     /**
@@ -100,11 +97,11 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     private fun showModule(moduleController: ModuleController, animated: Boolean) {
         val duration = 500.0
 
-        if (mCurrentModuleController === moduleController)
+        if (currentModuleController === moduleController)
             return
 
-        val oldModule = mCurrentModuleController
-        mCurrentModuleController = moduleController
+        val oldModule = currentModuleController
+        currentModuleController = moduleController
 
         val node = moduleController.rootNode
         val oldNode = oldModule?.rootNode
@@ -120,20 +117,20 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
                 ftOut.fromValue = 1.0
                 ftOut.toValue = 0.0
                 ftOut.setOnFinished { e ->
-                    if (oldNode !== mCurrentModuleController!!.rootNode)
-                        mContentPaneContainer!!.children.remove(oldNode)
+                    if (oldNode !== currentModuleController!!.rootNode)
+                        fxContentPaneContainer.children.remove(oldNode)
                 }
                 animations.add(ftOut)
 
                 node!!.opacity = 0.0
             }
         } else {
-            mContentPaneContainer!!.children.clear()
+            fxContentPaneContainer.children.clear()
         }
 
         // Add new pane to container
-        if (!mContentPaneContainer!!.children.contains(node))
-            mContentPaneContainer.children.add(node)
+        if (!fxContentPaneContainer.children.contains(node))
+            fxContentPaneContainer.children.add(node)
         AnchorPane.setTopAnchor(node, 0.0)
         AnchorPane.setBottomAnchor(node, 0.0)
         AnchorPane.setRightAnchor(node, 0.0)
@@ -144,16 +141,16 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
             val ftIn = FadeTransition(Duration.millis(duration), node)
             ftIn.fromValue = 0.0
             ftIn.toValue = 1.0
-            ftIn.setOnFinished { e -> mContentPaneTransition = null }
+            ftIn.setOnFinished { e -> contentPaneTransition = null }
             animations.add(ftIn)
 
             val evt: EventHandler<ActionEvent> = EventHandler {
-                mContentPaneTransition = ParallelTransition(*animations.toTypedArray())
-                mContentPaneTransition!!.play()
+                contentPaneTransition = ParallelTransition(*animations.toTypedArray())
+                contentPaneTransition!!.play()
             }
 
-            if (mContentPaneTransition != null)
-                mContentPaneTransition!!.setOnFinished(evt)
+            if (contentPaneTransition != null)
+                contentPaneTransition!!.onFinished = evt
             else
                 evt.handle(null)
         } else {
@@ -161,7 +158,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
         }
 
         moduleController.activate()
-        mSidebarController!!.highlightByController(moduleController)
+        fxSidebarController.highlightByController(moduleController)
     }
 
     fun showModule(moduleController: ModuleController) {
@@ -182,13 +179,13 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
         if (animated) {
             val duration = 175.0
 
-            val ftOut = FadeTransition(Duration.millis(duration), mTitle)
+            val ftOut = FadeTransition(Duration.millis(duration), fxTitle)
             ftOut.fromValue = 1.0
             ftOut.toValue = 0.0
 
-            ftOut.setOnFinished { e -> mTitle!!.text = title }
+            ftOut.setOnFinished { e -> fxTitle.text = title }
 
-            val ftIn = FadeTransition(Duration.millis(duration), mTitle)
+            val ftIn = FadeTransition(Duration.millis(duration), fxTitle)
             ftIn.fromValue = 0.0
             ftIn.toValue = 1.0
             ftIn.setOnFinished { e -> mTitleTransition = null }
@@ -200,11 +197,11 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
             }
 
             if (mTitleTransition != null)
-                mTitleTransition!!.setOnFinished(evt)
+                mTitleTransition!!.onFinished = evt
             else
                 evt.handle(null)
         } else {
-            mTitle!!.text = title
+            fxTitle.text = title
         }
     }
 
@@ -213,18 +210,18 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
      * Each call to request requires release to be called for the indicator to disappear as soon as all consumers released it
      */
     fun requestProgressIndicator() {
-        mProgressIndicatorActivationCount += 1
-        mProgressIndicator!!.isVisible = true
+        progressIndicatorActivationCount += 1
+        fxProgressIndicator.isVisible = true
     }
 
     /**
      * Release progress indication
      */
     fun releaseProgressIndicator() {
-        mProgressIndicatorActivationCount -= 1
-        if (mProgressIndicatorActivationCount <= 0) {
-            mProgressIndicator!!.isVisible = false
-            mProgressIndicatorActivationCount = 0
+        progressIndicatorActivationCount -= 1
+        if (progressIndicatorActivationCount <= 0) {
+            fxProgressIndicator.isVisible = false
+            progressIndicatorActivationCount = 0
         }
     }
 
@@ -243,12 +240,12 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     override fun close() {
         super.close()
 
-        if (mHomeController != null)
-            mHomeController!!.close()
-        if (mDepotMaintenanceController != null)
-            mDepotMaintenanceController!!.close()
-        if (mDebugController != null)
-            mDebugController!!.close()
+        if (homeController != null)
+            homeController!!.close()
+        if (depotMaintenanceController != null)
+            depotMaintenanceController!!.close()
+        if (debugController != null)
+            debugController!!.close()
     }
 
     override fun onLeoBridgeMessageReceived(message: Message) {

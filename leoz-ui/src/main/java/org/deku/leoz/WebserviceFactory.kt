@@ -1,12 +1,10 @@
 package org.deku.leoz
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.rest.services.internal.v1.StationService
 import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.client.proxy.WebResourceFactory
-
 import javax.ws.rs.client.Client
 import javax.ws.rs.client.ClientBuilder
 import javax.ws.rs.client.WebTarget
@@ -17,28 +15,27 @@ import javax.ws.rs.client.WebTarget
  * Created by masc on 27.08.14.
  */
 object WebserviceFactory {
-    private val mLog = LogFactory.getLog(WebserviceFactory::class.java)
-    private var mClient: Client? = null
-    private var mWebTarget: WebTarget? = null
+    private val log = LogFactory.getLog(WebserviceFactory::class.java)
+
+    private val client: Client by lazy({
+        // Setup client
+        val client = ClientBuilder.newClient()
+        client.register(JacksonJsonProvider::class.java)
+        client.property(ClientProperties.CONNECT_TIMEOUT, 2000)
+        client.property(ClientProperties.READ_TIMEOUT, 2000)
+        client
+    })
+
+    private val webTarget: WebTarget by lazy({
+        // Setup webtarget
+        this.client.target("http://127.0.0.1:13000/rs/api")
+    })
 
     /** Convenience method to get service instance
      * @param c service interface class
      */
     fun <T> getService(c: Class<T>): T {
-        // Setup client
-        if (mClient == null) {
-            mClient = ClientBuilder.newClient()
-            mClient!!.register(JacksonJsonProvider::class.java)
-            mClient!!.property(ClientProperties.CONNECT_TIMEOUT, 2000)
-            mClient!!.property(ClientProperties.READ_TIMEOUT, 2000)
-        }
-
-        if (mWebTarget == null) {
-            mWebTarget = mClient!!.target("http://127.0.0.1:13000/rs/api")
-            //mWebTarget = mClient.target("http://localhost:8080/leo2");
-        }
-
-        val instance = WebResourceFactory.newResource(c, mWebTarget)
+        val instance = WebResourceFactory.newResource(c, webTarget)
         return instance
     }
 

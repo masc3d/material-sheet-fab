@@ -5,7 +5,6 @@ import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.concurrent.Task
-import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.TableCell
@@ -16,7 +15,6 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.input.MouseEvent
 import javafx.util.Callback
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Main
 import org.deku.leoz.WebserviceFactory
@@ -24,12 +22,8 @@ import org.deku.leoz.bridge.LeoBridge
 import org.deku.leoz.bridge.MessageFactory
 import org.deku.leoz.fx.Controller
 import org.deku.leoz.rest.entities.internal.v1.Station
-
 import java.net.URL
-import java.util.Arrays
-import java.util.EventListener
-import java.util.ResourceBundle
-import java.util.concurrent.ExecutorService
+import java.util.*
 import java.util.concurrent.Executors
 
 /**
@@ -39,29 +33,29 @@ class DepotListController : Controller(), Initializable {
     private val mLogger = LogFactory.getLog(this.javaClass)
 
     @FXML
-    private val mSearchText: TextField? = null
+    private lateinit var fxSearchText: TextField
     @FXML
-    private lateinit var mDepotTableView: TableView<Station>
+    private lateinit var fxDepotTableView: TableView<Station>
     @FXML
-    private val mDepotTableMatchcodeColumn: TableColumn<Any, Any>? = null
+    private lateinit var fxDepotTableMatchcodeColumn: TableColumn<Any, Any>
     @FXML
-    private val mDepotTableCompany1Column: TableColumn<Any, Any>? = null
+    private lateinit var fxDepotTableCompany1Column: TableColumn<Any, Any>
     @FXML
-    private val mDepotTableCompany2Column: TableColumn<Any, Any>? = null
+    private lateinit var fxDepotTableCompany2Column: TableColumn<Any, Any>
     @FXML
-    private val mDepotTableCountryColumn: TableColumn<Any, Any>? = null
+    private lateinit var fxDepotTableCountryColumn: TableColumn<Any, Any>
     @FXML
-    private val mDepotTableZipCodeColumn: TableColumn<Any, Any>? = null
+    private lateinit var fxDepotTableZipCodeColumn: TableColumn<Any, Any>
     @FXML
-    private val mDepotTableCityColumn: TableColumn<Any, Any>? = null
+    private lateinit var fxDepotTableCityColumn: TableColumn<Any, Any>
     @FXML
-    private val mDepotTableStreetColumn: TableColumn<Any, Any>? = null
+    private lateinit var fxDepotTableStreetColumn: TableColumn<Any, Any>
 
-    private var mStations: ObservableList<Station> = ImmutableObservableList()
+    private var stations: ObservableList<Station> = ImmutableObservableList()
 
-    private val mQueryTaskExecutor = Executors.newFixedThreadPool(3)
-    private var mQueryTask: Task<ObservableList<Station>>? = null
-    private var mRequestedDepotId: Int? = null
+    private val queryTaskExecutor = Executors.newFixedThreadPool(3)
+    private var queryTask: Task<ObservableList<Station>>? = null
+    private var requestedDepotId: Int? = null
     var listener: Listener? = null
 
     interface Listener : EventListener {
@@ -80,7 +74,7 @@ class DepotListController : Controller(), Initializable {
                 // Invoke depot webservice and deliver as observable depot list
                 return FXCollections.observableArrayList(
                         Arrays.asList(
-                                *WebserviceFactory.depotService().find(mSearchText!!.text)))
+                                *WebserviceFactory.depotService().find(fxSearchText.text)))
             } catch (e: Exception) {
                 mLogger.error(e.message, e)
                 throw e
@@ -90,15 +84,15 @@ class DepotListController : Controller(), Initializable {
         }
 
         override fun succeeded() {
-            mStations = this.value
-            mDepotTableView.items = mStations
-            if (mRequestedDepotId != null)
-                selectDepot(mRequestedDepotId)
-            mSearchText!!.styleClass.remove("leoz-error")
+            stations = this.value
+            fxDepotTableView.items = stations
+            if (requestedDepotId != null)
+                selectDepot(requestedDepotId)
+            fxSearchText.styleClass.remove("leoz-error")
         }
 
         override fun failed() {
-            mSearchText!!.styleClass.add("leoz-error")
+            fxSearchText.styleClass.add("leoz-error")
         }
     }
 
@@ -110,31 +104,31 @@ class DepotListController : Controller(), Initializable {
      * Start remote depotlist query
      */
     private fun startQuery() {
-        if (mQueryTask != null) {
-            mQueryTask!!.cancel(true)
+        if (queryTask != null) {
+            queryTask!!.cancel(true)
         }
 
-        mQueryTask = QueryTask()
-        mQueryTaskExecutor.execute(mQueryTask!!)
+        queryTask = QueryTask()
+        queryTaskExecutor.execute(queryTask!!)
     }
 
     override fun initialize(location: URL, resources: ResourceBundle) {
-        mSearchText!!.textProperty().addListener { obj, oldValue, newValue -> onSearchTextChanged(newValue) }
+        fxSearchText.textProperty().addListener { obj, oldValue, newValue -> onSearchTextChanged(newValue) }
 
-        mDepotTableView.selectionModel.selectedItemProperty().addListener { obj, oldValue, newValue ->
+        fxDepotTableView.selectionModel.selectedItemProperty().addListener { obj, oldValue, newValue ->
             if (listener != null)
                 listener!!.onDepotListItemSelected(newValue)
         }
 
         // Bind depotlist columns
         // TODO. needs strong typing!
-        mDepotTableMatchcodeColumn!!.setCellValueFactory(PropertyValueFactory<Any, Any>("depotNr"))
-        mDepotTableCompany1Column!!.setCellValueFactory(PropertyValueFactory<Any, Any>("address1"))
-        mDepotTableCompany2Column!!.setCellValueFactory(PropertyValueFactory<Any, Any>("address2"))
-        mDepotTableCountryColumn!!.setCellValueFactory(PropertyValueFactory<Any, Any>("lkz"))
-        mDepotTableZipCodeColumn!!.setCellValueFactory(PropertyValueFactory<Any, Any>("plz"))
-        mDepotTableCityColumn!!.setCellValueFactory(PropertyValueFactory<Any, Any>("ort"))
-        mDepotTableStreetColumn!!.setCellValueFactory(PropertyValueFactory<Any, Any>("strasse"))
+        fxDepotTableMatchcodeColumn.cellValueFactory = PropertyValueFactory<Any, Any>("depotNr")
+        fxDepotTableCompany1Column.cellValueFactory = PropertyValueFactory<Any, Any>("address1")
+        fxDepotTableCompany2Column.cellValueFactory = PropertyValueFactory<Any, Any>("address2")
+        fxDepotTableCountryColumn.cellValueFactory = PropertyValueFactory<Any, Any>("lkz")
+        fxDepotTableZipCodeColumn.cellValueFactory = PropertyValueFactory<Any, Any>("plz")
+        fxDepotTableCityColumn.cellValueFactory = PropertyValueFactory<Any, Any>("ort")
+        fxDepotTableStreetColumn.cellValueFactory = PropertyValueFactory<Any, Any>("strasse")
 
         // Cell factory for cell specific behaviour handling
         val cellFactory = Callback<javafx.scene.control.TableColumn<kotlin.Any, kotlin.Any>, javafx.scene.control.TableCell<kotlin.Any, kotlin.Any>> {
@@ -154,46 +148,46 @@ class DepotListController : Controller(), Initializable {
             tc
         }
 
-        mDepotTableMatchcodeColumn.setCellFactory(cellFactory)
-        mDepotTableCompany1Column.setCellFactory(cellFactory)
-        mDepotTableCompany2Column.setCellFactory(cellFactory)
-        mDepotTableCountryColumn.setCellFactory(cellFactory)
-        mDepotTableZipCodeColumn.setCellFactory(cellFactory)
-        mDepotTableCityColumn.setCellFactory(cellFactory)
-        mDepotTableStreetColumn.setCellFactory(cellFactory)
+        fxDepotTableMatchcodeColumn.cellFactory = cellFactory
+        fxDepotTableCompany1Column.cellFactory = cellFactory
+        fxDepotTableCompany2Column.cellFactory = cellFactory
+        fxDepotTableCountryColumn.cellFactory = cellFactory
+        fxDepotTableZipCodeColumn.cellFactory = cellFactory
+        fxDepotTableCityColumn.cellFactory = cellFactory
+        fxDepotTableStreetColumn.cellFactory = cellFactory
 
         this.startQuery()
     }
 
     private fun selectDepot(id: Int?) {
-        for (i in mStations.indices) {
-            val d = mStations[i]
+        for (i in stations.indices) {
+            val d = stations[i]
             if (d.depotNr == id) {
-                mDepotTableView.selectionModel.select(d)
-                mDepotTableView.scrollTo(d)
-                mDepotTableView.requestFocus()
+                fxDepotTableView.selectionModel.select(d)
+                fxDepotTableView.scrollTo(d)
+                fxDepotTableView.requestFocus()
             }
         }
-        mRequestedDepotId = null
+        requestedDepotId = null
     }
 
     fun requestDepotSelection(id: Int?) {
-        mRequestedDepotId = id
-        if (mSearchText!!.text.length == 0 && mStations.size > 0) {
+        requestedDepotId = id
+        if (fxSearchText.text.length == 0 && stations.size > 0) {
             this.selectDepot(id)
         } else {
-            mSearchText.text = ""
+            fxSearchText.text = ""
             this.startQuery()
         }
     }
 
     public override fun onActivation() {
-        if (!mDepotTableView.isFocused)
-            mSearchText!!.requestFocus()
+        if (!fxDepotTableView.isFocused)
+            fxSearchText.requestFocus()
     }
 
     override fun close() {
         super.close()
-        mQueryTaskExecutor.shutdown()
+        queryTaskExecutor.shutdown()
     }
 }

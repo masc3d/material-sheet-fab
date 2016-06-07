@@ -2,35 +2,39 @@ package org.deku.leoz
 
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
+import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.scene.layout.Pane
 import javafx.scene.text.Font
 import javafx.stage.Stage
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.controlsfx.control.Notifications
 import org.deku.leoz.bridge.LeoBridge
 import org.deku.leoz.fx.MainController
 import sx.util.Utf8ResourceBundleControl
-
 import java.io.IOException
-import java.util.Locale
-import java.util.MissingResourceException
-import java.util.ResourceBundle
+import java.util.*
 import java.util.concurrent.Executors
 
 /**
  * Main application entry point
  */
+fun main(args: Array<String>) {
+    javafx.application.Application.launch(Main::class.java, *args)
+}
+
+/**
+ * Main application class
+ */
 class Main : Application() {
 
-    private var mPrimaryStage: Stage? = null
-    private var mLocale: Locale? = null
-    private var mLocalizedResourceBundle: ResourceBundle? = null
+    private var fxPrimaryStage: Stage? = null
+    private var _locale: Locale? = null
+    private var _localizedResourceBundle: ResourceBundle? = null
 
-    private var mMainPane: Pane? = null
-    private var mMainController: MainController? = null
+    private var _mainPane: Pane? = null
+    private var _mainController: MainController? = null
 
     /**
      * Utility method for loading a specific language resource bundle
@@ -46,53 +50,50 @@ class Main : Application() {
      * Intializes language related resources
      */
     private fun initializeLanguage() {
-        Locale.setDefault(Locale.GERMAN)
-        var locale = Locale.getDefault()
-        try {
-            mLocalizedResourceBundle = this.getLanguageResourceBundle(locale)
-        } catch (e: MissingResourceException) {
-            // Reverting to default language (eg. english)
-            locale = Locale.ENGLISH
-            mLocalizedResourceBundle = this.getLanguageResourceBundle(locale)
-        }
+        if (_localizedResourceBundle == null || _locale == null) {
+            Locale.setDefault(Locale.GERMAN)
+            var locale = Locale.getDefault()
+            try {
+                _localizedResourceBundle = this.getLanguageResourceBundle(locale)
+            } catch (e: MissingResourceException) {
+                // Reverting to default language (eg. english)
+                locale = Locale.ENGLISH
+                _localizedResourceBundle = this.getLanguageResourceBundle(locale)
+            }
 
-        mLocale = locale
+            _locale = locale
+        }
     }
 
     /**
      * Initialize main pane/controller
      */
     private fun initializeMainPane() {
-        // Load main UI
-        val fxmlMain = this.loadFxPane("/fx/Main.fxml")
-        mMainPane = fxmlMain.getRoot<Pane>()
-        mMainController = fxmlMain.getController<MainController>()
+        if (_mainPane == null || _mainController == null) {
+            // Load main UI
+            val fxmlMain = this.loadFxPane("/fx/Main.fxml")
+            _mainPane = fxmlMain.getRoot<Pane>()
+            _mainController = fxmlMain.getController<MainController>()
+        }
     }
 
     /**
      * Application langauge resource bundle
      * @return ResourceBundle
      */
-    private val localizedResourceBundle: ResourceBundle
-        get() {
-            if (mLocalizedResourceBundle == null) {
-                this.initializeLanguage()
-            }
-            return mLocalizedResourceBundle!!
-        }
+    private val localizedResourceBundle: ResourceBundle by lazy({
+        this.initializeLanguage()
+        _localizedResourceBundle!!
+    })
 
     /**
      * Application locale
      * @return Locale
      */
-    val locale: Locale
-        get() {
-            if (mLocale == null) {
-                this.initializeLanguage()
-            }
-
-            return mLocale!!
-        }
+    val locale: Locale by lazy({
+        this.initializeLanguage()
+        _locale!!
+    })
 
     /**
      * Get string from localized resource bundle
@@ -108,25 +109,19 @@ class Main : Application() {
      * Main user interface pane
      * @return
      */
-    val mainPane: Pane
-        get() {
-            if (mMainPane == null) {
-                this.initializeMainPane()
-            }
-            return mMainPane!!
-        }
+    val mainPane: Pane by lazy({
+        this.initializeMainPane()
+        _mainPane!!
+    })
 
     /**
      * Main user interface controller
      * @return
      */
-    val mainController: MainController
-        get() {
-            if (mMainController == null) {
-                this.initializeMainPane()
-            }
-            return mMainController!!
-        }
+    val mainController: MainController by lazy({
+        this.initializeMainPane()
+        _mainController!!
+    })
 
     /**
      * Utility method for loading javafx pane from fxml resource
@@ -138,7 +133,7 @@ class Main : Application() {
         val fxml = FXMLLoader(javaClass.getResource(resourcePath))
         fxml.resources = this.localizedResourceBundle
         try {
-            fxml.load<Any>()
+            fxml.load<Parent>()
             return fxml
         } catch (e: IOException) {
             throw RuntimeException("Could not load pane", e)
@@ -166,7 +161,7 @@ class Main : Application() {
      */
     @Throws(Exception::class)
     override fun start(primaryStage: Stage) {
-        mInstance = this
+        instance = this
 
         val setup = Setup()
         val command = setup.parse(this.parameters.raw.toTypedArray())
@@ -175,20 +170,27 @@ class Main : Application() {
                 command.run()
                 System.exit(0)
             } catch (e: Exception) {
-                mLogger.error(e.message, e)
+                log.error(e.message, e)
                 System.exit(-1)
             }
 
             return
         }
 
-        mPrimaryStage = primaryStage
+        fxPrimaryStage = primaryStage
 
         // Load embedded fonts
         this.loadFont("/fonts/Futura-CondensedExtraBold.ttf")
         this.loadFont("/fonts/Futura-CondensedMedium.ttf")
         this.loadFont("/fonts/Futura-Medium.ttf")
         this.loadFont("/fonts/Futura-MediumItalic.ttf")
+
+//        try {
+//            val root = FXMLLoader.load<Parent>(this.javaClass.getResource("/fx/Main.fxml"))
+//        } catch(e: Exception) {
+//            println(e)
+//            throw(e)
+//        }
 
         // Main scene
         val scene = Scene(this.mainPane, 1600.0, 800.0)
@@ -201,14 +203,14 @@ class Main : Application() {
             try {
                 LeoBridge.instance().start()
             } catch (e: IOException) {
-                mLogger.error(e.message, e)
+                log.error(e.message, e)
             }
         }
     }
 
     @Throws(Exception::class)
     override fun stop() {
-        mMainController!!.close()
+        _mainController!!.close()
         LeoBridge.instance().stop()
         super.stop()
     }
@@ -218,10 +220,10 @@ class Main : Application() {
      */
     fun toForeground() {
         // toFront doesn't suffice
-        mPrimaryStage!!.isAlwaysOnTop = true
-        mPrimaryStage!!.toFront()
-        mPrimaryStage!!.requestFocus()
-        mPrimaryStage!!.isAlwaysOnTop = false
+        fxPrimaryStage!!.isAlwaysOnTop = true
+        fxPrimaryStage!!.toFront()
+        fxPrimaryStage!!.requestFocus()
+        fxPrimaryStage!!.isAlwaysOnTop = false
     }
 
     fun showError(message: String) {
@@ -233,11 +235,11 @@ class Main : Application() {
     }
 
     companion object {
-        private var mInstance: Main? = null
-        private val mLogger = LogFactory.getLog(Main::class.java)
+        private var instance: Main? = null
+        private val log = LogFactory.getLog(Main::class.java)
 
         fun instance(): Main {
-            return mInstance!!
+            return instance!!
         }
 
         /**

@@ -14,21 +14,17 @@ package org.deku.leoz.fx
 
 import com.dooapp.fxform.FXForm
 import com.dooapp.fxform.model.Element
-import com.dooapp.fxform.view.FXFormNode
 import com.dooapp.fxform.view.FXFormSkin
 import com.dooapp.fxform.view.NodeCreationException
 import com.dooapp.fxform.view.control.AutoHidableLabel
 import javafx.geometry.HPos
 import javafx.geometry.Insets
 import javafx.scene.Node
-import javafx.scene.control.Label
 import javafx.scene.control.Separator
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
-
-import java.util.HashMap
-import java.util.LinkedList
+import java.util.*
 
 /**
  * Modified skin based on FormFX inline skin

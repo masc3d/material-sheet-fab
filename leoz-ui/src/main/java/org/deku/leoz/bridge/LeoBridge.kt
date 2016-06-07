@@ -13,11 +13,9 @@ import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
 import sx.event.ThreadSafeEventDispatcher
-
-import javax.ws.rs.client.Client
-import javax.ws.rs.client.ClientBuilder
 import java.io.IOException
 import java.net.URI
+import javax.ws.rs.client.ClientBuilder
 
 /**
  * Created by masc on 26.09.14.
@@ -41,12 +39,12 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
         }
     }
 
-    private var mHttpServer: HttpServer? = null
-    private var mMessageServiceClient: IMessageService? = null
+    private var httpServer: HttpServer? = null
+    private var messageServiceClient: IMessageService? = null
 
-    internal var mListenerEventDispatcher: EventDispatcher<Listener> = ThreadSafeEventDispatcher()
+    internal var listenerEventDispatcher: EventDispatcher<Listener> = ThreadSafeEventDispatcher()
     val listenerEventDelegate: EventDelegate<Listener>
-        get() = mListenerEventDispatcher
+        get() = listenerEventDispatcher
 
     /**
      * Start leo bridge
@@ -54,8 +52,8 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
      */
     @Synchronized @Throws(IOException::class)
     fun start() {
-        if (mHttpServer == null) {
-            mHttpServer = GrizzlyHttpServerFactory.createHttpServer(HOST_URI, WebserviceResourceConfig())
+        if (httpServer == null) {
+            httpServer = GrizzlyHttpServerFactory.createHttpServer(HOST_URI, WebserviceResourceConfig())
             // Setup mClient
             val c = ClientBuilder.newClient()
             c.register(JacksonJsonProvider::class.java)
@@ -64,29 +62,29 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
             // Client debug logging
             // c.register(new LoggingFilter(Logger.getLog(LeoBridge.class.getName()), true));
 
-            mMessageServiceClient = WebResourceFactory.newResource(IMessageService::class.java, c.target(CLIENT_URI))
+            messageServiceClient = WebResourceFactory.newResource(IMessageService::class.java, c.target(CLIENT_URI))
         }
-        mHttpServer!!.start()
+        httpServer!!.start()
     }
 
     /**
      * Stop leo bridge
      */
     @Synchronized fun stop() {
-        if (mHttpServer != null)
-            mHttpServer!!.shutdownNow()
+        if (httpServer != null)
+            httpServer!!.shutdownNow()
     }
 
     fun sendMessage(message: Message) {
-        mMessageServiceClient!!.send(message)
+        messageServiceClient!!.send(message)
     }
 
     fun sendValue(value: Any) {
-        mMessageServiceClient!!.send(Message(value))
+        messageServiceClient!!.send(Message(value))
     }
 
     override fun onLeoBridgeServiceMessageReceived(message: Message) {
-        mListenerEventDispatcher.emit { r -> r.onLeoBridgeMessageReceived(message) }
+        listenerEventDispatcher.emit { r -> r.onLeoBridgeMessageReceived(message) }
     }
 
     override fun close() {
@@ -94,18 +92,18 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
     }
 
     companion object {
-        private var mInstance: LeoBridge? = null
+        private var instance: LeoBridge? = null
 
         private val HOST_URI = URI.create("http://localhost:37420/")
         private val CLIENT_URI = URI.create("http://localhost:37421/")
 
         fun instance(): LeoBridge {
-            if (mInstance == null) {
+            if (instance == null) {
                 synchronized (LeoBridge::class.java) {
-                    mInstance = LeoBridge()
+                    instance = LeoBridge()
                 }
             }
-            return mInstance!!
+            return instance!!
         }
     }
 }

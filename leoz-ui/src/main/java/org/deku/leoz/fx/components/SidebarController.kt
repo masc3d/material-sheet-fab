@@ -9,28 +9,25 @@ import org.deku.leoz.fx.ModuleController
 import org.deku.leoz.fx.modules.DebugController
 import org.deku.leoz.fx.modules.DepotMaintenanceController
 import org.deku.leoz.fx.modules.HomeController
-
 import java.net.URL
-import java.util.ArrayList
-import java.util.EventListener
-import java.util.ResourceBundle
+import java.util.*
 
 /**
  * Created by masc on 22.09.14.
  */
 class SidebarController : Initializable {
     @FXML
-    internal var mMenuAccordion: Accordion? = null
+    private lateinit var fxMenuAccordion: Accordion
     @FXML
-    internal var mMenuPane: TitledPane? = null
+    private lateinit var fxMenuPane: TitledPane
     @FXML
-    internal var mHomeButton: Button? = null
+    private lateinit var fxHomeButton: Button
     @FXML
-    internal var mDepotsButton: Button? = null
+    private lateinit var fxDepotsButton: Button
     @FXML
-    internal var mDebugButton: Button? = null
+    private lateinit var fxDebugButton: Button
 
-    internal var mButtons: MutableList<Button> = ArrayList()
+    private var buttons: MutableList<Button> = ArrayList()
 
     enum class ItemType {
         Home,
@@ -42,38 +39,38 @@ class SidebarController : Initializable {
         fun OnSidebarItemSelected(itemType: ItemType)
     }
 
-    private var mListener: Listener? = null
+    private var listener: Listener? = null
 
     fun setListener(listener: Listener) {
-        mListener = listener
+        this.listener = listener
     }
 
     fun onHomeButton() {
-        if (mListener != null)
-            mListener!!.OnSidebarItemSelected(ItemType.Home)
+        if (listener != null)
+            listener!!.OnSidebarItemSelected(ItemType.Home)
     }
 
     fun onDepotButton() {
-        if (mListener != null)
-            mListener!!.OnSidebarItemSelected(ItemType.Depots)
+        if (listener != null)
+            listener!!.OnSidebarItemSelected(ItemType.Depots)
     }
 
     fun onDebugButton() {
-        if (mListener != null)
-            mListener!!.OnSidebarItemSelected(ItemType.Debug)
+        if (listener != null)
+            listener!!.OnSidebarItemSelected(ItemType.Debug)
     }
 
     fun highlightByController(module: ModuleController) {
-        for (b in mButtons)
+        for (b in buttons)
             b.styleClass.remove("leoz-sidebar-selection")
 
         var selection: Button? = null
         if (module is HomeController) {
-            selection = mHomeButton
+            selection = fxHomeButton
         } else if (module is DepotMaintenanceController) {
-            selection = mDepotsButton
+            selection = fxDepotsButton
         } else if (module is DebugController) {
-            selection = mDebugButton
+            selection = fxDebugButton
         }
 
         if (selection != null)
@@ -81,10 +78,10 @@ class SidebarController : Initializable {
     }
 
     override fun initialize(location: URL, resources: ResourceBundle) {
-        mMenuAccordion!!.expandedPane = mMenuPane
+        fxMenuAccordion.expandedPane = fxMenuPane
 
-        mButtons.add(mHomeButton!!)
-        mButtons.add(mDepotsButton!!)
-        mButtons.add(mDebugButton!!)
+        buttons.add(fxHomeButton)
+        buttons.add(fxDepotsButton)
+        buttons.add(fxDebugButton)
     }
 }

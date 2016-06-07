@@ -1,6 +1,5 @@
 package org.deku.leoz.fx
 
-import javafx.fxml.FXMLLoader
 import javafx.scene.Node
 import org.deku.leoz.Main
 

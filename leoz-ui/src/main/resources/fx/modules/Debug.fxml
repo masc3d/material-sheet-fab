@@ -11,7 +11,7 @@
                      <children>
                         <HBox alignment="CENTER" spacing="10.0">
                            <children>
-                              <TextField fx:id="mLeoBridgeMessageTextField" prefHeight="26.0" prefWidth="140.0" HBox.hgrow="ALWAYS" />
+                              <TextField fx:id="fxLeoBridgeMessageTextField" prefHeight="26.0" prefWidth="140.0" HBox.hgrow="ALWAYS" />
                               <Button mnemonicParsing="false" onAction="#onLeoBridgeSend" prefHeight="26.0" prefWidth="49.0" text="Send" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                            </children>
                         </HBox>
@@ -24,7 +24,7 @@
               <content>
                   <VBox>
                      <children>
-                        <CheckBox fx:id="mUiAnimationsEnabled" mnemonicParsing="false" text="Animations" />
+                        <CheckBox fx:id="fxUiAnimationsEnabled" mnemonicParsing="false" text="Animations" />
                      </children>
                   </VBox>
               </content>
