@@ -60,31 +60,39 @@ abstract class Listener(
      */
     @Throws(JMSException::class)
     protected open fun onMessage(message: Message, session: Session) {
-        var messageObject: Any?
+        var messageObject: Any? = null
 
         var handler: Handler<Any?>?
 
         // Deserialize if there's a converter and determine handler
         val converter = this.channel.converter
-        messageObject = converter.fromMessage(message)
-        handler = this.handlerDelegates.getOrDefault(messageObject.javaClass, null)
 
-        if (handler == null) {
-            throw HandlingException("No delegate for message object type [%s]".format(messageObject.javaClass, Message::class.java))
-        }
-
-        // Prepare reply channel if applicable
-        var replyChannel: Channel? = null
-        if (message.jmsReplyTo != null) {
-            replyChannel = this.channel.createReplyChannel(session, message.jmsReplyTo)
-        }
-
-        // Delegate to handler
         try {
-            handler.onMessage(messageObject, replyChannel)
-        } finally {
-            if (replyChannel != null)
-                replyChannel.close()
+            messageObject = converter.fromMessage(message)
+        } catch(e: Exception) {
+            log.error("Error converting message [${message}] ${e.message}")
+        }
+
+        if (messageObject != null) {
+            handler = this.handlerDelegates.getOrDefault(messageObject.javaClass, null)
+
+            if (handler == null) {
+                throw HandlingException("No delegate for message object type [%s]".format(messageObject.javaClass, Message::class.java))
+            }
+
+            // Prepare reply channel if applicable
+            var replyChannel: Channel? = null
+            if (message.jmsReplyTo != null) {
+                replyChannel = this.channel.createReplyChannel(session, message.jmsReplyTo)
+            }
+
+            // Delegate to handler
+            try {
+                handler.onMessage(messageObject, replyChannel)
+            } finally {
+                if (replyChannel != null)
+                    replyChannel.close()
+            }
         }
     }
 
