@@ -106,3 +106,22 @@
     -fx-border-color: darkgray;
     -fx-border-radius: 5;
 }
+
+.tab:selected {
+    -fx-background-color: linear-gradient(to top, lightblue, azure);
+}
+
+.leoz-parcel-search {
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 3, 2, 2;
+    -fx-background-image: url("../images/search-32px.png");
+    -fx-background-size: 20 20;
+    -fx-background-position: left 10 center;
+    -fx-background-repeat: no-repeat;
+    /*-fx-opacity: 0.85;*/
+    /*-fx-background-color: transparent;*/
+    /*-fx-border-width: 2pt;*/
+    /*-fx-border-color: transparent transparent #f8ae18 transparent;*/
+    /*-fx-prompt-text-fill: #5c5c5c;*/
+    -fx-padding: 0 0 0 27pt;
+}
