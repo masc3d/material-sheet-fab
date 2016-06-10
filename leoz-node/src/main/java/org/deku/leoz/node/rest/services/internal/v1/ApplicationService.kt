@@ -23,7 +23,6 @@ import javax.ws.rs.core.MediaType
 @Named
 @ApiKey(false)
 @Path("internal/v1/application")
-@Produces(MediaType.APPLICATION_JSON)
 class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationService {
     private val log = LogFactory.getLog(this.javaClass)
 

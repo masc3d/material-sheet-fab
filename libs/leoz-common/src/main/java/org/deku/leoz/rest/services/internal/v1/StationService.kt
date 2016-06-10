@@ -2,17 +2,15 @@ package org.deku.leoz.rest.services.internal.v1
 
 import io.swagger.annotations.*
 import org.deku.leoz.rest.entities.internal.v1.Station
+import javax.ws.rs.*
 
-import javax.ws.rs.Consumes
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
 
 /**
  * Created by masc on 17.09.14.
  */
 @Path("internal/v1/depot")
+@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Depot operations")
 interface StationService {

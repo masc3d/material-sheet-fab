@@ -38,7 +38,6 @@ import javax.ws.rs.core.MediaType
 @Named
 @ApiKey(false)
 @Path("v1/routing")
-@Produces(MediaType.APPLICATION_JSON)
 class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     private val log = LogFactory.getLog(this.javaClass)
 

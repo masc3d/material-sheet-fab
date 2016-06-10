@@ -15,7 +15,6 @@ import javax.ws.rs.core.MediaType
 @Named
 @ApiKey(false)
 @Path("internal/v1/node")
-@Produces(MediaType.APPLICATION_JSON)
 class NodeService : org.deku.leoz.rest.services.internal.v1.NodeService {
     private val log = LogFactory.getLog(this.javaClass)
 
