@@ -26,6 +26,7 @@ public abstract class WebserviceTest {
 
         // Setup target
         this.target = client.target("http://10.0.10.10:8080/leoz");
+        this.target = client.target("http://127.0.0.1:13000/rs/api");
     }
 
     @After
