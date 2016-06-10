@@ -17,7 +17,7 @@ import javax.ws.rs.client.WebTarget
 object WebserviceFactory {
     private val log = LogFactory.getLog(WebserviceFactory::class.java)
 
-    private val client: Client by lazy({
+    private val client by lazy({
         // Setup client
         val client = ClientBuilder.newClient()
         client.register(JacksonJsonProvider::class.java)

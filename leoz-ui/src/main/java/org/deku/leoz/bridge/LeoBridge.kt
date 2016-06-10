@@ -39,12 +39,29 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
         }
     }
 
-    private var httpServer: HttpServer? = null
-    private var messageServiceClient: IMessageService? = null
-
-    internal var listenerEventDispatcher: EventDispatcher<Listener> = ThreadSafeEventDispatcher()
+    private var listenerEventDispatcher: EventDispatcher<Listener> = ThreadSafeEventDispatcher()
     val listenerEventDelegate: EventDelegate<Listener>
         get() = listenerEventDispatcher
+
+    private val httpServer by lazy {
+        GrizzlyHttpServerFactory.createHttpServer(HOST_URI, WebserviceResourceConfig())
+    }
+
+    private val httpClient by lazy {
+        // Setup mClient
+        val c = ClientBuilder.newClient()
+        c.register(JacksonJsonProvider::class.java)
+        c.property(ClientProperties.CONNECT_TIMEOUT, 500)
+        c
+    }
+
+    private val webTarget by lazy {
+        this.httpClient.target(CLIENT_URI)
+    }
+
+    private val messageServiceClient by lazy {
+        WebResourceFactory.newResource(IMessageService::class.java, this.webTarget)
+    }
 
     /**
      * Start leo bridge
@@ -52,39 +69,26 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
      */
     @Synchronized @Throws(IOException::class)
     fun start() {
-        if (httpServer == null) {
-            httpServer = GrizzlyHttpServerFactory.createHttpServer(HOST_URI, WebserviceResourceConfig())
-            // Setup mClient
-            val c = ClientBuilder.newClient()
-            c.register(JacksonJsonProvider::class.java)
-            c.property(ClientProperties.CONNECT_TIMEOUT, 500)
-
-            // Client debug logging
-            // c.register(new LoggingFilter(Logger.getLog(LeoBridge.class.getName()), true));
-
-            messageServiceClient = WebResourceFactory.newResource(IMessageService::class.java, c.target(CLIENT_URI))
-        }
-        httpServer!!.start()
+        this.httpServer.start()
     }
 
     /**
      * Stop leo bridge
      */
     @Synchronized fun stop() {
-        if (httpServer != null)
-            httpServer!!.shutdownNow()
+        this.httpServer.shutdownNow()
     }
 
     fun sendMessage(message: Message) {
-        messageServiceClient!!.send(message)
+        this.messageServiceClient.send(message)
     }
 
     fun sendValue(value: Any) {
-        messageServiceClient!!.send(Message(value))
+        this.messageServiceClient.send(Message(value))
     }
 
     override fun onLeoBridgeServiceMessageReceived(message: Message) {
-        listenerEventDispatcher.emit { r -> r.onLeoBridgeMessageReceived(message) }
+        this.listenerEventDispatcher.emit { r -> r.onLeoBridgeMessageReceived(message) }
     }
 
     override fun close() {

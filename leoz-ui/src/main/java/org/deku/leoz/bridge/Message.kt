@@ -61,7 +61,7 @@ class Message {
         @Throws(IOException::class)
         override fun serialize(value: Message, jgen: JsonGenerator, provider: SerializerProvider) {
             jgen.writeStartObject()
-            for (entry in value.attributes!!.entries) {
+            for (entry in value.attributes.entries) {
 
                 if (entry.value is Date) {
                     jgen.writeFieldName(entry.key.toString())
@@ -75,17 +75,17 @@ class Message {
         }
     }
 
-    private var attributes: HashMap<Any, Any>? = null
+    private var attributes: HashMap<Any, Any>
 
     /**
      * c'tor
      */
     constructor() {
-        attributes = HashMap()
+        this.attributes = HashMap()
     }
 
     constructor(value: Any) : this() {
-        attributes!!.put(DEFAULT_KEY, value)
+        this.attributes.put(DEFAULT_KEY, value)
     }
 
     constructor(attributes: HashMap<Any, Any>) {
@@ -99,7 +99,7 @@ class Message {
      * @param value
      */
     fun put(key: String, value: Any) {
-        attributes!!.put(key, value)
+        this.attributes.put(key, value)
     }
 
     /**
@@ -109,7 +109,7 @@ class Message {
      * @return
      */
     operator fun get(key: String): Any? {
-        return attributes!![key]
+        return attributes[key]
     }
 
     /**
@@ -117,12 +117,12 @@ class Message {
      * @return
      */
     fun get(): Any? {
-        return attributes!![DEFAULT_KEY]
+        return attributes[DEFAULT_KEY]
     }
 
     override fun toString(): String {
         var message = ""
-        for (entry in attributes!!.entries) {
+        for (entry in attributes.entries) {
             if (message.length > 0)
                 message += ", "
             message += String.format("%s:%s", entry.key, entry.value)

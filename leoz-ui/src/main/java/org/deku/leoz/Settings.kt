@@ -23,5 +23,4 @@ class Settings private constructor() {
             return mInstance!!
         }
     }
-
 }

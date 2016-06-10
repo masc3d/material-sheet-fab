@@ -30,7 +30,7 @@ import java.util.concurrent.Executors
  * Created by masc on 22.09.14.
  */
 class DepotListController : Controller(), Initializable {
-    private val mLogger = LogFactory.getLog(this.javaClass)
+    private val log = LogFactory.getLog(this.javaClass)
 
     @FXML
     private lateinit var fxSearchText: TextField
@@ -59,7 +59,7 @@ class DepotListController : Controller(), Initializable {
     var listener: Listener? = null
 
     interface Listener : EventListener {
-        fun onDepotListItemSelected(station: Station)
+        fun onDepotListItemSelected(station: Station?)
     }
 
     /**
@@ -76,7 +76,7 @@ class DepotListController : Controller(), Initializable {
                         Arrays.asList(
                                 *WebserviceFactory.depotService().find(fxSearchText.text)))
             } catch (e: Exception) {
-                mLogger.error(e.message, e)
+                log.error(e.message, e)
                 throw e
             } finally {
                 Platform.runLater { Main.instance().mainController.releaseProgressIndicator() }
@@ -84,11 +84,12 @@ class DepotListController : Controller(), Initializable {
         }
 
         override fun succeeded() {
-            stations = this.value
-            fxDepotTableView.items = stations
-            if (requestedDepotId != null)
-                selectDepot(requestedDepotId)
-            fxSearchText.styleClass.remove("leoz-error")
+            val controller = this@DepotListController
+            controller.stations = this.value
+            controller.fxDepotTableView.items = stations
+            if (controller.requestedDepotId != null)
+                selectDepot(controller.requestedDepotId)
+            controller.fxSearchText.styleClass.remove("leoz-error")
         }
 
         override fun failed() {
@@ -116,8 +117,9 @@ class DepotListController : Controller(), Initializable {
         fxSearchText.textProperty().addListener { obj, oldValue, newValue -> onSearchTextChanged(newValue) }
 
         fxDepotTableView.selectionModel.selectedItemProperty().addListener { obj, oldValue, newValue ->
+            val listener = this.listener
             if (listener != null)
-                listener!!.onDepotListItemSelected(newValue)
+                listener.onDepotListItemSelected(newValue)
         }
 
         // Bind depotlist columns
@@ -160,20 +162,20 @@ class DepotListController : Controller(), Initializable {
     }
 
     private fun selectDepot(id: Int?) {
-        for (i in stations.indices) {
-            val d = stations[i]
+        for (i in this.stations.indices) {
+            val d = this.stations[i]
             if (d.depotNr == id) {
                 fxDepotTableView.selectionModel.select(d)
                 fxDepotTableView.scrollTo(d)
                 fxDepotTableView.requestFocus()
             }
         }
-        requestedDepotId = null
+        this.requestedDepotId = null
     }
 
     fun requestDepotSelection(id: Int?) {
-        requestedDepotId = id
-        if (fxSearchText.text.length == 0 && stations.size > 0) {
+        this.requestedDepotId = id
+        if (fxSearchText.text.length == 0 && this.stations.size > 0) {
             this.selectDepot(id)
         } else {
             fxSearchText.text = ""
@@ -188,6 +190,6 @@ class DepotListController : Controller(), Initializable {
 
     override fun close() {
         super.close()
-        queryTaskExecutor.shutdown()
+        this.queryTaskExecutor.shutdown()
     }
 }

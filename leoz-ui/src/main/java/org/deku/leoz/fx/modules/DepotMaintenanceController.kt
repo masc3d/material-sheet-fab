@@ -35,7 +35,7 @@ class DepotMaintenanceController : ModuleController(), Initializable, DepotListC
         fxDepotListController.activate()
     }
 
-    override fun onDepotListItemSelected(station: Station) {
+    override fun onDepotListItemSelected(station: Station?) {
         fxDepotDetailsController.station = station
     }
 

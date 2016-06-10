@@ -56,7 +56,7 @@ class DebugController : ModuleController(), Initializable {
     }
 
     fun onDepotSelect() {
-        Main.instance().mainController.showModule(Main.instance().mainController.depotMaintenanceModule)
-        Main.instance().mainController.depotMaintenanceModule.selectDepot(800)
+        Main.instance().mainController.showModule(Main.instance().mainController.depotMaintenanceController)
+        Main.instance().mainController.depotMaintenanceController.selectDepot(800)
     }
 }

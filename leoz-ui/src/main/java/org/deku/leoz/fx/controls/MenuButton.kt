@@ -29,6 +29,5 @@ class MenuButton : Button() {
     }
 
     fun onButton(e: ActionEvent) {
-
     }
 }

@@ -28,14 +28,15 @@ class DepotDetailsController : Initializable {
     @FXML
     private lateinit var fxPermissionsPane: Pane
 
-    private var fxFormMain: FXForm<Any>? = null
-    private var fxFormOps: FXForm<Any>? = null
-    private var fxFormAccounting: FXForm<Any>? = null
-    private var fxFormTransfer: FXForm<Any>? = null
-    private var fxFormPermissions: FXForm<Any>? = null
+    private lateinit var fxFormMain: FXForm<Any>
+    private lateinit var fxFormOps: FXForm<Any>
+    private lateinit var fxFormAccounting: FXForm<Any>
+    private lateinit var fxFormTransfer: FXForm<Any>
+    private lateinit var fxFormPermissions: FXForm<Any>
+
     var station: Station? = null
         set(station) {
-            this.station = station
+            field = station
             this.updateTab()
         }
 
@@ -55,31 +56,31 @@ class DepotDetailsController : Initializable {
         fxTabPane.selectionModel.selectedItemProperty().addListener { obj, oldvalue, newValue -> this.updateTab() }
         fxFormMain = FXForm()
 
-        fxFormMain!!.skin = FormSkin(fxFormMain!!)
-        fxFormMain!!.addFilters(IncludeFilter("depotNr", "depotMatchcode", "address1", "address2", "lkz", "plz", "ort", "strasse"))
+        fxFormMain.skin = FormSkin(fxFormMain)
+        fxFormMain.addFilters(IncludeFilter("depotNr", "depotMatchcode", "address1", "address2", "lkz", "plz", "ort", "strasse"))
         fxMainPane.children.add(fxFormMain)
 
         fxFormOps = FXForm()
-        fxFormOps!!.skin = FormSkin(fxFormOps!!)
-        fxFormOps!!.addFilters(IncludeFilter("aktivierungsdatum", "deaktivierungsdatum", "istGueltig", "masterDepot", "ebSdgDepot", "ebDepotAd", "ebGen", "ebUmvDepot", "comCode", "qualitaet", "ladehilfeLinie",
+        fxFormOps.skin = FormSkin(fxFormOps)
+        fxFormOps.addFilters(IncludeFilter("aktivierungsdatum", "deaktivierungsdatum", "istGueltig", "masterDepot", "ebSdgDepot", "ebDepotAd", "ebGen", "ebUmvDepot", "comCode", "qualitaet", "ladehilfeLinie",
                 "ladehilfeWas", "ladehilfeKg", "ladehilfeAb", "strang", "multiBag", "bagKontingent", "bagBemerkung", "bagCo"))
         fxOpsPane.children.add(fxFormOps)
 
         fxFormAccounting = FXForm()
-        fxFormAccounting!!.skin = FormSkin(fxFormAccounting!!)
-        fxFormAccounting!!.addFilters(IncludeFilter("firmenverbund", "kondition", "konditionAbD", "konditionLd", "zahlungsbedingungen", "zahlungsbedingungenR", "verbundenesU", "debitorNr", "kreditorNr", "cod1",
+        fxFormAccounting.skin = FormSkin(fxFormAccounting)
+        fxFormAccounting.addFilters(IncludeFilter("firmenverbund", "kondition", "konditionAbD", "konditionLd", "zahlungsbedingungen", "zahlungsbedingungenR", "verbundenesU", "debitorNr", "kreditorNr", "cod1",
                 "masterVertrag", "ustId", "ekStNr", "hanReg", /*"rName1", "rName2",*/ "rlkz" /*,"rOrt", "rStrasse"*/))
         fxAccountingPane.children.add(fxFormAccounting)
 
         fxFormTransfer = FXForm()
-        fxFormTransfer!!.skin = FormSkin(fxFormTransfer!!)
-        fxFormTransfer!!.addFilters(IncludeFilter("intRoutingLkz", "exportEmail", "exportFtpServer", "exportFtpUser", "exportFtpPwd", "exportToGlo", "exportToXml", "qualiMail", "umRoutung", "xmlStammdaten", /*"eMailPas",*/
+        fxFormTransfer.skin = FormSkin(fxFormTransfer)
+        fxFormTransfer.addFilters(IncludeFilter("intRoutingLkz", "exportEmail", "exportFtpServer", "exportFtpUser", "exportFtpPwd", "exportToGlo", "exportToXml", "qualiMail", "umRoutung", "xmlStammdaten", /*"eMailPas",*/
                 "paXml", "paPdf", "paDruck", "rgGutschrift", "rgRechnung", "mentorDepotNr", "trzProz", "rup", "password", "smspwd"))
         fxTransferPane.children.add(fxFormTransfer)
 
         fxFormPermissions = FXForm()
-        fxFormPermissions!!.skin = FormSkin(fxFormPermissions!!)
-        fxFormPermissions!!.addFilters(IncludeFilter("nnOk", "valOk", "maxValwert", "maxHoeherhaftung", "maxWarenwert"))
+        fxFormPermissions.skin = FormSkin(fxFormPermissions)
+        fxFormPermissions.addFilters(IncludeFilter("nnOk", "valOk", "maxValwert", "maxHoeherhaftung", "maxWarenwert"))
         fxPermissionsPane.children.add(fxFormPermissions)
     }
 }

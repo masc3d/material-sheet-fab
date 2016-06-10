@@ -38,9 +38,17 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     @FXML
     private lateinit var fxProgressIndicator: ProgressIndicator
 
-    private var homeController: HomeController? = null
-    private var depotMaintenanceController: DepotMaintenanceController? = null
-    private var debugController: DebugController? = null
+    val homeController by lazy {
+        ModuleController.fromFxml<HomeController>("/fx/modules/Home.fxml")
+    }
+
+    val depotMaintenanceController by lazy {
+        ModuleController.fromFxml<DepotMaintenanceController>("/fx/modules/DepotMaintenance.fxml")
+    }
+
+    val debugController by lazy {
+        ModuleController.fromFxml<DebugController>("/fx/modules/Debug.fxml")
+    }
 
     /**
      * Currently active module
@@ -51,41 +59,17 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
      */
     private var progressIndicatorActivationCount: Int = 0
 
+    /**
+     * Tracks current content pane transition
+     */
+    private var contentPaneTransition: Transition? = null
+
     override fun initialize(location: URL, resources: ResourceBundle) {
         fxSidebarController.setListener(this)
         LeoBridge.instance().listenerEventDelegate.add(this)
 
-        this.showModule(this.homeModule, false)
+        this.showModule(this.homeController, false)
     }
-
-    /**
-     * Tracks current content pane transition
-     */
-    internal var contentPaneTransition: Transition? = null
-
-    val depotMaintenanceModule: DepotMaintenanceController
-        get() {
-            if (depotMaintenanceController == null) {
-                depotMaintenanceController = ModuleController.fromFxml<DepotMaintenanceController>("/fx/modules/DepotMaintenance.fxml")
-            }
-            return depotMaintenanceController!!
-        }
-
-    val homeModule: HomeController
-        get() {
-            if (homeController == null) {
-                homeController = ModuleController.fromFxml<HomeController>("/fx/modules/Home.fxml")
-            }
-            return homeController!!
-        }
-
-    val debugPane: DebugController
-        get() {
-            if (debugController == null) {
-                debugController = ModuleController.fromFxml<DebugController>("/fx/modules/Debug.fxml")
-            }
-            return debugController!!
-        }
 
     /**
      * Sets and shows a content pane
@@ -168,7 +152,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     /**
      * Tracks current title transition
      */
-    internal var mTitleTransition: Transition? = null
+    internal var titleTransition: Transition? = null
 
     /**
      * Set title
@@ -188,16 +172,16 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
             val ftIn = FadeTransition(Duration.millis(duration), fxTitle)
             ftIn.fromValue = 0.0
             ftIn.toValue = 1.0
-            ftIn.setOnFinished { e -> mTitleTransition = null }
+            ftIn.setOnFinished { e -> titleTransition = null }
 
             // Create chained sequential transition
             val evt: EventHandler<ActionEvent> = EventHandler {
-                mTitleTransition = SequentialTransition(ftOut, ftIn)
-                mTitleTransition!!.play()
+                titleTransition = SequentialTransition(ftOut, ftIn)
+                titleTransition!!.play()
             }
 
-            if (mTitleTransition != null)
-                mTitleTransition!!.onFinished = evt
+            if (titleTransition != null)
+                titleTransition!!.onFinished = evt
             else
                 evt.handle(null)
         } else {
@@ -228,9 +212,9 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     override fun OnSidebarItemSelected(itemType: SidebarController.ItemType) {
         val m: ModuleController
         when (itemType) {
-            SidebarController.ItemType.Home -> m = this.homeModule
-            SidebarController.ItemType.Depots -> m = this.depotMaintenanceModule
-            SidebarController.ItemType.Debug -> m = this.debugPane
+            SidebarController.ItemType.Home -> m = this.homeController
+            SidebarController.ItemType.Depots -> m = this.depotMaintenanceController
+            SidebarController.ItemType.Debug -> m = this.debugController
             else -> throw RuntimeException(String.format("Unknown sidebar item [%s]", itemType))
         }
 
@@ -252,8 +236,8 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
         Platform.runLater {
             if (message.get("view") == "depot") {
                 val id = message.get("id") as Int
-                this.showModule(this.depotMaintenanceModule)
-                this.depotMaintenanceModule.selectDepot(id)
+                this.showModule(this.depotMaintenanceController)
+                this.depotMaintenanceController.selectDepot(id)
             } else {
                 Main.instance().showMessage(String.format("Received message [%s]", message))
             }

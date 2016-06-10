@@ -27,7 +27,7 @@ class SidebarController : Initializable {
     @FXML
     private lateinit var fxDebugButton: Button
 
-    private var buttons: MutableList<Button> = ArrayList()
+    private val buttons: MutableList<Button> = ArrayList()
 
     enum class ItemType {
         Home,
@@ -46,18 +46,15 @@ class SidebarController : Initializable {
     }
 
     fun onHomeButton() {
-        if (listener != null)
-            listener!!.OnSidebarItemSelected(ItemType.Home)
+        this.listener?.OnSidebarItemSelected(ItemType.Home)
     }
 
     fun onDepotButton() {
-        if (listener != null)
-            listener!!.OnSidebarItemSelected(ItemType.Depots)
+        this.listener?.OnSidebarItemSelected(ItemType.Depots)
     }
 
     fun onDebugButton() {
-        if (listener != null)
-            listener!!.OnSidebarItemSelected(ItemType.Debug)
+        this.listener?.OnSidebarItemSelected(ItemType.Debug)
     }
 
     fun highlightByController(module: ModuleController) {
@@ -80,8 +77,8 @@ class SidebarController : Initializable {
     override fun initialize(location: URL, resources: ResourceBundle) {
         fxMenuAccordion.expandedPane = fxMenuPane
 
-        buttons.add(fxHomeButton)
-        buttons.add(fxDepotsButton)
-        buttons.add(fxDebugButton)
+        this.buttons.add(fxHomeButton)
+        this.buttons.add(fxDepotsButton)
+        this.buttons.add(fxDebugButton)
     }
 }
