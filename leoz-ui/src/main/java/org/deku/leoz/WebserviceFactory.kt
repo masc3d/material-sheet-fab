@@ -5,7 +5,9 @@ import org.apache.commons.logging.LogFactory
 import org.deku.leoz.rest.services.internal.v1.StationService
 import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.client.proxy.WebResourceFactory
-import javax.ws.rs.client.Client
+import org.glassfish.jersey.logging.LoggingFeature
+import java.util.logging.Level
+import java.util.logging.Logger
 import javax.ws.rs.client.ClientBuilder
 import javax.ws.rs.client.WebTarget
 
@@ -15,6 +17,8 @@ import javax.ws.rs.client.WebTarget
  * Created by masc on 27.08.14.
  */
 object WebserviceFactory {
+    const val CLIENT_LOG = false
+
     private val log = LogFactory.getLog(WebserviceFactory::class.java)
 
     private val client by lazy({
@@ -23,6 +27,12 @@ object WebserviceFactory {
         client.register(JacksonJsonProvider::class.java)
         client.property(ClientProperties.CONNECT_TIMEOUT, 2000)
         client.property(ClientProperties.READ_TIMEOUT, 2000)
+
+        if (CLIENT_LOG) {
+            val logger = Logger.getLogger(this.javaClass.name)
+            client.register(LoggingFeature(logger, Level.INFO, null, null))
+        }
+
         client
     })
 
