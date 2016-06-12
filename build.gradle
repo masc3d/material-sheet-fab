@@ -39,16 +39,18 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
     // Logging
-    compile 'commons-logging:commons-logging:1.1'
-    compile "ch.qos.logback:logback-classic:1.1.7"
+    compile "commons-logging:commons-logging:1.1"
     compile "org.slf4j:jcl-over-slf4j:1.7.21"
+    def v_logback = '1.1.7'
+    provided "ch.qos.logback:logback-classic:$v_logback"
+    testCompile "ch.qos.logback:logback-classic:$v_logback"
 
     // Misc
-    compile 'com.google.guava:guava:18.0'
-    compile 'org.apache.commons:commons-lang3:3.4'
+    compile "com.google.guava:guava:18.0"
+    compile "org.apache.commons:commons-lang3:3.4"
 
     // JMS
-    provided 'javax.jms:jms-api:1.1-rev-1'
+    provided "javax.jms:jms-api:1.1-rev-1"
 
     // JAX-RS
     provided "javax.ws.rs:javax.ws.rs-api:2.0.1"
@@ -73,13 +75,13 @@ dependencies {
     }
 
     // Mina/SSHD
-    provided 'org.apache.sshd:sshd-core:1.2.0'
+    provided "org.apache.sshd:sshd-core:1.2.0"
 
     // Spring
-    provided 'org.springframework:spring-jms:4.2.6.RELEASE'
+    provided "org.springframework:spring-jms:4.2.6.RELEASE"
 
     // Kryo
-    provided 'com.esotericsoftware:kryo:3.0.3'
+    provided "com.esotericsoftware:kryo:3.0.3"
 
     // Snappy
     provided 'org.xerial.snappy:snappy-java:1.1.2.4'
@@ -88,6 +90,6 @@ dependencies {
     provided "net.java.dev.jna:jna:4.2.2"
     provided "net.java.dev.jna:jna-platform:4.2.2"
 
-    provided 'junit:junit:4.12'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    provided "junit:junit:4.12"
+    testCompile "junit:junit:4.12"
 }
