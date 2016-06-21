@@ -30,6 +30,8 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     @FXML
     private lateinit var fxTitle: Label
     @FXML
+    private lateinit var fxVersion: Label
+    @FXML
     private lateinit var fxContentPaneContainer: AnchorPane
     @FXML
     private lateinit var fxSidebar: Pane
@@ -69,6 +71,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
         LeoBridge.instance().listenerEventDelegate.add(this)
 
         this.showModule(this.homeController, false)
+        this.setVersion("User: Max Mustermann\tVersion: TEST") //TODO: Dynamic information
     }
 
     /**
@@ -187,6 +190,10 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
         } else {
             fxTitle.text = title
         }
+    }
+
+    private fun setVersion(version: String){
+        fxVersion.text = version
     }
 
     /**

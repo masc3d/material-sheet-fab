@@ -82,7 +82,10 @@
                </center>
             </BorderPane>
                 <AnchorPane id="content" fx:id="fxContentPaneContainer" minHeight="0.0" minWidth="0.0" styleClass="leoz-content-pane" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS" />
-                <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" styleClass="leoz-bottom-pane" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+                <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" styleClass="leoz-bottom-pane" GridPane.columnSpan="2" GridPane.rowIndex="2">
+               <children>
+                  <Label fx:id="fxVersion" text="Label" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
+               </children></AnchorPane>
             </children>
         </GridPane>
     </children>
