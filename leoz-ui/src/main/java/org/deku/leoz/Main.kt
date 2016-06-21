@@ -193,7 +193,7 @@ class Main : Application() {
 //        }
 
         // Main scene
-        val scene = Scene(this.mainPane, 1600.0, 800.0)
+        val scene = Scene(this.mainPane, 1366.0, 768.0)
         primaryStage.title = "Leoz UI"
         primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
         primaryStage.scene = scene
