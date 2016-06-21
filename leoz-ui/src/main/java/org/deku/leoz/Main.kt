@@ -196,19 +196,18 @@ class Main : Application() {
 
         // Main scene
         //TODO: User preferences? Check if last size and position should be remembered. Dont think so (PHPR)
-        var primScreenBounds: Rectangle2D = Screen.getPrimary().visualBounds
-        val screenX: Double = primScreenBounds.minX
-        val screenY: Double = primScreenBounds.minY
-        val width: Double = primScreenBounds.width
-        val height: Double = primScreenBounds.height
-        val scene = Scene(this.mainPane, 1366.0, 768.0)
+        var primScreenBounds: Rectangle2D = Screen.getPrimary().visualBounds //Used to access the computers screen resolution/size
+        val scene = Scene(this.mainPane, 1366.0, 768.0) //Set default scene size which is used when primary stage is no more in maximized mode
         primaryStage.title = "Leoz UI"
         primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
         primaryStage.scene = scene
-        primaryStage.x = screenX
-        primaryStage.y = screenY
-        primaryStage.width = width
-        primaryStage.height = height
+        //Set boundaries of primary Stage to visible bounds of the computers main screen ==> Stage is fullscreen sized but not in fullscreen mode
+//        primaryStage.x = primScreenBounds.minX
+//        primaryStage.y = primScreenBounds.minY
+//        primaryStage.width = primScreenBounds.width
+//        primaryStage.height = primScreenBounds.height
+        //Set primary stage maximized. Don't use "isFullscreen", this leads to a "kiosk mode" fullscreen
+        primaryStage.isMaximized = true
         primaryStage.show()
 
         Executors.newSingleThreadExecutor().submit {
