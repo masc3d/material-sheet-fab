@@ -2,11 +2,13 @@ package org.deku.leoz
 
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
+import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.scene.layout.Pane
 import javafx.scene.text.Font
+import javafx.stage.Screen
 import javafx.stage.Stage
 import org.apache.commons.logging.LogFactory
 import org.controlsfx.control.Notifications
@@ -193,10 +195,20 @@ class Main : Application() {
 //        }
 
         // Main scene
+        //TODO: User preferences? Check if last size and position should be remembered. Dont think so (PHPR)
+        var primScreenBounds: Rectangle2D = Screen.getPrimary().visualBounds
+        val screenX: Double = primScreenBounds.minX
+        val screenY: Double = primScreenBounds.minY
+        val width: Double = primScreenBounds.width
+        val height: Double = primScreenBounds.height
         val scene = Scene(this.mainPane, 1366.0, 768.0)
         primaryStage.title = "Leoz UI"
         primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
         primaryStage.scene = scene
+        primaryStage.x = screenX
+        primaryStage.y = screenY
+        primaryStage.width = width
+        primaryStage.height = height
         primaryStage.show()
 
         Executors.newSingleThreadExecutor().submit {
