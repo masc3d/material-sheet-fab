@@ -1,6 +1,9 @@
 buildscript {
     ext {
-        v_kotlin = '1.0.2'
+        v_activemq = '5.13.3'
+        v_kotlin = '1.0.2-1'
+        v_logback = '1.1.7'
+        v_snappy = "1.1.2.4"
     }
 
     dependencies {
@@ -39,15 +42,18 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
     // Logging
-    compile "commons-logging:commons-logging:1.1"
+    compile "commons-logging:commons-logging:1.2"
     compile "org.slf4j:jcl-over-slf4j:1.7.21"
-    def v_logback = '1.1.7'
     provided "ch.qos.logback:logback-classic:$v_logback"
     testCompile "ch.qos.logback:logback-classic:$v_logback"
 
     // Misc
     compile "com.google.guava:guava:18.0"
     compile "org.apache.commons:commons-lang3:3.4"
+
+    // RX
+    compile "io.reactivex:rxjava:1.1.6"
+    compile 'io.reactivex:rxkotlin:0.60.0'
 
     // JMS
     provided "javax.jms:jms-api:1.1-rev-1"
@@ -61,7 +67,6 @@ dependencies {
     provided "javax.servlet:javax.servlet-api:3.1.0"
 
     // ActiveMQ
-    def v_activemq = '5.13.3'
     provided "org.apache.activemq:activemq-broker:$v_activemq"
     provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
     provided "org.apache.activemq:activemq-leveldb-store:$v_activemq"
@@ -84,7 +89,7 @@ dependencies {
     provided "com.esotericsoftware:kryo:3.0.3"
 
     // Snappy
-    provided 'org.xerial.snappy:snappy-java:1.1.2.4'
+    provided "org.xerial.snappy:snappy-java:$v_snappy"
 
     // JNA
     provided "net.java.dev.jna:jna:4.2.2"
@@ -92,4 +97,20 @@ dependencies {
 
     provided "junit:junit:4.12"
     testCompile "junit:junit:4.12"
+}
+
+configurations.all {
+    resolutionStrategy {
+        failOnVersionConflict()
+
+        force "com.fasterxml.jackson.core:jackson-annotations:2.7.4"
+        force "com.google.guava:guava:19.0"
+        force "commons-logging:commons-logging:1.2"
+        force "io.reactivex:rxjava:1.1.6"
+        force "org.fusesource.hawtdispatch:hawtdispatch-transport:1.22"
+        force "org.fusesource.hawtbuf:hawtbuf:1.11"
+        force "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+        force "org.slf4j:slf4j-api:1.7.21"
+        force "org.xerial.snappy:snappy-java:$v_snappy"
+    }
 }
