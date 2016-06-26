@@ -86,11 +86,13 @@ fun <T> Observable<T>.subscribeAwaitableWith(body: TransformingFunctionSubscribe
     val modifier = TransformingFunctionSubscriberModifier(this, subscriber<T>())
     modifier.body()
     val o = modifier.observable.share()
+    
+    val oc = o.toCompletable()
     val s = o.subscribe(modifier.subscriber)
 
     return object : AwaitableSubscription, Subscription by s {
         override fun await() {
-            return o.toCompletable().await()
+            return oc.await()
         }
     }
 }
