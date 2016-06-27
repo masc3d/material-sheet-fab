@@ -85,14 +85,15 @@ class TransformingFunctionSubscriberModifier<T>(observable: Observable<T>, init:
 fun <T> Observable<T>.subscribeAwaitableWith(body: TransformingFunctionSubscriberModifier<T>.() -> Unit): AwaitableSubscription {
     val modifier = TransformingFunctionSubscriberModifier(this, subscriber<T>())
     modifier.body()
-    val o = modifier.observable.share()
-    
-    val oc = o.toCompletable()
-    val s = o.subscribe(modifier.subscriber)
 
-    return object : AwaitableSubscription, Subscription by s {
+    // Create shared/multicast observable
+    val multicast = modifier.observable.share()
+    
+    val sub = multicast.subscribe(modifier.subscriber)
+
+    return object : AwaitableSubscription, Subscription by sub {
         override fun await() {
-            return oc.await()
+            return multicast.toCompletable().await()
         }
     }
 }
