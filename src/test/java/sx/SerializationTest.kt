@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer
+import org.apache.commons.logging.LogFactory
 import org.junit.Assert
 import org.junit.Test
 import java.io.*
@@ -12,6 +13,7 @@ import java.io.*
  * Created by masc on 12.10.15.
  */
 class SerializationTest {
+    val log = LogFactory.getLog(this.javaClass)
 
     data class TestClass1(
             var field1: String = "Hello")
@@ -82,6 +84,6 @@ class SerializationTest {
         var input = ByteArrayInputStream(content)
         var objOut = this.deserializeKryo(input)
 
-        println(objOut)
+        log.info(objOut)
     }
 }
