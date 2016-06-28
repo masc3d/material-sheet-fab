@@ -2,11 +2,17 @@ buildscript {
     repositories {
         jcenter()
     }
+    ext {
+        v_kotlin = '1.0.2-1'
+    }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 repositories {
     mavenCentral()
@@ -35,6 +41,10 @@ android {
 }
 
 dependencies {
+    // Kotlin
+    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+
     compile("sx:sx-common:1.0") {
         exclude group: 'commons-logging'
     }
