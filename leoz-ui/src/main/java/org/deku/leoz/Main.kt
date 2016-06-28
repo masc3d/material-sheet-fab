@@ -2,11 +2,13 @@ package org.deku.leoz
 
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
+import javafx.geometry.Rectangle2D
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.scene.layout.Pane
 import javafx.scene.text.Font
+import javafx.stage.Screen
 import javafx.stage.Stage
 import org.apache.commons.logging.LogFactory
 import org.controlsfx.control.Notifications
@@ -193,10 +195,20 @@ class Main : Application() {
 //        }
 
         // Main scene
-        val scene = Scene(this.mainPane, 1600.0, 800.0)
-        primaryStage.title = "Leoz UI"
+        //TODO: User preferences? Check if last size and position should be remembered. Dont think so (PHPR)
+        var primScreenBounds: Rectangle2D = Screen.getPrimary().visualBounds //Used to access the computers screen resolution/size
+        //Set default scene size which is used when primary stage is no more in maximized mode
+        val scene = Scene(this.mainPane, if(primScreenBounds.width < 1366.0) primScreenBounds.width - 50 else 1366.0, if(primScreenBounds.height < 768.0) primScreenBounds.height - 50 else 768.0)
+        primaryStage.title = localizedResourceBundle.getString("global.title")!!
         primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
         primaryStage.scene = scene
+        //Set boundaries of primary Stage to visible bounds of the computers main screen ==> Stage is fullscreen sized but not in fullscreen mode
+//        primaryStage.x = primScreenBounds.minX
+//        primaryStage.y = primScreenBounds.minY
+//        primaryStage.width = primScreenBounds.width
+//        primaryStage.height = primScreenBounds.height
+        //Set primary stage maximized. Don't use "isFullscreen", this leads to a "kiosk mode" fullscreen
+        primaryStage.isMaximized = true
         primaryStage.show()
 
         Executors.newSingleThreadExecutor().submit {

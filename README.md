@@ -10,7 +10,8 @@
 * [JavaFX Scene Builder](http://gluonhq.com/open-source/scene-builder/)
 
 #### Get up and running ####
-* Clone GIT repository using URL [ssh://git@bitbucket.org/masc3d/leoz](ssh://git@bitbucket.org/masc3d/leoz])
+* Clone GIT repository using URL [ssh://git@git.derkurier.de:13020/leoz/leoz.git](ssh://git@git.derkurier.de:13020/leoz/leoz.git)
+  <pre>git clone --recursive ssh://git@git.derkurier.de:13020/leoz/leoz.git leoz</pre>
 * Open project directory with IntelliJ
 
 ### VM ###
