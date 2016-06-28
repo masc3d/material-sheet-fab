@@ -1,3 +1,6 @@
+group = 'sx'
+version = '1.0'
+
 buildscript {
     ext {
         v_kotlin = '1.0.2-1'
@@ -19,7 +22,6 @@ apply plugin: 'project-report'
 // masc20150818., Keep source compatibility 1.7 for android support
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-version = '1.0'
 
 repositories {
     mavenCentral()
@@ -53,42 +55,14 @@ dependencies {
     compile "io.reactivex:rxjava:1.1.6"
     compile "io.reactivex:rxkotlin:0.60.0"
 
-    // JMS
-    provided "javax.jms:jms-api:1.1-rev-1"
-
     // JAX-RS
     provided "javax.ws.rs:javax.ws.rs-api:2.0.1"
 
     // Ini/conf file support
     compile 'org.ini4j:ini4j:0.5.4'
 
-    provided "javax.servlet:javax.servlet-api:3.1.0"
-
-    // Spring
-    provided "org.springframework:spring-jms:4.2.6.RELEASE"
-
-    // ActiveMQ
-    def v_activemq = '5.13.3'
-    provided "org.apache.activemq:activemq-broker:$v_activemq"
-    provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
-    provided "org.apache.activemq:activemq-leveldb-store:$v_activemq"
-    provided "org.apache.activemq:activemq-jms-pool:$v_activemq"
-    provided "org.apache.activemq:activemq-jaas:$v_activemq"
-    provided "org.apache.activemq:activemq-mqtt:$v_activemq"
-    provided("org.apache.activemq:activemq-http:$v_activemq") {
-        exclude group: 'org.springframework'
-        exclude group: 'org.apache.activemq', module: 'activemq-spring'
-        exclude group: 'org.eclipse.jetty.aggregate'
-    }
-
     // Mina/SSHD
     provided "org.apache.sshd:sshd-core:1.2.0"
-
-    // Kryo
-    provided "com.esotericsoftware:kryo:3.0.3"
-
-    // Snappy
-    provided "org.xerial.snappy:snappy-java:1.1.2.4"
 
     // JNA
     provided "net.java.dev.jna:jna:4.2.2"
