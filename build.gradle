@@ -14,7 +14,7 @@ repositories {
 
 android {
     compileSdkVersion 16
-    buildToolsVersion "23.0.3"
+    buildToolsVersion "24.0.0"
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 16
@@ -35,9 +35,10 @@ android {
 }
 
 dependencies {
-    compile(project(':sx-common')) {
+    compile("sx:sx-common:1.0") {
         exclude group: 'commons-logging'
     }
+
     compile 'com.android.support:support-v4:24.0.0'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
