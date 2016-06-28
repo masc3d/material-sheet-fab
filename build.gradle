@@ -104,6 +104,10 @@ subprojects {
     // Global dependency resolution
     configurations.all {
         resolutionStrategy {
+            dependencySubstitution {
+                substitute module("sx:sx-common") with project(":libs:sx-common")
+            }
+
             // fail eagerly on version conflict (includes transitive dependencies)
             // e.g. multiple different versions of the same dependency (group and name are equal)
             failOnVersionConflict()

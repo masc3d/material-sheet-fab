@@ -22,6 +22,8 @@
       <module name="barbarywatchservice_test" target="1.7" />
       <module name="buildSrc_main" target="1.8" />
       <module name="buildSrc_test" target="1.8" />
+      <module name="jms_main" target="1.5" />
+      <module name="jms_test" target="1.5" />
       <module name="leoz-boot_main" target="1.8" />
       <module name="leoz-boot_test" target="1.8" />
       <module name="leoz-central_main" target="1.8" />
@@ -38,6 +40,8 @@
       <module name="libs_test" target="1.8" />
       <module name="sx-common_main" target="1.7" />
       <module name="sx-common_test" target="1.7" />
+      <module name="sx-jms_main" target="1.7" />
+      <module name="sx-jms_test" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>
