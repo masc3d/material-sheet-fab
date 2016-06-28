@@ -16,7 +16,6 @@ class SshTunnelProviderTest {
     fun setup() {
         val lRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
         lRoot.level = Level.INFO
-
     }
 
     @Test
