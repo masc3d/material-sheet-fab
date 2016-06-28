@@ -1,0 +1,76 @@
+group 'sx'
+version '1.0'
+
+buildscript {
+    ext {
+        v_kotlin = '1.0.2-1'
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'project-report'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
+}
+
+dependencies {
+    compile "sx:sx-common:1.0"
+
+    // Kotlin
+    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+
+    // JMS
+    compile "javax.jms:jms-api:1.1-rev-1"
+
+    // Spring
+    provided "org.springframework:spring-jms:4.3.0.RELEASE"
+
+    // ActiveMQ
+    def v_activemq = '5.13.3'
+    provided "org.apache.activemq:activemq-broker:$v_activemq"
+    provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
+    provided "org.apache.activemq:activemq-leveldb-store:$v_activemq"
+    provided "org.apache.activemq:activemq-jms-pool:$v_activemq"
+    provided "org.apache.activemq:activemq-jaas:$v_activemq"
+    provided "org.apache.activemq:activemq-mqtt:$v_activemq"
+    provided("org.apache.activemq:activemq-http:$v_activemq") {
+        exclude group: 'org.springframework'
+        exclude group: 'org.apache.activemq', module: 'activemq-spring'
+        exclude group: 'org.eclipse.jetty.aggregate'
+    }
+
+    // For ActiveMQ tunnel servlet
+    provided "javax.servlet:javax.servlet-api:3.1.0"
+
+    // Kryo
+    provided "com.esotericsoftware:kryo:3.0.3"
+
+    // Snappy
+    provided "org.xerial.snappy:snappy-java:1.1.2.4"
+
+    testCompile "junit:junit:4.12"
+}
