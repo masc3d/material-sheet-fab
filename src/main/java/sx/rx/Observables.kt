@@ -1,14 +1,14 @@
 package sx.rx
 
-import rx.Completable
-import rx.Observable
-import rx.Scheduler
-import rx.Subscription
+import rx.*
 import rx.lang.kotlin.FunctionSubscriber
 import rx.lang.kotlin.subscriber
 import rx.observables.ConnectableObservable
 import rx.schedulers.Schedulers
+import java.time.Duration
+import java.time.Period
 import java.util.concurrent.Executor
+import java.util.concurrent.TimeUnit
 
 /**
  * Subscribe on a specific executor
@@ -23,13 +23,6 @@ fun <T> Observable<T>.subscribeOn(executor: Executor? = null): Observable<T> {
  */
 fun <T> Observable<T>.observeOn(executor: Executor? = null): Observable<T> {
     return if (executor != null) this.observeOn(Schedulers.from(executor)) else this
-}
-
-/**
- * Subscription which can be sxnchronizued with completion
- */
-interface AwaitableSubscription : Subscription {
-    fun await()
 }
 
 /**
@@ -79,21 +72,56 @@ class TransformingFunctionSubscriberModifier<T>(observable: Observable<T>, init:
     fun onStart(onStartFunction : () -> Unit) : Unit { subscriber = subscriber.onStart(onStartFunction) }
 }
 
+interface AwaitableSubscription : Subscription {
+    fun await()
+    fun await(timeout: Duration)
+}
+
+/**
+ * Subscription which can be synchronized with completion
+ * A shared/multicast Observable is created from the original and subscribed to on creation of this instance.
+ * The class decorates a subscription to this shared Observable.
+ * The await methods pass through to a lazily created Completable.
+ */
+class AwaitableSubscriptionImpl<T>(
+        observable: Observable<T>,
+        subscriber: Subscriber<T>): AwaitableSubscription {
+
+    private val multicast: Observable<T>
+    private val subscription: Subscription
+
+    init {
+        this.multicast = observable.share()
+        this.subscription = this.multicast.subscribe(subscriber)
+    }
+
+    private val completable by lazy {
+        this.multicast.toCompletable()
+    }
+
+    override fun unsubscribe() {
+        this.subscription.unsubscribe()
+    }
+
+    override fun isUnsubscribed(): Boolean {
+        return this.subscription.isUnsubscribed
+    }
+
+    override fun await() {
+        this.completable.await()
+    }
+
+    override fun await(timeout: Duration) {
+        this.completable.await(timeout.toMillis(), TimeUnit.MILLISECONDS)
+    }
+}
+
 /**
  * Subscribe with a subscriber that is configured inside body
  */
-fun <T> Observable<T>.subscribeAwaitableWith(body: TransformingFunctionSubscriberModifier<T>.() -> Unit): AwaitableSubscription {
-    val modifier = TransformingFunctionSubscriberModifier(this, subscriber<T>())
+inline fun <T> Observable<T>.subscribeAwaitableWith(body: TransformingFunctionSubscriberModifier<T>.() -> Unit): AwaitableSubscription {
+    val modifier = TransformingFunctionSubscriberModifier(this)
     modifier.body()
 
-    // Create shared/multicast observable
-    val multicast = modifier.observable.share()
-    
-    val sub = multicast.subscribe(modifier.subscriber)
-
-    return object : AwaitableSubscription, Subscription by sub {
-        override fun await() {
-            return multicast.toCompletable().await()
-        }
-    }
+    return AwaitableSubscriptionImpl(this, modifier.subscriber)
 }
