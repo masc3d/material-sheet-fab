@@ -123,5 +123,5 @@ inline fun <T> Observable<T>.subscribeAwaitableWith(body: TransformingFunctionSu
     val modifier = TransformingFunctionSubscriberModifier(this)
     modifier.body()
 
-    return AwaitableSubscriptionImpl(this, modifier.subscriber)
+    return AwaitableSubscriptionImpl(modifier.observable, modifier.subscriber)
 }
