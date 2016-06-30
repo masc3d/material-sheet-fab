@@ -59,7 +59,7 @@
                               </AnchorPane>
                               <AnchorPane>
                                  <children>
-                                    <TextField prefWidth="170.0" promptText="Sendungsnummer" styleClass="leoz-parcel-search" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
+                                    <TextField prefWidth="170.0" promptText="Sendungsnummer" styleClass="leoz-textfield-search" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
                                        <font>
                                           <Font size="14.0" />
                                        </font></TextField>
