@@ -105,13 +105,13 @@ class AwaitableImpl<T>(
         observable: Observable<T>,
         subscriber: Subscriber<T>) : Awaitable {
     /**
-     * Publish subject used for cancellation
+     * Publish subject used for injecting items ie. CancellationException
      */
     private val subject: Subject<T, T>
     /**
-     * A cancellable observable
+     * The final observable
      */
-    private val cancellable: Observable<T>
+    private val observable: Observable<T>
     /**
      * Subscription
      */
@@ -121,29 +121,44 @@ class AwaitableImpl<T>(
         this.subject = PublishSubject<T>().synchronized()
 
         // Merge subject with observable
-        this.cancellable = this.subject.mergeWith(
-                // Complete the subject when the merged Observable completes
+        this.observable = this.subject.mergeWith(
+                // Complete the subject when the consumed Observable completes
                 observable.doOnCompleted {
                     subject.onCompleted()
                 })
                 // Share it, so a subsequently created Completable works as expected
                 .share()
 
-        this.subscription = this.cancellable.subscribe(subscriber)
+        // Subscribe to it internally
+        this.subscription = this.observable.subscribe(subscriber)
     }
 
+    /**
+     * Lazily created completable for awaiting completion
+     */
     private val completable by lazy {
-        this.cancellable.toCompletable()
+        this.observable.toCompletable()
     }
 
+    /**
+     * Wait for observable to complete
+     */
     override fun await() {
         this.completable.await()
     }
 
+    /**
+     * Wait for observable to complete
+     * @param timeout Timeout
+     * @param unit Timeout unit
+     */
     override fun await(timeout: Long, unit: TimeUnit) {
         this.completable.await(timeout, unit)
     }
 
+    /**
+     * Cancel observable
+     */
     override fun cancel() {
         this.subject.onError(CancellationException())
     }
