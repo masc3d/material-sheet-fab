@@ -23,7 +23,10 @@ Contains development host resources, eg. MYSQL and application server
 
 #### Get up and running ####
 * Go to <project directory>/vm
-* Run command `vagrant up`
+* Install vagrant plugin for keeping guest additions up-to-date
+    * `vagrant plugin install vagrant-vbguest`
+* Start VM
+    * `vagrant up`
 
 ## Contribution guidelines ##
 
