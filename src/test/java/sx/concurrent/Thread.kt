@@ -1,6 +1,7 @@
 package sx.concurrent
 
 import org.apache.commons.logging.LogFactory
+import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
 import rx.Observable
@@ -9,6 +10,7 @@ import rx.lang.kotlin.subscribeWith
 import rx.schedulers.Schedulers
 import sx.rx.subscribeAwaitableWith
 import java.lang.Thread
+import java.util.concurrent.CancellationException
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 
@@ -56,7 +58,13 @@ class Thread {
                     }
                 }
 
-        s.unsubscribe()
-        s.await()
+        Thread.sleep(3000)
+        s.cancel()
+        try {
+            s.await()
+            Assert.fail("Expected ${CancellationException::class}")
+        } catch(e: CancellationException) {
+            log.error(e.message, e)
+        }
     }
 }
