@@ -13,7 +13,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.box = "ubuntu-1404-x64-vbox-puppet"
 
   # masc20140722. default vbox base box
-  config.vm.box = "bento/ubuntu-14.04"
+  config.vm.box = "masc/ubuntu-14-04"
 
   # masc20140721. basic settings, like box url, hostname etc.
   # config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/debian-73-x64-virtualbox-puppet.box"

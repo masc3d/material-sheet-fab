@@ -17,4 +17,4 @@ CREATE TABLE `mst_bundle_version` (
   `version` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `idx_name_bundle` (`alias`,`bundle`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
