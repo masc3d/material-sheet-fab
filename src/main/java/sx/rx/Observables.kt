@@ -2,11 +2,14 @@ package sx.rx
 
 import rx.*
 import rx.lang.kotlin.FunctionSubscriber
+import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.subscriber
+import rx.lang.kotlin.synchronized
 import rx.observables.ConnectableObservable
 import rx.schedulers.Schedulers
+import rx.subjects.Subject
 import java.time.Duration
-import java.time.Period
+import java.util.concurrent.CancellationException
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
@@ -64,64 +67,94 @@ class TransformingFunctionSubscriberModifier<T>(observable: Observable<T>, init:
         this.observable = observable
     }
 
-    fun observeOn(observeOnFunction: () -> Scheduler) : Unit { observable = observable.observeOn(observeOnFunction()) }
-    fun transform(onTransformFunction: (o: Observable<T>) -> Observable<T>) : Unit { observable = onTransformFunction(observable) }
-    fun onCompleted(onCompletedFunction: () -> Unit) : Unit { subscriber = subscriber.onCompleted(onCompletedFunction) }
-    fun onError(onErrorFunction: (t : Throwable) -> Unit) : Unit { subscriber = subscriber.onError(onErrorFunction) }
-    fun onNext(onNextFunction: (t : T) -> Unit) : Unit { subscriber = subscriber.onNext(onNextFunction) }
-    fun onStart(onStartFunction : () -> Unit) : Unit { subscriber = subscriber.onStart(onStartFunction) }
+    fun observeOn(observeOnFunction: () -> Scheduler): Unit {
+        observable = observable.observeOn(observeOnFunction())
+    }
+
+    fun transform(onTransformFunction: (o: Observable<T>) -> Observable<T>): Unit {
+        observable = onTransformFunction(observable)
+    }
+
+    fun onCompleted(onCompletedFunction: () -> Unit): Unit {
+        subscriber = subscriber.onCompleted(onCompletedFunction)
+    }
+
+    fun onError(onErrorFunction: (t: Throwable) -> Unit): Unit {
+        subscriber = subscriber.onError(onErrorFunction)
+    }
+
+    fun onNext(onNextFunction: (t: T) -> Unit): Unit {
+        subscriber = subscriber.onNext(onNextFunction)
+    }
+
+    fun onStart(onStartFunction: () -> Unit): Unit {
+        subscriber = subscriber.onStart(onStartFunction)
+    }
 }
 
-interface AwaitableSubscription : Subscription {
+interface Awaitable {
     fun await()
-    fun await(timeout: Duration)
+    fun await(timeout: Long, unit: TimeUnit)
+    fun cancel()
 }
 
 /**
- * Subscription which can be synchronized with completion
- * A shared/multicast Observable is created from the original and subscribed to on creation of this instance.
- * The class decorates a subscription to this shared Observable.
- * The await methods pass through to a lazily created Completable.
+ * Specific subscription which can only be awaited for or cancelled.
  */
-class AwaitableSubscriptionImpl<T>(
+class AwaitableImpl<T>(
         observable: Observable<T>,
-        subscriber: Subscriber<T>): AwaitableSubscription {
-
-    private val multicast: Observable<T>
+        subscriber: Subscriber<T>) : Awaitable {
+    /**
+     * Publish subject used for cancellation
+     */
+    private val subject: Subject<T, T>
+    /**
+     * A cancellable observable
+     */
+    private val cancellable: Observable<T>
+    /**
+     * Subscription
+     */
     private val subscription: Subscription
 
     init {
-        this.multicast = observable.share()
-        this.subscription = this.multicast.subscribe(subscriber)
+        this.subject = PublishSubject<T>().synchronized()
+
+        // Merge subject with observable
+        this.cancellable = this.subject.mergeWith(
+                // Complete the subject when the merged Observable completes
+                observable.doOnCompleted {
+                    subject.onCompleted()
+                })
+                // Share it, so a subsequently created Completable works as expected
+                .share()
+
+        this.subscription = this.cancellable.subscribe(subscriber)
     }
 
     private val completable by lazy {
-        this.multicast.toCompletable()
-    }
-
-    override fun unsubscribe() {
-        this.subscription.unsubscribe()
-    }
-
-    override fun isUnsubscribed(): Boolean {
-        return this.subscription.isUnsubscribed
+        this.cancellable.toCompletable()
     }
 
     override fun await() {
         this.completable.await()
     }
 
-    override fun await(timeout: Duration) {
-        this.completable.await(timeout.toMillis(), TimeUnit.MILLISECONDS)
+    override fun await(timeout: Long, unit: TimeUnit) {
+        this.completable.await(timeout, unit)
+    }
+
+    override fun cancel() {
+        this.subject.onError(CancellationException())
     }
 }
 
 /**
  * Subscribe with a subscriber that is configured inside body
  */
-inline fun <T> Observable<T>.subscribeAwaitableWith(body: TransformingFunctionSubscriberModifier<T>.() -> Unit): AwaitableSubscription {
+inline fun <T> Observable<T>.subscribeAwaitableWith(body: TransformingFunctionSubscriberModifier<T>.() -> Unit): Awaitable {
     val modifier = TransformingFunctionSubscriberModifier(this)
     modifier.body()
 
-    return AwaitableSubscriptionImpl(modifier.observable, modifier.subscriber)
+    return AwaitableImpl(modifier.observable, modifier.subscriber)
 }
