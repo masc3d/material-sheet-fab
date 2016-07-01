@@ -126,29 +126,31 @@ class AwaitableImpl<T>(
                 observable.doOnCompleted {
                     subject.onCompleted()
                 })
-                // Share it, so a subsequently created Completable works as expected
-                .share()
+                // Cache items, so the Completable used for waiting seems the same sequence/completion
+                // REMARK/BUG: share() misbehaves, re-emits items when {@link Completable#await} is called
+                // after the Observable has completed (no matter when the Completable actually has been created)
+                .cache()
 
         // Subscribe to it internally
         this.subscription = this.observable.subscribe(subscriber)
     }
 
     /**
-     * Lazily created completable for awaiting completion
+     * Lazily created {@link rx.Completable} for awaiting completion
      */
-    private val completable by lazy {
+    private val completable: Completable by lazy {
         this.observable.toCompletable()
     }
 
     /**
-     * Wait for observable to complete
+     * Wait for completion
      */
     override fun await() {
         this.completable.await()
     }
 
     /**
-     * Wait for observable to complete
+     * Wait for completion
      * @param timeout Timeout
      * @param unit Timeout unit
      */
