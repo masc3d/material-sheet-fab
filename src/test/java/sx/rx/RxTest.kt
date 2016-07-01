@@ -1,6 +1,6 @@
 package sx.rx
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
@@ -32,7 +32,7 @@ fun <T> concat(observables: List<Observable<T>>): Observable<T> {
  * Created by masc on 23/06/16.
  */
 class RxTest {
-    val log = LogFactory.getLog(this.javaClass)
+    val log = LoggerFactory.getLogger(this.javaClass)
     final val DELAY = 150L
     final val COUNT = 10
 
@@ -147,6 +147,34 @@ class RxTest {
 
     @Ignore
     @Test
+    fun testRxCacheMerged() {
+        val emitCount = AtomicInteger(0)
+
+        val ov = this.observableMergedDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+
+        val cov = ov
+                .subscribeOn(Schedulers.newThread())
+                .cache()
+
+        cov.subscribe {
+            i ->
+            log.info("F ${i}")
+        }
+
+        // Wait until ~half the items have been emitted
+        Thread.sleep(DELAY * COUNT / 2)
+
+        cov.subscribe({ i ->
+            Assert.assertFalse("Blocking until the party is over.",
+                    i < COUNT && emitCount.get() == COUNT)
+            log.info(String.format("Observed [%d]", i))
+        })
+
+        cov.toCompletable().await()
+    }
+
+    @Ignore
+    @Test
     fun testRxCacheCompletableAfterCompletion() {
         val o = this.observableDelayedNumbers(COUNT, DELAY)
                 .subscribeOn(Schedulers.newThread())
@@ -205,7 +233,7 @@ class RxTest {
             Assert.fail("Expected ${CancellationException::class}")
         } catch(e: CancellationException) {
         }
-        
+
         Assert.assertTrue(seenError)
     }
 
