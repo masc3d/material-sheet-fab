@@ -1,7 +1,7 @@
 package sx.rsync
 
 import org.apache.commons.lang3.SystemUtils
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.EmbeddedExecutable
 import sx.ssh.SshTunnelProvider
 import java.io.File
@@ -13,7 +13,7 @@ import java.util.*
  */
 class Rsync() {
     companion object {
-        val log = LogFactory.getLog(Rsync::class.java)
+        val log = LoggerFactory.getLogger(Rsync::class.java)
 
         val executable = EmbeddedExecutable("sx-rsync")
     }

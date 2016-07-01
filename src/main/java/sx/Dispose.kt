@@ -1,13 +1,13 @@
 package sx
 
 import com.google.common.base.Stopwatch
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 
 /**
  * Created by masc on 07.07.15.
  */
 object Dispose {
-    internal var log = LogFactory.getLog(Dispose::class.java)
+    internal var log = LoggerFactory.getLogger(Dispose::class.java)
 
     /**
      * Customized disposal

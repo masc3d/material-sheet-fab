@@ -1,7 +1,8 @@
 package sx.junit;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.AssumptionViolatedException;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * Created by masc on 14.04.15.
  */
 public class LoggingStopwatchRule extends Stopwatch {
-    private static final Log logger = LogFactory.getLog(LoggingStopwatchRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoggingStopwatchRule.class);
 
     private static void logInfo(Description description, String status, long nanos) {
         String testName = description.getDisplayName();

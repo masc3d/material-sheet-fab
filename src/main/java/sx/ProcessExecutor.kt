@@ -1,7 +1,7 @@
 package sx
 
 import com.google.common.base.StandardSystemProperty
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -26,7 +26,7 @@ class ProcessExecutor @JvmOverloads constructor(
 :
         Disposable
 {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
     var process: Process? = null
         private set
     private var outputReaderThread: StreamReaderThread? = null

@@ -32,7 +32,8 @@ import com.sun.jna.platform.win32.W32Errors;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.PointerByReference;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +44,7 @@ import java.util.List;
  * @author ntoskrnl, masc
  */
 public class WindowsShellLink {
-    private static final Log logger = LogFactory.getLog(WindowsShellLink.class);
+    private static final Logger logger = LoggerFactory.getLogger(WindowsShellLink.class);
 
     private static final String CLSID_ShellLink = "{00021401-0000-0000-C000-000000000046}";
     private static final String IID_IShellLinkW = "{000214F9-0000-0000-C000-000000000046}";

@@ -1,7 +1,7 @@
 package sx.ssh
 
 import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.client.session.ClientSession
 import org.apache.sshd.common.session.Session
@@ -38,7 +38,7 @@ class SshTunnel(
     class AuthenticationException : Exception() {}
 
     /** Logger */
-    private val log: Log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
     /** Sync object */
     private val sync = Object()
     /** SSH client session */

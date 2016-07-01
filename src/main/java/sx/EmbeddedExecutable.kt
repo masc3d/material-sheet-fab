@@ -1,7 +1,7 @@
 package sx
 
 import org.apache.commons.lang3.SystemUtils
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import java.io.File
@@ -21,7 +21,7 @@ class EmbeddedExecutable(
         /** Rsync executable base filename */
         public var baseFilename: String) {
 
-    val log = LogFactory.getLog(Rsync::class.java)
+    val log = LoggerFactory.getLogger(Rsync::class.java)
 
     /** Rsync executable file name */
     val filename: String by lazy {
