@@ -3,7 +3,7 @@ version = '1.0'
 
 buildscript {
     ext {
-        v_kotlin = '1.0.2-1'
+        v_kotlin = '1.0.3'
     }
 
     dependencies {
@@ -42,9 +42,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
     // Logging
-    compile "org.slf4j:slf4j-api:1.7.21"
-    compile "org.slf4j:jcl-over-slf4j:1.7.21"
-    compile "commons-logging:commons-logging:1.2"
+    def v_slf4j = '1.7.21'
+    compile "org.slf4j:slf4j-api:$v_slf4j"
+    compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
     provided "ch.qos.logback:logback-classic:1.1.7"
 
     // Misc
