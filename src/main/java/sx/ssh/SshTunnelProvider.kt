@@ -1,6 +1,6 @@
 package sx.ssh
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import java.net.BindException
 import java.time.Duration
 import java.util.*
@@ -16,7 +16,7 @@ class SshTunnelProvider(
         val localPortRange: IntRange,
         vararg sshHosts: SshHost
 ) {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Synchronization object */
     private val sync = Object()

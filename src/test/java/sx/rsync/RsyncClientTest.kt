@@ -2,7 +2,7 @@ package sx.rsync
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
@@ -18,7 +18,7 @@ import kotlin.concurrent.thread
  */
 @Ignore
 class RsyncClientTest {
-    val log = LogFactory.getLog(this.javaClass)
+    val log = LoggerFactory.getLogger(this.javaClass)
 
     val rsyncSource = Rsync.URI("rsync://leoz@10.211.55.7:13002/bundles/leoz-boot/0.4-RELEASE/win64")
     val rsyncPassword = "2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x"

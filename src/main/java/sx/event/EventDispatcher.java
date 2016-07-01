@@ -2,8 +2,8 @@ package sx.event;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.List;
  * Created by masc on 11.08.14.
  */
 public abstract class EventDispatcher<T extends EventListener> implements EventDelegate<T> {
-    private Log mLog = LogFactory.getLog(this.getClass());
+    private Logger mLog = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Listener reference with type information

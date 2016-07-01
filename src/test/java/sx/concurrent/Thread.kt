@@ -1,6 +1,6 @@
 package sx.concurrent
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
@@ -18,7 +18,7 @@ import kotlin.concurrent.thread
  * Created by masc on 29/06/16.
  */
 class Thread {
-    val log = LogFactory.getLog(this.javaClass)
+    val log = LoggerFactory.getLogger(this.javaClass)
 
     @Ignore
     @Test

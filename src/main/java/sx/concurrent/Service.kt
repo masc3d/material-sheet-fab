@@ -1,6 +1,6 @@
 package sx.concurrent
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.Lifecycle
 import sx.concurrent.task.DynamicScheduledExecutorService
 import java.time.Duration
@@ -25,7 +25,7 @@ abstract class Service(
         private val interruptOnCancel: Boolean = true)
 :
         Lifecycle {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
     private val lock = ReentrantLock()
 
     /** Primary service task future */

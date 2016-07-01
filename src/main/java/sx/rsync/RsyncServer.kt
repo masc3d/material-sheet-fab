@@ -1,6 +1,6 @@
 package sx.rsync
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import org.ini4j.Ini
 import sx.Disposable
 import sx.ProcessExecutor
@@ -20,7 +20,7 @@ class RsyncServer(
         /** Embedded configuration */
         val configuration: RsyncServer.Configuration? = null) : Disposable {
 
-    val log = LogFactory.getLog(RsyncClient::class.java)
+    val log = LoggerFactory.getLogger(RsyncClient::class.java)
     var processExecutor: ProcessExecutor? = null
 
     /**
@@ -31,7 +31,7 @@ class RsyncServer(
             val CONFIG_FILENAME = "rsyncd.conf"
             val SECRETS_FILENAME = "rsyncd.secrets"
         }
-        private val log = LogFactory.getLog(this.javaClass)
+        private val log = LoggerFactory.getLogger(this.javaClass)
 
         /** Bind address */
         var address: String? = null

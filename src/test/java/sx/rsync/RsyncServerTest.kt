@@ -1,6 +1,6 @@
 package sx.rsync
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import org.junit.Ignore
 import org.junit.Test
 import java.nio.file.Paths
@@ -10,7 +10,7 @@ import java.nio.file.Paths
  */
 @Ignore
 class RsyncServerTest {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val modulePath = Paths.get("").toAbsolutePath()
             .parent
