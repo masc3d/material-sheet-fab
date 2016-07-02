@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
-import org.slf4j.LoggerFactory
 import sx.ssh.SshHost
 import sx.ssh.SshTunnelProvider
 import java.nio.file.Paths

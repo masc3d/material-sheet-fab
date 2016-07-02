@@ -1,5 +1,6 @@
 package sx.rx
 
+import org.slf4j.LoggerFactory
 import rx.*
 import rx.lang.kotlin.FunctionSubscriber
 import rx.lang.kotlin.PublishSubject
@@ -8,7 +9,6 @@ import rx.lang.kotlin.synchronized
 import rx.observables.ConnectableObservable
 import rx.schedulers.Schedulers
 import rx.subjects.Subject
-import java.time.Duration
 import java.util.concurrent.CancellationException
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
@@ -75,6 +75,10 @@ class TransformingFunctionSubscriberModifier<T>(observable: Observable<T>, init:
         observable = onTransformFunction(observable)
     }
 
+    fun compose(onComposeFunction: () -> Observable.Transformer<T, T>): Unit {
+        observable = observable.compose(onComposeFunction())
+    }
+
     fun onCompleted(onCompletedFunction: () -> Unit): Unit {
         subscriber = subscriber.onCompleted(onCompletedFunction)
     }
@@ -92,18 +96,24 @@ class TransformingFunctionSubscriberModifier<T>(observable: Observable<T>, init:
     }
 }
 
-interface Awaitable {
+/**
+ * Specific subscription which can be awaited on or cancalled
+ */
+interface Awaitable : Subscription {
     fun await()
     fun await(timeout: Long, unit: TimeUnit)
     fun cancel()
 }
 
 /**
- * Specific subscription which can only be awaited for or cancelled.
+ * Awaitable implementation
  */
 class AwaitableImpl<T>(
         observable: Observable<T>,
         subscriber: Subscriber<T>) : Awaitable {
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     /**
      * Publish subject used for injecting items ie. CancellationException
      */
@@ -122,10 +132,11 @@ class AwaitableImpl<T>(
 
         // Merge subject with observable
         this.observable = this.subject.mergeWith(
-                // Complete the subject when the consumed Observable completes
-                observable.doOnCompleted {
-                    subject.onCompleted()
-                })
+                // Complete the subject when the Observable completes
+                observable
+                        .doOnCompleted {
+                            subject.onCompleted()
+                        })
                 // Cache items, so the Completable used for waiting seems the same sequence/completion
                 // REMARK/BUG: share() misbehaves, re-emits items when {@link Completable#await} is called
                 // after the Observable has completed (no matter when the Completable actually has been created)
@@ -163,6 +174,20 @@ class AwaitableImpl<T>(
      */
     override fun cancel() {
         this.subject.onError(CancellationException())
+    }
+
+    /**
+     * @see {@link rx.Subscription#isUnsubscribed}
+     */
+    override fun isUnsubscribed(): Boolean {
+        return this.subscription.isUnsubscribed
+    }
+
+    /**
+     * @see {@link rx.Subscription#unsubscribe}
+     */
+    override fun unsubscribe() {
+        this.subscription.unsubscribe()
     }
 }
 
