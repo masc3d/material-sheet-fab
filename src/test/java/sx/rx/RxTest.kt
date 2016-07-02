@@ -7,6 +7,7 @@ import org.junit.Test
 import rx.Observable
 import rx.lang.kotlin.subscribeWith
 import rx.schedulers.Schedulers
+import sx.logging.slf4j.*
 import java.util.concurrent.CancellationException
 import java.util.concurrent.atomic.AtomicInteger
 
