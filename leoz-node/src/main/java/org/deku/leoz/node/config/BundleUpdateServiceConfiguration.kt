@@ -1,6 +1,5 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.BundleUpdateService
 import org.deku.leoz.bundle.Bundles
@@ -10,6 +9,7 @@ import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.peer.RemotePeerSettings
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -29,7 +29,7 @@ import javax.inject.Named
 @Configuration
 @Lazy(false)
 open class BundleUpdateServiceConfiguration {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Named
     @ConfigurationProperties(prefix = "update")

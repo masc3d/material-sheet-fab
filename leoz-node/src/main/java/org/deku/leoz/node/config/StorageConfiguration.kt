@@ -1,8 +1,7 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.App
+import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import java.io.File
 
@@ -19,7 +18,7 @@ open class StorageConfiguration protected constructor(appName: String)
         val instance by lazy({ injectableInstance.get() })
     }
 
-    private var log: Log = LogFactory.getLog(this.javaClass)
+    private var log = LoggerFactory.getLogger(this.javaClass)
 
     // Directories
     /** Local embedded activemq data directory */

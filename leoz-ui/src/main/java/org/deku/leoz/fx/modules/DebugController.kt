@@ -4,12 +4,12 @@ import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Main
 import org.deku.leoz.Settings
 import org.deku.leoz.bridge.LeoBridge
 import org.deku.leoz.bridge.Message
 import org.deku.leoz.fx.ModuleController
+import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.*
 
@@ -17,7 +17,7 @@ import java.util.*
  * Created by masc on 27.09.14.
  */
 class DebugController : ModuleController(), Initializable {
-    internal var log = LogFactory.getLog(DebugController::class.java)
+    internal var log = LoggerFactory.getLogger(DebugController::class.java)
 
     @FXML
     private lateinit var fxLeoBridgeMessageTextField: TextField

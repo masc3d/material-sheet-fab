@@ -1,7 +1,7 @@
 package org.deku.leoz.bundle
 
 import org.apache.commons.lang3.SystemUtils
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import java.io.File
@@ -16,7 +16,7 @@ class BundleInstaller(
         /** Path containing bundles */
         public val bundleContainerPath: File) {
 
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
         private val READY_SUFFIX = ".ready"

@@ -1,7 +1,7 @@
 package org.deku.leoz.central
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.config.StorageConfiguration
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
@@ -17,7 +17,7 @@ import org.springframework.core.annotation.Order
 @ComponentScan(lazyInit = true)
 open class Main : org.deku.leoz.node.Main() {
     companion object {
-        private val log = LogFactory.getLog(Main::class.java)
+        private val log = LoggerFactory.getLogger(Main::class.java)
 
         /**
          * Main entry point

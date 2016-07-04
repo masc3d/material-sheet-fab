@@ -1,10 +1,10 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.data.entities.master.*
 import org.deku.leoz.node.data.sync.EntityConsumer
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
@@ -27,7 +27,7 @@ import kotlin.properties.Delegates
 @Profile(App.PROFILE_CLIENT_NODE)
 @Lazy(false)
 open class EntitySyncConfiguration {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     private lateinit var executorService: ScheduledExecutorService

@@ -2,12 +2,12 @@ package org.deku.leoz.node.services
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
+import org.slf4j.LoggerFactory
 import sx.concurrent.Service
 import sx.jms.Channel
 import sx.jms.Handler
@@ -29,7 +29,7 @@ class AuthorizationClientService(
                 period = Duration.ofSeconds(60)),
         Handler<AuthorizationMessage>
 {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val identity: Identity
         get() = identitySupplier()

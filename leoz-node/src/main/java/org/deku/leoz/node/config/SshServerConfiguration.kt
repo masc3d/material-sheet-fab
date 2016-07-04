@@ -1,6 +1,5 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.LogFactory
 import org.apache.sshd.common.NamedFactory
 import org.apache.sshd.common.channel.Channel
 import org.apache.sshd.server.SshServer
@@ -11,6 +10,7 @@ import org.apache.sshd.server.forward.DirectTcpipFactoryFixed
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
 import org.apache.sshd.server.session.ServerSession
 import org.deku.leoz.config.SshConfiguration
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import java.io.File
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @Configuration
 @Lazy(false)
 open class SshServerConfiguration {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
     private val sshServer: SshServer
 
     init {

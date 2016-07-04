@@ -2,7 +2,7 @@ package org.deku.leoz
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.google.common.base.CharMatcher
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import java.io.Serializable
 import java.net.Inet4Address
 import java.net.Inet6Address
@@ -28,7 +28,7 @@ class SystemInformation : Serializable {
         private const val serialVersionUID = 1558995436722991648L
 
         /** Logger */
-        private val log = LogFactory.getLog(SystemInformation::class.java)
+        private val log = LoggerFactory.getLogger(SystemInformation::class.java)
 
         /**
          * Find appropriate ipv4 address

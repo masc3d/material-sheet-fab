@@ -1,15 +1,16 @@
 package org.deku.leoz.central.services
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.central.data.repositories.NodeRepository
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
+import org.slf4j.LoggerFactory
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
 import sx.jms.Channel
 import sx.jms.Handler
+import sx.logging.slf4j.info
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -20,7 +21,7 @@ import javax.inject.Named
 class AuthorizationService
 :
         Handler<AuthorizationRequestMessage> {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     private lateinit var nodeRepository: NodeRepository

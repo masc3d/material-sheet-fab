@@ -1,7 +1,7 @@
 package org.deku.leoz.central.config
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.Channel
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @Configuration
 @Lazy(false)
 open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListenerConfiguration() {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     private lateinit var executorService: ExecutorService

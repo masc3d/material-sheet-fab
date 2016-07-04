@@ -1,6 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -15,7 +15,7 @@ import javax.annotation.PreDestroy
 @Configuration
 @Lazy(false)
 open class ExecutorConfiguration {
-    val log = LogFactory.getLog(ExecutorConfiguration::class.java.name)
+    val log = LoggerFactory.getLogger(ExecutorConfiguration::class.java.name)
 
     /**
      * Scheduled thread executor

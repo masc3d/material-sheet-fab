@@ -1,10 +1,9 @@
 package org.deku.leoz.central.services
 
 import com.google.common.base.Stopwatch
-import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.core.types.dsl.DateTimePath
 import com.querydsl.core.types.dsl.EntityPathBase
-import org.apache.commons.logging.LogFactory
+import com.querydsl.jpa.impl.JPAQuery
 import org.deku.leoz.central.data.entities.jooq.Tables
 import org.deku.leoz.central.data.entities.jooq.tables.*
 import org.deku.leoz.central.data.entities.jooq.tables.records.*
@@ -16,13 +15,13 @@ import org.deku.leoz.node.data.repositories.system.PropertyRepository
 import org.jooq.Record
 import org.jooq.TableField
 import org.jooq.impl.TableImpl
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionTemplate
-import sx.Disposable
 import sx.concurrent.Service
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
@@ -57,7 +56,7 @@ constructor(
     }
 
     companion object {
-        private val log = LogFactory.getLog(DatabaseSyncService::class.java)
+        private val log = LoggerFactory.getLogger(DatabaseSyncService::class.java)
 
         /**
          * Convert mysql mst_station record to jpa entity

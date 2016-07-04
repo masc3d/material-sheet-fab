@@ -2,7 +2,7 @@ package org.deku.leoz.bundle
 
 import com.google.common.hash.Hashing
 import org.apache.commons.lang3.SystemUtils
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.ProcessExecutor
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
  */
 @XmlRootElement
 class Bundle : Serializable {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Bundle path */
     var path: File? = null

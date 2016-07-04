@@ -1,6 +1,6 @@
 package org.deku.leoz.central
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.LazyInstance
 
 /**
@@ -9,7 +9,7 @@ import sx.LazyInstance
  * Created by masc on 30.05.15.
  */
 class App private constructor() : org.deku.leoz.node.App() {
-    private val log = LogFactory.getLog(App::class.java)
+    private val log = LoggerFactory.getLogger(App::class.java)
 
     override val name: String
         get() = "leoz-central"

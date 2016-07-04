@@ -1,10 +1,10 @@
 package org.deku.leoz.central.services
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.io.WatchServiceFactory
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import org.deku.leoz.node.services.FileSyncServiceBase
+import org.slf4j.LoggerFactory
 import sx.concurrent.Service
 import sx.jms.Channel
 import java.io.File
@@ -39,7 +39,7 @@ class FileSyncHostService(
             val outDirectory: File) {
     }
 
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
     /** Known nodes */
     private val nodes = HashMap<Identity.Key, Node>()
     /** Known nodes by watchkey */

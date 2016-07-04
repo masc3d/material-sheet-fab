@@ -1,16 +1,16 @@
 package org.deku.leoz.messaging
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.MessagingTest
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.junit.Test
+import org.slf4j.LoggerFactory
 import javax.jms.DeliveryMode
 
 /**
  * Created by masc on 20/02/16.
  */
 class QueueTest : MessagingTest() {
-    val log = LogFactory.getLog(this.javaClass)
+    val log = LoggerFactory.getLogger(this.javaClass)
     val configuration = ActiveMQConfiguration.instance
 
     @Test

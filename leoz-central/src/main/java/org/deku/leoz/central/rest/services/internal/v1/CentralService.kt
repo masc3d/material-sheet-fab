@@ -1,7 +1,7 @@
 package org.deku.leoz.central.rest.services.internal.v1
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.services.DatabaseSyncService
+import org.slf4j.LoggerFactory
 import sx.rs.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType
 @Path("internal/v1/central")
 @Produces(MediaType.APPLICATION_JSON)
 class CentralService : org.deku.leoz.rest.services.internal.v1.CentralService {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     lateinit var databaseSyncService: DatabaseSyncService

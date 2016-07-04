@@ -1,6 +1,6 @@
 package org.deku.leoz.bundle
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import sx.rsync.Rsync
@@ -25,7 +25,7 @@ class BundleRepository(
         val rsyncPassword: String = "",
         val sshTunnelProvider: SshTunnelProvider? = null)
 {
-    val log = LogFactory.getLog(this.javaClass)
+    val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
         val DOWNLOAD_SUFFIX = ".download"

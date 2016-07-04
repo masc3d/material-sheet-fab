@@ -1,11 +1,11 @@
 package org.deku.leoz
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.rest.services.internal.v1.StationService
 import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.client.proxy.WebResourceFactory
 import org.glassfish.jersey.logging.LoggingFeature
+import org.slf4j.LoggerFactory
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.ws.rs.client.ClientBuilder
@@ -19,7 +19,7 @@ import javax.ws.rs.client.WebTarget
 object WebserviceFactory {
     const val CLIENT_LOG = false
 
-    private val log = LogFactory.getLog(WebserviceFactory::class.java)
+    private val log = LoggerFactory.getLogger(WebserviceFactory::class.java)
 
     private val client by lazy({
         // Setup client

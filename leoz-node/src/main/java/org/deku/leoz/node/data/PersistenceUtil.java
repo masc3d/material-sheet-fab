@@ -1,11 +1,11 @@
 package org.deku.leoz.node.data;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.node.config.PersistenceConfiguration;
 import org.jinq.jpa.JPAQueryLogger;
 import org.jinq.jpa.JinqJPAStreamProvider;
 import org.jinq.orm.stream.JinqStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -17,7 +17,7 @@ import java.util.Map;
  * Created by masc on 14.05.15.
  */
 public class PersistenceUtil {
-    private Log mLog = LogFactory.getLog(PersistenceConfiguration.class);
+    private Logger mLog = LoggerFactory.getLogger(PersistenceConfiguration.class);
 
     private JinqJPAStreamProvider mJinqStreamProvider;
     private boolean mShowJinqQueries = false;

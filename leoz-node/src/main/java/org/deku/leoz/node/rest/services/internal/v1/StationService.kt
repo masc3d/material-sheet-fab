@@ -1,14 +1,12 @@
 package org.deku.leoz.node.rest.services.internal.v1
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.data.repositories.master.StationRepository
 import org.deku.leoz.rest.entities.internal.v1.Station
+import org.slf4j.LoggerFactory
 import sx.rs.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.core.MediaType
 
 /**
  * Created by masc on 17.09.14.
@@ -17,7 +15,7 @@ import javax.ws.rs.core.MediaType
 @ApiKey(false)
 @Path("internal/v1/depot")
 class StationService : org.deku.leoz.rest.services.internal.v1.StationService {
-    private val log = LogFactory.getLog(StationService::class.java)
+    private val log = LoggerFactory.getLogger(StationService::class.java)
 
     @Inject
     private lateinit var stationRepository: StationRepository

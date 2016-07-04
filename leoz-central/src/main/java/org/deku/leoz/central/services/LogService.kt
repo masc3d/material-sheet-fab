@@ -7,7 +7,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.central.config.StorageConfiguration
 import org.deku.leoz.log.LogMessage
@@ -27,7 +26,7 @@ import javax.inject.Named
 class LogService
 :
         Handler<LogMessage> {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Loggers by node id */
     private val loggers = HashMap<String, Logger>()

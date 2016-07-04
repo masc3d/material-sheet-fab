@@ -1,7 +1,7 @@
 package org.deku.leoz.central.config
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.central.services.DatabaseSyncService
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.embedded.Broker
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @Configuration
 @Lazy(false)
 open class DatabaseSyncConfiguration {
-    private var log = LogFactory.getLog(this.javaClass)
+    private var log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     private lateinit var databaseSyncService: DatabaseSyncService

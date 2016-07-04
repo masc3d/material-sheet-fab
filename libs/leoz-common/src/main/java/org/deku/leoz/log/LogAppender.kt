@@ -3,9 +3,9 @@ package org.deku.leoz.log
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.spi.LoggingEvent
 import ch.qos.logback.core.AppenderBase
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.config.messaging.MessagingConfiguration
+import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.jms.Channel
 import sx.jms.embedded.Broker
@@ -25,7 +25,7 @@ public class LogAppender(
 :
         AppenderBase<ILoggingEvent>(),
         Disposable {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
     /** Log message buffer  */
     private val buffer = ArrayList<LogMessage.LogEntry>()
 

@@ -1,8 +1,8 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.LogFactory
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.flyway.FlywayDataSource
@@ -34,7 +34,7 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
         const val QUALIFIER = "db_embedded"
     }
 
-    private val log = LogFactory.getLog(PersistenceConfiguration::class.java.name)
+    private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java.name)
 
     private val showSql = false
 

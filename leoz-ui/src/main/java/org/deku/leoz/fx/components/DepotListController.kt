@@ -15,13 +15,13 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.input.MouseEvent
 import javafx.util.Callback
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Main
 import org.deku.leoz.WebserviceFactory
 import org.deku.leoz.bridge.LeoBridge
 import org.deku.leoz.bridge.MessageFactory
 import org.deku.leoz.fx.Controller
 import org.deku.leoz.rest.entities.internal.v1.Station
+import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.*
 import java.util.concurrent.Executors
@@ -30,7 +30,7 @@ import java.util.concurrent.Executors
  * Created by masc on 22.09.14.
  */
 class DepotListController : Controller(), Initializable {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @FXML
     private lateinit var fxSearchText: TextField

@@ -1,10 +1,10 @@
 package org.deku.leoz.node.services
 
 import com.google.common.base.Stopwatch
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.io.WatchServiceFactory
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
+import org.slf4j.LoggerFactory
 import sx.Lifecycle
 import sx.concurrent.Service
 import sx.jms.Channel
@@ -38,7 +38,7 @@ class FileSyncClientService constructor(
         Lifecycle {
     private final val RETRY_INTERVAL = Duration.ofSeconds(3)
 
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
     private val rsyncEndpointOut: Rsync.Endpoint
     private val rsyncEndpointIn: Rsync.Endpoint
     private val watchService: WatchService

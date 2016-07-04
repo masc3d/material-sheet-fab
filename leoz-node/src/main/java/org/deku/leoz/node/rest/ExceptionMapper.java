@@ -3,9 +3,9 @@ package org.deku.leoz.node.rest;
 import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.rest.entities.v1.Error;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Named;
 import javax.ws.rs.WebApplicationException;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @Named
 @Provider
 public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Exception> {
-    Log mLog = LogFactory.getLog(this.getClass());
+    Logger mLog = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public javax.ws.rs.core.Response toResponse(Exception e) {

@@ -1,9 +1,9 @@
 package org.deku.leoz.bundle
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.bundle.entities.UpdateInfoRequest
+import org.slf4j.LoggerFactory
 import sx.Lifecycle
 import sx.concurrent.Service
 import sx.jms.Channel
@@ -38,7 +38,7 @@ class BundleUpdateService(
         Handler<UpdateInfo>,
         Lifecycle {
 
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     /**
      * Bundle update preset

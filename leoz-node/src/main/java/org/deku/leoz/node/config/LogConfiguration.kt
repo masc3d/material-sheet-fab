@@ -1,10 +1,9 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.log.LogAppender
 import org.deku.leoz.node.App
+import org.slf4j.LoggerFactory
 
 /**
  * Log configuration.
@@ -12,7 +11,7 @@ import org.deku.leoz.node.App
  * Created by masc on 24-Jul-15.
  */
 open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
-    private var log: Log = LogFactory.getLog(this.javaClass)
+    private var log = LoggerFactory.getLogger(this.javaClass)
 
     companion object Singleton {
         val instance by lazy { LogConfiguration() }

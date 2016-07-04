@@ -4,7 +4,6 @@ import org.deku.leoz.bridge.IMessageService
 import org.deku.leoz.bridge.LeoBridge
 import org.deku.leoz.bridge.MediaType
 import org.deku.leoz.bridge.Message
-import java.util.*
 import javax.ws.rs.Consumes
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
@@ -21,7 +20,6 @@ class MessageService : IMessageService {
     }
 
     override fun send(message: Message) {
-        val test = Date()
         val l = LeoBridge.instance()
         l.onLeoBridgeServiceMessageReceived(message)
     }

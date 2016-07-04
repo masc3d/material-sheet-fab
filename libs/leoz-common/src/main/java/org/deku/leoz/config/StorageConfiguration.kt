@@ -2,8 +2,7 @@ package org.deku.leoz.config
 
 import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.io.PermissionUtil
 import java.io.File
 import java.nio.file.Files
@@ -18,7 +17,7 @@ abstract class StorageConfiguration(
         /** Base name for process specific files/directories */
         val appName: String) {
     /** Logger */
-    private var log: Log = LogFactory.getLog(this.javaClass)
+    private var log = LoggerFactory.getLogger(this.javaClass)
 
     // Directories
 

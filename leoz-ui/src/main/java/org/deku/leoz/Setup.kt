@@ -1,9 +1,9 @@
 package org.deku.leoz
 
 import com.sun.jna.platform.win32.Shell32Util
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleProcessInterface
+import org.slf4j.LoggerFactory
 import sx.io.WindowsShellLink
 import java.io.File
 
@@ -11,7 +11,7 @@ import java.io.File
  * Created by masc on 05-Feb-16.
  */
 class Setup : BundleProcessInterface() {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
     private val CSIDL_DESKTOP = 0
 
     private val bundle by lazy({

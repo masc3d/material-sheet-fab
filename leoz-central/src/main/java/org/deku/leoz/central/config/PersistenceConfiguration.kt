@@ -1,10 +1,10 @@
 package org.deku.leoz.central.config
 
 import com.mysql.jdbc.AbandonedConnectionCleanupThread
-import org.apache.commons.logging.LogFactory
 import org.jooq.SQLDialect
 import org.jooq.impl.DataSourceConnectionProvider
 import org.jooq.impl.DefaultDSLContext
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -39,7 +39,7 @@ open class PersistenceConfiguration {
         const val QUALIFIER = "PersistenceConfigurationCentral"
     }
 
-    private val log = LogFactory.getLog(PersistenceConfiguration::class.java)
+    private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java)
 
     // TODO: tomcat deployment breaks with circular dependency when wither dataSourceCentral()
     // or jooqTransactionAwareDataSourceProxy() are not @Lazy.

@@ -1,10 +1,11 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.RsyncConfiguration
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
+import sx.logging.slf4j.info
 import sx.rsync.Rsync
 import sx.rsync.RsyncServer
 import java.io.File
@@ -31,7 +32,7 @@ open class RsyncServerConfiguration {
         var port: Int? = null
     }
 
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     private lateinit var settings: Settings

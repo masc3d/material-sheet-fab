@@ -1,10 +1,9 @@
 package org.deku.leoz.node
 
 import com.google.common.base.Strings
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleProcessInterface
 import org.deku.leoz.node.config.StorageConfiguration
+import org.slf4j.LoggerFactory
 import sx.EmbeddedExecutable
 import sx.ProcessExecutor
 import java.nio.file.Path
@@ -19,7 +18,7 @@ class Setup(
         val serviceId: String,
         val mainClass: Class<*>) : BundleProcessInterface() {
 
-    private var log: Log = LogFactory.getLog(this.javaClass)
+    private var log = LoggerFactory.getLogger(this.javaClass)
 
     private var basePath: Path
 

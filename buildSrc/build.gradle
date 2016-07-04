@@ -102,6 +102,7 @@ task syncClasses(type: Sync) {
             '**/config/SshConfiguration*',
             '**/platform/**',
             '**/rsync/**',
+            '**/logging/slf4j/**',
             '**/system/**',
             '**/io/PermissionUtil*',
             '**/Action*/',

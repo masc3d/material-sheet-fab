@@ -2,7 +2,6 @@ package org.deku.leoz.node
 
 import ch.qos.logback.classic.LoggerContext
 import com.vaadin.spring.boot.VaadinAutoConfiguration
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
@@ -66,7 +65,7 @@ import org.springframework.core.annotation.Order
 @EnableConfigurationProperties
 open class Main {
     companion object {
-        private val log = LogFactory.getLog(Main::class.java)
+        private val log = LoggerFactory.getLogger(Main::class.java)
 
         /**
          * Static main entry point

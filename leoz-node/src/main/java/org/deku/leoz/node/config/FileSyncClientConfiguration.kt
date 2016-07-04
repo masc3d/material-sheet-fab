@@ -1,6 +1,5 @@
 package org.deku.leoz.node.config
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
@@ -8,6 +7,7 @@ import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.deku.leoz.node.services.FileSyncClientService
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -27,7 +27,7 @@ import javax.inject.Inject
 @Profile(App.PROFILE_CLIENT_NODE)
 @Lazy(false)
 open class FileSyncClientConfiguration {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     private lateinit var executorService: ScheduledExecutorService

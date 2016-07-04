@@ -1,11 +1,11 @@
 package org.deku.leoz.central.services
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.entities.UpdateInfo
 import org.deku.leoz.bundle.entities.UpdateInfoRequest
 import org.deku.leoz.central.data.repositories.BundleVersionRepository
 import org.deku.leoz.central.data.repositories.NodeRepository
+import org.slf4j.LoggerFactory
 import sx.jms.Channel
 import sx.jms.Handler
 import java.util.*
@@ -21,7 +21,7 @@ class UpdateService(
 )
 :
         Handler<UpdateInfoRequest> {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun onMessage(message: UpdateInfoRequest, replyChannel: Channel?) {
         try {

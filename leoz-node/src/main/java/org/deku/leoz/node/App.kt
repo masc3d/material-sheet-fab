@@ -1,12 +1,12 @@
 package org.deku.leoz.node
 
 import com.google.common.collect.Lists
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
+import org.slf4j.LoggerFactory
 import org.springframework.beans.BeansException
 import org.springframework.boot.ExitCodeGenerator
 import org.springframework.boot.SpringApplication
@@ -22,6 +22,7 @@ import sx.Disposable
 import sx.Dispose
 import sx.JarManifest
 import sx.LazyInstance
+import sx.logging.slf4j.info
 import sx.platform.JvmUtil
 import java.io.IOException
 import java.net.MalformedURLException
@@ -46,7 +47,7 @@ open class App :
 
     companion object {
         /** Logger  */
-        private val log = LogFactory.getLog(App::class.java)
+        private val log = LoggerFactory.getLogger(App::class.java)
 
         /** Client node profile, activates specific configurations for leoz client nodes  */
         const val PROFILE_CLIENT_NODE = "client-node"

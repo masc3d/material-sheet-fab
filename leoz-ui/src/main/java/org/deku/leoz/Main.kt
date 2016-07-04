@@ -10,10 +10,10 @@ import javafx.scene.layout.Pane
 import javafx.scene.text.Font
 import javafx.stage.Screen
 import javafx.stage.Stage
-import org.apache.commons.logging.LogFactory
 import org.controlsfx.control.Notifications
 import org.deku.leoz.bridge.LeoBridge
 import org.deku.leoz.fx.MainController
+import org.slf4j.LoggerFactory
 import sx.util.Utf8ResourceBundleControl
 import java.io.IOException
 import java.util.*
@@ -248,7 +248,7 @@ class Main : Application() {
 
     companion object {
         private var instance: Main? = null
-        private val log = LogFactory.getLog(Main::class.java)
+        private val log = LoggerFactory.getLogger(Main::class.java)
 
         fun instance(): Main {
             return instance!!

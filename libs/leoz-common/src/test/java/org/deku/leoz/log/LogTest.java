@@ -2,7 +2,6 @@ package org.deku.leoz.log;
 
 import ch.qos.logback.classic.Logger;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deku.leoz.Identity;
 import org.deku.leoz.MessagingTest;
 import org.deku.leoz.SystemInformation;
@@ -24,7 +23,7 @@ import java.util.concurrent.Executors;
  */
 @Ignore
 public class LogTest extends MessagingTest {
-    private Log mLog = LogFactory.getLog(this.getClass());
+    private Log mLog = LoggerFactory.getLogger(this.getClass());
 
     @Test
     public void testSend() throws JMSException {

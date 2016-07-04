@@ -1,13 +1,13 @@
 package org.deku.leoz.bundle
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import java.io.File
 
 
 // Extension methods defining a process interface
 // for installation and start/stop control
 
-val log = LogFactory.getLog(Bundle::class.java)
+val log = LoggerFactory.getLogger(Bundle::class.java)
 
 fun Bundle.start() {
     log.info("Starting bundle process [${this.name}]")

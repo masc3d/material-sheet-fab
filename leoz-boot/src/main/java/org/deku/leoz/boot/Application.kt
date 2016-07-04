@@ -9,11 +9,11 @@ import javafx.scene.image.Image
 import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.boot.config.StorageConfiguration
 import org.deku.leoz.boot.fx.ResizeHelper
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.Bundles
+import org.slf4j.LoggerFactory
 import sx.JarManifest
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
@@ -58,7 +58,7 @@ class Application : javafx.application.Application() {
         var uninstall: Boolean = false
     }
 
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Bundle to install */
     val bundle by lazy({

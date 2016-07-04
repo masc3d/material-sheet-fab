@@ -7,9 +7,9 @@ import com.vaadin.server.ThemeResource
 import com.vaadin.server.VaadinRequest
 import com.vaadin.spring.annotation.SpringUI
 import com.vaadin.ui.*
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.data.entities.master.Station
 import org.deku.leoz.node.data.repositories.master.StationRepository
+import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
 /**
@@ -32,7 +32,7 @@ class MainUI : UI() {
 @Theme("deku")
 @SpringUI(path = "/depots/")
 public class DepotsUI : UI() {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     private lateinit var stationRepository: StationRepository

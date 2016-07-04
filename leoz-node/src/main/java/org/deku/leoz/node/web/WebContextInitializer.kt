@@ -4,7 +4,6 @@ import io.undertow.server.handlers.resource.Resource
 import io.undertow.server.handlers.resource.ResourceChangeListener
 import io.undertow.server.handlers.resource.ResourceManager
 import io.undertow.server.handlers.resource.URLResource
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.MessageBrokerConfiguration
 import org.jboss.resteasy.core.Dispatcher
@@ -14,6 +13,7 @@ import org.jboss.resteasy.spi.Registry
 import org.jboss.resteasy.spi.ResteasyDeployment
 import org.jboss.resteasy.spi.ResteasyProviderFactory
 import org.jboss.resteasy.springmvc.ResteasyHandlerMapping
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.ServletContextInitializer
 import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer
@@ -34,7 +34,7 @@ import javax.servlet.ServletException
  */
 @Named
 internal class WebContextInitializer : ServletContextInitializer {
-    var mLog = LogFactory.getLog(WebContextInitializer::class.java.name)
+    var mLog = LoggerFactory.getLogger(WebContextInitializer::class.java.name)
 
     companion object {
         private val STATIC_CONTENT_CLASSPATH = "/webapp"

@@ -1,6 +1,5 @@
 package org.deku.leoz.node.rest.services.internal.v1
 
-import org.apache.commons.logging.LogFactory
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleUpdateService
 import org.deku.leoz.bundle.boot
@@ -9,13 +8,12 @@ import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion
+import org.slf4j.LoggerFactory
 import sx.jms.Channel
 import sx.rs.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.core.MediaType
 
 /**
  * Created by masc on 09.10.15.
@@ -24,7 +22,7 @@ import javax.ws.rs.core.MediaType
 @ApiKey(false)
 @Path("internal/v1/application")
 class ApplicationService : org.deku.leoz.rest.services.internal.v1.ApplicationService {
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     lateinit var bundleUpdateService: BundleUpdateService

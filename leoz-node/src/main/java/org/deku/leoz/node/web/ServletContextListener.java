@@ -1,7 +1,7 @@
 package org.deku.leoz.node.web;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -15,7 +15,7 @@ import javax.servlet.ServletContextEvent;
  */
 @Named("node.ServletContextListener")
 public class ServletContextListener implements javax.servlet.ServletContextListener {
-    Log mLog = LogFactory.getLog(ServletContextListener.class);
+    Logger mLog = LoggerFactory.getLogger(ServletContextListener.class);
 
     @Inject
     ConfigurableWebApplicationContext mContext;
