@@ -4,8 +4,8 @@ import org.apache.commons.lang3.SystemUtils
 import org.slf4j.LoggerFactory
 import sx.ProcessExecutor
 import sx.io.PermissionUtil
+import sx.logging.slf4j.trace
 import sx.ssh.SshTunnelProvider
-import sx.logging.slf4j.*
 import java.io.File
 import java.net.URI
 import java.time.LocalDateTime

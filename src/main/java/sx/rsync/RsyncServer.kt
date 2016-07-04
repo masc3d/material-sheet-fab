@@ -1,7 +1,7 @@
 package sx.rsync
 
-import org.slf4j.LoggerFactory
 import org.ini4j.Ini
+import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.ProcessExecutor
 import java.io.File

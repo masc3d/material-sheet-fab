@@ -33,7 +33,7 @@ fun <T> Observable<T>.observeOn(executor: Executor? = null): Observable<T> {
  * as .connect() does.
  */
 fun <T> ConnectableObservable<T>.connected(): Observable<T> {
-    val sub = this.connect()
+    this.connect()
     return this
 }
 
