@@ -16,7 +16,7 @@ buildscript {
         v_javax_ws_rs = '2.0.1'
         v_jna = '4.2.2'
         v_junit = '4.12'
-        v_kotlin = '1.0.2-1'
+        v_kotlin = '1.0.3'
         v_kryo = '3.0.3'
         v_logback = '1.1.7'
         v_rxjava = '1.1.6'
