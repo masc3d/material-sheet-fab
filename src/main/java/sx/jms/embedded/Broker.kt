@@ -1,6 +1,6 @@
 package sx.jms.embedded
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
@@ -23,7 +23,7 @@ protected constructor(
 :
         Disposable {
     /** Log  */
-    protected var log = LogFactory.getLog(this.javaClass)
+    protected var log = LoggerFactory.getLogger(this.javaClass)
 
     /**
      * Transport type

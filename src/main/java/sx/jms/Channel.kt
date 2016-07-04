@@ -1,6 +1,6 @@
 package sx.jms
 
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.Action
 import sx.Disposable
 import sx.LazyInstance
@@ -95,7 +95,7 @@ class Channel @JvmOverloads constructor(
     // control over, which may or should also support threadlocal pooling, replacing connection factory
     // itself as a connection provider for all sx.jms classes
     class TemporaryQueuePool {
-        private val log = LogFactory.getLog(this.javaClass)
+        private val log = LoggerFactory.getLogger(this.javaClass)
         private val queue = HashMap<String, LinkedList<TemporaryQueue>>()
 
         private fun resolveKey(connection: Connection): String {
@@ -265,7 +265,7 @@ class Channel @JvmOverloads constructor(
 
     }
 
-    private val log = LogFactory.getLog(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
     val configuration: Configuration
 
     /**

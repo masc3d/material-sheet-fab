@@ -1,7 +1,6 @@
 package sx.jms
 
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.Disposable
 import java.util.*
 import java.util.concurrent.Executor
@@ -24,7 +23,7 @@ abstract class Listener(
 :
         Disposable,
         ExceptionListener {
-    protected val log: Log = LogFactory.getLog(this.javaClass)
+    protected val log = LoggerFactory.getLogger(this.javaClass)
     /** Object message handler delegates  */
     private val handlerDelegates = HashMap<Class<out Any?>, Handler<Any?>>()
 

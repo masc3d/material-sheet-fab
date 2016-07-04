@@ -2,7 +2,7 @@ package sx.jms.embedded.activemq
 
 import org.apache.activemq.transport.http.HttpTransportFactory
 import org.apache.activemq.transport.http.HttpTunnelServlet
-import org.apache.commons.logging.LogFactory
+import org.slf4j.LoggerFactory
 import sx.jms.embedded.Broker
 import java.net.URI
 import java.util.*
@@ -18,7 +18,7 @@ import javax.servlet.ServletException
 class HttpExternalTunnelServlet(
         /** Public URI of jms servlet  */
         private val publicUri: URI) : HttpTunnelServlet() {
-    private val log = LogFactory.getLog(HttpExternalTunnelServlet::class.java)
+    private val log = LoggerFactory.getLogger(HttpExternalTunnelServlet::class.java)
 
     private var transportConnector: HttpExternalTransportServer? = null
     /** Broker event listener  */
