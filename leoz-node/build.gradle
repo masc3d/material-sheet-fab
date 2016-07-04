@@ -94,7 +94,7 @@ dependencies {
     compile "org.eclipse.persistence:eclipselink:2.6.3"
 
     // queryDSL
-    def v_querydsl = '4.1.2'
+    def v_querydsl = '4.1.3'
     compile "com.querydsl:querydsl-core:$v_querydsl"
     compile "com.querydsl:querydsl-jpa:$v_querydsl"
     compile "com.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
@@ -103,7 +103,7 @@ dependencies {
     kapt "com.querydsl:querydsl-apt:$v_querydsl:jpa"
 
     // flyway
-    compile "org.flywaydb:flyway-core:4.0.1"
+    compile "org.flywaydb:flyway-core:4.0.3"
 
     // JSR-330
     compile "javax.inject:javax.inject:1"
@@ -161,7 +161,7 @@ dependencies {
 //    compile "org.aspectj:aspectjweaver:+"
 
     // TODO: for testing vaadin
-    def v_vaadin = '7.6.6'
+    def v_vaadin = '7.6.7'
     compile "com.vaadin:vaadin-spring-boot:1.0.0"
     compile "com.vaadin:vaadin-client:$v_vaadin"
     compile "com.vaadin:vaadin-client-compiled:$v_vaadin"
