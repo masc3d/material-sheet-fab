@@ -20,6 +20,11 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
+    // RX
+    compile "io.reactivex:rxjava:1.1.6"
+    compile "io.reactivex:rxkotlin:0.60.0"
+    compile "io.reactivex:rxjavafx:0.1.0"
+
     // JSR-303 bean validation
     compile "org.hibernate:hibernate-validator:5.2.4.Final"
 
