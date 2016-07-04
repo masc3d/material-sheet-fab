@@ -3,7 +3,7 @@ version '1.0'
 
 buildscript {
     ext {
-        v_kotlin = '1.0.2-1'
+        v_kotlin = '1.0.3'
     }
 
     dependencies {
