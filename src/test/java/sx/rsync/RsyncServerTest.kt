@@ -1,8 +1,8 @@
 package sx.rsync
 
-import org.slf4j.LoggerFactory
 import org.junit.Ignore
 import org.junit.Test
+import org.slf4j.LoggerFactory
 import java.nio.file.Paths
 
 /**

@@ -1,12 +1,11 @@
 package sx.ssh
 
-import org.apache.commons.logging.Log
-import org.slf4j.LoggerFactory
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.client.session.ClientSession
 import org.apache.sshd.common.session.Session
 import org.apache.sshd.common.session.SessionListener
 import org.apache.sshd.common.util.net.SshdSocketAddress
+import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException

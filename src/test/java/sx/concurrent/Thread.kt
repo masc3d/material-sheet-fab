@@ -1,15 +1,12 @@
 package sx.concurrent
 
-import org.slf4j.LoggerFactory
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
+import org.slf4j.LoggerFactory
 import rx.Observable
-import rx.Scheduler
-import rx.lang.kotlin.subscribeWith
 import rx.schedulers.Schedulers
 import sx.rx.subscribeAwaitableWith
-import java.lang.Thread
 import java.util.concurrent.CancellationException
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
