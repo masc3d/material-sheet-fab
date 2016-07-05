@@ -4,7 +4,8 @@ buildscript {
     }
     ext {
         v_kotlin = '1.0.3'
-        v_android_build_tools = '24.0.0'
+        v_android_buildtools = '23.0.3'
+        v_android_support = '23.3.0'
     }
 
     dependencies {
@@ -21,7 +22,7 @@ repositories {
 
 android {
     compileSdkVersion 16
-    buildToolsVersion v_android_build_tools
+    buildToolsVersion v_android_buildtools
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 16
@@ -51,7 +52,7 @@ dependencies {
 
     compile project(":libs:sx-common")
 
-    compile "com.android.support:support-v4:$v_android_build_tools"
+    compile "com.android.support:support-v4:$v_android_support"
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
