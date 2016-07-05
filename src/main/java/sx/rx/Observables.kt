@@ -200,3 +200,25 @@ inline fun <T> Observable<T>.subscribeAwaitableWith(body: TransformingFunctionSu
 
     return AwaitableImpl(modifier.observable, modifier.subscriber)
 }
+
+/**
+ * Retry with specific count, action handler and timer provider
+ * @param count Retry count
+ * @param action Callback invoked for every retry/error, returning a (timer) Observable
+ */
+fun <T> Observable<T>.retryWith(count: Int, action: (retry: Int, error: Throwable) -> Observable<Long> = { r, e -> Observable.just(0) }): Observable<T> {
+    return this.retryWhen { attempts ->
+        attempts.zipWith(Observable.range(1, count + 1), { n, i ->
+            Pair(n, i)
+        }).flatMap { p ->
+            val error = p.first as Throwable
+            val retryCount = p.second
+
+            if (retryCount <= count) {
+                return@flatMap action(retryCount, error)
+            } else {
+                return@flatMap Observable.error<Throwable>(error)
+            }
+        }
+    }
+}
