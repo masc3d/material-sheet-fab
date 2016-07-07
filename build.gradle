@@ -5,7 +5,7 @@ buildscript {
     ext {
         v_kotlin = '1.0.3'
         v_android_buildtools = '23.0.3'
-        v_android_support = '23.3.0'
+        v_android_support = '23.4.0'
     }
 
     dependencies {
@@ -21,7 +21,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 16
+    compileSdkVersion 23
     buildToolsVersion v_android_buildtools
     defaultConfig {
         minSdkVersion 16
@@ -52,7 +52,12 @@ dependencies {
 
     compile project(":libs:sx-common")
 
-    compile "com.android.support:support-v4:$v_android_support"
+//    compile "com.android.support:support-v4:$v_android_support"
+
+    def v_rxlifecycle = '0.6.1'
+    compile "com.trello:rxlifecycle:$v_rxlifecycle"
+    compile "com.trello:rxlifecycle-kotlin:$v_rxlifecycle"
+    compile "com.trello:rxlifecycle-components:$v_rxlifecycle"
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
