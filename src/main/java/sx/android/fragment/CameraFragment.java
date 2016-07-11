@@ -1,4 +1,4 @@
-package sx.android.ui.fragments;
+package sx.android.fragment;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -18,10 +18,10 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import sx.android.Camera;
 import sx.android.R;
-import sx.android.ui.FragmentEventDispatcher;
-import sx.android.ui.views.AsyncImageView;
-import sx.android.ui.views.CameraView;
-import sx.android.ui.views.CircleButton;
+import sx.android.app.FragmentEventDispatcher;
+import sx.android.widget.AsyncImageView;
+import sx.android.widget.CameraView;
+import sx.android.widget.CircleButton;
 import sx.event.EventDispatcher;
 import sx.event.EventListener;
 

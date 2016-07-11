@@ -1,4 +1,4 @@
-package sx.android.ui
+package sx.android.app
 
 import android.app.Activity
 import android.support.v4.app.FragmentActivity

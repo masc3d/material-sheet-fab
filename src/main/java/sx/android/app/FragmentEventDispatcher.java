@@ -1,4 +1,4 @@
-package sx.android.ui;
+package sx.android.app;
 
 import sx.event.EventListener;
 import sx.event.RegularEventDispatcher;
