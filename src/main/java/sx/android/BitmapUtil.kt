@@ -12,7 +12,7 @@ object BitmapUtil {
      * @param size Square size
      * @return
      */
-    fun scaleSquare(src: Bitmap, size: Int): Bitmap {
+    @JvmStatic fun scaleSquare(src: Bitmap, size: Int): Bitmap {
         // Calculate thumbnail scale/crop parameters
         var newWidth = 0
         var newHeight = 0

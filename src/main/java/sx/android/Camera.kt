@@ -5,25 +5,36 @@ package sx.android
  * Created by masc on 26.11.14.
  */
 class Camera {
+
+    private var _hardwareCamera: android.hardware.Camera? = null
     /**
      * Hardware camera instance
      * @return
      */
     // Preserve hardware camera instance for faster access.
-    val hardwareCamera: android.hardware.Camera by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
-        android.hardware.Camera.open()
-    }
+    val hardwareCamera: android.hardware.Camera
+        get() {
+            if (_hardwareCamera == null) {
+                _hardwareCamera = android.hardware.Camera.open();
+
+            }
+            return _hardwareCamera!!
+        }
 
     /**
      * Release hardware camera
      */
     fun releaseHardwareCamera() {
-        try {
-            this.hardwareCamera.stopPreview()
-        } catch(e: Throwable) {
-            // Ignore stopPreview failing
+        val camera = _hardwareCamera
+        if (camera != null) {
+            try {
+                camera.stopPreview()
+            } catch(e: Throwable) {
+                // Ignore stopPreview failing
+            }
+            camera.release()
+            _hardwareCamera = null
         }
-        this.hardwareCamera.release()
     }
 
     companion object {
