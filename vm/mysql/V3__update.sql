@@ -18,7 +18,9 @@ DROP TRIGGER IF EXISTS dekuclient.mst_station_BEFORE_INSERT$$
 USE `dekuclient`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `dekuclient`.`mst_station_BEFORE_INSERT` BEFORE INSERT ON `mst_station` FOR EACH ROW
 BEGIN
-
+	update sys_synch set counter=counter+1 where tablename='mst_station';
+    set @counter = (select counter from sys_synch where tablename='mst_station');
+	set new.synchid= @counter;
 END
 $$
 DELIMITER ;
