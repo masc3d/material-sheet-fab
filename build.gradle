@@ -4,8 +4,8 @@ buildscript {
     }
     ext {
         v_kotlin = '1.0.3'
-        v_android_buildtools = '23.0.3'
-        v_android_support = '23.4.0'
+        v_android_buildtools = '24.0.0'
+        v_android_support = '24.0.0'
     }
 
     dependencies {
