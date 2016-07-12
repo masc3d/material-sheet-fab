@@ -1,7 +1,5 @@
 package sx.event;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,21 +46,18 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
 
     /**
      * Add listener
-     *
      * @param listener
      */
     public abstract void add(T listener);
 
     /**
      * Remove listener
-     *
      * @param listener
      */
     public abstract void remove(T listener);
 
     /**
      * Remove weak references from listeners, used for cleaning out garbage collected/invalid rfs
-     *
      * @param listeners
      */
     protected abstract void remove(List<ListenerReference> listeners);
@@ -74,7 +69,6 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
 
     /**
      * Emit event to listeners
-     *
      * @param r Runnable supposed to call listener interface method
      */
     public void emit(Runnable<T> r) {
@@ -95,14 +89,15 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
         // Remove invalid refs
         if (invalidRefs != null) {
             for (ListenerReference ir : invalidRefs) {
+                // Convert interface class instances to strings (for logging)
+                ArrayList<String> interfaceStrings = new ArrayList<String>();
+                for (Class c : ir.getListenerClass().getInterfaces()) {
+                    interfaceStrings.add(c.toString());
+                }
+
                 mLog.info(String.format("Removing gc'ed listener %s (%s)",
                         ir.getListenerClass(),
-                        Joiner.on(",").join(Lists.transform(Lists.newArrayList(ir.getListenerClass().getInterfaces()), new com.google.common.base.Function<Class, String>() {
-                            @Override
-                            public String apply(Class input) {
-                                return input.toString();
-                            }
-                        }))));
+                        String.join(",", interfaceStrings)));
             }
             this.remove(invalidRefs);
         }

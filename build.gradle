@@ -48,7 +48,6 @@ dependencies {
     provided "ch.qos.logback:logback-classic:1.1.7"
 
     // Misc
-    compile "com.google.guava:guava:19.0"
     compile "org.apache.commons:commons-lang3:3.4"
 
     // RX

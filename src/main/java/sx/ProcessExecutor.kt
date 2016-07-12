@@ -1,6 +1,5 @@
 package sx
 
-import com.google.common.base.StandardSystemProperty
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStream

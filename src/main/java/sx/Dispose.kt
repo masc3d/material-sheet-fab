@@ -1,6 +1,5 @@
 package sx
 
-import com.google.common.base.Stopwatch
 import org.slf4j.LoggerFactory
 
 /**
