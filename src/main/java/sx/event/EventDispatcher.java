@@ -1,5 +1,6 @@
 package sx.event;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +98,7 @@ public abstract class EventDispatcher<T extends EventListener> implements EventD
 
                 mLog.info(String.format("Removing gc'ed listener %s (%s)",
                         ir.getListenerClass(),
-                        String.join(",", interfaceStrings)));
+                        StringUtils.join(interfaceStrings.toArray(), ",")));
             }
             this.remove(invalidRefs);
         }
