@@ -12,11 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.ViewSwitcher;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import sx.android.Camera;
+import sx.android.Function;
 import sx.android.R;
 import sx.android.app.FragmentEventDispatcher;
 import sx.android.widget.AsyncImageView;
@@ -25,6 +22,7 @@ import sx.android.widget.CircleButton;
 import sx.event.EventDispatcher;
 import sx.event.EventListener;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -252,12 +250,11 @@ public class CameraFragment extends Fragment {
                 parameters.setFocusMode(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO);
                 mCameraMaxZoom = parameters.getMaxZoom();
                 // Find resolutions above 1000 lines
-                List<android.hardware.Camera.Size> resolutions = Lists.newArrayList(Collections2.filter(parameters.getSupportedPictureSizes(), new Predicate<android.hardware.Camera.Size>() {
-                    @Override
-                    public boolean apply(android.hardware.Camera.Size input) {
-                        return input.height > 1000;
-                    }
-                }));
+                ArrayList<android.hardware.Camera.Size> resolutions = new ArrayList<>();
+                for (android.hardware.Camera.Size res : parameters.getSupportedPictureSizes()) {
+                    if (res.height > 1000) resolutions.add(res);
+                }
+
                 // Sort resolutions ascending
                 Collections.sort(resolutions, new Comparator<android.hardware.Camera.Size>() {
                     @Override
