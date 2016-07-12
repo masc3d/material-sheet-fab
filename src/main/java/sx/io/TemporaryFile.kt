@@ -1,6 +1,5 @@
 package sx.io
 
-import com.google.common.io.ByteStreams
 import sx.legacy.Disposable
 import java.io.File
 import java.io.FileOutputStream
@@ -39,7 +38,7 @@ open class TemporaryFile
         this.file = File(temporaryPath.absolutePath, "${fileName}${fileExtension}")
 
         FileOutputStream(this.file, false).use {
-            ByteStreams.copy(inputStream, it)
+            inputStream.copyTo(it)
         }
     }
 
