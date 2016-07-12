@@ -5,7 +5,8 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.widget.ImageView;
-import com.google.common.base.Function;
+
+import sx.android.Function;
 
 /**
  * ImageView with async loading support

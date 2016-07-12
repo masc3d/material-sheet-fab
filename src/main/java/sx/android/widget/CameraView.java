@@ -4,10 +4,11 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.*;
-import com.google.common.base.Function;
 
 import java.io.IOException;
 import java.util.List;
+
+import sx.android.Function;
 
 /**
  * Camera view
