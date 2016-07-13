@@ -3,47 +3,37 @@ package sx.android.app
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.app.FragmentStatePagerAdapter
+import android.support.v4.view.PagerAdapter
 import android.view.ViewGroup
 
 /**
  * Fragment pager adapter implementation
- * Created by masc on 11/07/16.
+ * Created by masc on 11/07/16.<
  */
 class FragmentPagerAdapter(val manager: FragmentManager) : FragmentPagerAdapter(manager) {
-    data class PagerFragment(val fragment: Fragment, val title: CharSequence) {
+    var baseId = 0L
+
+    data class PagerFragment<T : Fragment>(val fragmentType: Class<T>, val title: CharSequence)  {
     }
 
-    private val fragmentList = arrayListOf<PagerFragment>()
+    private val fragmentList = arrayListOf<PagerFragment<*>>()
 
     override fun getItem(position: Int): Fragment {
-        return fragmentList.get(position).fragment
+        return fragmentList.get(position).fragmentType.newInstance()
     }
 
     override fun getCount(): Int {
         return fragmentList.count()
     }
 
-    fun addFragment(fragment: Fragment, title: CharSequence) {
+    fun <T : Fragment> addFragment(fragment: Class<T>, title: CharSequence) {
         fragmentList.add(PagerFragment(fragment, title))
         notifyDataSetChanged()
     }
 
-    override fun destroyItem(container: ViewGroup?, position: Int, `object`: Any?) {
-        super.destroyItem(container, position, `object`)
-
-        // Base class method merely detaches fragments, which will lead
-        // to inconsistencies of .fragmentList with the fragment manager.
-        // Fragment instances which are not known to this adapter should be removed:
-        val fragment = `object` as Fragment
-        if (this.fragmentList.find { it.fragment === fragment } == null) {
-            val t = manager.beginTransaction()
-            t.remove(fragment)
-            t.commit()
-        }
-    }
-
     fun removeFragmentAt(index: Int) {
-        val fragment = fragmentList[index].fragment
+        baseId += this.fragmentList.count() + 1
         fragmentList.removeAt(index)
         notifyDataSetChanged()
     }
@@ -52,8 +42,11 @@ class FragmentPagerAdapter(val manager: FragmentManager) : FragmentPagerAdapter(
         return fragmentList.get(position).title
     }
 
+    override fun getItemId(position: Int): Long {
+        return baseId + position
+    }
+
     override fun getItemPosition(`object`: Any?): Int {
-        val index = fragmentList.indexOfFirst { it.fragment === `object` }
-        return if (index >= 0) index else POSITION_NONE
+        return PagerAdapter.POSITION_NONE
     }
 }
