@@ -14,32 +14,50 @@ import android.view.ViewGroup
 class FragmentPagerAdapter(val manager: FragmentManager) : FragmentPagerAdapter(manager) {
     var baseId = 0L
 
-    data class PagerFragment<T : Fragment>(val fragmentType: Class<T>, val title: CharSequence)  {
+    data class PagerFragment<T : Fragment>(
+            val type: Class<T>,
+            val title: CharSequence,
+            val initializer: (t: T) -> Unit) {
+
+        fun createInstance(): T {
+            val instance = this.type.newInstance()
+            this.initializer(instance)
+            return instance
+        }
     }
 
-    private val fragmentList = arrayListOf<PagerFragment<*>>()
+    private val fragments = arrayListOf<PagerFragment<*>>()
 
     override fun getItem(position: Int): Fragment {
-        return fragmentList.get(position).fragmentType.newInstance()
+        return fragments[position].createInstance()
     }
 
     override fun getCount(): Int {
-        return fragmentList.count()
+        return fragments.count()
     }
 
-    fun <T : Fragment> addFragment(fragment: Class<T>, title: CharSequence) {
-        fragmentList.add(PagerFragment(fragment, title))
+    /**
+     * Add fragment to pager
+     * @param type Type of fragment
+     * @param title Title of fragment page
+     * @param initializer Optional initializer code block
+     */
+    fun <T : Fragment> addFragment(fragment: Class<T>, title: CharSequence, initializer: (t: T) -> Unit = { }) {
+        fragments.add(PagerFragment(fragment, title, initializer))
         notifyDataSetChanged()
     }
 
+    /**
+     * Remove fragment from pager
+     */
     fun removeFragmentAt(index: Int) {
-        baseId += this.fragmentList.count() + 1
-        fragmentList.removeAt(index)
+        baseId += this.fragments.count() + 1
+        fragments.removeAt(index)
         notifyDataSetChanged()
     }
 
     override fun getPageTitle(position: Int): CharSequence {
-        return fragmentList.get(position).title
+        return fragments.get(position).title
     }
 
     override fun getItemId(position: Int): Long {
