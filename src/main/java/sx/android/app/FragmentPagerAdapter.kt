@@ -65,6 +65,10 @@ class FragmentPagerAdapter(val manager: FragmentManager) : FragmentStatePagerAda
         notifyDataSetChanged()
     }
 
+    fun removeFragment(predicate: (f: Page<*>) -> Boolean) {
+        this.fragments.removeAll { predicate(it) }
+    }
+
     override fun getPageTitle(position: Int): CharSequence {
         return fragments[position].title
     }
