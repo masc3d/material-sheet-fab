@@ -58,6 +58,8 @@ dependencies {
     compile "com.android.support:support-v4:$v_android_support"
 
     // RX
+    compile "io.reactivex:rxjava:1.1.7"
+    compile "io.reactivex:rxandroid:1.2.1"
     def v_rxlifecycle = '0.6.1'
     compile "com.trello:rxlifecycle:$v_rxlifecycle"
     compile "com.trello:rxlifecycle-kotlin:$v_rxlifecycle"
