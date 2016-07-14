@@ -6,15 +6,19 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
 import android.view.ViewGroup
+import java.util.*
 
 /**
- * Fragment pager adapter implementation
- * Created by masc on 11/07/16.<
+ * Fragment state pager adapter implementation with support for adding and removing fragments
+ * Created by masc on 11/07/16.
  */
-class FragmentPagerAdapter(val manager: FragmentManager) : FragmentPagerAdapter(manager) {
-    var baseId = 0L
+class FragmentPagerAdapter(val manager: FragmentManager) : FragmentStatePagerAdapter(manager) {
 
-    data class PagerFragment<T : Fragment>(
+    /**
+     * Page representing a fragment.
+     * Contains only type of fragment and provides instances on demand
+     */
+    data class Page<T : Fragment>(
             val type: Class<T>,
             val title: CharSequence,
             val initializer: (t: T) -> Unit) {
@@ -26,8 +30,14 @@ class FragmentPagerAdapter(val manager: FragmentManager) : FragmentPagerAdapter(
         }
     }
 
-    private val fragments = arrayListOf<PagerFragment<*>>()
+    /**
+     * List of pager fragment instances
+     */
+    private val fragments = arrayListOf<Page<*>>()
 
+    /**
+     * Provides fragment instances to underlying pager adapter
+     */
     override fun getItem(position: Int): Fragment {
         return fragments[position].createInstance()
     }
@@ -43,7 +53,7 @@ class FragmentPagerAdapter(val manager: FragmentManager) : FragmentPagerAdapter(
      * @param initializer Optional initializer code block
      */
     fun <T : Fragment> addFragment(fragment: Class<T>, title: CharSequence, initializer: (t: T) -> Unit = { }) {
-        fragments.add(PagerFragment(fragment, title, initializer))
+        fragments.add(Page(fragment, title, initializer))
         notifyDataSetChanged()
     }
 
@@ -51,20 +61,16 @@ class FragmentPagerAdapter(val manager: FragmentManager) : FragmentPagerAdapter(
      * Remove fragment from pager
      */
     fun removeFragmentAt(index: Int) {
-        baseId += this.fragments.count() + 1
         fragments.removeAt(index)
         notifyDataSetChanged()
     }
 
     override fun getPageTitle(position: Int): CharSequence {
-        return fragments.get(position).title
-    }
-
-    override fun getItemId(position: Int): Long {
-        return baseId + position
+        return fragments[position].title
     }
 
     override fun getItemPosition(`object`: Any?): Int {
+        // Enforce refresh of fragments (in case of add/remove)
         return PagerAdapter.POSITION_NONE
     }
 }
