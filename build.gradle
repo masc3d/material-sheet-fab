@@ -21,7 +21,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion v_android_buildtools
     defaultConfig {
         minSdkVersion 16
@@ -52,8 +52,12 @@ dependencies {
 
     compile project(":libs:sx-common")
 
-//    compile "com.android.support:support-v4:$v_android_support"
+    // Android support libs
+    compile "com.android.support:support-annotations:$v_android_support"
+    compile "com.android.support:appcompat-v7:$v_android_support"
+    compile "com.android.support:support-v4:$v_android_support"
 
+    // RX
     def v_rxlifecycle = '0.6.1'
     compile "com.trello:rxlifecycle:$v_rxlifecycle"
     compile "com.trello:rxlifecycle-kotlin:$v_rxlifecycle"
