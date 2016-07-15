@@ -52,8 +52,8 @@ class FragmentPagerAdapter(val manager: FragmentManager) : FragmentStatePagerAda
      * @param title Title of fragment page
      * @param initializer Optional initializer code block
      */
-    fun <T : Fragment> addFragment(fragment: Class<T>, title: CharSequence, initializer: (t: T) -> Unit = { }) {
-        fragments.add(Page(fragment, title, initializer))
+    fun <T : Fragment> addFragment(type: Class<T>, title: CharSequence, initializer: (t: T) -> Unit = { }) {
+        fragments.add(Page(type, title, initializer))
         notifyDataSetChanged()
     }
 
