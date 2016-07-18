@@ -59,6 +59,7 @@ dependencies {
     compile "com.android.support:support-annotations:$v_android_support"
     compile "com.android.support:appcompat-v7:$v_android_support"
     compile "com.android.support:support-v4:$v_android_support"
+    compile "com.android.support:design:$v_android_support"
 
     // RX
     compile "io.reactivex:rxjava:1.1.7"
