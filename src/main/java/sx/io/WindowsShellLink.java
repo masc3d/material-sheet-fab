@@ -31,6 +31,7 @@ import com.sun.jna.platform.win32.Ole32Util;
 import com.sun.jna.platform.win32.W32Errors;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.PointerByReference;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
