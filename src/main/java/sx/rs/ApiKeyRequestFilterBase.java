@@ -1,12 +1,13 @@
 package sx.rs;
 
+import java.io.IOException;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 
 /**
  * JAX RS request filter for api key authorization
