@@ -36,13 +36,8 @@ DROP FUNCTION IF EXISTS f_sync_increment$$
 CREATE FUNCTION f_sync_increment(p_table_name VARCHAR(50))
   RETURNS BIGINT
   BEGIN
-    SET @sync_id = (SELECT sync_id
-                    FROM sys_sync
-                    WHERE table_name = p_table_name FOR UPDATE );
-    SET @sync_id = @sync_id + 1;
-
     UPDATE sys_sync
-    SET sync_id = @sync_id
+    SET sync_id = (@sync_id := sync_id + 1)
     WHERE table_name = p_table_name;
 
     RETURN @sync_id;
