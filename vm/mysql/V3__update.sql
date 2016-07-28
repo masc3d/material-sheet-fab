@@ -1,39 +1,61 @@
-CREATE TABLE `sys_synch` (
-  `idsys_synch` int(11) NOT NULL,
-  `tablename` varchar(45) DEFAULT NULL,
-  `counter` BIGINT NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (`idsys_synch`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
-INSERT INTO `dekuclient`.`sys_synch` (`idsys_synch`, `tablename`, `counter`) VALUES ('1', 'mst_station', '0');
-
-ALTER TABLE `dekuclient`.`mst_station` 
-ADD COLUMN `synchid` BIGINT NOT NULL DEFAULT 0 ;
-
 USE `dekuclient`;
 
+CREATE TABLE `sys_sync` (
+  `id`         INT(11) NOT NULL,
+  `table_name` VARCHAR(45)      DEFAULT NULL,
+  `id_sync`    BIGINT  NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+)
+  ENGINE = MyISAM
+  DEFAULT CHARSET = latin1;
+
+INSERT INTO `dekuclient`.`sys_sync` (`id`, `table_name`, `id_sync`) VALUES ('1', 'mst_station', '0');
+
+ALTER TABLE `dekuclient`.`mst_station`
+  ADD COLUMN `id_sync` BIGINT NOT NULL DEFAULT 0;
+
 DELIMITER $$
+
+DROP FUNCTION IF EXISTS f_sync_increment_unsafe$$
+CREATE FUNCTION f_sync_increment_unsafe(p_table_name VARCHAR(50))
+  RETURNS BIGINT
+  BEGIN
+    UPDATE sys_sync
+    SET id_sync = id_sync + 1
+    WHERE table_name = p_table_name;
+
+    SET @id_sync = (SELECT id_sync
+                    FROM sys_sync
+                    WHERE table_name = p_table_name);
+
+    RETURN @id_sync;
+  END$$
+
+DROP FUNCTION IF EXISTS f_sync_increment$$
+CREATE FUNCTION f_sync_increment(p_table_name VARCHAR(50))
+  RETURNS BIGINT
+  BEGIN
+    SET @id_sync = (SELECT id_sync
+                    FROM sys_sync
+                    WHERE table_name = p_table_name FOR UPDATE );
+    SET @id_sync = @id_sync + 1;
+
+    UPDATE sys_sync
+    SET id_sync = @id_sync
+    WHERE table_name = p_table_name;
+    
+    RETURN @id_sync;
+  END$$
 
 DROP TRIGGER IF EXISTS dekuclient.mst_station_BEFORE_INSERT$$
-USE `dekuclient`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `dekuclient`.`mst_station_BEFORE_INSERT` BEFORE INSERT ON `mst_station` FOR EACH ROW
-BEGIN
-	update sys_synch set counter=counter+1 where tablename='mst_station';
-    set @counter = (select counter from sys_synch where tablename='mst_station');
-	set new.synchid= @counter;
-END
-$$
-DELIMITER ;
-USE `dekuclient`;
-
-DELIMITER $$
+  BEGIN
+    SET NEW.id_sync = f_sync_increment('mst_station');
+  END$$
 
 DROP TRIGGER IF EXISTS dekuclient.mst_station_BEFORE_UPDATE$$
-USE `dekuclient`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `dekuclient`.`mst_station_BEFORE_UPDATE` BEFORE UPDATE ON `mst_station` FOR EACH ROW
-BEGIN
-	update sys_synch set counter=counter+1 where tablename='mst_station';
-    set @counter = (select counter from sys_synch where tablename='mst_station');
-	set new.synchid= @counter;
-END$$
+  BEGIN
+    SET NEW.id_sync = f_sync_increment('mst_station');
+  END$$
 DELIMITER ;
