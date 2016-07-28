@@ -29,7 +29,8 @@ CREATE FUNCTION f_sync_increment_unsafe(p_table_name VARCHAR(50))
                     WHERE table_name = p_table_name);
 
     RETURN @id_sync;
-  END$$
+  END
+$$
 
 DROP FUNCTION IF EXISTS f_sync_increment$$
 CREATE FUNCTION f_sync_increment(p_table_name VARCHAR(50))
@@ -43,19 +44,21 @@ CREATE FUNCTION f_sync_increment(p_table_name VARCHAR(50))
     UPDATE sys_sync
     SET id_sync = @id_sync
     WHERE table_name = p_table_name;
-    
+
     RETURN @id_sync;
-  END$$
+  END
+$$
 
 DROP TRIGGER IF EXISTS dekuclient.mst_station_BEFORE_INSERT$$
 CREATE DEFINER = CURRENT_USER TRIGGER `dekuclient`.`mst_station_BEFORE_INSERT` BEFORE INSERT ON `mst_station` FOR EACH ROW
   BEGIN
     SET NEW.id_sync = f_sync_increment('mst_station');
-  END$$
+  END
+$$
 
 DROP TRIGGER IF EXISTS dekuclient.mst_station_BEFORE_UPDATE$$
 CREATE DEFINER = CURRENT_USER TRIGGER `dekuclient`.`mst_station_BEFORE_UPDATE` BEFORE UPDATE ON `mst_station` FOR EACH ROW
   BEGIN
     SET NEW.id_sync = f_sync_increment('mst_station');
-  END$$
-DELIMITER ;
+  END
+$$
