@@ -17,6 +17,7 @@ public class StationSector implements Serializable {
     private String mSector;
     private int mRoutingLayer;
     private Timestamp mTimestamp;
+    private Long mSyncId;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -56,6 +57,16 @@ public class StationSector implements Serializable {
 
     public void setTimestamp(Timestamp timestamp) {
         mTimestamp = timestamp;
+    }
+
+    @Basic
+    @Column(nullable = false)
+    public Long getSyncId() {
+        return mSyncId;
+    }
+
+    public void setSyncId(Long syncId) {
+        mSyncId = syncId;
     }
 }
 

@@ -21,18 +21,18 @@ class GenericRepository {
 
     /**
      * Generic find newer function
-     * @param timestamp Optional timestamp. If omitted all records are fetched.
+     * @param syncId Optional sync id. If omitted all records are fetched.
      * @param table Jooq table
      * @param field Jooq field
      * @return Jooq record
      */
     fun <TRecord : Record> findNewerThan(
-            timestamp: Timestamp?,
+            syncId: Long?,
             table: TableImpl<TRecord>,
-            field: TableField<out Record, Timestamp>?): Cursor<TRecord> {
+            field: TableField<out Record, Long>?): Cursor<TRecord> {
 
         return dslContext.selectFrom(table)
-                .where(if ((timestamp != null && field != null)) field.gt(timestamp) else DSL.trueCondition())
+                .where(if ((syncId != null && field != null)) field.gt(syncId) else DSL.trueCondition())
                 .fetchLazy()
     }
 }

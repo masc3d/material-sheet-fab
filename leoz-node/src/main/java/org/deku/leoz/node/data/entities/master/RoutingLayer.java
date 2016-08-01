@@ -19,6 +19,7 @@ public class RoutingLayer implements Serializable {
     private Integer services;
     private String description;
     private Timestamp timestamp;
+    private Long syncId;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -60,5 +61,15 @@ public class RoutingLayer implements Serializable {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Basic
+    @Column(nullable = false)
+    public Long getSyncId() {
+        return syncId;
+    }
+
+    public void setSyncId(Long syncId) {
+        this.syncId = syncId;
     }
 }

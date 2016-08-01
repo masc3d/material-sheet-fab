@@ -14,7 +14,7 @@ import java.sql.Timestamp
  */
 data class EntityStateMessage(
         val entityType: Class<*>? = null,
-        val timestamp: Timestamp? = null
+        val syncId: Long? = null
 ) : Serializable {
 
     companion object {

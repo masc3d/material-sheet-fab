@@ -370,5 +370,15 @@ public class Station implements Serializable {
         this.billingHouseNr = billingHouseNr;
     }
 
+    private Long syncId;
 
+    @Basic
+    @Column(nullable = false)
+    public Long getSyncId() {
+        return syncId;
+    }
+
+    public void setSyncId(Long syncId) {
+        this.syncId = syncId;
+    }
 }

@@ -44,9 +44,9 @@ class EntityPublisher(
      * @param timestamp
      */
     @Throws(JMSException::class)
-    fun publish(entityType: Class<*>, timestamp: Timestamp?) {
+    fun publish(entityType: Class<*>, syncId: Long?) {
         Channel(ActiveMQConfiguration.instance.entitySyncTopic).use {
-            val msg = EntityStateMessage(entityType, timestamp)
+            val msg = EntityStateMessage(entityType, syncId)
             log.info("Publishing [${msg}]")
             it.send(msg)
         }
@@ -61,14 +61,14 @@ class EntityPublisher(
             // Entity state message
             val esMessage = message
             val entityType = esMessage.entityType
-            val timestamp = esMessage.timestamp
+            val syncId = esMessage.syncId
             val lfmt = { s: String -> "[" + entityType!!.canonicalName + "]" + " " + s }
 
             em = entityManagerFactory.createEntityManager()
             val er = EntityRepository(em, entityType)
 
             // Count records
-            val count = er.countNewerThan(timestamp)
+            val count = er.countNewerThan(syncId)
 
             replyChannel!!.statistics.enabled = true
 
@@ -81,7 +81,7 @@ class EntityPublisher(
                 // Query with cursor
                 var cursor: ScrollableCursor? = null
                 try {
-                    cursor = er.findNewerThan(timestamp)
+                    cursor = er.findNewerThan(syncId)
 
                     val CHUNK_SIZE = 500
                     val buffer = ArrayList<Any?>(CHUNK_SIZE)

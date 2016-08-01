@@ -24,6 +24,7 @@ public class Sector implements Serializable {
     private Timestamp validTo;
     private String via;
     private Timestamp timestamp;
+    private Long syncId;
 
     @Id
     public String getSectorFrom() {
@@ -80,4 +81,13 @@ public class Sector implements Serializable {
         this.timestamp = timestamp;
     }
 
+    @Basic
+    @Column(nullable = false)
+    public Long getSyncId() {
+        return syncId;
+    }
+
+    public void setSyncId(Long syncId) {
+        this.syncId = syncId;
+    }
 }

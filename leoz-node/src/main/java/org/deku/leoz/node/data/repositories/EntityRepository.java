@@ -34,48 +34,48 @@ public class EntityRepository {
     /**
      * Timestamp attribute from jpa metamodel
      */
-    LazyInstance<Attribute> mTimestampAttribute = new LazyInstance<>(() -> {
+    LazyInstance<Attribute> mSyncIdAttribute = new LazyInstance<>(() -> {
         Set<Attribute> attrs = mEntityManager.getMetamodel().managedType(mEntityType).getAttributes();
-        Optional<Attribute> ts = attrs.stream().filter(a -> a.getName().equalsIgnoreCase("timestamp")).findFirst();
+        Optional<Attribute> ts = attrs.stream().filter(a -> a.getName().equalsIgnoreCase("syncId")).findFirst();
         return (ts.isPresent()) ? ts.get() : null;
     });
 
     /**
-     * Indicates if entity has a timestamp attribute
+     * Indicates if entity has sync id attribute
      * @return
      */
-    public boolean hasTimestampAttribute() {
-        return mTimestampAttribute.get() != null;
+    public boolean hasSyncIdAttribute() {
+        return mSyncIdAttribute.get() != null;
     }
 
     /**
-     * Count of entities newer than specific timestamp
-     * @param timestamp
+     * Count of entities newer than specific sync id
+     * @param syncId
      * @return
      */
-    public long countNewerThan(Timestamp timestamp) {
+    public long countNewerThan(Long syncId) {
         CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 
         // Roots and parameters
         Root croot = cq.from(mEntityType);
-        ParameterExpression<Timestamp> cparam = null;
-        Predicate prTimestamp = null;
-        if (mTimestampAttribute.get() != null && timestamp != null) {
-            cparam = cb.parameter(Timestamp.class);
-            Path pathTimestamp = croot.get(mTimestampAttribute.get().getName());
-            prTimestamp = cb.greaterThan(pathTimestamp, cparam);
+        ParameterExpression<Long> cparam = null;
+        Predicate prSyncId = null;
+        if (mSyncIdAttribute.get() != null && syncId != null) {
+            cparam = cb.parameter(Long.class);
+            Path pathSyncId = croot.get(mSyncIdAttribute.get().getName());
+            prSyncId = cb.greaterThan(pathSyncId, cparam);
         }
 
         // Count query
         cq.select(cb.count(croot));
-        if (prTimestamp != null)
-            cq.where(prTimestamp);
+        if (prSyncId != null)
+            cq.where(prSyncId);
 
         // Execute
         Query q = mEntityManager.createQuery(cq);
         if (cparam != null)
-            q.setParameter(cparam, timestamp);
+            q.setParameter(cparam, syncId);
         return (Long)q.getSingleResult();
     }
 
@@ -83,22 +83,22 @@ public class EntityRepository {
      * Find timestamp of newest entity
      * @return
      */
-    public Timestamp findMaxTimestamp() {
+    public Long findMaxSyncId() {
         CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
         CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
 
         Root croot = cq.from(mEntityType);
 
-        if (mTimestampAttribute.get() == null)
+        if (mSyncIdAttribute.get() == null)
             return null;
 
-        Path pathTimestamp = croot.get(mTimestampAttribute.get().getName());
-        Expression prTimestamp = cb.max(pathTimestamp);
-        cq.select(prTimestamp);
+        Path pathSyncId = croot.get(mSyncIdAttribute.get().getName());
+        Expression prSyncId = cb.max(pathSyncId);
+        cq.select(prSyncId);
 
         // Execute
         Query q = mEntityManager.createQuery(cq);
-        return (Timestamp)q.getSingleResult();
+        return (Long)q.getSingleResult();
     }
 
     /**
@@ -115,31 +115,31 @@ public class EntityRepository {
     /**
      * Find entities newer than specific timestamp.
      * The resultset is ordered by timestamp
-     * @param timestamp
+     * @param syncId
      * @return Cursor
      */
-    public ScrollableCursor findNewerThan(Timestamp timestamp) {
+    public ScrollableCursor findNewerThan(Long syncId) {
         CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery(mEntityType);
 
         // Roots and parameters
         Root croot = cq.from(mEntityType);
-        ParameterExpression<Timestamp> cparam = null;
-        Predicate prTimestamp = null;
-        Path<Timestamp> pathTimestamp = null;
-        if (mTimestampAttribute.get() != null && timestamp != null) {
-            pathTimestamp = croot.get(mTimestampAttribute.get().getName());
-            cparam = cb.parameter(Timestamp.class);
-            prTimestamp = cb.greaterThan(pathTimestamp, cparam);
+        ParameterExpression<Long> cparam = null;
+        Predicate prSyncId = null;
+        Path<Long> pathSyncId = null;
+        if (mSyncIdAttribute.get() != null && syncId != null) {
+            pathSyncId = croot.get(mSyncIdAttribute.get().getName());
+            cparam = cb.parameter(Long.class);
+            prSyncId = cb.greaterThan(pathSyncId, cparam);
         }
 
         // Select
         cq.select(croot);
-        if (prTimestamp != null)
-            cq.where(prTimestamp);
+        if (prSyncId != null)
+            cq.where(prSyncId);
 
-        if (pathTimestamp != null)
-            cq.orderBy(cb.asc(pathTimestamp));
+        if (pathSyncId != null)
+            cq.orderBy(cb.asc(pathSyncId));
 
         // Execute entity query
         Query q = mEntityManager.createQuery(cq)
@@ -147,7 +147,7 @@ public class EntityRepository {
                 .setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly)
                 .setHint(QueryHints.SCROLLABLE_CURSOR, true);
         if (cparam != null)
-            q.setParameter(cparam, timestamp);
+            q.setParameter(cparam, syncId);
 
         return (ScrollableCursor) q.getSingleResult();
     }

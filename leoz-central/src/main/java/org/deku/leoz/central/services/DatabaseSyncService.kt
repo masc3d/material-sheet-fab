@@ -3,6 +3,7 @@ package org.deku.leoz.central.services
 import com.google.common.base.Stopwatch
 import com.querydsl.core.types.dsl.DateTimePath
 import com.querydsl.core.types.dsl.EntityPathBase
+import com.querydsl.core.types.dsl.NumberPath
 import com.querydsl.jpa.impl.JPAQuery
 import org.deku.leoz.central.data.entities.jooq.Tables
 import org.deku.leoz.central.data.entities.jooq.tables.*
@@ -44,8 +45,7 @@ open class DatabaseSyncService
 constructor(
         private val exceutorService: ScheduledExecutorService,
         @Qualifier(PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
-        @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER) txJooq: PlatformTransactionManager)
-{
+        @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER) txJooq: PlatformTransactionManager) {
     /**
      * Embedded service class
      */
@@ -98,6 +98,7 @@ constructor(
             s.setuStId(ds.ustid)
             s.webAddress = ds.webAddress
             s.zip = ds.zip
+            s.syncId = ds.syncId
             return s
         }
 
@@ -116,6 +117,7 @@ constructor(
             c.minLen = cr.minLen
             c.maxLen = cr.maxLen
             c.zipFormat = cr.zipFormat
+            c.syncId = cr.syncId
 
             return c
         }
@@ -133,6 +135,7 @@ constructor(
             d.description = cr.description
             d.holiday = cr.holiday
             d.timestamp = cr.timestamp
+            d.syncId = cr.syncId
 
             return d
         }
@@ -150,6 +153,7 @@ constructor(
             d.timestamp = cr.timestamp
             d.validFrom = cr.validfrom
             d.validTo = cr.validto
+            d.syncId = cr.syncId
 
             return d
         }
@@ -166,6 +170,7 @@ constructor(
             d.services = rs.services
             d.description = rs.description
             d.timestamp = rs.timestamp
+            d.syncId = rs.syncId
 
             return d
         }
@@ -198,6 +203,7 @@ constructor(
             d.ltodholiday = sr.ltodholiday
             d.island = sr.island
             d.holidayCtrl = sr.holidayctrl
+            d.syncId = sr.syncId
 
             return d
         }
@@ -213,6 +219,7 @@ constructor(
             s.sector = ss.sector
             s.routingLayer = ss.routingLayer
             s.timestamp = ss.timestamp
+            s.syncId = ss.syncId
             return s
         }
     }
@@ -220,7 +227,7 @@ constructor(
     //region Events
     interface EventListener : sx.event.EventListener {
         /** Emitted when entities have been updated  */
-        fun onUpdate(entityType: Class<out Any?>, currentTimestamp: Timestamp?)
+        fun onUpdate(entityType: Class<out Any?>, currentSyncId: Long?)
     }
 
     private val eventDispatcher = EventDispatcher.createThreadSafe<EventListener>()
@@ -270,64 +277,64 @@ constructor(
 
         this.updateEntities<MstStationRecord, Station>(
                 Tables.MST_STATION,
-                MstStation.MST_STATION.TIMESTAMP,
+                MstStation.MST_STATION.SYNC_ID,
                 stationRepository,
                 QStation.station,
-                QStation.station.timestamp,
+                QStation.station.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_COUNTRY,
-                MstCountry.MST_COUNTRY.TIMESTAMP,
+                MstCountry.MST_COUNTRY.SYNC_ID,
                 countryRepository,
                 QCountry.country,
-                QCountry.country.timestamp,
+                QCountry.country.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_HOLIDAYCTRL,
-                MstHolidayctrl.MST_HOLIDAYCTRL.TIMESTAMP,
+                MstHolidayctrl.MST_HOLIDAYCTRL.SYNC_ID,
                 holidayCtrlRepository,
                 QHolidayCtrl.holidayCtrl,
-                QHolidayCtrl.holidayCtrl.timestamp,
+                QHolidayCtrl.holidayCtrl.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_ROUTE,
-                MstRoute.MST_ROUTE.TIMESTAMP,
+                MstRoute.MST_ROUTE.SYNC_ID,
                 routeRepository,
                 QRoute.route,
-                QRoute.route.timestamp,
+                QRoute.route.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_SECTOR,
-                MstSector.MST_SECTOR.TIMESTAMP,
+                MstSector.MST_SECTOR.SYNC_ID,
                 sectorRepository,
                 QSector.sector,
-                QSector.sector.timestamp,
+                QSector.sector.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_ROUTINGLAYER,
-                MstRoutinglayer.MST_ROUTINGLAYER.TIMESTAMP,
+                MstRoutinglayer.MST_ROUTINGLAYER.SYNC_ID,
                 routingLayerRepository,
                 QRoutingLayer.routingLayer,
-                QRoutingLayer.routingLayer.timestamp,
+                QRoutingLayer.routingLayer.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_STATION_SECTOR,
-                MstStationSector.MST_STATION_SECTOR.TIMESTAMP,
+                MstStationSector.MST_STATION_SECTOR.SYNC_ID,
                 stationSectorRepository,
                 QStationSector.stationSector,
-                QStationSector.stationSector.timestamp,
+                QStationSector.stationSector.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
@@ -338,10 +345,10 @@ constructor(
     /**
      * Generic updater for entites from jooq to jpa
      * @param sourceTable           JOOQ source table
-     * @param sourceTableTimestampField      JOOQ source timestamp field
+     * @param sourceTableSyncIdField      JOOQ source sync id field
      * @param destRepository        Destination JPA repository
      * @param destQdslEntityPath    Destination QueryDSL entity table path
-     * @param destQdslTimestampPath Destination QueryDSL timestamp field path
+     * @param destQdslSyncIdPath Destination QueryDSL sync id field path
      * @param conversionFunction    Conversion function JOOQ record -> JPA entity
      * @param deleteBeforeUpdate    Delete all records before updating
      * @param <TEntity>             Type of destiantion JPA entity
@@ -349,10 +356,10 @@ constructor(
      */
     open protected fun <TCentralRecord : Record, TEntity> updateEntities(
             sourceTable: TableImpl<TCentralRecord>,
-            sourceTableTimestampField: TableField<TCentralRecord, Timestamp>,
+            sourceTableSyncIdField: TableField<TCentralRecord, Long>,
             destRepository: JpaRepository<TEntity, *>,
             destQdslEntityPath: EntityPathBase<TEntity>,
-            destQdslTimestampPath: DateTimePath<Timestamp>?,
+            destQdslSyncIdPath: NumberPath<Long>?,
             conversionFunction: (TCentralRecord) -> TEntity,
             deleteBeforeUpdate: Boolean) {
 
@@ -363,7 +370,7 @@ constructor(
 
         entityManager.flushMode = FlushModeType.COMMIT
 
-        if (deleteBeforeUpdate || destQdslTimestampPath == null) {
+        if (deleteBeforeUpdate || destQdslSyncIdPath == null) {
             transaction.execute<Any> { ts ->
                 log.info(lfmt("Deleting all entities"))
                 destRepository.deleteAllInBatch()
@@ -374,12 +381,12 @@ constructor(
         }
 
         // Get latest timestamp
-        var destMaxTimestamp: Timestamp? = null
-        if (destQdslTimestampPath != null) {
+        var destMaxSyncId: Long? = null
+        if (destQdslSyncIdPath != null) {
             // Query embedded database table for latest timestamp
-            destMaxTimestamp = JPAQuery<TEntity>(entityManager)
+            destMaxSyncId = JPAQuery<TEntity>(entityManager)
                     .from(destQdslEntityPath)
-                    .select(destQdslTimestampPath.max())
+                    .select(destQdslSyncIdPath.max())
                     .fetchFirst()
         }
 
@@ -388,15 +395,15 @@ constructor(
         transactionJooq.execute<Any> { tsJooq ->
             // Read source records newer than destination timestamp
             val source = syncRepository.findNewerThan(
-                    destMaxTimestamp,
+                    destMaxSyncId,
                     sourceTable,
-                    sourceTableTimestampField)
+                    sourceTableSyncIdField)
 
             if (source.hasNext()) {
                 // Save to destination/jpa
                 // REMARKS
                 // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
-                log.info(lfmt("Outdated [[${destMaxTimestamp}]"))
+                log.info(lfmt("Outdated [[${destMaxSyncId}]"))
                 var count = 0
                 transaction.execute<Any> { ts ->
                     while (source.hasNext()) {
@@ -415,22 +422,22 @@ constructor(
                 }
 
                 // Re-query destination timestamp
-                if (destQdslTimestampPath != null) {
+                if (destQdslSyncIdPath != null) {
                     // Query embedded database for updated latest timestamp
-                    destMaxTimestamp = JPAQuery<TEntity>(entityManager)
+                    destMaxSyncId = JPAQuery<TEntity>(entityManager)
                             .from(destQdslEntityPath)
-                            .select(destQdslTimestampPath.max())
+                            .select(destQdslSyncIdPath.max())
                             .fetchFirst()
                 }
-                log.info(lfmt("Updated ${count} entities [${destMaxTimestamp}]"))
+                log.info(lfmt("Updated ${count} entities [${destMaxSyncId}]"))
 
                 // Emit update event
                 eventDispatcher.emit { e ->
                     // Emit event
-                    e.onUpdate(destQdslEntityPath.getType(), destMaxTimestamp)
+                    e.onUpdate(destQdslEntityPath.getType(), destMaxSyncId)
                 }
             } else {
-                log.info(lfmt("Uptodate [${destMaxTimestamp}]"))
+                log.info(lfmt("Uptodate [${destMaxSyncId}]"))
             }
             null
         }

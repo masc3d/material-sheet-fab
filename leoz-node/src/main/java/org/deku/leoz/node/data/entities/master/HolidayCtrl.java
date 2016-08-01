@@ -18,6 +18,7 @@ public class HolidayCtrl implements Serializable {
     private String mCountry;
     private String mDescription;
     private Timestamp mTimestamp;
+    private Long mSyncId;
 
     @Id
     public Timestamp getHoliday() {
@@ -65,4 +66,13 @@ public class HolidayCtrl implements Serializable {
         this.mTimestamp = timestamp;
     }
 
+    @Basic
+    @Column(nullable = false)
+    public Long getSyncId() {
+        return mSyncId;
+    }
+
+    public void setSyncId(Long syncId) {
+        mSyncId = syncId;
+    }
 }

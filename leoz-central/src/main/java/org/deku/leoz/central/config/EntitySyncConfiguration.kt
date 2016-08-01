@@ -52,8 +52,8 @@ open class EntitySyncConfiguration {
 
     /** Database sync event listener */
     private val databaseSyncEvent = object : DatabaseSyncService.EventListener {
-        override fun onUpdate(entityType: Class<out Any?>, currentTimestamp: Timestamp?) {
-            this@EntitySyncConfiguration.entityPublisher.publish(entityType, currentTimestamp);
+        override fun onUpdate(entityType: Class<out Any?>, currentSyncId: Long?) {
+            this@EntitySyncConfiguration.entityPublisher.publish(entityType, currentSyncId);
         }
     }
 

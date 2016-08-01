@@ -19,6 +19,7 @@ public class Country implements Serializable {
     private Integer mMinLen;
     private Integer mMaxLen;
     private String mZipFormat;
+    private Long mSyncId;
 
     @Id
     public String getCode() {
@@ -86,5 +87,15 @@ public class Country implements Serializable {
 
     public void setNameStringId(Integer nameStringId) {
         mNameStringId = nameStringId;
+    }
+
+    @Basic
+    @Column(nullable = false)
+    public Long getSyncId() {
+        return mSyncId;
+    }
+
+    public void setSyncId(Long syncId) {
+        mSyncId = syncId;
     }
 }

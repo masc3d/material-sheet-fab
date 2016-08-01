@@ -47,7 +47,7 @@ class EntityConsumer
      * Entity state message handler
      */
     override fun onMessage(message: EntityStateMessage, replyChannel: Channel?) {
-        this.request(message.entityType!!, message.timestamp)
+        this.request(message.entityType!!, message.syncId)
     }
 
     val entitySyncChannel by lazy {
@@ -63,7 +63,7 @@ class EntityConsumer
      * @param entityType Entity type
      * @param remoteTimestamp Optional remote timestamp, usually provided via notification
      */
-    @Synchronized fun request(entityType: Class<*>, remoteTimestamp: Timestamp?) {
+    @Synchronized fun request(entityType: Class<*>, remoteSyncId: Long?) {
         executorService.submit<Unit> {
             // Log formatting with entity type
             val lfmt = { s: String -> "[" + entityType.canonicalName + "]" + " " + s }
@@ -73,8 +73,8 @@ class EntityConsumer
                 em = entityManagerFactory.createEntityManager()
                 val er = EntityRepository(em, entityType)
 
-                val timestamp = er.findMaxTimestamp()
-                if (timestamp != null && remoteTimestamp != null && !remoteTimestamp.after(timestamp)) {
+                val syncId = er.findMaxSyncId()
+                if (syncId != null && remoteSyncId != null && remoteSyncId <= syncId) {
                     log.debug(lfmt("Entities uptodate"))
                     return@submit
                 }
@@ -82,7 +82,7 @@ class EntityConsumer
                 val sw = Stopwatch.createStarted()
 
                 // Send entity state message
-                entitySyncChannel.sendRequest(EntityStateMessage(entityType, timestamp), replyChannel = this.replyChannel)
+                entitySyncChannel.sendRequest(EntityStateMessage(entityType, syncId), replyChannel = this.replyChannel)
 
                 log.info(lfmt("Requesting entities"))
 
@@ -96,7 +96,7 @@ class EntityConsumer
                 if (euMessage.amount > 0) {
                     val emv = em!!
                     PersistenceUtil.transaction(em) {
-                        if (!er.hasTimestampAttribute()) {
+                        if (!er.hasSyncIdAttribute()) {
                             log.debug(lfmt("No timestamp attribute found -> removing all entities"))
                             er.removeAll()
                         }
@@ -110,7 +110,7 @@ class EntityConsumer
                             // Verify message order
                             if (tMsg.jmsTimestamp < lastJmsTimestamp)
                                 throw IllegalStateException(
-                                        String.format("Inconsistent message order (%d < %d)", tMsg.jmsTimestamp, timestamp))
+                                        String.format("Inconsistent message order (%d < %d)", tMsg.jmsTimestamp, syncId))
 
                             // Store last timestamp
                             lastJmsTimestamp = tMsg.jmsTimestamp
@@ -127,7 +127,7 @@ class EntityConsumer
                                 // data of transactions that were committed may not be there and h2 may report
                                 // cache level state nio exceptions.
                                 // Data seems to remain consistent though
-                                if (timestamp != null) {
+                                if (syncId != null) {
                                     log.trace(lfmt("Removing existing entities"))
                                     // If there's already entities, clean out existing first.
                                     // it's much faster than merging everything

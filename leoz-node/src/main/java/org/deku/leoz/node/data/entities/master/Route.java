@@ -54,6 +54,7 @@ public class Route implements Serializable {
     private Time ltodholiday;
     private Integer island;
     private String holidayCtrl;
+    private Long syncId;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -235,4 +236,13 @@ public class Route implements Serializable {
         this.holidayCtrl = holidayCtrl;
     }
 
+    @Basic
+    @Column(nullable = false)
+    public Long getSyncId() {
+        return syncId;
+    }
+
+    public void setSyncId(Long syncId) {
+        this.syncId = syncId;
+    }
 }
