@@ -5,6 +5,10 @@ import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import com.esotericsoftware.kryo.pool.KryoPool
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer
+import io.protostuff.LinkedBuffer
+import io.protostuff.ProtobufIOUtil
+import io.protostuff.ProtostuffIOUtil
+import io.protostuff.runtime.RuntimeSchema
 import org.xerial.snappy.SnappyInputStream
 import org.xerial.snappy.SnappyOutputStream
 import sx.jms.Converter
@@ -27,13 +31,19 @@ class DefaultConverter(
         Converter {
     enum class SerializationType {
         JAVA,
-        KRYO
+        KRYO,
+        PROTOBUF
     }
 
     enum class CompressionType {
         NONE,
         GZIP,
         SNAPPY
+    }
+
+    class ProtoObject(
+            var clazz: String = "",
+            var data: ByteArray? = null) {
     }
 
     companion object {
@@ -110,6 +120,29 @@ class DefaultConverter(
                 }
             }
 
+            DefaultConverter.SerializationType.PROTOBUF -> {
+                serializer = fun(outStream, o) {
+                    val lb = LinkedBuffer.allocate()
+
+                    val po = ProtoObject(
+                            clazz = o.javaClass.name,
+                            data = ProtobufIOUtil.toByteArray(o, RuntimeSchema.getSchema<Any>(o.javaClass), lb))
+
+                    lb.clear()
+                    ProtobufIOUtil.writeTo(outStream, po, RuntimeSchema.getSchema(ProtoObject::class.java), lb)
+                }
+
+                deserializer = fun(inStream): Any {
+                    val o = ProtoObject()
+                    ProtobufIOUtil.mergeFrom(inStream, o, RuntimeSchema.getSchema(ProtoObject::class.java))
+
+                    val c = Class.forName(o.clazz) as Class<Any>
+                    val o2 = c.newInstance()
+                    ProtobufIOUtil.mergeFrom<Any>(o.data, o2, RuntimeSchema.getSchema<Any>(c))
+                    return o2
+                }
+            }
+
             DefaultConverter.SerializationType.JAVA -> {
                 // Serialization using (standard) java object streams
                 serializer = fun(outStream, o) {
@@ -134,6 +167,7 @@ class DefaultConverter(
         // Apply intermediate stream if applicable (compression eg.) and serialize
         val serializerStream = serializationStreamSupplier(baos)
         serializer(serializerStream, obj)
+        serializerStream.close()
 
         // Create jms byte message from binary stream
         val bm = session.createBytesMessage()
