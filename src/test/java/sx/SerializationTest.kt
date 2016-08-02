@@ -4,17 +4,26 @@ import com.esotericsoftware.kryo.Kryo
 import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer
+import io.protostuff.LinkedBuffer
+import io.protostuff.ProtobufIOUtil
+import io.protostuff.ProtostuffIOUtil
+import io.protostuff.runtime.RuntimeSchema
 import org.junit.Assert
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import sx.logging.slf4j.info
 import java.io.*
-import sx.logging.slf4j.*
 
 /**
  * Created by masc on 12.10.15.
  */
 class SerializationTest {
     val log = LoggerFactory.getLogger(this.javaClass)
+
+    class ProtostuffObject(
+            var clazz: String = "",
+            var data: ByteArray? = null) {
+    }
 
     data class TestClass1(
             var field1: String = "Hello")
@@ -39,6 +48,7 @@ class SerializationTest {
     init {
         kryo.setDefaultSerializer(CompatibleFieldSerializer::class.java)
     }
+
     /**
      * Mainly for testing readability of serialUID of a kotlin class
      */
@@ -60,6 +70,27 @@ class SerializationTest {
         return o
     }
 
+    private fun serializeProtostuff(stream: OutputStream, o: Any) {
+        val lb = LinkedBuffer.allocate()
+
+        val po = ProtostuffObject(
+                clazz = o.javaClass.name,
+                data = ProtobufIOUtil.toByteArray(o, RuntimeSchema.getSchema<Any>(o.javaClass), lb))
+
+        lb.clear()
+        ProtobufIOUtil.writeTo(stream, po, RuntimeSchema.getSchema(ProtostuffObject::class.java), lb)
+    }
+
+    private fun deserializeProtostuff(stream: InputStream): Any {
+        val o = ProtostuffObject()
+        ProtobufIOUtil.mergeFrom(stream, o, RuntimeSchema.getSchema(ProtostuffObject::class.java))
+
+        val c = Class.forName(o.clazz) as Class<Any>
+        val o2 = c.newInstance()
+        ProtobufIOUtil.mergeFrom<Any>(o.data, o2, RuntimeSchema.getSchema<Any>(c))
+        return o2
+    }
+
     private fun serializeJava(outStream: OutputStream, o: Any) {
         val oos = ObjectOutputStream(outStream)
         oos.writeObject(o)
@@ -75,16 +106,23 @@ class SerializationTest {
 
     @Test
     fun testSerialize() {
-        var objIn = TestClass1()
+        val sw = Stopwatch.createStarted()
 
-        var out = ByteArrayOutputStream()
-        this.serializeKryo(out, TestClass1("meh"))
+        for (i: Int in 0..1000000) {
+            var objIn = TestClass1()
 
-        var content = out.toByteArray()
+            var out = ByteArrayOutputStream()
+//        this.serializeKryo(out, TestClass1("meh"))
+            this.serializeProtostuff(out, TestClass1("meh"))
 
-        var input = ByteArrayInputStream(content)
-        var objOut = this.deserializeKryo(input)
+            var content = out.toByteArray()
 
-        log.info(objOut)
+            var input = ByteArrayInputStream(content)
+//        var objOut = this.deserializeKryo(input)
+            var objOut = this.deserializeProtostuff(input)
+        }
+
+        log.info("Completed in [$sw]")
+
     }
 }

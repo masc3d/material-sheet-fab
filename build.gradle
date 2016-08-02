@@ -68,8 +68,14 @@ dependencies {
     // Kryo
     provided "com.esotericsoftware:kryo:4.0.0"
 
+    // Protostuff
+    def v_protostuff = '1.4.4'
+    provided "io.protostuff:protostuff-core:$v_protostuff"
+    provided "io.protostuff:protostuff-runtime:$v_protostuff"
+
     // Snappy
     provided "org.xerial.snappy:snappy-java:1.1.2.4"
 
     testCompile "junit:junit:4.12"
+    testCompile "org.slf4j:slf4j-simple:1.7.21"
 }
