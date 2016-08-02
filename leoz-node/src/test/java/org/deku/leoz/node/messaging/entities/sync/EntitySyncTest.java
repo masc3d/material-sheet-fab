@@ -63,7 +63,7 @@ public class EntitySyncTest extends DataTest {
     @Test
     public void testSync() throws Exception {
         mListener.start();
-        mClient.request(Route.class);
+        mClient.request(Route.class, null, true);
 
         Thread.sleep(10000);
     }
