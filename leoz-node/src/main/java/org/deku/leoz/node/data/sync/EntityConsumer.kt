@@ -61,9 +61,10 @@ class EntityConsumer
     /**
      * Request entity update
      * @param entityType Entity type
-     * @param remoteTimestamp Optional remote timestamp, usually provided via notification
+     * @param remoteSyncId Optional remote timestamp, usually provided via notification
+     * @param requestAll Ignores sync id, requests all entities (mainly for testing)
      */
-    @Synchronized fun request(entityType: Class<*>, remoteSyncId: Long?) {
+    @Synchronized fun request(entityType: Class<*>, remoteSyncId: Long?, requestAll: Boolean = false) {
         executorService.submit<Unit> {
             // Log formatting with entity type
             val lfmt = { s: String -> "[" + entityType.canonicalName + "]" + " " + s }
@@ -73,10 +74,14 @@ class EntityConsumer
                 em = entityManagerFactory.createEntityManager()
                 val er = EntityRepository(em, entityType)
 
-                val syncId = er.findMaxSyncId()
-                if (syncId != null && remoteSyncId != null && remoteSyncId <= syncId) {
-                    log.debug(lfmt("Entities uptodate"))
-                    return@submit
+                var syncId: Long? = null
+
+                if (!requestAll) {
+                    syncId = er.findMaxSyncId()
+                    if (syncId != null && remoteSyncId != null && remoteSyncId <= syncId) {
+                        log.debug(lfmt("Entities uptodate"))
+                        return@submit
+                    }
                 }
 
                 val sw = Stopwatch.createStarted()
@@ -127,7 +132,7 @@ class EntityConsumer
                                 // data of transactions that were committed may not be there and h2 may report
                                 // cache level state nio exceptions.
                                 // Data seems to remain consistent though
-                                if (syncId != null) {
+                                if (syncId != null || requestAll) {
                                     log.trace(lfmt("Removing existing entities"))
                                     // If there's already entities, clean out existing first.
                                     // it's much faster than merging everything
@@ -158,7 +163,7 @@ class EntityConsumer
                 log.info(lfmt("Received and stored ${count.get()} in ${sw} (${bytesReceived} bytes)"))
             } catch (e: TimeoutException) {
                 log.error(lfmt(e.message ?: ""))
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 log.error(lfmt(e.message ?: ""), e)
             } finally {
                 if (em != null)
