@@ -22,7 +22,7 @@ buildscript {
         v_protostuff = '1.4.4'
         v_rxjava = '1.1.6'
         v_resteasy = '3.0.17.Final'
-        v_slf4j = '1.7.13'
+        v_slf4j = '1.7.21'
         v_snappy = '1.1.2.4'
         v_snakeyaml = '1.17'
         v_spring = '4.3.1.RELEASE'
