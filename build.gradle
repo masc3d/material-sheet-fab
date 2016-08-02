@@ -72,8 +72,6 @@ subprojects {
     // Plugin for showing dependency updates
     apply plugin: 'com.github.ben-manes.versions'
 
-    projectReportDirName = new File(project.projectDir, 'reports').toString()
-
     // Global repositories
     repositories {
         mavenCentral()
