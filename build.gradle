@@ -144,6 +144,7 @@ subprojects {
             force "org.javassist:javassist:$v_javassist"
             force "org.jboss.logging:jboss-logging:3.2.1.Final"
             force "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+            force "org.objenesis:objenesis:2.4"
             force "org.reflections:reflections:0.9.10"
             force "org.xerial.snappy:snappy-java:$v_snappy"
             force "org.yaml:snakeyaml:$v_snakeyaml"

@@ -34,6 +34,10 @@ dependencies {
     compile "ch.qos.logback:logback-classic:$v_logback"
     compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
 
+    // Guava
+    compile "com.google.guava:guava:$v_guava"
+
+    // Commons
     compile "commons-io:commons-io:$v_commons_io"
 
     // javax

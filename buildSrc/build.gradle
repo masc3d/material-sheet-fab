@@ -109,6 +109,7 @@ task syncClasses(type: Sync) {
             '**/Disposable*/',
             '**/EmbeddedExecutable*/',
             '**/ProcessExecutor*',
+            '**/StandardSystemProperty*',
             '**/ssh/**'
     includeEmptyDirs = false
 }
