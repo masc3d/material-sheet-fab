@@ -8,6 +8,7 @@ import org.junit.Assert
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import java.io.*
+import sx.logging.slf4j.*
 
 /**
  * Created by masc on 12.10.15.

@@ -46,6 +46,8 @@ class DefaultConverter(
                 // Setting the default serializer to CompatibleFieldSerializer is crucial here
                 // as the default FiedldSerializer relies solely in order and may cause breakage as classes evolve
                 k.setDefaultSerializer(CompatibleFieldSerializer::class.java)
+                // Required for compatibility with kryo 3.x
+                k.fieldSerializerConfig.isOptimizedGenerics = true
                 k
             })
                     .softReferences()
