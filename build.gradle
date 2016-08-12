@@ -4,8 +4,8 @@ buildscript {
     }
     ext {
         v_kotlin = '1.0.3'
-        v_android_buildtools = '24.0.0'
-        v_android_support = '24.0.0'
+        v_android_buildtools = '24.0.1'
+        v_android_support = '24.1.1'
     }
 
     dependencies {
@@ -62,7 +62,7 @@ dependencies {
     compile "com.android.support:design:$v_android_support"
 
     // RX
-    compile "io.reactivex:rxjava:1.1.7"
+    compile "io.reactivex:rxjava:1.1.9"
     compile "io.reactivex:rxandroid:1.2.1"
     def v_rxlifecycle = '0.6.1'
     compile "com.trello:rxlifecycle:$v_rxlifecycle"
