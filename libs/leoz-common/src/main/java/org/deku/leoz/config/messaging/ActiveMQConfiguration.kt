@@ -28,17 +28,19 @@ class ActiveMQConfiguration(connectionFactory: ConnectionFactory? = null) : Mess
         })
     }
 
-    /**
-     * Connection factory
-     */
-    var connectionFactory: ConnectionFactory
-        private set
+    private var _connectionFactory: ConnectionFactory?
 
     init {
         // Configure broker authentication
         this.broker.user = Broker.User(USERNAME, PASSWORD, GROUPNAME)
+        _connectionFactory = connectionFactory
+    }
 
-        this.connectionFactory = connectionFactory ?: this.broker.connectionFactory
+    /**
+     * Connection factory
+     */
+    val connectionFactory by lazy {
+        _connectionFactory ?: this.broker.connectionFactory
     }
 
     override val broker: Broker
