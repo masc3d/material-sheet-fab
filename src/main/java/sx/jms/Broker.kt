@@ -1,9 +1,10 @@
-package sx.jms.embedded
+package sx.jms
 
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
+import sx.event.EventListener
 import java.io.File
 import java.util.*
 import javax.jms.ConnectionFactory

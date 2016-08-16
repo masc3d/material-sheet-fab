@@ -1,4 +1,4 @@
-package sx.jms.embedded.activemq
+package sx.jms.activemq
 
 import org.apache.activemq.ActiveMQConnectionFactory
 import org.apache.activemq.RedeliveryPolicy
@@ -19,7 +19,7 @@ import org.apache.activemq.security.*
 import org.apache.activemq.store.PersistenceAdapter
 import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter
 import org.apache.activemq.transport.TransportServer
-import sx.jms.embedded.Broker
+import sx.jms.Broker
 import java.io.File
 import java.net.URI
 import java.net.URISyntaxException
@@ -36,7 +36,7 @@ import javax.jms.Topic
  */
 class ActiveMQBroker private constructor()
 :
-        Broker(ActiveMQBroker.NATIVE_TCP_PORT) {
+        Broker(NATIVE_TCP_PORT) {
     /**
      * Persistence store type
      */
@@ -96,11 +96,11 @@ class ActiveMQBroker private constructor()
 
         val pa: PersistenceAdapter
         when (storeType) {
-            ActiveMQBroker.StoreType.KahaDb -> {
+            StoreType.KahaDb -> {
                 pa = brokerService!!.persistenceAdapter as KahaDBPersistenceAdapter
                 pa.isCheckForCorruptJournalFiles = true
             }
-            ActiveMQBroker.StoreType.LevelDb -> {
+            StoreType.LevelDb -> {
                 brokerService!!.persistenceFactory = LevelDBStoreFactory()
                 pa = brokerService!!.persistenceAdapter as LevelDBStore
             }
@@ -331,10 +331,10 @@ class ActiveMQBroker private constructor()
          * @param failover
          * @return ActiveMQ URI
          */
-        fun createUri(peerBroker: Broker.PeerBroker, failover: Boolean): URI {
+        fun createUri(peerBroker: PeerBroker, failover: Boolean): URI {
             var scheme = peerBroker.transportType.toString()
-            var path = peerBroker.httpPath ?: ""
-            var port = peerBroker.port ?: if (peerBroker.transportType === Broker.TransportType.TCP) 61616 else 80
+            val path = peerBroker.httpPath ?: ""
+            val port = peerBroker.port ?: if (peerBroker.transportType === TransportType.TCP) 61616 else 80
 
             if (failover)
                 scheme = "failover:" + scheme
