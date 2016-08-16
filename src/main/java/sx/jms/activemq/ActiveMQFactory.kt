@@ -18,6 +18,10 @@ import javax.jms.Topic
  * Created by masc on 15/08/16.
  */
 class ActiveMQFactory : Factory {
+    companion object {
+        @JvmStatic val instance: ActiveMQFactory by lazy { ActiveMQFactory() }
+    }
+
     override fun createConnectionFactory(): ConnectionFactory {
         return ActiveMQConnectionFactory()
     }
@@ -39,11 +43,17 @@ class ActiveMQFactory : Factory {
                                 transportType: Broker.TransportType,
                                 user: String,
                                 password: String): ConnectionFactory {
+        return this.createConnectionFactory(URI.create("${transportType.toString()}://${host}:${port}"), user, password)
+    }
+
+    fun createConnectionFactory(uri: URI,
+                                user: String,
+                                password: String): ConnectionFactory {
         val psf = PooledConnectionFactory()
         val cf = ActiveMQConnectionFactory(
                 user,
                 password,
-                "${transportType.toString()}://${host}:${port}")
+                uri)
         cf.isWatchTopicAdvisories = false
         psf.connectionFactory = cf
         psf.maxConnections = 32

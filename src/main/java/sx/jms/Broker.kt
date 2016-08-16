@@ -122,13 +122,7 @@ protected constructor(
 
     protected abstract val isStartedImpl: Boolean
 
-    /** Create jms message queue  */
-    abstract fun createQueue(name: String): Queue
-
-    /** Create jms message topic  */
-    abstract fun createTopic(name: String): Topic
-
-    /** Jms connection factory  */
+    /** Jms connection factory for connecting to this broker  */
     abstract val connectionFactory: ConnectionFactory
     //endregion
 

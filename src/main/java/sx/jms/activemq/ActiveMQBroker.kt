@@ -37,6 +37,40 @@ import javax.jms.Topic
 class ActiveMQBroker private constructor()
 :
         Broker(NATIVE_TCP_PORT) {
+
+    companion object {
+        // Defaults
+        private val NATIVE_TCP_PORT = 61616
+
+        /** Singleton */
+        @JvmStatic val instance by lazy({ ActiveMQBroker() })
+
+        /**
+         * Create ActiveMQ URI
+         * @param peerBroker Peer broker
+         * @param failover
+         * @return ActiveMQ URI
+         */
+        private fun createUri(peerBroker: PeerBroker, failover: Boolean): URI {
+            var scheme = peerBroker.transportType.toString()
+            val path = peerBroker.httpPath ?: ""
+            val port = peerBroker.port ?: if (peerBroker.transportType === TransportType.TCP) 61616 else 80
+
+            if (failover)
+                scheme = "failover:" + scheme
+
+            try {
+                return URI(String.format("%s://%s:%d%s",
+                        scheme,
+                        peerBroker.hostname,
+                        port,
+                        path))
+            } catch (e: URISyntaxException) {
+                throw RuntimeException(e)
+            }
+        }
+    }
+
     /**
      * Persistence store type
      */
@@ -298,56 +332,10 @@ class ActiveMQBroker private constructor()
             return brokerService != null && brokerService.isStarted
         }
 
-    override fun createQueue(name: String): Queue {
-        return ActiveMQQueue(name)
-    }
-
-    override fun createTopic(name: String): Topic {
-        return ActiveMQTopic(name)
-    }
-
     override val connectionFactory: ConnectionFactory by lazy({
-        val psf = PooledConnectionFactory()
-        val cf = ActiveMQConnectionFactory(
-                this.user!!.userName,
-                this.user!!.password,
-                localUri.toString())
-        cf.isWatchTopicAdvisories = false
-        psf.connectionFactory = cf
-        psf.maxConnections = 32
-        psf
+        ActiveMQFactory.instance.createConnectionFactory(
+                uri = this.localUri,
+                user = this.user!!.userName,
+                password = this.user!!.password)
     })
-
-    companion object {
-        // Defaults
-        private val NATIVE_TCP_PORT = 61616
-
-        /** Singleton */
-        @JvmStatic val instance by lazy({ ActiveMQBroker() })
-
-        /**
-         * Create ActiveMQ URI
-         * @param peerBroker Peer broker
-         * @param failover
-         * @return ActiveMQ URI
-         */
-        fun createUri(peerBroker: PeerBroker, failover: Boolean): URI {
-            var scheme = peerBroker.transportType.toString()
-            val path = peerBroker.httpPath ?: ""
-            val port = peerBroker.port ?: if (peerBroker.transportType === TransportType.TCP) 61616 else 80
-
-            if (failover)
-                scheme = "failover:" + scheme
-
-            try {
-                return URI(String.format("%s://%s:%d%s",
-                        scheme,
-                        peerBroker.hostname,
-                        port,
-                        path))
-            } catch (e: URISyntaxException) {
-                throw RuntimeException(e)
-            }
-        }
-    }
 }
