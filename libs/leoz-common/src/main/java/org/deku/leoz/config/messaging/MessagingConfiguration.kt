@@ -2,7 +2,7 @@ package org.deku.leoz.config.messaging
 
 import org.deku.leoz.Identity
 import sx.jms.Channel
-import sx.jms.embedded.Broker
+import sx.jms.Broker
 
 /**
  * Messaging configuration base interface

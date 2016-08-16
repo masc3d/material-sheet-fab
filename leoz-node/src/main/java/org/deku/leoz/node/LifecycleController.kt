@@ -3,7 +3,7 @@ package org.deku.leoz.node
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.peer.RemotePeerSettings
 import sx.Lifecycle
-import sx.jms.embedded.Broker
+import sx.jms.Broker
 import java.lang.ref.WeakReference
 import java.util.*
 import javax.annotation.PostConstruct

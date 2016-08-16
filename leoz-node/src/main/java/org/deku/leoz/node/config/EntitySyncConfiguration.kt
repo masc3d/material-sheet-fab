@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
-import sx.jms.embedded.Broker
-import sx.jms.embedded.activemq.ActiveMQBroker
+import sx.jms.Broker
+import sx.jms.activemq.ActiveMQBroker
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy

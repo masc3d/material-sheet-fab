@@ -5,6 +5,7 @@ import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import javax.jms.DeliveryMode
+import sx.logging.slf4j.*
 
 /**
  * Created by masc on 20/02/16.

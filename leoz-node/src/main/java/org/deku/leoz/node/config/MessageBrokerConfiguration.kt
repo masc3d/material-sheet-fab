@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.jms.embedded.Broker
-import sx.jms.embedded.activemq.ActiveMQBroker
+import sx.jms.Broker
+import sx.jms.activemq.ActiveMQBroker
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject

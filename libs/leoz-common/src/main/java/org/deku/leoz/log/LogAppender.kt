@@ -8,7 +8,7 @@ import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.jms.Channel
-import sx.jms.embedded.Broker
+import sx.jms.Broker
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors

@@ -20,7 +20,7 @@ import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfo
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.web.context.support.WebApplicationContextUtils
-import sx.jms.embedded.activemq.HttpExternalTunnelServlet
+import sx.jms.activemq.HttpExternalTunnelServlet
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException

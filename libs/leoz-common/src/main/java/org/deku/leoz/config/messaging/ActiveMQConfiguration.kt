@@ -3,8 +3,8 @@ package org.deku.leoz.config.messaging
 import org.deku.leoz.Identity
 import sx.jms.Channel
 import sx.jms.converters.DefaultConverter
-import sx.jms.embedded.Broker
-import sx.jms.embedded.activemq.ActiveMQBroker
+import sx.jms.Broker
+import sx.jms.activemq.ActiveMQBroker
 
 /**
  * ActiveMQ specific messaging configuration
