@@ -35,9 +35,10 @@ class ActiveMQConfiguration(connectionFactory: ConnectionFactory? = null) : Mess
         private set
 
     init {
-        this.connectionFactory = connectionFactory ?: this.broker.connectionFactory
         // Configure broker authentication
         this.broker.user = Broker.User(USERNAME, PASSWORD, GROUPNAME)
+
+        this.connectionFactory = connectionFactory ?: this.broker.connectionFactory
     }
 
     override val broker: Broker
