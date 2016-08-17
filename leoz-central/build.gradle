@@ -37,7 +37,7 @@ dependencies {
     compile "mysql:mysql-connector-java:$v_mysql"
 
     // jooq
-    compile "org.jooq:jooq:3.8.2"
+    compile "org.jooq:jooq:3.8.4"
 
     // test dependencies
     testCompile group: 'junit', name: 'junit', version: v_junit

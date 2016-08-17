@@ -20,10 +20,14 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
 
+    def v_kodein = '3.0.0'
+    compile "com.github.salomonbrys.kodein:kodein:$v_kodein"
+    compile "com.github.salomonbrys.kodein:kodein-conf:$v_kodein"
+
     // RX
     compile "io.reactivex:rxjava:1.1.6"
     compile "io.reactivex:rxkotlin:0.60.0"
-    compile "io.reactivex:rxjavafx:0.1.0"
+    compile "io.reactivex:rxjavafx:0.1.4"
 
     // JSR-303 bean validation
     compile "org.hibernate:hibernate-validator:5.2.4.Final"
@@ -45,7 +49,7 @@ dependencies {
 
     // JavaFX libs
     compile "com.dooapp.fxform2:core:$v_fxform2"
-    compile "org.controlsfx:controlsfx:8.40.10"
+    compile "org.controlsfx:controlsfx:8.40.11"
     compile "javax.el:javax.el-api:3.0.0"
 
     testCompile group: 'junit', name: 'junit', version: v_junit

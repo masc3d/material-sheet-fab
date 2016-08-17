@@ -27,7 +27,7 @@ dependencies {
     compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
 
     // command line
-    compile "com.beust:jcommander:1.55"
+    compile "com.beust:jcommander:1.56"
 
     // ini/conf file
     compile "org.ini4j:ini4j:$v_ini4j"

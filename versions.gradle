@@ -1,12 +1,12 @@
 buildscript {
     ext {
         // Versions
-        v_activemq = '5.13.4'
+        v_activemq = '5.14.0'
         v_apache_httpclient = '4.5.2'
         v_commons_lang = '3.4'
         v_commons_io = '2.5'
         v_commons_logging = '1.2'
-        v_fxform2 = '8.0.17'
+        v_fxform2 = '8.0.18'
         v_guava = '19.0'
         v_ini4j = '0.5.4'
         v_jackson = '2.6.6'
@@ -21,7 +21,7 @@ buildscript {
         v_logback = '1.1.7'
         v_protostuff = '1.4.4'
         v_rxjava = '1.1.6'
-        v_resteasy = '3.0.17.Final'
+        v_resteasy = '3.0.19.Final'
         v_slf4j = '1.7.21'
         v_snappy = '1.1.2.4'
         v_snakeyaml = '1.17'

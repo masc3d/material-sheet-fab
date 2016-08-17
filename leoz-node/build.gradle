@@ -144,7 +144,7 @@ dependencies {
 
     // hawt.io
     compile "io.hawt:hawtio-springboot:1.4.65"
-    compile "org.jolokia:jolokia-spring:1.3.3"
+    compile "org.jolokia:jolokia-spring:1.3.4"
 
     // serialization
     compile "com.esotericsoftware:kryo:$v_kryo"
@@ -161,7 +161,7 @@ dependencies {
 //    compile "org.aspectj:aspectjweaver:+"
 
     // TODO: for testing vaadin
-    def v_vaadin = '7.6.7'
+    def v_vaadin = '7.6.8'
     compile "com.vaadin:vaadin-spring-boot:1.0.0"
     compile "com.vaadin:vaadin-client:$v_vaadin"
     compile "com.vaadin:vaadin-client-compiled:$v_vaadin"
