@@ -49,7 +49,7 @@ dependencies {
     provided "org.springframework:spring-jms:4.3.0.RELEASE"
 
     // ActiveMQ
-    def v_activemq = '5.13.4'
+    def v_activemq = '5.14.0'
     provided "org.apache.activemq:activemq-broker:$v_activemq"
     provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
     provided "org.apache.activemq:activemq-leveldb-store:$v_activemq"
