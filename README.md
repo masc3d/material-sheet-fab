@@ -5,7 +5,7 @@
 ### Development environment & repository ###
 
 #### Required software ####
-* [Idea Intellij Ultimate](https://www.jetbrains.com/idea/) (v2016.1)
+* [Idea Intellij Ultimate](https://www.jetbrains.com/idea/)
 * [Sourcetree](https://www.atlassian.com/software/sourcetree)
 * [JavaFX Scene Builder](http://gluonhq.com/open-source/scene-builder/)
 
