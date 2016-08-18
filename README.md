@@ -22,9 +22,9 @@ Contains development host resources, eg. MYSQL and application server
 * [Vagrant](http://www.vagrantup.com)
 
 #### Get up and running ####
-* Go to <project directory>/vm
+* Go to `<project directory>/vm`
 * Start VM
-    * `vagrant up`
+  <pre>vagrant up</pre>
 
 ## Contribution guidelines ##
 
