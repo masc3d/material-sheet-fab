@@ -1,5 +1,9 @@
 package org.deku.leoz.fx.modules
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.CheckBox
@@ -24,12 +28,14 @@ class DebugController : ModuleController(), Initializable {
     @FXML
     private lateinit var fxUiAnimationsEnabled: CheckBox
 
+    private val settings: Settings by Kodein.global.lazy.instance()
+
     override val title: String
         get() = "Debug"
 
     override fun initialize(location: URL, resources: ResourceBundle) {
-        fxUiAnimationsEnabled.isSelected = Settings.instance().isAnimationsEnabled
-        fxUiAnimationsEnabled.selectedProperty().addListener { o, ov, nv -> Settings.instance().isAnimationsEnabled = nv }
+        fxUiAnimationsEnabled.isSelected = this.settings.isAnimationsEnabled
+        fxUiAnimationsEnabled.selectedProperty().addListener { o, ov, nv -> this.settings.isAnimationsEnabled = nv }
     }
 
     fun onLeoBridgeSend() {

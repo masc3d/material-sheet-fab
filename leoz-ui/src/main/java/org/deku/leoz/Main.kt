@@ -1,5 +1,7 @@
 package org.deku.leoz
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.geometry.Rectangle2D
@@ -12,6 +14,7 @@ import javafx.stage.Screen
 import javafx.stage.Stage
 import org.controlsfx.control.Notifications
 import org.deku.leoz.bridge.LeoBridge
+import org.deku.leoz.config.Configurations
 import org.deku.leoz.fx.MainController
 import org.slf4j.LoggerFactory
 import sx.util.Utf8ResourceBundleControl
@@ -20,18 +23,27 @@ import java.util.*
 import java.util.concurrent.Executors
 
 /**
- * Main application entry point
- */
-fun main(args: Array<String>) {
-    javafx.application.Application.launch(Main::class.java, *args)
-}
-
-/**
  * Main application class
  */
 class Main : Application() {
+    companion object {
+        private var instance: Main? = null
+        private val log = LoggerFactory.getLogger(Main::class.java)
 
-    private var fxPrimaryStage: Stage? = null
+        fun instance(): Main {
+            return instance!!
+        }
+
+        /**
+         * Application main entry point
+         * @param args
+         */
+        @JvmStatic fun main(args: Array<String>) {
+            javafx.application.Application.launch(Main::class.java, *args)
+        }
+    }
+
+    private var _fxPrimaryStage: Stage? = null
     private var _locale: Locale? = null
     private var _localizedResourceBundle: ResourceBundle? = null
 
@@ -41,7 +53,6 @@ class Main : Application() {
     /**
      * Utility method for loading a specific language resource bundle
      * @param locale
-     * *
      * @return
      */
     private fun getLanguageResourceBundle(locale: Locale): ResourceBundle {
@@ -100,7 +111,6 @@ class Main : Application() {
     /**
      * Get string from localized resource bundle
      * @param key
-     * *
      * @return
      */
     fun getLocalizedString(key: String): String {
@@ -128,7 +138,6 @@ class Main : Application() {
     /**
      * Utility method for loading javafx pane from fxml resource
      * @param resourcePath
-     * *
      * @return
      */
     fun loadFxPane(resourcePath: String): FXMLLoader {
@@ -147,7 +156,6 @@ class Main : Application() {
      * Utility method for loading font. Once a font has been loaded (even without explicitly using it),
      * it can be referenced within css stylesheetss.
      * @param resourcePath
-     * *
      * @return
      */
     fun loadFont(resourcePath: String): Font {
@@ -155,10 +163,8 @@ class Main : Application() {
     }
 
     /**
-     * Scene start
-
+     * Scene start (javafx main)
      * @param primaryStage
-     * *
      * @throws Exception
      */
     @Throws(Exception::class)
@@ -179,7 +185,12 @@ class Main : Application() {
             return
         }
 
-        fxPrimaryStage = primaryStage
+        // Setup injection
+        Kodein.global.addImport(Configurations.application)
+        Kodein.global.addImport(Configurations.messenging)
+
+        // Setup stage
+        _fxPrimaryStage = primaryStage
 
         // Load embedded fonts
         this.loadFont("/fonts/Futura-CondensedExtraBold.ttf")
@@ -187,28 +198,22 @@ class Main : Application() {
         this.loadFont("/fonts/Futura-Medium.ttf")
         this.loadFont("/fonts/Futura-MediumItalic.ttf")
 
-//        try {
-//            val root = FXMLLoader.load<Parent>(this.javaClass.getResource("/fx/Main.fxml"))
-//        } catch(e: Exception) {
-//            println(e)
-//            throw(e)
-//        }
-
         // Main scene
         //TODO: User preferences? Check if last size and position should be remembered. Dont think so (PHPR)
-        var primScreenBounds: Rectangle2D = Screen.getPrimary().visualBounds //Used to access the computers screen resolution/size
+        val primScreenBounds: Rectangle2D = Screen.getPrimary().visualBounds //Used to access the computers screen resolution/size
         //Set default scene size which is used when primary stage is no more in maximized mode
-        val scene = Scene(this.mainPane, if(primScreenBounds.width < 1366.0) primScreenBounds.width - 50 else 1366.0, if(primScreenBounds.height < 768.0) primScreenBounds.height - 50 else 768.0)
+
+        val width = if(primScreenBounds.width < 1366.0) primScreenBounds.width - 50 else 1366.0
+        val height = if(primScreenBounds.height < 768.0) primScreenBounds.height - 50 else 768.0
+        val scene = Scene(this.mainPane, width, height)
+
         primaryStage.title = localizedResourceBundle.getString("global.title")!!
         primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
         primaryStage.scene = scene
-        //Set boundaries of primary Stage to visible bounds of the computers main screen ==> Stage is fullscreen sized but not in fullscreen mode
-//        primaryStage.x = primScreenBounds.minX
-//        primaryStage.y = primScreenBounds.minY
-//        primaryStage.width = primScreenBounds.width
-//        primaryStage.height = primScreenBounds.height
-        //Set primary stage maximized. Don't use "isFullscreen", this leads to a "kiosk mode" fullscreen
-        primaryStage.isMaximized = true
+
+        // Maximizing by default is usually annoying for users and developers alike.
+        // Default should be the minimum supported size.
+        // If it's necessary to maximize by default on partidular occasionas/installations it should be paremeterized.
         primaryStage.show()
 
         Executors.newSingleThreadExecutor().submit {
@@ -232,10 +237,10 @@ class Main : Application() {
      */
     fun toForeground() {
         // toFront doesn't suffice
-        fxPrimaryStage!!.isAlwaysOnTop = true
-        fxPrimaryStage!!.toFront()
-        fxPrimaryStage!!.requestFocus()
-        fxPrimaryStage!!.isAlwaysOnTop = false
+        _fxPrimaryStage!!.isAlwaysOnTop = true
+        _fxPrimaryStage!!.toFront()
+        _fxPrimaryStage!!.requestFocus()
+        _fxPrimaryStage!!.isAlwaysOnTop = false
     }
 
     fun showError(message: String) {
@@ -244,24 +249,6 @@ class Main : Application() {
 
     fun showMessage(message: String) {
         Notifications.create().title("Leoz").text(message).showInformation()
-    }
-
-    companion object {
-        private var instance: Main? = null
-        private val log = LoggerFactory.getLogger(Main::class.java)
-
-        fun instance(): Main {
-            return instance!!
-        }
-
-        /**
-         * Application main entry point
-         * @param args
-         */
-
-        @JvmStatic fun main(args: Array<String>) {
-            Application.launch(*args)
-        }
     }
 }
 

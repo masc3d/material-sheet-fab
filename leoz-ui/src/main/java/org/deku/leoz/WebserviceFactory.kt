@@ -13,7 +13,6 @@ import javax.ws.rs.client.WebTarget
 
 /**
  * Webservice factory
-
  * Created by masc on 27.08.14.
  */
 object WebserviceFactory {

@@ -1,5 +1,9 @@
 package org.deku.leoz.fx
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import javafx.animation.*
 import javafx.application.Platform
 import javafx.event.ActionEvent
@@ -39,6 +43,8 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     private lateinit var fxSidebarController: SidebarController
     @FXML
     private lateinit var fxProgressIndicator: ProgressIndicator
+
+    private val settings: Settings by Kodein.global.lazy.instance()
 
     val homeController by lazy {
         ModuleController.fromFxml<HomeController>("/fx/modules/Home.fxml")
@@ -149,7 +155,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     }
 
     fun showModule(moduleController: ModuleController) {
-        this.showModule(moduleController, Settings.instance().isAnimationsEnabled)
+        this.showModule(moduleController, this.settings.isAnimationsEnabled)
     }
 
     /**
