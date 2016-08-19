@@ -50,7 +50,7 @@ class Main : Application() {
     private var _mainPane: Pane? = null
     private var _mainController: MainController? = null
 
-    private val localization: Localization by Kodein.global.lazy.instance()
+    private val i18n: Localization by Kodein.global.lazy.instance()
 
     /**
      * Utility method for loading a specific language resource bundle
@@ -98,7 +98,7 @@ class Main : Application() {
      */
     fun loadFxPane(resourcePath: String): FXMLLoader {
         val fxml = FXMLLoader(javaClass.getResource(resourcePath))
-        fxml.resources = this.localization.resourceBundle
+        fxml.resources = this.i18n.resources
         try {
             fxml.load<Parent>()
             return fxml
@@ -163,7 +163,7 @@ class Main : Application() {
         val height = if(primScreenBounds.height < 768.0) primScreenBounds.height - 50 else 768.0
         val scene = Scene(this.mainPane, width, height)
 
-        primaryStage.title = this.localization.resourceBundle.getString("global.title")!!
+        primaryStage.title = this.i18n.resources.getString("global.title")!!
         primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
         primaryStage.scene = scene
 

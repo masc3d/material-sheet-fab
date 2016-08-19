@@ -29,10 +29,10 @@ class DepotMaintenanceController : ModuleController(), Initializable, DepotListC
     @FXML
     private lateinit var fxDepotDetailsController: DepotDetailsController
 
-    private val localization: Localization by Kodein.global.lazy.instance()
+    private val i18n: Localization by Kodein.global.lazy.instance()
 
     override val title: String
-        get() = this.localization.resourceBundle.getString("menu.depots")
+        get() = this.i18n.resources.getString("menu.depots")
 
     override fun initialize(location: URL, resources: ResourceBundle) {
         fxDepotListController.listener = this

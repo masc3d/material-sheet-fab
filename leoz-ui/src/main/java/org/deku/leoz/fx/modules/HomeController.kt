@@ -12,8 +12,8 @@ import org.deku.leoz.fx.ModuleController
  * Created by masc on 27.09.14.
  */
 class HomeController : ModuleController() {
-    private val localization: Localization by Kodein.global.lazy.instance()
+    private val i18n: Localization by Kodein.global.lazy.instance()
 
     override val title: String
-        get() = this.localization.resourceBundle.getString("menu.home")
+        get() = this.i18n.resources.getString("menu.home")
 }
