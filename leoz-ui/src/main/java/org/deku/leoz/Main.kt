@@ -53,15 +53,6 @@ class Main : Application() {
     private val i18n: Localization by Kodein.global.lazy.instance()
 
     /**
-     * Utility method for loading a specific language resource bundle
-     * @param locale
-     * @return
-     */
-    private fun getLanguageResourceBundle(locale: Locale): ResourceBundle {
-        return ResourceBundle.getBundle("i18n.leoz", locale, Utf8ResourceBundleControl())
-    }
-
-    /**
      * Initialize main pane/controller
      */
     private fun initializeMainPane() {
@@ -169,7 +160,7 @@ class Main : Application() {
 
         // Maximizing by default is usually annoying for users and developers alike.
         // Default should be the minimum supported size.
-        // If it's necessary to maximize by default on partidular occasionas/installations it should be paremeterized.
+        // If it's necessary to maximize by default on partidular occasions/installations it should be paremeterized.
         primaryStage.show()
 
         Executors.newSingleThreadExecutor().submit {
