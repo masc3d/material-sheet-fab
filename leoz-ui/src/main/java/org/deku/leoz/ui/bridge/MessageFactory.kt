@@ -1,4 +1,4 @@
-package org.deku.leoz.bridge
+package org.deku.leoz.ui.bridge
 
 import org.deku.leoz.rest.entities.internal.v1.Station
 

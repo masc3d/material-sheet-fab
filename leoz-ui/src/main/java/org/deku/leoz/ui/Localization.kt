@@ -1,4 +1,4 @@
-package org.deku.leoz
+package org.deku.leoz.ui
 
 import sx.util.Utf8ResourceBundleControl
 import java.util.*
@@ -11,13 +11,13 @@ import java.util.*
  * @param defaultLocale Fallback default locale
  */
 class Localization(val baseName: String,
-                   locale: Locale,
-                   defaultLocale: Locale) {
+                   locale: java.util.Locale,
+                   defaultLocale: java.util.Locale) {
 
     /** Locale */
-    val locale: Locale
+    val locale: java.util.Locale
     /** Localized resource bundle */
-    val resources: ResourceBundle
+    val resources: java.util.ResourceBundle
 
     /**
      * c'tor
@@ -25,23 +25,23 @@ class Localization(val baseName: String,
     init {
         var finalLocale = locale
         try {
-            Locale.setDefault(finalLocale)
+            java.util.Locale.setDefault(finalLocale)
             this.resources = this.getLanguageResourceBundle(finalLocale)
-        } catch (e: MissingResourceException) {
+        } catch (e: java.util.MissingResourceException) {
             // Reverting to fallback language (eg. english)
             finalLocale = defaultLocale
-            Locale.setDefault(finalLocale)
+            java.util.Locale.setDefault(finalLocale)
             this.resources = this.getLanguageResourceBundle(finalLocale)
         }
 
         this.locale = finalLocale
-        Locale.setDefault(this.locale)
+        java.util.Locale.setDefault(this.locale)
     }
 
     /**
      * Helper for getting resource bundle
      */
-    private fun getLanguageResourceBundle(locale: Locale): ResourceBundle {
-        return ResourceBundle.getBundle(this.baseName, locale, Utf8ResourceBundleControl())
+    private fun getLanguageResourceBundle(locale: java.util.Locale): java.util.ResourceBundle {
+        return java.util.ResourceBundle.getBundle(this.baseName, locale, sx.util.Utf8ResourceBundleControl())
     }
 }

@@ -1,4 +1,4 @@
-package org.deku.leoz.bridge
+package org.deku.leoz.ui.bridge
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser

@@ -1,7 +1,7 @@
-package org.deku.leoz.fx
+package org.deku.leoz.ui.fx
 
 import javafx.scene.Node
-import org.deku.leoz.Main
+import org.deku.leoz.ui.Main
 
 /**
  * Base class for leoz user interface modules

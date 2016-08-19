@@ -1,14 +1,14 @@
-package org.deku.leoz.fx.components
+package org.deku.leoz.ui.fx.components
 
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.Accordion
 import javafx.scene.control.Button
 import javafx.scene.control.TitledPane
-import org.deku.leoz.fx.ModuleController
-import org.deku.leoz.fx.modules.DebugController
-import org.deku.leoz.fx.modules.DepotMaintenanceController
-import org.deku.leoz.fx.modules.HomeController
+import org.deku.leoz.ui.fx.ModuleController
+import org.deku.leoz.ui.fx.modules.DebugController
+import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
+import org.deku.leoz.ui.fx.modules.HomeController
 import java.net.URL
 import java.util.*
 

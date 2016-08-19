@@ -1,4 +1,4 @@
-package org.deku.leoz
+package org.deku.leoz.ui
 
 /**
  * Created by masc on 21.10.14.

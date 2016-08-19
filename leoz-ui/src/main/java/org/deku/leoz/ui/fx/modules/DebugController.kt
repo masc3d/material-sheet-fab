@@ -1,4 +1,4 @@
-package org.deku.leoz.fx.modules
+package org.deku.leoz.ui.fx.modules
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -8,11 +8,11 @@ import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
-import org.deku.leoz.Main
-import org.deku.leoz.Settings
-import org.deku.leoz.bridge.LeoBridge
-import org.deku.leoz.bridge.Message
-import org.deku.leoz.fx.ModuleController
+import org.deku.leoz.ui.Main
+import org.deku.leoz.ui.Settings
+import org.deku.leoz.ui.bridge.LeoBridge
+import org.deku.leoz.ui.bridge.Message
+import org.deku.leoz.ui.fx.ModuleController
 import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.*

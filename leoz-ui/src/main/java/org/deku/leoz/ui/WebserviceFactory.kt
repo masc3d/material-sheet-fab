@@ -1,4 +1,4 @@
-package org.deku.leoz
+package org.deku.leoz.ui
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider
 import org.deku.leoz.rest.services.internal.v1.StationService

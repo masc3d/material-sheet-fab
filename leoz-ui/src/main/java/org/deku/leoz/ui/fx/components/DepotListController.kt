@@ -1,4 +1,4 @@
-package org.deku.leoz.fx.components
+package org.deku.leoz.ui.fx.components
 
 import com.sun.javafx.collections.ImmutableObservableList
 import javafx.application.Platform
@@ -15,11 +15,11 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.input.MouseEvent
 import javafx.util.Callback
-import org.deku.leoz.Main
-import org.deku.leoz.WebserviceFactory
-import org.deku.leoz.bridge.LeoBridge
-import org.deku.leoz.bridge.MessageFactory
-import org.deku.leoz.fx.Controller
+import org.deku.leoz.ui.Main
+import org.deku.leoz.ui.WebserviceFactory
+import org.deku.leoz.ui.bridge.LeoBridge
+import org.deku.leoz.ui.bridge.MessageFactory
+import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.rest.entities.internal.v1.Station
 import org.slf4j.LoggerFactory
 import java.net.URL

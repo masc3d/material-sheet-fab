@@ -1,4 +1,4 @@
-package org.deku.leoz
+package org.deku.leoz.ui
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -15,9 +15,9 @@ import javafx.scene.text.Font
 import javafx.stage.Screen
 import javafx.stage.Stage
 import org.controlsfx.control.Notifications
-import org.deku.leoz.bridge.LeoBridge
-import org.deku.leoz.config.Configurations
-import org.deku.leoz.fx.MainController
+import org.deku.leoz.ui.bridge.LeoBridge
+import org.deku.leoz.ui.config.Configurations
+import org.deku.leoz.ui.fx.MainController
 import org.slf4j.LoggerFactory
 import sx.util.Utf8ResourceBundleControl
 import java.io.IOException
@@ -50,7 +50,7 @@ class Main : Application() {
     private var _mainPane: Pane? = null
     private var _mainController: MainController? = null
 
-    private val i18n: Localization by Kodein.global.lazy.instance()
+    private val i18n: org.deku.leoz.ui.Localization by Kodein.global.lazy.instance()
 
     /**
      * Initialize main pane/controller

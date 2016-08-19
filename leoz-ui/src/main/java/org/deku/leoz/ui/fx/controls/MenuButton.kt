@@ -1,4 +1,4 @@
-package org.deku.leoz.fx.controls
+package org.deku.leoz.ui.fx.controls
 
 import javafx.event.ActionEvent
 import javafx.fxml.FXML

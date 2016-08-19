@@ -1,4 +1,4 @@
-package org.deku.leoz.fx.components
+package org.deku.leoz.ui.fx.components
 
 import com.dooapp.fxform.FXForm
 import com.dooapp.fxform.filter.IncludeFilter
@@ -6,7 +6,7 @@ import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Pane
-import org.deku.leoz.fx.FormSkin
+import org.deku.leoz.ui.fx.FormSkin
 import org.deku.leoz.rest.entities.internal.v1.Station
 import java.net.URL
 import java.util.*

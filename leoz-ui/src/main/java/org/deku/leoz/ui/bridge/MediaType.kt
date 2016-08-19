@@ -1,4 +1,4 @@
-package org.deku.leoz.bridge
+package org.deku.leoz.ui.bridge
 
 /**
  * Created by masc on 27.09.14.

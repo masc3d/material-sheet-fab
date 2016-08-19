@@ -1,4 +1,4 @@
-package org.deku.leoz.fx
+package org.deku.leoz.ui.fx
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -15,14 +15,14 @@ import javafx.scene.control.ProgressIndicator
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
 import javafx.util.Duration
-import org.deku.leoz.Main
-import org.deku.leoz.Settings
-import org.deku.leoz.bridge.LeoBridge
-import org.deku.leoz.bridge.Message
-import org.deku.leoz.fx.components.SidebarController
-import org.deku.leoz.fx.modules.DebugController
-import org.deku.leoz.fx.modules.DepotMaintenanceController
-import org.deku.leoz.fx.modules.HomeController
+import org.deku.leoz.ui.Main
+import org.deku.leoz.ui.Settings
+import org.deku.leoz.ui.bridge.LeoBridge
+import org.deku.leoz.ui.bridge.Message
+import org.deku.leoz.ui.fx.components.SidebarController
+import org.deku.leoz.ui.fx.modules.DebugController
+import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
+import org.deku.leoz.ui.fx.modules.HomeController
 import java.net.URL
 import java.util.*
 

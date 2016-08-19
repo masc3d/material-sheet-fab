@@ -1,4 +1,4 @@
-package org.deku.leoz
+package org.deku.leoz.ui
 
 import com.sun.jna.platform.win32.Shell32Util
 import org.deku.leoz.bundle.Bundle

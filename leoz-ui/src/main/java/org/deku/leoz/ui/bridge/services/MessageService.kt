@@ -1,9 +1,9 @@
-package org.deku.leoz.bridge.services
+package org.deku.leoz.ui.bridge.services
 
-import org.deku.leoz.bridge.IMessageService
-import org.deku.leoz.bridge.LeoBridge
-import org.deku.leoz.bridge.MediaType
-import org.deku.leoz.bridge.Message
+import org.deku.leoz.ui.bridge.IMessageService
+import org.deku.leoz.ui.bridge.LeoBridge
+import org.deku.leoz.ui.bridge.MediaType
+import org.deku.leoz.ui.bridge.Message
 import javax.ws.rs.Consumes
 import javax.ws.rs.Path
 import javax.ws.rs.Produces

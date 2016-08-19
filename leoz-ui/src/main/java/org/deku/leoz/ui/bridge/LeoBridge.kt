@@ -1,7 +1,7 @@
-package org.deku.leoz.bridge
+package org.deku.leoz.ui.bridge
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider
-import org.deku.leoz.bridge.services.MessageService
+import org.deku.leoz.ui.bridge.services.MessageService
 import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.client.proxy.WebResourceFactory
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory

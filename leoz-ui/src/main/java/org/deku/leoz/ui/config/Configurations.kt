@@ -1,9 +1,9 @@
-package org.deku.leoz.config
+package org.deku.leoz.ui.config
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.singleton
-import org.deku.leoz.Localization
-import org.deku.leoz.Settings
+import org.deku.leoz.ui.Localization
+import org.deku.leoz.ui.Settings
 import java.util.*
 
 /**
@@ -14,10 +14,12 @@ object Configurations {
         /** Application side settings */
         bind<Settings>() with singleton { Settings() }
         /** Localization & internationalization */
-        bind<Localization>() with singleton { Localization(
-                baseName = "i18n.leoz",
-                locale = Locale.GERMAN,
-                defaultLocale = Locale.ENGLISH)}
+        bind<org.deku.leoz.ui.Localization>() with singleton {
+            org.deku.leoz.ui.Localization(
+                    baseName = "i18n.leoz",
+                    locale = Locale.GERMAN,
+                    defaultLocale = Locale.ENGLISH)
+        }
     }
 
     val messenging = Kodein.Module {

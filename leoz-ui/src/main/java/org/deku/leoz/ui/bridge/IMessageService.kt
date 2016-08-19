@@ -1,4 +1,4 @@
-package org.deku.leoz.bridge
+package org.deku.leoz.ui.bridge
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST

@@ -1,4 +1,4 @@
-package org.deku.leoz.fx
+package org.deku.leoz.ui.fx
 
 /**
  * Activatable
