@@ -16,6 +16,7 @@ import javax.jms.ConnectionFactory
 class ActiveMQConfiguration(connectionFactory: ConnectionFactory? = null) : MessagingConfiguration {
 
     companion object {
+        // Leoz broker configuration only has a single user which is defined here
         val USERNAME = "leoz"
         val PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC"
         val GROUPNAME = "leoz"
