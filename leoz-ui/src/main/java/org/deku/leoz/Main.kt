@@ -2,6 +2,8 @@ package org.deku.leoz
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.geometry.Rectangle2D
@@ -44,11 +46,11 @@ class Main : Application() {
     }
 
     private var _fxPrimaryStage: Stage? = null
-    private var _locale: Locale? = null
-    private var _localizedResourceBundle: ResourceBundle? = null
 
     private var _mainPane: Pane? = null
     private var _mainController: MainController? = null
+
+    private val localization: Localization by Kodein.global.lazy.instance()
 
     /**
      * Utility method for loading a specific language resource bundle
@@ -57,25 +59,6 @@ class Main : Application() {
      */
     private fun getLanguageResourceBundle(locale: Locale): ResourceBundle {
         return ResourceBundle.getBundle("i18n.leoz", locale, Utf8ResourceBundleControl())
-    }
-
-    /**
-     * Intializes language related resources
-     */
-    private fun initializeLanguage() {
-        if (_localizedResourceBundle == null || _locale == null) {
-            Locale.setDefault(Locale.GERMAN)
-            var locale = Locale.getDefault()
-            try {
-                _localizedResourceBundle = this.getLanguageResourceBundle(locale)
-            } catch (e: MissingResourceException) {
-                // Reverting to default language (eg. english)
-                locale = Locale.ENGLISH
-                _localizedResourceBundle = this.getLanguageResourceBundle(locale)
-            }
-
-            _locale = locale
-        }
     }
 
     /**
@@ -91,49 +74,22 @@ class Main : Application() {
     }
 
     /**
-     * Application langauge resource bundle
-     * @return ResourceBundle
-     */
-    private val localizedResourceBundle: ResourceBundle by lazy({
-        this.initializeLanguage()
-        _localizedResourceBundle!!
-    })
-
-    /**
-     * Application locale
-     * @return Locale
-     */
-    val locale: Locale by lazy({
-        this.initializeLanguage()
-        _locale!!
-    })
-
-    /**
-     * Get string from localized resource bundle
-     * @param key
-     * @return
-     */
-    fun getLocalizedString(key: String): String {
-        return this.localizedResourceBundle.getString(key)
-    }
-
-    /**
      * Main user interface pane
      * @return
      */
-    val mainPane: Pane by lazy({
+    val mainPane: Pane by lazy {
         this.initializeMainPane()
         _mainPane!!
-    })
+    }
 
     /**
      * Main user interface controller
      * @return
      */
-    val mainController: MainController by lazy({
+    val mainController: MainController by lazy {
         this.initializeMainPane()
         _mainController!!
-    })
+    }
 
     /**
      * Utility method for loading javafx pane from fxml resource
@@ -142,7 +98,7 @@ class Main : Application() {
      */
     fun loadFxPane(resourcePath: String): FXMLLoader {
         val fxml = FXMLLoader(javaClass.getResource(resourcePath))
-        fxml.resources = this.localizedResourceBundle
+        fxml.resources = this.localization.resourceBundle
         try {
             fxml.load<Parent>()
             return fxml
@@ -207,7 +163,7 @@ class Main : Application() {
         val height = if(primScreenBounds.height < 768.0) primScreenBounds.height - 50 else 768.0
         val scene = Scene(this.mainPane, width, height)
 
-        primaryStage.title = localizedResourceBundle.getString("global.title")!!
+        primaryStage.title = this.localization.resourceBundle.getString("global.title")!!
         primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
         primaryStage.scene = scene
 

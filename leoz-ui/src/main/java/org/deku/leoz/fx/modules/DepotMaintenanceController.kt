@@ -1,8 +1,13 @@
 package org.deku.leoz.fx.modules
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Node
+import org.deku.leoz.Localization
 import org.deku.leoz.Main
 import org.deku.leoz.fx.ModuleController
 import org.deku.leoz.fx.components.DepotDetailsController
@@ -24,8 +29,10 @@ class DepotMaintenanceController : ModuleController(), Initializable, DepotListC
     @FXML
     private lateinit var fxDepotDetailsController: DepotDetailsController
 
+    private val localization: Localization by Kodein.global.lazy.instance()
+
     override val title: String
-        get() = Main.instance().getLocalizedString("menu.depots")
+        get() = this.localization.resourceBundle.getString("menu.depots")
 
     override fun initialize(location: URL, resources: ResourceBundle) {
         fxDepotListController.listener = this
