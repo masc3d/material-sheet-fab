@@ -11,7 +11,9 @@ import java.util.*
  */
 object Configurations {
     val application = Kodein.Module {
+        /** Application side settings */
         bind<Settings>() with singleton { Settings() }
+        /** Localization & internationalization */
         bind<Localization>() with singleton { Localization(
                 baseName = "i18n.leoz",
                 locale = Locale.GERMAN,
