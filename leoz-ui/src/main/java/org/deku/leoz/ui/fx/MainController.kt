@@ -23,6 +23,7 @@ import org.deku.leoz.ui.fx.components.SidebarController
 import org.deku.leoz.ui.fx.modules.DebugController
 import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
 import org.deku.leoz.ui.fx.modules.HomeController
+import sx.LazyInstance
 import java.net.URL
 import java.util.*
 
@@ -46,17 +47,27 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
 
     private val settings: Settings by Kodein.global.lazy.instance()
 
-    val homeController by lazy {
+    /**
+     * Lazy controller instances
+     */
+    private val lazyHomeController = LazyInstance<HomeController>({
         ModuleController.fromFxml<HomeController>("/fx/modules/Home.fxml")
-    }
+    })
 
-    val depotMaintenanceController by lazy {
+    private val lazyDepotMaintenanceController = LazyInstance<DepotMaintenanceController>({
         ModuleController.fromFxml<DepotMaintenanceController>("/fx/modules/DepotMaintenance.fxml")
-    }
+    })
 
-    val debugController by lazy {
+    private val lazyDebugController = LazyInstance<DebugController>({
         ModuleController.fromFxml<DebugController>("/fx/modules/Debug.fxml")
-    }
+    })
+
+    /**
+     * Convenience properties
+     */
+    val homeController: HomeController get() { return lazyHomeController.get() }
+    val depotMaintenanceController: DepotMaintenanceController get() { return lazyDepotMaintenanceController.get() }
+    val debugController: DebugController get() { return lazyDebugController.get() }
 
     /**
      * Currently active module
@@ -198,7 +209,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
         }
     }
 
-    private fun setVersion(version: String){
+    private fun setVersion(version: String) {
         fxVersion.text = version
     }
 
@@ -237,12 +248,14 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     override fun close() {
         super.close()
 
-        if (homeController != null)
-            homeController!!.close()
-        if (depotMaintenanceController != null)
-            depotMaintenanceController!!.close()
-        if (debugController != null)
-            debugController!!.close()
+        arrayOf(this.lazyHomeController,
+                this.lazyDepotMaintenanceController,
+                this.lazyDebugController
+        ).forEach {
+            it.ifSet {
+                it.close()
+            }
+        }
     }
 
     override fun onLeoBridgeMessageReceived(message: Message) {
