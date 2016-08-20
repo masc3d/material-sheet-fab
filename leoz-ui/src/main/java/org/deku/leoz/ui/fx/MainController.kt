@@ -148,8 +148,8 @@ class MainController : Controller(), Initializable {
             val oldModule = currentModuleController
             currentModuleController = moduleController
 
-            val node = moduleController.root
-            val oldNode = oldModule?.root
+            val node = moduleController.fxRoot
+            val oldNode = oldModule?.fxRoot
 
             this.setTitle(moduleController.title, animated)
 
@@ -162,7 +162,7 @@ class MainController : Controller(), Initializable {
                     ftOut.fromValue = 1.0
                     ftOut.toValue = 0.0
                     ftOut.setOnFinished { e ->
-                        if (oldNode !== currentModuleController!!.root)
+                        if (oldNode !== currentModuleController!!.fxRoot)
                             fxContentPaneContainer.children.remove(oldNode)
                     }
                     animations.add(ftOut)
@@ -199,7 +199,7 @@ class MainController : Controller(), Initializable {
                 else
                     evt.handle(null)
             } else {
-                node!!.opacity = 1.0
+                node.opacity = 1.0
             }
 
             moduleController.activate()

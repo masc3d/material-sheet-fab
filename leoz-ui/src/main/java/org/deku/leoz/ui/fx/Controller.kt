@@ -20,7 +20,9 @@ import sx.Stopwatch
  */
 abstract class Controller : Activatable, Disposable {
     companion object {
+        /** Logger */
         private val log = LoggerFactory.getLogger(Controller::class.java)
+        /** Localization */
         val i18n: Localization by Kodein.global.lazy.instance()
 
         /**
@@ -34,19 +36,19 @@ abstract class Controller : Activatable, Disposable {
             fxml.load<Parent>()
 
             val m = fxml.getController<T>()
-            m.root = fxml.getRoot()
+            m.fxRoot = fxml.getRoot()
             return m
         }
     }
 
     /**
      * Root fx node.
-     * For controllers which are deserialized implicitly (eg. nested) the fx:id must be `root` by convention.
+     * For controllers which are deserialized implicitly (eg. nested) the fx:id must be `fxRoot` by convention.
      * When loaded via `Controller.fromFxml` it's set in the process without considering fx:id
      * @return
      */
     @FXML
-    lateinit var root: Parent
+    lateinit var fxRoot: Parent
 
     override fun activate() {
         // Run later, as requesting focus within initial activation (directly after loading from fxml) won't work (bug in javafx8)

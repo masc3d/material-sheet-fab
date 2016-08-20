@@ -108,7 +108,7 @@ class Main : Application() {
         //Set default scene size which is used when primary stage is no more in maximized mode
         val width = if(primScreenBounds.width < 1366.0) primScreenBounds.width - 50 else 1366.0
         val height = if(primScreenBounds.height < 768.0) primScreenBounds.height - 50 else 768.0
-        val scene = Scene(mainController.root, width, height)
+        val scene = Scene(mainController.fxRoot, width, height)
 
         primaryStage.title = this.i18n.resources.getString("global.title")!!
         primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
