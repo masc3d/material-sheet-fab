@@ -1,5 +1,6 @@
 package sx.platform
 
+import org.junit.Assert
 import org.junit.Test
 
 /**

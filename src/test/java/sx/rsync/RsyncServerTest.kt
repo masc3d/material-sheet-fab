@@ -33,6 +33,7 @@ class RsyncServerTest {
         return config
     }
 
+    @Ignore
     @Test
     fun testConfiguration() {
         var config = this.createConfiguration()
@@ -44,6 +45,7 @@ class RsyncServerTest {
         config.saveSecrets(System.out)
     }
 
+    @Ignore
     @Test
     fun testServer() {
         var config = this.createConfiguration()
