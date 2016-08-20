@@ -1,14 +1,12 @@
 package sx.jms
 
 import org.slf4j.LoggerFactory
-import sx.Action
 import sx.Disposable
 import sx.LazyInstance
 import java.io.Closeable
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeoutException
-import java.util.function.Supplier
 import javax.jms.*
 
 /**
@@ -160,11 +158,11 @@ class Channel @JvmOverloads constructor(
      * @param converter Message converter
      * @param deliveryMode JMS delivery mode
      */
-    class Configuration @JvmOverloads constructor (val connectionFactory: ConnectionFactory?,
-                                                   sessionTransacted: Boolean = Channel.JMS_TRANSACTED,
-                                                   destination: Destination,
-                                                   val converter: Converter,
-                                                   deliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE)
+    class Configuration @JvmOverloads constructor(val connectionFactory: ConnectionFactory?,
+                                                  sessionTransacted: Boolean = Channel.JMS_TRANSACTED,
+                                                  destination: Destination,
+                                                  val converter: Converter,
+                                                  deliveryMode: Channel.DeliveryMode = Channel.JMS_DELIVERY_MODE)
     :
             Cloneable {
 
@@ -363,7 +361,7 @@ class Channel @JvmOverloads constructor(
         // Initialize lazy properties
 
         // JMS connection
-        this.connection.set( {
+        this.connection.set({
             val cnf = this.connectionFactory
             if (cnf == null)
                 throw IllegalStateException("Channel does not have connection factory")
@@ -377,7 +375,7 @@ class Channel @JvmOverloads constructor(
         })
 
         // JMS session
-        this.sessionInstance.set( {
+        this.sessionInstance.set({
             var finalSession: Session
             // Return c'tor provided session if applicable
             if (session != null) {
@@ -391,12 +389,12 @@ class Channel @JvmOverloads constructor(
         })
 
         // JMS consumer
-        this.consumer.set( {
+        this.consumer.set({
             this.sessionInstance.get().createConsumer(destination)
         })
 
         // JMS producer
-        this.producer.set( {
+        this.producer.set({
             this.sessionInstance.get().createProducer(destination)
         })
     }
@@ -460,7 +458,7 @@ class Channel @JvmOverloads constructor(
      * @param jmsMessage Message to send
      * @param messageConfigurer Callback for customizing the message before sending
      */
-    @JvmOverloads fun send(jmsMessage: Message, messageConfigurer: Action<Message>? = null) {
+    @JvmOverloads fun send(jmsMessage: Message, messageConfigurer: ((Message) -> Unit)? = null) {
         val mp = this.producer.get()
 
         mp.deliveryMode = deliveryMode.value
@@ -470,7 +468,7 @@ class Channel @JvmOverloads constructor(
             mp.priority = priority
 
         // Customize message if applicable
-        messageConfigurer?.perform(jmsMessage)
+        messageConfigurer?.invoke(jmsMessage)
 
         // Send actual message
         mp.send(destination, jmsMessage)
@@ -484,9 +482,11 @@ class Channel @JvmOverloads constructor(
      * @param jmsMessage Message to send
      * @param messageConfigurer Callback for customizing the message before sending
      */
-    @JvmOverloads fun sendRequest(jmsMessage: Message, replyChannel: Channel = this.createReplyChannelInternal(), messageConfigurer: Action<Message>? = null): Channel {
-        this.send(jmsMessage, Action {
-            messageConfigurer?.perform(it)
+    @JvmOverloads fun sendRequest(jmsMessage: Message,
+                                  replyChannel: Channel = this.createReplyChannelInternal(),
+                                  messageConfigurer: ((Message) -> Unit)? = null): Channel {
+        this.send(jmsMessage, {
+            messageConfigurer?.invoke(it)
             it.jmsReplyTo = replyChannel.destination
         })
 
@@ -498,7 +498,7 @@ class Channel @JvmOverloads constructor(
      * @param message
      * @param messageConfigurer Callback for customizing the message before sending
      */
-    @JvmOverloads fun send(message: Any, messageConfigurer: Action<Message>? = null) {
+    @JvmOverloads fun send(message: Any, messageConfigurer: ((Message) -> Unit)? = null) {
         this.send(
                 this.converter.toMessage(
                         obj = message,
@@ -514,7 +514,9 @@ class Channel @JvmOverloads constructor(
      * @param messageConfigurer Optional callback to customize jms message
      * @return Response/reply channel
      */
-    @JvmOverloads fun sendRequest(message: Any, replyChannel: Channel = this.createReplyChannelInternal(), messageConfigurer: Action<Message>? = null): Channel {
+    @JvmOverloads fun sendRequest(message: Any,
+                                  replyChannel: Channel = this.createReplyChannelInternal(),
+                                  messageConfigurer: ((Message) -> Unit)? = null): Channel {
         return this.sendRequest(
                 this.converter.toMessage(
                         obj = message,
@@ -582,7 +584,7 @@ class Channel @JvmOverloads constructor(
      */
     override fun close() {
         // Close message consumer
-        consumer.ifSet( { c ->
+        consumer.ifSet({ c ->
             try {
                 c.close()
             } catch (e: Exception) {
@@ -592,7 +594,7 @@ class Channel @JvmOverloads constructor(
         consumer.reset()
 
         // Close message producer
-        producer.ifSet( { p ->
+        producer.ifSet({ p ->
             try {
                 p.close()
             } catch (e: Exception) {
@@ -626,7 +628,7 @@ class Channel @JvmOverloads constructor(
 
         // Close session if approrpriate
         if (ownsSession) {
-            sessionInstance.ifSet( { s ->
+            sessionInstance.ifSet({ s ->
                 try {
                     s.close()
                 } catch (e: Exception) {
@@ -638,7 +640,7 @@ class Channel @JvmOverloads constructor(
 
         // Close connection
         if (ownsConnection) {
-            connection.ifSet( { c ->
+            connection.ifSet({ c ->
                 try {
                     c.close()
                 } catch (e: Exception) {
