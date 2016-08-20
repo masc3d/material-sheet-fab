@@ -28,7 +28,7 @@ class RsyncClientTest {
                     username = "leoz",
                     password = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
 
-    val localPath = Paths.get("").toAbsolutePath().parent.parent.resolve("release").resolve("test")
+    val localPath = Paths.get("").toAbsolutePath().parent.parent.resolve("release").resolve("testInitNull")
 
     init {
         val lRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
@@ -45,6 +45,7 @@ class RsyncClientTest {
         return rsyncClient
     }
 
+    @Ignore
     @Test
     fun testSync() {
         val rsyncClient = this.createRsyncClient()
@@ -54,6 +55,7 @@ class RsyncClientTest {
         rsyncClient.sync(source, destination, { fr -> println(fr) }, {})
     }
 
+    @Ignore
     @Test
     fun testThreadedSync() {
         val threads = ArrayList<Thread>()
@@ -77,6 +79,7 @@ class RsyncClientTest {
         threads.forEach { t -> t.join() }
     }
 
+    @Ignore
     @Test
     fun testTunneledSync() {
         val rsyncClient = this.createRsyncClient(this.sshTunnelProvider)
@@ -86,6 +89,7 @@ class RsyncClientTest {
         rsyncClient.sync(source, destination, { fr -> println(fr) }, {})
     }
 
+    @Ignore
     @Test
     fun testThreadedTunneledSync() {
         val rsyncClient = this.createRsyncClient(this.sshTunnelProvider)
@@ -109,6 +113,7 @@ class RsyncClientTest {
         threads.forEach { t -> t.join() }
     }
 
+    @Ignore
     @Test
     fun testList() {
         val rsyncClient = this.createRsyncClient()
@@ -117,6 +122,7 @@ class RsyncClientTest {
         var result = rsyncClient.list(uri)
     }
 
+    @Ignore
     @Test
     fun testTunneledList() {
         val rsyncClient = this.createRsyncClient(this.sshTunnelProvider)
