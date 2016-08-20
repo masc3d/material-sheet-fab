@@ -12,7 +12,6 @@ import java.io.IOException
  * Created by masc on 13.09.14.
  */
 class MenuButton : Button() {
-
     @FXML
     private lateinit var fxImageView: ImageView
 

@@ -13,13 +13,17 @@ import org.deku.leoz.ui.fx.ModuleController
 import org.deku.leoz.ui.fx.components.DepotDetailsController
 import org.deku.leoz.ui.fx.components.DepotListController
 import org.deku.leoz.rest.entities.internal.v1.Station
+import org.deku.leoz.ui.event.BusyNotifier
+import org.deku.leoz.ui.event.Event
+import rx.Observable
+import rx.subjects.PublishSubject
 import java.net.URL
 import java.util.*
 
 /**
  * Created by masc on 22.09.14.
  */
-class DepotMaintenanceController : ModuleController(), Initializable, DepotListController.Listener {
+class DepotMaintenanceController : ModuleController(), Initializable {
     @FXML
     private lateinit var fxDepotList: Node
     @FXML
@@ -34,16 +38,18 @@ class DepotMaintenanceController : ModuleController(), Initializable, DepotListC
     override val title: String
         get() = this.i18n.resources.getString("menu.depots")
 
+    override val ovBusy: PublishSubject<Event<Boolean>> by lazy {
+        fxDepotListController.ovBusy
+    }
+
     override fun initialize(location: URL, resources: ResourceBundle) {
-        fxDepotListController.listener = this
+        fxDepotListController.ovItemSelected.subscribe {
+            fxDepotDetailsController.station = it
+        }
     }
 
     public override fun onActivation() {
         fxDepotListController.activate()
-    }
-
-    override fun onDepotListItemSelected(station: Station?) {
-        fxDepotDetailsController.station = station
     }
 
     fun selectDepot(id: Int?) {

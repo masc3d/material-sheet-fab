@@ -1,0 +1,18 @@
+package org.deku.leoz.ui.event
+
+import rx.subjects.PublishSubject
+import java.lang.ref.WeakReference
+
+/**
+ * Created by masc on 20/08/16.
+ */
+class Event<T>(
+        val sender: WeakReference<Any>,
+        val value: T) {
+
+    companion object {
+        fun <T> emit(sender: Any, subject: PublishSubject<Event<T>>, value: T) {
+            subject.onNext(Event(WeakReference(sender), value))
+        }
+    }
+}

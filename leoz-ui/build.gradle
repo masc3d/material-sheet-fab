@@ -30,12 +30,13 @@ dependencies {
     compile "io.reactivex:rxjava:1.1.6"
     compile "io.reactivex:rxkotlin:0.60.0"
     compile "io.reactivex:rxjavafx:0.1.4"
+    compile "com.github.thomasnield:rxkotlinfx:0.1.4"
 
     // JavaFX libs
 
     // Lightweight kotlin/javafx framework. only for EVALUATION and reference for now
     // It seems to have
-    compile "no.tornado:tornadofx:1.5.4"
+    compile "no.tornado:tornadofx:1.5.5"
     // For automatic fx forms generation
     compile "com.dooapp.fxform2:core:$v_fxform2"
     compile "javax.el:javax.el-api:3.0.0"

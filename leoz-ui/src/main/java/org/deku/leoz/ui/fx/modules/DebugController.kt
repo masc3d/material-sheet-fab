@@ -14,6 +14,8 @@ import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.bridge.Message
 import org.deku.leoz.ui.fx.ModuleController
 import org.slf4j.LoggerFactory
+import rx.subjects.PublishSubject
+import rx.lang.kotlin.PublishSubject
 import java.net.URL
 import java.util.*
 
@@ -27,6 +29,8 @@ class DebugController : ModuleController(), Initializable {
     private lateinit var fxLeoBridgeMessageTextField: TextField
     @FXML
     private lateinit var fxUiAnimationsEnabled: CheckBox
+
+    val ovDepotSelect by lazy { PublishSubject<Unit>() }
 
     private val settings: Settings by Kodein.global.lazy.instance()
 
@@ -62,7 +66,6 @@ class DebugController : ModuleController(), Initializable {
     }
 
     fun onDepotSelect() {
-        Main.instance().mainController.showModule(Main.instance().mainController.depotMaintenanceController)
-        Main.instance().mainController.depotMaintenanceController.selectDepot(800)
+        this.ovDepotSelect.onNext(Unit)
     }
 }

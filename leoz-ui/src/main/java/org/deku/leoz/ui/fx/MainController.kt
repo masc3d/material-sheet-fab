@@ -15,6 +15,7 @@ import javafx.scene.control.ProgressIndicator
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
 import javafx.util.Duration
+import org.controlsfx.control.Notifications
 import org.deku.leoz.ui.Main
 import org.deku.leoz.ui.Settings
 import org.deku.leoz.ui.bridge.LeoBridge
@@ -23,6 +24,8 @@ import org.deku.leoz.ui.fx.components.SidebarController
 import org.deku.leoz.ui.fx.modules.DebugController
 import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
 import org.deku.leoz.ui.fx.modules.HomeController
+import rx.schedulers.JavaFxScheduler
+import sun.security.pkcs11.Secmod
 import sx.LazyInstance
 import java.net.URL
 import java.util.*
@@ -31,7 +34,7 @@ import java.util.*
  * Main userinterface controller
  * Created by masc on 21.09.14.
  */
-class MainController : Controller(), Initializable, SidebarController.Listener, LeoBridge.Listener {
+class MainController : Controller(), Initializable {
     @FXML
     private lateinit var fxTitle: Label
     @FXML
@@ -48,26 +51,55 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     private val settings: Settings by Kodein.global.lazy.instance()
 
     /**
-     * Lazy controller instances
+     * Helper for loading a controller in the context of MainController
+     * subscribing to all relevant events
      */
+    private fun <T : ModuleController> loadController(fxml: String): T {
+        val mc = Controller.fromFxml<T>(fxml)
+        mc.ovError.subscribe {
+            this.showError(it.message ?: "")
+        }
+        mc.ovBusy.subscribe {
+            if (it.value)
+                this.requestProgressIndicator()
+            else
+                this.releaseProgressIndicator()
+        }
+        return mc
+    }
+
+    // Home controller configuration
     private val lazyHomeController = LazyInstance<HomeController>({
-        ModuleController.fromFxml<HomeController>("/fx/modules/Home.fxml")
+        this.loadController("/fx/modules/Home.fxml")
     })
 
+    // Depot maintenance controller configuration
     private val lazyDepotMaintenanceController = LazyInstance<DepotMaintenanceController>({
-        ModuleController.fromFxml<DepotMaintenanceController>("/fx/modules/DepotMaintenance.fxml")
+        this.loadController("/fx/modules/DepotMaintenance.fxml")
     })
 
+    // Debug controller configuration
     private val lazyDebugController = LazyInstance<DebugController>({
-        ModuleController.fromFxml<DebugController>("/fx/modules/Debug.fxml")
+        val c = this.loadController<DebugController>("/fx/modules/Debug.fxml")
+        c.ovDepotSelect.subscribe {
+            this.showModule(this.depotMaintenanceController)
+            this.depotMaintenanceController.selectDepot(800)
+        }
+        c
     })
 
     /**
      * Convenience properties
      */
-    val homeController: HomeController get() { return lazyHomeController.get() }
-    val depotMaintenanceController: DepotMaintenanceController get() { return lazyDepotMaintenanceController.get() }
-    val debugController: DebugController get() { return lazyDebugController.get() }
+    val homeController: HomeController get() {
+        return lazyHomeController.get()
+    }
+    val depotMaintenanceController: DepotMaintenanceController get() {
+        return lazyDepotMaintenanceController.get()
+    }
+    val debugController: DebugController get() {
+        return lazyDebugController.get()
+    }
 
     /**
      * Currently active module
@@ -84,85 +116,94 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     private var contentPaneTransition: Transition? = null
 
     override fun initialize(location: URL, resources: ResourceBundle) {
-        fxSidebarController.setListener(this)
-        LeoBridge.instance().listenerEventDelegate.add(this)
+        // Hook up to LeoBridge
+        LeoBridge.instance().ovMessageReceived
+                .observeOn(JavaFxScheduler.getInstance())
+                .subscribe { this.onLeoBridgeMessageReceived(it) }
 
-        this.showModule(this.homeController, false)
+        // Sidebar
+        this.fxSidebarController.ovItemSelected.subscribe {
+            this.onSidebarItemSelected(it)
+        }
+
+        // Initial display
         this.setVersion("User: Max Mustermann\tVersion: TEST") //TODO: Dynamic information
+        this.showModule(this.homeController, false)
     }
 
     /**
      * Sets and shows a content pane
-
-     * @param moduleController
-     * *
-     * @param animated
+     * @param moduleController Module/controller to show
+     * @param animated Show with animation or not
      */
     private fun showModule(moduleController: ModuleController, animated: Boolean) {
-        val duration = 500.0
-
-        if (currentModuleController === moduleController)
-            return
-
-        val oldModule = currentModuleController
-        currentModuleController = moduleController
-
-        val node = moduleController.rootNode
-        val oldNode = oldModule?.rootNode
-
-        this.setTitle(moduleController.title, animated)
-
-        val animations = ArrayList<Animation>()
-
-        if (animated) {
-            if (oldNode != null) {
-                // Fade out old pane if there is one
-                val ftOut = FadeTransition(Duration.millis(duration), oldNode)
-                ftOut.fromValue = 1.0
-                ftOut.toValue = 0.0
-                ftOut.setOnFinished { e ->
-                    if (oldNode !== currentModuleController!!.rootNode)
-                        fxContentPaneContainer.children.remove(oldNode)
-                }
-                animations.add(ftOut)
-
-                node!!.opacity = 0.0
-            }
-        } else {
-            fxContentPaneContainer.children.clear()
-        }
-
-        // Add new pane to container
-        if (!fxContentPaneContainer.children.contains(node))
-            fxContentPaneContainer.children.add(node)
-        AnchorPane.setTopAnchor(node, 0.0)
-        AnchorPane.setBottomAnchor(node, 0.0)
-        AnchorPane.setRightAnchor(node, 0.0)
-        AnchorPane.setLeftAnchor(node, 0.0)
-
-        if (animated) {
-            // Fade in new pane
-            val ftIn = FadeTransition(Duration.millis(duration), node)
-            ftIn.fromValue = 0.0
-            ftIn.toValue = 1.0
-            ftIn.setOnFinished { e -> contentPaneTransition = null }
-            animations.add(ftIn)
-
-            val evt: EventHandler<ActionEvent> = EventHandler {
-                contentPaneTransition = ParallelTransition(*animations.toTypedArray())
-                contentPaneTransition!!.play()
-            }
-
-            if (contentPaneTransition != null)
-                contentPaneTransition!!.onFinished = evt
-            else
-                evt.handle(null)
-        } else {
-            node!!.opacity = 1.0
-        }
-
-        moduleController.activate()
         fxSidebarController.highlightByController(moduleController)
+
+        Platform.runLater {
+            val duration = 500.0
+
+            if (currentModuleController === moduleController)
+                return@runLater
+
+            val oldModule = currentModuleController
+            currentModuleController = moduleController
+
+            val node = moduleController.root
+            val oldNode = oldModule?.root
+
+            this.setTitle(moduleController.title, animated)
+
+            val animations = ArrayList<Animation>()
+
+            if (animated) {
+                if (oldNode != null) {
+                    // Fade out old pane if there is one
+                    val ftOut = FadeTransition(Duration.millis(duration), oldNode)
+                    ftOut.fromValue = 1.0
+                    ftOut.toValue = 0.0
+                    ftOut.setOnFinished { e ->
+                        if (oldNode !== currentModuleController!!.root)
+                            fxContentPaneContainer.children.remove(oldNode)
+                    }
+                    animations.add(ftOut)
+
+                    node.opacity = 0.0
+                }
+            } else {
+                fxContentPaneContainer.children.clear()
+            }
+
+            // Add new pane to container
+            if (!fxContentPaneContainer.children.contains(node))
+                fxContentPaneContainer.children.add(node)
+            AnchorPane.setTopAnchor(node, 0.0)
+            AnchorPane.setBottomAnchor(node, 0.0)
+            AnchorPane.setRightAnchor(node, 0.0)
+            AnchorPane.setLeftAnchor(node, 0.0)
+
+            if (animated) {
+                // Fade in new pane
+                val ftIn = FadeTransition(Duration.millis(duration), node)
+                ftIn.fromValue = 0.0
+                ftIn.toValue = 1.0
+                ftIn.setOnFinished { e -> contentPaneTransition = null }
+                animations.add(ftIn)
+
+                val evt: EventHandler<ActionEvent> = EventHandler {
+                    contentPaneTransition = ParallelTransition(*animations.toTypedArray())
+                    contentPaneTransition!!.play()
+                }
+
+                if (contentPaneTransition != null)
+                    contentPaneTransition!!.onFinished = evt
+                else
+                    evt.handle(null)
+            } else {
+                node!!.opacity = 1.0
+            }
+
+            moduleController.activate()
+        }
     }
 
     fun showModule(moduleController: ModuleController) {
@@ -176,7 +217,6 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
 
     /**
      * Set title
-
      * @param title
      */
     private fun setTitle(title: String, animated: Boolean) {
@@ -217,7 +257,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
      * Request progress indication
      * Each call to request requires release to be called for the indicator to disappear as soon as all consumers released it
      */
-    fun requestProgressIndicator() {
+    private fun requestProgressIndicator() {
         progressIndicatorActivationCount += 1
         fxProgressIndicator.isVisible = true
     }
@@ -225,7 +265,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
     /**
      * Release progress indication
      */
-    fun releaseProgressIndicator() {
+    private fun releaseProgressIndicator() {
         progressIndicatorActivationCount -= 1
         if (progressIndicatorActivationCount <= 0) {
             fxProgressIndicator.isVisible = false
@@ -233,7 +273,7 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
         }
     }
 
-    override fun OnSidebarItemSelected(itemType: SidebarController.ItemType) {
+    fun onSidebarItemSelected(itemType: SidebarController.ItemType) {
         val m: ModuleController
         when (itemType) {
             SidebarController.ItemType.Home -> m = this.homeController
@@ -245,6 +285,9 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
         this.showModule(m)
     }
 
+    /**
+     * Close controller(s)
+     */
     override fun close() {
         super.close()
 
@@ -258,16 +301,21 @@ class MainController : Controller(), Initializable, SidebarController.Listener, 
         }
     }
 
-    override fun onLeoBridgeMessageReceived(message: Message) {
-        Platform.runLater {
-            if (message.get("view") == "depot") {
-                val id = message.get("id") as Int
-                this.showModule(this.depotMaintenanceController)
-                this.depotMaintenanceController.selectDepot(id)
-            } else {
-                Main.instance().showMessage(String.format("Received message [%s]", message))
-            }
-            Main.instance().toForeground()
+    fun showMessage(message: String) {
+        Notifications.create().title("Leoz").text(message).showInformation()
+    }
+
+    fun showError(message: String) {
+        Notifications.create().title("Leoz").text(message).showError()
+    }
+
+    fun onLeoBridgeMessageReceived(message: Message) {
+        if (message.get("view") == "depot") {
+            val id = message.get("id") as Int
+            this.showModule(this.depotMaintenanceController)
+            this.depotMaintenanceController.selectDepot(id)
+        } else {
+            this.showMessage(String.format("Received message [%s]", message))
         }
     }
 }

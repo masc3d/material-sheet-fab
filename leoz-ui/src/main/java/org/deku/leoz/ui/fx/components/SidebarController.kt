@@ -9,6 +9,7 @@ import org.deku.leoz.ui.fx.ModuleController
 import org.deku.leoz.ui.fx.modules.DebugController
 import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
 import org.deku.leoz.ui.fx.modules.HomeController
+import rx.lang.kotlin.PublishSubject
 import java.net.URL
 import java.util.*
 
@@ -29,32 +30,24 @@ class SidebarController : Initializable {
 
     private val buttons: MutableList<Button> = ArrayList()
 
+    val ovItemSelected by lazy { PublishSubject<ItemType>() }
+
     enum class ItemType {
         Home,
         Depots,
         Debug
     }
 
-    interface Listener : EventListener {
-        fun OnSidebarItemSelected(itemType: ItemType)
-    }
-
-    private var listener: Listener? = null
-
-    fun setListener(listener: Listener) {
-        this.listener = listener
-    }
-
     fun onHomeButton() {
-        this.listener?.OnSidebarItemSelected(ItemType.Home)
+        this.ovItemSelected.onNext(ItemType.Home)
     }
 
     fun onDepotButton() {
-        this.listener?.OnSidebarItemSelected(ItemType.Depots)
+        this.ovItemSelected.onNext(ItemType.Depots)
     }
 
     fun onDebugButton() {
-        this.listener?.OnSidebarItemSelected(ItemType.Debug)
+        this.ovItemSelected.onNext(ItemType.Debug)
     }
 
     fun highlightByController(module: ModuleController) {

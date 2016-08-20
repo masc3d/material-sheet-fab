@@ -17,6 +17,7 @@ import javafx.stage.Stage
 import org.controlsfx.control.Notifications
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.config.Configurations
+import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.ui.fx.MainController
 import org.slf4j.LoggerFactory
 import sx.util.Utf8ResourceBundleControl
@@ -28,14 +29,9 @@ import java.util.concurrent.Executors
  * Main application class
  */
 class Main : Application() {
+    private val log = LoggerFactory.getLogger(Main::class.java)
+
     companion object {
-        private var instance: Main? = null
-        private val log = LoggerFactory.getLogger(Main::class.java)
-
-        fun instance(): Main {
-            return instance!!
-        }
-
         /**
          * Application main entry point
          * @param args
@@ -45,58 +41,19 @@ class Main : Application() {
         }
     }
 
-    private var _fxPrimaryStage: Stage? = null
+    /** Primary stage. Intialized when javafx application is started */
+    private lateinit var primaryStage: Stage
 
-    private var _mainPane: Pane? = null
-    private var _mainController: MainController? = null
-
+    /** Localization */
     private val i18n: org.deku.leoz.ui.Localization by Kodein.global.lazy.instance()
-
-    /**
-     * Initialize main pane/controller
-     */
-    private fun initializeMainPane() {
-        if (_mainPane == null || _mainController == null) {
-            // Load main UI
-            val fxmlMain = this.loadFxPane("/fx/Main.fxml")
-            _mainPane = fxmlMain.getRoot<Pane>()
-            _mainController = fxmlMain.getController<MainController>()
-        }
-    }
-
-    /**
-     * Main user interface pane
-     * @return
-     */
-    val mainPane: Pane by lazy {
-        this.initializeMainPane()
-        _mainPane!!
-    }
 
     /**
      * Main user interface controller
      * @return
      */
     val mainController: MainController by lazy {
-        this.initializeMainPane()
-        _mainController!!
-    }
-
-    /**
-     * Utility method for loading javafx pane from fxml resource
-     * @param resourcePath
-     * @return
-     */
-    fun loadFxPane(resourcePath: String): FXMLLoader {
-        val fxml = FXMLLoader(javaClass.getResource(resourcePath))
-        fxml.resources = this.i18n.resources
-        try {
-            fxml.load<Parent>()
-            return fxml
-        } catch (e: IOException) {
-            throw RuntimeException("Could not load pane", e)
-        }
-
+        val mc = Controller.fromFxml<MainController>("/fx/Main.fxml")
+        mc
     }
 
     /**
@@ -116,8 +73,7 @@ class Main : Application() {
      */
     @Throws(Exception::class)
     override fun start(primaryStage: Stage) {
-        instance = this
-
+        // Support for command line interface
         val setup = Setup()
         val command = setup.parse(this.parameters.raw.toTypedArray())
         if (command != null) {
@@ -137,7 +93,7 @@ class Main : Application() {
         Kodein.global.addImport(Configurations.messenging)
 
         // Setup stage
-        _fxPrimaryStage = primaryStage
+        this.primaryStage = primaryStage
 
         // Load embedded fonts
         this.loadFont("/fonts/Futura-CondensedExtraBold.ttf")
@@ -147,12 +103,12 @@ class Main : Application() {
 
         // Main scene
         //TODO: User preferences? Check if last size and position should be remembered. Dont think so (PHPR)
-        val primScreenBounds: Rectangle2D = Screen.getPrimary().visualBounds //Used to access the computers screen resolution/size
-        //Set default scene size which is used when primary stage is no more in maximized mode
+        val primScreenBounds: Rectangle2D = Screen.getPrimary().visualBounds // Used to access the computers screen resolution/size
 
+        //Set default scene size which is used when primary stage is no more in maximized mode
         val width = if(primScreenBounds.width < 1366.0) primScreenBounds.width - 50 else 1366.0
         val height = if(primScreenBounds.height < 768.0) primScreenBounds.height - 50 else 768.0
-        val scene = Scene(this.mainPane, width, height)
+        val scene = Scene(mainController.root, width, height)
 
         primaryStage.title = this.i18n.resources.getString("global.title")!!
         primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
@@ -163,8 +119,12 @@ class Main : Application() {
         // If it's necessary to maximize by default on partidular occasions/installations it should be paremeterized.
         primaryStage.show()
 
+        // Start leo bridge (asynchronously so it doesn't slow down startup)
         Executors.newSingleThreadExecutor().submit {
             try {
+                LeoBridge.instance().ovMessageReceived.subscribe {
+                    this.toForeground()
+                }
                 LeoBridge.instance().start()
             } catch (e: IOException) {
                 log.error(e.message, e)
@@ -174,7 +134,7 @@ class Main : Application() {
 
     @Throws(Exception::class)
     override fun stop() {
-        _mainController!!.close()
+        this.mainController.close()
         LeoBridge.instance().stop()
         super.stop()
     }
@@ -184,18 +144,10 @@ class Main : Application() {
      */
     fun toForeground() {
         // toFront doesn't suffice
-        _fxPrimaryStage!!.isAlwaysOnTop = true
-        _fxPrimaryStage!!.toFront()
-        _fxPrimaryStage!!.requestFocus()
-        _fxPrimaryStage!!.isAlwaysOnTop = false
-    }
-
-    fun showError(message: String) {
-        Notifications.create().title("Leoz").text(message).showError()
-    }
-
-    fun showMessage(message: String) {
-        Notifications.create().title("Leoz").text(message).showInformation()
+        this.primaryStage.isAlwaysOnTop = true
+        this.primaryStage.toFront()
+        this.primaryStage.requestFocus()
+        this.primaryStage.isAlwaysOnTop = false
     }
 }
 

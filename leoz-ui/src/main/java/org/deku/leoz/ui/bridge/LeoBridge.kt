@@ -7,11 +7,9 @@ import org.glassfish.jersey.client.proxy.WebResourceFactory
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.glassfish.jersey.jackson.JacksonFeature
 import org.glassfish.jersey.server.ResourceConfig
+import rx.lang.kotlin.PublishSubject
+import rx.lang.kotlin.synchronized
 import sx.Disposable
-import sx.event.EventDelegate
-import sx.event.EventDispatcher
-import sx.event.EventListener
-import sx.event.ThreadSafeEventDispatcher
 import java.io.IOException
 import java.net.URI
 import javax.ws.rs.client.ClientBuilder
@@ -21,10 +19,6 @@ import javax.ws.rs.client.ClientBuilder
  */
 class LeoBridge private constructor() : Disposable, MessageService.Listener {
 
-    interface Listener : EventListener {
-        fun onLeoBridgeMessageReceived(message: Message)
-    }
-
     /**
      * Created by masc on 23.07.14.
      */
@@ -33,14 +27,11 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
 
             // Server debug logging
             // registerInstances(new LoggingFilter(Logger.getLog(LeoBridge.class.getName()), true));
-
             packages("org.deku.leoz.bridge.services")
         }
     }
 
-    private var listenerEventDispatcher: EventDispatcher<Listener> = ThreadSafeEventDispatcher()
-    val listenerEventDelegate: EventDelegate<Listener>
-        get() = listenerEventDispatcher
+    val ovMessageReceived by lazy { PublishSubject<Message>().synchronized() }
 
     private val httpServer by lazy {
         GrizzlyHttpServerFactory.createHttpServer(HOST_URI, WebserviceResourceConfig())
@@ -87,7 +78,7 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
     }
 
     override fun onLeoBridgeServiceMessageReceived(message: Message) {
-        this.listenerEventDispatcher.emit { r -> r.onLeoBridgeMessageReceived(message) }
+        this.ovMessageReceived.onNext(message)
     }
 
     override fun close() {

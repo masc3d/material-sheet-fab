@@ -1,5 +1,10 @@
 package org.deku.leoz.ui.fx.components
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.instanceOrNull
+import com.github.salomonbrys.kodein.lazy
 import com.sun.javafx.collections.ImmutableObservableList
 import javafx.application.Platform
 import javafx.collections.FXCollections
@@ -15,13 +20,22 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.input.MouseEvent
 import javafx.util.Callback
-import org.deku.leoz.ui.Main
-import org.deku.leoz.ui.WebserviceFactory
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.bridge.MessageFactory
 import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.rest.entities.internal.v1.Station
+import org.deku.leoz.ui.*
+import org.deku.leoz.ui.event.BusyNotifier
+import org.deku.leoz.ui.event.BusyNotifier.*
+import org.deku.leoz.ui.event.ErrorNotifier
+import org.deku.leoz.ui.event.Event
+import org.deku.leoz.ui.event.busy
 import org.slf4j.LoggerFactory
+import rx.Observable
+import rx.lang.kotlin.PublishSubject
+import rx.lang.kotlin.synchronized
+import rx.subjects.PublishSubject
+import rx.subjects.Subject
 import java.net.URL
 import java.util.*
 import java.util.concurrent.Executors
@@ -29,7 +43,7 @@ import java.util.concurrent.Executors
 /**
  * Created by masc on 22.09.14.
  */
-class DepotListController : Controller(), Initializable {
+class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNotifier {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @FXML
@@ -56,11 +70,15 @@ class DepotListController : Controller(), Initializable {
     private val queryTaskExecutor = Executors.newFixedThreadPool(3)
     private var queryTask: Task<ObservableList<Station>>? = null
     private var requestedDepotId: Int? = null
-    var listener: Listener? = null
 
-    interface Listener : EventListener {
-        fun onDepotListItemSelected(station: Station?)
-    }
+    // BusyNotifier implementation
+    override val ovBusy by lazy { PublishSubject<Event<Boolean>>() }
+
+    // ErrorNotifier implementation
+    override val ovError by lazy { PublishSubject<Exception>() }
+
+    // On item selected event
+    val ovItemSelected by lazy { PublishSubject<Station>() }
 
     /**
      * Query task
@@ -68,18 +86,16 @@ class DepotListController : Controller(), Initializable {
     private inner class QueryTask : Task<ObservableList<Station>>() {
         @Throws(Exception::class)
         override fun call(): ObservableList<Station> {
-            Platform.runLater { Main.instance().mainController.requestProgressIndicator() }
-
-            try {
-                // Invoke depot webservice and deliver as observable depot list
-                return FXCollections.observableArrayList(
-                        Arrays.asList(
-                                *WebserviceFactory.depotService().find(fxSearchText.text)))
-            } catch (e: Exception) {
-                log.error(e.message, e)
-                throw e
-            } finally {
-                Platform.runLater { Main.instance().mainController.releaseProgressIndicator() }
+            busy {
+                try {
+                    // Invoke depot webservice and deliver as observable depot list
+                    return FXCollections.observableArrayList(
+                            Arrays.asList(
+                                    *WebserviceFactory.depotService().find(fxSearchText.text)))
+                } catch (e: Exception) {
+                    log.error(e.message, e)
+                    throw e
+                }
             }
         }
 
@@ -117,9 +133,7 @@ class DepotListController : Controller(), Initializable {
         fxSearchText.textProperty().addListener { obj, oldValue, newValue -> onSearchTextChanged(newValue) }
 
         fxDepotTableView.selectionModel.selectedItemProperty().addListener { obj, oldValue, newValue ->
-            val listener = this.listener
-            if (listener != null)
-                listener.onDepotListItemSelected(newValue)
+            this.ovItemSelected.onNext(newValue)
         }
 
         // Bind depotlist columns
@@ -142,9 +156,8 @@ class DepotListController : Controller(), Initializable {
                     try {
                         LeoBridge.instance().sendMessage(MessageFactory.createViewDepotMessage(station))
                     } catch (e: Exception) {
-                        Main.instance().showError("Could not send message to leo1")
+                        this.ovError.onNext(Exception("Could not send message to leo1"))
                     }
-
                 }
             }
             tc
