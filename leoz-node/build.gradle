@@ -51,6 +51,10 @@ compileJava {
     }
 }
 
+clean {
+    srcdir_apt.deleteDir()
+}
+
 dependencies {
     // leoz webservice dependencies
     compile project(':libs:sx-common')
