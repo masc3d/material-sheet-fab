@@ -53,7 +53,7 @@ open class App :
         const val PROFILE_CLIENT_NODE = "client-node"
 
         /** Injectable lazy instance */
-        @JvmStatic val injectableInstance = LazyInstance(Supplier { App() })
+        @JvmStatic val injectableInstance = LazyInstance( { App() })
         /** Convenience accessor */
         @JvmStatic val instance by lazy({ injectableInstance.get() })
     }

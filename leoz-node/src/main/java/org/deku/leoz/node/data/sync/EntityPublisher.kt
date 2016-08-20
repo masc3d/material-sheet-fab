@@ -7,7 +7,6 @@ import org.deku.leoz.node.data.repositories.EntityRepository
 import org.deku.leoz.node.messaging.entities.EntityStateMessage
 import org.deku.leoz.node.messaging.entities.EntityUpdateMessage
 import org.eclipse.persistence.queries.ScrollableCursor
-import sx.Action
 import sx.jms.Channel
 import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener
@@ -104,7 +103,7 @@ class EntityPublisher(
                     }
 
                     // Send empty array -> EOS
-                    replyChannel.send(arrayOfNulls<Any>(0), messageConfigurer = Action {
+                    replyChannel.send(arrayOfNulls<Any>(0), messageConfigurer = {
                         it.setBooleanProperty(EntityUpdateMessage.EOS_PROPERTY, true)
                     })
                 } finally {
