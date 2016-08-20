@@ -12,13 +12,12 @@ object Dispose {
      * Customized disposal
      * @param r Dispose operation
      */
-    fun safely(r: Runnable, exceptionHandler: Action<Exception>?) {
+    @JvmOverloads fun safely(r: () -> Unit, exceptionHandler: ((Exception) -> Unit)? = null) {
         try {
-            r.run()
+            r()
         } catch (e: Exception) {
-            exceptionHandler?.perform(e)
+            exceptionHandler?.invoke(e)
         }
-
     }
 
     /**
@@ -26,13 +25,15 @@ object Dispose {
      * @param d Disposable instance
      * @param exceptionHandler Optional exception handler
      */
-    @JvmOverloads fun safely(d: Disposable, exceptionHandler: Action<Exception>? = null) {
+    @JvmOverloads fun safely(d: Disposable, exceptionHandler: ((Exception) -> Unit)? = null) {
         log.info(String.format("Disposing [%s]", d.javaClass.name))
         val sw = Stopwatch.createStarted()
-        safely(Runnable { d.close() }, Action<java.lang.Exception> { e ->
-            log.error(e.message, e)
-            exceptionHandler!!.perform(e)
-        })
+        this.safely(
+                { d.close() },
+                { e ->
+                    log.error(e.message, e)
+                    exceptionHandler?.invoke(e)
+                })
         log.info(String.format("Disposed [%s] in [%s]", d.javaClass.name, sw.toString()))
     }
 
@@ -41,7 +42,7 @@ object Dispose {
      * @param d Disposable instance
      * @param exceptionHandler Optional exception handler
      */
-    @JvmOverloads fun safely(d: sx.legacy.Disposable, exceptionHandler: Action<Exception>? = null) {
+    @JvmOverloads fun safely(d: sx.legacy.Disposable, exceptionHandler: ((Exception) -> Unit)? = null) {
         this.safely(object : Disposable {
             override fun close() {
                 d.close()
