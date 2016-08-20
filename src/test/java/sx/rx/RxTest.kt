@@ -193,6 +193,7 @@ class RxTest {
         o.toCompletable().await()
     }
 
+    @Ignore
     @Test
     fun testRxSubscribeAwaitable() {
         val emitCount = AtomicInteger(0)
@@ -210,6 +211,7 @@ class RxTest {
         Assert.assertTrue(emitCount.get() == COUNT)
     }
 
+    @Ignore
     @Test
     fun testRxSubscribeAwaitableCancellation() {
         var seenError = false
@@ -238,6 +240,7 @@ class RxTest {
         Assert.assertTrue(seenError)
     }
 
+    @Ignore
     @Test
     fun testRxSubscribeAwaitableAwaitAfterCompletion() {
         val emitCount = AtomicInteger(0)
