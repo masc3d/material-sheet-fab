@@ -272,25 +272,25 @@ class Channel @JvmOverloads constructor(
      * Lazy connection instance
      */
     private val connection = LazyInstance<Connection>(
-            LazyInstance.ThreadSafeMode.None)
+            LazyInstance.ThreadSafetyMode.None)
 
     /**
      * Lazy session instance
      */
     private val sessionInstance = LazyInstance<Session>(
-            LazyInstance.ThreadSafeMode.None)
+            LazyInstance.ThreadSafetyMode.None)
 
     /**
      * Lazy consumer instance
      */
     private val consumer = LazyInstance<MessageConsumer>(
-            LazyInstance.ThreadSafeMode.None)
+            LazyInstance.ThreadSafetyMode.None)
 
     /**
      * Lazy producer instance
      */
     private val producer = LazyInstance<MessageProducer>(
-            LazyInstance.ThreadSafeMode.None)
+            LazyInstance.ThreadSafetyMode.None)
 
     /**
      * Indicates if this channel owns the session. If true, session will be properly closed with the channel
@@ -363,7 +363,7 @@ class Channel @JvmOverloads constructor(
         // Initialize lazy properties
 
         // JMS connection
-        this.connection.set(Supplier {
+        this.connection.set( {
             val cnf = this.connectionFactory
             if (cnf == null)
                 throw IllegalStateException("Channel does not have connection factory")
@@ -377,7 +377,7 @@ class Channel @JvmOverloads constructor(
         })
 
         // JMS session
-        this.sessionInstance.set(Supplier {
+        this.sessionInstance.set( {
             var finalSession: Session
             // Return c'tor provided session if applicable
             if (session != null) {
@@ -391,12 +391,12 @@ class Channel @JvmOverloads constructor(
         })
 
         // JMS consumer
-        this.consumer.set(Supplier {
+        this.consumer.set( {
             this.sessionInstance.get().createConsumer(destination)
         })
 
         // JMS producer
-        this.producer.set(Supplier {
+        this.producer.set( {
             this.sessionInstance.get().createProducer(destination)
         })
     }
@@ -582,7 +582,7 @@ class Channel @JvmOverloads constructor(
      */
     override fun close() {
         // Close message consumer
-        consumer.ifSet(Action { c ->
+        consumer.ifSet( { c ->
             try {
                 c.close()
             } catch (e: Exception) {
@@ -592,7 +592,7 @@ class Channel @JvmOverloads constructor(
         consumer.reset()
 
         // Close message producer
-        producer.ifSet(Action { p ->
+        producer.ifSet( { p ->
             try {
                 p.close()
             } catch (e: Exception) {
@@ -626,7 +626,7 @@ class Channel @JvmOverloads constructor(
 
         // Close session if approrpriate
         if (ownsSession) {
-            sessionInstance.ifSet(Action { s ->
+            sessionInstance.ifSet( { s ->
                 try {
                     s.close()
                 } catch (e: Exception) {
@@ -638,7 +638,7 @@ class Channel @JvmOverloads constructor(
 
         // Close connection
         if (ownsConnection) {
-            connection.ifSet(Action { c ->
+            connection.ifSet( { c ->
                 try {
                     c.close()
                 } catch (e: Exception) {
