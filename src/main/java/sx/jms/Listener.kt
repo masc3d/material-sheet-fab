@@ -1,7 +1,11 @@
 package sx.jms
 
+import com.google.common.reflect.TypeToken
 import org.slf4j.LoggerFactory
 import sx.Disposable
+import sx.logging.slf4j.*
+import java.io.Serializable
+import java.lang.reflect.ParameterizedType
 import java.util.*
 import java.util.concurrent.Executor
 import javax.jms.ExceptionListener
@@ -25,7 +29,7 @@ abstract class Listener(
         ExceptionListener {
     protected val log = LoggerFactory.getLogger(this.javaClass)
     /** Object message handler delegates  */
-    private val handlerDelegates = HashMap<Class<out Any?>, Handler<Any?>>()
+    private val handlerDelegates = HashMap<Class<*>, Handler<Any?>>()
 
     /**
      * Message handling exception
@@ -61,7 +65,7 @@ abstract class Listener(
     protected open fun onMessage(message: Message, session: Session) {
         var messageObject: Any? = null
 
-        var handler: Handler<Any?>?
+        val handler: Handler<Any?>?
 
         // Deserialize if there's a converter and determine handler
         val converter = this.channel.converter
@@ -106,12 +110,38 @@ abstract class Listener(
     /**
      * Add handler delegate for handling messages of specific (object) type
      * Delegate handlers requires a converter to be set.
-     * @param c Class of object/message to process
      * @param delegate Handler
      */
     @Suppress("UNCHECKED_CAST")
-    fun <T> addDelegate(c: Class<T>, delegate: Handler<T>) {
-        handlerDelegates.put(c, delegate as Handler<Any?>)
+    fun <T> addDelegate(delegate: Handler<T>) {
+        var messageTypes = delegate.messageTypes
+        if (messageTypes.size == 0) {
+            // No message types specified, extracing generic type from Handler interface
+            val handlerInterfaces = TypeToken.of(delegate.javaClass).types.interfaces()
+
+            // Find interface type for Handler<T> in hierarchy
+            val handlerInterface = handlerInterfaces
+                    .filter { it.isSubtypeOf(Handler::class.java) }
+                    .first()
+
+            val handlerInterfaceType = handlerInterface.type
+            if (!(handlerInterfaceType is ParameterizedType))
+                throw IllegalArgumentException()
+
+            messageTypes = arrayListOf(handlerInterfaceType.actualTypeArguments.get(0) as Class<*>)
+        }
+
+        for (c in messageTypes) {
+            // Verify if message/type is serializable
+            if (TypeToken.of(c).types.interfaces().filter { it.rawType.equals(Serializable::class.java) }.size == 0)
+                throw IllegalArgumentException("Message type [${c.name}] is not serializable")
+
+            if (this.handlerDelegates.containsKey(c))
+                throw IllegalStateException("Listener already contains handler for message type [${c.name}]")
+
+            log.debug("Registering message handler [${delegate.javaClass.name}] for [${c.name}]")
+            handlerDelegates.put(c, delegate as Handler<Any?>)
+        }
     }
 
     final override fun onException(e: JMSException) {
