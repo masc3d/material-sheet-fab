@@ -8,4 +8,9 @@ interface Lifecycle : Disposable {
     fun stop()
     fun restart()
     fun isRunning(): Boolean
+
+    /** Default implementation calls stop */
+    override fun close() {
+        this.stop()
+    }
 }
