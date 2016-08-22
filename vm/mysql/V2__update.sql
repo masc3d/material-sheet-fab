@@ -9,7 +9,8 @@ ALTER TABLE `mst_node`
   ADD COLUMN authorized int(11) NULL AFTER `key`,
   ADD COLUMN bundle varchar(45) NOT NULL,
   CHANGE COLUMN timestamp timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
-  
+
+DROP TABLE IF EXISTS `mst_bundle_version`;
 CREATE TABLE `mst_bundle_version` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `bundle` varchar(45) DEFAULT NULL,
