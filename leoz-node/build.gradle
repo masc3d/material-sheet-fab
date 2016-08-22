@@ -117,9 +117,6 @@ dependencies {
     // databases
     compile "com.h2database:h2:1.4.192"
 
-    // discovery
-    compile "javax.jmdns:jmdns:3.4.1"
-
     // persistence
     compile "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
 

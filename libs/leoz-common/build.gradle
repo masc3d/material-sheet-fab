@@ -40,6 +40,9 @@ dependencies {
     // Commons
     compile "commons-io:commons-io:$v_commons_io"
 
+    // Zeroconf/discovery
+    compile "org.jmdns:jmdns:3.5.1"
+
     // javax
     compile "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs"
 
