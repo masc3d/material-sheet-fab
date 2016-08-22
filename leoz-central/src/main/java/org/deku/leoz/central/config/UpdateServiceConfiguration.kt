@@ -1,6 +1,6 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.bundle.entities.UpdateInfoRequest
+import org.deku.leoz.bundle.update.UpdateInfoRequest
 import org.deku.leoz.central.data.repositories.BundleVersionRepository
 import org.deku.leoz.central.data.repositories.NodeRepository
 import org.deku.leoz.central.services.UpdateService

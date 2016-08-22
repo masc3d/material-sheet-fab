@@ -1,4 +1,4 @@
-package org.deku.leoz.bundle.entities
+package org.deku.leoz.bundle.update
 
 /**
  * Update info request message

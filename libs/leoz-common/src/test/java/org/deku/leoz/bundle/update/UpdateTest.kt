@@ -3,7 +3,7 @@ package org.deku.leoz.bundle.update
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleUpdateService
+import org.deku.leoz.bundle.update.BundleUpdateService
 import org.deku.leoz.bundle.Bundles
 import org.deku.leoz.config.BundleTestConfiguration
 import org.deku.leoz.config.StorageTestConfiguration

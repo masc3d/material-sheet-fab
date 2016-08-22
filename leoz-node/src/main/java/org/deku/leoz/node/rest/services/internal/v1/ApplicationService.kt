@@ -1,9 +1,9 @@
 package org.deku.leoz.node.rest.services.internal.v1
 
 import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleUpdateService
+import org.deku.leoz.bundle.update.BundleUpdateService
 import org.deku.leoz.bundle.boot
-import org.deku.leoz.bundle.entities.UpdateInfo
+import org.deku.leoz.bundle.update.UpdateInfo
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.StorageConfiguration

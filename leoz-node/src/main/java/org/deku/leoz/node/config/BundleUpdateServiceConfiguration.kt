@@ -1,9 +1,9 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.bundle.BundleUpdateService
+import org.deku.leoz.bundle.update.BundleUpdateService
 import org.deku.leoz.bundle.Bundles
-import org.deku.leoz.bundle.entities.UpdateInfo
+import org.deku.leoz.bundle.update.UpdateInfo
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App

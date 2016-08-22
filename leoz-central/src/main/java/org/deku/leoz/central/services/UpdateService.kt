@@ -1,8 +1,8 @@
 package org.deku.leoz.central.services
 
 import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.bundle.entities.UpdateInfo
-import org.deku.leoz.bundle.entities.UpdateInfoRequest
+import org.deku.leoz.bundle.update.UpdateInfo
+import org.deku.leoz.bundle.update.UpdateInfoRequest
 import org.deku.leoz.central.data.repositories.BundleVersionRepository
 import org.deku.leoz.central.data.repositories.NodeRepository
 import org.slf4j.LoggerFactory

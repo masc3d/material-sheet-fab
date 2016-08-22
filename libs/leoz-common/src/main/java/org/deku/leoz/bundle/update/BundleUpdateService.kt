@@ -1,8 +1,12 @@
-package org.deku.leoz.bundle
+package org.deku.leoz.bundle.update
 
 import org.deku.leoz.Identity
-import org.deku.leoz.bundle.entities.UpdateInfo
-import org.deku.leoz.bundle.entities.UpdateInfoRequest
+import org.deku.leoz.bundle.Bundle
+import org.deku.leoz.bundle.BundleInstaller
+import org.deku.leoz.bundle.BundleRepository
+import org.deku.leoz.bundle.boot
+import org.deku.leoz.bundle.update.UpdateInfo
+import org.deku.leoz.bundle.update.UpdateInfoRequest
 import org.slf4j.LoggerFactory
 import sx.Lifecycle
 import sx.concurrent.Service
@@ -32,7 +36,7 @@ class BundleUpdateService(
         val installer: BundleInstaller,
         val remoteRepository: BundleRepository,
         val localRepository: BundleRepository? = null,
-        presets: List<BundleUpdateService.Preset>,
+        presets: List<Preset>,
         val cleanup: Boolean = true)
 :
         Handler<UpdateInfo>,
