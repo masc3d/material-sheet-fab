@@ -33,7 +33,7 @@ class EntityPublisher(
         SpringJmsListener({ Channel(messagingConfiguration.entitySyncQueue) }, executor),
         Handler<EntityStateMessage> {
     init {
-        this.addDelegate(EntityStateMessage::class.java, this)
+        this.addDelegate(this)
     }
 
     /**

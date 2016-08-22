@@ -38,7 +38,6 @@ open class UpdateServiceConfiguration {
     @PostConstruct
     fun onInitialize() {
         this.messageListenerConfiguration.centralQueueListener.addDelegate(
-                UpdateInfoRequest::class.java,
                 this.updateService)
 
     }

@@ -127,7 +127,6 @@ open class BundleUpdateServiceConfiguration {
         // Register for update notifications (as long as automatic updates are enabled)
         if (this@BundleUpdateServiceConfiguration.settings.automatic) {
             this.messageListenerConfiguration.nodeNotificationListener.addDelegate(
-                    UpdateInfo::class.java,
                     this.bundleUpdateService)
         }
     }

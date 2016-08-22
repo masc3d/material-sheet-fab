@@ -23,7 +23,6 @@ open class LogServiceConfiguration {
     @PostConstruct
     fun onInitialize() {
         this.messageListenerConfiguration.centralLogQueueListener.addDelegate(
-                LogMessage::class.java,
                 logService)
 
     }

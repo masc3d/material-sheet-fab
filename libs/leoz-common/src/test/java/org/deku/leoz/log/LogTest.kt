@@ -53,7 +53,7 @@ class LogTest : MessagingTest() {
 
         }
 
-        mListener.addDelegate(LogMessage::class.java, object : Handler<LogMessage> {
+        mListener.addDelegate(object : Handler<LogMessage> {
             override fun onMessage(message: LogMessage, replyChannel: Channel?) {
                 mLog.info(message)
             }

@@ -66,7 +66,6 @@ open class FileSyncClientConfiguration {
         this.lifecycleController.registerNetworkDependant(this.fileSyncClientService)
 
         messageListenerConfiguration.nodeQueueListener.addDelegate(
-                FileSyncMessage::class.java,
                 this.fileSyncClientService
         )
     }

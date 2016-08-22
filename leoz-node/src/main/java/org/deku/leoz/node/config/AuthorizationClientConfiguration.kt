@@ -59,7 +59,6 @@ open class AuthorizationClientConfiguration {
 
         // Add message handler delegatess
         this.messageListenerConfiguration.nodeQueueListener.addDelegate(
-                AuthorizationMessage::class.java,
                 this.authorizationClientService)
     }
 }

@@ -23,7 +23,6 @@ open class AuthorizationServiceConfiguration {
     @PostConstruct
     fun onInitialize() {
         this.messageListenerConfiguration.centralQueueListener.addDelegate(
-                AuthorizationRequestMessage::class.java,
                 authorizationService)
 
     }

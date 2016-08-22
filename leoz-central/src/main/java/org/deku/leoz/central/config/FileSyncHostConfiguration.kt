@@ -45,7 +45,6 @@ open class FileSyncHostConfiguration {
     @PostConstruct
     fun onInitialize() {
         messageListenerConfiguration.centralQueueListener.addDelegate(
-                FileSyncMessage::class.java,
                 this.fileSyncService)
 
         this.fileSyncService.start()

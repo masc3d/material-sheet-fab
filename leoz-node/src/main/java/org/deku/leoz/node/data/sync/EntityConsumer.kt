@@ -35,7 +35,7 @@ class EntityConsumer
 
     init {
 
-        this.addDelegate(EntityStateMessage::class.java, this)
+        this.addDelegate(this)
         executorService = Executors.newSingleThreadExecutor { r ->
             val t = Thread(r)
             t.priority = Thread.MIN_PRIORITY
