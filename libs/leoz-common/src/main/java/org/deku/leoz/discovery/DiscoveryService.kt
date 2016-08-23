@@ -3,9 +3,12 @@ package org.deku.leoz.discovery
 import org.deku.leoz.bundle.Bundles
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
-import sx.Lifecycle
+import sx.concurrent.Service
 import java.net.InetAddress
 import java.net.NetworkInterface
+import java.time.Duration
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import javax.jmdns.JmmDNS
 import javax.jmdns.ServiceEvent
 import javax.jmdns.ServiceListener
@@ -20,10 +23,36 @@ import javax.jmdns.impl.NetworkTopologyDiscoveryImpl
  * @property serviceInfos Zeroconf service infos to register
  */
 class DiscoveryService(
+        executorService: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(),
         val port: Int,
         val bundleType: Bundles? = null,
-        vararg serviceInfos: ServiceInfo) : Lifecycle {
+        vararg serviceInfos: ServiceInfo)
+: Service(
+        executorService = executorService) {
+
+    /** Logger */
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    /**
+     * Network topology discovery, customizing network interface/address filter
+     */
+    class NetworkTopologyDiscovery : NetworkTopologyDiscoveryImpl() {
+        private val log = LoggerFactory.getLogger(this.javaClass)
+
+        override fun useInetAddress(networkInterface: NetworkInterface?, interfaceAddress: InetAddress?): Boolean {
+            if (interfaceAddress == null)
+                return false
+
+            val use = super.useInetAddress(networkInterface, interfaceAddress)
+            log.trace("use=${use} ${networkInterface} ${interfaceAddress} ${interfaceAddress.isLinkLocalAddress} ${interfaceAddress.isSiteLocalAddress}")
+
+            // Only listen on private/site local addresses
+            if (!interfaceAddress.isSiteLocalAddress)
+                return false
+
+            return use
+        }
+    }
 
     /** Discoverable service infos */
     private val serviceInfos: Array<out ServiceInfo>
@@ -51,7 +80,6 @@ class DiscoveryService(
 
         override fun serviceTypeAdded(event: ServiceEvent) {
             log.debug("serviceTypeAdded ${event.type}")
-            this@DiscoveryService.jmmdns.addServiceListener(event.type, serviceListener)
         }
     }
 
@@ -60,7 +88,8 @@ class DiscoveryService(
      */
     private val serviceListener = object : ServiceListener {
         override fun serviceResolved(event: ServiceEvent) {
-            log.debug("serviceResolved ${event.info.hostAddresses.joinToString(",")}")
+            val local: Boolean = this@DiscoveryService.jmmdns.dns.map { it.name }.contains(event.info.server)
+            log.debug("serviceResolved local=${local} ${event.info.hostAddresses.joinToString(",")}")
         }
 
         override fun serviceRemoved(event: ServiceEvent) {
@@ -82,91 +111,51 @@ class DiscoveryService(
         // Add service type listener
         this.jmmdns.addServiceTypeListener(this.serviceTypeListener)
 
-        this.serviceInfos.map {
+        val jmsis = this.serviceInfos.map {
             // Translate generic service info to jmDNS service info
             val type = "_${it.serviceType.value}._tcp."
             val name = it.serviceType.value
             val subtype = bundleType?.value ?: ""
             val text = ""
             javax.jmdns.ServiceInfo.create(type, name, subtype, port, text)
-        }.forEach {
+        }
+
+        jmsis.forEach { si ->
+            this@DiscoveryService.jmmdns.addServiceListener(si.type, serviceListener)
+
             // Register and force persistent updates
             // TODO: figure out why jmDNS is r{eally slow on those operations (even much worse on Windows)
-            this.jmmdns.registerService(it)
-            this.jmmdns.requestServiceInfo(it.type, "", true)
+            this@DiscoveryService.jmmdns.registerService(si)
+        }
+
+        jmsis.forEach {
+            var i = 1
+            this@DiscoveryService.jmmdns.list(it.type, 2000).forEach { si ->
+                val local: Boolean = this@DiscoveryService.jmmdns.dns.map { it.name }.contains(si.server)
+                log.debug("list ${i++} local=${local} ${si.hostAddresses.joinToString(",")}")
+            }
         }
     }
 
-    /**
-     * Network topology discovery, customizing network interface/address filter
-     */
-    class NetworkTopologyDiscovery : NetworkTopologyDiscoveryImpl() {
-        private val log = LoggerFactory.getLogger(this.javaClass)
-
-        override fun useInetAddress(networkInterface: NetworkInterface?, interfaceAddress: InetAddress?): Boolean {
-            if (interfaceAddress == null)
-                return false
-
-            val use = super.useInetAddress(networkInterface, interfaceAddress)
-            log.trace("use=${use} ${networkInterface} ${interfaceAddress} ${interfaceAddress.isLinkLocalAddress} ${interfaceAddress.isSiteLocalAddress}")
-
-            // Only listen on private/site local addresses
-            if (!interfaceAddress.isSiteLocalAddress)
-                return false
-
-            return use
-        }
+    override fun run() {
     }
 
-    /**
-     * Start discovery service
-     */
-    override fun start() {
-        if (lazyJmmdns.isSet) {
-            // Already running
-            return
-        }
+    override fun onStart() {
+        this.submitSupplementalTask {
+            log.info("Configuring mDNS services")
+            javax.jmdns.NetworkTopologyDiscovery.Factory.setClassDelegate {
+                NetworkTopologyDiscovery()
+            }
 
-        log.info("Starting discovery service")
-
-        javax.jmdns.NetworkTopologyDiscovery.Factory.setClassDelegate {
-            NetworkTopologyDiscovery()
-        }
-
-        try {
             this.configureServices()
-        } catch(e: Throwable) {
-            this.lazyJmmdns.reset()
-            throw e
+            log.info("Configured mDNS services")
         }
-
-        log.info("Started discovery service")
     }
 
-    /**
-     * Stop discovery service
-     */
-    override fun stop() {
+    override fun onStop(interrupted: Boolean) {
         this.lazyJmmdns.ifSet {
-            log.info("Stopping discovery service")
             it.close()
-            log.info("Stopped discovery service")
         }
         this.lazyJmmdns.reset()
-    }
-
-    /**
-     * Restart discovery service
-     */
-    override fun restart() {
-        this.stop()
-        this.start()
-    }
-
-    /**
-     * Indicates if discovery service is running
-     */
-    override fun isRunning(): Boolean {
-        return this.lazyJmmdns.isSet
     }
 }

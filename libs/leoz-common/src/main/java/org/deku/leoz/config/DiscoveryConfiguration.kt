@@ -12,6 +12,9 @@ object DiscoveryConfiguration {
     const val port = 13004
 
     fun createDiscoveryService(bundleType: Bundles, vararg serviceInfos: ServiceInfo): DiscoveryService {
-        return DiscoveryService(this.port, bundleType, *serviceInfos)
+        return DiscoveryService(
+                port = this.port,
+                bundleType =  bundleType,
+                serviceInfos = *serviceInfos)
     }
 }
