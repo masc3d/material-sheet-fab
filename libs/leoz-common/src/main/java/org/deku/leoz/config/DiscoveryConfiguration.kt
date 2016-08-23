@@ -11,10 +11,10 @@ object DiscoveryConfiguration {
     /** Discovery port must be static */
     const val port = 13004
 
-    fun createDiscoveryService(bundleType: Bundles, vararg serviceInfos: ServiceInfo): DiscoveryService {
+    fun createDiscoveryService(bundleType: Bundles, serviceInfos: List<ServiceInfo>): DiscoveryService {
         return DiscoveryService(
                 port = this.port,
                 bundleType =  bundleType,
-                serviceInfos = *serviceInfos)
+                serviceInfos = serviceInfos)
     }
 }

@@ -13,7 +13,11 @@ class DiscoveryServiceTest {
         DiscoveryService(
                 port = DiscoveryConfiguration.port,
                 bundleType = Bundles.LEOZ_NODE,
-                serviceInfos = ServiceInfo(ServiceType.HTTPS, 13000))
+                serviceInfos = arrayListOf(
+                        ServiceInfo(ServiceType.HTTPS, 13000),
+                        ServiceInfo(ServiceType.ACTIVEMQ_NATIVE, 13001),
+                        ServiceInfo(ServiceType.RSYNC, 13002),
+                        ServiceInfo(ServiceType.SSH, 13003)))
     }
     @Test
     fun testDiscoveryService() {

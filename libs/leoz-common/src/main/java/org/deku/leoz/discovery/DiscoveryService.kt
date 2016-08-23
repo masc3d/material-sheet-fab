@@ -26,7 +26,7 @@ class DiscoveryService(
         executorService: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(),
         val port: Int,
         val bundleType: Bundles? = null,
-        vararg serviceInfos: ServiceInfo)
+        val serviceInfos: List<ServiceInfo>)
 : Service(
         executorService = executorService) {
 
@@ -54,13 +54,9 @@ class DiscoveryService(
         }
     }
 
-    /** Discoverable service infos */
-    private val serviceInfos: Array<out ServiceInfo>
-
     init {
         // The only way to customize jmDNS port for now.
         System.setProperty("net.mdns.port", port.toString())
-        this.serviceInfos = serviceInfos
     }
 
     /**
