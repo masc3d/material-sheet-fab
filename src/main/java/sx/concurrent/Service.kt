@@ -230,8 +230,6 @@ abstract class Service(
                 return
             }
 
-            this.onStart()
-
             if (log)
                 this.log.info("Starting service [${this.javaClass}]")
 
@@ -240,6 +238,8 @@ abstract class Service(
 
             this.isStarted = true
             this.hasBeenStarted = true
+
+            this.onStart()
 
             // Only schedule initially if either period or initial delay is set (or both)
             if (this.period != null || this.initialDelay != null) {
