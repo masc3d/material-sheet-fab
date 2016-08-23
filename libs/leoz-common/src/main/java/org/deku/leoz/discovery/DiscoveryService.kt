@@ -89,7 +89,7 @@ class DiscoveryService(
     private val serviceListener = object : ServiceListener {
         override fun serviceResolved(event: ServiceEvent) {
             val local: Boolean = this@DiscoveryService.jmmdns.dns.map { it.name }.contains(event.info.server)
-            log.debug("serviceResolved local=${local} ${event.info.hostAddresses.joinToString(",")}")
+            log.debug("serviceResolved local=${local} ${event.info.server} ${event.info.hostAddresses.joinToString(",")}")
         }
 
         override fun serviceRemoved(event: ServiceEvent) {
