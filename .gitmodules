@@ -31,3 +31,6 @@ url=git@github.com:masc3d/BarbaryWatchService.git
 [submodule "libs/sx-jms"]
 	path = libs/sx-jms
 	url = ssh://git@git.derkurier.de:13020/leoz/sx-jms.git
+[submodule "libs/mdnsjava"]
+	path = libs/mdnsjava
+	url = git@github.com:masc3d/mdnsjava.git

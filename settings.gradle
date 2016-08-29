@@ -9,4 +9,5 @@ include ':libs:leoz-common'
 include ':libs:sx-common'
 include ':libs:sx-jms'
 include ':libs:barbarywatchservice'
+include ':libs:mdnsjava'
 

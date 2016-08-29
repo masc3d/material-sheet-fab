@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/libs" />
             <option value="$PROJECT_DIR$/libs/barbarywatchservice" />
             <option value="$PROJECT_DIR$/libs/leoz-common" />
+            <option value="$PROJECT_DIR$/libs/mdnsjava" />
             <option value="$PROJECT_DIR$/libs/sx-common" />
             <option value="$PROJECT_DIR$/libs/sx-jms" />
           </set>

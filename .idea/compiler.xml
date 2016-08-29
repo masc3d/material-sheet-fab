@@ -38,6 +38,8 @@
       <module name="leoz-ui_test" target="1.8" />
       <module name="libs_main" target="1.8" />
       <module name="libs_test" target="1.8" />
+      <module name="mdnsjava_main" target="1.6" />
+      <module name="mdnsjava_test" target="1.6" />
       <module name="sx-common_main" target="1.7" />
       <module name="sx-common_test" target="1.7" />
       <module name="sx-jms_main" target="1.7" />
