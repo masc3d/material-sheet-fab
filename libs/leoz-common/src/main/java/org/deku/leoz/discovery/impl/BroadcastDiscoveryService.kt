@@ -32,7 +32,6 @@ class BroadcastDiscoveryService(port: Int,
     override fun onStart() {
         this.running = true
 
-        // Keep a socket open to listen to all the UDP trafic that is destined for this port
         val serverSocket = DatagramSocket(this.port, InetSocketAddress(0).address)
         serverSocket.broadcast = true
         this.serverSocket = serverSocket
@@ -42,21 +41,16 @@ class BroadcastDiscoveryService(port: Int,
                 while (this.running) {
                     log.info("Starting discovery host cycle")
 
-                    //Receive a packet
                     val recvBuf = ByteArray(15000)
                     val packet = DatagramPacket(recvBuf, recvBuf.size)
                     serverSocket.receive(packet)
 
-                    val packetText = String(packet.data, 0, packet.length, Charset.defaultCharset())
-                    //Packet received
-                    log.info("Discovery request packet received from [${packet.address.hostAddress}] data [${packetText}]")
+                    val message = String(packet.data, 0, packet.length, Charset.defaultCharset())
+                    log.info("Discovery request packet received from [${packet.address.hostAddress}] data [${message}]")
 
-                    //See if the packet holds the right command (message)
-                    val message = String(packet.getData()).trim({ it <= ' ' })
                     if (message == REQUEST) {
                         val sendData = RESPONSE.toByteArray()
 
-                        //Send a response
                         val sendPacket = DatagramPacket(sendData, sendData.size, packet.getAddress(), packet.getPort())
                         serverSocket.send(sendPacket)
 
@@ -69,8 +63,6 @@ class BroadcastDiscoveryService(port: Int,
         }
 
         this.submitSupplementalTask {
-            // Find the server using UDP broadcast
-            //Open a random port to send the package
             val clientSocket = DatagramSocket()
             clientSocket.setBroadcast(true)
 
@@ -87,7 +79,6 @@ class BroadcastDiscoveryService(port: Int,
                             .forEach {
                                 val broadcast = it.broadcast
 
-                                // Send the broadcast package!
                                 try {
                                     val sendPacket = DatagramPacket(sendData, sendData.size, broadcast, this.port)
                                     clientSocket.send(sendPacket)
@@ -105,22 +96,18 @@ class BroadcastDiscoveryService(port: Int,
 
                     log.info("Received response from [${receivePacket.address.hostAddress}]")
 
-                    //Check if the message is correct
-                    val message = String(receivePacket.data).trim { it <= ' ' }
+                    val message = String(receivePacket.data, 0, receivePacket.length, Charset.defaultCharset())
                     if (message == RESPONSE) {
-                        //DO SOMETHING WITH THE SERVER'S IP (for example, store it in your controller)
                         log.info("Resolved ${receivePacket.address}")
                     }
 
                     Thread.sleep(2000)
                 }
-
-                //Close the port!
-                clientSocket.close()
             } catch (e: Exception) {
                 log.error(e.message, e)
+            } finally {
+                clientSocket.close()
             }
-
         }
     }
 
