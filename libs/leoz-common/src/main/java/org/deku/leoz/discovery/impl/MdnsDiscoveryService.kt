@@ -6,10 +6,8 @@ import org.deku.leoz.discovery.ServiceInfo
 import org.deku.leoz.discovery.ServiceType
 import org.slf4j.LoggerFactory
 import org.xbill.DNS.*
+import org.xbill.mDNS.*
 import org.xbill.mDNS.Lookup
-import org.xbill.mDNS.MulticastDNSService
-import org.xbill.mDNS.ServiceInstance
-import org.xbill.mDNS.ServiceName
 import java.net.InetAddress
 import java.net.NetworkInterface
 import java.util.concurrent.Executors
@@ -30,7 +28,6 @@ class MdnsDiscoveryService(executorService: ScheduledExecutorService = Executors
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private var mDnsService: MulticastDNSService? = null
-    private var lookup: Lookup? = null
     private val registeredServices = mutableListOf<ServiceInstance>()
 
     private fun ServiceInfo.toMdnsType(): String {
@@ -61,24 +58,35 @@ class MdnsDiscoveryService(executorService: ScheduledExecutorService = Executors
         this.mDnsService = MulticastDNSService()
         this.registerServices()
 
-        log.info("Creating lookup")
-        val lookup = Lookup(this.serviceInfos.map { it.toMdnsType() }.toTypedArray(), Type.ANY, DClass.IN)
-        lookup.lookupRecordsAsync(object : Lookup.RecordListener {
-            override fun receiveRecord(id: Any, record: Record) {
-                log.info("Record Found: ${record}")
+        log.info("Starting service discovery")
+        val browse = Browse(*this.serviceInfos.map { it.toMdnsType() }.toTypedArray())
+        this.mDnsService!!.startServiceDiscovery(browse, object : DNSSDListener {
+            override fun handleException(id: Any?, e: Exception?) {
+                if (e != null)
+                    log.error(e.message, e)
             }
 
-            override fun handleException(id: Any, e: Exception) {
-                log.error(e.message, e)
+            override fun serviceDiscovered(id: Any?, service: ServiceInstance?) {
+                if (service != null) {
+                    log.info("serviceDiscovered ${service}")
+                }
+            }
+
+            override fun serviceRemoved(id: Any?, service: ServiceInstance?) {
+                if (service != null) {
+                    log.info("serviceRemoved ${service}")
+                }
+            }
+
+            override fun receiveMessage(id: Any?, m: Message?) {
+//                if (m != null)
+//                    log.info(m.toString())
             }
         })
-        this.lookup = lookup
     }
 
     override fun onStop(interrupted: Boolean) {
-        this.lookup?.close()
         this.mDnsService?.close()
         this.mDnsService = null
-        this.lookup = null
     }
 }
