@@ -12,7 +12,7 @@ import javafx.stage.StageStyle
 import org.deku.leoz.boot.config.StorageConfiguration
 import org.deku.leoz.boot.fx.ResizeHelper
 import org.deku.leoz.bundle.Bundle
-import org.deku.leoz.bundle.Bundles
+import org.deku.leoz.bundle.BundleType
 import org.slf4j.LoggerFactory
 import sx.JarManifest
 import sx.rsync.Rsync
@@ -101,7 +101,7 @@ class Application : javafx.application.Application() {
         Bundle.load(nativeBundlePath).verify()
 
         val srcPath = nativeBundlePath
-        val destPath = File(StorageConfiguration.bundleInstallationDirectory, Bundles.LEOZ_BOOT.value)
+        val destPath = File(StorageConfiguration.bundleInstallationDirectory, BundleType.LEOZ_BOOT.value)
 
         val rc = RsyncClient()
         val source = Rsync.URI(srcPath)

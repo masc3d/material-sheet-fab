@@ -3,7 +3,7 @@ package org.deku.leoz.bundle
 /**
  * Created by masc on 09.09.15.
  */
-enum class Bundles(val value: String) {
+enum class BundleType(val value: String) {
     LEOZ_CENTRAL("leoz-central"),
     LEOZ_NODE("leoz-node"),
     LEOZ_UI("leoz-ui"),

@@ -2,7 +2,7 @@ package org.deku.leoz.node.config
 
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.update.BundleUpdateService
-import org.deku.leoz.bundle.Bundles
+import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.bundle.update.UpdateInfo
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
@@ -106,7 +106,7 @@ open class BundleUpdateServiceConfiguration {
                                 storeInLocalRepository = false,
                                 requiresBoot = true),
                         BundleUpdateService.Preset(
-                                bundleName = Bundles.LEOZ_BOOT.value,
+                                bundleName = BundleType.LEOZ_BOOT.value,
                                 install = true,
                                 storeInLocalRepository = true)
                 ),

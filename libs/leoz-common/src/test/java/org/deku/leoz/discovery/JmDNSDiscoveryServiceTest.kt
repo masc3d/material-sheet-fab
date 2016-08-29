@@ -1,6 +1,6 @@
 package org.deku.leoz.discovery
 
-import org.deku.leoz.bundle.Bundles
+import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.DiscoveryConfiguration
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -16,7 +16,7 @@ class JmDNSDiscoveryServiceTest {
     fun testJmDNSDiscoveryServiceWithExposedServiceInfos() {
         val ds = org.deku.leoz.discovery.impl.JmDNSDiscoveryService(
                 port = DiscoveryConfiguration.port,
-                bundleType = Bundles.LEOZ_NODE,
+                bundleType = BundleType.LEOZ_NODE,
                 serviceInfos = arrayListOf(
                         ServiceInfo(serviceType = ServiceType.HTTPS, port = 13000),
                         ServiceInfo(ServiceType.ACTIVEMQ_NATIVE, 13001),
@@ -35,7 +35,7 @@ class JmDNSDiscoveryServiceTest {
     fun testJmDNSDiscoveryServiceWithoutExposedServiceInfos() {
         val ds = org.deku.leoz.discovery.impl.JmDNSDiscoveryService(
                 port = DiscoveryConfiguration.port,
-                bundleType = Bundles.LEOZ_NODE)
+                bundleType = BundleType.LEOZ_NODE)
 
         ds.rxOnServiceUpdate.subscribe {
             log.info(it)

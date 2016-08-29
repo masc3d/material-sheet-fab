@@ -1,6 +1,6 @@
 package org.deku.leoz.discovery
 
-import org.deku.leoz.bundle.Bundles
+import org.deku.leoz.bundle.BundleType
 import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.synchronized
 import sx.concurrent.Service
@@ -17,7 +17,7 @@ import java.util.concurrent.ScheduledExecutorService
 abstract class DiscoveryService(
         executorService: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(),
         val port: Int,
-        val bundleType: Bundles? = null,
+        val bundleType: BundleType? = null,
         val serviceInfos: List<org.deku.leoz.discovery.ServiceInfo> = arrayListOf())
 : Service(
         executorService = executorService) {

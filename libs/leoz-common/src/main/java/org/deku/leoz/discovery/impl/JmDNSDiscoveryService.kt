@@ -1,6 +1,6 @@
 package org.deku.leoz.discovery.impl
 
-import org.deku.leoz.bundle.Bundles
+import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.discovery.DiscoveredServiceInfo
 import org.deku.leoz.discovery.DiscoveryService
 import org.deku.leoz.discovery.ServiceType
@@ -23,7 +23,7 @@ import javax.jmdns.impl.NetworkTopologyDiscoveryImpl
 class JmDNSDiscoveryService(
         executorService: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(),
         port: Int,
-        bundleType: Bundles? = null,
+        bundleType: BundleType? = null,
         serviceInfos: List<org.deku.leoz.discovery.ServiceInfo> = arrayListOf())
 : DiscoveryService(
         executorService = executorService,
@@ -100,10 +100,10 @@ class JmDNSDiscoveryService(
             }
 
             // Parse subtypes/bundle type
-            var bundleType: Bundles? = null
+            var bundleType: BundleType? = null
             val subtypes = event.info.subtype.split(',').forEach { subtype ->
                 try {
-                    bundleType = Bundles.values().find { it.value == subtype }
+                    bundleType = BundleType.values().find { it.value == subtype }
                 } catch(e: IllegalArgumentException) {
                 }
             }
@@ -116,7 +116,7 @@ class JmDNSDiscoveryService(
                         serviceType = serviceType,
                         port = event.info.port,
                         host = (event.info.inet4Addresses.firstOrNull() ?: event.info.inet6Addresses.firstOrNull())!!.hostName,
-                        bundleType = Bundles.LEOZ_NODE
+                        bundleType = BundleType.LEOZ_NODE
                 )))
             }
         }

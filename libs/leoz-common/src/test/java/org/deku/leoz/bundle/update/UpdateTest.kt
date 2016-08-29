@@ -4,7 +4,7 @@ import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.update.BundleUpdateService
-import org.deku.leoz.bundle.Bundles
+import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.BundleTestConfiguration
 import org.deku.leoz.config.StorageTestConfiguration
 import org.deku.leoz.config.messaging.ActiveMQConfiguration
@@ -18,7 +18,7 @@ import java.util.concurrent.Executors
 class UpdateTest {
     val updater = BundleUpdateService(
             executorService = Executors.newScheduledThreadPool(2),
-            identity = Identity.create(Bundles.LEOZ_BOOT.value, SystemInformation()),
+            identity = Identity.create(BundleType.LEOZ_BOOT.value, SystemInformation()),
             installer = BundleInstaller(
                     StorageTestConfiguration.bundlesTestDirectory),
             remoteRepository = BundleTestConfiguration.remoteRepository,

@@ -1,6 +1,6 @@
 package org.deku.leoz.discovery
 
-import org.deku.leoz.bundle.Bundles
+import org.deku.leoz.bundle.BundleType
 
 /**
  * Leoz service types
@@ -33,7 +33,7 @@ open class ServiceInfo(
 class DiscoveredServiceInfo(serviceType: ServiceType,
                             port: Int,
                             val host: String,
-                            val bundleType: Bundles) : ServiceInfo(serviceType, port) {
+                            val bundleType: BundleType) : ServiceInfo(serviceType, port) {
     override fun toString(): String {
         return "DiscoveredServiceInfo(serviceType=$serviceType, port=$port, host='$host', bundleType=$bundleType)"
     }

@@ -1,9 +1,8 @@
 package org.deku.leoz.node.auth;
 
-import org.apache.commons.logging.Log;
 import org.deku.leoz.Identity;
 import org.deku.leoz.SystemInformation;
-import org.deku.leoz.bundle.Bundles;
+import org.deku.leoz.bundle.BundleType;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,7 @@ public class IdentityTest {
 
     @Test
     public void testIdentity() {
-        Identity ident = Identity.Companion.create(Bundles.LEOZ_NODE.getValue(), SystemInformation.create());
+        Identity ident = Identity.Companion.create(BundleType.LEOZ_NODE.getValue(), SystemInformation.create());
         mLog.info(ident.toString());
     }
 }
