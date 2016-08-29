@@ -158,9 +158,6 @@ class JmDNSDiscoveryService(
         }
     }
 
-    override fun run() {
-    }
-
     override fun onStart() {
         this.submitSupplementalTask {
             log.info("Configuring mDNS services")

@@ -58,4 +58,8 @@ abstract class DiscoveryService(
             }
         })
     }
+
+    override fun run() {
+        // Discovery service has no interval/run logic. Initialization is done on start.
+    }
 }

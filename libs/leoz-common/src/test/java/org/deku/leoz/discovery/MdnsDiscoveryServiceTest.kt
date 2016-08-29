@@ -10,13 +10,13 @@ import sx.logging.slf4j.info
 /**
  * Created by masc on 22/08/16.
  */
-class JmDNSDiscoveryServiceTest {
+class MdnsDiscoveryServiceTest {
     val log = LoggerFactory.getLogger(this.javaClass)
 
     @Ignore
     @Test
-    fun testJmDNSDiscoveryServiceWithExposedServiceInfos() {
-        val ds = org.deku.leoz.discovery.impl.JmDNSDiscoveryService(
+    fun testMdnsDiscoveryServiceWithExposedServiceInfos() {
+        val ds = org.deku.leoz.discovery.impl.MdnsDiscoveryService(
                 port = DiscoveryConfiguration.port,
                 bundleType = BundleType.LEOZ_NODE,
                 serviceInfos = arrayListOf(
@@ -35,8 +35,8 @@ class JmDNSDiscoveryServiceTest {
 
     @Ignore
     @Test
-    fun testJmDNSDiscoveryServiceWithoutExposedServiceInfos() {
-        val ds = org.deku.leoz.discovery.impl.JmDNSDiscoveryService(
+    fun testMdnsDiscoveryServiceWithoutExposedServiceInfos() {
+        val ds = org.deku.leoz.discovery.impl.MdnsDiscoveryService(
                 port = DiscoveryConfiguration.port,
                 bundleType = BundleType.LEOZ_NODE)
 

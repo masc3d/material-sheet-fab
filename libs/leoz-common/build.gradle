@@ -25,6 +25,9 @@ dependencies {
     // Watchservice replacement for OSX
     compile project(':libs:barbarywatchservice')
 
+    // mdnsjava
+    compile project(':libs:mdnsjava')
+
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
