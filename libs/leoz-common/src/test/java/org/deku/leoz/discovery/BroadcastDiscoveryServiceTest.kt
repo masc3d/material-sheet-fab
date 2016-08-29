@@ -25,9 +25,6 @@ class BroadcastDiscoveryServiceTest {
                         ServiceInfo(ServiceType.RSYNC, 13002),
                         ServiceInfo(ServiceType.SSH, 13003)))
 
-        ds.rxOnServiceUpdate.subscribe {
-            log.info(it)
-        }
         ds.start()
         Thread.sleep(Long.MAX_VALUE)
         ds.stop()
@@ -40,9 +37,6 @@ class BroadcastDiscoveryServiceTest {
                 port = DiscoveryConfiguration.port,
                 bundleType = BundleType.LEOZ_NODE)
 
-        ds.rxOnServiceUpdate.subscribe {
-            log.info(it)
-        }
         ds.start()
         Thread.sleep(Long.MAX_VALUE)
         ds.stop()
