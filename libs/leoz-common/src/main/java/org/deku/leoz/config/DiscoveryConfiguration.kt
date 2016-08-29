@@ -1,7 +1,6 @@
 package org.deku.leoz.config
 
 import org.deku.leoz.bundle.Bundles
-import org.deku.leoz.discovery.DiscoveryService
 import org.deku.leoz.discovery.ServiceInfo
 
 /**
@@ -11,10 +10,10 @@ object DiscoveryConfiguration {
     /** Discovery port must be static */
     const val port = 13004
 
-    fun createDiscoveryService(bundleType: Bundles, serviceInfos: List<ServiceInfo>): DiscoveryService {
-        return DiscoveryService(
+    fun createDiscoveryService(bundleType: Bundles, serviceInfos: List<ServiceInfo>): org.deku.leoz.discovery.impl.JmDNSDiscoveryService {
+        return org.deku.leoz.discovery.impl.JmDNSDiscoveryService(
                 port = this.port,
-                bundleType =  bundleType,
+                bundleType = bundleType,
                 serviceInfos = serviceInfos)
     }
 }
