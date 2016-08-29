@@ -3,9 +3,10 @@ package org.deku.leoz.discovery.impl
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.discovery.DiscoveryService
 import org.deku.leoz.discovery.ServiceInfo
+import org.deku.leoz.discovery.ServiceType
 import org.slf4j.LoggerFactory
-import org.xbill.DNS.Name
-import org.xbill.DNS.TXTRecord
+import org.xbill.DNS.*
+import org.xbill.mDNS.Lookup
 import org.xbill.mDNS.MulticastDNSService
 import org.xbill.mDNS.ServiceInstance
 import org.xbill.mDNS.ServiceName
@@ -29,18 +30,22 @@ class MdnsDiscoveryService(executorService: ScheduledExecutorService = Executors
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private var mDnsService: MulticastDNSService? = null
+    private var lookup: Lookup? = null
     private val registeredServices = mutableListOf<ServiceInstance>()
 
+    private fun ServiceInfo.toMdnsType(): String {
+        return "${this.serviceType.name}._${this.serviceType.value}._tcp.local."
+    }
+
     private fun registerServices() {
-        log.info("Registering services")
         val addresses = NetworkInterface.getNetworkInterfaces().toList().flatMap {
             it.interfaceAddresses.map { it.address }.filter { !it.isLoopbackAddress && it.isSiteLocalAddress }
-        }.subList(0, 1)
+        }
 
-        this.serviceInfos.subList(0,1).forEach {
-            log.info("FU")
+        this.serviceInfos.forEach {
+            log.info("Registering [${it.serviceType}]")
             val service = ServiceInstance(
-                    ServiceName("${it.serviceType.name}._${it.serviceType.value}._tcp.local."),
+                    ServiceName(it.toMdnsType()),
                     0,
                     0,
                     it.port,
@@ -48,18 +53,32 @@ class MdnsDiscoveryService(executorService: ScheduledExecutorService = Executors
                     addresses.toTypedArray(),
                     arrayListOf<String>() as Collection<*>)
 
-            this.registeredServices.add(mDnsService!!.register(service))
+            mDnsService!!.register(service)
         }
-        log.info("Registered services")
     }
 
     override fun onStart() {
         this.mDnsService = MulticastDNSService()
         this.registerServices()
+
+        log.info("Creating lookup")
+        val lookup = Lookup(this.serviceInfos.map { it.toMdnsType() }.toTypedArray(), Type.ANY, DClass.IN)
+        lookup.lookupRecordsAsync(object : Lookup.RecordListener {
+            override fun receiveRecord(id: Any, record: Record) {
+                log.info("Record Found: ${record}")
+            }
+
+            override fun handleException(id: Any, e: Exception) {
+                log.error(e.message, e)
+            }
+        })
+        this.lookup = lookup
     }
 
     override fun onStop(interrupted: Boolean) {
-        mDnsService?.close()
-        mDnsService = null
+        this.lookup?.close()
+        this.mDnsService?.close()
+        this.mDnsService = null
+        this.lookup = null
     }
 }
