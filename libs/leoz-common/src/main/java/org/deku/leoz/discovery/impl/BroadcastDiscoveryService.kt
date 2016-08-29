@@ -29,24 +29,21 @@ class BroadcastDiscoveryService(port: Int,
     private val REQUEST = "DISCO_REQUEST";
     private val RESPONSE = "DISCO_RESPONSE"
 
-    override fun onStart() {
-        this.running = true
+    inner class Server : Runnable {
+        private val log = LoggerFactory.getLogger(this.javaClass)
 
-        val serverSocket = DatagramSocket(this.port, InetSocketAddress(0).address)
-        serverSocket.broadcast = true
-        this.serverSocket = serverSocket
-
-        this.submitSupplementalTask {
+        override fun run() {
             try {
-                while (this.running) {
-                    log.info("Starting discovery host cycle")
+                val serverSocket = this@BroadcastDiscoveryService.serverSocket!!
+                while (this@BroadcastDiscoveryService.running) {
+                    this.log.trace("Starting discovery host cycle")
 
                     val recvBuf = ByteArray(15000)
                     val packet = DatagramPacket(recvBuf, recvBuf.size)
                     serverSocket.receive(packet)
 
                     val message = String(packet.data, 0, packet.length, Charset.defaultCharset())
-                    log.info("Discovery request packet received from [${packet.address.hostAddress}] data [${message}]")
+                    this.log.debug("Discovery request received from [${packet.address.hostAddress}] data [${message}]")
 
                     if (message == REQUEST) {
                         val sendData = RESPONSE.toByteArray()
@@ -54,21 +51,36 @@ class BroadcastDiscoveryService(port: Int,
                         val sendPacket = DatagramPacket(sendData, sendData.size, packet.getAddress(), packet.getPort())
                         serverSocket.send(sendPacket)
 
-                        log.info("Sent reply to [${sendPacket.address.hostAddress}]")
+                        log.debug("Sent reply to [${sendPacket.address.hostAddress}]")
                     }
                 }
             } catch (e: Exception) {
                 this.log.error(e.message, e)
             }
         }
+    }
+
+    override fun onStart() {
+        this.running = true
+
+        val serverSocket = DatagramSocket(this.port, InetSocketAddress(0).address)
+        serverSocket.broadcast = true
+        this.serverSocket = serverSocket
+
+        val server = Server()
+        this.submitSupplementalTask {
+            server.run()
+        }
 
         this.submitSupplementalTask {
             val clientSocket = DatagramSocket()
             clientSocket.setBroadcast(true)
+            clientSocket.soTimeout = 2000
+            val recvBuf = ByteArray(15000)
 
             try {
                 while (this.running) {
-                    log.info("Starting discovery client cycle")
+                    log.trace("Starting discovery client cycle")
                     val sendData = REQUEST.toByteArray()
 
                     // Broadcast the message over all the network interfaces
@@ -90,15 +102,25 @@ class BroadcastDiscoveryService(port: Int,
 
                     log.info("Waiting for host reply")
 
-                    val recvBuf = ByteArray(15000)
-                    val receivePacket = DatagramPacket(recvBuf, recvBuf.size)
-                    clientSocket.receive(receivePacket)
+                    try {
+                        while(true) {
+                            val receivePacket = DatagramPacket(recvBuf, recvBuf.size)
 
-                    log.info("Received response from [${receivePacket.address.hostAddress}]")
+                            try {
+                                clientSocket.receive(receivePacket)
+                            } catch(e: SocketTimeoutException) {
+                                break
+                            }
 
-                    val message = String(receivePacket.data, 0, receivePacket.length, Charset.defaultCharset())
-                    if (message == RESPONSE) {
-                        log.info("Resolved ${receivePacket.address}")
+                            log.trace("Received response from [${receivePacket.address.hostAddress}]")
+
+                            val message = String(receivePacket.data, 0, receivePacket.length, Charset.defaultCharset())
+                            if (message == RESPONSE) {
+                                log.info("Resolved ${receivePacket.address}")
+                            }
+                        }
+                    } catch(e: Exception) {
+                        log.error(e.message, e)
                     }
 
                     Thread.sleep(2000)
