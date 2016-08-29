@@ -15,7 +15,7 @@ class MdnsDiscoveryServiceTest {
 
     @Ignore
     @Test
-    fun testMdnsDiscoveryServiceWithExposedServiceInfos() {
+    fun testeWithExposedServiceInfos() {
         val ds = org.deku.leoz.discovery.impl.MdnsDiscoveryService(
                 port = DiscoveryConfiguration.port,
                 bundleType = BundleType.LEOZ_NODE,
@@ -35,7 +35,7 @@ class MdnsDiscoveryServiceTest {
 
     @Ignore
     @Test
-    fun testMdnsDiscoveryServiceWithoutExposedServiceInfos() {
+    fun testWithoutExposedServiceInfos() {
         val ds = org.deku.leoz.discovery.impl.MdnsDiscoveryService(
                 port = DiscoveryConfiguration.port,
                 bundleType = BundleType.LEOZ_NODE)

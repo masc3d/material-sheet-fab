@@ -15,7 +15,7 @@ class JmDNSDiscoveryServiceTest {
 
     @Ignore
     @Test
-    fun testJmDNSDiscoveryServiceWithExposedServiceInfos() {
+    fun testWithExposedServiceInfos() {
         val ds = org.deku.leoz.discovery.impl.JmDNSDiscoveryService(
                 port = DiscoveryConfiguration.port,
                 bundleType = BundleType.LEOZ_NODE,
@@ -35,7 +35,7 @@ class JmDNSDiscoveryServiceTest {
 
     @Ignore
     @Test
-    fun testJmDNSDiscoveryServiceWithoutExposedServiceInfos() {
+    fun testWithoutExposedServiceInfos() {
         val ds = org.deku.leoz.discovery.impl.JmDNSDiscoveryService(
                 port = DiscoveryConfiguration.port,
                 bundleType = BundleType.LEOZ_NODE)
