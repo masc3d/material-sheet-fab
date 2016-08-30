@@ -199,7 +199,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
             val host = this@UdpDiscoveryService.parsePacket(packet.data.copyOf(packet.data.size))
 
             this@UdpDiscoveryService.onInfo(host)
-            val response = this@UdpDiscoveryService.createPacket(host.address)
+            val response = this@UdpDiscoveryService.createPacket(InetSocketAddress(0).address)
 
             log.debug("Answering to ${packet.address} size [${response.size}]")
 
@@ -257,7 +257,11 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
 
                 try {
                     this.socket.receive(receivePacket)
-                    val host = this@UdpDiscoveryService.parsePacket(receivePacket.data.copyOf(receivePacket.length))
+                    var host = this@UdpDiscoveryService.parsePacket(receivePacket.data.copyOf(receivePacket.length))
+                    if (host.address.equals(InetSocketAddress(0).address)) {
+                        this.log.debug("ZERO")
+                        host = Host(receivePacket.address, host.info)
+                    }
                     if (hostsByAddress.contains(host.address)) {
                         this.log.info("Discarding previous reply from [${host.address}]")
                     }
