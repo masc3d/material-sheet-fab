@@ -6,7 +6,8 @@ import rx.lang.kotlin.synchronized
 import sx.Disposable
 import sx.LazyInstance
 import sx.concurrent.Service
-import sx.io.serialization.*
+import sx.io.serialization.KryoSerializer
+import sx.io.serialization.Serializer
 import java.io.Serializable
 import java.net.*
 import java.time.Duration
@@ -22,7 +23,7 @@ import kotlin.concurrent.withLock
  * @param serializer (Optional) Serializer override
  * Created by masc on 29/08/16.
  */
-class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
+class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         val port: Int,
         private val serializer: Serializer = KryoSerializer())
 :
@@ -40,7 +41,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
      * @param address Host address
      * @property info Optional info block
      */
-     class Host<TInfo> internal constructor (
+    class Host<TInfo> internal constructor(
             address: InetAddress? = null,
             val info: TInfo? = null) : Serializable {
 
@@ -75,16 +76,26 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
             return (this.info != null && other.info != null && this.info.equals(other.info))
         }
 
-        override fun hashCode(): Int{
+        override fun hashCode(): Int {
             var result = info?.hashCode() ?: 0
             result = 31 * result + Arrays.hashCode(addressData)
             return result
         }
 
-        override fun toString(): String{
+        override fun toString(): String {
             return "Host(address=${this.address}, info=$info)"
         }
     }
+
+    /**
+     * Network interfaces
+     */
+    private val interfaces = LazyInstance({
+        NetworkInterface.getNetworkInterfaces().toList()
+                .filter { !it.isLoopback && it.isUp }
+                .flatMap { it.interfaceAddresses }
+                .filter { !it.address.isLoopbackAddress && it.address.isSiteLocalAddress && it.broadcast != null }
+    })
 
     /**
      * Server
@@ -104,7 +115,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
     /**
      * Info block for this host
      */
-    private var info: TInfo? = null
+    private var info = LazyInstance<TInfo?>({ null })
 
     /**
      * Info blocks by address
@@ -117,7 +128,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
     }
 
     inner class UpdateEvent(val type: UpdateEventType, val host: Host<TInfo>) {
-        override fun toString(): String{
+        override fun toString(): String {
             return "UpdateEvent(type=$type, host=$host)"
         }
     }
@@ -128,28 +139,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
     val rxOnUpdate by lazy { rxOnUpdateSubject.asObservable() }
     private val rxOnUpdateSubject = PublishSubject<UpdateEvent>().synchronized()
 
-    /**
-     * Can be overridden to create a customized response message
-     * @param address Address this response is going to be sent to
-     * @param request Request data
-     */
-    private fun createPacket(address: InetAddress): ByteArray {
-        val host = Host(address, this.info)
-        return this.serializer.serializeToByteArray(host)
-    }
-
-    /**
-     * Called when a response is received
-     * @param address Address of sender
-     * @param response Response data
-     */
-    @Suppress("UNCHECKED_CAST")
-    private fun parsePacket(response: ByteArray): Host<TInfo> {
-        val host = this.serializer.deserializeFrom(response) as Host<TInfo>
-        return host
-    }
-
-    private fun onInfo(host: Host<TInfo>) {
+    private fun updateHost(host: Host<TInfo>) {
         this.log.info("Discovered ${host}")
 
         var updated = true
@@ -172,14 +162,14 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
      * Updates info for this host
      */
     fun updateInfo(info: TInfo?) {
-        lock.withLock {
-            this.info = info
-        }
+        this.info.set({ info }, true)
+        this.info.reset()
     }
 
     /**
      * Discovery server
      */
+    @Suppress("UNCHECKED_CAST")
     private inner class Server : Runnable, Disposable {
         private val log = LoggerFactory.getLogger(this.javaClass)
         private val buffer = ByteArray(BUFFER_SIZE)
@@ -196,10 +186,16 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
             val packet = DatagramPacket(buffer, buffer.size)
             this.socket.receive(packet)
 
-            val host = this@UdpDiscoveryService.parsePacket(packet.data.copyOf(packet.data.size))
+            // Deserialize packet
+            val host = this@UdpDiscoveryService.serializer.deserializeFrom(
+                    packet.data.copyOf(packet.data.size)) as Host<TInfo>
 
-            this@UdpDiscoveryService.onInfo(host)
-            val response = this@UdpDiscoveryService.createPacket(InetSocketAddress(0).address)
+            // Update directory from requesting host
+            this@UdpDiscoveryService.updateHost(host)
+
+            // Send response for this host
+            val response = this@UdpDiscoveryService.serializer.serializeToByteArray(
+                    Host(InetSocketAddress(0).address, this@UdpDiscoveryService.info.get()))
 
             log.debug("Answering to ${packet.address} size [${response.size}]")
 
@@ -226,57 +222,70 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
             this.socket.soTimeout = RECEIVE_TIMEOUT.toMillis().toInt()
         }
 
+        @Suppress("UNCHECKED_CAST")
         override fun run() {
             this.log.trace("Starting discovery client cycle")
 
             // Broadcast the message over all the network interfaces
-            NetworkInterface.getNetworkInterfaces().toList()
-                    .filter { !it.isLoopback && it.isUp }
-                    .flatMap { it.interfaceAddresses }
-                    .filter { !it.address.isLoopbackAddress && it.address.isSiteLocalAddress && it.broadcast != null }
-                    .forEach {
-                        val broadcast = it.broadcast
+            this@UdpDiscoveryService.interfaces.reset()
+            val interfaces = this@UdpDiscoveryService.interfaces.get()
+            interfaces.forEach {
+                val broadcast = it.broadcast
 
-                        try {
-                            val sendData = this@UdpDiscoveryService.createPacket(it.address)
-                            val sendPacket = DatagramPacket(sendData, sendData.size, broadcast, this@UdpDiscoveryService.port)
-                            this.socket.send(sendPacket)
-                            this.log.info("Broadcasting to ${sendPacket.address}")
-                        } catch (e: Exception) {
-                            this.log.error(e.message, e)
-                        }
-                    }
+                // Create host entry for this interface/address and update
+                val host = Host(it.address, this@UdpDiscoveryService.info.get())
+                this@UdpDiscoveryService.updateHost(host)
+
+                val sendData = this@UdpDiscoveryService.serializer.serializeToByteArray(host)
+                val sendPacket = DatagramPacket(sendData, sendData.size, broadcast, this@UdpDiscoveryService.port)
+                this.log.info("Broadcasting to ${sendPacket.address}")
+                this.socket.send(sendPacket)
+            }
 
             this.log.info("Waiting for replies")
 
-            // Receive packet in a loop until we timeout
+            val interfaceAddresses = interfaces.map { it.address }.toHashSet()
 
+            // Receive packet in a loop until timeout
             val hostsByAddress = mutableMapOf<InetAddress, Host<TInfo>>()
             while (true) {
                 val receivePacket = DatagramPacket(buffer, buffer.size)
 
                 try {
                     this.socket.receive(receivePacket)
-                    var host = this@UdpDiscoveryService.parsePacket(receivePacket.data.copyOf(receivePacket.length))
+
+                    // Deserialize packet
+                    var host = this@UdpDiscoveryService.serializer.deserializeFrom(
+                            receivePacket.data.copyOf(receivePacket.length)) as Host<TInfo>
+
+                    // If packet is a server reply, it won't contain an address
                     if (host.address.equals(InetSocketAddress(0).address)) {
-                        this.log.debug("ZERO")
+                        // In this case complement the address from the received packet
                         host = Host(receivePacket.address, host.info)
                     }
-                    if (hostsByAddress.contains(host.address)) {
-                        this.log.info("Discarding previous reply from [${host.address}]")
+
+                    if (!interfaceAddresses.contains(host.address)) {
+                        // Only process replies which do not relate to/are not sent by this host
+                        hostsByAddress[host.address] = host
+
+                        // Update directory with received host info
+                        this@UdpDiscoveryService.updateHost(host)
+                    } else {
+                        this.log.info("Ignoring reply for local host [${host.address}]")
                     }
-                    hostsByAddress[host.address] = host
                 } catch(e: SocketTimeoutException) {
                     break
                 }
             }
 
-            hostsByAddress.forEach {
-                this@UdpDiscoveryService.onInfo(it.value)
-            }
-
+            // Post processing
             this@UdpDiscoveryService.lock.withLock {
-                val removed = this@UdpDiscoveryService.infoByAddress.filter { !hostsByAddress.containsKey(it.key) }
+                // Find all non-local addresses for which no replies have been received
+                val removed = this@UdpDiscoveryService.infoByAddress.filter {
+                    !interfaceAddresses.contains(it.key) && !hostsByAddress.containsKey(it.key)
+                }
+
+                // Remove them and notify
                 removed.forEach {
                     this@UdpDiscoveryService.infoByAddress.remove(it.key)
                     this@UdpDiscoveryService.rxOnUpdateSubject.onNext(UpdateEvent(UpdateEventType.Removed, it.value))
@@ -292,7 +301,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
     /**
      * On service starr
      */
-     override fun onStart() {
+    override fun onStart() {
         this.running = true
 
         /**

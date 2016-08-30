@@ -23,7 +23,7 @@ class UdpDiscoveryServiceTest {
         }
 
         ds.start()
-        ds.updateInfo("test, test2")
+//        ds.updateInfo("test, test2")
 
         Thread.sleep(Long.MAX_VALUE)
         ds.stop()
