@@ -111,11 +111,22 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
      */
     private val infoByAddress = mutableMapOf<InetAddress, Host<TInfo>>()
 
+    enum class UpdateEventType {
+        Changed,
+        Removed
+    }
+
+    inner class UpdateEvent(val type: UpdateEventType, val host: Host<TInfo>) {
+        override fun toString(): String{
+            return "UpdateEvent(type=$type, host=$host)"
+        }
+    }
+
     /**
      * Update event
      */
     val rxOnUpdate by lazy { rxOnUpdateSubject.asObservable() }
-    private val rxOnUpdateSubject = PublishSubject<Host<TInfo>>().synchronized()
+    private val rxOnUpdateSubject = PublishSubject<UpdateEvent>().synchronized()
 
     /**
      * Can be overridden to create a customized response message
@@ -133,9 +144,12 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
      * @param response Response data
      */
     @Suppress("UNCHECKED_CAST")
-    private fun onPacket(address: InetAddress, response: ByteArray) {
+    private fun parsePacket(response: ByteArray): Host<TInfo> {
         val host = this.serializer.deserializeFrom(response) as Host<TInfo>
+        return host
+    }
 
+    private fun onInfo(host: Host<TInfo>) {
         this.log.info("Discovered ${host}")
 
         var updated = true
@@ -150,7 +164,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
         }
 
         if (updated) {
-            this.rxOnUpdateSubject.onNext(host)
+            this.rxOnUpdateSubject.onNext(UpdateEvent(UpdateEventType.Changed, host))
         }
     }
 
@@ -182,7 +196,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
             val packet = DatagramPacket(buffer, buffer.size)
             this.socket.receive(packet)
 
-            this@UdpDiscoveryService.onPacket(packet.address, packet.data.copyOf(packet.data.size))
+            this@UdpDiscoveryService.parsePacket(packet.data.copyOf(packet.data.size))
 
             val response = this@UdpDiscoveryService.createPacket(packet.address)
 
@@ -236,22 +250,31 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
 
             // Receive packet in a loop until we timeout
 
-            val repliesByAddress = mutableMapOf<InetAddress, ByteArray>()
+            val hostsByAddress = mutableMapOf<InetAddress, Host<TInfo>>()
             while (true) {
                 val receivePacket = DatagramPacket(buffer, buffer.size)
 
                 try {
                     this.socket.receive(receivePacket)
-                    if (repliesByAddress.contains(receivePacket.address)) {
-                        this.log.info("Discarding previous reply from [${receivePacket.address}]")
+                    val host = this@UdpDiscoveryService.parsePacket(receivePacket.data.copyOf(receivePacket.length))
+                    if (hostsByAddress.contains(host.address)) {
+                        this.log.info("Discarding previous reply from [${host.address}]")
                     }
-                    repliesByAddress[receivePacket.address] = receivePacket.data.copyOf(receivePacket.length)
+                    hostsByAddress[host.address] = host
                 } catch(e: SocketTimeoutException) {
                     break
                 }
+            }
 
-                repliesByAddress.forEach {
-                    this@UdpDiscoveryService.onPacket(it.key, it.value)
+            hostsByAddress.forEach {
+                this@UdpDiscoveryService.onInfo(it.value)
+            }
+
+            this@UdpDiscoveryService.lock.withLock {
+                val removed = this@UdpDiscoveryService.infoByAddress.filter { !hostsByAddress.containsKey(it.key) }
+                removed.forEach {
+                    this@UdpDiscoveryService.infoByAddress.remove(it.key)
+                    this@UdpDiscoveryService.rxOnUpdateSubject.onNext(UpdateEvent(UpdateEventType.Removed, it.value))
                 }
             }
         }
