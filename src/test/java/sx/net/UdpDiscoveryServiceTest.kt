@@ -19,12 +19,14 @@ class UdpDiscoveryServiceTest {
         val ds = UdpDiscoveryService<String>(20000)
 
         ds.rxOnUpdate.subscribe {
-            log.info("Updated [${it}]")
+            log.info("Event ${it}")
         }
 
         ds.start()
 //        ds.updateInfo("test, test2")
 
+        Thread.sleep(5000)
+        ds.updateInfo("YO")
         Thread.sleep(Long.MAX_VALUE)
         ds.stop()
     }

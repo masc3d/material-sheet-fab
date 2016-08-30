@@ -47,6 +47,7 @@ class LazyInstance<T>
      */
     constructor(threadSafetyMode: ThreadSafetyMode) : this(null, threadSafetyMode) { }
 
+    // TODO: set method should be migrated to reset overload also resetting the instnace
     /**
      * Set instance
      * @param supplier Supplier

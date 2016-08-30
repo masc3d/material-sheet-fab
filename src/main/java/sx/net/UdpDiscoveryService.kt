@@ -1,5 +1,6 @@
 package sx.net
 
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.synchronized
@@ -29,7 +30,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
 :
         Service(
                 executorService = Executors.newScheduledThreadPool(2),
-                period = Duration.ofSeconds(5)) where TInfo : Serializable {
+                period = Duration.ofSeconds(30)) where TInfo : Serializable {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private var running = false
 
@@ -139,16 +140,12 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     val rxOnUpdate by lazy { rxOnUpdateSubject.asObservable() }
     private val rxOnUpdateSubject = PublishSubject<UpdateEvent>().synchronized()
 
-    private fun updateHost(host: Host<TInfo>) {
-        this.log.info("Discovered ${host}")
-
+    private fun updateHost(host: Host<TInfo>, log: Logger) {
         var updated = true
         this.lock.withLock {
-            val info = this.infoByAddress[host.address]
-            if (info != null) {
-                updated = info.equals(host.info)
-            }
+            updated = (!this.infoByAddress.containsKey(host.address) || info != host.info)
             if (updated) {
+                log.info("Updated info for ${host}")
                 this.infoByAddress[host.address] = host
             }
         }
@@ -162,14 +159,16 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
      * Updates info for this host
      */
     fun updateInfo(info: TInfo?) {
-        this.info.set({ info }, true)
-        this.info.reset()
+        if ((info != this.info.get())) {
+            this.info.set({ info }, true)
+            this.info.reset()
+            this.trigger()
+        }
     }
 
     /**
      * Discovery server
      */
-    @Suppress("UNCHECKED_CAST")
     private inner class Server : Runnable, Disposable {
         private val log = LoggerFactory.getLogger(this.javaClass)
         private val buffer = ByteArray(BUFFER_SIZE)
@@ -187,20 +186,26 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
             this.socket.receive(packet)
 
             // Deserialize packet
+            @Suppress("UNCHECKED_CAST")
             val host = this@UdpDiscoveryService.serializer.deserializeFrom(
                     packet.data.copyOf(packet.data.size)) as Host<TInfo>
 
+
+            log.debug("Received info from [${host.address}]")
+
             // Update directory from requesting host
-            this@UdpDiscoveryService.updateHost(host)
+            this@UdpDiscoveryService.updateHost(host, this.log)
 
-            // Send response for this host
-            val response = this@UdpDiscoveryService.serializer.serializeToByteArray(
-                    Host(InetSocketAddress(0).address, this@UdpDiscoveryService.info.get()))
+            if (!this@UdpDiscoveryService.interfaces.get().map { it.address }.contains(packet.address)) {
+                // Send response for this host
+                val response = this@UdpDiscoveryService.serializer.serializeToByteArray(
+                        Host(InetSocketAddress(0).address, this@UdpDiscoveryService.info.get()))
 
-            log.debug("Answering to ${packet.address} size [${response.size}]")
+                log.debug("Answering to ${packet.address} size [${response.size}]")
 
-            val responsePacket = DatagramPacket(response, response.size, packet.address, packet.port)
-            this.socket.send(responsePacket)
+                val responsePacket = DatagramPacket(response, response.size, packet.address, packet.port)
+                this.socket.send(responsePacket)
+            }
         }
 
         override fun close() {
@@ -222,7 +227,6 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
             this.socket.soTimeout = RECEIVE_TIMEOUT.toMillis().toInt()
         }
 
-        @Suppress("UNCHECKED_CAST")
         override fun run() {
             this.log.trace("Starting discovery client cycle")
 
@@ -232,9 +236,8 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
             interfaces.forEach {
                 val broadcast = it.broadcast
 
-                // Create host entry for this interface/address and update
+                // Create host entry for this interface/address
                 val host = Host(it.address, this@UdpDiscoveryService.info.get())
-                this@UdpDiscoveryService.updateHost(host)
 
                 val sendData = this@UdpDiscoveryService.serializer.serializeToByteArray(host)
                 val sendPacket = DatagramPacket(sendData, sendData.size, broadcast, this@UdpDiscoveryService.port)
@@ -242,7 +245,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 this.socket.send(sendPacket)
             }
 
-            this.log.info("Waiting for replies")
+            this.log.trace("Processing replies")
 
             val interfaceAddresses = interfaces.map { it.address }.toHashSet()
 
@@ -255,6 +258,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                     this.socket.receive(receivePacket)
 
                     // Deserialize packet
+                    @Suppress("UNCHECKED_CAST")
                     var host = this@UdpDiscoveryService.serializer.deserializeFrom(
                             receivePacket.data.copyOf(receivePacket.length)) as Host<TInfo>
 
@@ -269,9 +273,9 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                         hostsByAddress[host.address] = host
 
                         // Update directory with received host info
-                        this@UdpDiscoveryService.updateHost(host)
+                        this@UdpDiscoveryService.updateHost(host, this.log)
                     } else {
-                        this.log.info("Ignoring reply for local host [${host.address}]")
+                        this.log.trace("Ignoring reply for local host [${host.address}]")
                     }
                 } catch(e: SocketTimeoutException) {
                     break
