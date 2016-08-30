@@ -196,9 +196,10 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
             val packet = DatagramPacket(buffer, buffer.size)
             this.socket.receive(packet)
 
-            this@UdpDiscoveryService.parsePacket(packet.data.copyOf(packet.data.size))
+            val host = this@UdpDiscoveryService.parsePacket(packet.data.copyOf(packet.data.size))
 
-            val response = this@UdpDiscoveryService.createPacket(packet.address)
+            this@UdpDiscoveryService.onInfo(host)
+            val response = this@UdpDiscoveryService.createPacket(host.address)
 
             log.debug("Answering to ${packet.address} size [${response.size}]")
 
