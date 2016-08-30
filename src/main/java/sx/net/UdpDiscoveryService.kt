@@ -1,6 +1,8 @@
 package sx.net
 
 import org.slf4j.LoggerFactory
+import rx.lang.kotlin.PublishSubject
+import rx.lang.kotlin.synchronized
 import sx.Disposable
 import sx.LazyInstance
 import sx.concurrent.Service
@@ -10,15 +12,17 @@ import java.net.*
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * Lightweight universal udp discovery service
- * @param TInfo Info block type. The class must be serializable and should implement `.equals` for change notifications
  * @property port Port to listen on
- * @param serializer (Optional) override serializer
+ * @param TInfo (Optional) Info block type. The class must be serializable and should implement `.equals` for change notifications
+ * @param serializer (Optional) Serializer override
  * Created by masc on 29/08/16.
  */
-open class UdpDiscoveryService<TInfo>(
+class UdpDiscoveryService<TInfo> @JvmOverloads constructor (
         val port: Int,
         private val serializer: Serializer = KryoSerializer())
 :
@@ -33,24 +37,30 @@ open class UdpDiscoveryService<TInfo>(
 
     /**
      * Host discovery info
-     * @param addressData
+     * @param address Host address
+     * @property info Optional info block
      */
-    class Host<TInfo>(
+     class Host<TInfo> internal constructor (
             address: InetAddress? = null,
             val info: TInfo? = null) : Serializable {
 
+        /**
+         * Address data (as InetAddress is not universally serializable)
+         */
         private val addressData: ByteArray
 
+        /**
+         * c'tor
+         */
         init {
             this.addressData = address?.address ?: ByteArray(0)
         }
 
+        /**
+         * Internet address
+         */
         @delegate:Transient
-        private val address by lazy { InetAddress.getByAddress(this.addressData) }
-
-        override fun toString(): String{
-            return "Host(address=${this.address}, info=$info)"
-        }
+        val address by lazy { InetAddress.getByAddress(this.addressData) }
 
         override fun equals(other: Any?): Boolean {
             if (other == null || !(other is Host<*>))
@@ -70,6 +80,10 @@ open class UdpDiscoveryService<TInfo>(
             result = 31 * result + Arrays.hashCode(addressData)
             return result
         }
+
+        override fun toString(): String{
+            return "Host(address=${this.address}, info=$info)"
+        }
     }
 
     /**
@@ -83,20 +97,34 @@ open class UdpDiscoveryService<TInfo>(
     private val client = LazyInstance({ Client() })
 
     /**
+     * Lock for accessing shared resources
+     */
+    private val lock = ReentrantLock()
+
+    /**
+     * Info block for this host
+     */
+    private var info: TInfo? = null
+
+    /**
+     * Info blocks by address
+     */
+    private val infoByAddress = mutableMapOf<InetAddress, Host<TInfo>>()
+
+    /**
+     * Update event
+     */
+    val rxOnUpdate by lazy { rxOnUpdateSubject.asObservable() }
+    private val rxOnUpdateSubject = PublishSubject<Host<TInfo>>().synchronized()
+
+    /**
      * Can be overridden to create a customized response message
      * @param address Address this response is going to be sent to
      * @param request Request data
      */
-    open protected fun createPacket(address: InetAddress): ByteArray {
-        val host = Host<TInfo>(address, this.createInfo(address))
+    private fun createPacket(address: InetAddress): ByteArray {
+        val host = Host(address, this.info)
         return this.serializer.serializeToByteArray(host)
-    }
-
-    /**
-     * Can be overridden to create a customized discovery info block
-     */
-    open protected fun createInfo(address: InetAddress): TInfo? {
-        return null
     }
 
     /**
@@ -105,13 +133,34 @@ open class UdpDiscoveryService<TInfo>(
      * @param response Response data
      */
     @Suppress("UNCHECKED_CAST")
-    open protected fun onResponse(address: InetAddress, response: ByteArray) {
-        val host = this.serializer.deserializeFrom(response)
-        this.onInfo(host as Host<TInfo>)
+    private fun onPacket(address: InetAddress, response: ByteArray) {
+        val host = this.serializer.deserializeFrom(response) as Host<TInfo>
+
+        this.log.info("Discovered ${host}")
+
+        var updated = true
+        this.lock.withLock {
+            val info = this.infoByAddress[host.address]
+            if (info != null) {
+                updated = info.equals(host.info)
+            }
+            if (updated) {
+                this.infoByAddress[host.address] = host
+            }
+        }
+
+        if (updated) {
+            this.rxOnUpdateSubject.onNext(host)
+        }
     }
 
-    open protected fun onInfo(host: Host<TInfo>) {
-        this.log.info("Discovered ${host}")
+    /**
+     * Updates info for this host
+     */
+    fun updateInfo(info: TInfo?) {
+        lock.withLock {
+            this.info = info
+        }
     }
 
     /**
@@ -130,14 +179,16 @@ open class UdpDiscoveryService<TInfo>(
         override fun run() {
             this.log.trace("Starting discovery host cycle")
 
-            val requestPacket = DatagramPacket(buffer, buffer.size)
-            this.socket.receive(requestPacket)
+            val packet = DatagramPacket(buffer, buffer.size)
+            this.socket.receive(packet)
 
-            val response = this@UdpDiscoveryService.createPacket(requestPacket.address)
+            this@UdpDiscoveryService.onPacket(packet.address, packet.data.copyOf(packet.data.size))
 
-            log.debug("Answering to ${requestPacket.address} size [${response.size}]")
+            val response = this@UdpDiscoveryService.createPacket(packet.address)
 
-            val responsePacket = DatagramPacket(response, response.size, requestPacket.address, requestPacket.port)
+            log.debug("Answering to ${packet.address} size [${response.size}]")
+
+            val responsePacket = DatagramPacket(response, response.size, packet.address, packet.port)
             this.socket.send(responsePacket)
         }
 
@@ -192,7 +243,7 @@ open class UdpDiscoveryService<TInfo>(
                 try {
                     this.socket.receive(receivePacket)
                     if (repliesByAddress.contains(receivePacket.address)) {
-                        this.log.info("Discarding previous duplicate reply from [${receivePacket.address}]")
+                        this.log.info("Discarding previous reply from [${receivePacket.address}]")
                     }
                     repliesByAddress[receivePacket.address] = receivePacket.data.copyOf(receivePacket.length)
                 } catch(e: SocketTimeoutException) {
@@ -200,7 +251,7 @@ open class UdpDiscoveryService<TInfo>(
                 }
 
                 repliesByAddress.forEach {
-                    this@UdpDiscoveryService.onResponse(it.key, it.value)
+                    this@UdpDiscoveryService.onPacket(it.key, it.value)
                 }
             }
         }
