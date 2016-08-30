@@ -121,7 +121,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     /**
      * Info blocks by address
      */
-    private val infoByAddress = mutableMapOf<InetAddress, Host<TInfo>>()
+    private val hostByAddress = mutableMapOf<InetAddress, Host<TInfo>>()
 
     enum class UpdateEventType {
         Changed,
@@ -143,10 +143,10 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     private fun updateHost(host: Host<TInfo>, log: Logger) {
         var updated = true
         this.lock.withLock {
-            updated = (!this.infoByAddress.containsKey(host.address) || info != host.info)
+            updated = (this.hostByAddress[host.address] != host)
             if (updated) {
                 log.info("Updated info for ${host}")
-                this.infoByAddress[host.address] = host
+                this.hostByAddress[host.address] = host
             }
         }
 
@@ -285,13 +285,13 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
             // Post processing
             this@UdpDiscoveryService.lock.withLock {
                 // Find all non-local addresses for which no replies have been received
-                val removed = this@UdpDiscoveryService.infoByAddress.filter {
+                val removed = this@UdpDiscoveryService.hostByAddress.filter {
                     !interfaceAddresses.contains(it.key) && !hostsByAddress.containsKey(it.key)
                 }
 
                 // Remove them and notify
                 removed.forEach {
-                    this@UdpDiscoveryService.infoByAddress.remove(it.key)
+                    this@UdpDiscoveryService.hostByAddress.remove(it.key)
                     this@UdpDiscoveryService.rxOnUpdateSubject.onNext(UpdateEvent(UpdateEventType.Removed, it.value))
                 }
             }
