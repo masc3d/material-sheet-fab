@@ -3,7 +3,9 @@ package org.deku.leoz.discovery
 import org.deku.leoz.bundle.BundleType
 import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.synchronized
+import sx.Lifecycle
 import sx.concurrent.Service
+import sx.net.UdpDiscoveryService
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
@@ -14,14 +16,12 @@ import java.util.concurrent.ScheduledExecutorService
  * @property bundleType The bundle type this discovery service will expose
  * @property serviceInfos Zeroconf service infos to register
  */
-abstract class DiscoveryService(
-        executorService: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor(),
+class DiscoveryService(
         val port: Int,
         val bundleType: BundleType? = null,
         val serviceInfos: List<org.deku.leoz.discovery.ServiceInfo> = arrayListOf())
-: Service(
-        executorService = executorService) {
-
+: Lifecycle {
+    private val _discoveryService: UdpDiscoveryService<ServiceInfo>
     /**
      * Discovery service event type
      */
@@ -30,12 +30,16 @@ abstract class DiscoveryService(
         Removed
     }
 
+    init {
+        _discoveryService = UdpDiscoveryService(this.port)
+    }
+
     /**
      * Discovery service event
      */
-    data class Event(val eventType: EventType, val serviceInfo: DiscoveredServiceInfo) {}
+    data class Event(val eventType: EventType, val serviceInfo: ServiceInfo) {}
 
-    val serviceInfosByHost: MutableMap<String, MutableList<DiscoveredServiceInfo>> = mutableMapOf()
+    val serviceInfosByHost: MutableMap<String, MutableList<ServiceInfo>> = mutableMapOf()
 
     private val rxOnServiceUpdateSubject = PublishSubject<Event>().synchronized()
     public val rxOnServiceUpdate by lazy { rxOnServiceUpdateSubject.asObservable() }
@@ -59,7 +63,19 @@ abstract class DiscoveryService(
         })
     }
 
-    override fun run() {
-        // Discovery service has no interval/run logic. Initialization is done on start.
+    override fun start() {
+        _discoveryService.start()
+    }
+
+    override fun stop() {
+        _discoveryService.stop()
+    }
+
+    override fun restart() {
+        _discoveryService.restart()
+    }
+
+    override fun isRunning(): Boolean {
+        return _discoveryService.isRunning()
     }
 }
