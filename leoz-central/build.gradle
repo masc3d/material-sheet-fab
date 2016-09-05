@@ -57,7 +57,7 @@ dependencies {
 }
 
 // SQL migrations (used for flyway eg.)
-def FLYWAY_MIGRATION_DIR = new File(project.projectDir, 'src/main/resources/db/migration/mysql')
+def FLYWAY_MIGRATION_DIR = new File(project.projectDir, 'src/main/resources/db/mysql/migration')
 
 flyway {
     driver = DB_MYSQL_JDBC_DRIVER
