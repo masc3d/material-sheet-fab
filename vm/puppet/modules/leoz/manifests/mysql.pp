@@ -29,7 +29,6 @@ class leoz::mysql (
   ::mysql::db { 'dekuclient':
     user => 'leoz',
     password => 'leoz',
-    host => '%',
-    sql => '/vagrant/mysql/dekuclient.sql'
+    host => '%'
   }
 }

@@ -6,6 +6,7 @@ buildscript {
         v_commons_lang = '3.4'
         v_commons_io = '2.5'
         v_commons_logging = '1.2'
+        v_flyway = '4.0.3'
         v_fxform2 = '8.0.18'
         v_guava = '19.0'
         v_ini4j = '0.5.4'
