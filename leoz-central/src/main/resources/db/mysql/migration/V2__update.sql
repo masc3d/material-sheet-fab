@@ -11,10 +11,10 @@ ALTER TABLE `mst_node`
   CHANGE COLUMN timestamp timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
 
 CREATE TABLE `mst_bundle_version` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `bundle` varchar(45) DEFAULT NULL,
   `alias` varchar(45) DEFAULT NULL,
   `version` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`Id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `idx_name_bundle` (`alias`,`bundle`)
 ) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;

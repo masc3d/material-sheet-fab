@@ -98,7 +98,7 @@ CREATE TABLE `mst_node` (
   `hostname` varchar(50) DEFAULT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `key` varchar(45) DEFAULT NULL,
-  `Authorized` int(11) DEFAULT NULL,
+  `authorized` int(11) DEFAULT NULL,
   PRIMARY KEY (`node_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
