@@ -1,4 +1,4 @@
-<dataSource name="H2 - leoz-central">
+<dataSource name="H2 - leoz">
   <database-model serializer="dbm" rdbms="H2" format-version="2.6">
     <database id="1" name="LEOZ">
       <visible>1</visible>
