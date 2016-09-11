@@ -1,13 +1,11 @@
-# leoz base system
-node leoz-base {
+# leoz developer configuration
+node leoz-dev {
 	include leoz::mysql
 	include leoz::java
 }
 
-# leoz developer configuration
-node leoz-dev inherits leoz-base {
-}
-
 # leoz productive configuration
-node leoz-prod inherits leoz-base {
+node leoz-prod {
+	include leoz::mysql
+	include leoz::java
 }
