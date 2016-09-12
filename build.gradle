@@ -1,0 +1,68 @@
+import org.flywaydb.gradle.FlywayExtension
+import org.flywaydb.gradle.task.FlywayMigrateTask
+import org.flywaydb.gradle.task.FlywayInfoTask
+
+group 'org.deku.leoz'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext {
+        v_flyway = '4.0.3'
+        v_mysql = '5.1.39'
+
+        DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
+        FLYWAY_MIGRATION_DIR = new File(project.projectDir, 'sql')
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        // mysql jdbc connector
+        classpath "mysql:mysql-connector-java:$v_mysql"
+        // Flyway
+        classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
+    }
+}
+
+apply plugin: 'org.flywaydb.flyway'
+
+
+// Remove standard flyway tasks
+tasks.remove(tasks.flywayBaseline)
+tasks.remove(tasks.flywayClean)
+tasks.remove(tasks.flywayInfo)
+tasks.remove(tasks.flywayMigrate)
+tasks.remove(tasks.flywayRepair)
+tasks.remove(tasks.flywayValidate)
+
+/**
+ * Common flyway extension/parameters
+ * @return
+ */
+def createFlywayExtension() {
+    def extension = new FlywayExtension()
+    extension.driver = ext.DB_MYSQL_JDBC_DRIVER
+    extension.user = 'root'
+    extension.password = 'root'
+    extension.schemas = ['dekuclient']
+    extension.locations = ["filesystem:${ext.FLYWAY_MIGRATION_DIR}"]
+    return extension
+}
+
+// LEO integration database tasks
+
+def DB_INTEGRATION_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306'
+
+task flywayIntegrationMigrate(type: FlywayMigrateTask) {
+    extension = createFlywayExtension()
+    extension.url = DB_INTEGRATION_JDBC_URL
+    extension.target = 1
+}
+
+task flywayIntegrationInfo(type: FlywayInfoTask) {
+    extension = createFlywayExtension()
+    extension.url = DB_INTEGRATION_JDBC_URL
+}
