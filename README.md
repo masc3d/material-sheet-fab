@@ -22,9 +22,11 @@ Contains development host resources, eg. MYSQL and application server
 * [Vagrant](http://www.vagrantup.com)
 
 #### Get up and running ####
-* Go to `<project directory>/vm`
-* Start VM
-  <pre>vagrant up</pre>
+* Open terminal/console and change directory to `<project directory>/vm`
+* Start VM with default provider (`virtualbox`)
+   <pre>vagrant up</pre>
+* Alternatively the provider can be overriden, eg. for Parallels on OSX
+   <pre>vagrant up --provider parallels</pre>
 
 ## Contribution guidelines ##
 
