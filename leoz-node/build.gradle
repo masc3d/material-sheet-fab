@@ -52,7 +52,7 @@ compileJava {
 }
 
 clean {
-    srcdir_apt.deleteDir()
+    delete(srcdir_apt)
 }
 
 dependencies {

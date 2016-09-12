@@ -32,9 +32,6 @@ open class SshServerConfiguration {
         this.sshServer = SshServer.setUpDefaultServer()
     }
 
-    @Inject
-    lateinit var tc: SshTunnelConfiguration
-
     @PostConstruct
     fun onInitialize() {
         val sshd = this.sshServer
