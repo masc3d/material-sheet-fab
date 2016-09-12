@@ -29,7 +29,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.box = "ubuntu-1404-x64-vbox-puppet"
 
   # masc20140722. default vbox base box
-  config.vm.box = "boxcutter/ubuntu1604"
+  config.vm.box = "masc/ubuntu-16.04"
 
   # masc20140721. basic settings, like box url, hostname etc.
   # config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/debian-73-x64-virtualbox-puppet.box"
@@ -92,7 +92,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # masc20140722. parallels base box
   config.vm.provider "parallels" do |v, override|
-    override.vm.box = "boxcutter/ubuntu1604"
+    override.vm.box = "masc/ubuntu-16.04"
     v.name = "leoz-dev"
     v.memory = 2048
     v.cpus = 1
