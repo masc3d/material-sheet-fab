@@ -1,4 +1,4 @@
-package org.deku.leoz.node.data;
+package org.deku.leoz.node.rest.v1;
 
 import org.deku.leoz.node.DataTest;
 import org.deku.leoz.node.rest.ServiceException;
