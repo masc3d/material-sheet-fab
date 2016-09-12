@@ -31,3 +31,6 @@ url=git@github.com:masc3d/BarbaryWatchService.git
 [submodule "libs/sx-jms"]
 	path = libs/sx-jms
 	url = ssh://git@git.derkurier.de:13020/leoz/sx-jms.git
+[submodule "leoz-central-schema"]
+	path = leoz-central-schema
+	url = ssh://git@git.derkurier.de:13020/leoz/leoz-central-schema.git
