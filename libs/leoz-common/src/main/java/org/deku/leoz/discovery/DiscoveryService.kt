@@ -31,7 +31,7 @@ class DiscoveryService(
     }
 
     init {
-        _discoveryService = UdpDiscoveryService(this.port)
+        _discoveryService = UdpDiscoveryService(ServiceInfo::class.java, this.port)
     }
 
     /**
