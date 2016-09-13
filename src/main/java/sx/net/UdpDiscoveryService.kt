@@ -9,8 +9,8 @@ import sx.Disposable
 import sx.LazyInstance
 import sx.concurrent.Service
 import sx.io.serialization.KryoSerializer
+import sx.io.serialization.Serializable
 import sx.io.serialization.Serializer
-import java.io.Serializable
 import java.net.*
 import java.time.Duration
 import java.util.*
@@ -26,12 +26,13 @@ import kotlin.concurrent.withLock
  * Created by masc on 29/08/16.
  */
 class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
+        infoClass: Class<TInfo>,
         val port: Int,
         private val serializer: Serializer = KryoSerializer())
 :
         Service(
                 executorService = Executors.newScheduledThreadPool(2),
-                period = Duration.ofSeconds(30)) where TInfo : Copyable<TInfo>, TInfo : Serializable {
+                period = Duration.ofSeconds(30)) where TInfo : Copyable<TInfo> {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private var running = false
 
@@ -43,9 +44,10 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
      * @param address Host address
      * @property info Optional info block
      */
+    @Serializable(0xe4d5af61ac4d1f)
     class Host<TInfo> internal constructor(
             address: InetAddress? = null,
-            val info: TInfo? = null) : Serializable {
+            val info: TInfo? = null) {
 
         /**
          * Address data (as InetAddress is not universally serializable)
@@ -95,6 +97,10 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     private class InterfaceAddressInfo(
             val networkInterface: NetworkInterface,
             val interfaceAddress: InterfaceAddress) {
+    }
+
+    init {
+        this.serializer.register(infoClass)
     }
 
     /**

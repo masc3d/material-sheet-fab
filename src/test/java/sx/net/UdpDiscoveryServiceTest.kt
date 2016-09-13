@@ -5,9 +5,9 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.logging.slf4j.info
 import sx.net.UdpDiscoveryService
-import java.io.Serializable
 import java.net.InetAddress
 import sx.Copyable
+import sx.io.serialization.Serializable
 
 /**
  * Created by masc on 22/08/16.
@@ -21,12 +21,13 @@ class UdpDiscoveryServiceTest {
         /**
          * Exxample info class
          */
-        data class Test(val info: String) : Copyable<Test>, Serializable {
-            constructor() : this(info = "") { }
-            override fun copyInstance(): Test { return this.copy() }
+        @Serializable(0x34e2c0f35e25b0)
+        data class Info(val type: String) : Copyable<Info> {
+            constructor() : this(type = "type-a") { }
+            override fun copyInstance(): Info { return this.copy() }
         }
 
-        val ds = UdpDiscoveryService<Test>(20000)
+        val ds = UdpDiscoveryService(Info::class.java, 20000)
 
         ds.rxOnUpdate.subscribe {
             log.info("Event ${it}")
@@ -37,7 +38,7 @@ class UdpDiscoveryServiceTest {
 
         ds.start()
         Thread.sleep(5000)
-        ds.updateInfo(Test("123"))
+        ds.updateInfo(Info("type-b"))
         Thread.sleep(Long.MAX_VALUE)
         ds.stop()
     }
