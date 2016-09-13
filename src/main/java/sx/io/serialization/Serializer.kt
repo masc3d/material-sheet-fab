@@ -1,6 +1,5 @@
 package sx.io.serialization
 
-import com.sun.javafx.tools.ant.Application
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.math.BigInteger
@@ -119,7 +118,9 @@ abstract class Serializer {
             log.debug("Purging all types")
             synchronized(_clsByUid, {
                 _clsByUid.clear()
+                _uidByCls.clear()
                 _readonlyClsByUid = mapOf(*_clsByUid.toList().toTypedArray())
+                _readonlyUidByCls = mapOf(*_uidByCls.toList().toTypedArray())
             })
         }
     }
