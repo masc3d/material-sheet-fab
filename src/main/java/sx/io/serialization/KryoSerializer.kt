@@ -14,8 +14,8 @@ import java.io.InputStream
 import java.io.OutputStream
 
 /**
- * Kryo serializer with support for @Serializable annotation (resilient against refactored class names/packages
- * on one or the other end)
+ * Kryo serializer with support for @Serializable annotations.
+ * It's resilient against refactored class names/packages on one or the other end.
  * Created by masc on 30/08/16
  */
 class KryoSerializer(
@@ -27,6 +27,8 @@ class KryoSerializer(
 
     /**
      * Serialize
+     * @param output Output stream
+     * @param obj Object to serialize
      */
     override fun serialize(output: OutputStream, obj: Any) {
         var k: Kryo? = null
@@ -44,6 +46,8 @@ class KryoSerializer(
 
     /**
      * Deserialize
+     * @param input Input stream
+     * @return Deserialized object
      */
     override fun deserialize(input: InputStream): Any {
         var k: Kryo? = null
@@ -59,6 +63,9 @@ class KryoSerializer(
         }
     }
 
+    /**
+     * Customized kryo class resolver with support for @Serializable annotations
+     */
     class ClassResolver : DefaultClassResolver() {
         private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -97,7 +104,10 @@ class KryoSerializer(
     }
 
     companion object {
-        internal fun newKryo(): Kryo {
+        /**
+         * Kryo factory
+         */
+        private fun newKryo(): Kryo {
             val k = Kryo(ClassResolver(), MapReferenceResolver())
             // Setting the default serializer to CompatibleFieldSerializer is crucial here
             // as the default FiedldSerializer relies solely in order and may cause breakage as classes evolve
