@@ -1,7 +1,8 @@
 package org.deku.leoz.node.data.entities.master;
 
+import sx.io.serialization.Serializable;
+
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -10,9 +11,8 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "mst_holidayctrl")
 @IdClass(HolidayCtrlPK.class)
-public class HolidayCtrl implements Serializable {
-    private static final long serialVersionUID = -4009423696998516814L;
-
+@Serializable(uid = 0x56c4d6ff7b69dcL)
+public class HolidayCtrl {
     private Timestamp mHoliday;
     private Integer mCtrlPos;
     private String mCountry;

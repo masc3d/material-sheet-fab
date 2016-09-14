@@ -1,7 +1,8 @@
 package org.deku.leoz.node.data.entities.master;
 
+import sx.io.serialization.Serializable;
+
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -9,25 +10,8 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "mst_station")
-public class Station implements Serializable {
-    private static final long serialVersionUID = 7124430646756787268L;
-
-//    private Integer stationId;
-//
-//    @Id
-//    public Integer getStationId() {
-//        return stationId;
-//    }
-//
-//    public void setStationId(Integer stationId) {
-//        this.stationId = stationId;
-//    }
-
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
+@Serializable(uid = 0x1f6229f711c472L)
+public class Station {
     private Integer stationNr;
 
     @Id

@@ -1,14 +1,16 @@
 package org.deku.leoz.node.data.entities.master;
 
+import sx.io.serialization.Serializable;
+
 import javax.persistence.Id;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
  * Created by JT on 11.05.15.
  */
-public class SectorPK implements Serializable {
-    private static final long serialVersionUID = -5369887873791810474L;
+@Serializable(uid = 0xd432b301532a4aL)
+public class SectorPK implements java.io.Serializable {
+    private static final long serialVersionUID = 0xd432b301532a4aL;
 
     private String sectorFrom;
     private String sectorTo;

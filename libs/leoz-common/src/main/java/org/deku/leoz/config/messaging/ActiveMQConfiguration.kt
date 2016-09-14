@@ -1,6 +1,8 @@
 package org.deku.leoz.config.messaging
 
 import org.deku.leoz.Identity
+import sx.io.serialization.KryoSerializer
+import sx.io.serialization.gzip
 import sx.jms.Channel
 import sx.jms.converters.DefaultConverter
 import sx.jms.Broker
@@ -51,9 +53,7 @@ class ActiveMQConfiguration(connectionFactory: ConnectionFactory? = null) : Mess
         Channel.Configuration(
                 connectionFactory = this.connectionFactory,
                 destination = ActiveMQFactory.instance.createQueue("leoz.central.queue"),
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP))
+                converter = DefaultConverter(KryoSerializer().gzip))
     })
 
     override val centralLogQueue: Channel.Configuration by lazy {
@@ -61,9 +61,7 @@ class ActiveMQConfiguration(connectionFactory: ConnectionFactory? = null) : Mess
                 connectionFactory = this.connectionFactory,
                 destination = ActiveMQFactory.instance.createQueue("leoz.log.queue"),
                 deliveryMode = Channel.DeliveryMode.Persistent,
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP))
+                converter = DefaultConverter(KryoSerializer().gzip))
 
         c.priority = 1
         c
@@ -73,33 +71,25 @@ class ActiveMQConfiguration(connectionFactory: ConnectionFactory? = null) : Mess
         Channel.Configuration(
                 connectionFactory = this.connectionFactory,
                 destination = ActiveMQFactory.instance.createQueue("leoz.entity-sync.queue"),
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP))
+                converter = DefaultConverter(KryoSerializer().gzip))
     }
 
     override val entitySyncTopic: Channel.Configuration by lazy {
         Channel.Configuration(
                 connectionFactory = this.connectionFactory,
                 destination = ActiveMQFactory.instance.createTopic("leoz.entity-sync.topic"),
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP))
+                converter = DefaultConverter(KryoSerializer().gzip))
     }
 
     override fun nodeQueue(identityKey: Identity.Key): Channel.Configuration {
         return Channel.Configuration(connectionFactory = this.connectionFactory,
                 destination = ActiveMQFactory.instance.createQueue("leoz.node.queue." + identityKey.short),
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP))
+                converter = DefaultConverter(KryoSerializer().gzip))
     }
 
     override val nodeNotificationTopic: Channel.Configuration by lazy {
         Channel.Configuration(connectionFactory = this.connectionFactory,
                 destination = ActiveMQFactory.instance.createTopic("leoz.node.notification.topic"),
-                converter = DefaultConverter(
-                        DefaultConverter.SerializationType.KRYO,
-                        DefaultConverter.CompressionType.GZIP))
+                converter = DefaultConverter(KryoSerializer().gzip))
     }
 }

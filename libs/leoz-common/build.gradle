@@ -46,6 +46,9 @@ dependencies {
     // persistence
     provided "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
 
+    // kryo
+    compile "com.esotericsoftware:kryo:4.0.0"
+
     // swagger for json doc
     provided "io.swagger:swagger-annotations:$v_swagger"
     provided "com.fasterxml.jackson.core:jackson-databind:$v_jackson"

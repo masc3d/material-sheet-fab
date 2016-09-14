@@ -1,8 +1,9 @@
 package org.deku.leoz.node.data.entities.system;
 
 
+import sx.io.serialization.Serializable;
+
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -11,21 +12,14 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "sys_property")
 @IdClass(PropertyPK.class)
-public class Property implements Serializable {
-
-    private static final long serialVersionUID = 374443241952176981L;
-
+@Serializable(uid = 0xaa946790064006L)
+public class Property {
     private Integer mId;
     private Integer mStation;
     private String mDescription;
     private String mValue;
     private boolean mEnabled;
     private Timestamp mTimestamp;
-
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
 
     @Id
     public Integer getId() {

@@ -1,9 +1,9 @@
 package org.deku.leoz.node.data.entities.master;
 
 import org.eclipse.persistence.annotations.CacheIndex;
+import sx.io.serialization.Serializable;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -11,19 +11,13 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "mst_routinglayer")
-public class RoutingLayer implements Serializable {
-
-    private static final long serialVersionUID = 3331634651828126770L;
-
+@Serializable(uid = 0x92ed6a2fc3f79fL)
+public class RoutingLayer {
     private Integer layer;
     private Integer services;
     private String description;
     private Timestamp timestamp;
     private Long syncId;
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
 
     @Id
     public Integer getLayer() {

@@ -1,13 +1,15 @@
 package org.deku.leoz.node.data.entities.master;
 
+import sx.io.serialization.Serializable;
+
 import javax.persistence.Id;
-import java.io.Serializable;
 
 /**
  * Created by JT on 29.06.15.
  */
-public class StationSectorPK implements Serializable {
-    private static final long serialVersionUID = -5369887873791810474L;
+@Serializable(uid = 0x4a81cc447bdc43L)
+public class StationSectorPK implements java.io.Serializable {
+    private static final long serialVersionUID = 0x4a81cc447bdc43L;
 
     private int mStationNr;
     private String mSector;

@@ -4,26 +4,21 @@ import ch.qos.logback.classic.pattern.ThrowableProxyConverter
 import ch.qos.logback.classic.spi.LoggingEvent
 import ch.qos.logback.core.CoreConstants
 import org.slf4j.helpers.MessageFormatter
-
-import java.io.Serializable
+import sx.io.serialization.Serializable
 
 /**
  * Log message
  * Created by masc on 16.04.15.
  */
-public class LogMessage : Serializable {
-    companion object {
-        private const val serialVersionUID = -8027400236775552276L
-    }
-
-    public var nodeKey: String = ""
-    public var logEntries: Array<LogEntry> = arrayOf()
+@Serializable(0x20881e385e22b8)
+class LogMessage {
+    var nodeKey: String = ""
+    var logEntries: Array<LogEntry> = arrayOf()
 
     class LogEntry {
-        public constructor() {
-        }
+        constructor() { }
 
-        public constructor(loggingEvent: LoggingEvent) {
+        constructor(loggingEvent: LoggingEvent) {
             val it = loggingEvent
             this.level = it.level.toString()
             this.loggerName = it.loggerName
@@ -41,16 +36,16 @@ public class LogMessage : Serializable {
             }
         }
 
-        public var level: String = ""
-        public var loggerName: String = ""
-        public var threadName: String = ""
-        public var message: String = ""
-        public var timestamp: Long = 0
+        var level: String = ""
+        var loggerName: String = ""
+        var threadName: String = ""
+        var message: String = ""
+        var timestamp: Long = 0
     }
 
-    public constructor() { }
+    constructor() { }
 
-    public constructor(nodeKey: String, logEntries: Array<LogEntry>) {
+    constructor(nodeKey: String, logEntries: Array<LogEntry>) {
         this.nodeKey = nodeKey
         this.logEntries = logEntries
     }

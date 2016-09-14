@@ -1,22 +1,18 @@
 package org.deku.leoz.node.data.entities.system;
 
+import sx.io.serialization.Serializable;
+
 import javax.persistence.Id;
-import java.io.Serializable;
 
 /**
  * Created by JT on 29.06.15.
  */
-public class PropertyPK implements Serializable {
-
-    private static final long serialVersionUID = -9156533861595632384L;
-
+@Serializable(uid = 0x72b4356618387dL)
+public class PropertyPK implements java.io.Serializable {
+    private static final long serialVersionUID = 0x72b4356618387dL;
 
     private Integer mId;
     private Integer mStation;
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
 
     @Id
     public Integer getId() {

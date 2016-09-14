@@ -1,6 +1,6 @@
 package org.deku.leoz.node.messaging.entities
 
-import java.io.Serializable
+import sx.io.serialization.Serializable
 import java.sql.Timestamp
 
 /**
@@ -12,12 +12,8 @@ import java.sql.Timestamp
  * @param entityType Entity type this state message refers to
  * @param timestamp Latest entity timestamp
  */
+@Serializable(0xd7247f46c96acc)
 data class EntityStateMessage(
         val entityType: Class<*>? = null,
         val syncId: Long? = null
-) : Serializable {
-
-    companion object {
-        private val serialVersionUID = -3506609875846947166L
-    }
-}
+)

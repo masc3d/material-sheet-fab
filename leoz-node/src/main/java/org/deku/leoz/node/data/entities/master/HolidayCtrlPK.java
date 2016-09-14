@@ -1,14 +1,16 @@
 package org.deku.leoz.node.data.entities.master;
 
+import sx.io.serialization.Serializable;
+
 import javax.persistence.Id;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
  * Created by JT on 11.05.15.
  */
-public class HolidayCtrlPK implements Serializable {
-    private static final long serialVersionUID = 5299169800497336816L;
+@Serializable(uid = 0x0bef5f538e4ed9L)
+public class HolidayCtrlPK implements java.io.Serializable {
+    private static final long serialVersionUID = 0x0bef5f538e4ed9L;
 
     private Timestamp mHoliday;
     private String mCountry;

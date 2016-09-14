@@ -1,7 +1,8 @@
 package org.deku.leoz.node.data.entities.master;
 
+import sx.io.serialization.Serializable;
+
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -9,9 +10,8 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "mst_country")
-public class Country implements Serializable {
-    private static final long serialVersionUID = -8829817367882199490L;
-
+@Serializable(uid = 0x61175aa6b510b3L)
+public class Country {
     private String mCode;
     private Integer mNameStringId;
     private Timestamp mTimestamp;
@@ -74,10 +74,6 @@ public class Country implements Serializable {
 
     public void setZipFormat(String zipFormat) {
         mZipFormat = zipFormat;
-    }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
     }
 
     @Basic

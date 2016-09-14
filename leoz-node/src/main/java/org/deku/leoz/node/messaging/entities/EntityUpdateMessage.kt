@@ -1,6 +1,6 @@
 package org.deku.leoz.node.messaging.entities
 
-import java.io.Serializable
+import sx.io.serialization.Serializable
 
 /**
  * Message sent by publishers prior to the actual entity payload, containing meta information
@@ -8,12 +8,10 @@ import java.io.Serializable
  * @param amount Amount of entities/records to follow
  * Created by masc on 18.06.15.
  */
+@Serializable(0x4823fac50e4fdf)
 data class EntityUpdateMessage(
-        val amount: Long = 0)
-: Serializable {
+        val amount: Long = 0) {
     companion object {
-        private val serialVersionUID = -8032738544698874536L
-
         /** Property set on last message to indicate end of stream  */
         val EOS_PROPERTY = "eos"
     }

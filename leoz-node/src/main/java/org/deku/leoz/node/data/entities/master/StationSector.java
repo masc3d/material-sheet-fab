@@ -1,7 +1,8 @@
 package org.deku.leoz.node.data.entities.master;
 
+import sx.io.serialization.Serializable;
+
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -10,18 +11,13 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "mst_station_sector")
 @IdClass(StationSectorPK.class)
-public class StationSector implements Serializable {
-    private static final long serialVersionUID = -7143786177620868528L;
-
+@Serializable(uid = 0x0d1eaebfd81899L )
+public class StationSector {
     private Integer mStationNr;
     private String mSector;
     private int mRoutingLayer;
     private Timestamp mTimestamp;
     private Long mSyncId;
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
 
     @Id
     public Integer getStationNr() {

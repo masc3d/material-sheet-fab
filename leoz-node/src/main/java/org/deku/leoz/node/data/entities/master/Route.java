@@ -2,9 +2,9 @@ package org.deku.leoz.node.data.entities.master;
 
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.config.QueryHints;
+import sx.io.serialization.Serializable;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
 
@@ -31,10 +31,8 @@ import java.sql.Timestamp;
                 })
         }
 )
-
-public class Route implements Serializable {
-    private static final long serialVersionUID = 6472457478560400106L;
-
+@Serializable(uid = 0xef6d8232d3263dL)
+public class Route {
     private Long id;
     private Integer layer;
     private String country;
@@ -55,10 +53,6 @@ public class Route implements Serializable {
     private Integer island;
     private String holidayCtrl;
     private Long syncId;
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
 
     @Id
     public Long getId() {
