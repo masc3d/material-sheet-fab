@@ -141,4 +141,16 @@ open class SerializerTest {
 
         Assert.assertTrue(dobj is Array<TestObjectRefactored1>)
     }
+
+    fun testObjectArraySerialization(serializer: Serializer) {
+        Serializer.purge()
+
+        val slist = ArrayList<Any?>(listOf(TestObject1(), TestObject1(), TestObject1()))
+        val sobj = slist.toTypedArray()
+
+        val sdata = serializer.serializeToByteArray(sobj)
+        val dobj = serializer.deserializeFrom(sdata) as Array<*>
+
+        Assert.assertTrue(Arrays.equals(sobj, dobj))
+    }
 }

@@ -80,7 +80,7 @@ class KryoSerializer(
             else
                 type
 
-            val uid = Serializer.register(typeToRegister)
+            val uid = Serializer.register(typeToRegister) ?: 0L
 
             // Write @Serializable uid to kryo output stream
             output!!.writeLong(uid)
@@ -91,6 +91,9 @@ class KryoSerializer(
 
             // Read @Serializable uid from kryo stream
             val uid = input!!.readLong()
+
+            if (uid == 0L)
+                return r
 
             // Look up class
             val cls = if (r.type.isArray) {

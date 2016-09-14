@@ -1,5 +1,6 @@
 package sx.io.serialization
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.math.BigInteger
@@ -33,7 +34,7 @@ abstract class Serializer {
     /**
      * Register class by its @Serializable annotation/uid
      */
-    fun register(cls: Class<*>): Long {
+    fun register(cls: Class<*>): Long? {
         return Serializer.register(cls)
     }
 
@@ -48,19 +49,23 @@ abstract class Serializer {
         private val log = LoggerFactory.getLogger(Serializer::class.java)
 
         private val _clsByUid = mutableMapOf<Long,Class<*>>()
-        private val _uidByCls = mutableMapOf<Class<*>, Long>()
+        private val _uidByCls = mutableMapOf<Class<*>, Long?>()
         private var _readonlyClsByUid = mapOf<Long,Class<*>>()
-        private var _readonlyUidByCls = mapOf<Class<*>, Long>()
+        private var _readonlyUidByCls = mapOf<Class<*>, Long?>()
 
         /**
          * Register class. If the class is already registered merely returns its UID (fast lookup)
          * @param cls Class to register
-         * @return Class @Serializable UID
+         * @return Class @Serializable UID or null if the type is not applicable for registering (eg. build-in type)
          */
-        fun register(cls: Class<*>): Long {
-            val registered = _readonlyUidByCls[cls]
+        fun register(cls: Class<*>): Long? {
+            var found: Boolean = true
+            val registered = _readonlyUidByCls.getOrElse(cls, {
+                found = false
+                null
+            })
 
-            if (registered != null)
+            if (found)
                 return registered
 
             /**
@@ -68,29 +73,41 @@ abstract class Serializer {
              * @param uid Class UID
              * @param c Class to register
              */
-            fun registerImpl(uid: Long, c: Class<*>) {
+            fun registerImpl(uid: Long?, c: Class<*>) {
+                if (uid == 0L)
+                    throw IllegalArgumentException("@Serializable uid of ${c.name} is 0")
+
                 // Decode short UID
-                if (java.io.Serializable::class.java.isAssignableFrom(c)) {
+                if (uid != null && java.io.Serializable::class.java.isAssignableFrom(c)) {
                     val suid = ObjectStreamClass.lookup(c).serialVersionUID
                     if (suid != uid)
                         throw IllegalStateException("@Serializable uid [${java.lang.Long.toHexString(uid)}] mismatch with serialVersionUID [${java.lang.Long.toHexString(suid)}]")
                 }
                 synchronized(_clsByUid, {
-                    log.debug("Registering type ${c.name}")
-                    if (_clsByUid.containsKey(uid))
-                        throw IllegalArgumentException("Cannot register [${c}] as UID [${uid}] is already registered with [${_clsByUid[uid]}]")
+                    if (uid != null) {
+                        log.debug("Registering type ${c.name}")
+                        if (_clsByUid.containsKey(uid))
+                            throw IllegalArgumentException("Cannot register [${c}] as UID [${uid}] is already registered with [${_clsByUid[uid]}]")
 
-                    _clsByUid[uid] = c
+                        _clsByUid[uid] = c
+                    }
+
                     _uidByCls[c] = uid
                     _readonlyClsByUid = mapOf(*_clsByUid.toList().toTypedArray())
                     _readonlyUidByCls = mapOf(*_uidByCls.toList().toTypedArray())
                 })
             }
 
-            val annotation = cls.getAnnotation(Serializable::class.java) ?: throw IllegalArgumentException("Class ${cls} is missing @Serializable")
+            val uid: Long?
+            if (cls.`package`.name.startsWith("java")) {
+                uid = null
+            } else {
+                val annotation = cls.getAnnotation(Serializable::class.java) ?: throw IllegalArgumentException("Class ${cls} is missing @Serializable")
+                uid = annotation.uid
+            }
 
             // Register the class
-            registerImpl(annotation.uid, cls)
+            registerImpl(uid, cls)
 
             // Register nested/declared classes
             cls.declaredClasses.forEach {
@@ -100,7 +117,7 @@ abstract class Serializer {
                 }
             }
 
-            return annotation.uid
+            return uid
         }
 
         /**
