@@ -3,6 +3,7 @@ package sx
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import java.util.function.Supplier
+import kotlin.concurrent.withLock
 
 /**
  * Lazy instance supporting external injection.
@@ -27,6 +28,18 @@ class LazyInstance<T>
     }
 
     /**
+     * Lock helper
+     */
+    private fun withLock(block: () -> Unit) {
+        this.lock?.lock()
+        try {
+            block()
+        } finally {
+            this.lock?.unlock()
+        }
+    }
+
+    /**
      * Designated c'tor
      * @param supplier Supplier
      * @param threadSafetyMode Thread safety mode
@@ -48,19 +61,56 @@ class LazyInstance<T>
     constructor(threadSafetyMode: ThreadSafetyMode) : this(null, threadSafetyMode) { }
 
     /**
-     * Set instance
-     * @param supplier Supplier
-     * @param ignoreExisting Does not throw if instance is already set
+     * Reset on condition
+     * @param predicate Condition
+     * @param supplier (Optional) supplier to (re)set to
      */
-    @JvmOverloads fun set(supplier: () -> T, ignoreExisting: Boolean = false) {
-        this.lock?.lock()
-        try {
-            if (!ignoreExisting && instance != null)
+    fun resetIf(predicate: ((T) -> Boolean)? = null, supplier: (() -> T)? = null) {
+        this.withLock {
+            if (predicate == null || predicate(this.get())) {
+                if (supplier != null) {
+                    this.supplier = supplier
+                }
+                this.instance = null
+            }
+        }
+    }
+
+    /**
+     * Reset on condition
+     * @param predicate Condition
+     * @param value Value
+     */
+    fun resetIf(predicate: ((T) -> Boolean)? = null, value: T) {
+        this.resetIf(predicate, { value })
+    }
+
+    /**
+     * Reset
+     * @param supplier Supplier
+     */
+    fun reset(supplier: (() -> T)? = null) {
+        this.resetIf(null, supplier)
+    }
+
+    /**
+     * Reset
+     *
+     */
+    fun reset(value: T) {
+        this.resetIf(null, value)
+    }
+    /**
+     * Set instance (deferred)
+     * This method throws when the instance has already been set internally (eg. by a consumer requesting it)
+     * @param supplier Supplier
+     */
+    fun set(supplier: () -> T) {
+        this.withLock {
+            if (instance != null)
                 throw IllegalStateException("Instance already set")
 
             this.supplier = supplier
-        } finally {
-            this.lock?.unlock()
         }
     }
 
@@ -77,12 +127,9 @@ class LazyInstance<T>
      */
     operator fun get(supplier: () -> T): T {
         if (instance == null) {
-            this.lock?.lock()
-            try {
+            this.withLock {
                 this.supplier = supplier
                 this.instance = Optional.ofNullable(supplier())
-            } finally {
-                this.lock?.unlock()
             }
         }
         return this.instance!!.orElse(null)
@@ -103,12 +150,5 @@ class LazyInstance<T>
         val instance = this.instance
         if (instance != null)
             action(instance.get())
-    }
-
-    /**
-     * Reset instance
-     */
-    fun reset() {
-        this.instance = null
     }
 }
