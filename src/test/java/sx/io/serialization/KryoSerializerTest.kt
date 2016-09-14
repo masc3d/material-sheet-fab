@@ -17,4 +17,14 @@ class KryoSerializerTest : SerializerTest() {
     fun testRefactoring() {
         super.testRefactoring(_serializer)
     }
+
+    @Test
+    fun testArraySerialization() {
+        super.testArraySerialization(_serializer)
+    }
+
+    @Test
+    fun testArrayRefactoring() {
+        super.testArrayRefactoring(_serializer)
+    }
 }

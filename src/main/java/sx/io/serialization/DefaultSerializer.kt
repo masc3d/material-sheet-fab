@@ -1,6 +1,7 @@
 package sx.io.serialization
 
 import java.io.*
+import java.lang.reflect.Array
 
 /**
  * Default java serializer
@@ -16,11 +17,27 @@ object DefaultSerializer : Serializer() {
         override protected fun readClassDescriptor(): ObjectStreamClass {
             var resultClassDescriptor = super.readClassDescriptor()
 
+            val resultClass = Class.forName(resultClassDescriptor.name)
+
+            val lookupUid: Long
+            if (resultClass.isArray) {
+                val osc = ObjectStreamClass.lookup(resultClass.componentType)
+                lookupUid = osc.serialVersionUID
+            } else {
+                lookupUid = resultClassDescriptor.serialVersionUID
+            }
+
             // Lookup registered class
-            val c = DefaultSerializer.lookup(resultClassDescriptor.serialVersionUID)
+            val finalClass = if (resultClass.isArray) {
+                val lc = DefaultSerializer.lookup(lookupUid)
+                if (lc != null) Array.newInstance(lc, 0).javaClass else null
+            } else {
+                DefaultSerializer.lookup(lookupUid)
+            }
+
             // If there's a mapping to a different class, modify resulting class descriptor
-            if (c != null && !c.name.equals(resultClassDescriptor.name)) {
-                resultClassDescriptor = ObjectStreamClass.lookup(c)
+            if (finalClass != null && !finalClass.equals(resultClass)) {
+                resultClassDescriptor = ObjectStreamClass.lookup(finalClass)
             }
 
             return resultClassDescriptor

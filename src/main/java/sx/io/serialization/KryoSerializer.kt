@@ -12,6 +12,8 @@ import com.esotericsoftware.kryo.util.MapReferenceResolver
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
+import java.lang.reflect.Array
+import java.util.*
 
 /**
  * Kryo serializer with support for @Serializable annotations.
@@ -72,8 +74,15 @@ class KryoSerializer(
         override fun writeName(output: Output?, type: Class<*>?, registration: Registration?) {
             super.writeName(output, type, registration)
 
+            // Determine type to register. In case of arrays using componentType
+            val typeToRegister = if (type!!.isArray)
+                type.componentType
+            else
+                type
+
+            val uid = Serializer.register(typeToRegister)
+
             // Write @Serializable uid to kryo output stream
-            val uid = Serializer.register(type!!)
             output!!.writeLong(uid)
         }
 
@@ -84,15 +93,19 @@ class KryoSerializer(
             val uid = input!!.readLong()
 
             // Look up class
-            val cls = Serializer.lookup(uid)
+            val cls = if (r.type.isArray) {
+                Array.newInstance(Serializer.lookup(uid), 0).javaClass
+            } else {
+                Serializer.lookup(uid)
+            }
 
             // Check if serializer mapped type is different
             if (cls != null && !cls.equals(r.type)) {
-                log.debug("Replacing kryo mapping for [${r.type.name}] with [${cls.name}]")
+                log.debug("Replacing kryo mapping for ${r.type.name} with ${cls.name}")
                 // Override entries in ClassResolver's lookup dictionaries
                 this.nameToClass.put(r.type.name, cls)
                 val key = this.nameIdToClass.findKey(r.type, true, -1)
-                if (key < 0) throw IllegalStateException("Class [${r.type}] not found in ClassResolver lookup dictionary")
+                if (key < 0) throw IllegalStateException("Class ${r.type} not found in ClassResolver lookup dictionary")
                 this.nameIdToClass.put(key, cls)
 
                 // Return resolved registration

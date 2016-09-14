@@ -63,8 +63,6 @@ abstract class Serializer {
             if (registered != null)
                 return registered
 
-            val annotation = cls.getAnnotation(Serializable::class.java) ?: throw IllegalArgumentException("Class [${cls}] is missing @Serializable")
-
             /**
              * Helper function to register class
              * @param uid Class UID
@@ -78,7 +76,7 @@ abstract class Serializer {
                         throw IllegalStateException("@Serializable uid [${java.lang.Long.toHexString(uid)}] mismatch with serialVersionUID [${java.lang.Long.toHexString(suid)}]")
                 }
                 synchronized(_clsByUid, {
-                    log.debug("Registering type [${c.name}]")
+                    log.debug("Registering type ${c.name}")
                     if (_clsByUid.containsKey(uid))
                         throw IllegalArgumentException("Cannot register [${c}] as UID [${uid}] is already registered with [${_clsByUid[uid]}]")
 
@@ -88,6 +86,8 @@ abstract class Serializer {
                     _readonlyUidByCls = mapOf(*_uidByCls.toList().toTypedArray())
                 })
             }
+
+            val annotation = cls.getAnnotation(Serializable::class.java) ?: throw IllegalArgumentException("Class ${cls} is missing @Serializable")
 
             // Register the class
             registerImpl(annotation.uid, cls)
@@ -114,7 +114,7 @@ abstract class Serializer {
         /**
          * Purges all registered classes. Useful for test cases, testing refactoring eg.
          */
-        internal fun purge() {
+        fun purge() {
             log.debug("Purging all types")
             synchronized(_clsByUid, {
                 _clsByUid.clear()

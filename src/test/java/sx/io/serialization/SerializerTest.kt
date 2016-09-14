@@ -23,10 +23,20 @@ open class SerializerTest {
             val l: Long = 1,
             val s: String = "Hello",
             val i: Int = 2,
-            val d: Array<Int> = listOf(1, 2, 3).toTypedArray()
+            val d: Array<Int> = listOf(1, 2, 3).toTypedArray(),
+            val dobj: Array<TestObject2> = listOf(TestObject1.TestObject2()).toTypedArray()
     ) : java.io.Serializable {
         companion object {
             val serialVersionUID = 0x716a49585525fd
+        }
+
+        @Serializable(0x9c826bbb11c253)
+        data class TestObject2(
+                val t: Int = 1
+        ) : java.io.Serializable {
+            companion object {
+                val serialVersionUID = 0x9c826bbb11c253
+            }
         }
 
         override fun equals(other: Any?): Boolean {
@@ -37,7 +47,8 @@ open class SerializerTest {
             return (this.l == o.l &&
                     this.s == o.s &&
                     this.i == o.i &&
-                    Arrays.equals(this.d, o.d))
+                    Arrays.equals(this.d, o.d) &&
+                    Arrays.equals(this.dobj, o.dobj))
         }
     }
 
@@ -46,10 +57,20 @@ open class SerializerTest {
             val l: Long = 1,
             val s: String = "Hello",
             val i: Int = 2,
-            val d: Array<Int> = listOf(1, 2, 3).toTypedArray()
+            val d: Array<Int> = listOf(1, 2, 3).toTypedArray(),
+            val dobj: Array<TestObjectRefactored1.TestObjectRefactored2> = listOf(TestObjectRefactored1.TestObjectRefactored2()).toTypedArray()
     ) : java.io.Serializable {
         companion object {
             val serialVersionUID = 0x716a49585525fd
+        }
+
+        @Serializable(0x9c826bbb11c253)
+        data class TestObjectRefactored2(
+                val t: Int = 1
+        ) : java.io.Serializable {
+            companion object {
+                val serialVersionUID = 0x9c826bbb11c253
+            }
         }
 
         override fun equals(other: Any?): Boolean {
@@ -60,48 +81,64 @@ open class SerializerTest {
             return (this.l == o.l &&
                     this.s == o.s &&
                     this.i == o.i &&
-                    Arrays.equals(this.d, o.d))
+                    Arrays.equals(this.d, o.d) &&
+                    Arrays.equals(this.dobj, o.dobj))
         }
     }
 
-    @Serializable(0x9c826bbb11c253)
-    data class TestObject2(
-            val t: TestObject1 = TestObject1()
-    ) : java.io.Serializable {
-        companion object {
-            val serialVersionUID = 0x9c826bbb11c253
-        }
-    }
+
 
     fun testSerialization(serializer: Serializer) {
         Serializer.purge()
 
-        val container = TestContainer(TestObject1())
+        val sobj = TestObject1(dobj = arrayOf(TestObject1.TestObject2(200)))
+        val scontainer = TestContainer(sobj)
 
-        serializer.register(TestContainer::class.java)
-        serializer.register(TestObject1::class.java)
+        val sdata = serializer.serializeToByteArray(scontainer)
+        val dcontainer = serializer.deserializeFrom(sdata)
 
-        val data = serializer.serializeToByteArray(container)
-        val dcontainer = serializer.deserializeFrom(data)
-
-        Assert.assertTrue(dcontainer.equals(container))
+        Assert.assertTrue(dcontainer.equals(scontainer))
     }
 
     fun testRefactoring(serializer: Serializer) {
         Serializer.purge()
 
-        val container = TestContainer(TestObject1())
+        val sobj = TestObject1(dobj = arrayOf(TestObject1.TestObject2(200)))
+        val scontainer = TestContainer(sobj)
 
-        serializer.register(TestContainer::class.java)
-        serializer.register(TestObject1::class.java)
-
-        val data = serializer.serializeToByteArray(container)
+        val sdata = serializer.serializeToByteArray(scontainer)
 
         Serializer.purge()
         serializer.register(TestObjectRefactored1::class.java)
 
-        val dcontainer = serializer.deserializeFrom(data) as TestContainer<*>
+        val dcontainer = serializer.deserializeFrom(sdata) as TestContainer<*>
 
         Assert.assertTrue(dcontainer.obj is TestObjectRefactored1)
+    }
+
+    fun testArraySerialization(serializer: Serializer) {
+        Serializer.purge()
+
+        val sobj = arrayOf(TestObject1(), TestObject1(), TestObject1())
+
+        val sdata = serializer.serializeToByteArray(sobj)
+        val dobj = serializer.deserializeFrom(sdata) as Array<TestObject1>
+
+        Assert.assertTrue(Arrays.equals(sobj, dobj))
+    }
+
+    fun testArrayRefactoring(serializer: Serializer) {
+        Serializer.purge()
+
+        val sobj = arrayOf(TestObject1(dobj = arrayOf(TestObject1.TestObject2(200))), TestObject1(), TestObject1())
+
+        val sdata = serializer.serializeToByteArray(sobj)
+
+        Serializer.purge()
+        serializer.register(TestObjectRefactored1::class.java)
+
+        val dobj = serializer.deserializeFrom(sdata) as Array<TestObjectRefactored1>
+
+        Assert.assertTrue(dobj is Array<TestObjectRefactored1>)
     }
 }
