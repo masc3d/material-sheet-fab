@@ -3,6 +3,7 @@ package sx.jms
 import com.google.common.reflect.TypeToken
 import org.slf4j.LoggerFactory
 import sx.Disposable
+import sx.io.serialization.Serializer
 import sx.logging.slf4j.*
 import java.io.Serializable
 import java.lang.reflect.ParameterizedType
@@ -132,14 +133,14 @@ abstract class Listener(
         }
 
         for (c in messageTypes) {
-            // Verify if message/type is serializable
-            if (TypeToken.of(c).types.interfaces().filter { it.rawType.equals(Serializable::class.java) }.size == 0)
-                throw IllegalArgumentException("Message type [${c.name}] is not serializable")
-
             if (this.handlerDelegates.containsKey(c))
                 throw IllegalStateException("Listener already contains handler for message type [${c.name}]")
 
             log.debug("Registering message handler [${delegate.javaClass.name}] for [${c.name}]")
+
+            // Register with (all) Serializer(s)
+            Serializer.register(c)
+
             handlerDelegates.put(c, delegate as Handler<Any?>)
         }
     }
