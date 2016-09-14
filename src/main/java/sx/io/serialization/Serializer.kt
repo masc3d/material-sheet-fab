@@ -57,7 +57,7 @@ abstract class Serializer {
          * @param cls Class to register
          * @return Class @Serializable UID
          */
-        internal fun register(cls: Class<*>): Long {
+        fun register(cls: Class<*>): Long {
             val registered = _readonlyUidByCls[cls]
 
             if (registered != null)
@@ -107,7 +107,7 @@ abstract class Serializer {
          * Lookup class by uid
          * @param uid Class UID
          */
-        internal fun lookup(uid: Long): Class<*>? {
+        fun lookup(uid: Long): Class<*>? {
             return _readonlyClsByUid[uid]
         }
 
