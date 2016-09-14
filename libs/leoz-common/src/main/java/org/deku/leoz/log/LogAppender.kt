@@ -77,7 +77,8 @@ public class LogAppender(
         }
 
         override fun onStop() {
-            service.trigger()
+            if (service.isStarted)
+                service.trigger()
             service.stop()
         }
     }
