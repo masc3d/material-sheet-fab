@@ -230,8 +230,6 @@ abstract class Service(
                 return
             }
 
-            this.onStart()
-
             if (log)
                 this.log.info("Starting service [${this.javaClass}]")
 
@@ -240,6 +238,8 @@ abstract class Service(
 
             this.isStarted = true
             this.hasBeenStarted = true
+
+            this.onStart()
 
             // Only schedule initially if either period or initial delay is set (or both)
             if (this.period != null || this.initialDelay != null) {
@@ -261,13 +261,13 @@ abstract class Service(
     /**
      * Called in the context of the thread starting the service before actually submitting/scheduling the task
      */
-    open fun onStart() {
+    protected open fun onStart() {
     }
 
     /**
      * Called in the context of the thread stopping the service before actually cancelling the task
      */
-    open fun onStop(interrupted: Boolean) {
+    protected open fun onStop(interrupted: Boolean) {
     }
 
     /**
