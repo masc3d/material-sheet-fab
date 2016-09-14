@@ -29,7 +29,7 @@ mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
 def DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
-def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306'
+def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
 
 dependencies {
     // leoz webservice dependencies
