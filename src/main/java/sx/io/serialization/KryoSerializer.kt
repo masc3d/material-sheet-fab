@@ -15,7 +15,7 @@ import java.io.OutputStream
 import java.lang.reflect.Array
 
 /**
- * Kryo serializer with support for @Serializable annotations.
+ * Kryo serializer with support for @Serializable annotations and lookup by UID
  * It's resilient against refactored class names/packages on one or the other end.
  * Created by masc on 30/08/16
  */
@@ -116,7 +116,10 @@ class KryoSerializer(
             else
                 type
 
-            val uid = if (!typeToRegister.equals(Any::class.java)) Serializer.register(typeToRegister) else 0L
+            val uid = if (!typeToRegister.equals(Any::class.java))
+                Serializer.types.register(typeToRegister)
+            else
+                0L
 
             // Write @Serializable uid to kryo output stream
             SerializableType(uid = uid, isArray = type.isArray).write(output)
@@ -135,7 +138,7 @@ class KryoSerializer(
                 //region ** Kryo protocol addition, read @Serializable metainfo **
                 val serializableType = SerializableType.read(input)
                 if (serializableType.uid != 0L) {
-                    type = Serializer.lookup(serializableType.uid)
+                    type = Serializer.types.lookup(serializableType.uid)
                     if (type != null && serializableType.isArray) {
                         type = Array.newInstance(type, 0).javaClass
                     }

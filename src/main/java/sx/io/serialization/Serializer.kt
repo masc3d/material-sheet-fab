@@ -37,17 +37,20 @@ abstract class Serializer {
      * Register class by its @Serializable annotation/uid
      */
     fun register(cls: Class<*>): Long {
-        return Serializer.register(cls)
+        return Serializer.types.register(cls)
     }
 
     /**
      * Lookup class by its @Serializable uid
      */
     fun lookup(uid: Long): Class<*>? {
-        return Serializer.lookup(uid)
+        return Serializer.types.lookup(uid)
     }
 
-    companion object {
+    /**
+     * Thread-safe @Serializable type directory
+     */
+    class TypeDirectory {
         private val log = LoggerFactory.getLogger(Serializer::class.java)
 
         private val lock = ReentrantLock()
@@ -147,12 +150,16 @@ abstract class Serializer {
             log.debug("Purging all types")
             this.lock.withLock {
                 this.classByUid.clear()
-                this.uidByClass.clear()
 
+                this.uidByClass.clear()
                 this.classByUidReadonly = mapOf(*classByUid.toList().toTypedArray())
                 this.uidByClassReadonly = mapOf(*uidByClass.toList().toTypedArray())
             }
         }
+    }
+
+    companion object {
+        @JvmStatic val types = TypeDirectory()
     }
 }
 
