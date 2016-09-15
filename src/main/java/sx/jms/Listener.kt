@@ -139,7 +139,7 @@ abstract class Listener(
             log.debug("Registering message handler [${delegate.javaClass.name}] for [${c.name}]")
 
             // Register with (all) Serializer(s)
-            Serializer.register(c)
+            Serializer.types.register(c)
 
             handlerDelegates.put(c, delegate as Handler<Any?>)
         }
