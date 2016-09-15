@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory
 import java.io.*
 import java.math.BigInteger
 import java.util.*
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * Generic serialization interface
@@ -34,7 +36,7 @@ abstract class Serializer {
     /**
      * Register class by its @Serializable annotation/uid
      */
-    fun register(cls: Class<*>): Long? {
+    fun register(cls: Class<*>): Long {
         return Serializer.register(cls)
     }
 
@@ -48,73 +50,83 @@ abstract class Serializer {
     companion object {
         private val log = LoggerFactory.getLogger(Serializer::class.java)
 
-        private val _clsByUid = mutableMapOf<Long,Class<*>>()
-        private val _uidByCls = mutableMapOf<Class<*>, Long?>()
-        private var _readonlyClsByUid = mapOf<Long,Class<*>>()
-        private var _readonlyUidByCls = mapOf<Class<*>, Long?>()
+        private val lock = ReentrantLock()
+        private val classByUid = mutableMapOf<Long,Class<*>>()
+        private val uidByClass = mutableMapOf<Class<*>, Long>()
+
+        // Readonly copy of maps or fast threadsafe access
+        private var classByUidReadonly = mapOf<Long,Class<*>>()
+        private var uidByClassReadonly = mapOf<Class<*>, Long>()
+
+        /**
+         * Determines UID of a class
+         * @param cls Class
+         * @return UID or null if class has none
+         * @throws IllegalStateException When there's both @Serializable and Serializable implementation with mismatched UIDs
+         */
+        private fun determineUid(cls: Class<*>): Long? {
+            val annotation = cls.getAnnotation(Serializable::class.java)
+            val objectStreamClass = ObjectStreamClass.lookup(cls)
+
+            val uid: Long?
+            if (annotation != null) {
+                uid = annotation.uid
+
+                if (objectStreamClass != null && uid != objectStreamClass.serialVersionUID) {
+                    throw IllegalStateException("Class ${cls} has mismatch @Serializable uid [${java.lang.Long.toHexString(uid)}] with serialVersionUID [${java.lang.Long.toHexString(objectStreamClass.serialVersionUID)}]")
+                }
+            } else {
+                uid = objectStreamClass?.serialVersionUID
+            }
+
+            return uid
+        }
 
         /**
          * Register class. If the class is already registered merely returns its UID (fast lookup)
          * @param cls Class to register
          * @return Class @Serializable UID or null if the type is not applicable for registering (eg. build-in type)
          */
-        fun register(cls: Class<*>): Long? {
-            var found: Boolean = true
-            val registered = _readonlyUidByCls.getOrElse(cls, {
-                found = false
-                null
-            })
+        fun register(cls: Class<*>): Long {
+            val registeredUid = this.uidByClassReadonly[cls]
 
-            if (found)
-                return registered
+            if (registeredUid != null)
+                return registeredUid
 
             /**
              * Helper function to register class
-             * @param uid Class UID
              * @param c Class to register
              */
-            fun registerImpl(uid: Long?, c: Class<*>) {
+            fun registerImpl(c: Class<*>, uid: Long) {
                 if (uid == 0L)
-                    throw IllegalArgumentException("@Serializable uid of ${c.name} is 0")
+                    throw IllegalArgumentException("@Serializable uid of ${c} is 0")
 
-                // Decode short UID
-                if (uid != null && java.io.Serializable::class.java.isAssignableFrom(c)) {
-                    val suid = ObjectStreamClass.lookup(c).serialVersionUID
-                    if (suid != uid)
-                        throw IllegalStateException("@Serializable uid [${java.lang.Long.toHexString(uid)}] mismatch with serialVersionUID [${java.lang.Long.toHexString(suid)}]")
+                this.lock.withLock {
+                    log.debug("Registering type ${c}")
+
+                    val registeredClass = this.classByUid[uid]
+                    if (registeredClass != null)
+                        throw IllegalArgumentException("Cannot register [${c}] as UID [${uid}] is already registered with [${registeredClass}]")
+
+                    this.classByUid[uid] = c
+                    this.uidByClass[c] = uid
+
+                    this.classByUidReadonly = mapOf(*classByUid.toList().toTypedArray())
+                    this.uidByClassReadonly = mapOf(*uidByClass.toList().toTypedArray())
                 }
-                synchronized(_clsByUid, {
-                    if (uid != null) {
-                        log.debug("Registering type ${c.name}")
-                        if (_clsByUid.containsKey(uid))
-                            throw IllegalArgumentException("Cannot register [${c}] as UID [${uid}] is already registered with [${_clsByUid[uid]}]")
-
-                        _clsByUid[uid] = c
-                    }
-
-                    _uidByCls[c] = uid
-                    _readonlyClsByUid = mapOf(*_clsByUid.toList().toTypedArray())
-                    _readonlyUidByCls = mapOf(*_uidByCls.toList().toTypedArray())
-                })
             }
 
-            val uid: Long?
-            if (cls.`package`.name.startsWith("java")) {
-                uid = null
-            } else {
-                val annotation = cls.getAnnotation(Serializable::class.java) ?: throw IllegalArgumentException("Class ${cls} is missing @Serializable")
-                uid = annotation.uid
-            }
+            val uid = determineUid(cls)
+            if (uid == null)
+                throw IllegalArgumentException("Class ${cls} has neither @Serializable annotation nor implements Serializable")
 
-            // Register the class
-            registerImpl(uid, cls)
+            registerImpl(cls, uid)
 
             // Register nested/declared classes
             cls.declaredClasses.forEach {
-                val a = it.getAnnotation(Serializable::class.java)
-                if (a != null) {
-                    registerImpl(a.uid, it)
-                }
+                val dcuid = determineUid(it)
+                if (dcuid != null)
+                    registerImpl(it, dcuid)
             }
 
             return uid
@@ -125,7 +137,7 @@ abstract class Serializer {
          * @param uid Class UID
          */
         fun lookup(uid: Long): Class<*>? {
-            return _readonlyClsByUid[uid]
+            return classByUidReadonly[uid]
         }
 
         /**
@@ -133,12 +145,13 @@ abstract class Serializer {
          */
         fun purge() {
             log.debug("Purging all types")
-            synchronized(_clsByUid, {
-                _clsByUid.clear()
-                _uidByCls.clear()
-                _readonlyClsByUid = mapOf(*_clsByUid.toList().toTypedArray())
-                _readonlyUidByCls = mapOf(*_uidByCls.toList().toTypedArray())
-            })
+            this.lock.withLock {
+                this.classByUid.clear()
+                this.uidByClass.clear()
+
+                this.classByUidReadonly = mapOf(*classByUid.toList().toTypedArray())
+                this.uidByClassReadonly = mapOf(*uidByClass.toList().toTypedArray())
+            }
         }
     }
 }

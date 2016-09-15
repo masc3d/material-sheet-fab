@@ -12,7 +12,6 @@ object DefaultSerializer : Serializer() {
      */
     private class ObjectInputStream(`in`: InputStream)
     : java.io.ObjectInputStream(`in`) {
-
         @Throws(IOException::class, ClassNotFoundException::class)
         override protected fun readClassDescriptor(): ObjectStreamClass {
             var resultClassDescriptor = super.readClassDescriptor()
