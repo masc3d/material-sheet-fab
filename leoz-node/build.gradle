@@ -3,6 +3,8 @@ import org.deku.gradle.PackagerPlugin
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: PackagerPlugin
+apply plugin: 'java'
+apply plugin: 'idea'
 //apply plugin: 'flyway'
 
 sourceCompatibility = 1.8
@@ -28,18 +30,6 @@ kapt {
     generateStubs = true
 }
 
-sourceSets {
-    main {
-        kotlin {
-            // TODO. bug, IJ doesn't see kapt generated sources/classes in build directory and refuses to make and/or shows errors in editor
-            // Cannot add apt generated path to java sourceset, as apt will be confused finding its generated files there
-            // reporting: java.lang.IllegalStateException: endPosTable already set.
-            // Workaround: add generated soruces to kotlin set, where IJ will recognize them, but apt will ignore them
-            srcDirs += srcdir_apt
-        }
-    }
-}
-
 compileJava {
     doFirst {
         // Source dir must exist
@@ -53,6 +43,12 @@ compileJava {
 
 clean {
     delete(srcdir_apt)
+}
+
+idea {
+    module {
+        sourceDirs += srcdir_apt
+    }
 }
 
 dependencies {
