@@ -23,6 +23,7 @@ open class SerializerTest {
             val l: Long = 1,
             val s: String = "Hello",
             val i: Int = 2,
+            val cls: Class<*> = Any::class.java,
             val d: Array<Int> = listOf(1, 2, 3).toTypedArray(),
             val dobj: Array<TestObject2> = listOf(TestObject1.TestObject2()).toTypedArray()
     ) : java.io.Serializable {
@@ -47,6 +48,7 @@ open class SerializerTest {
             return (this.l == o.l &&
                     this.s == o.s &&
                     this.i == o.i &&
+                    this.cls == o.cls &&
                     Arrays.equals(this.d, o.d) &&
                     Arrays.equals(this.dobj, o.dobj))
         }
@@ -57,6 +59,7 @@ open class SerializerTest {
             val l: Long = 1,
             val s: String = "Hello",
             val i: Int = 2,
+            val cls: Class<*> = Any::class.java,
             val d: Array<Int> = listOf(1, 2, 3).toTypedArray(),
             val dobj: Array<TestObjectRefactored1.TestObjectRefactored2> = listOf(TestObjectRefactored1.TestObjectRefactored2()).toTypedArray()
     ) : java.io.Serializable {
@@ -81,6 +84,7 @@ open class SerializerTest {
             return (this.l == o.l &&
                     this.s == o.s &&
                     this.i == o.i &&
+                    this.cls == o.cls &&
                     Arrays.equals(this.d, o.d) &&
                     Arrays.equals(this.dobj, o.dobj))
         }
@@ -130,7 +134,10 @@ open class SerializerTest {
     fun testArrayRefactoring(serializer: Serializer) {
         Serializer.purge()
 
-        val sobj = arrayOf(TestObject1(dobj = arrayOf(TestObject1.TestObject2(200))), TestObject1(), TestObject1())
+        val sobj = arrayOf(
+                TestObject1(dobj = arrayOf(TestObject1.TestObject2(200)), cls = TestObject1::class.java),
+                TestObject1(dobj = arrayOf(TestObject1.TestObject2(200)), cls = TestObject1::class.java),
+                TestObject1(dobj = arrayOf(TestObject1.TestObject2(200)), cls = TestObject1::class.java))
 
         val sdata = serializer.serializeToByteArray(sobj)
 
@@ -140,6 +147,7 @@ open class SerializerTest {
         val dobj = serializer.deserializeFrom(sdata) as Array<TestObjectRefactored1>
 
         Assert.assertTrue(dobj is Array<TestObjectRefactored1>)
+        Assert.assertTrue(dobj.get(0).cls.equals(TestObjectRefactored1::class.java))
     }
 
     fun testObjectArraySerialization(serializer: Serializer) {
