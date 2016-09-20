@@ -1,6 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.data.entities.master.*
 import org.deku.leoz.node.data.sync.EntityConsumer

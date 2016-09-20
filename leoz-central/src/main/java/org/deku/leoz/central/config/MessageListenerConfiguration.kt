@@ -1,6 +1,6 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy

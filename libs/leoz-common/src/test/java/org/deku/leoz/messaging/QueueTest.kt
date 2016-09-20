@@ -1,7 +1,7 @@
 package org.deku.leoz.messaging
 
 import org.deku.leoz.MessagingTest
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import javax.jms.DeliveryMode

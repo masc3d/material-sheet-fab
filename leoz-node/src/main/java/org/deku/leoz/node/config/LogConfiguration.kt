@@ -1,6 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.log.LogAppender
 import org.deku.leoz.node.App
 import org.slf4j.LoggerFactory

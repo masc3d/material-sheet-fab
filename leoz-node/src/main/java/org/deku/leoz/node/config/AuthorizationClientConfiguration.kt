@@ -1,7 +1,7 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.bundle.boot
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage

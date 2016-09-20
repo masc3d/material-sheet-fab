@@ -1,7 +1,7 @@
 package org.deku.leoz.node.config
 
 import com.google.common.base.Strings
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.slf4j.LoggerFactory

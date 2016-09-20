@@ -4,7 +4,7 @@ import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.update.BundleUpdateService
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.bundle.update.UpdateInfo
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.rest.entities.internal.v1.ApplicationVersion

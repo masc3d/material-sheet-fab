@@ -7,7 +7,7 @@ import org.deku.leoz.bundle.update.BundleUpdateService
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.BundleTestConfiguration
 import org.deku.leoz.config.StorageTestConfiguration
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.junit.Test
 import sx.jms.Channel
 import java.util.concurrent.Executors

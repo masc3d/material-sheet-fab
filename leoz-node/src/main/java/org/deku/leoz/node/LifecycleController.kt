@@ -1,6 +1,6 @@
 package org.deku.leoz.node
 
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.peer.RemotePeerSettings
 import sx.Lifecycle
 import sx.jms.Broker

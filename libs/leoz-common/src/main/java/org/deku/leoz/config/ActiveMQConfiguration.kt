@@ -1,4 +1,4 @@
-package org.deku.leoz.config.messaging
+package org.deku.leoz.config
 
 import org.apache.activemq.command.ActiveMQQueue
 import org.apache.activemq.command.ActiveMQTopic
@@ -40,7 +40,7 @@ class ActiveMQConfiguration() {
 
     val connectionFactory: ActiveMQPooledConnectionFactory by lazy {
         ActiveMQPooledConnectionFactory(
-                ActiveMQBroker.instance.localUri,
+                ActiveMQBroker.Companion.instance.localUri,
                 USERNAME,
                 PASSWORD)
     }

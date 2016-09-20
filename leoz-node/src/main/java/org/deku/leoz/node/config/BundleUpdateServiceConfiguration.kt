@@ -5,7 +5,7 @@ import org.deku.leoz.bundle.update.BundleUpdateService
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.bundle.update.UpdateInfo
 import org.deku.leoz.config.RsyncConfiguration
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.peer.RemotePeerSettings

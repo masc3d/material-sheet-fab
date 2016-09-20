@@ -2,7 +2,7 @@ package org.deku.leoz
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.junit.After
 import org.junit.Before
 import sx.jms.Broker

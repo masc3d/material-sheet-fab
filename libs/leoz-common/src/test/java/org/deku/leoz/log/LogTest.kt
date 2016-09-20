@@ -5,7 +5,7 @@ import org.deku.leoz.Identity
 import org.deku.leoz.MessagingTest
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.config.messaging.ActiveMQConfiguration
+import org.deku.leoz.config.ActiveMQConfiguration
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
