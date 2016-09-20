@@ -2,6 +2,7 @@ package sx.jms
 
 import org.slf4j.LoggerFactory
 import sx.Disposable
+import sx.LazyInstance
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
@@ -62,19 +63,19 @@ protected constructor(
         }
     }
 
+    /** Data directory for store  */
+    var dataDirectory: File? = null
+
     /**
      * Broker name
      */
     var brokerName: String = "localhost"
 
-    /** Peer brokers  */
-    protected val peerBrokers = ArrayList<PeerBroker>()
-
     /** Broker user */
     var user: User? = null
 
-    /** Data directory for store  */
-    var dataDirectory: File? = null
+    /** Peer brokers  */
+    protected val peerBrokers = ArrayList<PeerBroker>()
 
     //region Events
     /**
@@ -121,9 +122,6 @@ protected constructor(
     protected abstract fun stopImpl()
 
     protected abstract val isStartedImpl: Boolean
-
-    /** Jms connection factory for connecting to this broker  */
-    abstract val connectionFactory: ConnectionFactory
     //endregion
 
     /**

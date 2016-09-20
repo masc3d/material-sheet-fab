@@ -93,7 +93,7 @@ class ActiveMQBroker private constructor()
     internal var externalTransportServers: MutableList<TransportServer> = ArrayList()
 
     /** Url for establishing connection to local/embedded broker  */
-    private val localUri: URI
+    val localUri: URI
         get() = URI("vm://${brokerName}?create=false")
 
     /**
@@ -331,11 +331,4 @@ class ActiveMQBroker private constructor()
             val brokerService = brokerService
             return brokerService != null && brokerService.isStarted
         }
-
-    override val connectionFactory: ConnectionFactory by lazy({
-        ActiveMQFactory.instance.createConnectionFactory(
-                uri = this.localUri,
-                user = this.user!!.userName,
-                password = this.user!!.password)
-    })
 }
