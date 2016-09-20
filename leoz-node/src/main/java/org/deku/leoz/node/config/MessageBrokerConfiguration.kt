@@ -1,6 +1,7 @@
 package org.deku.leoz.node.config
 
 import com.google.common.base.Strings
+import org.deku.leoz.config.messaging.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.slf4j.LoggerFactory
@@ -49,6 +50,9 @@ open class MessageBrokerConfiguration {
                     Broker.TransportType.TCP,
                     peerSettings.broker.nativePort))
         }
+
+        // Initialize connection factory UDI
+        ActiveMQConfiguration.instance.connectionFactory.uri = ActiveMQBroker.instance.localUri
 
         // The broker is currently started by the http tunnel servlet, initialized via web context
     }

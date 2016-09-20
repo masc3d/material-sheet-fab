@@ -75,7 +75,8 @@ open class EntitySyncConfiguration {
 
         // Entity sync consumer
         this.entityConsumer = EntityConsumer(
-                messagingConfiguration = ActiveMQConfiguration.instance,
+                notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
+                requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
                 entityManagerFactory = this.entityManagerFactory,
                 executor = this.executorService)
     }

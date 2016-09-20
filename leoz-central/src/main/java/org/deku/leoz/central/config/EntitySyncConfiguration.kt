@@ -61,7 +61,7 @@ open class EntitySyncConfiguration {
     fun onInitialize() {
         // Setup entity publisher
         this.entityPublisher = EntityPublisher(
-                ActiveMQConfiguration.instance,
+                ActiveMQConfiguration.instance.entitySyncTopic,
                 this.entityManagerFactory,
                 this.executorService)
 

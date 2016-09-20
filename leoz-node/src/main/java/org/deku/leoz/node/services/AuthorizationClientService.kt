@@ -3,7 +3,6 @@ package org.deku.leoz.node.services
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.Identity
-import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
@@ -20,8 +19,7 @@ import java.util.concurrent.ScheduledExecutorService
  */
 class AuthorizationClientService(
         executorService: ScheduledExecutorService,
-        /** Messaging context  */
-        private val messagingConfiguration: MessagingConfiguration,
+        private val channelConfiguration: Channel.Configuration,
         private val identitySupplier: () -> Identity,
         private val onRejected: (identity: Identity) -> Unit)
 :
@@ -56,7 +54,7 @@ class AuthorizationClientService(
         log.info("Sending ${authorizationRequest}")
 
         // Connection and session
-        val authorizationMessage = Channel(messagingConfiguration.centralQueue).use {
+        val authorizationMessage = Channel(channelConfiguration).use {
             it.sendRequest(authorizationRequest).use {
                 it.receive(AuthorizationMessage::class.java)
             }

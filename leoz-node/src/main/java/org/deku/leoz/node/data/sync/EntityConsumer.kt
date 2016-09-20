@@ -1,7 +1,6 @@
 package org.deku.leoz.node.data.sync
 
 import com.google.common.base.Stopwatch
-import org.deku.leoz.config.messaging.MessagingConfiguration
 import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repositories.EntityRepository
 import org.deku.leoz.node.messaging.entities.EntityStateMessage
@@ -23,12 +22,13 @@ import javax.persistence.EntityManagerFactory
 class EntityConsumer
 (
         /** Messaging context  */
-        private val messagingConfiguration: MessagingConfiguration,
+        private val notificationChannelConfiguration: Channel.Configuration,
+        private val requestChannelConfiguration: Channel.Configuration,
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory,
         executor: Executor)
 :
-        SpringJmsListener({ Channel(messagingConfiguration.entitySyncTopic) }, executor),
+        SpringJmsListener({ Channel(notificationChannelConfiguration) }, executor),
         Handler<EntityStateMessage> {
 
     private var executorService: ExecutorService
@@ -50,12 +50,12 @@ class EntityConsumer
         this.request(message.entityType!!, message.syncId)
     }
 
-    val entitySyncChannel by lazy {
-        Channel(this.messagingConfiguration.entitySyncQueue)
+    val requestChannel by lazy {
+        Channel(this.requestChannelConfiguration)
     }
 
     val replyChannel by lazy {
-        entitySyncChannel.createReplyChannel()
+        requestChannel.createReplyChannel()
     }
 
     /**
@@ -87,7 +87,7 @@ class EntityConsumer
                 val sw = Stopwatch.createStarted()
 
                 // Send entity state message
-                entitySyncChannel.sendRequest(EntityStateMessage(entityType, syncId), replyChannel = this.replyChannel)
+                requestChannel.sendRequest(EntityStateMessage(entityType, syncId), replyChannel = this.replyChannel)
 
                 log.info(lfmt("Requesting entities"))
 

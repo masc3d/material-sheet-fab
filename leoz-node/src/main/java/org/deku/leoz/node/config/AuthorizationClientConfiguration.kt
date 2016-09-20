@@ -37,8 +37,7 @@ open class AuthorizationClientConfiguration {
     open fun authorizationClientService(): AuthorizationClientService {
         return AuthorizationClientService(
                 executorService = this.executorService,
-
-                messagingConfiguration = ActiveMQConfiguration.instance,
+                channelConfiguration = ActiveMQConfiguration.instance.centralQueue,
                 identitySupplier = { App.instance.identity },
                 onRejected = { identity ->
                     log.warn("Authorization rejected for identity [${identity}]")
