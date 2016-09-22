@@ -13,23 +13,33 @@ import sx.jms.activemq.ActiveMQBroker
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * ActiveMQ broker configuration
  * Created by masc on 11.06.15.
  */
 @Configuration
-@ConfigurationProperties(prefix = "broker")
 @Lazy(false)
 open class MessageBrokerConfiguration {
     private val log = LoggerFactory.getLogger(MessageBrokerConfiguration::class.java)
 
+    @Named
+    @ConfigurationProperties(prefix = "broker")
+    /**
+     * Configuration properties
+     */
+    class Settings {
+        var nativePort: Int? = null
+        var httpContextPath: String? = null
+    }
+
+    @Inject
+    private lateinit var settings: Settings
+
     @Inject
     private lateinit var peerSettings: RemotePeerSettings
 
-    // Configuration properties
-    var nativePort: Int? = null
-    var httpContextPath: String? = null
 
     @PostConstruct
     fun onInitialize() {
@@ -38,7 +48,7 @@ open class MessageBrokerConfiguration {
         log.info("Configuring messaging broker")
         ActiveMQBroker.instance.brokerName = "leoz-aq-${App.instance.identity.keyInstance.short}"
         ActiveMQBroker.instance.dataDirectory = StorageConfiguration.instance.activeMqDataDirectory
-        ActiveMQBroker.instance.nativeTcpPort = this.nativePort
+        ActiveMQBroker.instance.nativeTcpPort = this.settings.nativePort
 
         if (!Strings.isNullOrEmpty(peerSettings.hostname)) {
             // TODO: we could probe for available remote ports here, but this implies

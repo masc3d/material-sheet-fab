@@ -1,12 +1,16 @@
 package org.deku.leoz.node.config
 
+import org.apache.sshd.server.SshServer
+import org.deku.leoz.discovery.DiscoveryInfo
 import org.deku.leoz.discovery.DiscoveryService
 import org.deku.leoz.node.App
+import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import javax.inject.Inject
 
 /**
  * Created by masc on 22/09/2016.
@@ -15,6 +19,15 @@ import javax.annotation.PreDestroy
 @Lazy(false)
 open class DiscoveryServiceConfguration {
 
+    @Inject
+    private lateinit var rsyncSettings: RsyncServerConfiguration.Settings
+
+    @Inject
+    private lateinit var brokerSettings: MessageBrokerConfiguration.Settings
+
+    @Inject
+    private lateinit var serverSettings: ServerProperties
+
     @Bean
     open fun discoveryService(): DiscoveryService {
         return DiscoveryService(bundleType = App.instance.bundleType)
@@ -22,6 +35,24 @@ open class DiscoveryServiceConfguration {
 
     @PostConstruct
     fun onInitialize() {
+        val discoveryService = this.discoveryService()
+
+        // Add service infos
+        discoveryService.addServices(
+                DiscoveryInfo.Service(
+                        type = DiscoveryInfo.ServiceType.ACTIVEMQ_NATIVE,
+                        port = brokerSettings.nativePort!!),
+                DiscoveryInfo.Service(
+                        type = DiscoveryInfo.ServiceType.HTTPS,
+                        port = serverSettings.port),
+                DiscoveryInfo.Service(
+                        type = DiscoveryInfo.ServiceType.RSYNC,
+                        port = rsyncSettings.port!!),
+                DiscoveryInfo.Service(
+                        type = DiscoveryInfo.ServiceType.SSH,
+                        port = SshServerConfiguration.DEFAULT_PORT)
+        )
+
         this.discoveryService().start()
     }
 

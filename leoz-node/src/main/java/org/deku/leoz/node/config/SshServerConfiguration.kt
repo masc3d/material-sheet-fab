@@ -28,6 +28,9 @@ open class SshServerConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val sshServer: SshServer
 
+    companion object {
+        const val DEFAULT_PORT = 13003
+    }
     init {
         this.sshServer = SshServer.setUpDefaultServer()
     }
@@ -36,7 +39,8 @@ open class SshServerConfiguration {
     fun onInitialize() {
         val sshd = this.sshServer
 
-        sshd.setPort(13003)
+        sshd.setPort(SshServerConfiguration.DEFAULT_PORT)
+
         sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(
                 File(StorageConfiguration.instance.sshDataDirectory, "hostkey.ser")))
 

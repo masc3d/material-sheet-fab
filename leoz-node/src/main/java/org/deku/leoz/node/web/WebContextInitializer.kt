@@ -52,7 +52,7 @@ internal class WebContextInitializer : ServletContextInitializer {
     private lateinit var mSpringBeanProcessor: SpringBeanProcessor
 
     @Inject
-    private lateinit var mMessageBrokerConfiguration: MessageBrokerConfiguration
+    private lateinit var mBrokerSettings: MessageBrokerConfiguration.Settings
 
     @Throws(ServletException::class)
     override fun onStartup(servletContext: ServletContext) {
@@ -93,7 +93,7 @@ internal class WebContextInitializer : ServletContextInitializer {
                     HttpExternalTunnelServlet(
                             URI("http://localhost:8080/leoz/jms")))
             sr.setLoadOnStartup(1)
-            sr.addMapping(this.mMessageBrokerConfiguration.httpContextPath!! + "/*")
+            sr.addMapping(this.mBrokerSettings.httpContextPath!! + "/*")
         } catch (e: URISyntaxException) {
             throw ServletException(e)
         }

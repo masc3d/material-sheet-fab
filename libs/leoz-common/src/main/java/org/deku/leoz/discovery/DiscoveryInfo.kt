@@ -26,7 +26,6 @@ data class DiscoveryInfo(
      * Leoz discovered service info, used for notifying about discovered services
      * Created by masc on 29/08/16.
      */
-    data class Service(val serviceType: ServiceType,
-                       val port: Int,
-                       val host: String)
+    data class Service(val type: ServiceType? = null,
+                       val port: Int = 0)
 }
