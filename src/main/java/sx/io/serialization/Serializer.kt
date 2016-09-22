@@ -79,7 +79,10 @@ abstract class Serializer {
                     throw IllegalStateException("Class ${cls} has mismatch @Serializable uid [${java.lang.Long.toHexString(uid)}] with serialVersionUID [${java.lang.Long.toHexString(objectStreamClass.serialVersionUID)}]")
                 }
             } else {
-                uid = objectStreamClass?.serialVersionUID
+                uid = if (objectStreamClass != null && objectStreamClass.serialVersionUID != 0L)
+                    objectStreamClass.serialVersionUID
+                else
+                    null
             }
 
             return uid
