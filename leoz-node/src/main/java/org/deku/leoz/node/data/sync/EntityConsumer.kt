@@ -22,8 +22,8 @@ import javax.persistence.EntityManagerFactory
 class EntityConsumer
 (
         /** Messaging context  */
-        private val notificationChannelConfiguration: Channel.Configuration,
         private val requestChannelConfiguration: Channel.Configuration,
+        private val notificationChannelConfiguration: Channel.Configuration,
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory,
         executor: Executor)

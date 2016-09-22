@@ -23,12 +23,13 @@ import javax.persistence.EntityManagerFactory
  * @param entityManagerFactory
  */
 class EntityPublisher(
+        private val requestChannelConfiguration: Channel.Configuration,
         private val notificationChannelConfiguration: Channel.Configuration,
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory,
         executor: Executor)
 :
-        SpringJmsListener({ Channel(notificationChannelConfiguration) }, executor),
+        SpringJmsListener({ Channel(requestChannelConfiguration) }, executor),
         Handler<EntityStateMessage> {
     init {
         this.addDelegate(this)
@@ -42,7 +43,7 @@ class EntityPublisher(
      */
     @Throws(JMSException::class)
     fun publish(entityType: Class<*>, syncId: Long?) {
-        Channel(ActiveMQConfiguration.instance.entitySyncTopic).use {
+        Channel(this.notificationChannelConfiguration).use {
             val msg = EntityStateMessage(entityType, syncId)
             log.info("Publishing [${msg}]")
             it.send(msg)

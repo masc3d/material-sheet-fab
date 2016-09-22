@@ -61,9 +61,10 @@ open class EntitySyncConfiguration {
     fun onInitialize() {
         // Setup entity publisher
         this.entityPublisher = EntityPublisher(
-                ActiveMQConfiguration.instance.entitySyncTopic,
-                this.entityManagerFactory,
-                this.executorService)
+                requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
+                notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
+                entityManagerFactory = this.entityManagerFactory,
+                executor = this.executorService)
 
         // Wire database sync event
         this.databaseSyncService.eventDelegate.add(databaseSyncEvent)
