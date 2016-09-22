@@ -21,24 +21,35 @@ import kotlin.concurrent.withLock
 /**
  * Lightweight universal udp discovery service
  * @property port Port to listen on
- * @param TInfo (Optional) Info block type. The class must be serializable, should be immutable and implement `.equals` for change notifications
+ * @param TInfo (Optional) Info block type.
+ * The class must be serializable, should be immutable and implement `.equals`for change notifications.
+ * A kotlin data class using only `val`s is a good match.
  * @param serializer (Optional) Serializer override
  * Created by masc on 29/08/16.
  */
-class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
+open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         infoClass: Class<TInfo>,
         val port: Int,
         private val serializer: Serializer = KryoSerializer())
 :
         Service(
                 executorService = Executors.newScheduledThreadPool(2),
-                period = Duration.ofSeconds(30)) where TInfo : Copyable<TInfo> {
+                period = Duration.ofSeconds(30)) {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private var running = false
 
     private val BUFFER_SIZE = 16 * 1024
     private val RECEIVE_TIMEOUT = Duration.ofSeconds(2)
 
+    companion object {
+        /**
+         * Creates the default udp discovery service, using a plain string as info block and the default serializer
+         * @param port Port to listen on
+         */
+        fun create(port: Int): UdpDiscoveryService<String> {
+            return UdpDiscoveryService(infoClass = String::class.java, port = port)
+        }
+    }
     /**
      * Host discovery info
      * @param address Host address
@@ -142,7 +153,10 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     /**
      * Info block for this host
      */
-    private var info = LazyInstance<TInfo?>({ null })
+    val info: TInfo?
+        get() = _info.get()
+
+    private var _info = LazyInstance<TInfo?>({ null })
 
     /**
      * Internal directory of hosts/infos by address.
@@ -197,10 +211,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
      * Updates info for this host. Triggers a publish cycle
      */
     fun updateInfo(info: TInfo?) {
-        val i = info?.copyInstance()
-
-        this.info.resetIf({ it != i }, i)
-
+        this._info.resetIf({ it != info }, info)
         this.trigger()
     }
 
@@ -237,7 +248,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 // Send response for this host
                 val response = this@UdpDiscoveryService.serializer.serializeToByteArray(
                         Host(address = InetSocketAddress(0).address,
-                                info = this@UdpDiscoveryService.info.get()))
+                                info = this@UdpDiscoveryService.info))
 
                 log.debug("Answering to ${packet.address} size [${response.size}]")
 
@@ -277,7 +288,7 @@ class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 // Create host entry for this interface/address
                 val host = Host(
                         address = it.interfaceAddress.address,
-                        info = this@UdpDiscoveryService.info.get())
+                        info = this@UdpDiscoveryService.info)
 
                 // Update directory with received host info
                 this@UdpDiscoveryService.updateDirectory(host, this.log)
