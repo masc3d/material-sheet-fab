@@ -3,6 +3,7 @@ package org.deku.leoz.node
 import com.google.common.collect.Lists
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
+import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
@@ -87,6 +88,12 @@ open class App :
      */
     open val type: Class<out Any>
         get() = App::class.java
+
+    /**
+     * Application bundle type
+     */
+    open val bundleType: BundleType
+        get() = BundleType.LEOZ_NODE
 
     /**
      * Application jar manifest

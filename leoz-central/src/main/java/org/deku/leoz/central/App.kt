@@ -1,5 +1,6 @@
 package org.deku.leoz.central
 
+import org.deku.leoz.bundle.BundleType
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 
@@ -16,6 +17,9 @@ class App private constructor() : org.deku.leoz.node.App() {
 
     override val type: Class<out Any>
         get() = App::class.java
+
+    override val bundleType: BundleType
+        get() = BundleType.LEOZ_CENTRAL
 
     override fun initialize() {
         // No JMS logging for leoz-central

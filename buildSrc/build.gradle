@@ -105,6 +105,7 @@ task syncClasses(type: Sync) {
             '**/logging/slf4j/**',
             '**/system/**',
             '**/io/PermissionUtil*',
+            '**/io/serialization/Serializer**',
             '**/Action*/',
             '**/Disposable*/',
             '**/EmbeddedExecutable*/',
