@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.schedulers.Schedulers
 import sx.rx.subscribeAwaitableWith
-import java.lang.Thread
 import java.util.concurrent.CancellationException
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread

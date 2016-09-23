@@ -3,9 +3,6 @@ package sx.net
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.logging.slf4j.info
-import sx.net.UdpDiscoveryService
-import java.net.InetAddress
 import sx.Copyable
 import sx.io.serialization.Serializable
 

@@ -1,7 +1,6 @@
 package sx.swing;
 
-import java.awt.Component;
-import java.awt.Container;
+import java.awt.*;
 
 /**
  * Walks swing components recursively

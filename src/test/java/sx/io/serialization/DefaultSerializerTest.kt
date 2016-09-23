@@ -1,6 +1,5 @@
 package sx.io.serialization
 
-import org.junit.Assert
 import org.junit.Test
 
 /**

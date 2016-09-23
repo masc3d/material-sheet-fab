@@ -2,9 +2,8 @@ package sx.io.serialization
 
 import org.xerial.snappy.SnappyInputStream
 import org.xerial.snappy.SnappyOutputStream
-import java.io.*
-import java.math.BigInteger
-import java.util.*
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 

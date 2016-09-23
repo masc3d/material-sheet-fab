@@ -1,10 +1,7 @@
 package sx.io.serialization
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import org.slf4j.LoggerFactory
 import java.io.*
-import java.math.BigInteger
-import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
