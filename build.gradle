@@ -132,7 +132,7 @@ subprojects {
             force "commons-logging:commons-logging:$v_commons_logging"
             force "com.google.guava:guava:$v_guava"
             force "com.thoughtworks.xstream:xstream:$v_xstream"
-            force "com.vaadin:vaadin-server:7.6.8"
+            force "com.vaadin:vaadin-server:$v_vaadin"
             force "io.reactivex:rxjava:$v_rxjava"
             force "javax.validation:validation-api:1.1.0.Final"
             force "net.java.dev.jna:jna:$v_jna"
