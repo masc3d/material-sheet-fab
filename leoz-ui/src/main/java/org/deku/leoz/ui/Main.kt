@@ -15,6 +15,7 @@ import javafx.scene.text.Font
 import javafx.stage.Screen
 import javafx.stage.Stage
 import org.controlsfx.control.Notifications
+import org.deku.leoz.discovery.DiscoveryService
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.config.Configurations
 import org.deku.leoz.ui.fx.Controller
@@ -23,7 +24,10 @@ import org.slf4j.LoggerFactory
 import sx.util.Utf8ResourceBundleControl
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 
 /**
  * Main application class
@@ -92,6 +96,27 @@ class Main : Application() {
         Kodein.global.addImport(Configurations.application)
         Kodein.global.addImport(Configurations.messenging)
 
+        // Initialize application
+        val executor: ExecutorService = Kodein.global.instance()
+
+        // Background task initialization
+        executor.submit {
+            val leoBridge: LeoBridge = Kodein.global.instance()
+
+            // Start leo bridge (asynchronously so it doesn't slow down startup)
+            try {
+                leoBridge.ovMessageReceived.subscribe {
+                    this.toForeground()
+                }
+                leoBridge.start()
+            } catch (e: IOException) {
+                log.error(e.message, e)
+            }
+
+            // Start discovery service
+            Kodein.global.instance<DiscoveryService>().start()
+        }
+
         // Setup stage
         this.primaryStage = primaryStage
 
@@ -118,24 +143,16 @@ class Main : Application() {
         // Default should be the minimum supported size.
         // If it's necessary to maximize by default on partidular occasions/installations it should be paremeterized.
         primaryStage.show()
-
-        // Start leo bridge (asynchronously so it doesn't slow down startup)
-        Executors.newSingleThreadExecutor().submit {
-            try {
-                LeoBridge.instance().ovMessageReceived.subscribe {
-                    this.toForeground()
-                }
-                LeoBridge.instance().start()
-            } catch (e: IOException) {
-                log.error(e.message, e)
-            }
-        }
     }
 
     @Throws(Exception::class)
     override fun stop() {
         this.mainController.close()
-        LeoBridge.instance().stop()
+
+        // Stop services
+        Kodein.global.instance<LeoBridge>().stop()
+        Kodein.global.instance<DiscoveryService>().stop()
+        Kodein.global.instance<ExecutorService>().shutdown()
         super.stop()
     }
 

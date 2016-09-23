@@ -7,12 +7,12 @@ import java.lang.ref.WeakReference
  * Created by masc on 20/08/16.
  */
 class Event<T>(
-        val sender: WeakReference<Any>,
+        val sender: Any,
         val value: T) {
 
     companion object {
         fun <T> emit(sender: Any, subject: PublishSubject<Event<T>>, value: T) {
-            subject.onNext(Event(WeakReference(sender), value))
+            subject.onNext(Event(sender, value))
         }
     }
 }

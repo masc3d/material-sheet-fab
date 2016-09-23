@@ -32,7 +32,11 @@ class DebugController : ModuleController(), Initializable {
 
     val ovDepotSelect by lazy { PublishSubject<Unit>() }
 
+    /** Global settings */
     private val settings: Settings by Kodein.global.lazy.instance()
+
+    /** LeoBridge instance */
+    private val leoBridge: LeoBridge by Kodein.global.lazy.instance()
 
     override val title: String
         get() = "Debug"
@@ -44,7 +48,7 @@ class DebugController : ModuleController(), Initializable {
 
     fun onLeoBridgeSend() {
         try {
-            LeoBridge.instance().sendMessage(Message(fxLeoBridgeMessageTextField.text))
+            this.leoBridge.sendMessage(Message(fxLeoBridgeMessageTextField.text))
         } catch (e: Exception) {
             log.error(e.message, e)
         }
@@ -58,7 +62,7 @@ class DebugController : ModuleController(), Initializable {
         msg.put("float", 34.5)
         msg.put("date", Date())
         try {
-            LeoBridge.instance().sendMessage(msg)
+            this.leoBridge.sendMessage(msg)
         } catch (e: Exception) {
             log.error(e.message, e)
         }

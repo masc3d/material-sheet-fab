@@ -1,5 +1,8 @@
 package org.deku.leoz.ui.bridge.services
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.ui.bridge.IMessageService
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.bridge.MediaType
@@ -15,12 +18,14 @@ import javax.ws.rs.Produces
 @Produces(MediaType.APPLICATION_JSON_UTF8)
 @Consumes(MediaType.APPLICATION_JSON_UTF8)
 class MessageService : IMessageService {
+    /** Leo bridge singgleton instance */
+    val leoBridge: LeoBridge = Kodein.global.instance()
+
     interface Listener {
         fun onLeoBridgeServiceMessageReceived(message: Message)
     }
 
     override fun send(message: Message) {
-        val l = LeoBridge.instance()
-        l.onLeoBridgeServiceMessageReceived(message)
+        this.leoBridge.onLeoBridgeServiceMessageReceived(message)
     }
 }

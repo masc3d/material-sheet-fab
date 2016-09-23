@@ -16,9 +16,11 @@ import java.util.concurrent.ScheduledExecutorService
  * @property bundleType The bundle type this discovery service will expose
  */
 class DiscoveryService(
+        executorService: ScheduledExecutorService,
         port: Int = DiscoveryService.DEFAULT_PORT,
         val bundleType: BundleType)
 : UdpDiscoveryService<DiscoveryInfo>(
+        executorService = executorService,
         infoClass = DiscoveryInfo::class.java,
         port = port) {
 

@@ -17,8 +17,7 @@ import javax.ws.rs.client.ClientBuilder
 /**
  * Created by masc on 26.09.14.
  */
-class LeoBridge private constructor() : Disposable, MessageService.Listener {
-
+class LeoBridge : Disposable, MessageService.Listener {
     /**
      * Created by masc on 23.07.14.
      */
@@ -29,6 +28,11 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
             // registerInstances(new LoggingFilter(Logger.getLog(LeoBridge.class.getName()), true));
             packages("org.deku.leoz.bridge.services")
         }
+    }
+
+    companion object {
+        private val HOST_URI = URI.create("http://localhost:37420/")
+        private val CLIENT_URI = URI.create("http://localhost:37421/")
     }
 
     val ovMessageReceived by lazy { PublishSubject<Message>().synchronized() }
@@ -83,21 +87,5 @@ class LeoBridge private constructor() : Disposable, MessageService.Listener {
 
     override fun close() {
         this.stop()
-    }
-
-    companion object {
-        private var instance: LeoBridge? = null
-
-        private val HOST_URI = URI.create("http://localhost:37420/")
-        private val CLIENT_URI = URI.create("http://localhost:37421/")
-
-        fun instance(): LeoBridge {
-            if (instance == null) {
-                synchronized (LeoBridge::class.java) {
-                    instance = LeoBridge()
-                }
-            }
-            return instance!!
-        }
     }
 }

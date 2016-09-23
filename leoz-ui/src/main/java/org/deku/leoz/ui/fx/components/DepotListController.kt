@@ -65,6 +65,9 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
     @FXML
     private lateinit var fxDepotTableStreetColumn: TableColumn<Any, Any>
 
+    /** LeoBridge instance */
+    private val leoBridge: LeoBridge by Kodein.global.lazy.instance()
+
     private var stations: ObservableList<Station> = ImmutableObservableList()
 
     private val queryTaskExecutor = Executors.newFixedThreadPool(3)
@@ -154,7 +157,7 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
                     val cell = event.source as TableCell<Any, Any>
                     val station = cell.tableRow.item as Station
                     try {
-                        LeoBridge.instance().sendMessage(MessageFactory.createViewDepotMessage(station))
+                        this.leoBridge.sendMessage(MessageFactory.createViewDepotMessage(station))
                     } catch (e: Exception) {
                         this.ovError.onNext(Exception("Could not send message to leo1"))
                     }

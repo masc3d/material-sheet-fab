@@ -48,7 +48,11 @@ class MainController : Controller(), Initializable {
     @FXML
     private lateinit var fxProgressIndicator: ProgressIndicator
 
+    /** Global settings */
     private val settings: Settings by Kodein.global.lazy.instance()
+
+    /** Leo bridge */
+    private val leoBridge: LeoBridge by Kodein.global.lazy.instance()
 
     /**
      * Helper for loading a controller in the context of MainController
@@ -117,7 +121,7 @@ class MainController : Controller(), Initializable {
 
     override fun initialize(location: URL, resources: ResourceBundle) {
         // Hook up to LeoBridge
-        LeoBridge.instance().ovMessageReceived
+        this.leoBridge.ovMessageReceived
                 .observeOn(JavaFxScheduler.getInstance())
                 .subscribe { this.onLeoBridgeMessageReceived(it) }
 

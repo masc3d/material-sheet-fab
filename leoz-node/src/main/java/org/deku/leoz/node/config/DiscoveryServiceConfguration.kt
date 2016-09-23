@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
+import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
@@ -28,9 +29,14 @@ open class DiscoveryServiceConfguration {
     @Inject
     private lateinit var serverSettings: ServerProperties
 
+    @Inject
+    private lateinit var executorService: ScheduledExecutorService
+
     @Bean
     open fun discoveryService(): DiscoveryService {
-        return DiscoveryService(bundleType = App.instance.bundleType)
+        return DiscoveryService(
+                executorService = this.executorService,
+                bundleType = App.instance.bundleType)
     }
 
     @PostConstruct
