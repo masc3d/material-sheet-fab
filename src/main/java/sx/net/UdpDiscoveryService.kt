@@ -4,7 +4,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.synchronized
-import sx.Copyable
 import sx.Disposable
 import sx.LazyInstance
 import sx.concurrent.Service
@@ -15,6 +14,7 @@ import java.net.*
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -28,12 +28,13 @@ import kotlin.concurrent.withLock
  * Created by masc on 29/08/16.
  */
 open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
-        infoClass: Class<TInfo>,
+        executorService: ScheduledExecutorService = Executors.newScheduledThreadPool(0),
         val port: Int,
+        infoClass: Class<TInfo>,
         private val serializer: Serializer = KryoSerializer())
 :
         Service(
-                executorService = Executors.newScheduledThreadPool(2),
+                executorService = executorService,
                 period = Duration.ofSeconds(30)) {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private var running = false
@@ -50,6 +51,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
             return UdpDiscoveryService(infoClass = String::class.java, port = port)
         }
     }
+
     /**
      * Host discovery info
      * @param address Host address
@@ -229,31 +231,37 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         }
 
         override fun run() {
-            this.log.trace("Starting discovery host cycle")
+            try {
+                this.log.trace("Starting discovery host cycle")
 
-            val packet = DatagramPacket(buffer, buffer.size)
-            this.socket.receive(packet)
+                val packet = DatagramPacket(buffer, buffer.size)
+                this.socket.receive(packet)
 
-            // Deserialize packet
-            @Suppress("UNCHECKED_CAST")
-            val host = this@UdpDiscoveryService.serializer.deserializeFrom(
-                    packet.data.copyOf(packet.data.size)) as Host<TInfo>
+                // Deserialize packet
+                @Suppress("UNCHECKED_CAST")
+                val host = this@UdpDiscoveryService.serializer.deserializeFrom(
+                        packet.data.copyOf(packet.data.size)) as Host<TInfo>
 
-            if (!this@UdpDiscoveryService.interfaces.get().containsKey(packet.address)) {
-                log.debug("Received info from [${host.address}]")
+                if (!this@UdpDiscoveryService.interfaces.get().containsKey(packet.address)) {
+                    log.debug("Received info from [${host.address}]")
 
-                // Update directory from requesting host
-                this@UdpDiscoveryService.updateDirectory(host, this.log)
+                    // Update directory from requesting host
+                    this@UdpDiscoveryService.updateDirectory(host, this.log)
 
-                // Send response for this host
-                val response = this@UdpDiscoveryService.serializer.serializeToByteArray(
-                        Host(address = InetSocketAddress(0).address,
-                                info = this@UdpDiscoveryService.info))
+                    // Send response for this host
+                    val response = this@UdpDiscoveryService.serializer.serializeToByteArray(
+                            Host(address = InetSocketAddress(0).address,
+                                    info = this@UdpDiscoveryService.info))
 
-                log.debug("Answering to ${packet.address} size [${response.size}]")
+                    log.debug("Answering to ${packet.address} size [${response.size}]")
 
-                val responsePacket = DatagramPacket(response, response.size, packet.address, packet.port)
-                this.socket.send(responsePacket)
+                    val responsePacket = DatagramPacket(response, response.size, packet.address, packet.port)
+                    this.socket.send(responsePacket)
+                }
+            } catch(e: SocketException) {
+                // Don't throw/report when socket was closed (eg. shutdown situation)
+                if (!this.socket.isClosed)
+                    throw e
             }
         }
 
@@ -277,77 +285,83 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         }
 
         override fun run() {
-            this.log.trace("Starting discovery client cycle")
+            try {
+                this.log.trace("Starting discovery client cycle")
 
-            // Broadcast the message over all the network interfaces
-            this@UdpDiscoveryService.interfaces.reset()
-            val interfaceAddresses = this@UdpDiscoveryService.interfaces.get()
-            interfaceAddresses.values.forEach {
-                val broadcast = it.interfaceAddress.broadcast
+                // Broadcast the message over all the network interfaces
+                this@UdpDiscoveryService.interfaces.reset()
+                val interfaceAddresses = this@UdpDiscoveryService.interfaces.get()
+                interfaceAddresses.values.forEach {
+                    val broadcast = it.interfaceAddress.broadcast
 
-                // Create host entry for this interface/address
-                val host = Host(
-                        address = it.interfaceAddress.address,
-                        info = this@UdpDiscoveryService.info)
+                    // Create host entry for this interface/address
+                    val host = Host(
+                            address = it.interfaceAddress.address,
+                            info = this@UdpDiscoveryService.info)
 
-                // Update directory with received host info
-                this@UdpDiscoveryService.updateDirectory(host, this.log)
+                    // Update directory with received host info
+                    this@UdpDiscoveryService.updateDirectory(host, this.log)
 
-                val sendData = this@UdpDiscoveryService.serializer.serializeToByteArray(host)
-                val sendPacket = DatagramPacket(sendData, sendData.size, broadcast, this@UdpDiscoveryService.port)
-                this.log.info("Broadcasting to ${sendPacket.address}")
-                this.socket.send(sendPacket)
-            }
+                    val sendData = this@UdpDiscoveryService.serializer.serializeToByteArray(host)
+                    val sendPacket = DatagramPacket(sendData, sendData.size, broadcast, this@UdpDiscoveryService.port)
+                    this.log.info("Broadcasting to ${sendPacket.address}")
+                    this.socket.send(sendPacket)
+                }
 
-            this.log.trace("Processing replies")
+                this.log.trace("Processing replies")
 
-            // Receive packet in a loop until timeout
-            val hostsByAddress = mutableMapOf<InetAddress, Host<TInfo>>()
-            while (true) {
-                val receivePacket = DatagramPacket(buffer, buffer.size)
+                // Receive packet in a loop until timeout
+                val hostsByAddress = mutableMapOf<InetAddress, Host<TInfo>>()
+                while (true) {
+                    val receivePacket = DatagramPacket(buffer, buffer.size)
 
-                try {
-                    this.socket.receive(receivePacket)
+                    try {
+                        this.socket.receive(receivePacket)
 
-                    // Deserialize packet
-                    @Suppress("UNCHECKED_CAST")
-                    var host = this@UdpDiscoveryService.serializer.deserializeFrom(
-                            receivePacket.data.copyOf(receivePacket.length)) as Host<TInfo>
+                        // Deserialize packet
+                        @Suppress("UNCHECKED_CAST")
+                        var host = this@UdpDiscoveryService.serializer.deserializeFrom(
+                                receivePacket.data.copyOf(receivePacket.length)) as Host<TInfo>
 
-                    // If packet is a server reply, it won't contain an address
-                    if (host.address.equals(InetSocketAddress(0).address)) {
-                        // In this case complement the address from the received packet
-                        host = Host(
-                                address = receivePacket.address,
-                                info = host.info)
+                        // If packet is a server reply, it won't contain an address
+                        if (host.address.equals(InetSocketAddress(0).address)) {
+                            // In this case complement the address from the received packet
+                            host = Host(
+                                    address = receivePacket.address,
+                                    info = host.info)
+                        }
+
+                        if (!interfaceAddresses.containsKey(host.address)) {
+                            // Only process replies which do not relate to/are not sent by this host
+                            hostsByAddress[host.address] = host
+
+                            // Update directory with received host info
+                            this@UdpDiscoveryService.updateDirectory(host, this.log)
+                        } else {
+                            this.log.trace("Ignoring reply for local host [${host.address}]")
+                        }
+                    } catch(e: SocketTimeoutException) {
+                        break
+                    }
+                }
+
+                // Post processing
+                this@UdpDiscoveryService.lock.withLock {
+                    // Find all non-local addresses for which no replies have been received
+                    val removed = this@UdpDiscoveryService._directory.filter {
+                        !interfaceAddresses.containsKey(it.key) && !hostsByAddress.containsKey(it.key)
                     }
 
-                    if (!interfaceAddresses.containsKey(host.address)) {
-                        // Only process replies which do not relate to/are not sent by this host
-                        hostsByAddress[host.address] = host
-
-                        // Update directory with received host info
-                        this@UdpDiscoveryService.updateDirectory(host, this.log)
-                    } else {
-                        this.log.trace("Ignoring reply for local host [${host.address}]")
+                    // Remove them and notify
+                    removed.forEach {
+                        this@UdpDiscoveryService._directory.remove(it.key)
+                        this@UdpDiscoveryService.rxOnUpdateSubject.onNext(UpdateEvent(UpdateEvent.Type.Removed, it.value))
                     }
-                } catch(e: SocketTimeoutException) {
-                    break
                 }
-            }
-
-            // Post processing
-            this@UdpDiscoveryService.lock.withLock {
-                // Find all non-local addresses for which no replies have been received
-                val removed = this@UdpDiscoveryService._directory.filter {
-                    !interfaceAddresses.containsKey(it.key) && !hostsByAddress.containsKey(it.key)
-                }
-
-                // Remove them and notify
-                removed.forEach {
-                    this@UdpDiscoveryService._directory.remove(it.key)
-                    this@UdpDiscoveryService.rxOnUpdateSubject.onNext(UpdateEvent(UpdateEvent.Type.Removed, it.value))
-                }
+            } catch(e: SocketException) {
+                // Don't throw/report when socket was closed (eg. shutdown situation)
+                if (!this.socket.isClosed)
+                    throw e
             }
         }
 
