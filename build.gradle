@@ -66,7 +66,7 @@ dependencies {
     provided "com.esotericsoftware:kryo:4.0.0"
 
     // Protostuff
-    def v_protostuff = '1.4.4'
+    def v_protostuff = '1.5.0'
     provided "io.protostuff:protostuff-core:$v_protostuff"
     provided "io.protostuff:protostuff-runtime:$v_protostuff"
 
