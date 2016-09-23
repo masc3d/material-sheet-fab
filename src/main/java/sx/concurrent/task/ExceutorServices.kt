@@ -65,6 +65,30 @@ class CompositeExecutorService(
         ExecutorService by executorService,
         DynamicScheduledExecutorService {
 
+    companion object {
+        //region Convenience methods for creating instances
+
+        /**
+         * Create instance
+         */
+        @JvmStatic fun create(scheduledCorePoolSize: Int = 0,
+                              cachedCorePoolSize: Int = 0,
+                              cachedKeepAliveTimeSeconds: Int = 60): CompositeExecutorService {
+            val scheduledExecutorService = ScheduledThreadPoolExecutor(scheduledCorePoolSize);
+            scheduledExecutorService.removeOnCancelPolicy = true
+
+            val cachedExecutorService = ThreadPoolExecutor(
+                    cachedCorePoolSize,
+                    Integer.MAX_VALUE,
+                    cachedKeepAliveTimeSeconds.toLong(),
+                    TimeUnit.SECONDS,
+                    SynchronousQueue<Runnable>())
+
+            return CompositeExecutorService(scheduledExecutorService, cachedExecutorService)
+        }
+        // endregion
+    }
+
     override var removeOnCancelPolicy: Boolean
         get() {
             return when (this.scheduledExecutorService) {
@@ -104,11 +128,15 @@ class CompositeExecutorService(
     }
 
     override fun shutdown() {
-        throw UnsupportedOperationException()
+        this.executorService.shutdown()
+        this.scheduledExecutorService.shutdown()
     }
 
     override fun shutdownNow(): MutableList<Runnable> {
-        throw UnsupportedOperationException()
+        val list1 =  this.executorService.shutdownNow()
+        val list2 =  this.scheduledExecutorService.shutdownNow()
+        list1.addAll(list2)
+        return list1
     }
 
     override fun isShutdown(): Boolean {
