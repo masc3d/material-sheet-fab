@@ -114,7 +114,7 @@
 .leoz-textfield-search {
     -fx-background-insets: 0, 1, 2;
     -fx-background-radius: 3, 2, 2;
-    -fx-background-image: url("../images/search-32px.png");
+    -fx-background-image: url("../images/search-48dp.png");
     -fx-background-size: 20 20;
     -fx-background-position: left 10 center;
     -fx-background-repeat: no-repeat;

@@ -18,7 +18,7 @@
          <graphic>
             <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../images/deoptdetails-address-32px.png" />
+                  <Image url="@../../images/deoptdetails-address-48dp.png" />
                </image>
             </ImageView>
          </graphic>
@@ -33,7 +33,7 @@
          <graphic>
             <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../images/depotdetails-ops-32px.png" />
+                  <Image url="@../../images/depotdetails-ops-48dp.png" />
                </image>
             </ImageView>
          </graphic>
@@ -42,7 +42,7 @@
          <graphic>
             <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../images/depotdetails-accounting-32px.png" />
+                  <Image url="@../../images/depotdetails-accounting-48dp.png" />
                </image>
             </ImageView>
          </graphic>
@@ -58,7 +58,7 @@
          <graphic>
             <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../images/depotdetails-transfer-32px.png" />
+                  <Image url="@../../images/depotdetails-transfer-48dp.png" />
                </image>
             </ImageView>
          </graphic>
@@ -74,7 +74,7 @@
          <graphic>
             <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../images/depotdetails-permission-32px.png" />
+                  <Image url="@../../images/depotdetails-permission-48dp.png" />
                </image>
             </ImageView>
          </graphic>

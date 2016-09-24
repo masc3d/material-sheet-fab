@@ -16,7 +16,7 @@
                                     <Rectangle2D minX="11.0" width="11.0" />
                                  </viewport>
                                  <image>
-                                    <Image url="@../../images/home-32px.png" />
+                                    <Image url="@../../images/home-48dp.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -25,7 +25,7 @@
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../images/depot-32px.png" />
+                                    <Image url="@../../images/depot-48dp.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -34,7 +34,7 @@
                            <graphic>
                               <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../images/debug-32px.png" />
+                                    <Image url="@../../images/debug-48dp.png" />
                                  </image>
                               </ImageView>
                            </graphic>
