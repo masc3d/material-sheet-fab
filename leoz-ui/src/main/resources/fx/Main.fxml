@@ -38,7 +38,7 @@
                                  <children>
                                     <ImageView fitHeight="20.0" fitWidth="20.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true" style="-fx-opacity: 0.5;" visible="false" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="20.0">
                                        <image>
-                                          <Image url="@../images/search-32px.png" />
+                                          <Image url="@../images/search-48dp.png" />
                                        </image>
                                     </ImageView>
                                  </children>
