@@ -1,0 +1,48 @@
+group 'sx'
+version '0.1'
+
+buildscript {
+    ext.kotlin_version = '1.0.4'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    // Logging
+    def v_slf4j = '1.7.21'
+    compile "org.slf4j:slf4j-api:$v_slf4j"
+    compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
+
+    // Kryo
+    provided "com.esotericsoftware:kryo:4.0.0"
+
+    // Protostuff
+    def v_protostuff = '1.5.0'
+    provided "io.protostuff:protostuff-core:$v_protostuff"
+    provided "io.protostuff:protostuff-runtime:$v_protostuff"
+
+    // Snappy
+    provided "org.xerial.snappy:snappy-java:1.1.2.4"
+}
