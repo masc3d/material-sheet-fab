@@ -36,7 +36,8 @@ configurations {
 }
 
 dependencies {
-    compile "sx:sx-common:1.0"
+    compile project(':libs:sx-common')
+    compile project(':libs:sx-serialization')
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
