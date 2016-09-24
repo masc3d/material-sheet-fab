@@ -2,8 +2,6 @@ package sx
 
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
-import java.util.function.Supplier
-import kotlin.concurrent.withLock
 
 /**
  * Lazy instance supporting external injection.
