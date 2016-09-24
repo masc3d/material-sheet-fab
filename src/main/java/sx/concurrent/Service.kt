@@ -330,18 +330,22 @@ abstract class Service(
     /**
      * Triggers the service logic to run once.
      * Puts the service in 'triggered' mode. All further triggers until the next schedule (which will execute asap) will be ignored.
+     * @return If the service was successfully trigger. Returns false if eg. the service is currently not running
      */
-    fun trigger() {
+    fun trigger(): Boolean {
         this.lock.withLock {
-            this.assertIsStarted()
+            if (!this.isStarted)
+                return false
 
             if (this.triggerCount.get() > 1)
-                return
+                return true
 
             this.triggerCount.incrementAndGet()
 
             // runImpl being synchronized will ensure triggered task will execute in order
             this.submitSupplementalTask({ this.runImpl() })
+
+            return true
         }
     }
 
