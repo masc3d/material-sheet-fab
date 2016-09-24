@@ -17,7 +17,12 @@
             <option value="$PROJECT_DIR$/libs/barbarywatchservice" />
             <option value="$PROJECT_DIR$/libs/leoz-common" />
             <option value="$PROJECT_DIR$/libs/sx-common" />
+            <option value="$PROJECT_DIR$/libs/sx-discovery" />
+            <option value="$PROJECT_DIR$/libs/sx-fx" />
             <option value="$PROJECT_DIR$/libs/sx-jms" />
+            <option value="$PROJECT_DIR$/libs/sx-rsync" />
+            <option value="$PROJECT_DIR$/libs/sx-serialization" />
+            <option value="$PROJECT_DIR$/libs/sx-ssh" />
           </set>
         </option>
       </GradleProjectSettings>

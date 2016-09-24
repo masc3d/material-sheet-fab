@@ -22,6 +22,8 @@
       <module name="barbarywatchservice_test" target="1.7" />
       <module name="buildSrc_main" target="1.8" />
       <module name="buildSrc_test" target="1.8" />
+      <module name="fx_main" target="1.8" />
+      <module name="fx_test" target="1.8" />
       <module name="jms_main" target="1.5" />
       <module name="jms_test" target="1.5" />
       <module name="leoz-boot_main" target="1.8" />
@@ -42,8 +44,22 @@
       <module name="mdnsjava_test" target="1.6" />
       <module name="sx-common_main" target="1.7" />
       <module name="sx-common_test" target="1.7" />
+      <module name="sx-discovery_main" target="1.8" />
+      <module name="sx-discovery_test" target="1.8" />
+      <module name="sx-fx_main" target="1.8" />
+      <module name="sx-fx_test" target="1.8" />
       <module name="sx-jms_main" target="1.7" />
       <module name="sx-jms_test" target="1.7" />
+      <module name="sx-rsync_main" target="1.8" />
+      <module name="sx-rsync_test" target="1.8" />
+      <module name="sx-serialization_main" target="1.8" />
+      <module name="sx-serialization_test" target="1.8" />
+      <module name="sx-ssh_main" target="1.8" />
+      <module name="sx-ssh_test" target="1.8" />
+      <module name="sx-swing_main" target="1.8" />
+      <module name="sx-swing_test" target="1.8" />
+      <module name="sx_main" target="1.8" />
+      <module name="sx_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

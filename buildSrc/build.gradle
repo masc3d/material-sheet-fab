@@ -90,7 +90,7 @@ sourceSets {
 
 // Task for importing classes from other projects
 task syncClasses(type: Sync) {
-    from '../libs/leoz-common/src/main/java', '../libs/sx-common/src/main/java'
+    from '../libs/leoz-common/src/main/java', '../libs/sx-common/src/main/java', '../libs/sx-ssh/src/main/java', '../libs/sx-rsync/src/main/java', '../libs/sx-serialization/src/main/java'
     into srcdir_import
     include '**/bundle/Bundle.kt',
             '**/bundle/BundleInstaller*',

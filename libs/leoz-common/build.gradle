@@ -21,6 +21,9 @@ configurations {
 dependencies {
     compile project(':libs:sx-common')
     compile project(':libs:sx-jms')
+    compile project(':libs:sx-rsync')
+    compile project(':libs:sx-serialization')
+    compile project(':libs:sx-discovery')
 
     // Watchservice replacement for OSX
     compile project(':libs:barbarywatchservice')

@@ -154,7 +154,7 @@ subprojects {
 
     ext {
         globalPlatformDir = new File(project.rootDir, 'platform')
-        sxPlatformDir = new File(project(':libs:sx-common').projectDir, 'platform')
+        sxRsyncPlatformDir = new File(project(':libs:sx-rsync').projectDir, 'platform')
 
         projectBuildSupplementalsDir = new File(project.buildDir, 'supplementals')
         projectBuildPlatformDir = new File(projectBuildSupplementalsDir, 'platform')
@@ -168,7 +168,7 @@ subprojects {
      * Task copying platform specific files from sx-common to project dir
      */
     task copySxPlatformDirToProject(type: Copy) {
-        from sxPlatformDir
+        from sxRsyncPlatformDir
         into projectPlatformDir
         // Rename generic name to leoz specific process name, as it's easier to handle,
         // when eg. looking at process names while leoz is running
@@ -179,7 +179,7 @@ subprojects {
      * Task copying platform specific files from sx-common to project build dir
      */
     task copySxPlatformDirToBuild(type: Copy) {
-        from sxPlatformDir
+        from sxRsyncPlatformDir
         into projectBuildPlatformDir
         // Rename generic name to leoz specific process name, as it's easier to handle,
         // when eg. looking at process names while leoz is running
