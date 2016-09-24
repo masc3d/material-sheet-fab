@@ -45,7 +45,6 @@ dependencies {
     def v_slf4j = '1.7.21'
     compile "org.slf4j:slf4j-api:$v_slf4j"
     compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
-    provided "ch.qos.logback:logback-classic:1.1.7"
 
     // Misc
     compile "org.apache.commons:commons-lang3:3.4"
@@ -56,27 +55,6 @@ dependencies {
 
     // JAX-RS
     provided "javax.ws.rs:javax.ws.rs-api:2.0.1"
-
-    // Ini/conf file support
-    compile 'org.ini4j:ini4j:0.5.4'
-
-    //region Serialization support
-
-    // Kryo
-    provided "com.esotericsoftware:kryo:4.0.0"
-
-    // Protostuff
-    def v_protostuff = '1.5.0'
-    provided "io.protostuff:protostuff-core:$v_protostuff"
-    provided "io.protostuff:protostuff-runtime:$v_protostuff"
-
-    // Snappy
-    provided "org.xerial.snappy:snappy-java:1.1.2.4"
-
-    //endregion
-
-    // Mina/SSHD
-    provided "org.apache.sshd:sshd-core:1.2.0"
 
     // JNA
     provided "net.java.dev.jna:jna:4.2.2"
