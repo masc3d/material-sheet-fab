@@ -130,9 +130,12 @@ class MainController : Controller(), Initializable {
             this.onSidebarItemSelected(it)
         }
 
-        // Initial display
-        this.setVersion("User: Max Mustermann\tVersion: TEST") //TODO: Dynamic information
-        this.showModule(this.homeController, false)
+        Platform.runLater {
+            // Initial display
+            this.setVersion("User: Max Mustermann\tVersion: TEST") //TODO: Dynamic information
+
+            this.showModule(this.homeController, false)
+        }
     }
 
     /**

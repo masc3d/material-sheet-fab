@@ -50,11 +50,11 @@
 }
 
 .leoz-sidebar-selection {
-    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, linear-gradient(to top, lightblue, azure);
+    -fx-background-color: #32629d;
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
     -fx-background-radius: 3px, 3px, 2px, 1px;
     -fx-padding: 0.333333em 0.666667em 0.333333em 0.666667em;
-    -fx-text-fill: -fx-text-base-color;
+    -fx-text-fill: white
 }
 
 /** home view styles */
@@ -102,13 +102,9 @@
 .form-content-box {
     -fx-padding: 5 5 5 5;
     -fx-background-color: linear-gradient(from 0% 0% to 0% 20%, rgba(225,225,225,1), white);
-    -fx-background-radius : 2, 2, 2, 2;
+    -fx-background-radius: 2, 2, 2, 2;
     -fx-border-color: darkgray;
     -fx-border-radius: 5;
-}
-
-.tab:selected {
-    -fx-background-color: linear-gradient(to top, lightblue, azure);
 }
 
 .leoz-textfield-search {

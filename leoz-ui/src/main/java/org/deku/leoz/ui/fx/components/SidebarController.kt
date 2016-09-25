@@ -5,11 +5,14 @@ import javafx.fxml.Initializable
 import javafx.scene.control.Accordion
 import javafx.scene.control.Button
 import javafx.scene.control.TitledPane
+import javafx.scene.effect.ColorAdjust
+import javafx.scene.image.ImageView
 import org.deku.leoz.ui.fx.ModuleController
 import org.deku.leoz.ui.fx.modules.DebugController
 import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
 import org.deku.leoz.ui.fx.modules.HomeController
 import rx.lang.kotlin.PublishSubject
+import tornadofx.getChildList
 import java.net.URL
 import java.util.*
 
@@ -51,8 +54,13 @@ class SidebarController : Initializable {
     }
 
     fun highlightByController(module: ModuleController) {
-        for (b in buttons)
+        for (b in buttons) {
             b.styleClass.remove("leoz-sidebar-selection")
+            val im = b.getChildList()?.firstOrNull() as? ImageView
+            if (im != null) {
+                im.effect = null
+            }
+        }
 
         var selection: Button? = null
         if (module is HomeController) {
@@ -63,8 +71,13 @@ class SidebarController : Initializable {
             selection = fxDebugButton
         }
 
-        if (selection != null)
+        if (selection != null) {
             selection.styleClass.add("leoz-sidebar-selection")
+            val im = selection.getChildList()?.firstOrNull() as? ImageView
+            if (im != null) {
+                im.effect = ColorAdjust(0.0, 0.0, 1.0, 0.0)
+            }
+        }
     }
 
     override fun initialize(location: URL, resources: ResourceBundle) {
