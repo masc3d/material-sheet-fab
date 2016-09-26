@@ -1,4 +1,11 @@
 /** leo2 styles */
+.root {
+    /** Color constant */
+    -leoz-primary-color: #32629d;
+    -leoz-secondary-color: #f8ae18;
+
+    -fx-focus-color: -leoz-primary-color;
+}
 
 /** generic containers */
 .leoz-pane {
@@ -6,6 +13,7 @@
 }
 
 .leoz-menu-pane {
+    -fx-background-color: white;
     -fx-padding: 0;
 }
 
@@ -23,7 +31,7 @@
 /** main view styles */
 .leoz-top-pane {
     -fx-background-color: linear-gradient(to bottom, darkgray, whitesmoke);
-    -fx-border-color: #f8ae18 transparent darkgray transparent;
+    -fx-border-color: -leoz-secondary-color transparent darkgray transparent;
     -fx-border-width: 3 0 1 0;
 }
 
@@ -50,7 +58,7 @@
 }
 
 .leoz-sidebar-selection {
-    -fx-background-color: #32629d;
+    -fx-background-color: -leoz-primary-color;
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
     -fx-background-radius: 3px, 3px, 2px, 1px;
     -fx-padding: 0.333333em 0.666667em 0.333333em 0.666667em;
