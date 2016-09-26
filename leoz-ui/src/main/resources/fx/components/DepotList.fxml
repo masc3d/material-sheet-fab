@@ -11,7 +11,7 @@
                         <children>
                             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
                                 <image>
-                                    <Image url="@../../images/search-48dp.png" />
+                                    <Image url="@../../images/search-144px.png" />
                                 </image>
                             </ImageView>
                             <TextField fx:id="fxSearchText" HBox.hgrow="ALWAYS" />

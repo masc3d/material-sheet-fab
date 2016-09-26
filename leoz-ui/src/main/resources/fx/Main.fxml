@@ -52,7 +52,7 @@
                                                     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0"
                                                     AnchorPane.topAnchor="20.0">
                                                     <image>
-                                                        <Image url="@../images/search-48dp.png" />
+                                                        <Image url="@../images/search-144px.png" />
                                                     </image>
                                                 </ImageView>
                                             </children>
