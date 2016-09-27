@@ -114,10 +114,12 @@
                 <AnchorPane layoutY="1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="8.0"
                     AnchorPane.topAnchor="0.0">
                     <children>
-                        <HBox alignment="CENTER" fillHeight="false" spacing="8.0" AnchorPane.bottomAnchor="0.0"
+                        <HBox alignment="CENTER" fillHeight="false" AnchorPane.bottomAnchor="0.0"
                             AnchorPane.topAnchor="0.0">
                             <children>
-                                <Label fx:id="fxVersion" text="Label" HBox.hgrow="ALWAYS" />
+                                <ImageView fitHeight="24.0" fitWidth="24.0"><image><Image url="@../images/user-144px.png"></Image></image></ImageView>
+                                <Label fx:id="fxUser" text="Label" HBox.hgrow="ALWAYS" />
+                                <Label fx:id="fxVersion" styleClass="leoz-version" text="Label" HBox.hgrow="ALWAYS" />
                                 <ButtonBar buttonMinWidth="16.0">
                                     <buttons>
                                         <ToggleButton fx:id="fxLogButton" mnemonicParsing="false">

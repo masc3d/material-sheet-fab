@@ -8,6 +8,7 @@ import org.deku.leoz.discovery.DiscoveryService
 import org.deku.leoz.ui.Localization
 import org.deku.leoz.ui.Settings
 import org.deku.leoz.ui.bridge.LeoBridge
+import sx.JarManifest
 import sx.concurrent.task.CompositeExecutorService
 import java.util.*
 import java.util.concurrent.Executor
@@ -26,6 +27,10 @@ object Configurations {
     val application = Kodein.Module {
         /** Application side settings */
         bind<Settings>() with singleton { Settings() }
+
+        bind<JarManifest>() with singleton {
+            JarManifest(this.javaClass)
+        }
 
         /** Localization & internationalization */
         bind<org.deku.leoz.ui.Localization>() with singleton {

@@ -141,6 +141,8 @@ class Main : Application() {
         this.loadFont("/fonts/Futura-CondensedMedium.ttf")
         this.loadFont("/fonts/Futura-Medium.ttf")
         this.loadFont("/fonts/Futura-MediumItalic.ttf")
+        this.loadFont("/fonts/Menlo-Regular.ttf")
+        this.loadFont("/fonts/Menlo-Bold.ttf")
 
         // Main scene
         //TODO: User preferences? Check if last size and position should be remembered. Dont think so (PHPR)

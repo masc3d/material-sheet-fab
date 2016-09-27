@@ -58,7 +58,11 @@
 }
 
 .leoz-status-bar HBox {
-    -fx-spacing: 16;
+    -fx-spacing: 8;
+}
+
+.leoz-status-bar .leoz-version {
+    -fx-text-fill: gray;
 }
 
 .leoz-status-bar ToggleButton {
@@ -71,6 +75,12 @@
 
 .leoz-status-bar ToggleButton:selected {
     -fx-background-color: white;
+}
+
+.leoz-log {
+    -fx-font-size: 11;
+    -fx-font-family: "Menlo";
+    -fx-font-weight: bold;
 }
 
 .leoz-sidebar-selection {

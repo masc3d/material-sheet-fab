@@ -27,6 +27,7 @@ import org.deku.leoz.ui.fx.modules.HomeController
 import org.slf4j.LoggerFactory
 import rx.schedulers.JavaFxScheduler
 import sun.security.pkcs11.Secmod
+import sx.JarManifest
 import sx.LazyInstance
 import sx.fx.TextAreaLogAppender
 import sx.fx.animate
@@ -44,6 +45,8 @@ class MainController : Controller(), Initializable {
     private lateinit var fxTitle: Label
     @FXML
     private lateinit var fxVersion: Label
+    @FXML
+    private lateinit var fxUser: Label
     @FXML
     private lateinit var fxContentPaneContainer: AnchorPane
     @FXML
@@ -149,7 +152,11 @@ class MainController : Controller(), Initializable {
             this.fxSplitPane.items.remove(this.fxBottomPaneContainer)
 
             // Initial display
-            this.setVersion("User: Max Mustermann\tVersion: TEST") //TODO: Dynamic information
+            val version = Kodein.global.instance<JarManifest>().implementationVersion
+            this.fxVersion.text = if (version.length > 0) version else "N/A"
+
+            // TODO: login name
+            this.fxUser.text = "Max Mustermann"
 
             this.showModule(this.homeController, false)
         }
@@ -273,10 +280,6 @@ class MainController : Controller(), Initializable {
         }
     }
 
-    private fun setVersion(version: String) {
-        fxVersion.text = version
-    }
-
     /**
      * Request progress indication
      * Each call to request requires release to be called for the indicator to disappear as soon as all consumers released it
@@ -340,6 +343,7 @@ class MainController : Controller(), Initializable {
             // Create text area
             val t = LogConfiguration.textAreaLogAppender.textArea
             t.isEditable = false
+            t.styleClass.add("leoz-log")
             AnchorPane.setTopAnchor(t, 0.0)
             AnchorPane.setBottomAnchor(t, 0.0)
             AnchorPane.setRightAnchor(t, 0.0)
