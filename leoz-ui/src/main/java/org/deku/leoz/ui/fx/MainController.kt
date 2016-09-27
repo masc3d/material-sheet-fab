@@ -10,8 +10,7 @@ import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
-import javafx.scene.control.Label
-import javafx.scene.control.ProgressIndicator
+import javafx.scene.control.*
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
 import javafx.util.Duration
@@ -20,13 +19,19 @@ import org.deku.leoz.ui.Main
 import org.deku.leoz.ui.Settings
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.bridge.Message
+import org.deku.leoz.ui.config.LogConfiguration
 import org.deku.leoz.ui.fx.components.SidebarController
 import org.deku.leoz.ui.fx.modules.DebugController
 import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
 import org.deku.leoz.ui.fx.modules.HomeController
+import org.slf4j.LoggerFactory
 import rx.schedulers.JavaFxScheduler
 import sun.security.pkcs11.Secmod
 import sx.LazyInstance
+import sx.fx.TextAreaLogAppender
+import sx.fx.animate
+import sx.logging.slf4j.*
+import tornadofx.removeFromParent
 import java.net.URL
 import java.util.*
 
@@ -47,6 +52,14 @@ class MainController : Controller(), Initializable {
     private lateinit var fxSidebarController: SidebarController
     @FXML
     private lateinit var fxProgressIndicator: ProgressIndicator
+    @FXML
+    private lateinit var fxLogButton: ToggleButton
+    @FXML
+    private lateinit var fxSplitPane: SplitPane
+    @FXML
+    private lateinit var fxBottomPaneContainer: AnchorPane
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Global settings */
     private val settings: Settings by Kodein.global.lazy.instance()
@@ -130,7 +143,11 @@ class MainController : Controller(), Initializable {
             this.onSidebarItemSelected(it)
         }
 
+        this.fxLogButton.onAction = EventHandler { e -> this.onLogButtonAction() }
+
         Platform.runLater {
+            this.fxSplitPane.items.remove(this.fxBottomPaneContainer)
+
             // Initial display
             this.setVersion("User: Max Mustermann\tVersion: TEST") //TODO: Dynamic information
 
@@ -314,6 +331,34 @@ class MainController : Controller(), Initializable {
 
     fun showError(message: String) {
         Notifications.create().title("Leoz").text(message).showError()
+    }
+
+    fun onLogButtonAction() {
+        val show = this.fxLogButton.isSelected
+
+        if (show)  {
+            // Create text area
+            val t = LogConfiguration.textAreaLogAppender.textArea
+            t.isEditable = false
+            AnchorPane.setTopAnchor(t, 0.0)
+            AnchorPane.setBottomAnchor(t, 0.0)
+            AnchorPane.setRightAnchor(t, 0.0)
+            AnchorPane.setLeftAnchor(t, 0.0)
+
+            this.fxBottomPaneContainer.children.clear()
+            this.fxBottomPaneContainer.children.add(t)
+
+            if (!this.fxSplitPane.items.contains(this.fxBottomPaneContainer)) {
+                this.fxSplitPane.items.add(this.fxBottomPaneContainer)
+            }
+
+            this.fxSplitPane.setDividerPositions(0.6)
+        } else {
+            this.fxBottomPaneContainer.removeFromParent()
+            this.fxBottomPaneContainer.children.clear()
+
+            this.fxSplitPane.items.remove(this.fxBottomPaneContainer)
+        }
     }
 
     fun onLeoBridgeMessageReceived(message: Message) {
