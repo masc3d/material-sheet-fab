@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.AppenderBase
 import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import org.apache.commons.io.FilenameUtils
@@ -93,6 +94,16 @@ abstract class LogConfiguration : Disposable {
             fileAppender.triggeringPolicy.start()
             fileAppender.start()
         }
+    }
+
+    /**
+     * Add appender to log configuration
+     */
+    fun addAppender(appender: AppenderBase<ILoggingEvent>) {
+        this.rootLogger.level = Level.INFO
+        appender.context = this.loggerContext
+        appender.start()
+        this.rootLogger.addAppender(appender)
     }
 
     /**

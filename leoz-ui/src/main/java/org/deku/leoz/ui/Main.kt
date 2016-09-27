@@ -18,6 +18,8 @@ import org.controlsfx.control.Notifications
 import org.deku.leoz.discovery.DiscoveryService
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.config.Configurations
+import org.deku.leoz.ui.config.LogConfiguration
+import org.deku.leoz.ui.config.StorageConfiguration
 import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.ui.fx.MainController
 import org.slf4j.LoggerFactory
@@ -77,6 +79,8 @@ class Main : Application() {
      */
     @Throws(Exception::class)
     override fun start(primaryStage: Stage) {
+        log.info("JavaFX application start")
+
         // Support for command line interface
         val setup = Setup()
         val command = setup.parse(this.parameters.raw.toTypedArray())
@@ -92,9 +96,18 @@ class Main : Application() {
             return
         }
 
+        log.debug("Initializing injection")
+
+        StorageConfiguration.initalize()
+
+        LogConfiguration.logFile = StorageConfiguration.logFile
+        LogConfiguration.initialize()
+
         // Setup injection
         Kodein.global.addImport(Configurations.application)
         Kodein.global.addImport(Configurations.messenging)
+
+        log.debug("Detaching background initialization")
 
         // Initialize application
         val executor: ExecutorService = Kodein.global.instance()
@@ -117,9 +130,12 @@ class Main : Application() {
             Kodein.global.instance<DiscoveryService>().start()
         }
 
+        log.debug("Initializing primary stage")
+
         // Setup stage
         this.primaryStage = primaryStage
 
+        log.debug("Loading fonts")
         // Load embedded fonts
         this.loadFont("/fonts/Futura-CondensedExtraBold.ttf")
         this.loadFont("/fonts/Futura-CondensedMedium.ttf")
@@ -133,12 +149,16 @@ class Main : Application() {
         //Set default scene size which is used when primary stage is no more in maximized mode
         val width = if(primScreenBounds.width < 1366.0) primScreenBounds.width - 50 else 1366.0
         val height = if(primScreenBounds.height < 768.0) primScreenBounds.height - 50 else 768.0
+
+        log.debug("Creating main controller")
         val scene = Scene(mainController.fxRoot, width, height)
+        log.debug("Created main controller")
 
         primaryStage.title = this.i18n.resources.getString("global.title")!!
         primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
         primaryStage.scene = scene
 
+        log.info("Showing primary stage")
         // Maximizing by default is usually annoying for users and developers alike.
         // Default should be the minimum supported size.
         // If it's necessary to maximize by default on partidular occasions/installations it should be paremeterized.

@@ -10,13 +10,4 @@ import org.deku.leoz.config.LogConfiguration
  */
 object LogConfiguration : LogConfiguration() {
 
-    /**
-     * Add appender to log configuration
-     */
-    fun addAppender(appender: AppenderBase<ILoggingEvent>) {
-        this.rootLogger.level = Level.INFO
-        appender.context = this.loggerContext
-        appender.start()
-        this.rootLogger.addAppender(appender)
-    }
 }

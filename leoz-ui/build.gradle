@@ -17,6 +17,7 @@ buildscript {
 dependencies {
     compile project(':libs:sx-common')
     compile project(':libs:leoz-common')
+    compile project(':libs:sx-fx')
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
