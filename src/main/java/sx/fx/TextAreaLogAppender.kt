@@ -5,6 +5,7 @@ import ch.qos.logback.classic.PatternLayout
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
 import javafx.application.Platform
+import javafx.beans.value.ChangeListener
 import javafx.scene.control.TextArea
 import org.slf4j.LoggerFactory
 
@@ -27,6 +28,11 @@ class TextAreaLogAppender(
         this.patternLayout.pattern = "%date{HH:mm:ss.SSS} %-5level [%thread]: %message%n"
         this.patternLayout.context = LoggerFactory.getILoggerFactory() as LoggerContext
         this.patternLayout.start()
+
+        this.textArea.textProperty().addListener { observableValue, old, new ->
+            // TODO: the first time this fires, it doesn't work properly, text area won't scroll to end
+            this.textArea.scrollTop = Double.MAX_VALUE
+        }
     }
 
     /**
@@ -41,27 +47,17 @@ class TextAreaLogAppender(
 
             if (this.lines > this.maxLines) {
                 // Truncate first line
-                var crlfIndex = buffer.indexOf("\n")
+                val crlfIndex = buffer.indexOf("\n")
                 if (crlfIndex > 0)
                     buffer.delete(0, crlfIndex + 1)
                 this.lines--
             }
-        }
 
-        // Append formatted message to text area using the Thread.
-        try {
-            Platform.runLater({
-                try {
-                    this.textArea.text = this.buffer.toString()
-                    this.textArea.scrollTop = Double.MAX_VALUE;
-                } catch (e: Exception) {
-                    // Ignore exceptions
-                }
-            })
-            // Pass thread slice to give UI opportunity to update asap
-            Thread.sleep(0)
-        } catch (e: Exception) {
-            // Ignore exceptions
+            Platform.runLater {
+                this.textArea.text = this.buffer.toString()
+                // Make sure text changed listener fires.
+                this.textArea.appendText("")
+            }
         }
     }
 }
