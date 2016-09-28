@@ -16,7 +16,6 @@ data class DiscoveryInfo(
      * Leoz service types
      * Created by masc on 22/08/16.
      */
-    @Serializable(0x103d252eea28de)
     enum class ServiceType(val value: String) {
         HTTPS("https"),
         ACTIVEMQ_NATIVE("activemq_native"),
