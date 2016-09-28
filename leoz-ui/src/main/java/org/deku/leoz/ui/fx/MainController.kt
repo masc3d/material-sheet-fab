@@ -35,6 +35,7 @@ import sx.logging.slf4j.*
 import tornadofx.removeFromParent
 import java.net.URL
 import java.util.*
+import java.util.concurrent.ExecutorService
 
 /**
  * Main userinterface controller
@@ -69,6 +70,8 @@ class MainController : Controller(), Initializable {
 
     /** Leo bridge */
     private val leoBridge: LeoBridge by Kodein.global.lazy.instance()
+
+    private val executorService: ExecutorService by Kodein.global.lazy.instance()
 
     /**
      * Helper for loading a controller in the context of MainController
@@ -148,6 +151,12 @@ class MainController : Controller(), Initializable {
 
         this.fxLogButton.onAction = EventHandler { e -> this.onLogButtonAction() }
 
+        // Asynchronously preload heavy modules
+        this.executorService.submit {
+            this.lazyDepotMaintenanceController.get()
+        }
+
+        // UI initialization
         Platform.runLater {
             this.fxSplitPane.items.remove(this.fxBottomPaneContainer)
 

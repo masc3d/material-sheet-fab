@@ -31,12 +31,16 @@ abstract class Controller : Activatable, Disposable {
          * @return
          */
         fun <T : Controller> fromFxml(path: String): T {
+            val sw = Stopwatch.createStarted()
+
             val fxml = FXMLLoader(Controller::class.java.getResource(path))
             fxml.resources = this.i18n.resources
             fxml.load<Parent>()
 
             val m = fxml.getController<T>()
             m.fxRoot = fxml.getRoot()
+
+            log.debug("Created fx controller from [${path}] in ${sw}")
             return m
         }
     }
