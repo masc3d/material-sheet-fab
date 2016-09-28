@@ -7,6 +7,7 @@ import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import com.esotericsoftware.kryo.pool.KryoPool
 import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer
+import com.esotericsoftware.kryo.serializers.EnumNameSerializer
 import com.esotericsoftware.kryo.util.*
 import com.esotericsoftware.minlog.Log
 import org.slf4j.LoggerFactory
@@ -173,17 +174,34 @@ class KryoSerializer(
         }
     }
 
+    /**
+     * Customized kryo EnumNameSeriarlizer which returns null if enum value could not be mapped
+     */
+    class EnumNameSerializer<T>(kryo: Kryo, type: Class<T>) : com.esotericsoftware.kryo.serializers.EnumNameSerializer(kryo, type) where T : Enum<*> {
+        override fun read(kryo: Kryo?, input: Input?, type: Class<Enum<*>>?): Enum<out Enum<*>>? {
+            try {
+                return super.read(kryo, input, type)
+            } catch(e: Exception) {
+                return null
+            }
+        }
+    }
+
     companion object {
         /**
          * Kryo factory
          */
         private fun newKryo(): Kryo {
+            // Create kryo with custom ClassResolver
             val k = Kryo(ClassResolver(), MapReferenceResolver())
             // Setting the default serializer to CompatibleFieldSerializer is crucial here
             // as the default FiedldSerializer relies solely in order and may cause breakage as classes evolve
             k.setDefaultSerializer(CompatibleFieldSerializer::class.java)
             // Required for compatibility with kryo 3.x
             k.fieldSerializerConfig.isOptimizedGenerics = true
+
+            // Register custom serializers
+            k.addDefaultSerializer(Enum::class.java, EnumNameSerializer::class.java)
             return k
         }
 
