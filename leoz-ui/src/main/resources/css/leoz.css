@@ -4,6 +4,7 @@
     -leoz-primary-color: #32629d;
     -leoz-secondary-color: #f8ae18;
 
+    -fx-accent: -leoz-primary-color;
     -fx-focus-color: -leoz-primary-color;
 }
 
