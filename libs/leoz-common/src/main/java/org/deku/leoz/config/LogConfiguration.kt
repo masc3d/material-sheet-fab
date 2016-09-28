@@ -100,7 +100,6 @@ abstract class LogConfiguration : Disposable {
      * Add appender to log configuration
      */
     fun addAppender(appender: AppenderBase<ILoggingEvent>) {
-        this.rootLogger.level = Level.INFO
         appender.context = this.loggerContext
         appender.start()
         this.rootLogger.addAppender(appender)
