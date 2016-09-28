@@ -197,9 +197,14 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     private fun updateDirectory(host: Host<TInfo>, log: Logger) {
         var updated = true
         this.lock.withLock {
+            val existing = this._directory[host.address]
+            if (existing == null) {
+                log.trace("No entry for host [${host.address}]")
+            }
+
             updated = (this._directory[host.address] != host)
             if (updated) {
-                log.info("Updated info for ${host}")
+                log.info("Updating info for ${host}")
                 this._directory[host.address] = host
             }
         }
@@ -354,6 +359,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
 
                     // Remove them and notify
                     removed.forEach {
+                        log.info("Removing entry for ${it.key}")
                         this@UdpDiscoveryService._directory.remove(it.key)
                         this@UdpDiscoveryService.rxOnUpdateSubject.onNext(UpdateEvent(UpdateEvent.Type.Removed, it.value))
                     }
@@ -383,8 +389,14 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
             while (this.running) {
                 try {
                     this.server.get().run()
+                } catch(e: BindException) {
+                    log.error(e.message, e)
+                    log.warn("Could not bind server, falling back to client only mode")
+                    break
                 } catch(e: Exception) {
                     log.error(e.message, e)
+                    // Prevent CPU hogging on unexpected exceptions
+                    Thread.sleep(2000)
                 }
             }
         }
