@@ -108,7 +108,7 @@ class PackagerPlugin implements Plugin<Project> {
         }
 
         // Initialize rsync
-        Rsync.executable.file = Paths.get(project.project(':libs:sx-common').projectDir.toURI())
+        Rsync.executable.file = Paths.get(project.project(':libs:sx-rsync').projectDir.toURI())
                 .resolve('platform')
                 .resolve(PlatformId.current().toString())
                 .resolve('bin')
