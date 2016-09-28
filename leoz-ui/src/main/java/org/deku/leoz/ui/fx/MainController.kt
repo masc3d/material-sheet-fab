@@ -162,7 +162,7 @@ class MainController : Controller(), Initializable {
 
             // Initial display
             val version = Kodein.global.instance<JarManifest>().implementationVersion
-            this.fxVersion.text = if (version.length > 0) version else "N/A"
+            this.fxVersion.text = if (version.length > 0) "v${version}" else "N/A"
 
             // TODO: login name
             this.fxUser.text = "Max Mustermann"

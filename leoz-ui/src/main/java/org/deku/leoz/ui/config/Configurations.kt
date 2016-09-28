@@ -29,7 +29,7 @@ object Configurations {
         bind<Settings>() with singleton { Settings() }
 
         bind<JarManifest>() with singleton {
-            JarManifest(this.javaClass)
+            JarManifest(Configurations::class.java)
         }
 
         /** Localization & internationalization */
