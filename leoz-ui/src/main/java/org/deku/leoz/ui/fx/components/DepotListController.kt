@@ -173,8 +173,6 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
         fxDepotTableZipCodeColumn.cellFactory = cellFactory
         fxDepotTableCityColumn.cellFactory = cellFactory
         fxDepotTableStreetColumn.cellFactory = cellFactory
-
-        this.startQuery()
     }
 
     private fun selectDepot(id: Int?) {
@@ -202,6 +200,8 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
     public override fun onActivation() {
         if (!fxDepotTableView.isFocused)
             fxSearchText.requestFocus()
+
+        this.startQuery()
     }
 
     override fun close() {
