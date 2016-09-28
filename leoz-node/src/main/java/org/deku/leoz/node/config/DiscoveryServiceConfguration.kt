@@ -49,7 +49,7 @@ open class DiscoveryServiceConfguration {
                         type = DiscoveryInfo.ServiceType.ACTIVEMQ_NATIVE,
                         port = brokerSettings.nativePort!!),
                 DiscoveryInfo.Service(
-                        type = DiscoveryInfo.ServiceType.HTTPS,
+                        type = if (this.serverSettings.ssl.isEnabled) DiscoveryInfo.ServiceType.HTTPS else DiscoveryInfo.ServiceType.HTTP,
                         port = serverSettings.port),
                 DiscoveryInfo.Service(
                         type = DiscoveryInfo.ServiceType.RSYNC,

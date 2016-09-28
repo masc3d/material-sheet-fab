@@ -17,6 +17,7 @@ data class DiscoveryInfo(
      * Created by masc on 22/08/16.
      */
     enum class ServiceType(val value: String) {
+        HTTP("http"),
         HTTPS("https"),
         ACTIVEMQ_NATIVE("activemq_native"),
         RSYNC("rsync"),

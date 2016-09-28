@@ -60,7 +60,7 @@ object WebserviceFactory {
      */
     private val client by lazy({
         // Setup client
-        val client = this.createClientIgnoringSSL() //ClientBuilder.newClient()
+        val client = ClientBuilder.newClient()
         client.register(JacksonJsonProvider::class.java)
         client.property(ClientProperties.CONNECT_TIMEOUT, 2000)
         client.property(ClientProperties.READ_TIMEOUT, 2000)
@@ -82,17 +82,17 @@ object WebserviceFactory {
     private fun update() {
         var foundService: DiscoveryInfo.Service? = null
         val host = this.discoveryService.directory.firstOrNull {
-            foundService = it.info?.services?.firstOrNull { it.type == DiscoveryInfo.ServiceType.HTTPS }
+            foundService = it.info?.services?.firstOrNull { it.type == DiscoveryInfo.ServiceType.HTTP }
             foundService != null
         }
 
         val service = foundService
 
         if (host != null && service != null) {
-            val url = "https://${host.address.toString()}:${service.port}/rs/api"
+            val url = "http://${host.address.hostName}:${service.port}/rs/api"
             log.info("Setting webservice url to ${url}")
             _webTarget.reset {
-                this.client.target("https://${host.address.hostAddress}:${service.port}/rs/api")
+                this.client.target(url)
             }
         }
     }
