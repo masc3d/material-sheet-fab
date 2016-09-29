@@ -1,6 +1,9 @@
 package org.deku.leoz.config
 
+import sx.platform.OperatingSystem
+import sx.platform.PlatformId
 import sx.rsync.Rsync
+import java.io.File
 import java.net.URI
 
 /**
@@ -29,5 +32,17 @@ object RsyncConfiguration {
 
     fun initialize() {
         Rsync.executable.baseFilename = "leoz-rsync"
+
+        try {
+            Rsync.executable.file
+        } catch(e: IllegalStateException) {
+            if (PlatformId.current().operatingSystem == OperatingSystem.LINUX) {
+                val nixRsyncFile = File("/usr/bin/rsync")
+                if (!nixRsyncFile.exists())
+                    throw IllegalStateException("Could not fallback to system `rsync` executable", e)
+
+                Rsync.executable.file = nixRsyncFile
+            }
+        }
     }
 }
