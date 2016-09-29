@@ -27,7 +27,6 @@ import org.deku.leoz.ui.config.LogConfiguration
 import org.deku.leoz.ui.config.StorageConfiguration
 import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.ui.fx.MainController
-import org.deku.leoz.ui.fx.StartupController
 import org.slf4j.LoggerFactory
 import sx.util.Utf8ResourceBundleControl
 import java.io.IOException
