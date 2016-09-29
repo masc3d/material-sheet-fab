@@ -62,7 +62,9 @@ class SystemInformation : Serializable {
             var localhost: InetAddress? = null
             try {
                 localhost = InetAddress.getLocalHost()
+                log.info("Local host address [${localhost}]")
                 networkInterface = NetworkInterface.getByInetAddress(localhost)
+                log.info("Network interface [${networkInterface}]")
             } catch (e: Exception) {
                 log.warn(e.message, e)
             }
