@@ -15,6 +15,8 @@ import javafx.scene.image.Image
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
+import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import javafx.stage.Screen
 import javafx.stage.Stage
@@ -186,7 +188,10 @@ class Main : Application() {
         splashStage.initStyle(StageStyle.TRANSPARENT)
         val splashView = ProgressIndicator()
         splashView.background = Background.EMPTY
-        splashStage.scene = Scene(splashView, 76.0, 76.0)
+        val splashScene = Scene(splashView, 76.0, 76.0)
+        splashScene.fill = Color.TRANSPARENT
+        splashStage.scene = splashScene
+
         splashStage.show()
 
         log.debug("Shown splash stage")
