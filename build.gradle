@@ -29,4 +29,6 @@ dependencies {
     compile "org.slf4j:slf4j-api:$v_slf4j"
     compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
     compile "ch.qos.logback:logback-classic:1.1.7"
+
+    testCompile "junit:junit:4.12"
 }
