@@ -25,6 +25,7 @@ open class SerializerTest {
             val i: Int = 2,
             val cls: Class<*> = Any::class.java,
             val d: Array<Int> = listOf(1, 2, 3).toTypedArray(),
+            val al: List<String> = mutableListOf("Hello1", "Hello2"),
             val dobj: Array<TestObject2> = listOf(TestObject1.TestObject2()).toTypedArray()
     ) : java.io.Serializable {
         companion object {
@@ -71,6 +72,7 @@ open class SerializerTest {
             val i: Int = 2,
             val cls: Class<*> = Any::class.java,
             val d: Array<Int> = listOf(1, 2, 3).toTypedArray(),
+            val al: List<String> = mutableListOf("Hello1", "Hello2"),
             val dobj: Array<TestObjectRefactored1.TestObjectRefactored2> = listOf(TestObjectRefactored1.TestObjectRefactored2()).toTypedArray()
     ) : java.io.Serializable {
         companion object {
