@@ -186,7 +186,7 @@ class Main : Application() {
         splashStage.initStyle(StageStyle.TRANSPARENT)
         val splashView = ProgressIndicator()
         splashView.background = Background.EMPTY
-        splashStage.scene = Scene(splashView, 40.0, 40.0)
+        splashStage.scene = Scene(splashView, 76.0, 76.0)
         splashStage.show()
 
         log.debug("Shown splash stage")
