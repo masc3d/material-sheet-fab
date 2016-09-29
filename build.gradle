@@ -45,4 +45,6 @@ dependencies {
 
     // Snappy
     provided "org.xerial.snappy:snappy-java:1.1.2.4"
+
+    testCompile "junit:junit:4.12"
 }
