@@ -32,7 +32,7 @@ class EmbeddedExecutable(
      */
     private fun findExecutable(): File? {
         // Search for executable in current and parent paths
-        var relativePaths = arrayOf(
+        val relativePaths = arrayOf(
                 Paths.get("platform")
                         .resolve(PlatformId.current().toString())
                         .resolve("bin")
@@ -101,6 +101,7 @@ class EmbeddedExecutable(
     /**
      * Path to executable.
      * When not set explicitly, tries to detect/find executable automatically within current and parent paths
+     * @throws IllegalStateException If embedded executable could not be found
      * */
     var file: File? = null
         @Synchronized get() {
