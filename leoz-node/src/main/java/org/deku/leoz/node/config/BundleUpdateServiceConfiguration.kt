@@ -34,9 +34,14 @@ open class BundleUpdateServiceConfiguration {
     @Named
     @ConfigurationProperties(prefix = "update")
     class Settings {
+        /** Enable/disbale updates */
         var enabled: Boolean = false
+        /** Perform automatic updates/retrieve update notifications */
         var automatic: Boolean = true
+        /** Automatically clean out outdated and non-relevant bundles */
         var cleanup: Boolean = true
+        /** Override rsync uri (defaults to remote peer/host and rsync port) */
+        var rsync_host: String? = null
     }
 
     @Inject
@@ -66,7 +71,7 @@ open class BundleUpdateServiceConfiguration {
      * Remote bundle update repository
      * */
     val updateRepository: BundleRepository by lazy {
-        val remoteHostname = remotePeerSettings.hostname
+        val remoteHostname = this.settings.rsync_host ?: remotePeerSettings.hostname
         if (remoteHostname != null && remoteHostname.length > 0) {
             BundleRepository(
                     rsyncModuleUri = RsyncConfiguration.createRsyncUri(
