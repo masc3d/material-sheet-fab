@@ -23,4 +23,6 @@ dependencies {
 
     // Mina/SSHD
     compile "org.apache.sshd:sshd-core:1.2.0"
+
+    testCompile "junit:junit:4.12"
 }
