@@ -14,10 +14,13 @@ import java.util.*
  * Update info service, providing version pattern information to clients
  * Created by masc on 19.10.15.
  */
-class UpdateService(
+class UpdateInfoService(
+        /** Central db node table repository */
         private val nodeRepository: NodeRepository,
+        /** Central db bundle version table repository */
         private val bundleVersionRepository: BundleVersionRepository,
-        private val localBundleRepository: BundleRepository
+        /** Leoz bundle repository */
+        private val bundleRepository: BundleRepository
 )
 :
         Handler<UpdateInfoRequest> {
@@ -41,7 +44,7 @@ class UpdateService(
 
             // Try to determine latest matching bundle version and platforms
             val bundleVersion = try {
-                this.localBundleRepository.queryLatestMatchingVersion(updateInfoRequest.bundleName, rVersion.version)
+                this.bundleRepository.queryLatestMatchingVersion(updateInfoRequest.bundleName, rVersion.version)
             } catch (e: NoSuchElementException) {
                 log.warn(e.message)
                 null
@@ -49,7 +52,7 @@ class UpdateService(
 
             val bundleVersionPlatforms =
                     if (bundleVersion != null)
-                        this.localBundleRepository.listPlatforms(updateInfoRequest.bundleName, bundleVersion)
+                        this.bundleRepository.listPlatforms(updateInfoRequest.bundleName, bundleVersion)
                     else ArrayList<String>()
 
             val versionPattern = rVersion.version

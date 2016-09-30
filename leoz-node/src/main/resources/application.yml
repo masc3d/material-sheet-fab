@@ -54,6 +54,7 @@ update:
     # Run updater on broker connection and message notification
     automatic: true
     cleanup: true
+    rsync-host: leoz.derkurier.de
 
 # Vaadin configuration
 vaadin:

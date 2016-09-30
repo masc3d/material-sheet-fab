@@ -37,6 +37,10 @@ server:
 
 # Updater configuration
 update:
+    info-service:
+        # By default the update service uses the local repository for providing update info/available versions
+        rsync-host: ''
+
     enabled: true
     # Run updater on broker connection and message notification
     automatic: false

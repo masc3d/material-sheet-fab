@@ -12,6 +12,11 @@ import java.net.URI
  */
 object RsyncConfiguration {
     /**
+     * Rsync default port
+     */
+    val DEFAULT_PORT = 13002
+
+    /**
      * Default leoz rsync user
      */
     val USERNAME: String = "leoz"
