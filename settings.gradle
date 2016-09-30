@@ -1,11 +1,6 @@
 rootProject.name = 'leoz'
 
 // project dependencies
-include ':leoz-boot'
-include ':leoz-central'
-include ':leoz-node'
-include ':leoz-ui'
-include ':libs:leoz-common'
 include ':libs:sx-common'
 include ':libs:sx-discovery'
 include ':libs:sx-jms'
@@ -14,4 +9,12 @@ include ':libs:sx-rsync'
 include ':libs:sx-ssh'
 include ':libs:sx-serialization'
 include ':libs:barbarywatchservice'
+
+include ':libs:leoz-common'
+include ':leoz-node'
+include ':leoz-central'
+include ':leoz-boot'
+include ':leoz-ui'
+
+
 

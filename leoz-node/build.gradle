@@ -2,9 +2,10 @@ import org.deku.gradle.PackagerPlugin
 
 apply plugin: 'kotlin'
 apply plugin: 'application'
-apply plugin: PackagerPlugin
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: PackagerPlugin
+//apply plugin: 'kotlin-kapt'
 //apply plugin: 'flyway'
 
 sourceCompatibility = 1.8
@@ -24,35 +25,16 @@ compileJava.dependsOn(processResources)
 // Location for generated sources
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
-def srcdir_apt = file("$projectDir/src/generated/java")
+def srcdir_apt = file("$projectDir/build/generated/source/kapt/main")
 
 kapt {
     generateStubs = true
-}
-
-sourceSets {
-    main.kotlin.srcDirs += srcdir_apt
 }
 
 idea {
     module {
         sourceDirs += srcdir_apt
     }
-}
-
-compileJava {
-    doFirst {
-        // Source dir must exist
-        srcdir_apt.exists() || srcdir_apt.mkdirs()
-        // Tell javac about the generated sources location
-        options.compilerArgs = [
-                '-s', srcdir_apt.toString()
-        ]
-    }
-}
-
-clean {
-    delete(srcdir_apt)
 }
 
 dependencies {
@@ -103,10 +85,10 @@ dependencies {
     def v_querydsl = '4.1.4'
     compile "com.querydsl:querydsl-core:$v_querydsl"
     compile "com.querydsl:querydsl-jpa:$v_querydsl"
-    compile "com.querydsl:querydsl-apt:$v_querydsl:jpa" // QueryDSL codegen/annotation processor
     compile "com.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
 
     kapt "com.querydsl:querydsl-apt:$v_querydsl:jpa"
+    kapt "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
 
     // flyway
     compile "org.flywaydb:flyway-core:4.0.3"
