@@ -1,7 +1,5 @@
 package sx.rsync
 
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
@@ -31,8 +29,6 @@ class RsyncClientTest {
     val localPath = Paths.get("").toAbsolutePath().parent.parent.resolve("release").resolve("testInitNull")
 
     init {
-        val lRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
-        lRoot.level = Level.DEBUG
     }
 
     private fun createRsyncClient(sshTunnelProvider: SshTunnelProvider? = null): RsyncClient {
