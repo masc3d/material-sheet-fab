@@ -51,3 +51,6 @@ leoz-ui/platform/
 release
 libs/build
 build
+.idea/compiler.xml
+.idea/gradle.xml
+.idea/kotlinc.xml

@@ -13,6 +13,9 @@ version = '0.58-RELEASE'
 mainClassName = "org.deku.leoz.node.Main"
 
 buildscript {
+    ext {
+        v_querydsl = '4.1.4'
+    }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
@@ -39,128 +42,130 @@ idea {
 
 dependencies {
     // leoz webservice dependencies
-    compile project(':libs:sx-common')
-    compile project(':libs:leoz-common')
+    compile(
+            project(':libs:sx-common'),
+            project(':libs:leoz-common'),
 
-    // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-    // spring
-    compile "org.springframework.data:spring-data-jpa:$v_spring_data_jpa"
-    compile "org.springframework.data:spring-data-commons:$v_spring_data_commons"
-    compile "org.springframework:spring-web:$v_spring"
-    //compile "org.springframework:spring-aspects"
-    // spring boot
-    compile "org.springframework.boot:spring-boot-starter:$v_springboot"
-    compile("org.springframework.boot:spring-boot-starter-web:$v_springboot") {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-    }
-    compile "org.springframework.boot:spring-boot-starter-undertow:$v_springboot"
-    compile "org.springframework.boot:spring-boot-actuator:$v_springboot"
-    //optional "org.springframework.boot:spring-boot-configuration-processor"
+            // spring
+            "org.springframework.data:spring-data-jpa:$v_spring_data_jpa",
+            "org.springframework.data:spring-data-commons:$v_spring_data_commons",
+            "org.springframework:spring-web:$v_spring",
+            //"org.springframework:spring-aspects"
 
-    // logging
-    compile "org.slf4j:jul-to-slf4j:$v_slf4j"
-    compile "org.slf4j:log4j-over-slf4j:$v_slf4j"
-    compile "ch.qos.logback:logback-classic:$v_logback"
+            // spring boot
+            "org.springframework.boot:spring-boot-starter:$v_springboot",
+            dependencies.create("org.springframework.boot:spring-boot-starter-web:$v_springboot") {
+                exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+            },
+            "org.springframework.boot:spring-boot-starter-undertow:$v_springboot",
+            "org.springframework.boot:spring-boot-actuator:$v_springboot",
 
-    // webservice
-    // for various javax interfaces (eg. ServletContextListener)
-    compile "javax.servlet:javax.servlet-api:$v_javax_servlet"
-    // jaxrs/resteasy
-    compile "org.jboss.resteasy:resteasy-jaxrs:$v_resteasy"
-    compile "org.jboss.resteasy:resteasy-spring:$v_resteasy"
-    compile "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy"
+            // logging
+            "org.slf4j:jul-to-slf4j:$v_slf4j",
+            "org.slf4j:log4j-over-slf4j:$v_slf4j",
+            "ch.qos.logback:logback-classic:$v_logback",
 
-    // jackson JSON serializer
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson"
-    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
+            // webservice
+            // for various javax interfaces (eg. ServletContextListener)
+            "javax.servlet:javax.servlet-api:$v_javax_servlet",
+            // jaxrs/resteasy
+            "org.jboss.resteasy:resteasy-jaxrs:$v_resteasy",
+            "org.jboss.resteasy:resteasy-spring:$v_resteasy",
+            "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
 
-    // persistence framework(s)
-    // eclipselink
-    compile "org.eclipse.persistence:eclipselink:2.6.4"
+            // jackson JSON serializer
+            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
+            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
 
-    // queryDSL
-    def v_querydsl = '4.1.4'
-    compile "com.querydsl:querydsl-core:$v_querydsl"
-    compile "com.querydsl:querydsl-jpa:$v_querydsl"
-    compile "com.querydsl:querydsl-collections:$v_querydsl" // QueryDSL codegen/annotation processor
+            // persistence framework(s)
+            // eclipselink
+            "org.eclipse.persistence:eclipselink:2.6.4",
 
-    kapt "com.querydsl:querydsl-apt:$v_querydsl:jpa"
-    kapt "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
+            // queryDSL
+            "com.querydsl:querydsl-core:$v_querydsl",
+            "com.querydsl:querydsl-jpa:$v_querydsl",
+            "com.querydsl:querydsl-collections:$v_querydsl",
 
-    // flyway
-    compile "org.flywaydb:flyway-core:4.0.3"
+            "org.flywaydb:flyway-core:4.0.3",
 
-    // JSR-330
-    compile "javax.inject:javax.inject:1"
+            // JSR-330
+            "javax.inject:javax.inject:1",
 
-    // databases
-    compile "com.h2database:h2:1.4.192"
+            // databases
+            "com.h2database:h2:1.4.192",
 
-    // persistence
-    compile "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
+            // persistence
+            "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
 
-    // ActiveMQ
-    compile "org.apache.activemq:activemq-broker:$v_activemq"
-    compile "org.apache.activemq:activemq-kahadb-store:$v_activemq"
-    compile "org.apache.activemq:activemq-jms-pool:$v_activemq"
-    compile "org.apache.activemq:activemq-jaas:$v_activemq"
-    compile "org.apache.activemq:activemq-mqtt:$v_activemq"
-    compile("org.apache.activemq:activemq-http:$v_activemq") {
-        exclude group: 'org.springframework'
-        exclude group: 'org.apache.activemq', module: 'activemq-spring'
-        exclude group: 'org.eclipse.jetty.aggregate'
-    }
-    // http support
-    compile "org.apache.httpcomponents:httpclient:$v_apache_httpclient"
-    compile "com.thoughtworks.xstream:xstream:$v_xstream"
+            // ActiveMQ
+            "org.apache.activemq:activemq-broker:$v_activemq",
+            "org.apache.activemq:activemq-kahadb-store:$v_activemq",
+            "org.apache.activemq:activemq-jms-pool:$v_activemq",
+            "org.apache.activemq:activemq-jaas:$v_activemq",
+            "org.apache.activemq:activemq-mqtt:$v_activemq",
+            dependencies.create("org.apache.activemq:activemq-http:$v_activemq") {
+                exclude group: 'org.springframework'
+                exclude group: 'org.apache.activemq', module: 'activemq-spring'
+                exclude group: 'org.eclipse.jetty.aggregate'
+            },
+            // http support
+            "org.apache.httpcomponents:httpclient:$v_apache_httpclient",
+            "com.thoughtworks.xstream:xstream:$v_xstream",
 
-    // ssh support
-    compile "org.apache.sshd:sshd-core:$v_sshd"
+            // ssh support
+            "org.apache.sshd:sshd-core:$v_sshd",
 
-    // spring
-    compile("org.springframework:spring-jms:$v_spring")
+            // spring
+            "org.springframework:spring-jms:$v_spring",
 
-    // json doc
-    compile "io.swagger:swagger-jaxrs:$v_swagger"
-    compile "org.javassist:javassist:$v_javassist"
+            // json doc
+            "io.swagger:swagger-jaxrs:$v_swagger",
+            "org.javassist:javassist:$v_javassist",
 
-    // hawt.io
-    compile "io.hawt:hawtio-springboot:1.4.65"
-    compile "org.jolokia:jolokia-spring:1.3.4"
+            // hawt.io
+            "io.hawt:hawtio-springboot:1.4.65",
+            "org.jolokia:jolokia-spring:1.3.4",
 
-    // serialization
-    compile "com.esotericsoftware:kryo:$v_kryo"
-    compile "org.xerial.snappy:snappy-java:$v_snappy"
+            // serialization
+            "com.esotericsoftware:kryo:$v_kryo",
 
-    // TODO: for testing jinq
-    compile 'org.jinq:jinq-jpa:+'
+            // TODO: for testing jinq
+            "org.jinq:jinq-jpa:+",
 
-    // TODO: for testing jsch
-    compile 'com.jcraft:jsch:+'
+            // TODO: for testing jsch
+            "com.jcraft:jsch:+",
 
-    // TODO: For testing aspectj proxies with spring
+            // TODO: For testing aspectj proxies with spring
 //    compile "org.aspectj:aspectjtools:+"
 //    compile "org.aspectj:aspectjweaver:+"
 
-    // TODO: for testing vaadin
-    compile "com.vaadin:vaadin-spring-boot:1.0.0"
-    compile "com.vaadin:vaadin-client:$v_vaadin"
-    compile "com.vaadin:vaadin-client-compiled:$v_vaadin"
-    compile "com.vaadin:vaadin-widgets:$v_vaadin"
-    compile "com.vaadin:vaadin-themes:$v_vaadin"
-    compile "commons-beanutils:commons-beanutils-core:1.8.3"
+            // TODO: for testing vaadin
+            "com.vaadin:vaadin-spring-boot:1.0.0",
+            "com.vaadin:vaadin-client:$v_vaadin",
+            "com.vaadin:vaadin-client-compiled:$v_vaadin",
+            "com.vaadin:vaadin-widgets:$v_vaadin",
+            "com.vaadin:vaadin-themes:$v_vaadin",
+            "commons-beanutils:commons-beanutils-core:1.8.3"
+    )
 
-    // test dependencies
-    testCompile group: 'junit', name: 'junit', version: v_junit
+    // QueryDSL codegen/annotation processor
+    kapt(
+            "com.querydsl:querydsl-apt:$v_querydsl:jpa",
+            "org.eclipse.persistence:javax.persistence:$v_javax_persistence")
 
-    // webservice client libraries for test cases
-    testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
-    testCompile "org.springframework:spring-test"
+    testCompile(
+            "junit:junit:$v_junit",
 
-    testCompile project(':libs:sx-common')
+            // webservice client libraries for test cases
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+            "org.springframework:spring-test",
+
+            project(':libs:sx-common')
+    )
 }
 
 run {
@@ -168,21 +173,6 @@ run {
     standardOutput = System.out
     standardInput = System.in
 }
-
-// Copy webapp content into classpath prior to compilation
-task copyWebapp(type: Sync) {
-    from 'src/main/webapp'
-    into 'build/classes/main/webapp'
-}
-task copyVaadinWebapp(type: Sync) {
-    from 'src/main/webapp/VAADIN'
-    into 'build/classes/main/VAADIN'
-}
-tasks.compileJava.dependsOn(copyWebapp)
-tasks.compileJava.dependsOn(copyVaadinWebapp)
-
-tasks.classes.dependsOn(copySxPlatformDirToBuild)
-tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
 
 distributions {
     main {
@@ -201,6 +191,31 @@ packager {
             (projectBuildPlatformDir): (platformDirRelative)
     )
 }
+
+// Custom tasks
+
+// Include sx platform/binaries
+tasks.classes.dependsOn(copySxPlatformDirToBuild)
+// Include leoz global platform/binaries
+tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
+
+/**
+ * Task for syncing webapp content to build/classes
+ */
+task copyWebapp(type: Sync) {
+    from 'src/main/webapp'
+    into 'build/classes/main/webapp'
+}
+tasks.compileJava.dependsOn(copyWebapp)
+
+/**
+ * Task for syncing vaadin webapp content to build/classes
+ */
+task copyVaadinWebapp(type: Sync) {
+    from 'src/main/webapp/VAADIN'
+    into 'build/classes/main/VAADIN'
+}
+tasks.compileJava.dependsOn(copyVaadinWebapp)
 
 // Packager task
 

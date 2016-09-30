@@ -2,14 +2,24 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/leoz-central-schema" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/leoz-central-schema" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/barbarywatchservice" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/barbarywatchservice" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/sx-common" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/sx-common" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/sx-discovery" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/sx-discovery" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/sx-fx" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/sx-fx" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/sx-jms" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/sx-jms" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/sx-rsync" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/sx-rsync" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/sx-serialization" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/sx-serialization" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/sx-ssh" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/sx-ssh" vcs="Git" />
   </component>
 </project>
