@@ -1,7 +1,5 @@
 package sx.ssh
 
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -14,8 +12,6 @@ import org.slf4j.LoggerFactory
 class SshTunnelProviderTest {
     @Before
     fun setup() {
-        val lRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
-        lRoot.level = Level.INFO
     }
 
     @Test
