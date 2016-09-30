@@ -181,10 +181,10 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
         val resultParticipants = ArrayList<Routing.Participant>()
 
-        var country: String = requestParticipant?.country?.toUpperCase()
+        val country: String = requestParticipant?.country?.toUpperCase()
                 ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "${errorPrefix} empty country")
 
-        var zip: String = requestParticipant?.zip?.toUpperCase()
+        val zip: String = requestParticipant?.zip?.toUpperCase()
                 ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "${errorPrefix} empty zipcode")
 
         val rcountry = countryRepository.findOne(country)
@@ -193,16 +193,16 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         if (Strings.isNullOrEmpty(rcountry.zipFormat))
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} unknown country")
 
-        if (zip.length < rcountry.minLen)
+        if (zip.length < rcountry.minLen!!)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} zipcode too short")
 
-        if (rcountry.routingTyp < 0 || rcountry.routingTyp > 3)
+        if (rcountry.routingTyp!! < 0 || rcountry.routingTyp!! > 3)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} country not enabled")
 
-        if (zip.length > rcountry.maxLen)
+        if (zip.length > rcountry.maxLen!!)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} zipcode too long")
 
-        val parsedZip = ParsedZip(zip = zip, zipFormat = rcountry.zipFormat)
+        val parsedZip = ParsedZip(zip = zip, zipFormat = rcountry.zipFormat!!)
 
         if (Strings.isNullOrEmpty(parsedZip.query))
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} wrong zipcode format")
@@ -290,10 +290,10 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         if (rStation == null)
             throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} Route Station not found");
 
-        participant.sector = rStation.sector
-        participant.country = rRoute.country
+        participant.sector = rStation.sector!!
+        participant.country = rRoute.country!!
         participant.zipCode = queryZipCode
-        participant.term = rRoute.term
+        participant.term = rRoute.term!!
 
         when (sendDelivery) {
             "S" -> {
@@ -306,7 +306,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
             }
             "D" -> {
                 var deliveryDate = desiredDeliveryDate
-                        ?: getNextDeliveryDay(sendDate, participant.country, rRoute.holidayCtrl, participant.term)
+                        ?: getNextDeliveryDay(sendDate, participant.country, rRoute.holidayCtrl!!, participant.term)
 
                 participant.date = deliveryDate
             }
@@ -316,14 +316,14 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
                 this.getDayType(
                         participant.date,
                         requestParticipant?.country?.toUpperCase(),
-                        rRoute.holidayCtrl
+                        rRoute.holidayCtrl!!
                 ).toString()
 
-        participant.station = rRoute.station
-        participant.zone = rRoute.area
+        participant.station = rRoute.station!!
+        participant.zone = rRoute.area!!
         participant.island = (rRoute.island != 0)
-        participant.earliestTimeOfDelivery = rRoute.etod.toShortTime()
-        participant.term = rRoute.term
+        participant.earliestTimeOfDelivery = rRoute.etod!!.toShortTime()
+        participant.term = rRoute.term!!
         if (rRoute.ltodsa != null)
             participant.sundayDeliveryUntil = ShortTime(rRoute.ltodsa.toString())
 
@@ -357,8 +357,8 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         if (rHolidayCtrl != null) {
             if (rHolidayCtrl.ctrlPos == -1)
                 daytype = DayType.Holiday
-            else if (rHolidayCtrl.ctrlPos > 0) {
-                if (holidayCtrl[rHolidayCtrl.ctrlPos] == 'J')
+            else if (rHolidayCtrl.ctrlPos!! > 0) {
+                if (holidayCtrl[rHolidayCtrl.ctrlPos!!] == 'J')
                     daytype = DayType.RegionalHoliday
             }
         }

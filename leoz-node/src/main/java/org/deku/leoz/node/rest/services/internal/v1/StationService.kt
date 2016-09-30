@@ -40,7 +40,7 @@ class StationService : org.deku.leoz.rest.services.internal.v1.StationService {
         internal fun convert(d: org.deku.leoz.node.data.entities.master.Station): Station {
             val rStation = Station()
             rStation.depotNr = d.stationNr
-            rStation.depotMatchcode = d.getuStId()
+            rStation.depotMatchcode = d.uStId
             rStation.address1 = d.address1
             rStation.address2= d.address2
             rStation.lkz = d.country

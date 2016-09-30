@@ -95,7 +95,7 @@ constructor(
             s.strang = null
             s.street = ds.street
             s.telefax = ds.telefax
-            s.setuStId(ds.ustid)
+            s.uStId = ds.ustid
             s.webAddress = ds.webAddress
             s.zip = ds.zip
             s.syncId = ds.syncId
