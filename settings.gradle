@@ -13,6 +13,7 @@ include ':libs:barbarywatchservice'
 include ':libs:leoz-common'
 include ':leoz-node'
 include ':leoz-central'
+include ':leoz-central-schema'
 include ':leoz-boot'
 include ':leoz-ui'
 
