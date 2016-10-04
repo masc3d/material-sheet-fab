@@ -1,6 +1,6 @@
 package org.deku.leoz.node.data.repositories.master.custom;
 
-import org.deku.leoz.node.data.entities.master.Station;
+import org.deku.leoz.node.data.entities.MstStation;
 
 import java.util.List;
 
@@ -8,5 +8,5 @@ import java.util.List;
  * Created by masc on 07.05.15.
  */
 public interface StationRepositoryCustom {
-    List<Station> findWithQuery(String query);
+    List<MstStation> findWithQuery(String query);
 }

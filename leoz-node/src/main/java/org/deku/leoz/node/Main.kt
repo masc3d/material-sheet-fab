@@ -10,6 +10,7 @@ import org.springframework.boot.Banner
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
 import org.springframework.boot.autoconfigure.web.*
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -57,7 +58,7 @@ import org.springframework.core.annotation.Order
         JolokiaAutoConfiguration::class,
 
         /** Flyway database migration setup  */
-        //FlywayAutoConfiguration.class
+        FlywayAutoConfiguration::class,
 
         /** Vaadin */
         VaadinAutoConfiguration::class

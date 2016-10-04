@@ -2,7 +2,7 @@ package org.deku.leoz.node.config
 
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.node.data.entities.master.*
+import org.deku.leoz.node.data.entities.*
 import org.deku.leoz.node.data.sync.EntityConsumer
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
@@ -58,12 +58,12 @@ open class EntitySyncConfiguration {
      * Starts entity requests for all entity types
      */
     fun requestEntities() {
-        entityConsumer.request(Station::class.java)
-        entityConsumer.request(Country::class.java)
-        entityConsumer.request(HolidayCtrl::class.java)
-        entityConsumer.request(Route::class.java)
-        entityConsumer.request(RoutingLayer::class.java)
-        entityConsumer.request(Sector::class.java)
+        entityConsumer.request(MstStation::class.java)
+        entityConsumer.request(MstCountry::class.java)
+        entityConsumer.request(MstHolidayCtrl::class.java)
+        entityConsumer.request(MstRoute::class.java)
+        entityConsumer.request(MstRoutingLayer::class.java)
+        entityConsumer.request(MstSector::class.java)
     }
 
     @PostConstruct

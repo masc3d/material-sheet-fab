@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Logger
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.DataTest
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.data.entities.master.Route
+import org.deku.leoz.node.data.entities.MstRoute
 import org.deku.leoz.node.data.sync.EntityConsumer
 import org.deku.leoz.node.data.sync.EntityPublisher
 import org.junit.After
@@ -67,7 +67,7 @@ class EntitySyncTest : DataTest() {
     @Throws(Exception::class)
     fun testSync() {
         listener!!.start()
-        client!!.request(Route::class.java, null, true)
+        client!!.request(MstRoute::class.java, null, true)
 
         Thread.sleep(10000)
     }

@@ -1,5 +1,6 @@
 package org.deku.leoz.node.config
 
+import org.deku.leoz.node.data.entities.*
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
 import org.slf4j.LoggerFactory
@@ -16,8 +17,11 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import sx.io.serialization.Serializer
 import java.io.File
 import java.util.*
+import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
 import javax.persistence.EntityManagerFactory
 import javax.sql.DataSource
 
@@ -29,7 +33,7 @@ import javax.sql.DataSource
 @ComponentScan(lazyInit = true, basePackageClasses = arrayOf(org.deku.leoz.node.data.Package::class))
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 @EnableJpaRepositories(considerNestedRepositories = false, basePackageClasses = arrayOf(org.deku.leoz.node.data.Package::class))
-open class PersistenceConfiguration : DisposableBean /*, TransactionManagementConfigurer*/ {
+open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
     companion object {
         const val QUALIFIER = "db_embedded"
     }
@@ -95,8 +99,8 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
 
         eclipseLinkProperties.setProperty("eclipselink.target-database", "org.eclipse.persistence.platform.database.H2Platform")
         // Automatic schema generation from jpa entites
-        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.database.action", "create")
-        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.create-database-schemas", "true")
+//        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.database.action", "create")
+//        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.create-database-schemas", "true")
         // Caching
         //        eclipseLinkProperties.setProperty("javax.persistence.sharedCache.mode", "ENABLE_SELECTIVE");
 
@@ -131,8 +135,26 @@ open class PersistenceConfiguration : DisposableBean /*, TransactionManagementCo
     }
     //endregion
 
-    @Throws(Exception::class)
-    override fun destroy() {
+
+    @PostConstruct
+    open fun onInitialize() {
+        // Register entities
+        Serializer.types.register(MstCountry::class.java, 0x61175aa6b510b3L)
+        Serializer.types.register(MstHolidayCtrl::class.java, 0x56c4d6ff7b69dcL)
+        Serializer.types.register(MstHolidayCtrlId::class.java, 0x0bef5f538e4ed9L)
+        Serializer.types.register(MstRoute::class.java, 0xef6d8232d3263dL)
+        Serializer.types.register(MstRoutingLayer::class.java, 0x92ed6a2fc3f79fL)
+        Serializer.types.register(MstSector::class.java, 0xf1dec2bb66db87L)
+        Serializer.types.register(MstSectorId::class.java, 0xd432b301532a4aL)
+        Serializer.types.register(MstStation::class.java, 0x1f6229f711c472L)
+        Serializer.types.register(MstStationSector::class.java, 0x0d1eaebfd81899L)
+        Serializer.types.register(MstStationSectorId::class.java, 0x4a81cc447bdc43L)
+        Serializer.types.register(SysProperty::class.java, 0xaa946790064006L)
+        Serializer.types.register(SysPropertyId::class.java, 0x72b4356618387dL)
+    }
+
+    @PreDestroy
+    open fun onDestroy() {
 
     }
 

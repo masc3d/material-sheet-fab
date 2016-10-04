@@ -1,7 +1,7 @@
 package org.deku.leoz.node.data
 
 import org.deku.leoz.node.DataTest
-import org.deku.leoz.node.data.entities.master.QCountry
+import org.deku.leoz.node.data.entities.QMstCountry
 import org.deku.leoz.node.data.repositories.master.CountryRepository
 import org.junit.Test
 import java.sql.Timestamp
@@ -20,7 +20,7 @@ class CountryRepositoryTest : DataTest() {
         val country = countryRepository.findOne("DE")
 
         val ts = Timestamp.valueOf(LocalDateTime.of(2014, 1, 1, 0, 0))
-        for (c in countryRepository.findAll(QCountry.country.timestamp.after(ts))) {
+        for (c in countryRepository.findAll(QMstCountry.mstCountry.timestamp.after(ts))) {
             println(c.timestamp)
         }
     }

@@ -126,6 +126,7 @@ subprojects {
             force "commons-codec:commons-codec:1.10"
             force "commons-io:commons-io:$v_commons_io"
             force "commons-logging:commons-logging:$v_commons_logging"
+            force "com.fasterxml:classmate:1.3.0"
             force "com.google.guava:guava:$v_guava"
             force "com.thoughtworks.xstream:xstream:$v_xstream"
             force "com.vaadin:vaadin-server:$v_vaadin"
@@ -137,6 +138,7 @@ subprojects {
             force "org.fusesource.hawtdispatch:hawtdispatch-transport:1.22"
             force "org.fusesource.hawtbuf:hawtbuf:1.11"
             force "org.hamcrest:hamcrest-core:1.3"
+            force "org.hibernate.common:hibernate-commons-annotations:5.0.1.Final"
             force "org.javassist:javassist:$v_javassist"
             force "org.jboss.logging:jboss-logging:3.2.1.Final"
             force "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
@@ -205,18 +207,18 @@ subprojects {
 // To avoid having a vcs change to reset every time, this configuration was moved to a separate file
 // which is copied on each gradle run. Implies that _when_ datasources are updated (rare) the
 // config file below needs to be updated manually.
-task copyIntellijDataSources(type: Copy) {
-    def ideaWorkspaceDir = '.idea'
-    def dataSourcesPresetFile = 'dataSources.preset.xml'
-    def dataSourcesFile = 'dataSources.xml'
-
-    if (!new File(ideaWorkspaceDir, dataSourcesFile).exists())
-        copy {
-            from(ideaWorkspaceDir)
-            into(ideaWorkspaceDir)
-            include dataSourcesPresetFile
-            rename dataSourcesPresetFile, dataSourcesFile
-        }
-}
-tasks.copyIntellijDataSources.execute()
+//task copyIntellijDataSources(type: Copy) {
+//    def ideaWorkspaceDir = '.idea'
+//    def dataSourcesPresetFile = 'dataSources.preset.xml'
+//    def dataSourcesFile = 'dataSources.xml'
+//
+//    if (!new File(ideaWorkspaceDir, dataSourcesFile).exists())
+//        copy {
+//            from(ideaWorkspaceDir)
+//            into(ideaWorkspaceDir)
+//            include dataSourcesPresetFile
+//            rename dataSourcesPresetFile, dataSourcesFile
+//        }
+//}
+//tasks.copyIntellijDataSources.execute()
 

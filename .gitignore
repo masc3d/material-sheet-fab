@@ -54,3 +54,4 @@ build
 .idea/compiler.xml
 .idea/gradle.xml
 .idea/kotlinc.xml
+leoz-node/db

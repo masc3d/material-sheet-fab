@@ -1,8 +1,8 @@
 package org.deku.leoz.node.data.repositories.master.custom;
 
 import com.google.common.collect.Lists;
-import org.deku.leoz.node.data.entities.master.QStation;
-import org.deku.leoz.node.data.entities.master.Station;
+import org.deku.leoz.node.data.entities.QMstStation;
+import org.deku.leoz.node.data.entities.MstStation;
 import org.deku.leoz.node.data.repositories.master.StationRepository;
 
 import javax.inject.Inject;
@@ -16,12 +16,12 @@ public class StationRepositoryImpl implements StationRepositoryCustom {
     StationRepository mDepotRepository;
 
     @Override
-    public List<Station> findWithQuery(String query) {
+    public List<MstStation> findWithQuery(String query) {
         query = query.trim();
 
         // QueryDSL
-        QStation station = QStation.station;
-        Iterable<Station> depots = mDepotRepository.findAll(
+        QMstStation station = QMstStation.mstStation;
+        Iterable<MstStation> depots = mDepotRepository.findAll(
                 station.stationNr.stringValue().containsIgnoreCase(query)
                         .or(station.address1.containsIgnoreCase(query))
                         .or(station.address2.containsIgnoreCase(query))

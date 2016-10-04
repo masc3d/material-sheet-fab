@@ -7,7 +7,7 @@ import com.vaadin.server.ThemeResource
 import com.vaadin.server.VaadinRequest
 import com.vaadin.spring.annotation.SpringUI
 import com.vaadin.ui.*
-import org.deku.leoz.node.data.entities.master.Station
+import org.deku.leoz.node.data.entities.MstStation
 import org.deku.leoz.node.data.repositories.master.StationRepository
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -85,7 +85,7 @@ public class DepotsUI : UI() {
         filter.setInputPrompt("Filter depots..");
         filter.addTextChangeListener({ e -> refresh(e.getText()) })
 
-        grid.setContainerDataSource(BeanItemContainer(Station::class.java));
+        grid.setContainerDataSource(BeanItemContainer(MstStation::class.java));
         grid.setColumnOrder(
                 "stationNr",
                 "address1",
@@ -122,6 +122,6 @@ public class DepotsUI : UI() {
 
     private fun refresh(stringFilter: String) {
         grid.setContainerDataSource(BeanItemContainer(
-                Station::class.java, stationRepository.findWithQuery(stringFilter)));
+                MstStation::class.java, stationRepository.findWithQuery(stringFilter)));
     }
 }

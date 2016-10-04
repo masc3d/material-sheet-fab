@@ -1,12 +1,12 @@
 package org.deku.leoz.node.data.repositories.master;
 
-import org.deku.leoz.node.data.entities.master.HolidayCtrl;
-import org.deku.leoz.node.data.entities.master.HolidayCtrlPK;
+import org.deku.leoz.node.data.entities.MstHolidayCtrl;
+import org.deku.leoz.node.data.entities.MstHolidayCtrlId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 /**
  * Created by JT on 15.05.15.
  */
-public interface HolidayctrlRepository extends JpaRepository<HolidayCtrl, HolidayCtrlPK>, QueryDslPredicateExecutor<HolidayCtrl> {
+public interface HolidayctrlRepository extends JpaRepository<MstHolidayCtrl, MstHolidayCtrlId>, QueryDslPredicateExecutor<MstHolidayCtrl> {
 }

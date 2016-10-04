@@ -10,7 +10,12 @@ import org.deku.leoz.central.data.entities.jooq.tables.*
 import org.deku.leoz.central.data.entities.jooq.tables.records.*
 import org.deku.leoz.central.data.repositories.GenericRepository
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.data.entities.master.*
+import org.deku.leoz.node.data.entities.*
+import org.deku.leoz.node.data.entities.MstCountry
+import org.deku.leoz.node.data.entities.MstRoute
+import org.deku.leoz.node.data.entities.MstSector
+import org.deku.leoz.node.data.entities.MstStation
+import org.deku.leoz.node.data.entities.MstStationSector
 import org.deku.leoz.node.data.repositories.master.*
 import org.deku.leoz.node.data.repositories.system.PropertyRepository
 import org.jooq.Record
@@ -63,8 +68,8 @@ constructor(
          * @param ds
          * @return
          */
-        private fun convert(ds: MstStationRecord): Station {
-            val s = Station()
+        private fun convert(ds: MstStationRecord): MstStation {
+            val s = MstStation()
 
             s.stationNr = ds.stationNr
             s.timestamp = ds.timestamp
@@ -74,7 +79,7 @@ constructor(
             s.billingAddress2 = ds.billingAddress2
             s.billingCity = ds.billingCity
             s.billingCountry = ds.billingCountry
-            s.billingHouseNr = ds.billingHouseNr
+            s.billingHousenr = ds.billingHouseNr
             s.billingStreet = ds.billingStreet
             s.billingZip = ds.billingZip
             s.city = ds.city
@@ -82,12 +87,12 @@ constructor(
             s.contactPerson2 = ds.contactPerson2
             s.country = ds.country
             s.email = ds.email
-            s.houseNr = ds.houseNr
+            s.housenr = ds.houseNr
             s.mobile = ds.mobile
             s.phone1 = ds.phone1
             s.phone2 = ds.phone2
-            s.posLat = ds.poslat
-            s.posLong = ds.poslong
+            s.poslat = ds.poslat
+            s.poslong = ds.poslong
             s.sector = ds.sectors
             s.servicePhone1 = ds.servicePhone1
             s.servicePhone2 = ds.servicePhone2
@@ -95,7 +100,7 @@ constructor(
             s.strang = null
             s.street = ds.street
             s.telefax = ds.telefax
-            s.uStId = ds.ustid
+            s.ustid = ds.ustid
             s.webAddress = ds.webAddress
             s.zip = ds.zip
             s.syncId = ds.syncId
@@ -107,8 +112,8 @@ constructor(
          * @param cr
          * @return
          */
-        private fun convert(cr: MstCountryRecord): Country {
-            val c = Country()
+        private fun convert(cr: MstCountryRecord): MstCountry {
+            val c = MstCountry()
 
             c.code = cr.code
             //        c.getNameStringId(cr.getNameStringid() );
@@ -127,8 +132,8 @@ constructor(
          * @param cr
          * @return
          */
-        private fun convert(cr: MstHolidayctrlRecord): HolidayCtrl {
-            val d = HolidayCtrl()
+        private fun convert(cr: MstHolidayctrlRecord): MstHolidayCtrl {
+            val d = MstHolidayCtrl()
 
             d.country = cr.country
             d.ctrlPos = cr.ctrlPos
@@ -145,8 +150,8 @@ constructor(
          * @param cr
          * @return
          */
-        private fun convert(cr: MstSectorRecord): Sector {
-            val d = Sector()
+        private fun convert(cr: MstSectorRecord): MstSector {
+            val d = MstSector()
 
             d.sectorFrom = cr.sectorfrom
             d.sectorTo = cr.sectorto
@@ -163,8 +168,8 @@ constructor(
          * @param rs
          * @return
          */
-        private fun convert(rs: MstRoutinglayerRecord): RoutingLayer {
-            val d = RoutingLayer()
+        private fun convert(rs: MstRoutinglayerRecord): MstRoutingLayer {
+            val d = MstRoutingLayer()
 
             d.layer = rs.layer
             d.services = rs.services
@@ -181,15 +186,15 @@ constructor(
          * @param sr
          * @return
          */
-        private fun convert(sr: MstRouteRecord): Route {
-            val d = Route()
+        private fun convert(sr: MstRouteRecord): MstRoute {
+            val d = MstRoute()
 
             d.id = sr.id.toLong()
             d.layer = sr.layer
             d.country = sr.country
             d.zipFrom = sr.zipfrom
             d.zipTo = sr.zipto
-            d.validCRTR = sr.validCtrl
+            d.validCrtr = sr.validCtrl
             d.validFrom = sr.validfrom
             d.validTo = sr.validto
             d.timestamp = sr.timestamp
@@ -198,7 +203,7 @@ constructor(
             d.etod = sr.etod
             d.ltop = sr.ltop
             d.term = sr.term
-            d.saturdayOK = sr.saturdayOk
+            d.saturdayOk = sr.saturdayOk
             d.ltodsa = sr.ltodsa
             d.ltodholiday = sr.ltodholiday
             d.island = sr.island
@@ -213,8 +218,8 @@ constructor(
          * @param ss
          * @return
          */
-        private fun convert(ss: MstStationSectorRecord): StationSector {
-            val s = StationSector()
+        private fun convert(ss: MstStationSectorRecord): MstStationSector {
+            val s = MstStationSector()
             s.stationNr = ss.stationNr
             s.sector = ss.sector
             s.routingLayer = ss.routingLayer
@@ -275,66 +280,66 @@ constructor(
 
         val alwaysDelete = reload
 
-        this.updateEntities<MstStationRecord, Station>(
+        this.updateEntities<MstStationRecord, MstStation>(
                 Tables.MST_STATION,
-                MstStation.MST_STATION.SYNC_ID,
+                org.deku.leoz.central.data.entities.jooq.tables.MstStation.MST_STATION.SYNC_ID,
                 stationRepository,
-                QStation.station,
-                QStation.station.syncId,
+                QMstStation.mstStation,
+                QMstStation.mstStation.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_COUNTRY,
-                MstCountry.MST_COUNTRY.SYNC_ID,
+                org.deku.leoz.central.data.entities.jooq.tables.MstCountry.MST_COUNTRY.SYNC_ID,
                 countryRepository,
-                QCountry.country,
-                QCountry.country.syncId,
+                QMstCountry.mstCountry,
+                QMstCountry.mstCountry.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_HOLIDAYCTRL,
-                MstHolidayctrl.MST_HOLIDAYCTRL.SYNC_ID,
+                org.deku.leoz.central.data.entities.jooq.tables.MstHolidayctrl.MST_HOLIDAYCTRL.SYNC_ID,
                 holidayCtrlRepository,
-                QHolidayCtrl.holidayCtrl,
-                QHolidayCtrl.holidayCtrl.syncId,
+                QMstHolidayCtrl.mstHolidayCtrl,
+                QMstHolidayCtrl.mstHolidayCtrl.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_ROUTE,
-                MstRoute.MST_ROUTE.SYNC_ID,
+                org.deku.leoz.central.data.entities.jooq.tables.MstRoute.MST_ROUTE.SYNC_ID,
                 routeRepository,
-                QRoute.route,
-                QRoute.route.syncId,
+                QMstRoute.mstRoute,
+                QMstRoute.mstRoute.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_SECTOR,
-                MstSector.MST_SECTOR.SYNC_ID,
+                org.deku.leoz.central.data.entities.jooq.tables.MstSector.MST_SECTOR.SYNC_ID,
                 sectorRepository,
-                QSector.sector,
-                QSector.sector.syncId,
+                QMstSector.mstSector,
+                QMstSector.mstSector.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_ROUTINGLAYER,
-                MstRoutinglayer.MST_ROUTINGLAYER.SYNC_ID,
+                org.deku.leoz.central.data.entities.jooq.tables.MstRoutinglayer.MST_ROUTINGLAYER.SYNC_ID,
                 routingLayerRepository,
-                QRoutingLayer.routingLayer,
-                QRoutingLayer.routingLayer.syncId,
+                QMstRoutingLayer.mstRoutingLayer,
+                QMstRoutingLayer.mstRoutingLayer.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
         this.updateEntities(
                 Tables.MST_STATION_SECTOR,
-                MstStationSector.MST_STATION_SECTOR.SYNC_ID,
+                org.deku.leoz.central.data.entities.jooq.tables.MstStationSector.MST_STATION_SECTOR.SYNC_ID,
                 stationSectorRepository,
-                QStationSector.stationSector,
-                QStationSector.stationSector.syncId,
+                QMstStationSector.mstStationSector,
+                QMstStationSector.mstStationSector.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 

@@ -4,10 +4,10 @@ import com.google.common.base.Strings
 import com.google.common.collect.Iterables
 import com.google.common.primitives.Ints
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.data.entities.master.HolidayCtrlPK
-import org.deku.leoz.node.data.entities.master.QRoute
-import org.deku.leoz.node.data.entities.master.QRoutingLayer
-import org.deku.leoz.node.data.entities.master.RoutingLayer
+import org.deku.leoz.node.data.entities.MstHolidayCtrlId
+import org.deku.leoz.node.data.entities.QMstRoute
+import org.deku.leoz.node.data.entities.QMstRoutingLayer
+import org.deku.leoz.node.data.entities.MstRoutingLayer
 import org.deku.leoz.node.data.repositories.master.*
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.rest.entities.ShortDate
@@ -89,7 +89,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         ctrlTransportUnit = 23
 
         val layer = routingLayerRepository.findAll(
-                QRoutingLayer.routingLayer.services.eq(ctrlTransportUnit))
+                QMstRoutingLayer.mstRoutingLayer.services.eq(ctrlTransportUnit))
 
         //TODO rWereLayer bitmaske suchen
 
@@ -174,7 +174,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
                            sendDate: LocalDate?,
                            desiredDeliveryDate: LocalDate?,
                            requestParticipant: RoutingRequest.RequestParticipant?,
-                           routingLayers: Iterable<RoutingLayer>,
+                           routingLayers: Iterable<MstRoutingLayer>,
                            ctrl: Int,
                            errorPrefix: String)
             : List<Routing.Participant> {
@@ -238,7 +238,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
                                 validDate: LocalDate?,
                                 sendDate: LocalDate?,
                                 desiredDeliveryDate: LocalDate?,
-                                routingLayer: RoutingLayer,
+                                routingLayer: MstRoutingLayer,
                                 ctrl: Int,
                                 errorPrefix: String)
             : Routing.Participant {
@@ -271,12 +271,12 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 //        val rRoutes = emq.resultList
 //
         val rRoutes = routeRepository.findAll(
-                QRoute.route.layer.eq(routingLayer.layer)
-                        .and(QRoute.route.country.eq(requestParticipant?.country?.toUpperCase()))
-                        .and(QRoute.route.zipFrom.loe(queryZipCode))
-                        .and(QRoute.route.zipTo.goe(queryZipCode))
-                        .and(QRoute.route.validFrom.before(validDate?.toTimestamp()))
-                        .and(QRoute.route.validTo.after(validDate?.toTimestamp())))
+                QMstRoute.mstRoute.layer.eq(routingLayer.layer)
+                        .and(QMstRoute.mstRoute.country.eq(requestParticipant?.country?.toUpperCase()))
+                        .and(QMstRoute.mstRoute.zipFrom.loe(queryZipCode))
+                        .and(QMstRoute.mstRoute.zipTo.goe(queryZipCode))
+                        .and(QMstRoute.mstRoute.validFrom.before(validDate?.toTimestamp()))
+                        .and(QMstRoute.mstRoute.validTo.after(validDate?.toTimestamp())))
 
         if (Iterables.isEmpty(rRoutes))
             throw ServiceException(RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
@@ -342,6 +342,11 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         return ShortTime(this.toString())
     }
 
+    // Extensions for java.Date
+    fun Date.toShortTime(): ShortTime {
+        return ShortTime(this.toString())
+    }
+
     /**
      * Get day type
      */
@@ -352,7 +357,10 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
             else -> DayType.Workday
         }
 
-        val rHolidayCtrl = holidayctrlRepostitory.findOne(HolidayCtrlPK(date?.toTimestamp(), country))
+        val holidayCtrlId = MstHolidayCtrlId()
+        holidayCtrlId.holiday = date?.toTimestamp()
+        holidayCtrlId.country = country
+        val rHolidayCtrl = holidayctrlRepostitory.findOne(holidayCtrlId)
 
         if (rHolidayCtrl != null) {
             if (rHolidayCtrl.ctrlPos == -1)
