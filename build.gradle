@@ -2,13 +2,16 @@ group 'sx'
 version '0.1'
 
 buildscript {
-    ext.kotlin_version = '1.0.4'
+    ext {
+        v_kotlin = '1.0.4'
+    }
 
     repositories {
         mavenCentral()
     }
+
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
 
@@ -19,13 +22,16 @@ repositories {
 }
 
 dependencies {
-    compile project(':libs:sx-common')
-    compile project(':libs:sx-ssh')
+    compile(
+            project(':libs:sx-common'),
+            project(':libs:sx-ssh'),
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // Ini/conf file support
+            'org.ini4j:ini4j:0.5.4'
+    )
 
-    // Ini/conf file support
-    compile 'org.ini4j:ini4j:0.5.4'
-
-    testCompile "junit:junit:4.12"
+    testCompile(
+            "junit:junit:4.12"
+    )
 }
