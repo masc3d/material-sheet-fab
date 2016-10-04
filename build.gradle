@@ -2,13 +2,17 @@ group 'sx'
 version '0.1'
 
 buildscript {
-    ext.kotlin_version = '1.0.4'
+    ext {
+        v_kotlin = '1.0.4'
+        v_slf4j = '1.7.21'
+        v_protostuff = '1.5.0'
+    }
 
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
 
@@ -28,23 +32,24 @@ configurations {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile(
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // Logging
+            "org.slf4j:slf4j-api:$v_slf4j",
+            "org.slf4j:jcl-over-slf4j:$v_slf4j"
+    )
 
-    // Logging
-    def v_slf4j = '1.7.21'
-    compile "org.slf4j:slf4j-api:$v_slf4j"
-    compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
+    provided(
+            // Kryo
+            "com.esotericsoftware:kryo:4.0.0",
+            // Protostuff
+            "io.protostuff:protostuff-core:$v_protostuff",
+            "io.protostuff:protostuff-runtime:$v_protostuff",
+            // Snappy
+            "org.xerial.snappy:snappy-java:1.1.2.4"
+    )
 
-    // Kryo
-    provided "com.esotericsoftware:kryo:4.0.0"
-
-    // Protostuff
-    def v_protostuff = '1.5.0'
-    provided "io.protostuff:protostuff-core:$v_protostuff"
-    provided "io.protostuff:protostuff-runtime:$v_protostuff"
-
-    // Snappy
-    provided "org.xerial.snappy:snappy-java:1.1.2.4"
-
-    testCompile "junit:junit:4.12"
+    testCompile(
+            "junit:junit:4.12"
+    )
 }
