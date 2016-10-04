@@ -1,21 +1,7 @@
 package sx.jms.converters
 
-import com.esotericsoftware.kryo.Kryo
-import com.esotericsoftware.kryo.io.Input
-import com.esotericsoftware.kryo.io.Output
-import com.esotericsoftware.kryo.pool.KryoPool
-import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer
-import io.protostuff.LinkedBuffer
-import io.protostuff.ProtobufIOUtil
-import io.protostuff.ProtostuffIOUtil
-import io.protostuff.runtime.RuntimeSchema
-import org.xerial.snappy.SnappyInputStream
-import org.xerial.snappy.SnappyOutputStream
 import sx.io.serialization.Serializer
 import sx.jms.Converter
-import java.io.*
-import java.util.zip.GZIPInputStream
-import java.util.zip.GZIPOutputStream
 import javax.jms.BytesMessage
 import javax.jms.JMSException
 import javax.jms.Message

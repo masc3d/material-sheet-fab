@@ -3,7 +3,9 @@ version '1.0'
 
 buildscript {
     ext {
+        v_activemq = '5.14.1'
         v_kotlin = '1.0.3'
+        v_protostuff = '1.5.0'
     }
 
     dependencies {
@@ -36,47 +38,36 @@ configurations {
 }
 
 dependencies {
-    compile project(':libs:sx-common')
-    compile project(':libs:sx-serialization')
+    compile(
+            project(':libs:sx-common'),
+            project(':libs:sx-serialization'),
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // JMS
+            "javax.jms:jms-api:1.1-rev-1"
+    )
 
-    // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+    provided(
+            // Spring
+            "org.springframework:spring-jms:4.3.0.RELEASE",
+            // ActiveMQ
+            "org.apache.activemq:activemq-broker:$v_activemq",
+            "org.apache.activemq:activemq-kahadb-store:$v_activemq",
+            "org.apache.activemq:activemq-leveldb-store:$v_activemq",
+            "org.apache.activemq:activemq-jms-pool:$v_activemq",
+            "org.apache.activemq:activemq-jaas:$v_activemq",
+            "org.apache.activemq:activemq-mqtt:$v_activemq",
+            dependencies.create("org.apache.activemq:activemq-http:$v_activemq") {
+                exclude group: 'org.springframework'
+                exclude group: 'org.apache.activemq', module: 'activemq-spring'
+                exclude group: 'org.eclipse.jetty.aggregate'
+            },
+            // For ActiveMQ tunnel servlet
+            "javax.servlet:javax.servlet-api:3.1.0"
+    )
 
-    // JMS
-    compile "javax.jms:jms-api:1.1-rev-1"
-
-    // Spring
-    provided "org.springframework:spring-jms:4.3.0.RELEASE"
-
-    // ActiveMQ
-    def v_activemq = '5.14.0'
-    provided "org.apache.activemq:activemq-broker:$v_activemq"
-    provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
-    provided "org.apache.activemq:activemq-leveldb-store:$v_activemq"
-    provided "org.apache.activemq:activemq-jms-pool:$v_activemq"
-    provided "org.apache.activemq:activemq-jaas:$v_activemq"
-    provided "org.apache.activemq:activemq-mqtt:$v_activemq"
-    provided("org.apache.activemq:activemq-http:$v_activemq") {
-        exclude group: 'org.springframework'
-        exclude group: 'org.apache.activemq', module: 'activemq-spring'
-        exclude group: 'org.eclipse.jetty.aggregate'
-    }
-
-    // For ActiveMQ tunnel servlet
-    provided "javax.servlet:javax.servlet-api:3.1.0"
-
-    // Kryo
-    provided "com.esotericsoftware:kryo:4.0.0"
-
-    // Protostuff
-    def v_protostuff = '1.5.0'
-    provided "io.protostuff:protostuff-core:$v_protostuff"
-    provided "io.protostuff:protostuff-runtime:$v_protostuff"
-
-    // Snappy
-    provided "org.xerial.snappy:snappy-java:1.1.2.4"
-
-    testCompile "junit:junit:4.12"
-    testCompile "org.slf4j:slf4j-simple:1.7.21"
+    testCompile(
+            "junit:junit:4.12"
+    )
 }
