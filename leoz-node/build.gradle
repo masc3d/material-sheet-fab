@@ -1,14 +1,12 @@
 import groovy.io.FileType
 import org.apache.commons.lang3.ClassUtils
-import org.deku.gradle.PackagerPlugin
-
 import org.apache.openjpa.jdbc.meta.ReverseMappingTool
 import org.apache.openjpa.jdbc.schema.Column
 import org.apache.openjpa.jdbc.schema.SchemaTool
+import org.deku.gradle.PackagerPlugin
 import org.jboss.forge.roaster.Roaster
 import org.jboss.forge.roaster.model.source.FieldSource
 import org.jboss.forge.roaster.model.source.JavaClassSource
-import org.jboss.forge.roaster.model.source.JavaSource
 import org.jboss.forge.roaster.model.source.PropertySource
 
 import java.sql.ResultSet
@@ -382,12 +380,20 @@ task openJpaGenerateEntities(dependsOn: [openJpaGenerateSchema]) {
     }
 }
 
+/**
+ * Task performing post-processing on openjpa-generated entity classes.
+ */
 task openJpaPostProcess(dependsOn: [openJpaGenerateEntities]) {
     doLast {
         JPA_GENERATED_DIR.eachFileRecurse(FileType.FILES, {
             def jtype = Roaster.parse(it)
             def jsource = (JavaClassSource)jtype
+
+            // EclipseLink currently does not support primitive @Id fields
+            // https://bugs.eclipse.org/bugs/show_bug.cgi?id=415027
+            // Thus changing primitve @Id fields and referring properties to their wrapped object type counterpart
             jsource.fields.each { field ->
+                // Find field with @Id annotation
                 def idAnnotation = field.annotations.find {
                     it.qualifiedName == javax.persistence.Id.canonicalName
                 }
@@ -396,20 +402,26 @@ task openJpaPostProcess(dependsOn: [openJpaGenerateEntities]) {
                         def fieldSource = (FieldSource)field
                         def wrapperType = ClassUtils.primitiveToWrapper(ClassUtils.getClass(field.type.qualifiedName))
 
+                        // Find property referring to this field
                         def p = (PropertySource)jsource.properties.find {
                             it.field.equals(field)
                         }
+
+                        // Update property type
                         def setterParam = p.mutator.parameters.first()
                         def setterParamName = setterParam.name
-
                         p.mutator
                                 .removeParameter(setterParam)
                                 .addParameter(wrapperType, setterParamName)
                         p.type = wrapperType
+
+                        // Update field type
                         fieldSource.type = wrapperType
                     }
                 }
             }
+
+            // Generate and write updated class
             it.write(jsource.toString())
         })
     }
