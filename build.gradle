@@ -2,13 +2,15 @@ group 'sx'
 version '0.1'
 
 buildscript {
-    ext.kotlin_version = '1.0.4'
+    ext {
+        v_kotlin = '1.0.4'
+    }
 
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
 
@@ -19,13 +21,16 @@ repositories {
 }
 
 dependencies {
-    compile project(':libs:sx-common')
-    compile project(':libs:sx-serialization')
+    compile(
+            project(':libs:sx-common'),
+            project(':libs:sx-serialization'),
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // Kryo
+            "com.esotericsoftware:kryo:4.0.0"
+    )
 
-    // Kryo
-    compile "com.esotericsoftware:kryo:4.0.0"
-
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-
-    testCompile "junit:junit:4.12"
+    testCompile(
+            "junit:junit:4.12"
+    )
 }
