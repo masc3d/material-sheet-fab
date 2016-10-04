@@ -60,6 +60,9 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
 
         // H2 parameters
         val params = HashMap<String, String>()
+        // Even though this is declared as "experimental" for h2 (http://www.h2database.com/javadoc/org/h2/engine/DbSettings.html#DATABASE_TO_UPPER)
+        // Uppercase table/column names are just ugly.
+        params.put("DATABASE_TO_UPPER", "false")
         if (IN_MEMORY) {
             // For in memory db
             params.put("INIT", "CREATE SCHEMA IF NOT EXISTS leoz")
