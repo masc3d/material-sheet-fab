@@ -86,15 +86,19 @@ abstract class Serializer {
         }
 
         /**
-         * Register class. If the class is already registered merely returns its UID (fast lookup)
+         * Register class with uid. If the class is already registered merely returns its UID (fast lookup)
          * @param cls Class to register
-         * @return Class @Serializable UID or null if the type is not applicable for registering (eg. build-in type)
+         * @param uid UID
          */
-        fun register(cls: Class<*>): Long {
+        fun register(cls: Class<*>, uid: Long) {
             val registeredUid = this.uidByClassReadonly[cls]
 
-            if (registeredUid != null)
-                return registeredUid
+            if (registeredUid != null) {
+                if (registeredUid != uid)
+                    throw IllegalStateException("Cannot register [${cls}] with uid [${uid}, it's already registered with [${registeredUid}}")
+
+                return
+            }
 
             /**
              * Helper function to register class
@@ -119,10 +123,6 @@ abstract class Serializer {
                 }
             }
 
-            val uid = determineUid(cls)
-            if (uid == null)
-                throw IllegalArgumentException("Class ${cls} has neither @Serializable annotation nor implements Serializable")
-
             registerImpl(cls, uid)
 
             // Register nested/declared classes
@@ -131,6 +131,24 @@ abstract class Serializer {
                 if (dcuid != null)
                     registerImpl(it, dcuid)
             }
+        }
+
+        /**
+         * Register class. If the class is already registered merely returns its UID (fast lookup)
+         * @param cls Class to register
+         * @return Class @Serializable UID or null if the type is not applicable for registering (eg. build-in type)
+         */
+        fun register(cls: Class<*>): Long {
+            val registeredUid = this.uidByClassReadonly[cls]
+
+            if (registeredUid != null)
+                return registeredUid
+
+            val uid = determineUid(cls)
+            if (uid == null)
+                throw IllegalArgumentException("Class ${cls} has neither @Serializable annotation nor implements Serializable")
+
+            this.register(cls, uid)
 
             return uid
         }
