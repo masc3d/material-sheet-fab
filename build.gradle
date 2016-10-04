@@ -4,7 +4,9 @@ version '0.1'
 buildscript {
     ext {
         v_kotlin = '1.0.3'
+        v_slf4j = '1.7.21'
     }
+
     repositories {
         mavenCentral()
     }
@@ -21,14 +23,17 @@ repositories {
 }
 
 dependencies {
-    compile project(':libs:sx-common')
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+    compile(
+            project(':libs:sx-common'),
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // Logging
+            "org.slf4j:slf4j-api:$v_slf4j",
+            "org.slf4j:jcl-over-slf4j:$v_slf4j",
+            "ch.qos.logback:logback-classic:1.1.7"
+    )
 
-    // Logging
-    def v_slf4j = '1.7.21'
-    compile "org.slf4j:slf4j-api:$v_slf4j"
-    compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
-    compile "ch.qos.logback:logback-classic:1.1.7"
-
-    testCompile "junit:junit:4.12"
+    testCompile(
+            "junit:junit:4.12"
+    )
 }
