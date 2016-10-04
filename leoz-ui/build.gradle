@@ -9,62 +9,69 @@ version = '0.10-RELEASE'
 mainClassName = "org.deku.leoz.ui.Main"
 
 buildscript {
+    ext {
+        v_jersey = '2.23'
+        v_kodein = '3.1.0'
+    }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
 
 dependencies {
-    compile project(':libs:sx-common')
-    compile project(':libs:leoz-common')
-    compile project(':libs:sx-fx')
+    compile(
+            project(':libs:sx-common'),
+            project(':libs:leoz-common'),
+            project(':libs:sx-fx'),
 
-    // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-    def v_kodein = '3.1.0'
-    compile "com.github.salomonbrys.kodein:kodein:$v_kodein"
-    compile "com.github.salomonbrys.kodein:kodein-conf:$v_kodein"
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
 
-    // RX
-    compile "io.reactivex:rxjava:1.1.6"
-    compile "io.reactivex:rxkotlin:0.60.0"
-    compile "io.reactivex:rxjavafx:0.2.0"
-    compile "com.github.thomasnield:rxkotlinfx:0.2.0"
+            "org.reflections:reflections:0.9.10",
+            // RX
+            "io.reactivex:rxjava:1.1.6",
+            "io.reactivex:rxkotlin:0.60.0",
+            "io.reactivex:rxjavafx:0.2.0",
+            "com.github.thomasnield:rxkotlinfx:0.2.0",
 
-    // JavaFX libs
+            // JavaFX libs
 
-    // Lightweight kotlin/javafx framework. TODO: only for EVALUATION and reference for now
-    compile "no.tornado:tornadofx:1.5.6"
+            // Lightweight kotlin/javafx framework. TODO: only for EVALUATION and reference for now
+            "no.tornado:tornadofx:1.5.6",
+            // For automatic fx forms generation
+            "com.dooapp.fxform2:core:$v_fxform2",
+            "javax.el:javax.el-api:3.0.0",
+            // FX controls
+            "org.controlsfx:controlsfx:8.40.12",
+            // RichTextFX
+            "org.fxmisc.richtext:richtextfx:0.7-M2",
 
-    // For automatic fx forms generation
-    compile "com.dooapp.fxform2:core:$v_fxform2"
-    compile "javax.el:javax.el-api:3.0.0"
-    // FX controls
-    compile "org.controlsfx:controlsfx:8.40.12"
-    // RichTextFX
-    compile "org.fxmisc.richtext:richtextfx:0.7-M2"
+            // JSR-303 bean validation
+            "org.hibernate:hibernate-validator:5.2.4.Final",
 
-    // JSR-303 bean validation
-    compile "org.hibernate:hibernate-validator:5.2.4.Final"
+            // JAX-RS client
+            "org.glassfish.jersey.core:jersey-client:$v_jersey",
+            "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey",
+            "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey",
 
-    // JAX-RS client
-    def v_jersey = '2.23'
-    compile "org.glassfish.jersey.core:jersey-client:$v_jersey"
-    compile "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey"
-    compile "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey"
+            // jackson JSON serializer
+            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
+            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
 
-    // jackson JSON serializer
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson"
-    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
+            // Webservice host libraries (leobridge)
+            "org.glassfish.jersey.containers:jersey-container-servlet:$v_jersey",
+            "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey",
+            "org.glassfish.jersey.containers:jersey-container-grizzly2-http:$v_jersey"
+    )
 
-    // Webservice host libraries (leobridge)
-    compile "org.glassfish.jersey.containers:jersey-container-servlet:$v_jersey"
-    compile "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey"
-    compile "org.glassfish.jersey.containers:jersey-container-grizzly2-http:$v_jersey"
-
-    testCompile group: 'junit', name: 'junit', version: v_junit
+    testCompile(
+            "junit:junit:$v_junit"
+    )
 }
 
 //task proguard(type: proguard.gradle.ProGuardTask) {

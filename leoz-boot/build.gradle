@@ -15,30 +15,32 @@ buildscript {
 }
 
 dependencies {
-    compile project(':libs:sx-common')
-    compile project(':libs:sx-fx')
-    compile project(':libs:sx-ssh')
-    compile project(':libs:leoz-common')
+    compile(
+            project(':libs:sx-common'),
+            project(':libs:sx-fx'),
+            project(':libs:sx-ssh'),
+            project(':libs:leoz-common'),
 
-    // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-    // Logging
-    compile "ch.qos.logback:logback-classic:$v_logback"
-    compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
+            // Logging
+            "ch.qos.logback:logback-classic:$v_logback",
+            "org.slf4j:jcl-over-slf4j:$v_slf4j",
 
-    // command line
-    compile "com.beust:jcommander:1.56"
+            // command line
+            "com.beust:jcommander:1.56",
 
-    // ini/conf file
-    compile "org.ini4j:ini4j:$v_ini4j"
+            // ini/conf file
+            "org.ini4j:ini4j:$v_ini4j",
 
-    // ssh support
-    compile "org.apache.sshd:sshd-core:$v_sshd"
+            // ssh support
+            "org.apache.sshd:sshd-core:$v_sshd",
 
-    compile "com.dooapp.fxform2:core:$v_fxform2"
-    compile "org.jfxtras:jfxtras-all:8.0-r5"
+            "com.dooapp.fxform2:core:$v_fxform2",
+            "org.jfxtras:jfxtras-all:8.0-r5"
+    )
 
     testCompile group: 'junit', name: 'junit', version: v_junit
 }

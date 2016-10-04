@@ -1,6 +1,10 @@
 apply from: '../versions.gradle'
 
 buildscript {
+    ext {
+        v_jsch = '0.0.9'
+    }
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.2"
     }
@@ -28,44 +32,46 @@ configurations {
 
 dependencies {
     // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+    compile(
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-    compile "org.apache.commons:commons-lang3:$v_commons_lang"
-    compile "org.apache.commons:commons-compress:1.11"
-    compile "commons-io:commons-io:$v_commons_io"
-    compile "org.tukaani:xz:1.5"
-    compile "org.eclipse.jgit:org.eclipse.jgit:4.3.1.201605051710-r"
-    compile "com.google.guava:guava:$v_guava"
-    compile "org.ini4j:ini4j:$v_ini4j"
+            "org.apache.commons:commons-lang3:$v_commons_lang",
+            "org.apache.commons:commons-compress:1.11",
+            "commons-io:commons-io:$v_commons_io",
+            "org.tukaani:xz:1.5",
+            "org.eclipse.jgit:org.eclipse.jgit:4.3.1.201605051710-r",
+            "com.google.guava:guava:$v_guava",
+            "org.ini4j:ini4j:$v_ini4j",
 
-    // For authenticating ssh/jgit against key agent
-    def v_jsch = '0.0.9'
-    compile "com.jcraft:jsch.agentproxy.connector-factory:$v_jsch"
-    compile "com.jcraft:jsch.agentproxy.jsch:$v_jsch"
-    compile "com.jcraft:jsch.agentproxy.sshagent:$v_jsch"
-    compile "com.jcraft:jsch.agentproxy.pageant:$v_jsch"
+            // For authenticating ssh/jgit against key agent
+            "com.jcraft:jsch.agentproxy.connector-factory:$v_jsch",
+            "com.jcraft:jsch.agentproxy.jsch:$v_jsch",
+            "com.jcraft:jsch.agentproxy.sshagent:$v_jsch",
+            "com.jcraft:jsch.agentproxy.pageant:$v_jsch"
+    )
 
     // Unused deps required for compilation
-    provided "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs"
-    provided "ch.qos.logback:logback-classic:$v_logback"
-    provided "javax.servlet:javax.servlet-api:$v_javax_servlet"
-    provided "org.apache.activemq:activemq-broker:$v_activemq"
-    provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
-    provided "org.apache.activemq:activemq-leveldb-store:$v_activemq"
-    provided "org.apache.activemq:activemq-jms-pool:$v_activemq"
-    provided "org.apache.activemq:activemq-jaas:$v_activemq"
-    provided "org.apache.activemq:activemq-mqtt:$v_activemq"
-    provided("org.apache.activemq:activemq-http:$v_activemq") {
-        exclude group: 'org.springframework'
-        exclude group: 'org.apache.activemq', module: 'activemq-spring'
-        exclude group: 'org.eclipse.jetty.aggregate'
-    }
-    provided 'org.apache.sshd:sshd-core:+'
-
-    provided "org.springframework:spring-jms:$v_spring"
-    provided "com.esotericsoftware:kryo:$v_kryo"
-    provided "org.xerial.snappy:snappy-java:$v_snappy"
+    provided(
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
+            "ch.qos.logback:logback-classic:$v_logback",
+            "javax.servlet:javax.servlet-api:$v_javax_servlet",
+            "org.apache.activemq:activemq-broker:$v_activemq",
+            "org.apache.activemq:activemq-kahadb-store:$v_activemq",
+            "org.apache.activemq:activemq-leveldb-store:$v_activemq",
+            "org.apache.activemq:activemq-jms-pool:$v_activemq",
+            "org.apache.activemq:activemq-jaas:$v_activemq",
+            "org.apache.activemq:activemq-mqtt:$v_activemq",
+            dependencies.create("org.apache.activemq:activemq-http:$v_activemq") {
+                exclude group: 'org.springframework'
+                exclude group: 'org.apache.activemq', module: 'activemq-spring'
+                exclude group: 'org.eclipse.jetty.aggregate'
+            },
+            "org.apache.sshd:sshd-core:$v_sshd",
+            "org.springframework:spring-jms:$v_spring",
+            "com.esotericsoftware:kryo:$v_kryo",
+            "org.xerial.snappy:snappy-java:$v_snappy"
+    )
 
     testCompile group: 'junit', name: 'junit', version: v_junit
 }

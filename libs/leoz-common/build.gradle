@@ -19,74 +19,66 @@ configurations {
 }
 
 dependencies {
-    compile project(':libs:sx-common')
-    compile project(':libs:sx-jms')
-    compile project(':libs:sx-rsync')
-    compile project(':libs:sx-serialization')
-    compile project(':libs:sx-discovery')
+    compile(
+            project(':libs:sx-common'),
+            project(':libs:sx-jms'),
+            project(':libs:sx-rsync'),
+            project(':libs:sx-serialization'),
+            project(':libs:sx-discovery'),
+            // Watchservice replacement for OSX
+            project(':libs:barbarywatchservice'),
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // logging
+            "org.apache.commons:commons-lang3:$v_commons_lang",
+            "ch.qos.logback:logback-classic:$v_logback",
+            "org.slf4j:jcl-over-slf4j:$v_slf4j",
+            // Guava
+            "com.google.guava:guava:$v_guava",
+            // Commons
+            "commons-io:commons-io:$v_commons_io",
+            // javax
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
+            // kryo
+            "com.esotericsoftware:kryo:4.0.0",
+            "net.java.dev.jna:jna:$v_jna",
+            "net.java.dev.jna:jna-platform:$v_jna",
+            // SnakeYAML
+            "org.yaml:snakeyaml:$v_snakeyaml"
 
-    // Watchservice replacement for OSX
-    compile project(':libs:barbarywatchservice')
+    )
 
-    // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+    provided(
+            // Persistence
+            "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
+            // Swagger for json doc
+            "io.swagger:swagger-annotations:$v_swagger",
+            "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
+            // ActiveMQ
+            "org.apache.activemq:activemq-broker:$v_activemq",
+            "org.apache.activemq:activemq-kahadb-store:$v_activemq",
+            "org.apache.activemq:activemq-jms-pool:$v_activemq",
+            "org.apache.activemq:activemq-jaas:$v_activemq",
+            "org.apache.activemq:activemq-mqtt:$v_activemq",
+            dependencies.create("org.apache.activemq:activemq-http:$v_activemq") {
+                exclude group: 'org.springframework'
+                exclude group: 'org.apache.activemq', module: 'activemq-spring'
+                exclude group: 'org.eclipse.jetty.aggregate'
+            },
+            // HTTP support
+            "org.apache.httpcomponents:httpclient:$v_apache_httpclient",
+            "com.thoughtworks.xstream:xstream:$v_xstream",
+            // Spring
+            "org.springframework:spring-jms:$v_spring"
+    )
 
-    // logging
-    compile "org.apache.commons:commons-lang3:$v_commons_lang"
-    compile "ch.qos.logback:logback-classic:$v_logback"
-    compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
-
-    // Guava
-    compile "com.google.guava:guava:$v_guava"
-
-    // Commons
-    compile "commons-io:commons-io:$v_commons_io"
-
-    // javax
-    compile "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs"
-
-    // persistence
-    provided "org.eclipse.persistence:javax.persistence:$v_javax_persistence"
-
-    // kryo
-    compile "com.esotericsoftware:kryo:4.0.0"
-
-    // swagger for json doc
-    provided "io.swagger:swagger-annotations:$v_swagger"
-    provided "com.fasterxml.jackson.core:jackson-databind:$v_jackson"
-
-    // messaging
-    // ActiveMQ
-    provided "org.apache.activemq:activemq-broker:$v_activemq"
-    provided "org.apache.activemq:activemq-kahadb-store:$v_activemq"
-    provided "org.apache.activemq:activemq-jms-pool:$v_activemq"
-    provided "org.apache.activemq:activemq-jaas:$v_activemq"
-    provided "org.apache.activemq:activemq-mqtt:$v_activemq"
-    provided("org.apache.activemq:activemq-http:$v_activemq") {
-        exclude group: 'org.springframework'
-        exclude group: 'org.apache.activemq', module: 'activemq-spring'
-        exclude group: 'org.eclipse.jetty.aggregate'
-    }
-    // http support
-    provided "org.apache.httpcomponents:httpclient:$v_apache_httpclient"
-    provided "com.thoughtworks.xstream:xstream:$v_xstream"
-
-    compile "net.java.dev.jna:jna:$v_jna"
-    compile "net.java.dev.jna:jna-platform:$v_jna"
-
-    // SnakeYAML
-    compile "org.yaml:snakeyaml:$v_snakeyaml"
-
-    // spring
-    provided ("org.springframework:spring-jms:$v_spring")
-
-    testCompile group: 'junit', name: 'junit', version: v_junit
-
-    // webservice client libraries for test cases
-    testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
-
-    // jackson JSON serializer
-    testCompile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson"
-    testCompile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
+    testCompile(
+            "junit:junit:$v_junit",
+            // webservice client libraries for test cases
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+            // jackson JSON serializer
+            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
+            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
+    )
 }

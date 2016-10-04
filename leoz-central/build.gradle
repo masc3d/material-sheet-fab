@@ -33,27 +33,29 @@ def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
 
 dependencies {
     // leoz webservice dependencies
-    compile project(':libs:sx-common')
-    compile project(':libs:leoz-common')
-    compile project(':leoz-node')
+    compile(
+            project(':libs:sx-common'),
+            project(':libs:leoz-common'),
+            project(':leoz-node'),
 
-    // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-    // db
-    compile "mysql:mysql-connector-java:$v_mysql"
+            // db
+            "mysql:mysql-connector-java:$v_mysql",
 
-    // jooq
-    compile "org.jooq:jooq:3.8.4"
+            // jooq
+            "org.jooq:jooq:3.8.4"
+    )
 
-    // test dependencies
-    testCompile group: 'junit', name: 'junit', version: v_junit
-    // webservice client libraries for test cases
-    testCompile "org.jboss.resteasy:resteasy-client:$v_resteasy"
-    testCompile "org.springframework.boot:spring-boot-starter-test:$v_springboot"
-
-    testCompile project(':libs:sx-common')
+    testCompile(
+            project(':libs:sx-common'),
+            "junit:junit:$v_junit",
+            // webservice client libraries for test cases
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+            "org.springframework.boot:spring-boot-starter-test:$v_springboot"
+    )
 }
 
 // SQL migrations (used for flyway eg.)
