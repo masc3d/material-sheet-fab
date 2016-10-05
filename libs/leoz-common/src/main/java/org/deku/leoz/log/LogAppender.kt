@@ -13,6 +13,8 @@ import java.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * Log appender sending log messages via jms
@@ -29,6 +31,7 @@ class LogAppender(
         Disposable {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+    private val lock = ReentrantLock()
     /** Log message buffer  */
     private val buffer = ArrayList<LogMessage.LogEntry>()
 
@@ -98,16 +101,20 @@ class LogAppender(
         }
     }
 
-    @Synchronized override fun start() {
-        super.start()
-        if (this.broker.isStarted)
-            this.service.start()
+    override fun start() {
+        this.lock.withLock {
+            super.start()
+            if (this.broker.isStarted)
+                this.service.start()
+        }
     }
 
-    @Synchronized override fun stop() {
-        // Shutdown log flush gracefully
-        this.service.stop()
-        super.stop()
+    override fun stop() {
+        this.lock.withLock {
+            // Shutdown log flush gracefully
+            this.service.stop()
+            super.stop()
+        }
     }
 
     override fun restart() {
