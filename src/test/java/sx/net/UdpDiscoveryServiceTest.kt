@@ -5,6 +5,7 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.Copyable
 import sx.io.serialization.Serializable
+import java.util.concurrent.Executors
 
 /**
  * Created by masc on 22/08/16.
@@ -24,7 +25,12 @@ class UdpDiscoveryServiceTest {
             override fun copyInstance(): Info { return this.copy() }
         }
 
-        val ds = UdpDiscoveryService(Info::class.java, 20000)
+        val e = Executors.newScheduledThreadPool(2)
+
+        val ds = UdpDiscoveryService(
+                executorService = e,
+                infoClass = Info::class.java,
+                port = 20000)
 
         ds.rxOnUpdate.subscribe {
             log.info("Event ${it}")
@@ -35,7 +41,7 @@ class UdpDiscoveryServiceTest {
 
         ds.start()
         Thread.sleep(5000)
-        ds.updateInfo(Info("type-b"))
+        ds.nodeInfo = Info("type-b")
         Thread.sleep(Long.MAX_VALUE)
         ds.stop()
     }
