@@ -12,23 +12,22 @@ import sx.jms.activemq.ActiveMQBroker
  * Created by masc on 16.06.15.
  */
 abstract class MessagingTest {
+    /**
+     * Test broker
+     */
+    val broker by lazy {
+        ActiveMQConfiguration.instance.broker
+    }
+
     @Before
     @Throws(Exception::class)
     fun setup() {
-        // Log levels
-        val root = org.slf4j.LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
-        root.level = Level.DEBUG
-
-        val lMessaging = org.slf4j.LoggerFactory.getLogger("org.deku.leoz.messaging") as Logger
-        lMessaging.level = Level.TRACE
-
-        // Start broker
-        ActiveMQConfiguration.instance.broker.start()
+        this.broker.start()
     }
 
     @After
     @Throws(Exception::class)
     fun tearDown() {
-        ActiveMQConfiguration.instance.broker.stop()
+        this.broker.stop()
     }
 }

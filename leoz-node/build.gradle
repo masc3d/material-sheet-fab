@@ -181,7 +181,6 @@ dependencies {
             "com.vaadin:vaadin-client-compiled:$v_vaadin",
             "com.vaadin:vaadin-widgets:$v_vaadin",
             "com.vaadin:vaadin-themes:$v_vaadin",
-            "commons-beanutils:commons-beanutils-core:1.8.3"
     )
 
     // QueryDSL codegen/annotation processor

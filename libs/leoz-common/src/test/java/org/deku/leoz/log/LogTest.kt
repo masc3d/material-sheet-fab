@@ -22,49 +22,52 @@ import java.util.concurrent.Executors
  */
 @Ignore
 class LogTest : MessagingTest() {
-    private val mLog = LoggerFactory.getLogger(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Test
     @Throws(JMSException::class)
     fun testSend() {
         // Setup log appender
-        val lAppender = LogAppender(
-                messagingConfiguration = ActiveMQConfiguration.instance,
-                idenitySupplier = { Identity.create(BundleType.LEOZ_NODE.value, SystemInformation.create()) })
-        lAppender.start()
-        val lRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
-        lRoot.addAppender(lAppender)
+        val logAppender = LogAppender(
+                broker = this.broker,
+                logChannelConfiguration= ActiveMQConfiguration.instance.centralLogQueue,
+                identitySupplier = { Identity.create(BundleType.LEOZ_NODE.value, SystemInformation.create()) })
+        logAppender.start()
+
+        val logRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
+        logRoot.addAppender(logAppender)
 
         // Generate some log messages
         for (i in 0..99)
-            lRoot.info("Test!")
+            logRoot.info("Test!")
 
         // Dispose to make sure everything is flushed
-        lAppender.close()
+        logAppender.flush()
+        logAppender.close()
     }
 
     @Test
     @Throws(JMSException::class, InterruptedException::class)
     fun testReceive() {
         // Setup log message listener
-        val mListener = object : SpringJmsListener(
+        val listener = object : SpringJmsListener(
                 { Channel(ActiveMQConfiguration.instance.centralLogQueue) },
                 Executors.newSingleThreadExecutor()) {
 
         }
 
-        mListener.addDelegate(object : Handler<LogMessage> {
+        listener.addDelegate(object : Handler<LogMessage> {
             override fun onMessage(message: LogMessage, replyChannel: Channel?) {
-                mLog.info(message)
+                log.info("${message}: ${message.logEntries.count()}")
             }
         })
 
-        mListener.start()
+        listener.start()
 
         // Wait for some messages to be received
         Thread.sleep(20000)
 
-        mListener.close()
+        listener.close()
     }
 }
 

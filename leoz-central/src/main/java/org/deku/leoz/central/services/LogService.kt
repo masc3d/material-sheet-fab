@@ -31,6 +31,7 @@ class LogService
     /** Loggers by node id */
     private val loggers = HashMap<String, Logger>()
 
+    // TODO: move to LogMessage.LogEntry
     private class LoggingEvent(val logEntry: LogMessage.LogEntry) : ch.qos.logback.classic.spi.LoggingEvent() {
         val levels = mapOf(
                 Level.ERROR.toString() to Level.ERROR,

@@ -16,7 +16,7 @@ class QueueTest : MessagingTest() {
 
     @Test
     fun testTemporaryQueueSendReceiveWithTransaction() {
-        val cn = this.configuration.broker.connectionFactory.createConnection()
+        val cn = ActiveMQConfiguration.instance.connectionFactory.createConnection()
         cn.start()
         val s = cn.createSession(true, -1)
         val q = s.createTemporaryQueue()

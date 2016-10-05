@@ -101,6 +101,10 @@ class LogAppender(
         }
     }
 
+    fun flush() {
+        this.service.trigger()
+    }
+
     override fun start() {
         this.lock.withLock {
             super.start()
