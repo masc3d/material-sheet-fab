@@ -29,8 +29,7 @@ class DiscoveryService(
     }
 
     init {
-        this.updateInfo(
-                DiscoveryInfo(bundleType = bundleType))
+        this.nodeInfo = DiscoveryInfo(bundleType = bundleType)
     }
 
     /**
@@ -40,10 +39,9 @@ class DiscoveryService(
         val finalServices = info?.services?.toMutableList() ?: mutableListOf()
 
         finalServices.addAll(services)
-        this.updateInfo(
-                DiscoveryInfo(
-                        this.bundleType,
-                        finalServices.toTypedArray())
-        )
+
+        this.nodeInfo = DiscoveryInfo(
+                this.bundleType,
+                finalServices.toTypedArray())
     }
 }

@@ -123,6 +123,7 @@ subprojects {
                 }
             }
 
+            force "commons-beanutils:commons-beanutils:1.9.2"
             force "commons-codec:commons-codec:1.10"
             force "commons-io:commons-io:$v_commons_io"
             force "commons-logging:commons-logging:$v_commons_logging"
