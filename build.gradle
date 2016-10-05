@@ -54,7 +54,6 @@ dependencies {
             // ActiveMQ
             "org.apache.activemq:activemq-broker:$v_activemq",
             "org.apache.activemq:activemq-kahadb-store:$v_activemq",
-            "org.apache.activemq:activemq-leveldb-store:$v_activemq",
             "org.apache.activemq:activemq-jms-pool:$v_activemq",
             "org.apache.activemq:activemq-jaas:$v_activemq",
             "org.apache.activemq:activemq-mqtt:$v_activemq",
@@ -64,10 +63,15 @@ dependencies {
                 exclude group: 'org.eclipse.jetty.aggregate'
             },
             // For ActiveMQ tunnel servlet
-            "javax.servlet:javax.servlet-api:3.1.0"
+            "javax.servlet:javax.servlet-api:3.1.0",
+
+
+            // Artemis
+            "org.apache.activemq:artemis-jms-server:1.4.0"
     )
 
     testCompile(
-            "junit:junit:4.12"
+            "junit:junit:4.12",
+            "ch.qos.logback:logback-classic:1.1.7"
     )
 }

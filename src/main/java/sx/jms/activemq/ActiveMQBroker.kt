@@ -12,8 +12,6 @@ import org.apache.activemq.command.ActiveMQTopic
 import org.apache.activemq.command.BrokerInfo
 import org.apache.activemq.filter.DestinationMapEntry
 import org.apache.activemq.jms.pool.PooledConnectionFactory
-import org.apache.activemq.leveldb.LevelDBStore
-import org.apache.activemq.leveldb.LevelDBStoreFactory
 import org.apache.activemq.network.DiscoveryNetworkConnector
 import org.apache.activemq.security.*
 import org.apache.activemq.store.PersistenceAdapter
@@ -71,23 +69,8 @@ class ActiveMQBroker private constructor()
         }
     }
 
-    /**
-     * Persistence store type
-     */
-    enum class StoreType(val storeType: String) {
-        KahaDb("kahadb"),
-        LevelDb("leveldb");
-
-        override fun toString(): String {
-            return storeType
-        }
-    }
-
     /** Native broker service  */
     @Volatile private var brokerService: BrokerService? = null
-
-    /** Persistence store type to use  */
-    private val storeType = StoreType.KahaDb
 
     /** External transport servers, eg. servlets  */
     internal var externalTransportServers: MutableList<TransportServer> = ArrayList()
@@ -125,21 +108,13 @@ class ActiveMQBroker private constructor()
         brokerService!!.isUseShutdownHook = false
 
         // Persistence setup
-        val persistenceStoreDirectory = File(this.dataDirectory, storeType.toString())
+        val persistenceStoreDirectory = File(this.dataDirectory, "kahadb")
         brokerService!!.dataDirectoryFile = persistenceStoreDirectory
 
         val pa: PersistenceAdapter
-        when (storeType) {
-            StoreType.KahaDb -> {
-                pa = brokerService!!.persistenceAdapter as KahaDBPersistenceAdapter
-                pa.isCheckForCorruptJournalFiles = true
-            }
-            StoreType.LevelDb -> {
-                brokerService!!.persistenceFactory = LevelDBStoreFactory()
-                pa = brokerService!!.persistenceAdapter as LevelDBStore
-            }
-            else -> throw IllegalStateException(String.format("Unknown store type [%s]", storeType))
-        }
+        pa = brokerService!!.persistenceAdapter as KahaDBPersistenceAdapter
+        pa.isCheckForCorruptJournalFiles = true
+
         // Enforce our own persistence store directory for both regular store and scheduler, overriding the default which has broker name in its path
         pa.directory = persistenceStoreDirectory
         brokerService!!.setSchedulerDirectory(persistenceStoreDirectory.resolve("scheduler").toString())
