@@ -9,6 +9,7 @@ import rx.schedulers.Schedulers
 import sx.rx.subscribeAwaitableWith
 import java.util.concurrent.CancellationException
 import java.util.concurrent.Executors
+import java.lang.Thread
 import kotlin.concurrent.thread
 
 /**
