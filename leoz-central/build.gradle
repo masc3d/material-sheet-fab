@@ -35,7 +35,7 @@ dependencies {
     // leoz webservice dependencies
     compile(
             project(':libs:sx-common'),
-            project(':libs:leoz-common'),
+            project(':leoz-common'),
             project(':leoz-node'),
 
             // Kotlin

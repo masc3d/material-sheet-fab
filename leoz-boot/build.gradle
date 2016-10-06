@@ -19,7 +19,7 @@ dependencies {
             project(':libs:sx-common'),
             project(':libs:sx-fx'),
             project(':libs:sx-ssh'),
-            project(':libs:leoz-common'),
+            project(':leoz-common'),
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",

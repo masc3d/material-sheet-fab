@@ -6,6 +6,7 @@ import org.deku.leoz.MessagingTest
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.ArtemisConfiguration
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -30,7 +31,7 @@ class LogTest : MessagingTest() {
         // Setup log appender
         val logAppender = LogAppender(
                 broker = this.broker,
-                logChannelConfiguration= ActiveMQConfiguration.instance.centralLogQueue,
+                logChannelConfiguration= ArtemisConfiguration.centralLogQueue,
                 identitySupplier = { Identity.create(BundleType.LEOZ_NODE.value, SystemInformation.create()) })
         logAppender.start()
 
@@ -51,7 +52,7 @@ class LogTest : MessagingTest() {
     fun testReceive() {
         // Setup log message listener
         val listener = object : SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.centralLogQueue) },
+                { Channel(ArtemisConfiguration.centralLogQueue) },
                 Executors.newSingleThreadExecutor()) {
 
         }

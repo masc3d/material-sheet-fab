@@ -72,7 +72,7 @@ dependencies {
     // leoz webservice dependencies
     compile(
             project(':libs:sx-common'),
-            project(':libs:leoz-common'),
+            project(':leoz-common'),
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
