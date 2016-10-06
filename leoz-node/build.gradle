@@ -413,7 +413,6 @@ task openJpaPostProcess(dependsOn: [openJpaGenerateEntities]) {
                 it.qualifiedName == javax.persistence.IdClass.canonicalName
             }
 
-            // TODO: support uid for @IdClass
             String uid
             if (tableAnnotation != null) {
                 def tableName = tableAnnotation.values.find { it.name == "name" }.stringValue
@@ -424,9 +423,10 @@ task openJpaPostProcess(dependsOn: [openJpaGenerateEntities]) {
 
                 // Determine table uid
                 def tableEntry = tableUidMap[tableName]
-                uid = tableEntry.@uid.toString()
-                if (uid == null)
+                if (tableEntry == null)
                     throw new IllegalStateException("Table [${tableName}] is missing entry in [${DB_TABLES_XML}]")
+
+                uid = tableEntry.@uid.toString()
 
                 if (idClassAnnotation != null) {
                     def idClassName = idClassAnnotation.literalValue
