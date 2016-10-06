@@ -68,10 +68,6 @@ idea {
     }
 }
 
-configurations {
-    hibernate
-}
-
 dependencies {
     // leoz webservice dependencies
     compile(
@@ -201,11 +197,6 @@ dependencies {
     compile(
             "org.jboss.forge.roaster:roaster-api:$v_roaster",
             "org.jboss.forge.roaster:roaster-jdt:$v_roaster"
-    )
-
-    hibernate(
-            "org.hibernate:hibernate-tools:5.1.0.CR1",
-            "com.h2database:h2:1.4.192"
     )
 }
 
@@ -488,20 +479,3 @@ task openJpaPostProcess(dependsOn: [openJpaGenerateEntities]) {
  */
 task jpaGenerate(dependsOn: [openJpaPostProcess], group: JPA_TASK_GROUP) << { }
 tasks.compileJava.dependsOn(jpaGenerate)
-
-// TEST: use hibernate-tools ant task for generation
-//task hbm2java(group: JPA_TASK_GROUP) << {
-//    ant {
-//        taskdef(name: 'hibernatetool',
-//                classname: 'org.hibernate.tool.ant.HibernateToolTask',
-//                classpath: configurations.hibernate.asPath )
-//        mkdir(dir: "$buildDir/generated")
-//        hibernatetool(destdir: "$buildDir/generated") {
-//            jdbcconfiguration(configurationfile:"${projectDir}/db/hibernate.cfg.xml")
-//            hbm2java(jdk5: true, ejb3: true)
-//            classpath {
-//                pathelement(path: sourceSets.main.output.classesDir)
-//            }
-//        }
-//    }
-//}
