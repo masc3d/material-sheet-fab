@@ -263,8 +263,13 @@ def DB_DIR = new File(project.projectDir, 'db')
 def DB_H2_JDBC_DRIVER = 'org.h2.Driver'
 def DB_H2_JDBC_URL = "jdbc:h2:${DB_DIR}/leoz;database_to_upper=false"
 
+
 // SQL migrations (used for flyway eg.)
-def FLYWAY_MIGRATION_DIR = new File(project.projectDir, 'src/main/resources/db/migration')
+def PROJECT_DB_DIR = new File(project.projectDir, 'src/main/resources/db')
+def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
+
+// Tables file which contains mapping to @Serializable uids
+def DB_TABLES_XML = new File(PROJECT_DB_DIR, "tables.xml")
 
 flyway {
     driver = DB_H2_JDBC_DRIVER
@@ -356,7 +361,7 @@ task jpaClean(group: JPA_TASK_GROUP) << {
 tasks.clean.dependsOn(tasks.jpaClean)
 
 /**
- * Task for generating entity classes
+ * Task for generating entity classes using openjpa reverse mapping tool
  */
 task openJpaGenerateEntities(dependsOn: [openJpaGenerateSchema]) {
     inputs.dir FLYWAY_MIGRATION_DIR
@@ -372,6 +377,9 @@ task openJpaGenerateEntities(dependsOn: [openJpaGenerateSchema]) {
                 "-useGenericCollections", "true",
                 "-nullableAsObject", "true",
                 "-metadata", "none",
+                // Eclipselink is not capable of inner identity classes :(
+//                "-innerIdentityClasses", "true",
+//                "-identityClassSuffix", "PrimaryKey",
                 OPENJPA_SCHEMA_XML
         ] as String[]
 
@@ -384,9 +392,58 @@ task openJpaGenerateEntities(dependsOn: [openJpaGenerateSchema]) {
  */
 task openJpaPostProcess(dependsOn: [openJpaGenerateEntities]) {
     doLast {
+        def tables = new XmlSlurper().parse(DB_TABLES_XML)
+
+        def tableUidMap = new HashMap<String, String>()
+        tables.table.each {
+            tableUidMap[it.@name.toString()] = it
+        }
+
+        def idClassUidByEntityClassName = new HashMap<String, String>()
+
         JPA_GENERATED_DIR.eachFileRecurse(FileType.FILES, {
             def jtype = Roaster.parse(it)
             def jsource = (JavaClassSource)jtype
+
+            def tableAnnotation = jsource.annotations.find {
+                it.qualifiedName == javax.persistence.Table.canonicalName
+            }
+
+            def idClassAnnotation = jsource.annotations.find {
+                it.qualifiedName == javax.persistence.IdClass.canonicalName
+            }
+
+            // TODO: support uid for @IdClass
+            String uid
+            if (tableAnnotation != null) {
+                def tableName = tableAnnotation.values.find { it.name == "name" }.stringValue
+
+                // Skip flyway schema table
+                if (tableName == "schema_version")
+                    return
+
+                // Determine table uid
+                def tableEntry = tableUidMap[tableName]
+                uid = tableEntry.@uid.toString()
+                if (uid == null)
+                    throw new IllegalStateException("Table [${tableName}] is missing entry in [${DB_TABLES_XML}]")
+
+                if (idClassAnnotation != null) {
+                    def idClassName = idClassAnnotation.literalValue
+                    def idClassUid = tableEntry.@pkuid.toString()
+                    idClassUidByEntityClassName[idClassName] = idClassUid
+                }
+            } else {
+                uid = idClassUidByEntityClassName[jsource.canonicalName]
+                if (uid == null)
+                    throw new IllegalStateException("Missing uid for id class [${jsource.canonicalName}]")
+            }
+
+            // Set @Serializable annotation
+            jsource
+                    .addAnnotation()
+                    .setName(sx.io.serialization.Serializable.canonicalName)
+                    .setLiteralValue("uid", uid + "L")
 
             // EclipseLink currently does not support primitive @Id fields
             // https://bugs.eclipse.org/bugs/show_bug.cgi?id=415027
