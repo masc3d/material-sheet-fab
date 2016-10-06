@@ -1,11 +1,13 @@
 package org.deku.leoz.discovery
 
+import org.deku.leoz.Identity
 import org.deku.leoz.bundle.BundleType
 import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.synchronized
 import sx.Lifecycle
 import sx.concurrent.Service
 import sx.net.UdpDiscoveryService
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
@@ -18,9 +20,11 @@ import java.util.concurrent.ScheduledExecutorService
 class DiscoveryService(
         executorService: ScheduledExecutorService,
         port: Int = DiscoveryService.DEFAULT_PORT,
+        uid: String = UUID.randomUUID().toString(),
         val bundleType: BundleType)
 : UdpDiscoveryService<DiscoveryInfo>(
         executorService = executorService,
+        nodeUid = uid,
         infoClass = DiscoveryInfo::class.java,
         port = port) {
 

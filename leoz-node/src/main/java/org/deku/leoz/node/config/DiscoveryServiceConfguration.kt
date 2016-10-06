@@ -36,6 +36,7 @@ open class DiscoveryServiceConfguration {
     open fun discoveryService(): DiscoveryService {
         return DiscoveryService(
                 executorService = this.executorService,
+                uid = App.instance.identity.shortKey,
                 bundleType = App.instance.bundleType)
     }
 
