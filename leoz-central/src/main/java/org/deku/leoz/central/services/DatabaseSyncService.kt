@@ -79,7 +79,7 @@ constructor(
             s.billingAddress2 = ds.billingAddress2
             s.billingCity = ds.billingCity
             s.billingCountry = ds.billingCountry
-            s.billingHousenr = ds.billingHouseNr
+            s.billingHouseNr = ds.billingHouseNr
             s.billingStreet = ds.billingStreet
             s.billingZip = ds.billingZip
             s.city = ds.city
@@ -87,12 +87,12 @@ constructor(
             s.contactPerson2 = ds.contactPerson2
             s.country = ds.country
             s.email = ds.email
-            s.housenr = ds.houseNr
+            s.houseNr = ds.houseNr
             s.mobile = ds.mobile
             s.phone1 = ds.phone1
             s.phone2 = ds.phone2
-            s.poslat = ds.poslat
-            s.poslong = ds.poslong
+            s.posLat = ds.poslat
+            s.posLong = ds.poslong
             s.sector = ds.sectors
             s.servicePhone1 = ds.servicePhone1
             s.servicePhone2 = ds.servicePhone2

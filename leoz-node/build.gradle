@@ -144,6 +144,9 @@ dependencies {
             "org.apache.httpcomponents:httpclient:$v_apache_httpclient",
             "com.thoughtworks.xstream:xstream:$v_xstream",
 
+            // Artemis
+            "org.apache.activemq:artemis-jms-server:1.4.0",
+
             // ssh support
             "org.apache.sshd:sshd-core:$v_sshd",
 
@@ -254,7 +257,6 @@ def DB_DIR = new File(project.projectDir, 'db')
 def DB_H2_JDBC_DRIVER = 'org.h2.Driver'
 def DB_H2_JDBC_URL = "jdbc:h2:${DB_DIR}/leoz;database_to_upper=false"
 
-
 // SQL migrations (used for flyway eg.)
 def PROJECT_DB_DIR = new File(project.projectDir, 'src/main/resources/db')
 def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
@@ -352,12 +354,110 @@ task jpaClean(group: JPA_TASK_GROUP) << {
 tasks.clean.dependsOn(tasks.jpaClean)
 
 /**
+ * Performs post-processing on openjpa-generated entity classes.
+ * @return
+ */
+def openJpaPostProcess(File tablesXmlFile, File sourceDir) {
+    def tables = new XmlSlurper().parse(tablesXmlFile)
+
+    def tableUidMap = new HashMap<String, String>()
+    tables.table.each {
+        tableUidMap[it.@name.toString()] = it
+    }
+
+    def idClassUidByEntityClassName = new HashMap<String, String>()
+
+    sourceDir.eachFileRecurse(FileType.FILES, {
+        def jtype = Roaster.parse(it)
+        def jsource = (JavaClassSource)jtype
+
+        def tableAnnotation = jsource.annotations.find {
+            it.qualifiedName == javax.persistence.Table.canonicalName
+        }
+
+        def idClassAnnotation = jsource.annotations.find {
+            it.qualifiedName == javax.persistence.IdClass.canonicalName
+        }
+
+        String uid
+        if (tableAnnotation != null) {
+            def tableName = tableAnnotation.values.find { it.name == "name" }.stringValue
+
+            // Skip flyway schema table
+            if (tableName == "schema_version")
+                return
+
+            // Determine table uid
+            def tableEntry = tableUidMap[tableName]
+            if (tableEntry == null)
+                throw new IllegalStateException("Table [${tableName}] is missing entry in [${DB_TABLES_XML}]")
+
+            uid = tableEntry.@uid.toString()
+
+            if (idClassAnnotation != null) {
+                def idClassName = idClassAnnotation.literalValue
+                def idClassUid = tableEntry.@pkuid.toString()
+                idClassUidByEntityClassName[idClassName] = idClassUid
+            }
+        } else {
+            uid = idClassUidByEntityClassName[jsource.canonicalName]
+            if (uid == null)
+                throw new IllegalStateException("Missing uid for id class [${jsource.canonicalName}]")
+        }
+
+        // Set @Serializable annotation if it's not there already
+        if (jsource.annotations.find {
+            it.qualifiedName == sx.io.serialization.Serializable.canonicalName
+        } == null) {
+            jsource
+                    .addAnnotation()
+                    .setName(sx.io.serialization.Serializable.canonicalName)
+                    .setLiteralValue("uid", uid + "L")
+        }
+
+        // EclipseLink currently does not support primitive @Id fields
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=415027
+        // Thus changing primitve @Id fields and referring properties to their wrapped object type counterpart
+        jsource.fields.each { field ->
+            // Find field with @Id annotation
+            def idAnnotation = field.annotations.find {
+                it.qualifiedName == javax.persistence.Id.canonicalName
+            }
+            if (idAnnotation != null) {
+                if (field.type.primitive) {
+                    def fieldSource = (FieldSource)field
+                    def wrapperType = ClassUtils.primitiveToWrapper(ClassUtils.getClass(field.type.qualifiedName))
+
+                    // Find property referring to this field
+                    def p = (PropertySource)jsource.properties.find {
+                        it.field.equals(field)
+                    }
+
+                    // Update property type
+                    def setterParam = p.mutator.parameters.first()
+                    def setterParamName = setterParam.name
+                    p.mutator
+                            .removeParameter(setterParam)
+                            .addParameter(wrapperType, setterParamName)
+                    p.type = wrapperType
+
+                    // Update field type
+                    fieldSource.type = wrapperType
+                }
+            }
+        }
+
+        // Generate and write updated class
+        it.write(jsource.toString())
+    })
+}
+
+/**
  * Task for generating entity classes using openjpa reverse mapping tool
  */
 task openJpaGenerateEntities(dependsOn: [openJpaGenerateSchema]) {
-    inputs.dir FLYWAY_MIGRATION_DIR
+    inputs.files OPENJPA_SCHEMA_XML.toString()
     outputs.dir JPA_GENERATED_DIR
-//    outputs.upToDateWhen { false }
 
     doLast {
         def params = [
@@ -375,107 +475,13 @@ task openJpaGenerateEntities(dependsOn: [openJpaGenerateSchema]) {
         ] as String[]
 
         ReverseMappingTool.main(params)
-    }
-}
 
-/**
- * Task performing post-processing on openjpa-generated entity classes.
- */
-task openJpaPostProcess(dependsOn: [openJpaGenerateEntities]) {
-    doLast {
-        def tables = new XmlSlurper().parse(DB_TABLES_XML)
-
-        def tableUidMap = new HashMap<String, String>()
-        tables.table.each {
-            tableUidMap[it.@name.toString()] = it
-        }
-
-        def idClassUidByEntityClassName = new HashMap<String, String>()
-
-        JPA_GENERATED_DIR.eachFileRecurse(FileType.FILES, {
-            def jtype = Roaster.parse(it)
-            def jsource = (JavaClassSource)jtype
-
-            def tableAnnotation = jsource.annotations.find {
-                it.qualifiedName == javax.persistence.Table.canonicalName
-            }
-
-            def idClassAnnotation = jsource.annotations.find {
-                it.qualifiedName == javax.persistence.IdClass.canonicalName
-            }
-
-            String uid
-            if (tableAnnotation != null) {
-                def tableName = tableAnnotation.values.find { it.name == "name" }.stringValue
-
-                // Skip flyway schema table
-                if (tableName == "schema_version")
-                    return
-
-                // Determine table uid
-                def tableEntry = tableUidMap[tableName]
-                if (tableEntry == null)
-                    throw new IllegalStateException("Table [${tableName}] is missing entry in [${DB_TABLES_XML}]")
-
-                uid = tableEntry.@uid.toString()
-
-                if (idClassAnnotation != null) {
-                    def idClassName = idClassAnnotation.literalValue
-                    def idClassUid = tableEntry.@pkuid.toString()
-                    idClassUidByEntityClassName[idClassName] = idClassUid
-                }
-            } else {
-                uid = idClassUidByEntityClassName[jsource.canonicalName]
-                if (uid == null)
-                    throw new IllegalStateException("Missing uid for id class [${jsource.canonicalName}]")
-            }
-
-            // Set @Serializable annotation
-            jsource
-                    .addAnnotation()
-                    .setName(sx.io.serialization.Serializable.canonicalName)
-                    .setLiteralValue("uid", uid + "L")
-
-            // EclipseLink currently does not support primitive @Id fields
-            // https://bugs.eclipse.org/bugs/show_bug.cgi?id=415027
-            // Thus changing primitve @Id fields and referring properties to their wrapped object type counterpart
-            jsource.fields.each { field ->
-                // Find field with @Id annotation
-                def idAnnotation = field.annotations.find {
-                    it.qualifiedName == javax.persistence.Id.canonicalName
-                }
-                if (idAnnotation != null) {
-                    if (field.type.primitive) {
-                        def fieldSource = (FieldSource)field
-                        def wrapperType = ClassUtils.primitiveToWrapper(ClassUtils.getClass(field.type.qualifiedName))
-
-                        // Find property referring to this field
-                        def p = (PropertySource)jsource.properties.find {
-                            it.field.equals(field)
-                        }
-
-                        // Update property type
-                        def setterParam = p.mutator.parameters.first()
-                        def setterParamName = setterParam.name
-                        p.mutator
-                                .removeParameter(setterParam)
-                                .addParameter(wrapperType, setterParamName)
-                        p.type = wrapperType
-
-                        // Update field type
-                        fieldSource.type = wrapperType
-                    }
-                }
-            }
-
-            // Generate and write updated class
-            it.write(jsource.toString())
-        })
+        openJpaPostProcess(DB_TABLES_XML, JPA_GENERATED_DIR)
     }
 }
 
 /**
  * Top-level task for generating jpa entities
  */
-task jpaGenerate(dependsOn: [openJpaPostProcess], group: JPA_TASK_GROUP) << { }
+task jpaGenerate(dependsOn: [openJpaGenerateEntities], group: JPA_TASK_GROUP) << { }
 tasks.compileJava.dependsOn(jpaGenerate)
