@@ -27,7 +27,9 @@ class Customizer : DescriptorCustomizer {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun customize(descriptor: ClassDescriptor?) {
-        log.info("Registering event listener")
-        descriptor!!.eventManager.addListener(ChangeListener())
+        if (descriptor == null)
+            return
+        log.info("Registering event listener [${descriptor.alias}]")
+        descriptor.eventManager.addListener(ChangeListener())
     }
 }
