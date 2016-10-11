@@ -54,7 +54,8 @@ dependencies {
             "junit:junit:$v_junit",
             // webservice client libraries for test cases
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
-            "org.springframework.boot:spring-boot-starter-test:$v_springboot"
+            "org.springframework:spring-test:$v_spring",
+            "org.springframework.boot:spring-boot-starter-test:$v_springboot",
     )
 }
 

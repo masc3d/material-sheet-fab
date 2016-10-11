@@ -13,19 +13,9 @@ import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Types
 
-apply plugin: 'kotlin'
-apply plugin: 'application'
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.flywaydb.flyway'
-apply plugin: PackagerPlugin
-
-sourceCompatibility = 1.8
-version = '0.58-RELEASE'
-mainClassName = "org.deku.leoz.node.Main"
-
 buildscript {
     ext {
+        v_aspectj = '1.8.9'
         v_querydsl = '4.1.4'
         v_openjpa = '2.4.1'
         v_roaster = '2.19.1.Final'
@@ -46,8 +36,22 @@ buildscript {
         classpath "org.jboss.forge.roaster:roaster-api:$v_roaster"
         classpath "org.jboss.forge.roaster:roaster-jdt:$v_roaster"
         classpath "org.apache.commons:commons-lang3:$v_commons_lang"
+        // Agent plugin
+        classpath "gradle.plugin.com.zoltu:application-agent:1.0.12"
     }
 }
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.flywaydb.flyway'
+//apply plugin: "com.zoltu.application-agent"
+apply plugin: PackagerPlugin
+
+sourceCompatibility = 1.8
+version = '0.58-RELEASE'
+mainClassName = "org.deku.leoz.node.Main"
 
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
@@ -152,6 +156,8 @@ dependencies {
 
             // spring
             "org.springframework:spring-jms:$v_spring",
+            "org.springframework:spring-instrument:$v_spring",
+            "org.springframework:spring-aspects:$v_spring",
 
             // json doc
             "io.swagger:swagger-jaxrs:$v_swagger",
@@ -171,8 +177,8 @@ dependencies {
             "com.jcraft:jsch:+",
 
             // TODO: For testing aspectj proxies with spring
-            //compile "org.aspectj:aspectjtools:+"
-            //compile "org.aspectj:aspectjweaver:+"
+            "org.aspectj:aspectjrt:$v_aspectj",
+            "org.aspectj:aspectjweaver:$v_aspectj",
 
             // TODO: for testing vaadin
             "com.vaadin:vaadin-spring-boot:1.0.0",
@@ -181,6 +187,10 @@ dependencies {
             "com.vaadin:vaadin-widgets:$v_vaadin",
             "com.vaadin:vaadin-themes:$v_vaadin",
     )
+
+//    agent(
+//            "org.springframework:spring-instrument:$v_spring"
+//    )
 
     // QueryDSL codegen/annotation processor
     kapt(
@@ -192,7 +202,8 @@ dependencies {
 
             // webservice client libraries for test cases
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
-            "org.springframework:spring-test",
+            "org.springframework:spring-test:$v_spring",
+            "org.springframework.boot:spring-boot-starter-test:$v_springboot",
 
             project(':libs:sx-common')
     )
@@ -208,6 +219,18 @@ run {
     standardOutput = System.out
     standardInput = System.in
 }
+
+//jar {
+//    manifest {
+//        attributes(
+//            'Premain-Class': 'org.springframework.instrument.InstrumentationSavingAgent',
+//            'Agent-Class': 'org.springframework.instrument.InstrumentationSavingAgent',
+//            'Can-Redefine-Classes': 'true',
+//            'Can-Retransform-Classes': 'true',
+//            'Can-Set-Native-Method-Prefix': 'false'
+//        )
+//    }
+//}
 
 distributions {
     main {
