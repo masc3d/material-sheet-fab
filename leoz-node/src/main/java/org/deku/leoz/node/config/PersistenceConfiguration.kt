@@ -5,11 +5,10 @@ import org.h2.jdbcx.JdbcDataSource
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.flyway.FlywayDataSource
-import org.springframework.context.annotation.AdviceMode
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.*
+import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
@@ -21,6 +20,7 @@ import java.io.File
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import javax.persistence.Entity
 import javax.persistence.EntityManagerFactory
 import javax.sql.DataSource
 
@@ -52,7 +52,7 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
         // Base URI
         val baseUri: String
         if (!IN_MEMORY) {
-            baseUri = "jdbc:h2:file:" + StorageConfiguration.instance.h2DatabaseFile
+            baseUri = "jdbc:h2:file:${StorageConfiguration.instance.h2DatabaseFile}"
         } else {
             baseUri = "jdbc:h2:mem:db1"
         }
@@ -68,6 +68,7 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
             params.put("DB_CLOSE_DELAY", "-1")
         }
 
+        // Build url with params
         dataSource.setUrl(baseUri + params.map { x -> "${x.key}=${x.value}" }.joinToString(separator = ";", prefix = ";"))
 
         return JdbcConnectionPool.create(dataSource)
@@ -106,9 +107,7 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
         // Caching
         //        eclipseLinkProperties.setProperty("javax.persistence.sharedCache.mode", "ENABLE_SELECTIVE");
 
-        //region DDL script generation configuration
-        // TODO: preliminary (demo) code to let eclipselink/jpa generate sql from entites
-        // should be integrated as a build task
+        //region Dev/debug code for letting eclipselink/jpa generate DDL/SQL from entites
         if (false) {
             val sqlFile = File("sql/leoz-ddl.sql")
             File(sqlFile.getParent()).mkdirs()
@@ -120,8 +119,8 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
 
         // Some master tables may have zero id values
         eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true")
-
         eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc")
+        // Weaving is required for lazy loading (amongst other features). Requires a LoadTimeWeaver to be setup (may require -javaagent as JVMARGS depending on setup)
         eclipseLinkProperties.setProperty("eclipselink.weaving", "false")
         eclipseLinkProperties.setProperty("eclipselink.cache.shared.default", "true")
 
@@ -129,6 +128,15 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
             // Show SQL
             eclipseLinkProperties.setProperty("eclipselink.logging.level.sql", "FINE")
             eclipseLinkProperties.setProperty("eclipselink.logging.parameters", "true")
+        }
+
+        // Scan and iterate entity classes
+        val scanner = ClassPathScanningCandidateComponentProvider(false)
+        scanner.addIncludeFilter(AnnotationTypeFilter(Entity::class.java))
+
+        for (bd in scanner.findCandidateComponents(org.deku.leoz.node.data.Package.name)) {
+            // Setup event listeners for all entity classes
+            eclipseLinkProperties.setProperty("eclipselink.descriptor.customizer.${bd.beanClassName}", "org.deku.leoz.node.data.Customizer")
         }
 
         em.setJpaProperties(eclipseLinkProperties)
