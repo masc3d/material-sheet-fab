@@ -22,7 +22,7 @@ class JarManifest(type: Class<out Any>) {
      */
     val implementationName: String by lazy({
         try {
-            manifest.mainAttributes.getValue("Implementation-Name")
+            manifest.mainAttributes.getValue("Implementation-Name") ?: ""
         } catch(e: Exception) {
             ""
         }
@@ -33,7 +33,7 @@ class JarManifest(type: Class<out Any>) {
      */
     val implementationVersion: String by lazy({
         try {
-            manifest.mainAttributes.getValue("Implementation-Version")
+            manifest.mainAttributes.getValue("Implementation-Version") ?: ""
         } catch(e: Exception) {
             ""
         }

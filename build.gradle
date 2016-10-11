@@ -4,6 +4,7 @@ version = '1.0'
 buildscript {
     ext {
         v_kotlin = '1.0.3'
+        v_slf4j = '1.7.21'
     }
 
     dependencies {
@@ -37,29 +38,31 @@ configurations {
 }
 
 dependencies {
-    // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+    compile(
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // Logging
+            "org.slf4j:slf4j-api:$v_slf4j",
+            "org.slf4j:jcl-over-slf4j:$v_slf4j",
+            // Misc
+            "org.apache.commons:commons-lang3:3.4",
+            // RX
+            "io.reactivex:rxjava:1.1.7",
+            "io.reactivex:rxkotlin:0.60.0"
+    )
 
-    // Logging
-    def v_slf4j = '1.7.21'
-    compile "org.slf4j:slf4j-api:$v_slf4j"
-    compile "org.slf4j:jcl-over-slf4j:$v_slf4j"
+    provided(
+            // JAX-RS
+            "javax.ws.rs:javax.ws.rs-api:2.0.1",
+            // JNA
+            "net.java.dev.jna:jna:4.2.2",
+            "net.java.dev.jna:jna-platform:4.2.2",
+            // JUnit
+            "junit:junit:4.12"
+    )
 
-    // Misc
-    compile "org.apache.commons:commons-lang3:3.4"
-
-    // RX
-    compile "io.reactivex:rxjava:1.1.9"
-    compile "io.reactivex:rxkotlin:0.60.0"
-
-    // JAX-RS
-    provided "javax.ws.rs:javax.ws.rs-api:2.0.1"
-
-    // JNA
-    provided "net.java.dev.jna:jna:4.2.2"
-    provided "net.java.dev.jna:jna-platform:4.2.2"
-
-    provided "junit:junit:4.12"
-    testCompile "junit:junit:4.12"
+    testCompile(
+            "junit:junit:4.12"
+    )
 }
