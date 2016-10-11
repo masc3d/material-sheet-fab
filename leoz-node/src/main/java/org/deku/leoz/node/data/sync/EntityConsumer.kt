@@ -8,7 +8,6 @@ import org.deku.leoz.node.messaging.entities.EntityUpdateMessage
 import sx.jms.Channel
 import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener
-import java.sql.Timestamp
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicLong
 import javax.persistence.EntityManager
@@ -54,10 +53,6 @@ class EntityConsumer
         Channel(this.requestChannelConfiguration)
     }
 
-    val replyChannel by lazy {
-        requestChannel.createReplyChannel()
-    }
-
     /**
      * Request entity update
      * @param entityType Entity type
@@ -87,80 +82,82 @@ class EntityConsumer
                 val sw = Stopwatch.createStarted()
 
                 // Send entity state message
-                requestChannel.sendRequest(EntityStateMessage(entityType, syncId), replyChannel = this.replyChannel)
+                this.requestChannel.createReplyChannel().use { replyChannel ->
+                    requestChannel.sendRequest(EntityStateMessage(entityType, syncId), replyChannel = replyChannel)
 
-                log.info(lfmt("Requesting entities"))
+                    log.info(lfmt("Requesting entities"))
 
-                // Receive entity update message
-                val euMessage = replyChannel.receive(EntityUpdateMessage::class.java)
+                    // Receive entity update message
+                    val euMessage = replyChannel.receive(EntityUpdateMessage::class.java)
 
-                log.debug(lfmt(euMessage.toString()))
-                val count = AtomicLong()
+                    log.debug(lfmt(euMessage.toString()))
+                    val count = AtomicLong()
 
-                var bytesReceived = 0L
-                if (euMessage.amount > 0) {
-                    val emv = em!!
-                    PersistenceUtil.transaction(em) {
-                        if (!er.hasSyncIdAttribute()) {
-                            log.debug(lfmt("No timestamp attribute found -> removing all entities"))
-                            er.removeAll()
-                        }
+                    var bytesReceived = 0L
+                    if (euMessage.amount > 0) {
+                        val emv = em!!
+                        PersistenceUtil.transaction(em) {
+                            if (!er.hasSyncIdAttribute()) {
+                                log.debug(lfmt("No timestamp attribute found -> removing all entities"))
+                                er.removeAll()
+                            }
 
-                        // Receive entities
-                        var eos: Boolean
-                        var lastJmsTimestamp: Long = 0
-                        do {
-                            val tMsg = replyChannel.receive() ?: throw TimeoutException("Timeout while waiting for next entities chunk")
+                            // Receive entities
+                            var eos: Boolean
+                            var lastJmsTimestamp: Long = 0
+                            do {
+                                val tMsg = replyChannel.receive() ?: throw TimeoutException("Timeout while waiting for next entities chunk")
 
-                            // Verify message order
-                            if (tMsg.jmsTimestamp < lastJmsTimestamp)
-                                throw IllegalStateException(
-                                        String.format("Inconsistent message order (%d < %d)", tMsg.jmsTimestamp, syncId))
+                                // Verify message order
+                                if (tMsg.jmsTimestamp < lastJmsTimestamp)
+                                    throw IllegalStateException(
+                                            String.format("Inconsistent message order (%d < %d)", tMsg.jmsTimestamp, syncId))
 
-                            // Store last timestamp
-                            lastJmsTimestamp = tMsg.jmsTimestamp
+                                // Store last timestamp
+                                lastJmsTimestamp = tMsg.jmsTimestamp
 
-                            eos = tMsg.propertyExists(EntityUpdateMessage.EOS_PROPERTY)
+                                eos = tMsg.propertyExists(EntityUpdateMessage.EOS_PROPERTY)
 
-                            if (!eos) {
-                                // Deserialize entities
-                                val entities = replyChannel.converter.fromMessage(tMsg, { size ->
-                                    bytesReceived += size
-                                }) as Array<*>
+                                if (!eos) {
+                                    // Deserialize entities
+                                    val entities = replyChannel.converter.fromMessage(tMsg, { size ->
+                                        bytesReceived += size
+                                    }) as Array<*>
 
-                                // TODO: exceptions within transactions behave in a strange way.
-                                // data of transactions that were committed may not be there and h2 may report
-                                // cache level state nio exceptions.
-                                // Data seems to remain consistent though
-                                if (syncId != null || requestAll) {
-                                    log.trace(lfmt("Removing existing entities"))
-                                    // If there's already entities, clean out existing first.
-                                    // it's much faster than merging everything
-                                    for (o in entities) {
-                                        val o2 = emv.find(entityType,
-                                                emv.entityManagerFactory.persistenceUnitUtil.getIdentifier(o))
+                                    // TODO: exceptions within transactions behave in a strange way.
+                                    // data of transactions that were committed may not be there and h2 may report
+                                    // cache level state nio exceptions.
+                                    // Data seems to remain consistent though
+                                    if (syncId != null || requestAll) {
+                                        log.trace(lfmt("Removing existing entities"))
+                                        // If there's already entities, clean out existing first.
+                                        // it's much faster than merging everything
+                                        for (o in entities) {
+                                            val o2 = emv.find(entityType,
+                                                    emv.entityManagerFactory.persistenceUnitUtil.getIdentifier(o))
 
-                                        if (o2 != null) {
-                                            emv.remove(o2)
+                                            if (o2 != null) {
+                                                emv.remove(o2)
+                                            }
                                         }
+                                        emv.flush()
+                                        emv.clear()
+                                    }
+
+                                    // Persist entities
+                                    for (o in entities) {
+                                        emv.persist(o)
                                     }
                                     emv.flush()
                                     emv.clear()
+                                    count.getAndUpdate { c -> c + entities.size }
                                 }
+                            } while (!eos)
+                        }
 
-                                // Persist entities
-                                for (o in entities) {
-                                    emv.persist(o)
-                                }
-                                emv.flush()
-                                emv.clear()
-                                count.getAndUpdate { c -> c + entities.size }
-                            }
-                        } while (!eos)
                     }
-
+                    log.info(lfmt("Received and stored ${count.get()} in ${sw} (${bytesReceived} bytes)"))
                 }
-                log.info(lfmt("Received and stored ${count.get()} in ${sw} (${bytesReceived} bytes)"))
             } catch (e: TimeoutException) {
                 log.error(lfmt(e.message ?: ""))
             } catch (e: Throwable) {
