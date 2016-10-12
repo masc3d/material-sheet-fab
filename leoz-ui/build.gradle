@@ -10,7 +10,7 @@ mainClassName = "org.deku.leoz.ui.Main"
 
 buildscript {
     ext {
-        v_jersey = '2.23'
+        v_jersey = '2.23.2'
         v_kodein = '3.1.0'
     }
     dependencies {
@@ -34,7 +34,7 @@ dependencies {
 
             "org.reflections:reflections:0.9.10",
             // RX
-            "io.reactivex:rxjava:1.1.6",
+            "io.reactivex:rxjava:1.2.1",
             "io.reactivex:rxkotlin:0.60.0",
             "io.reactivex:rxjavafx:0.2.0",
             "com.github.thomasnield:rxkotlinfx:0.2.0",
@@ -52,7 +52,7 @@ dependencies {
             "org.fxmisc.richtext:richtextfx:0.7-M2",
 
             // JSR-303 bean validation
-            "org.hibernate:hibernate-validator:5.2.4.Final",
+            "org.hibernate:hibernate-validator:5.3.0.Final",
 
             // JAX-RS client
             "org.glassfish.jersey.core:jersey-client:$v_jersey",
