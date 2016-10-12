@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!-- Required as a dummy, as ReverseMappingTool can't create MetaDataFactory when it's missing,
+actual JDBC properties are set within the gradle build file -->
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
+    <persistence-unit name="leoz">
+        <properties>
+        </properties>
+    </persistence-unit>
+</persistence>

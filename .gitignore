@@ -54,5 +54,8 @@ build
 .idea/compiler.xml
 .idea/gradle.xml
 .idea/kotlinc.xml
-leoz-node/db
 libs/leoz-common/data
+leoz.mv.db
+leoz.trace.db
+hibernate.cfg.xml
+openjpa-schema.xml
