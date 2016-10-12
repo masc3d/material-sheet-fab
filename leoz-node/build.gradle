@@ -513,3 +513,4 @@ task openJpaGenerateEntities(dependsOn: [openJpaGenerateSchema]) {
  */
 task jpaGenerate(dependsOn: [openJpaGenerateEntities], group: JPA_TASK_GROUP) << { }
 tasks.compileJava.dependsOn(jpaGenerate)
+tasks.compileJava.mustRunAfter(jpaGenerate)
