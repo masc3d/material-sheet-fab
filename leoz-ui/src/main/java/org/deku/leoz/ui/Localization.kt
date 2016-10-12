@@ -24,16 +24,18 @@ class Localization(val baseName: String,
      */
     init {
         var finalLocale = locale
+        var finalResources: ResourceBundle
         try {
             java.util.Locale.setDefault(finalLocale)
-            this.resources = this.getLanguageResourceBundle(finalLocale)
+            finalResources = this.getLanguageResourceBundle(finalLocale)
         } catch (e: java.util.MissingResourceException) {
             // Reverting to fallback language (eg. english)
             finalLocale = defaultLocale
             java.util.Locale.setDefault(finalLocale)
-            this.resources = this.getLanguageResourceBundle(finalLocale)
+            finalResources = this.getLanguageResourceBundle(finalLocale)
         }
 
+        this.resources = finalResources
         this.locale = finalLocale
         java.util.Locale.setDefault(this.locale)
     }

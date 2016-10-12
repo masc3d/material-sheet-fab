@@ -152,7 +152,7 @@ class Main : Application() {
                     val scene = Scene(root, width, height)
 
                     primaryStage.title = this.i18n.resources.getString("global.title")!!
-                    primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")))
+                    primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/deku-icon.256px.png")))
                     primaryStage.scene = scene
 
                     log.info("Showing primary stage")
