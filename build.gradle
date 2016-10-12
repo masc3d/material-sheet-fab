@@ -44,13 +44,15 @@ dependencies {
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // Guava
+            "com.google.guava:guava:19.0",
             // JMS
             "javax.jms:jms-api:1.1-rev-1"
     )
 
     provided(
             // Spring
-            "org.springframework:spring-jms:4.3.0.RELEASE",
+            "org.springframework:spring-jms:4.3.3.RELEASE",
             // ActiveMQ
             "org.apache.activemq:activemq-broker:$v_activemq",
             "org.apache.activemq:activemq-kahadb-store:$v_activemq",
