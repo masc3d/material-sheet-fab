@@ -41,7 +41,7 @@
 }
 
 .leoz-logo {
-    -fx-background-image: url('../images/DEKU.logo.256px.png');
+    -fx-background-image: url('../images/deku-logo.256px.png');
     -fx-background-position: center center;
     -fx-background-size: contain;
     -fx-background-repeat: no-repeat;
@@ -94,7 +94,7 @@
 
 /** home view styles */
 .leoz-home-pane {
-    -fx-background-image: url('../images/DEKU.logo.backdrop.1178px.png');
+    -fx-background-image: url('../images/deku-logo.backdrop.1178px.png');
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-size: contain;

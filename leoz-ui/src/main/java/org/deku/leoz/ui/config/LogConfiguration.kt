@@ -8,7 +8,7 @@ import sx.fx.TextAreaLogAppender
  * Created by masc on 26/09/2016.
  */
 object LogConfiguration : org.deku.leoz.config.LogConfiguration() {
-    val textAreaLogAppender =  TextAreaLogAppender(TextArea())
+    val textAreaLogAppender by lazy { TextAreaLogAppender(TextArea()) }
 
     override fun initialize() {
         super.initialize()
