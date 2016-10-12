@@ -32,7 +32,6 @@ import sx.LazyInstance
 import sx.fx.TextAreaLogAppender
 import sx.fx.animate
 import sx.logging.slf4j.*
-import tornadofx.removeFromParent
 import java.net.URL
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -79,10 +78,14 @@ class MainController : Controller(), Initializable {
      */
     private fun <T : ModuleController> loadController(fxml: String): T {
         val mc = Controller.fromFxml<T>(fxml)
-        mc.ovError.subscribe {
+        mc.ovError
+                .observeOn(JavaFxScheduler.getInstance())
+                .subscribe {
             this.showError(it.message ?: "")
         }
-        mc.ovBusy.subscribe {
+        mc.ovBusy
+                .observeOn(JavaFxScheduler.getInstance())
+                .subscribe {
             if (it.value)
                 this.requestProgressIndicator()
             else
@@ -367,7 +370,7 @@ class MainController : Controller(), Initializable {
 
             this.fxSplitPane.setDividerPositions(0.6)
         } else {
-            this.fxBottomPaneContainer.removeFromParent()
+            this.fxSplitPane.items.remove(this.fxBottomPaneContainer)
             this.fxBottomPaneContainer.children.clear()
 
             this.fxSplitPane.items.remove(this.fxBottomPaneContainer)
