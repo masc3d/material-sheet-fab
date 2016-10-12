@@ -42,15 +42,19 @@ class TextAreaLogAppender(
         val message = this.patternLayout.doLayout(loggingEvent)
 
         synchronized(this.buffer) {
-            buffer.append(message)
-            this.lines++
+            val lineBreak = '\n'
 
-            if (this.lines > this.maxLines) {
+            buffer.append(message)
+            this.lines += message.count {
+                it == lineBreak
+            }
+
+            while (this.lines > this.maxLines) {
                 // Truncate first line
-                val crlfIndex = buffer.indexOf("\n")
+                val crlfIndex = buffer.indexOf(lineBreak)
                 if (crlfIndex > 0)
                     buffer.delete(0, crlfIndex + 1)
-                this.lines--
+                this.lines -= 1
             }
 
             Platform.runLater {
