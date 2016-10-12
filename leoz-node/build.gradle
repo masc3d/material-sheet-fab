@@ -292,7 +292,6 @@ flyway {
     url = DB_H2_JDBC_URL
     locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
 }
-tasks.clean.dependsOn(tasks.flywayClean)
 
 // JPA class generation
 
@@ -373,8 +372,14 @@ task openJpaGenerateSchema(dependsOn: [flywayMigrate]) {
 task jpaClean(group: JPA_TASK_GROUP) << {
     OPENJPA_SCHEMA_XML.delete()
     JPA_GENERATED_DIR.deleteDir()
+
+    // TODO: sucky workaround for not being able to depend/finalize (base) task `clean` on/with `flywayClean` task, which causes an issue on windows systems, preventing the clean tkas to delete jars (pretty weird)
+    DB_DIR.eachFile {
+        if (it.name.endsWith(".db"))
+            it.delete()
+    }
 }
-tasks.clean.dependsOn(tasks.jpaClean)
+tasks.clean.finalizedBy tasks.jpaClean
 
 /**
  * Performs post-processing on openjpa-generated entity classes.
