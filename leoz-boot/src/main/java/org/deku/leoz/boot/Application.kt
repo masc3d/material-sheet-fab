@@ -94,7 +94,7 @@ class Application : javafx.application.Application() {
         val nativeBundlePath = StorageConfiguration.nativeBundleBasePath!!
         log.info("Native bundle path [${nativeBundlePath}")
 
-        if (nativeBundlePath.parentFile.equals(StorageConfiguration.bundleInstallationDirectory))
+        if (nativeBundlePath.parentFile == StorageConfiguration.bundleInstallationDirectory)
             return
 
         log.info("Performing self verification")
@@ -147,7 +147,7 @@ class Application : javafx.application.Application() {
             })
 
             // Show splash screen
-            var splash = SplashScreen.getSplashScreen()
+            val splash = SplashScreen.getSplashScreen()
 
             // Setup JavaFX stage
             val root = FXMLLoader.load<Parent>(this.javaClass.getResource("/fx/Main.fxml"))
@@ -155,10 +155,10 @@ class Application : javafx.application.Application() {
             primaryStage.scene = Scene(root, 800.0, 475.0)
             ResizeHelper.addResizeListener(primaryStage)
 
-            var screenBounds = Screen.getPrimary().bounds
-            var rootBounds = root.boundsInLocal
+            val screenBounds = Screen.getPrimary().bounds
+            val rootBounds = root.boundsInLocal
 
-            var img = this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")
+            val img = this.javaClass.getResourceAsStream("/images/DEKU.icon.256px.png")
             primaryStage.icons.add(Image(img))
             primaryStage.initStyle(StageStyle.UNDECORATED)
             primaryStage.y = (screenBounds.height - rootBounds.height) / 2
