@@ -58,9 +58,9 @@ class TextAreaLogAppender(
             }
 
             Platform.runLater {
-                this.textArea.text = this.buffer.toString()
+                this.textArea.text = ""
                 // Make sure text changed listener fires.
-                this.textArea.appendText("")
+                this.textArea.appendText(this.buffer.toString())
             }
         }
     }
