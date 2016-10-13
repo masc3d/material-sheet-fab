@@ -10,7 +10,7 @@
 
 /** generic containers */
 .leoz-pane {
-    -fx-padding: 10;
+    -fx-padding: 0.4em;
 }
 
 .leoz-menu-pane {
@@ -33,11 +33,11 @@
 .leoz-top-pane {
     -fx-background-color: linear-gradient(to bottom, darkgray, whitesmoke);
     -fx-border-color: -leoz-secondary-color transparent darkgray transparent;
-    -fx-border-width: 3 0 1 0;
+    -fx-border-width: 3 0 0 0;
 }
 
 .leoz-content-pane {
-    -fx-padding: 10 10 10 0;
+    -fx-padding: 0.4em 0.4em 0.30em 0;
 }
 
 .leoz-logo {
@@ -59,7 +59,7 @@
 }
 
 .leoz-status-bar HBox {
-    -fx-spacing: 8;
+    -fx-spacing: 0.4em;
 }
 
 .leoz-status-bar .leoz-version {
