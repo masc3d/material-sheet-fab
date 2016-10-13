@@ -30,7 +30,7 @@ dependencies {
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
 
             // command line
-            "com.beust:jcommander:1.56",
+            "com.beust:jcommander:1.58",
 
             // ini/conf file
             "org.ini4j:ini4j:$v_ini4j",

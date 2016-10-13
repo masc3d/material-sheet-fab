@@ -11,6 +11,7 @@ import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.*
+import javafx.scene.image.ImageView
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Pane
 import javafx.util.Duration
@@ -25,14 +26,16 @@ import org.deku.leoz.ui.fx.modules.DebugController
 import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
 import org.deku.leoz.ui.fx.modules.HomeController
 import org.slf4j.LoggerFactory
+import rx.Observable
+import rx.lang.kotlin.PublishSubject
 import rx.schedulers.JavaFxScheduler
 import sun.security.pkcs11.Secmod
 import sx.JarManifest
 import sx.LazyInstance
 import sx.fx.TextAreaLogAppender
 import sx.fx.animate
+import sx.fx.controls.MaterialProgressIndicator
 import sx.logging.slf4j.*
-import tornadofx.removeFromParent
 import java.net.URL
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -42,6 +45,8 @@ import java.util.concurrent.ExecutorService
  * Created by masc on 21.09.14.
  */
 class MainController : Controller(), Initializable {
+    @FXML
+    private lateinit var fxTitleImageView: ImageView
     @FXML
     private lateinit var fxTitle: Label
     @FXML
@@ -55,7 +60,7 @@ class MainController : Controller(), Initializable {
     @FXML
     private lateinit var fxSidebarController: SidebarController
     @FXML
-    private lateinit var fxProgressIndicator: ProgressIndicator
+    private lateinit var fxProgressIndicator: MaterialProgressIndicator
     @FXML
     private lateinit var fxLogButton: ToggleButton
     @FXML
@@ -79,10 +84,14 @@ class MainController : Controller(), Initializable {
      */
     private fun <T : ModuleController> loadController(fxml: String): T {
         val mc = Controller.fromFxml<T>(fxml)
-        mc.ovError.subscribe {
+        mc.ovError
+                .observeOn(JavaFxScheduler.getInstance())
+                .subscribe {
             this.showError(it.message ?: "")
         }
-        mc.ovBusy.subscribe {
+        mc.ovBusy
+                .observeOn(JavaFxScheduler.getInstance())
+                .subscribe {
             if (it.value)
                 this.requestProgressIndicator()
             else
@@ -158,6 +167,8 @@ class MainController : Controller(), Initializable {
 
         // UI initialization
         Platform.runLater {
+            this.fxProgressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS)
+
             this.fxSplitPane.items.remove(this.fxBottomPaneContainer)
 
             // Initial display
@@ -192,6 +203,7 @@ class MainController : Controller(), Initializable {
             val oldNode = oldModule?.fxRoot
 
             this.setTitle(moduleController.title, animated)
+            this.fxTitleImageView.image = moduleController.titleImage
 
             val animations = ArrayList<Animation>()
 
@@ -367,7 +379,7 @@ class MainController : Controller(), Initializable {
 
             this.fxSplitPane.setDividerPositions(0.6)
         } else {
-            this.fxBottomPaneContainer.removeFromParent()
+            this.fxSplitPane.items.remove(this.fxBottomPaneContainer)
             this.fxBottomPaneContainer.children.clear()
 
             this.fxSplitPane.items.remove(this.fxBottomPaneContainer)

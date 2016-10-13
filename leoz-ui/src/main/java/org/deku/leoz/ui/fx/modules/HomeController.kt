@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import javafx.scene.image.Image
 import org.deku.leoz.ui.Localization
 import org.deku.leoz.ui.Main
 import org.deku.leoz.ui.fx.ModuleController
@@ -16,4 +17,6 @@ class HomeController : ModuleController() {
 
     override val title: String
         get() = this.i18n.resources.getString("menu.home")
+
+    override val titleImage: Image by lazy { Image(this.javaClass.getResourceAsStream("/images/home-144px.png")) }
 }

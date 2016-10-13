@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.lazy
 import javafx.fxml.FXMLLoader
 import javafx.scene.Node
 import javafx.scene.Parent
+import javafx.scene.image.Image
 import org.deku.leoz.ui.Localization
 import org.deku.leoz.ui.event.BusyNotifier
 import org.deku.leoz.ui.event.Event
@@ -26,6 +27,12 @@ abstract class ModuleController : Controller(), BusyNotifier, ErrorNotifier {
      * @return
      */
     abstract val title: String
+
+    /**
+     * Module title image
+     * @return
+     */
+    abstract val titleImage: Image
 
     // BusyNotifier implementation
     override val ovBusy by lazy { PublishSubject<Event<Boolean>>() }

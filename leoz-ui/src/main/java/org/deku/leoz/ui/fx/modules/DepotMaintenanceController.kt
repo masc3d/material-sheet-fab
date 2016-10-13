@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.lazy
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Node
+import javafx.scene.image.Image
 import org.deku.leoz.ui.Localization
 import org.deku.leoz.ui.Main
 import org.deku.leoz.ui.fx.ModuleController
@@ -37,6 +38,8 @@ class DepotMaintenanceController : ModuleController(), Initializable {
 
     override val title: String
         get() = this.i18n.resources.getString("menu.depots")
+
+    override val titleImage: Image by lazy { Image(this.javaClass.getResourceAsStream("/images/depot-144px.png")) }
 
     override val ovBusy: PublishSubject<Event<Boolean>> by lazy {
         fxDepotListController.ovBusy

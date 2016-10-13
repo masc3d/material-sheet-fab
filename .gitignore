@@ -59,3 +59,4 @@ leoz.mv.db
 leoz.trace.db
 hibernate.cfg.xml
 openjpa-schema.xml
+misc.xml

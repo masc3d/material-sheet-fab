@@ -6,22 +6,19 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import javafx.application.Application
 import javafx.application.Platform
-import javafx.fxml.FXMLLoader
 import javafx.geometry.Rectangle2D
-import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.ProgressIndicator
 import javafx.scene.image.Image
+import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Background
-import javafx.scene.layout.BackgroundFill
-import javafx.scene.layout.Pane
+import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
-import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
-import org.controlsfx.control.Notifications
+import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.discovery.DiscoveryService
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.config.Configurations
@@ -30,13 +27,10 @@ import org.deku.leoz.ui.config.StorageConfiguration
 import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.ui.fx.MainController
 import org.slf4j.LoggerFactory
-import sx.util.Utf8ResourceBundleControl
+import sx.fx.controls.MaterialProgressIndicator
+import tornadofx.anchorpane
 import java.io.IOException
-import java.util.*
-import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
 
 /**
  * Main application class
@@ -146,21 +140,27 @@ class Main : Application() {
                     val primScreenBounds: Rectangle2D = Screen.getPrimary().visualBounds // Used to access the computers screen resolution/size
 
                     //Set default scene size which is used when primary stage is no more in maximized mode
-                    val width = if(primScreenBounds.width < 1366.0) primScreenBounds.width - 50 else 1366.0
-                    val height = if(primScreenBounds.height < 768.0) primScreenBounds.height - 50 else 768.0
+                    val width = if (primScreenBounds.width < 1366.0) primScreenBounds.width - 50 else 1366.0
+                    val height = if (primScreenBounds.height < 768.0) primScreenBounds.height - 50 else 768.0
 
                     val scene = Scene(root, width, height)
 
                     primaryStage.title = this.i18n.resources.getString("global.title")!!
-                    primaryStage.icons.add(Image(this.javaClass.getResourceAsStream("/images/deku-icon.256px.png")))
                     primaryStage.scene = scene
 
-                    log.info("Showing primary stage")
-                    // Maximizing by default is usually annoying for users and developers alike.
-                    // Default should be the minimum supported size.
-                    // If it's necessary to maximize by default on partidular occasions/installations it should be paremeterized.
-                    primaryStage.show()
-                    splashStage.close()
+                    val primaryStageIcon = Image(this.javaClass.getResourceAsStream("/images/deku-icon.256px.png"))
+
+                    val updateIcon = {
+                        primaryStage.icons.clear()
+                        primaryStage.icons.add(primaryStageIcon)
+                    }
+
+                    updateIcon()
+                    // TODO: workaround for OSX issue where window icon is garbled on resize
+                    if (SystemUtils.IS_OS_MAC) {
+                        primaryStage.widthProperty().addListener { v, o, n -> updateIcon() }
+                        primaryStage.heightProperty().addListener { v, o, n -> updateIcon() }
+                    }
 
                     executor.submit {
                         // Start discovery service
@@ -180,15 +180,32 @@ class Main : Application() {
                             log.error(e.message, e)
                         }
                     }
+
+                    Platform.runLater {
+                        log.info("Showing primary stage")
+                        // Maximizing by default is usually annoying for users and developers alike.
+                        // Default should be the minimum supported size.
+                        // If it's necessary to maximize by default on partidular occasions/installations it should be paremeterized.
+                        primaryStage.show()
+                        splashStage.close()
+                    }
                 }
             }
         }
 
         log.debug("Showing splash stage")
         splashStage.initStyle(StageStyle.TRANSPARENT)
-        val splashView = ProgressIndicator()
+        val splashView = MaterialProgressIndicator()
+        splashView.stylesheets.add(this.javaClass.getResource("/css/leoz.css").toExternalForm())
+        splashView.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS)
         splashView.background = Background.EMPTY
-        val splashScene = Scene(splashView, 76.0, 76.0)
+        val pane = AnchorPane(splashView)
+        pane.background = Background.EMPTY
+        AnchorPane.setTopAnchor(splashView, 10.0)
+        AnchorPane.setBottomAnchor(splashView, 10.0)
+        AnchorPane.setRightAnchor(splashView, 10.0)
+        AnchorPane.setLeftAnchor(splashView, 10.0)
+        val splashScene = Scene(pane, 94.0, 94.0)
         splashScene.fill = Color.TRANSPARENT
         splashStage.scene = splashScene
 
