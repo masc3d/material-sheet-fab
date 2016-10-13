@@ -8,6 +8,7 @@ import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import javafx.scene.image.Image
 import org.deku.leoz.ui.Main
 import org.deku.leoz.ui.Settings
 import org.deku.leoz.ui.bridge.LeoBridge
@@ -40,6 +41,8 @@ class DebugController : ModuleController(), Initializable {
 
     override val title: String
         get() = "Debug"
+
+    override val titleImage: Image by lazy { Image(this.javaClass.getResourceAsStream("/images/debug-144px.png")) }
 
     override fun initialize(location: URL, resources: ResourceBundle) {
         fxUiAnimationsEnabled.isSelected = this.settings.isAnimationsEnabled

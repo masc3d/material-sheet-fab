@@ -52,6 +52,10 @@
     -fx-font-family: 'Futura Condensed Medium';
 }
 
+.leoz-title-image {
+    -fx-padding: 0 0.2em 0 0;
+}
+
 .leoz-status-bar {
     -fx-background-color: linear-gradient(to top, darkgray, whitesmoke);
     -fx-border-color: darkgray;
@@ -140,6 +144,15 @@
     -fx-background-radius: 2, 2, 2, 2;
     -fx-border-color: darkgray;
     -fx-border-radius: 5;
+}
+
+.circular-progress {
+    -indicator-color:  #32629d;
+}
+.circular-progress .indicator {
+    -fx-stroke-type    : centered;
+    -fx-fill           : null;
+    -fx-stroke         : -indicator-color;
 }
 
 .leoz-textfield-search {

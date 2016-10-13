@@ -10,7 +10,9 @@ import javafx.geometry.Rectangle2D
 import javafx.scene.Scene
 import javafx.scene.control.ProgressIndicator
 import javafx.scene.image.Image
+import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Background
+import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.stage.Screen
@@ -25,6 +27,8 @@ import org.deku.leoz.ui.config.StorageConfiguration
 import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.ui.fx.MainController
 import org.slf4j.LoggerFactory
+import sx.fx.controls.MaterialProgressIndicator
+import tornadofx.anchorpane
 import java.io.IOException
 import java.util.concurrent.ExecutorService
 
@@ -158,13 +162,6 @@ class Main : Application() {
                         primaryStage.heightProperty().addListener { v, o, n -> updateIcon() }
                     }
 
-                    log.info("Showing primary stage")
-                    // Maximizing by default is usually annoying for users and developers alike.
-                    // Default should be the minimum supported size.
-                    // If it's necessary to maximize by default on partidular occasions/installations it should be paremeterized.
-                    primaryStage.show()
-                    splashStage.close()
-
                     executor.submit {
                         // Start discovery service
                         Kodein.global.instance<DiscoveryService>().start()
@@ -183,15 +180,32 @@ class Main : Application() {
                             log.error(e.message, e)
                         }
                     }
+
+                    Platform.runLater {
+                        log.info("Showing primary stage")
+                        // Maximizing by default is usually annoying for users and developers alike.
+                        // Default should be the minimum supported size.
+                        // If it's necessary to maximize by default on partidular occasions/installations it should be paremeterized.
+                        primaryStage.show()
+                        splashStage.close()
+                    }
                 }
             }
         }
 
         log.debug("Showing splash stage")
         splashStage.initStyle(StageStyle.TRANSPARENT)
-        val splashView = ProgressIndicator()
+        val splashView = MaterialProgressIndicator()
+        splashView.stylesheets.add(this.javaClass.getResource("/css/leoz.css").toExternalForm())
+        splashView.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS)
         splashView.background = Background.EMPTY
-        val splashScene = Scene(splashView, 76.0, 76.0)
+        val pane = AnchorPane(splashView)
+        pane.background = Background.EMPTY
+        AnchorPane.setTopAnchor(splashView, 10.0)
+        AnchorPane.setBottomAnchor(splashView, 10.0)
+        AnchorPane.setRightAnchor(splashView, 10.0)
+        AnchorPane.setLeftAnchor(splashView, 10.0)
+        val splashScene = Scene(pane, 94.0, 94.0)
         splashScene.fill = Color.TRANSPARENT
         splashStage.scene = splashScene
 

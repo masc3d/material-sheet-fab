@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?><?import javafx.scene.image.Image?><?import javafx.scene.image.ImageView?><?import javafx.scene.layout.*?><?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import sx.fx.controls.MaterialProgressIndicator?>
 <VBox fx:id="fxRoot" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../css/leoz.css"
     xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
     fx:controller="org.deku.leoz.ui.fx.MainController">
     <children>
-        <SplitPane fx:id="fxSplitPane" orientation="VERTICAL" VBox.vgrow="ALWAYS" dividerPositions="0.6" AnchorPane.bottomAnchor="0.0"
-            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <SplitPane fx:id="fxSplitPane" dividerPositions="0.6" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0"
+            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
             <items>
 
                 <GridPane prefHeight="722.0" prefWidth="1071.0" AnchorPane.bottomAnchor="0.0"
@@ -30,6 +35,19 @@
                         </AnchorPane>
                         <HBox styleClass="leoz-top-pane" GridPane.columnIndex="1">
                             <children>
+                                <HBox alignment="CENTER" styleClass="leoz-title-image">
+                                    <children>
+                                        <ImageView fx:id="fxTitleImageView" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true"
+                                            preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/home-144px.png" />
+                                            </image>
+                                            <HBox.margin>
+                                                <Insets />
+                                            </HBox.margin>
+                                        </ImageView>
+                                    </children>
+                                </HBox>
                                 <AnchorPane id="title" GridPane.columnIndex="1" HBox.hgrow="ALWAYS">
                                     <children>
                                         <Label fx:id="fxTitle" layoutX="14.0" layoutY="6.0" styleClass="leoz-title"
@@ -73,7 +91,8 @@
                                                 </AnchorPane>
                                                 <AnchorPane>
                                                     <children>
-                                                        <ProgressIndicator fx:id="fxProgressIndicator" prefHeight="44.0"
+                                                        <MaterialProgressIndicator
+                                                            fx:id="fxProgressIndicator" prefHeight="44.0"
                                                             prefWidth="47.0" visible="false"
                                                             AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0"
                                                             AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="12.0" />
@@ -92,15 +111,9 @@
                         </BorderPane>
 
                         <!-- Main module/content container -->
-                        <AnchorPane id="content" fx:id="fxContentPaneContainer"
-                            minHeight="0.0"
-                            minWidth="0.0"
-                            styleClass="leoz-content-pane"
-                            GridPane.columnIndex="1"
-                            GridPane.hgrow="ALWAYS"
-                            GridPane.rowIndex="1"
-                            GridPane.vgrow="ALWAYS"
-                            VBox.vgrow="ALWAYS" />
+                        <AnchorPane id="content" fx:id="fxContentPaneContainer" minHeight="0.0" minWidth="0.0"
+                            styleClass="leoz-content-pane" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
+                            GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS" />
                     </children>
                 </GridPane>
 
@@ -117,7 +130,11 @@
                         <HBox alignment="CENTER" fillHeight="false" AnchorPane.bottomAnchor="0.0"
                             AnchorPane.topAnchor="0.0">
                             <children>
-                                <ImageView fitHeight="24.0" fitWidth="24.0"><image><Image url="@../images/user-144px.png"></Image></image></ImageView>
+                                <ImageView fitHeight="24.0" fitWidth="24.0">
+                                    <image>
+                                        <Image url="@../images/user-144px.png" />
+                                    </image>
+                                </ImageView>
                                 <Label fx:id="fxUser" text="Label" HBox.hgrow="ALWAYS" />
                                 <Label fx:id="fxVersion" styleClass="leoz-version" text="Label" HBox.hgrow="ALWAYS" />
                                 <ButtonBar buttonMinWidth="16.0">
