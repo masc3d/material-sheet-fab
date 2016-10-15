@@ -5,9 +5,9 @@ import com.google.common.collect.Iterables
 import com.google.common.primitives.Ints
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.entities.MstHolidayCtrlId
+import org.deku.leoz.node.data.entities.MstRoutingLayer
 import org.deku.leoz.node.data.entities.QMstRoute
 import org.deku.leoz.node.data.entities.QMstRoutingLayer
-import org.deku.leoz.node.data.entities.MstRoutingLayer
 import org.deku.leoz.node.data.repositories.master.*
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.rest.entities.ShortDate
@@ -22,6 +22,7 @@ import sx.rs.ApiKey
 import java.sql.Timestamp
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
@@ -95,14 +96,14 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
         val sendDate = routingRequest.sendDate?.localDate
         val routingValidDate = sendDate
-        var desiredDeliveryDate: LocalDate? = routingRequest.desiredDeliveryDate?.localDate
+        val desiredDeliveryDate: LocalDate? = routingRequest.desiredDeliveryDate?.localDate
 
         var deliveryDate: LocalDate? = null
 
-        var senderParticipant: Routing.Participant?
+        val senderParticipant: Routing.Participant?
         val possibleSenderSectors = ArrayList<String>()
         if (routingRequest.sender != null) {
-            var senderParticipants = queryRoute("S",
+            val senderParticipants = queryRoute("S",
                     routingValidDate,
                     sendDate,
                     desiredDeliveryDate,
@@ -126,9 +127,9 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
             routing.sender = null
 
 
-        var consigneeParticipant: Routing.Participant? = null;
+        var consigneeParticipant: Routing.Participant? = null
         if (routingRequest.consignee != null) {
-            var consigneeParticipants = queryRoute("D",
+            val consigneeParticipants = queryRoute("D",
                     routingValidDate,
                     sendDate,
                     desiredDeliveryDate,
@@ -270,13 +271,15 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 //
 //        val rRoutes = emq.resultList
 //
+        val qRoute = QMstRoute.mstRoute
+
         val rRoutes = routeRepository.findAll(
-                QMstRoute.mstRoute.layer.eq(routingLayer.layer)
-                        .and(QMstRoute.mstRoute.country.eq(requestParticipant?.country?.toUpperCase()))
-                        .and(QMstRoute.mstRoute.zipFrom.loe(queryZipCode))
-                        .and(QMstRoute.mstRoute.zipTo.goe(queryZipCode))
-                        .and(QMstRoute.mstRoute.validFrom.before(validDate?.toTimestamp()))
-                        .and(QMstRoute.mstRoute.validTo.after(validDate?.toTimestamp())))
+                qRoute.layer.eq(routingLayer.layer)
+                        .and(qRoute.country.eq(requestParticipant?.country?.toUpperCase()))
+                        .and(qRoute.zipFrom.loe(queryZipCode))
+                        .and(qRoute.zipTo.goe(queryZipCode))
+                        .and(qRoute.validFrom.before(validDate?.toTimestamp()))
+                        .and(qRoute.validTo.after(validDate?.toTimestamp())))
 
         if (Iterables.isEmpty(rRoutes))
             throw ServiceException(RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
@@ -288,7 +291,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         val rStation = stationRepository.findOne(rRoute.station)
 
         if (rStation == null)
-            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} Route Station not found");
+            throw ServiceException(ServiceErrorCode.WRONG_PARAMETER_VALUE, "${errorPrefix} Route Station not found")
 
         participant.sector = rStation.sector!!
         participant.country = rRoute.country!!
@@ -305,7 +308,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
                 //                    date = getNextDeliveryDay(date, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl());
             }
             "D" -> {
-                var deliveryDate = desiredDeliveryDate
+                val deliveryDate = desiredDeliveryDate
                         ?: getNextDeliveryDay(sendDate, participant.country, rRoute.holidayCtrl!!, participant.term)
 
                 participant.date = deliveryDate
@@ -325,7 +328,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         participant.earliestTimeOfDelivery = rRoute.etod!!.toShortTime()
         participant.term = rRoute.term!!
         if (rRoute.ltodsa != null)
-            participant.sundayDeliveryUntil = ShortTime(rRoute.ltodsa.toString())
+            participant.sundayDeliveryUntil = rRoute.ltodsa.toShortTime()
 
         return participant
     }
@@ -344,7 +347,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
 
     // Extensions for java.Date
     fun Date.toShortTime(): ShortTime {
-        return ShortTime(this.toString())
+        return ShortTime(this)
     }
 
     /**

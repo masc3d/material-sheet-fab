@@ -2,10 +2,14 @@ package org.deku.leoz.rest.entities
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
+import java.time.Instant
+import java.time.LocalDateTime
 
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.util.*
 
 /**
  * LocalTime wrapper for rest operations, serializing to short time format (eg. "10:00")
@@ -21,6 +25,11 @@ class ShortTime {
 
     @JvmOverloads constructor(localTime: LocalTime = LocalTime.now()) {
         this.localTime = localTime
+    }
+
+    constructor(date: Date) {
+        val instant = Instant.ofEpochMilli(date.time)
+        this.localTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalTime()
     }
 
     override fun toString(): String {
