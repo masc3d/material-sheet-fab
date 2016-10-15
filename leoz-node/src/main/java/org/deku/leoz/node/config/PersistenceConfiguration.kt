@@ -121,7 +121,7 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
         eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true")
         eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc")
         // Weaving is required for lazy loading (amongst other features). Requires a LoadTimeWeaver to be setup (may require -javaagent as JVMARGS depending on setup)
-        eclipseLinkProperties.setProperty("eclipselink.weaving", "false")
+        eclipseLinkProperties.setProperty("eclipselink.weaving", "static")
         eclipseLinkProperties.setProperty("eclipselink.cache.shared.default", "true")
 
         if (showSql) {

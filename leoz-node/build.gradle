@@ -1,4 +1,5 @@
 import groovy.io.FileType
+import groovy.xml.MarkupBuilder
 import org.apache.commons.lang3.ClassUtils
 import org.apache.openjpa.jdbc.meta.ReverseMappingTool
 import org.apache.openjpa.jdbc.schema.Column
@@ -8,6 +9,8 @@ import org.jboss.forge.roaster.Roaster
 import org.jboss.forge.roaster.model.source.FieldSource
 import org.jboss.forge.roaster.model.source.JavaClassSource
 import org.jboss.forge.roaster.model.source.PropertySource
+import org.eclipse.persistence.tools.weaving.jpa.StaticWeave
+import org.eclipse.persistence.internal.weaving.PersistenceWeaved
 
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -32,6 +35,8 @@ buildscript {
         // OpenJPA/Entitygen
         classpath "org.apache.openjpa:openjpa-all:$v_openjpa"
         classpath "com.h2database:h2:1.4.192"
+        // Eclipselink
+        classpath "org.eclipse.persistence:eclipselink:$v_eclipselink"
         // Roaster
         classpath "org.jboss.forge.roaster:roaster-api:$v_roaster"
         classpath "org.jboss.forge.roaster:roaster-jdt:$v_roaster"
@@ -115,7 +120,7 @@ dependencies {
 
             // persistence framework(s)
             // eclipselink
-            "org.eclipse.persistence:eclipselink:2.6.4",
+            "org.eclipse.persistence:eclipselink:$v_eclipselink",
 
             // queryDSL
             "com.querydsl:querydsl-core:$v_querydsl",
@@ -220,18 +225,6 @@ run {
     standardInput = System.in
 }
 
-//jar {
-//    manifest {
-//        attributes(
-//            'Premain-Class': 'org.springframework.instrument.InstrumentationSavingAgent',
-//            'Agent-Class': 'org.springframework.instrument.InstrumentationSavingAgent',
-//            'Can-Redefine-Classes': 'true',
-//            'Can-Retransform-Classes': 'true',
-//            'Can-Set-Native-Method-Prefix': 'false'
-//        )
-//    }
-//}
-
 distributions {
     main {
         contents {
@@ -276,7 +269,8 @@ task copyVaadinWebapp(type: Sync) {
 tasks.compileJava.dependsOn(copyVaadinWebapp)
 
 // Database constants
-def DB_DIR = new File(project.projectDir, 'db')
+def DB_DIR = new File(project.buildDir, 'db')
+def DB_PERSISTENCE_XML = new File(DB_DIR, 'META-INF/persistence.xml')
 def DB_H2_JDBC_DRIVER = 'org.h2.Driver'
 def DB_H2_JDBC_URL = "jdbc:h2:${DB_DIR}/leoz;database_to_upper=false"
 
@@ -300,8 +294,7 @@ def JPA_GENERATED_DIR = file("${project.projectDir}/src/generated/jpa")
 def JPA_TASK_GROUP = "jpa"
 
 //region OpenJPA
-def OPENJPA_PERSISTENCE_XML = file("db/openjpa-persistence.xml")
-def OPENJPA_SCHEMA_XML = file('db/openjpa-schema.xml')
+def OPENJPA_SCHEMA_XML = new File(DB_DIR, 'openjpa-schema.xml')
 
 sourceSets {
     main.java.srcDir JPA_GENERATED_DIR
@@ -347,45 +340,80 @@ class H2Dictionary extends org.apache.openjpa.jdbc.sql.H2Dictionary {
 }
 
 /**
- * Task for generating openjpa schema
+ * Dynamically generate persistence.xml
+ * @param persistenceXml Destination persistence.xml
+ * @param classNames Class names to add to persistence unit
+ * @return
  */
-task openJpaGenerateSchema(dependsOn: [flywayMigrate]) {
-    inputs.dir FLYWAY_MIGRATION_DIR
-    outputs.files OPENJPA_SCHEMA_XML.toString()
+static def generatePersistenceXml(File persistenceXml, List<String> classNames) {
+    persistenceXml.parentFile.mkdirs()
 
-    doFirst {
-        JPA_GENERATED_DIR.deleteDir()
+    def fileWriter = new FileWriter(persistenceXml)
+    def builder = new MarkupBuilder(fileWriter)
+    builder.persistence(xmlns: "http://java.sun.com/xml/ns/persistence", version: "1.0") {
+        "persistence-unit"(name: "leoz") {
+            properties {
+            }
+            classNames.each {
+                "class"(it)
+            }
+        }
     }
-
-    doLast {
-        def params = [
-                "-properties", OPENJPA_PERSISTENCE_XML,
-                "-action", "reflect",
-                "-file", OPENJPA_SCHEMA_XML
-        ] as String[]
-
-        print(params)
-        SchemaTool.main(params)
-    }
+    fileWriter.close();
 }
 
-task jpaClean(group: JPA_TASK_GROUP) << {
-    OPENJPA_SCHEMA_XML.delete()
-    JPA_GENERATED_DIR.deleteDir()
+/**
+ * Generate openjpa schema xml file
+ * @param persistenceXml Source persistence.xml to use
+ * @param openJpaSchemaXml Destination xml file
+ * @return
+ */
+static def openJpaGenerateSchema(File persistenceXml, File openJpaSchemaXml) {
+    def params = [
+            "-properties", persistenceXml,
+            "-action", "reflect",
+            "-file", openJpaSchemaXml
+    ] as String[]
 
-    // TODO: sucky workaround for not being able to depend/finalize (base) task `clean` on/with `flywayClean` task, which causes an issue on windows systems, preventing the clean tkas to delete jars (pretty weird)
-    DB_DIR.eachFile {
-        if (it.name.endsWith(".db"))
-            it.delete()
-    }
+    SchemaTool.main(params)
 }
-tasks.clean.finalizedBy tasks.jpaClean
+
+/**
+ * Perform jpa reverse mapping (using openjpa)
+ * @param persistenceXml Source persistence.xml to use
+ * @param openJpaSchemaXml Source openjpa schema.xml to use
+ * @param jpaGeneratedDir Destination generated sources dir
+ * @param jpaGeneratedPackage Generated package name
+ * @return
+ */
+static def openJpaReverseMapping(File persistenceXml, File openJpaSchemaXml, File jpaGeneratedDir, String jpaGeneratedPackage) {
+    def params = [
+            "-properties", persistenceXml,
+            "-directory", jpaGeneratedDir,
+            "-pkg", jpaGeneratedPackage,
+            "-annotations", "true",
+            "-useGenericCollections", "true",
+            "-nullableAsObject", "true",
+            "-metadata", "none",
+            // Eclipselink is not capable of inner identity classes :(
+//                "-innerIdentityClasses", "true",
+//                "-identityClassSuffix", "PrimaryKey",
+            openJpaSchemaXml
+    ] as String[]
+
+    ReverseMappingTool.main(params)
+}
 
 /**
  * Performs post-processing on openjpa-generated entity classes.
- * @return
+ * @param persistenceXmlFile Source persistence.xml to use
+ * @param tablesXmlFile Source tables.xml to use
+ * @param sourceDir Generated sources dir (to process)
+ * @return List of entity class names that have been found
  */
-def openJpaPostProcess(File tablesXmlFile, File sourceDir) {
+static def List<String> openJpaPostProcess(File persistenceXmlFile, File tablesXmlFile, File sourceDir) {
+    def entityClassNames = new ArrayList<String>()
+
     def tables = new XmlSlurper().parse(tablesXmlFile)
 
     def tableUidMap = new HashMap<String, String>()
@@ -396,8 +424,11 @@ def openJpaPostProcess(File tablesXmlFile, File sourceDir) {
     def idClassUidByEntityClassName = new HashMap<String, String>()
 
     sourceDir.eachFileRecurse(FileType.FILES, {
+        if (!it.name.endsWith(".java"))
+            return
+
         def jtype = Roaster.parse(it)
-        def jsource = (JavaClassSource)jtype
+        def jsource = (JavaClassSource) jtype
 
         def tableAnnotation = jsource.annotations.find {
             it.qualifiedName == javax.persistence.Table.canonicalName
@@ -409,6 +440,9 @@ def openJpaPostProcess(File tablesXmlFile, File sourceDir) {
 
         String uid
         if (tableAnnotation != null) {
+            println(jsource.canonicalName)
+            entityClassNames.add(jsource.canonicalName)
+
             def tableName = tableAnnotation.values.find { it.name == "name" }.stringValue
 
             // Skip flyway schema table
@@ -453,11 +487,11 @@ def openJpaPostProcess(File tablesXmlFile, File sourceDir) {
             }
             if (idAnnotation != null) {
                 if (field.type.primitive) {
-                    def fieldSource = (FieldSource)field
+                    def fieldSource = (FieldSource) field
                     def wrapperType = ClassUtils.primitiveToWrapper(ClassUtils.getClass(field.type.qualifiedName))
 
                     // Find property referring to this field
-                    def p = (PropertySource)jsource.properties.find {
+                    def p = (PropertySource) jsource.properties.find {
                         it.field.equals(field)
                     }
 
@@ -478,42 +512,80 @@ def openJpaPostProcess(File tablesXmlFile, File sourceDir) {
         // Generate and write updated class
         it.write(jsource.toString())
     })
+
+    return entityClassNames
 }
 
 /**
- * Task for generating entity classes using openjpa reverse mapping tool
+ * Perform eclipselink static weaving
+ * @param persistenceXmlDir Directory containing persistence.xml (eclipselink expects this to be in META-INF subdir from here)
+ * @return
  */
-task openJpaGenerateEntities(dependsOn: [openJpaGenerateSchema]) {
-    inputs.files OPENJPA_SCHEMA_XML.toString()
-    outputs.dir JPA_GENERATED_DIR
+static def eclispelinkStaticWeave(File persistenceXmlDir, File classesDir) {
+    def params = [
+            "-persistenceinfo", persistenceXmlDir,
+            classesDir,
+            classesDir
+    ] as String[]
 
-    doLast {
-        def params = [
-                "-properties", OPENJPA_PERSISTENCE_XML,
-                "-directory", JPA_GENERATED_DIR,
-                "-pkg", JPA_GENERATED_PACKAGE,
-                "-annotations", "true",
-                "-useGenericCollections", "true",
-                "-nullableAsObject", "true",
-                "-metadata", "none",
-                // Eclipselink is not capable of inner identity classes :(
-//                "-innerIdentityClasses", "true",
-//                "-identityClassSuffix", "PrimaryKey",
-                OPENJPA_SCHEMA_XML
-        ] as String[]
+    StaticWeave.main(params)
+}
 
-        ReverseMappingTool.main(params)
-
-        openJpaPostProcess(DB_TABLES_XML, JPA_GENERATED_DIR)
-    }
+/**
+ * Clean genereated JPA files
+ */
+task jpaClean(group: JPA_TASK_GROUP) << {
+    JPA_GENERATED_DIR.deleteDir()
+}
+tasks.clean {
+    finalizedBy tasks.jpaClean
 }
 
 /**
  * Top-level task for generating jpa entities
  */
-task jpaGenerate(dependsOn: [openJpaGenerateEntities], group: JPA_TASK_GROUP) << { }
+task jpaGenerate(dependsOn: [flywayMigrate], group: JPA_TASK_GROUP) {
+    inputs.dir FLYWAY_MIGRATION_DIR
+    outputs.dir JPA_GENERATED_DIR
+
+    doFirst {
+    }
+
+    doLast {
+        // Generate persistence.xml without classes (for reverse mapping)
+        generatePersistenceXml(DB_PERSISTENCE_XML, [])
+
+        openJpaGenerateSchema(DB_PERSISTENCE_XML, OPENJPA_SCHEMA_XML)
+
+        openJpaReverseMapping(DB_PERSISTENCE_XML, OPENJPA_SCHEMA_XML, JPA_GENERATED_DIR, JPA_GENERATED_PACKAGE)
+
+        // Post process generated java classes
+        List<String> entityClassNames = openJpaPostProcess(DB_PERSISTENCE_XML, DB_TABLES_XML, JPA_GENERATED_DIR)
+
+        generatePersistenceXml(DB_PERSISTENCE_XML, entityClassNames)
+    }
+}
 // Dependencies
 tasks.compileJava {
     dependsOn tasks.jpaGenerate
     mustRunAfter tasks.jpaGenerate
+}
+
+/**
+ * Task for statically weaving eclipselink entitiy classes
+ */
+task jpaWeaving(dependsOn: tasks.compileJava, group: JPA_TASK_GROUP) {
+    inputs.dir compileJava.destinationDir
+    outputs.dir compileJava.destinationDir
+
+    mustRunAfter tasks.compileJava
+
+    doLast {
+        eclispelinkStaticWeave(DB_DIR, compileJava.destinationDir)
+    }
+}
+// Dependenceis
+tasks.classes {
+    dependsOn tasks.jpaWeaving
+    mustRunAfter tasks.jpaWeaving
 }
