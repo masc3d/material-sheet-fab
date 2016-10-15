@@ -534,8 +534,10 @@ static def eclispelinkStaticWeave(File persistenceXmlDir, File classesDir) {
 /**
  * Clean genereated JPA files
  */
-task jpaClean(group: JPA_TASK_GROUP) << {
-    JPA_GENERATED_DIR.deleteDir()
+task jpaClean(group: JPA_TASK_GROUP) {
+    doLast {
+        JPA_GENERATED_DIR.deleteDir()
+    }
 }
 tasks.clean {
     finalizedBy tasks.jpaClean
@@ -544,12 +546,11 @@ tasks.clean {
 /**
  * Top-level task for generating jpa entities
  */
-task jpaGenerate(dependsOn: [flywayMigrate], group: JPA_TASK_GROUP) {
+task jpaGenerate(group: JPA_TASK_GROUP) {
+    dependsOn tasks.flywayMigrate
+
     inputs.dir FLYWAY_MIGRATION_DIR
     outputs.dir JPA_GENERATED_DIR
-
-    doFirst {
-    }
 
     doLast {
         // Generate persistence.xml without classes (for reverse mapping)
@@ -574,11 +575,12 @@ tasks.compileJava {
 /**
  * Task for statically weaving eclipselink entitiy classes
  */
-task jpaWeaving(dependsOn: tasks.compileJava, group: JPA_TASK_GROUP) {
+task jpaWeaving(group: JPA_TASK_GROUP) {
+    dependsOn tasks.compileJava, tasks.compileKotlin
+    mustRunAfter tasks.compileJava, tasks.compileKotlin
+
     inputs.dir compileJava.destinationDir
     outputs.dir compileJava.destinationDir
-
-    mustRunAfter tasks.compileJava, tasks.compileKotlin
 
     doLast {
         eclispelinkStaticWeave(DB_DIR, compileJava.destinationDir)
