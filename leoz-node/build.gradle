@@ -578,7 +578,7 @@ task jpaWeaving(dependsOn: tasks.compileJava, group: JPA_TASK_GROUP) {
     inputs.dir compileJava.destinationDir
     outputs.dir compileJava.destinationDir
 
-    mustRunAfter tasks.compileJava
+    mustRunAfter tasks.compileJava, tasks.compileKotlin
 
     doLast {
         eclispelinkStaticWeave(DB_DIR, compileJava.destinationDir)

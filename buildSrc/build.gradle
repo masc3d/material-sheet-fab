@@ -2,11 +2,12 @@ apply from: '../versions.gradle'
 
 buildscript {
     ext {
+        v_kotlin = '1.0.3'
         v_jsch = '0.0.9'
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 
     repositories {
@@ -76,8 +77,6 @@ dependencies {
 }
 
 sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
-
     // See workaround below
     //main.java.srcDirs += '../libs/sx-common/src/main/java'
     //main.java.srcDirs += '../libs/leoz-common/src/main/java'
@@ -90,7 +89,6 @@ def srcdir_import = file("$projectDir/src/import/java")
 
 sourceSets {
     main.java.srcDirs += srcdir_import
-    main.java.srcDirs += 'src/main/kotlin'
 }
 
 // Task for importing classes from other projects
