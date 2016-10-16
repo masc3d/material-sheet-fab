@@ -10,7 +10,7 @@ import java.util.*
  * Managing and providing SSH tunnels with multithreading support.
  * Created by masc on 25.11.15.
  * @property localPortRange Local port range to use
- * @property sshHosts Array of SSH hosts
+ * @property sshHosts Array of SSH hosts. Default credentials may be provided with an `SshHost` having empty string as hostname
  */
 class SshTunnelProvider(
         val localPortRange: IntRange,
@@ -63,13 +63,23 @@ class SshTunnelProvider(
             hostname: String,
             port: Int): TunnelResource? {
 
+        var tunnelResource: TunnelResource? = null
+
         synchronized(sync) {
             // Lookup tunnel spec
-            val sshHost = this.sshHosts.get(hostname) ?: return null
+            val sshHost = this.sshHosts.getOrPut(hostname,
+                    {
+                        val defaultSshHost = this.sshHosts.get("") ?: return@synchronized null
+
+                        SshHost(
+                                hostname = hostname,
+                                port = defaultSshHost.port,
+                                username = defaultSshHost.username,
+                                password = defaultSshHost.password)
+                    })
 
             val key = TunnelKey(Thread.currentThread().id, hostname, port)
 
-            var tunnelResource: TunnelResource? = null
             do {
                 // Get existing tunnel for host or create new one
                 val tunnel = this.tunnels
@@ -116,9 +126,9 @@ class SshTunnelProvider(
                     }
                 }
             } while (tunnelResource == null)
-
-            return tunnelResource!!
         }
+
+        return tunnelResource
     }
 
     /**
