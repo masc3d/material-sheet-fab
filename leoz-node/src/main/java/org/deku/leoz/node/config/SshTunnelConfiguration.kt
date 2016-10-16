@@ -29,6 +29,13 @@ open class SshTunnelConfiguration {
         var localPortRangeStart: Int by Delegates.notNull()
         var localPortRangeEnd: Int by Delegates.notNull()
 
+        /** Default username */
+        var username: String? = null
+        /** Defauzlt password */
+        var password: String? = null
+        /** Default port */
+        var port: Int? = 0
+
         var hosts: Map<String, Host> = HashMap()
 
         class Host {
@@ -47,18 +54,31 @@ open class SshTunnelConfiguration {
      * */
     @Bean
     open fun tunnelProvider(): SshTunnelProvider {
+        val sshHosts = this.settings.hosts.values.map {
+            SshHost(
+                    hostname = it.hostname,
+                    port = it.port,
+                    username = it.username,
+                    password = it.password)
+        }.toMutableList()
+
+        val defaultUsername = this.settings.username
+        val defaultPassword = this.settings.password
+        val defaultPort = this.settings.port
+
+        if (defaultUsername != null && defaultPassword != null && defaultPort != null) {
+            sshHosts.add(SshHost(hostname = "",
+                    username = defaultUsername,
+                    password = defaultPassword,
+                    port = defaultPort))
+        }
+
         // Create SSH tunnel provider from settings/application.properties
         val s = SshTunnelProvider(
                 localPortRange = IntRange(
                         this.settings.localPortRangeStart,
                         this.settings.localPortRangeEnd),
-                sshHosts = *this.settings.hosts.values.map {
-                    SshHost(
-                            hostname = it.hostname,
-                            port = it.port,
-                            username = it.username,
-                            password = it.password)
-                }.toTypedArray())
+                sshHosts = *sshHosts.toTypedArray())
 
         s.idleTimeout = Duration.ofMinutes(3)
         return s
