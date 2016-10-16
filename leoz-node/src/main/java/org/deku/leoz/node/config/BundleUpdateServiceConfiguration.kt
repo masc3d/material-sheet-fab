@@ -111,6 +111,10 @@ open class BundleUpdateServiceConfiguration {
                                 storeInLocalRepository = false,
                                 requiresBoot = true),
                         BundleUpdateService.Preset(
+                                bundleName = BundleType.LEOZ_UI.value,
+                                install = false,
+                                storeInLocalRepository = true),
+                        BundleUpdateService.Preset(
                                 bundleName = BundleType.LEOZ_BOOT.value,
                                 install = true,
                                 storeInLocalRepository = true)
