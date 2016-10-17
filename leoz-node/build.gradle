@@ -545,13 +545,16 @@ task jpaGenerate(group: JPA_TASK_GROUP) {
         // Generate persistence.xml without classes (for reverse mapping)
         generatePersistenceXml(DB_PERSISTENCE_XML, [])
 
+        // Generate openjpa schema xml
         openJpaGenerateSchema(DB_PERSISTENCE_XML, OPENJPA_SCHEMA_XML)
-
+        // Generated reverse mapped classes
         openJpaReverseMapping(DB_PERSISTENCE_XML, OPENJPA_SCHEMA_XML, JPA_GENERATED_DIR, JPA_GENERATED_PACKAGE)
 
         // Post process generated java classes
         List<String> entityClassNames = openJpaPostProcess(DB_TABLES_XML, JPA_GENERATED_DIR)
 
+        // Update persistence.xml to include generated classes. This is required for eclipselink static weaving
+        // which relies on a complete persistence.xml
         generatePersistenceXml(DB_PERSISTENCE_XML, entityClassNames)
     }
 }
