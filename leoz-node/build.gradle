@@ -9,8 +9,6 @@ import org.jboss.forge.roaster.Roaster
 import org.jboss.forge.roaster.model.source.FieldSource
 import org.jboss.forge.roaster.model.source.JavaClassSource
 import org.jboss.forge.roaster.model.source.PropertySource
-import org.eclipse.persistence.tools.weaving.jpa.StaticWeave
-import org.eclipse.persistence.internal.weaving.PersistenceWeaved
 
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -386,7 +384,8 @@ static def openJpaGenerateSchema(File persistenceXml, File openJpaSchemaXml) {
  * @param jpaGeneratedPackage Generated package name
  * @return
  */
-static def openJpaReverseMapping(File persistenceXml, File openJpaSchemaXml, File jpaGeneratedDir, String jpaGeneratedPackage) {
+static
+def openJpaReverseMapping(File persistenceXml, File openJpaSchemaXml, File jpaGeneratedDir, String jpaGeneratedPackage) {
     def params = [
             "-properties", persistenceXml,
             "-directory", jpaGeneratedDir,
@@ -516,21 +515,6 @@ static def List<String> openJpaPostProcess(File tablesXmlFile, File sourceDir) {
 }
 
 /**
- * Perform eclipselink static weaving
- * @param persistenceXmlDir Directory containing persistence.xml (eclipselink expects this to be in META-INF subdir from here)
- * @return
- */
-static def eclispelinkStaticWeave(File persistenceXmlDir, File classesDir) {
-    def params = [
-            "-persistenceinfo", persistenceXmlDir,
-            classesDir,
-            classesDir
-    ] as String[]
-
-    StaticWeave.main(params)
-}
-
-/**
  * Clean genereated JPA files
  */
 task jpaClean(group: JPA_TASK_GROUP) {
@@ -578,20 +562,24 @@ tasks.compileJava {
 }
 
 /**
- * Task for statically weaving eclipselink entitiy classes
+ * Task for statically weaving eclipselink entitiy classes.
+ * This must be a `JavaExec` path otherwise there's sporadic issues with StaticWeave not being able to find
+ * specific classes of subprojects.
  */
-task jpaWeaving(group: JPA_TASK_GROUP) {
-    dependsOn tasks.compileJava, tasks.compileKotlin
-    mustRunAfter tasks.compileJava, tasks.compileKotlin
-
+task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
     inputs.dir compileJava.destinationDir
     outputs.dir compileJava.destinationDir
 
-    doLast {
-        eclispelinkStaticWeave(DB_DIR, compileJava.destinationDir)
-    }
+    dependsOn tasks.compileJava, tasks.compileKotlin
+    mustRunAfter tasks.compileJava, tasks.compileKotlin
+
+    main 'org.eclipse.persistence.tools.weaving.jpa.StaticWeave'
+    args '-persistenceinfo', DB_DIR,
+            compileJava.destinationDir.getAbsolutePath(),
+            compileJava.destinationDir.getAbsolutePath()
+    classpath = configurations.compile
 }
-// Dependenceis
+// Dependencies
 tasks.classes {
     dependsOn tasks.jpaWeaving
     mustRunAfter tasks.jpaWeaving
