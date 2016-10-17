@@ -9,7 +9,11 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor
 /**
  * Created by masc on 16.05.15.
  */
-interface RouteRepository : JpaRepository<MstRoute, Long>, QueryDslPredicateExecutor<MstRoute>, RouteRepositoryCustom {
+interface RouteRepository :
+        JpaRepository<MstRoute, Long>,
+        QueryDslPredicateExecutor<MstRoute>,
+        RouteRepositoryCustom {
+    // TODO: preliminary test for applying jpa query hints to spring-data queries. don't remove (just yet)
     //    @QueryHints(value = {
     //            @QueryHint(name = org.eclipse.persistence.config.QueryHints.QUERY_RESULTS_CACHE, value = "true"),
     //            @QueryHint(name = org.eclipse.persistence.config.QueryHints.QUERY_RESULTS_CACHE_SIZE, value = "500")

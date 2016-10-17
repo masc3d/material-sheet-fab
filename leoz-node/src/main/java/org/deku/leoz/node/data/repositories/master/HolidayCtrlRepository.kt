@@ -8,4 +8,6 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor
 /**
  * Created by JT on 15.05.15.
  */
-interface HolidayCtrlRepository : JpaRepository<MstHolidayCtrl, MstHolidayCtrlId>, QueryDslPredicateExecutor<MstHolidayCtrl>
+interface HolidayCtrlRepository :
+        JpaRepository<MstHolidayCtrl, MstHolidayCtrlId>,
+        QueryDslPredicateExecutor<MstHolidayCtrl>

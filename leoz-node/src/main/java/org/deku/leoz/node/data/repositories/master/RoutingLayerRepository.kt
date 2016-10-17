@@ -7,6 +7,8 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor
 /**
  * Created by JT on 23.06.15.
  */
-interface RoutingLayerRepository : JpaRepository<MstRoutingLayer, Int>, QueryDslPredicateExecutor<MstRoutingLayer>
+interface RoutingLayerRepository :
+        JpaRepository<MstRoutingLayer, Int>,
+        QueryDslPredicateExecutor<MstRoutingLayer>
 
 

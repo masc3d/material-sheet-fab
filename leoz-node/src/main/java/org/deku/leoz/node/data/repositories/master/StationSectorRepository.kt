@@ -8,4 +8,6 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor
 /**
  * Created by JT on 29.06.15.
  */
-interface StationSectorRepository : JpaRepository<MstStationSector, MstStationSectorId>, QueryDslPredicateExecutor<MstStationSector>
+interface StationSectorRepository :
+        JpaRepository<MstStationSector, MstStationSectorId>,
+        QueryDslPredicateExecutor<MstStationSector>

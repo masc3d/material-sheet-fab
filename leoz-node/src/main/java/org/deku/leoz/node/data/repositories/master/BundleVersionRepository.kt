@@ -7,4 +7,6 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor
 /**
  * Created by JT on 11.05.15.
  */
-interface BundleVersionRepository : JpaRepository<MstBundleVersion, String>, QueryDslPredicateExecutor<MstBundleVersion>
+interface BundleVersionRepository :
+        JpaRepository<MstBundleVersion, String>,
+        QueryDslPredicateExecutor<MstBundleVersion>

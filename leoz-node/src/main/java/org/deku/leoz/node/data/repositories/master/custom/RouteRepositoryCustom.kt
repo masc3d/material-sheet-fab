@@ -13,5 +13,5 @@ interface RouteRepositoryCustom
  */
 class RouteRepositoryImpl : RouteRepositoryCustom {
     @Inject
-    internal var mRouteRepository: RouteRepository? = null
+    private lateinit var mRouteRepository: RouteRepository
 }

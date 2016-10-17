@@ -8,5 +8,8 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor
 /**
  * Created by JT on 11.05.15.
  */
-interface CountryRepository : JpaRepository<MstCountry, String>, QueryDslPredicateExecutor<MstCountry>, CountryRepositoryCustom
+interface CountryRepository :
+        JpaRepository<MstCountry, String>,
+        QueryDslPredicateExecutor<MstCountry>,
+        CountryRepositoryCustom
 

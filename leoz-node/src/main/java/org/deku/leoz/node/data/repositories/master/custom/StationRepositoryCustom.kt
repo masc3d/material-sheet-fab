@@ -18,14 +18,14 @@ interface StationRepositoryCustom {
  */
 class StationRepositoryImpl : StationRepositoryCustom {
     @Inject
-    internal var depotRepository: StationRepository? = null
+    private lateinit var depotRepository: StationRepository
 
     override fun findWithQuery(query: String): List<MstStation> {
         val query = query.trim { it <= ' ' }
 
         // QueryDSL
         val qStation = QMstStation.mstStation
-        val depots = depotRepository!!.findAll(
+        val depots = depotRepository.findAll(
                 qStation.stationNr.stringValue().containsIgnoreCase(query)
                         .or(qStation.address1.containsIgnoreCase(query))
                         .or(qStation.address2.containsIgnoreCase(query))
