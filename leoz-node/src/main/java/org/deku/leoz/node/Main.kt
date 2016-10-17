@@ -6,6 +6,7 @@ import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.Banner
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration
@@ -15,6 +16,7 @@ import org.springframework.boot.autoconfigure.web.*
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.resteasy.autoconfigure.ResteasyAutoConfiguration
+import org.springframework.context.annotation.AnnotationBeanNameGenerator
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
@@ -117,11 +119,22 @@ open class Main {
             // Initialize and start application
             App.instance.initialize()
             try {
-                SpringApplicationBuilder()
+                val springApplication = SpringApplicationBuilder()
+                        .beanNameGenerator(object : AnnotationBeanNameGenerator() {
+                            override fun buildDefaultBeanName(definition: BeanDefinition?): String {
+                                // Override the bean name to be fully qualified.
+                                // The default behaviour causes issues with classes having the same name in different packages
+                                val beanName = definition!!.beanClassName
+                                return beanName
+                            }
+                        })
                         .bannerMode(Banner.Mode.OFF)
                         .sources(this.javaClass)
                         .profiles(this.app.profile)
-                        .listeners(this.app).run(*args)
+                        .listeners(this.app)
+                        .build()
+
+                springApplication.run(*args)
             } catch(e: Throwable) {
                 // In some situations spring will prevent further logging due to turboFilterList, thus clearing it here
                 val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
