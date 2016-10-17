@@ -74,7 +74,7 @@ flyway {
 // Location for generated sources
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
-def srcdir_jooq = file("$projectDir/src/generated/jooq")
+def JOOQ_GENERATED_DIR = file("$projectDir/src/generated/jooq")
 
 jooq {
     main(sourceSets.main) {
@@ -99,18 +99,27 @@ jooq {
 
             target {
                 packageName = 'org.deku.leoz.central.data.entities.jooq'
-                directory = srcdir_jooq.toString()
+                directory = JOOQ_GENERATED_DIR.toString()
             }
         }
     }
 }
 // JOOQ generation depends on schema migration
-tasks.generateMainJooqSchemaSource.dependsOn(tasks.flywayMigrate)
-// Optimization: Only generate sources when flyway/migration actually did some work
-tasks.generateMainJooqSchemaSource.outputs.upToDateWhen { !tasks.flywayMigrate.didWork }
+tasks.generateMainJooqSchemaSource {
+    dependsOn tasks.flywayMigrate
+}
+
+// Clear jooq sources on flywayMigrate
+tasks.flywayMigrate {
+    doFirst {
+        JOOQ_GENERATED_DIR.deleteDir()
+    }
+}
 
 clean {
-    delete(srcdir_jooq)
+    doFirst {
+        JOOQ_GENERATED_DIR.deleteDir()
+    }
 }
 
 run {
