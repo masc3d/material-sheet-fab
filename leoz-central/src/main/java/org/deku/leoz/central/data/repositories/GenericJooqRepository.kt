@@ -15,7 +15,7 @@ import javax.inject.Named
  * Created by masc on 17.05.15.
  */
 @Named
-class GenericRepository {
+class GenericJooqRepository {
     @Inject
     private lateinit var dslContext: DSLContext
 

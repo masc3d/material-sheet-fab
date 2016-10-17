@@ -3,8 +3,8 @@ package org.deku.leoz.central.services
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.update.UpdateInfo
 import org.deku.leoz.bundle.update.UpdateInfoRequest
-import org.deku.leoz.central.data.repositories.BundleVersionRepository
-import org.deku.leoz.central.data.repositories.NodeRepository
+import org.deku.leoz.central.data.repositories.BundleVersionJooqRepository
+import org.deku.leoz.central.data.repositories.NodeJooqRepository
 import org.slf4j.LoggerFactory
 import sx.jms.Channel
 import sx.jms.Handler
@@ -16,9 +16,10 @@ import java.util.*
  */
 class UpdateInfoService(
         /** Central db node table repository */
-        private val nodeRepository: NodeRepository,
+        private val nodeJooqRepository: NodeJooqRepository,
         /** Central db bundle version table repository */
-        private val bundleVersionRepository: BundleVersionRepository,
+        private val bundleVersionJooqRepository: BundleVersionJooqRepository,
+
         /** Leoz bundle repository */
         private val bundleRepository: BundleRepository
 )
@@ -30,12 +31,24 @@ class UpdateInfoService(
         try {
             val updateInfoRequest = message
 
-            val rNode = nodeRepository.findByKey(message.nodeKey)
-            if (rNode == null)
-                throw IllegalArgumentException("Unknown node [${message.nodeKey}}")
+            // Determine version alias
+            val versionAlias: String
+            if (updateInfoRequest.versionAlias != null) {
+                // Primarily use version alias of request, if provided
+                versionAlias = updateInfoRequest.versionAlias!!
+            } else {
+                // Lookup appropriate version alias by node key
+                if (updateInfoRequest.nodeKey.isNullOrEmpty())
+                    throw IllegalArgumentException("Neither version alias nor node key provided [${updateInfoRequest}]")
 
-            val versionAlias = message.versionAlias ?: rNode.versionAlias ?: "release"
-            val rVersion = bundleVersionRepository.findByAlias(
+                val rNode = nodeJooqRepository.findByKey(updateInfoRequest.nodeKey)
+                if (rNode == null)
+                    throw IllegalArgumentException("Unknown node [${updateInfoRequest.nodeKey}}")
+
+                versionAlias = rNode.versionAlias
+            }
+
+            val rVersion = bundleVersionJooqRepository.findByAlias(
                     bundleName = updateInfoRequest.bundleName,
                     versionAlias = versionAlias)
 

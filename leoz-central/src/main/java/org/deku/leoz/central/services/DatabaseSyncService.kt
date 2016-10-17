@@ -8,9 +8,11 @@ import com.querydsl.jpa.impl.JPAQuery
 import org.deku.leoz.central.data.entities.jooq.Tables
 import org.deku.leoz.central.data.entities.jooq.tables.*
 import org.deku.leoz.central.data.entities.jooq.tables.records.*
-import org.deku.leoz.central.data.repositories.GenericRepository
+import org.deku.leoz.central.data.repositories.GenericJooqRepository
 import org.deku.leoz.node.config.PersistenceConfiguration
+import org.deku.leoz.node.data.repositories.master.BundleVersionRepository
 import org.deku.leoz.node.data.entities.*
+import org.deku.leoz.node.data.entities.MstBundleVersion
 import org.deku.leoz.node.data.entities.MstCountry
 import org.deku.leoz.node.data.entities.MstRoute
 import org.deku.leoz.node.data.entities.MstSector
@@ -62,6 +64,20 @@ constructor(
 
     companion object {
         private val log = LoggerFactory.getLogger(DatabaseSyncService::class.java)
+
+        /**
+         * Convert mysql mst_bundle_version record
+         */
+        private fun convert(ds: MstBundleVersionRecord): MstBundleVersion {
+            val s = MstBundleVersion()
+
+            s.id = ds.id
+            s.bundle = ds.bundle
+            s.alias = ds.alias
+            s.version = ds.version
+
+            return s
+        }
 
         /**
          * Convert mysql mst_station record to jpa entity
@@ -249,7 +265,9 @@ constructor(
 
     // Repositories
     @Inject
-    private lateinit var syncRepository: GenericRepository
+    private lateinit var genericJooqRepository: GenericJooqRepository
+    @Inject
+    private lateinit var bundleVersionRepository: BundleVersionRepository
     @Inject
     private lateinit var stationRepository: StationRepository
     @Inject
@@ -257,7 +275,7 @@ constructor(
     @Inject
     private lateinit var routeRepository: RouteRepository
     @Inject
-    private lateinit var holidayCtrlRepository: HolidayctrlRepository
+    private lateinit var holidayCtrlRepository: HolidayCtrlRepository
     @Inject
     private lateinit var sectorRepository: SectorRepository
     @Inject
@@ -279,6 +297,15 @@ constructor(
         val sw = Stopwatch.createStarted()
 
         val alwaysDelete = reload
+
+        this.updateEntities<MstBundleVersionRecord, MstBundleVersion>(
+                Tables.MST_BUNDLE_VERSION,
+                null,
+                bundleVersionRepository,
+                QMstBundleVersion.mstBundleVersion,
+                null,
+                { s -> convert(s) },
+                alwaysDelete)
 
         this.updateEntities<MstStationRecord, MstStation>(
                 Tables.MST_STATION,
@@ -361,7 +388,7 @@ constructor(
      */
     open protected fun <TCentralRecord : Record, TEntity> updateEntities(
             sourceTable: TableImpl<TCentralRecord>,
-            sourceTableSyncIdField: TableField<TCentralRecord, Long>,
+            sourceTableSyncIdField: TableField<TCentralRecord, Long>?,
             destRepository: JpaRepository<TEntity, *>,
             destQdslEntityPath: EntityPathBase<TEntity>,
             destQdslSyncIdPath: NumberPath<Long>?,
@@ -399,7 +426,7 @@ constructor(
         // masc20150530. JOOQ cursor requires an explicit transaction
         transactionJooq.execute<Any> { tsJooq ->
             // Read source records newer than destination timestamp
-            val source = syncRepository.findNewerThan(
+            val source = genericJooqRepository.findNewerThan(
                     destMaxSyncId,
                     sourceTable,
                     sourceTableSyncIdField)

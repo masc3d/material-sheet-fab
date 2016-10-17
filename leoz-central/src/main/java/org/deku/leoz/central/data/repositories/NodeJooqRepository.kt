@@ -12,7 +12,7 @@ import javax.inject.Named
  * Created by masc on 02.07.15.
  */
 @Named
-class NodeRepository {
+class NodeJooqRepository {
     @Inject
     private lateinit var dslContext: DSLContext
 

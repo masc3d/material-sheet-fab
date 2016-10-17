@@ -13,7 +13,7 @@ import javax.inject.Inject
  */
 class CountryRepositoryTest : DataTest() {
     @Inject
-    lateinit private var countryRepository: CountryRepository
+    private lateinit var countryRepository: CountryRepository
 
     @Test
     fun test() {

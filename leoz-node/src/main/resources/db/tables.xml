@@ -4,6 +4,7 @@
 <tables xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.w3schools.com tables.xsd">
 
+    <table name="mst_bundle_version" uid="0x6a0acd69ac1a6c" />
     <table name="mst_country" uid="0x61175aa6b510b3" />
     <table name="mst_holiday_ctrl" uid="0x56c4d6ff7b69dc" pkuid="0x0bef5f538e4ed9" />
     <table name="mst_route" uid="0xef6d8232d3263d" />

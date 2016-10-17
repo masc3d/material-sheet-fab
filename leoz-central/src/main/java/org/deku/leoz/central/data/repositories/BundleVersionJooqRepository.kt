@@ -10,7 +10,7 @@ import javax.inject.Named
  * Created by masc on 27/02/16.
  */
 @Named
-class BundleVersionRepository {
+class BundleVersionJooqRepository {
     @Inject
     lateinit var dslContext: DSLContext
 

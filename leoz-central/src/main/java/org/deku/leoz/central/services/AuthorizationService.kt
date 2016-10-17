@@ -1,7 +1,7 @@
 package org.deku.leoz.central.services
 
 import org.deku.leoz.Identity
-import org.deku.leoz.central.data.repositories.NodeRepository
+import org.deku.leoz.central.data.repositories.NodeJooqRepository
 import org.deku.leoz.node.messaging.entities.AuthorizationMessage
 import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
 import org.slf4j.LoggerFactory
@@ -21,10 +21,11 @@ import javax.inject.Named
 class AuthorizationService
 :
         Handler<AuthorizationRequestMessage> {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
-    private lateinit var nodeRepository: NodeRepository
+    private lateinit var nodeJooqRepository: NodeJooqRepository
 
     interface Listener : EventListener {
         fun onAuthorized(nodeIdentityKey: Identity.Key)
@@ -42,16 +43,16 @@ class AuthorizationService
             am.key = message.key
 
             val identityKey = Identity.Key(message.key)
-            var record = nodeRepository.findByKey(message.key)
+            var record = nodeJooqRepository.findByKey(message.key)
             if (record == null) {
-                val conflictingRecord = nodeRepository.findByKeyStartingWith(identityKey.short)
+                val conflictingRecord = nodeJooqRepository.findByKeyStartingWith(identityKey.short)
                 if (conflictingRecord != null) {
                     // Short key conflict, reject
                     am.rejected = true
                     log.warn("Node [${message.key}] has short key conflicting with [${conflictingRecord.key}] and will be rejected")
                 } else {
                     // Store new node record
-                    record = nodeRepository.createNew()
+                    record = nodeJooqRepository.createNew()
                     record.key = message.key
                     record.bundle = message.name
                     record.sysInfo = message.systemInfo

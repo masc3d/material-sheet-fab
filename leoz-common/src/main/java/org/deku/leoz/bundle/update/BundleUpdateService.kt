@@ -8,6 +8,8 @@ import org.deku.leoz.bundle.boot
 import org.deku.leoz.bundle.update.UpdateInfo
 import org.deku.leoz.bundle.update.UpdateInfoRequest
 import org.slf4j.LoggerFactory
+import rx.lang.kotlin.PublishSubject
+import rx.subjects.PublishSubject
 import sx.Lifecycle
 import sx.concurrent.Service
 import sx.jms.Channel
@@ -20,7 +22,7 @@ import java.util.concurrent.ScheduledExecutorService
  * Updater suoporting async/background updates of bundles.
  * Can be added as a message handler to a notification topic message listener for push update notifications.
  * @property executorService Executor service
- * @property requestChannel The JMS channel to use to issue update info requests
+ * @property requestChannel The JMS channel to issue update info requests on
  * @property identity Id of this leoz node
  * @property installer Bundle installer for installing bundles locally
  * @property remoteRepository Remote bundle repository. The bundle name of this repository has to match the installer name
@@ -95,12 +97,20 @@ class BundleUpdateService(
         this.presets = presets.sortedBy { p -> p.requiresBoot }
     }
 
+    private val ovsInfoReceived by lazy { PublishSubject<UpdateInfo>() }
+    /**
+     * Update info received event
+     */
+    val ovInfoReceived = ovsInfoReceived.asObservable()
+
     /**
      * Update notification message handler
      */
     override fun onMessage(message: UpdateInfo, replyChannel: Channel?) {
         val updateInfo = message
         log.info("Received update notification [${updateInfo}]")
+
+        ovsInfoReceived.onNext(updateInfo)
 
         val preset = this.presets.firstOrNull { s -> s.bundleName.compareTo(updateInfo.bundleName, ignoreCase = true) == 0 }
         if (preset != null) {
@@ -143,6 +153,7 @@ class BundleUpdateService(
         }
 
         log.info("Update info [${updateInfo}]")
+        ovsInfoReceived.onNext(updateInfo)
 
         if (updateInfo.latestDesignatedVersion != null) {
             val latestDesignatedVersion = Bundle.Version.parse(updateInfo.latestDesignatedVersion)

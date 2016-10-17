@@ -2,8 +2,8 @@ package org.deku.leoz.central.config
 
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.update.UpdateInfoRequest
-import org.deku.leoz.central.data.repositories.BundleVersionRepository
-import org.deku.leoz.central.data.repositories.NodeRepository
+import org.deku.leoz.central.data.repositories.BundleVersionJooqRepository
+import org.deku.leoz.central.data.repositories.NodeJooqRepository
 import org.deku.leoz.central.services.UpdateInfoService
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.SshConfiguration
@@ -41,10 +41,10 @@ open class UpdateInfoServiceConfiguration {
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
 
     @Inject
-    private lateinit var nodeRepository: NodeRepository
+    private lateinit var nodeJooqRepository: NodeJooqRepository
 
     @Inject
-    private lateinit var bundleVersionRepository: BundleVersionRepository
+    private lateinit var bundleVersionJooqRepository: BundleVersionJooqRepository
 
     fun updateService(): UpdateInfoService {
         val rsyncHost = settings.rsyncHost
@@ -63,8 +63,8 @@ open class UpdateInfoServiceConfiguration {
 
 
         return UpdateInfoService(
-                nodeRepository = nodeRepository,
-                bundleVersionRepository = bundleVersionRepository,
+                nodeJooqRepository = nodeJooqRepository,
+                bundleVersionJooqRepository = bundleVersionJooqRepository,
                 bundleRepository = bundleRepository)
     }
 

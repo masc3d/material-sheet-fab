@@ -45,7 +45,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
     @Inject
     lateinit var routeRepository: RouteRepository
     @Inject
-    lateinit var holidayctrlRepostitory: HolidayctrlRepository
+    lateinit var holidayCtrlJpaRepostitory: HolidayCtrlRepository
     @Inject
     lateinit var routingLayerRepository: RoutingLayerRepository
     @Inject
@@ -363,7 +363,7 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
         val holidayCtrlId = MstHolidayCtrlId()
         holidayCtrlId.holiday = date?.toTimestamp()
         holidayCtrlId.country = country
-        val rHolidayCtrl = holidayctrlRepostitory.findOne(holidayCtrlId)
+        val rHolidayCtrl = holidayCtrlJpaRepostitory.findOne(holidayCtrlId)
 
         if (rHolidayCtrl != null) {
             if (rHolidayCtrl.ctrlPos == -1)
