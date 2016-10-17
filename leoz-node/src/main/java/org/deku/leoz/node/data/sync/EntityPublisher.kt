@@ -63,7 +63,7 @@ class EntityPublisher(
             val lfmt = { s: String -> "[" + entityType!!.canonicalName + "]" + " " + s }
 
             em = entityManagerFactory.createEntityManager()
-            val er = EntityRepository(em, entityType)
+            val er = EntityRepository(em, entityType!!)
 
             // Count records
             val count = er.countNewerThan(syncId)

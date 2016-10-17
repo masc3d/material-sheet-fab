@@ -9,4 +9,6 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor
 /**
  * Created by JT on 29.06.15.
  */
-interface PropertyRepository : JpaRepository<SysProperty, SysPropertyId>, QueryDslPredicateExecutor<SysProperty>
+interface PropertyRepository :
+        JpaRepository<SysProperty, SysPropertyId>,
+        QueryDslPredicateExecutor<SysProperty>
