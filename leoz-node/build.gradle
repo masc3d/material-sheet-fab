@@ -406,12 +406,11 @@ static def openJpaReverseMapping(File persistenceXml, File openJpaSchemaXml, Fil
 
 /**
  * Performs post-processing on openjpa-generated entity classes.
- * @param persistenceXmlFile Source persistence.xml to use
  * @param tablesXmlFile Source tables.xml to use
  * @param sourceDir Generated sources dir (to process)
  * @return List of entity class names that have been found
  */
-static def List<String> openJpaPostProcess(File persistenceXmlFile, File tablesXmlFile, File sourceDir) {
+static def List<String> openJpaPostProcess(File tablesXmlFile, File sourceDir) {
     def entityClassNames = new ArrayList<String>()
 
     def tables = new XmlSlurper().parse(tablesXmlFile)
@@ -452,7 +451,7 @@ static def List<String> openJpaPostProcess(File persistenceXmlFile, File tablesX
             // Determine table uid
             def tableEntry = tableUidMap[tableName]
             if (tableEntry == null)
-                throw new IllegalStateException("Table [${tableName}] is missing entry in [${DB_TABLES_XML}]")
+                throw new IllegalStateException("Table [${tableName}] is missing entry in [${tablesXmlFile}]")
 
             uid = tableEntry.@uid.toString()
 
@@ -548,9 +547,15 @@ tasks.clean {
  */
 task jpaGenerate(group: JPA_TASK_GROUP) {
     dependsOn tasks.flywayMigrate
+    mustRunAfter tasks.flywayMigrate
 
     inputs.dir FLYWAY_MIGRATION_DIR
     outputs.dir JPA_GENERATED_DIR
+
+    doFirst {
+        // Clean build dir before jpa generatino, as weaved class files may cause errors
+        new File(project.buildDir, 'classes').deleteDir()
+    }
 
     doLast {
         // Generate persistence.xml without classes (for reverse mapping)
@@ -561,7 +566,7 @@ task jpaGenerate(group: JPA_TASK_GROUP) {
         openJpaReverseMapping(DB_PERSISTENCE_XML, OPENJPA_SCHEMA_XML, JPA_GENERATED_DIR, JPA_GENERATED_PACKAGE)
 
         // Post process generated java classes
-        List<String> entityClassNames = openJpaPostProcess(DB_PERSISTENCE_XML, DB_TABLES_XML, JPA_GENERATED_DIR)
+        List<String> entityClassNames = openJpaPostProcess(DB_TABLES_XML, JPA_GENERATED_DIR)
 
         generatePersistenceXml(DB_PERSISTENCE_XML, entityClassNames)
     }
