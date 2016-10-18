@@ -64,6 +64,7 @@ open class EntitySyncConfiguration {
         entityConsumer.request(MstRoute::class.java)
         entityConsumer.request(MstRoutingLayer::class.java)
         entityConsumer.request(MstSector::class.java)
+        entityConsumer.request(MstBundleVersion::class.java)
     }
 
     @PostConstruct

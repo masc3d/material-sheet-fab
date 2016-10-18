@@ -9,6 +9,7 @@ import org.deku.leoz.central.data.entities.jooq.Tables
 import org.deku.leoz.central.data.entities.jooq.tables.*
 import org.deku.leoz.central.data.entities.jooq.tables.records.*
 import org.deku.leoz.central.data.repositories.GenericJooqRepository
+import org.deku.leoz.central.data.repositories.SyncJooqRepository
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.repositories.master.BundleVersionRepository
 import org.deku.leoz.node.data.entities.*
@@ -75,6 +76,7 @@ constructor(
             s.bundle = ds.bundle
             s.alias = ds.alias
             s.version = ds.version
+            s.syncId = ds.syncId
 
             return s
         }
@@ -263,9 +265,13 @@ constructor(
     private val transaction: TransactionTemplate
     private val transactionJooq: TransactionTemplate
 
-    // Repositories
+    // JOOQ Repositories
     @Inject
     private lateinit var genericJooqRepository: GenericJooqRepository
+    @Inject
+    private lateinit var syncJooqRepository: SyncJooqRepository
+
+    // JPA Repositories
     @Inject
     private lateinit var bundleVersionRepository: BundleVersionRepository
     @Inject
@@ -300,10 +306,10 @@ constructor(
 
         this.updateEntities<MstBundleVersionRecord, MstBundleVersion>(
                 Tables.MST_BUNDLE_VERSION,
-                null,
+                org.deku.leoz.central.data.entities.jooq.tables.MstBundleVersion.MST_BUNDLE_VERSION.SYNC_ID,
                 bundleVersionRepository,
                 QMstBundleVersion.mstBundleVersion,
-                null,
+                QMstBundleVersion.mstBundleVersion.syncId,
                 { s -> convert(s) },
                 alwaysDelete)
 
@@ -422,6 +428,14 @@ constructor(
                     .fetchFirst()
         }
 
+        if (destMaxSyncId != null) {
+            val maxSyncId = syncJooqRepository.findSyncIdByTableName(sourceTable.name)
+            if (maxSyncId == destMaxSyncId) {
+                log.info(lfmt("sync-id uptodate [${destMaxSyncId}]"))
+                return
+            }
+        }
+
         // Get newer records from central
         // masc20150530. JOOQ cursor requires an explicit transaction
         transactionJooq.execute<Any> { tsJooq ->
@@ -435,7 +449,7 @@ constructor(
                 // Save to destination/jpa
                 // REMARKS
                 // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
-                log.info(lfmt("Outdated [[${destMaxSyncId}]"))
+                log.info(lfmt("Outdated [${destMaxSyncId}]"))
                 var count = 0
                 transaction.execute<Any> { ts ->
                     while (source.hasNext()) {

@@ -19,6 +19,9 @@ class DepotJooqRepository {
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     fun findAll(): List<TbldepotlisteRecord> {
-        return dslContext.select().from(Tables.TBLDEPOTLISTE).fetchInto(TbldepotlisteRecord::class.java)
+        return dslContext
+                .select()
+                .from(Tables.TBLDEPOTLISTE)
+                .fetchInto(TbldepotlisteRecord::class.java)
     }
 }
