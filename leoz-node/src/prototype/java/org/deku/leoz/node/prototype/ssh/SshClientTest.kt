@@ -8,7 +8,6 @@ import org.junit.Test
 /**
  * Created by masc on 13.11.15.
  */
-@Ignore
 class SshClientTest {
     @Test
     fun testRun() {

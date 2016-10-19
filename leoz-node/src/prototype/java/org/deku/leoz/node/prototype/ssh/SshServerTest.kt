@@ -15,7 +15,6 @@ import java.nio.file.Files
 /**
  * Created by masc on 13.11.15.
  */
-@Ignore
 class SshServerTest {
     @Test
     fun testRun() {
