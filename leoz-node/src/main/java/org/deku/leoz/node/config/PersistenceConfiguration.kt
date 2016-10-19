@@ -3,9 +3,7 @@ package org.deku.leoz.node.config
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.flyway.FlywayDataSource
 import org.springframework.context.annotation.*
 import org.springframework.core.type.filter.AnnotationTypeFilter
@@ -15,7 +13,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
-import sx.io.serialization.Serializer
 import java.io.File
 import java.util.*
 import javax.annotation.PostConstruct
@@ -32,7 +29,7 @@ import javax.sql.DataSource
 @ComponentScan(lazyInit = true, basePackageClasses = arrayOf(org.deku.leoz.node.data.Package::class))
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 @EnableJpaRepositories(considerNestedRepositories = false, basePackageClasses = arrayOf(org.deku.leoz.node.data.Package::class))
-open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
+open class PersistenceConfiguration {
     companion object {
         const val QUALIFIER = "db_embedded"
     }
@@ -45,31 +42,37 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
     @FlywayDataSource
     @Qualifier(QUALIFIER)
     open fun dataSource(): DataSource {
-        val IN_MEMORY = false
-
-        val dataSource = JdbcDataSource()
+        // Dev/debug flag for enabling h2 in memory database
+        val H2_IN_MEMORY = false
 
         // Base URI
-        val baseUri: String
-        if (!IN_MEMORY) {
-            baseUri = "jdbc:h2:file:${StorageConfiguration.instance.h2DatabaseFile}"
+        val baseUri: String = if (!H2_IN_MEMORY) {
+            "jdbc:h2:file:${StorageConfiguration.instance.h2DatabaseFile}"
         } else {
-            baseUri = "jdbc:h2:mem:db1"
+            "jdbc:h2:mem:db1"
         }
 
-        // H2 parameters
+        //region H2 setup
         val params = HashMap<String, String>()
+
         // Even though this is declared as "experimental" for h2 (http://www.h2database.com/javadoc/org/h2/engine/DbSettings.html#DATABASE_TO_UPPER)
-        // Uppercase table/column names are just ugly.
+        // Lowercase table/column names or much better readable in queries and schema migrations
         params.put("DATABASE_TO_UPPER", "false")
-        if (IN_MEMORY) {
-            // For in memory db
+
+        // In-memory specific settings
+        if (H2_IN_MEMORY) {
             params.put("INIT", "CREATE SCHEMA IF NOT EXISTS leoz")
             params.put("DB_CLOSE_DELAY", "-1")
         }
+        //endregion
 
-        // Build url with params
-        dataSource.setUrl(baseUri + params.map { x -> "${x.key}=${x.value}" }.joinToString(separator = ";", prefix = ";"))
+        // Build url and setup data source
+        val dataSource = JdbcDataSource()
+
+        dataSource.setUrl(baseUri +
+                params
+                        .map { x -> "${x.key}=${x.value}" }
+                        .joinToString(separator = ";", prefix = ";"))
 
         return JdbcConnectionPool.create(dataSource)
     }
@@ -98,14 +101,14 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
         val vendorAdapter = EclipseLinkJpaVendorAdapter()
         em.jpaVendorAdapter = vendorAdapter
 
+        //region Setup eclipselink
         val eclipseLinkProperties = Properties()
-
         eclipseLinkProperties.setProperty("eclipselink.target-database", "org.eclipse.persistence.platform.database.H2Platform")
-        // Automatic schema generation from jpa entites
+
+        //region Dev/debug code for automatically generating database from jpa entites
 //        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.database.action", "create")
 //        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.create-database-schemas", "true")
-        // Caching
-        //        eclipseLinkProperties.setProperty("javax.persistence.sharedCache.mode", "ENABLE_SELECTIVE");
+        //endregion
 
         //region Dev/debug code for letting eclipselink/jpa generate DDL/SQL from entites
         if (false) {
@@ -117,12 +120,19 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
         }
         //endregion
 
+        //region Caching
+        eclipseLinkProperties.setProperty("eclipselink.cache.shared.default", "true")
+//        eclipseLinkProperties.setProperty("javax.persistence.sharedCache.mode", "ENABLE_SELECTIVE");
+        //endregion
+
         // Some master tables may have zero id values
         eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true")
+
+        // Enable jdbc batch writing
         eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc")
+
         // Weaving is required for lazy loading (amongst other features). Requires a LoadTimeWeaver to be setup (may require -javaagent as JVMARGS depending on setup)
         eclipseLinkProperties.setProperty("eclipselink.weaving", "static")
-        eclipseLinkProperties.setProperty("eclipselink.cache.shared.default", "true")
 
         if (showSql) {
             // Show SQL
@@ -130,6 +140,7 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
             eclipseLinkProperties.setProperty("eclipselink.logging.parameters", "true")
         }
 
+        //region Entity setup
         // Scan and iterate entity classes
         val scanner = ClassPathScanningCandidateComponentProvider(false)
         scanner.addIncludeFilter(AnnotationTypeFilter(Entity::class.java))
@@ -138,6 +149,7 @@ open class PersistenceConfiguration /*, TransactionManagementConfigurer*/ {
             // Setup event listeners for all entity classes
             eclipseLinkProperties.setProperty("eclipselink.descriptor.customizer.${bd.beanClassName}", "org.deku.leoz.node.data.Customizer")
         }
+        //endregion
 
         em.setJpaProperties(eclipseLinkProperties)
 
