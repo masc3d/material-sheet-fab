@@ -1,29 +1,21 @@
-package org.deku.leoz.node.data
+package org.deku.leoz.node.prototype.data
 
 import com.querydsl.jpa.impl.JPAQuery
-import org.deku.leoz.node.DataTest
-import org.deku.leoz.node.config.PersistenceConfiguration
+import com.querydsl.sql.Configuration
+import com.querydsl.sql.H2Templates
+import com.querydsl.sql.SQLQueryFactory
+import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.data.entities.MstRoute
-import org.deku.leoz.node.data.entities.MstStation
 import org.deku.leoz.node.data.entities.QMstRoute
-import org.deku.leoz.node.data.entities.QMstStation
-import org.deku.leoz.node.data.repositories.master.RouteRepository
-import org.eclipse.persistence.config.HintValues
-import org.junit.Ignore
+import org.deku.leoz.node.data.entities.sql.QSQLMstRoute
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
-import sx.concurrent.Service
-import sx.concurrent.task.CompositeExecutorService
-import java.time.Duration
 import javax.inject.Inject
 import javax.persistence.EntityManager
-import javax.persistence.FlushModeType
 import javax.persistence.PersistenceContext
-import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.Query
 import javax.sql.DataSource
 
 /**
@@ -129,5 +121,24 @@ open class QueryPerformanceTest : DataTest() {
             log.info("${maxSyncId} ${sw}")
         }
         cn.close()
+    }
+
+    @Test
+    open fun testSelectQueryDslSql() {
+        val dialect = H2Templates()
+        val config = Configuration(dialect)
+
+        val factory = SQLQueryFactory(config, this.dataSource, false)
+        val qRoute = QSQLMstRoute.mstRoute
+
+        val q = factory
+                .from(qRoute)
+                .select(qRoute.syncId.max())
+
+        for (i in 0..10) {
+            val sw = Stopwatch.createStarted()
+            val result = q.fetchOne()
+            log.info("${result} ${sw}")
+        }
     }
 }

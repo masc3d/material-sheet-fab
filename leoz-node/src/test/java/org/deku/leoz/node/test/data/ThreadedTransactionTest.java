@@ -1,6 +1,6 @@
-package org.deku.leoz.node.data;
+package org.deku.leoz.node.test.data;
 
-import org.deku.leoz.node.DataTest;
+import org.deku.leoz.node.test.DataTest;
 import org.deku.leoz.node.config.PersistenceConfiguration;
 import org.junit.Test;
 

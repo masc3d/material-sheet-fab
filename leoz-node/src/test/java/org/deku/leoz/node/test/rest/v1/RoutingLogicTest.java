@@ -1,6 +1,6 @@
-package org.deku.leoz.node.rest.v1;
+package org.deku.leoz.node.test.rest.v1;
 
-import org.deku.leoz.node.DataTest;
+import org.deku.leoz.node.test.DataTest;
 import org.deku.leoz.node.rest.ServiceException;
 import org.deku.leoz.node.rest.services.v1.RoutingService;
 import org.deku.leoz.rest.entities.ShortDate;

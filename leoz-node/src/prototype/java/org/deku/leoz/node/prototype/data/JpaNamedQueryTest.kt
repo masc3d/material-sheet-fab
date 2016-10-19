@@ -1,9 +1,12 @@
-package org.deku.leoz.node.data
+package org.deku.leoz.node.prototype.data
 
+import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
+import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.data.entities.MstStation
 import org.deku.leoz.node.data.entities.QMstRoute
 import org.eclipse.persistence.config.HintValues
+import org.eclipse.persistence.config.QueryHints
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
@@ -14,7 +17,7 @@ import javax.persistence.PersistenceContext
 /**
  * Created by masc on 18/10/2016.
  */
-open class JpaNamedQueryTest {
+open class JpaNamedQueryTest : DataTest() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @PersistenceContext
@@ -28,14 +31,14 @@ open class JpaNamedQueryTest {
         val qRoute = QMstRoute.mstRoute
 
         // TODO: query result cache currently only works for queries returning entities, not for custom data/single values/aggregates etc.
-        val query = JPAQuery<MstStation>(this.entityManager)
+        val query = JPAQuery<MstStation>(entityManager)
                 .from(qRoute)
-                .where(qRoute.syncId.eq(22060))
+                .where(qRoute.syncId.eq(1))
                 .orderBy(qRoute.syncId.desc())
                 .createQuery()
 
-        query.setHint(org.eclipse.persistence.config.QueryHints.QUERY_RESULTS_CACHE, HintValues.TRUE)
-        query.setHint(org.eclipse.persistence.config.QueryHints.QUERY_RESULTS_CACHE_SIZE, (500).toString())
+        query.setHint(QueryHints.QUERY_RESULTS_CACHE, HintValues.TRUE)
+        query.setHint(QueryHints.QUERY_RESULTS_CACHE_SIZE, (500).toString())
         this.entityManager.entityManagerFactory.addNamedQuery(QUERY_NAME, query)
 
         val nq = this.entityManager

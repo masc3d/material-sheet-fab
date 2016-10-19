@@ -75,6 +75,22 @@ idea {
     }
 }
 
+sourceSets {
+    test {
+        java {
+            srcDirs += file("$projectDir/src/prototype/java")
+        }
+    }
+}
+
+test {
+    exclude 'org/deku/leoz/node/prototype/**'
+}
+
+configurations {
+    driver
+}
+
 dependencies {
     // leoz webservice dependencies
     compile(
@@ -195,6 +211,10 @@ dependencies {
 //            "org.springframework:spring-instrument:$v_spring"
 //    )
 
+    driver(
+            "com.h2database:h2:1.4.192"
+    )
+
     // QueryDSL codegen/annotation processor
     kapt(
             "com.querydsl:querydsl-apt:$v_querydsl:jpa",
@@ -266,18 +286,20 @@ task copyVaadinWebapp(type: Sync) {
 }
 tasks.compileJava.dependsOn(copyVaadinWebapp)
 
+def GENERATED_DIR = file("${project.projectDir}/src/generated")
+
 // Database constants
+def PROJECT_DB_DIR = new File(project.projectDir, 'src/main/resources/db')
+
 def DB_DIR = new File(project.buildDir, 'db')
 def DB_PERSISTENCE_XML = new File(DB_DIR, 'META-INF/persistence.xml')
 def DB_H2_JDBC_DRIVER = 'org.h2.Driver'
 def DB_H2_JDBC_URL = "jdbc:h2:${DB_DIR}/leoz;database_to_upper=false"
-
-// SQL migrations (used for flyway eg.)
-def PROJECT_DB_DIR = new File(project.projectDir, 'src/main/resources/db')
-def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
-
 // Tables file which contains mapping to @Serializable uids
 def DB_TABLES_XML = new File(PROJECT_DB_DIR, "tables.xml")
+
+// SQL migrations (used for flyway eg.)
+def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
 
 flyway {
     driver = DB_H2_JDBC_DRIVER
@@ -285,13 +307,13 @@ flyway {
     locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
 }
 
-// JPA class generation
+//region JPA class generation
 
-def JPA_GENERATED_PACKAGE = "org.deku.leoz.node.data.entities"
-def JPA_GENERATED_DIR = file("${project.projectDir}/src/generated/jpa")
-def JPA_TASK_GROUP = "jpa"
+def JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.entities'
+def JPA_GENERATED_DIR = new File(GENERATED_DIR, 'jpa')
+def JPA_TASK_GROUP = 'jpa'
 
-//region OpenJPA
+//region JPA code generation
 def OPENJPA_SCHEMA_XML = new File(DB_DIR, 'openjpa-schema.xml')
 
 sourceSets {
@@ -410,17 +432,20 @@ def openJpaReverseMapping(File persistenceXml, File openJpaSchemaXml, File jpaGe
  * @return List of entity class names that have been found
  */
 static def List<String> openJpaPostProcess(File tablesXmlFile, File sourceDir) {
-    def entityClassNames = new ArrayList<String>()
-
+    // Parse `tables.xml` for @Serializable uids and build look up map
     def tables = new XmlSlurper().parse(tablesXmlFile)
-
     def tableUidMap = new HashMap<String, String>()
     tables.table.each {
         tableUidMap[it.@name.toString()] = it
     }
 
+    // Id classes are collected here
     def idClassUidByEntityClassName = new HashMap<String, String>()
 
+    // Entity class names are collected here
+    def entityClassNames = new ArrayList<String>()
+
+    // Iterate source files
     sourceDir.eachFileRecurse(FileType.FILES, {
         if (!it.name.endsWith(".java"))
             return
@@ -428,6 +453,7 @@ static def List<String> openJpaPostProcess(File tablesXmlFile, File sourceDir) {
         def jtype = Roaster.parse(it)
         def jsource = (JavaClassSource) jtype
 
+        // Look for JPA annotations
         def tableAnnotation = jsource.annotations.find {
             it.qualifiedName == javax.persistence.Table.canonicalName
         }
@@ -438,7 +464,6 @@ static def List<String> openJpaPostProcess(File tablesXmlFile, File sourceDir) {
 
         String uid
         if (tableAnnotation != null) {
-            println(jsource.canonicalName)
             entityClassNames.add(jsource.canonicalName)
 
             def tableName = tableAnnotation.values.find { it.name == "name" }.stringValue

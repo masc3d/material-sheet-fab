@@ -1,4 +1,4 @@
-package org.deku.leoz.node
+package org.deku.leoz.node.test
 
 import org.deku.leoz.node.config.ExecutorConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
@@ -23,7 +23,7 @@ import javax.servlet.ServletContext
 @Ignore
 @RunWith(SpringJUnit4ClassRunner::class)
 @SpringBootTest(classes = arrayOf(
-        org.deku.leoz.node.config.PersistenceConfiguration::class,
+        PersistenceConfiguration::class,
         FlywayAutoConfiguration::class,
         ExecutorConfiguration::class
 ))

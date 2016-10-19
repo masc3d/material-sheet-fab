@@ -1,4 +1,4 @@
-package org.deku.leoz.node.ssh
+package org.deku.leoz.node.prototype.ssh
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger

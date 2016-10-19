@@ -1,6 +1,6 @@
-package org.deku.leoz.node.rest.v1;
+package org.deku.leoz.node.test.rest.v1;
 
-import org.deku.leoz.node.WebserviceTest;
+import org.deku.leoz.node.test.WebserviceTest;
 import org.junit.Ignore;
 import org.junit.Rule;
 import sx.junit.LoggingStopwatchRule;

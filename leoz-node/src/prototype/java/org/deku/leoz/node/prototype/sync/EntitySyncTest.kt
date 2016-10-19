@@ -1,9 +1,9 @@
-package org.deku.leoz.node.messaging.entities.sync
+package org.deku.leoz.node.prototype.sync
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.node.DataTest
+import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.entities.MstRoute
 import org.deku.leoz.node.data.sync.EntityConsumer
@@ -44,14 +44,14 @@ class EntitySyncTest : DataTest() {
         ActiveMQConfiguration.instance.broker.start()
 
         listener = EntityPublisher(
-                notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
-                requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
+                notificationChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncTopic,
+                requestChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncQueue,
                 entityManagerFactory = entityManagerFactory!!,
                 executor = Executors.newSingleThreadExecutor())
 
         client = EntityConsumer(
-                notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
-                requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
+                notificationChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncTopic,
+                requestChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncQueue,
                 entityManagerFactory = entityManagerFactory!!,
                 executor = Executors.newSingleThreadExecutor())
     }

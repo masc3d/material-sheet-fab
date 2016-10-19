@@ -1,5 +1,6 @@
-package org.deku.leoz.node;
+package org.deku.leoz.node.test;
 
+import org.deku.leoz.node.Main;
 import org.deku.leoz.node.rest.ObjectMapperProvider;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.After;
