@@ -1,5 +1,8 @@
 package org.deku.leoz.node.config
 
+import org.eclipse.persistence.config.BatchWriting
+import org.eclipse.persistence.config.CacheType
+import org.eclipse.persistence.config.PersistenceUnitProperties
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
 import org.slf4j.LoggerFactory
@@ -27,6 +30,7 @@ import javax.annotation.PreDestroy
 import javax.inject.Inject
 import javax.persistence.Entity
 import javax.persistence.EntityManagerFactory
+import javax.persistence.PersistenceUnit
 import javax.sql.DataSource
 
 /**
@@ -112,7 +116,7 @@ open class PersistenceConfiguration {
 
         //region Setup eclipselink
         val eclipseLinkProperties = Properties()
-        eclipseLinkProperties.setProperty("eclipselink.target-database", "org.eclipse.persistence.platform.database.H2Platform")
+        eclipseLinkProperties.setProperty(PersistenceUnitProperties.TARGET_DATABASE, org.eclipse.persistence.platform.database.H2Platform::class.java.canonicalName)
 
         //region Dev/debug code for automatically generating database from jpa entites
 //        eclipseLinkProperties.setProperty("javax.persistence.schema-generation.database.action", "create")
@@ -123,32 +127,31 @@ open class PersistenceConfiguration {
         if (false) {
             val sqlFile = File("sql/leoz-ddl.sql")
             File(sqlFile.getParent()).mkdirs()
-            eclipseLinkProperties.setProperty("javax.persistence.schema-generation.scripts.action", "create")
-            eclipseLinkProperties.setProperty("javax.persistence.schema-generation.scripts.create-target", sqlFile.toString())
-            eclipseLinkProperties.setProperty("eclipselink.ddlgen-terminate-statements", "true")
+
+            eclipseLinkProperties.setProperty(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, "create")
+            eclipseLinkProperties.setProperty(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, sqlFile.toString())
+            eclipseLinkProperties.setProperty(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_TERMINATE_STATEMENTS, "true")
         }
         //endregion
 
         //region Caching
-        eclipseLinkProperties.setProperty("eclipselink.cache.shared.default", "true")
-//        eclipseLinkProperties.setProperty("javax.persistence.sharedCache.mode", "ENABLE_SELECTIVE");
+        eclipseLinkProperties.setProperty(PersistenceUnitProperties.CACHE_SHARED_DEFAULT, "true")
         //endregion
 
         // Some master tables may have zero id values
-        eclipseLinkProperties.setProperty("eclipselink.allow-zero-id", "true")
+        eclipseLinkProperties.setProperty(PersistenceUnitProperties.ID_VALIDATION, "NULL")
 
         // Enable jdbc batch writing
-        eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc")
-        eclipseLinkProperties.setProperty("eclipselink.jdbc.bind-parameters", "true")
-        eclipseLinkProperties.setProperty("eclipselink.jdbc.cache-statements", "true")
+        eclipseLinkProperties.setProperty(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.JDBC)
+        eclipseLinkProperties.setProperty(PersistenceUnitProperties.JDBC_BIND_PARAMETERS, "true")
+        eclipseLinkProperties.setProperty(PersistenceUnitProperties.CACHE_STATEMENTS, "true")
 
         // Weaving is required for lazy loading (amongst other features). Requires a LoadTimeWeaver to be setup (may require -javaagent as JVMARGS depending on setup)
-        eclipseLinkProperties.setProperty("eclipselink.weaving", "static")
+        eclipseLinkProperties.setProperty(PersistenceUnitProperties.WEAVING, "static")
 
         if (showSql) {
-            // Show SQL
-            eclipseLinkProperties.setProperty("eclipselink.logging.level.sql", "FINE")
-            eclipseLinkProperties.setProperty("eclipselink.logging.parameters", "true")
+            vendorAdapter.setShowSql(true)
+            eclipseLinkProperties.setProperty(PersistenceUnitProperties.LOGGING_PARAMETERS, "true")
         }
 
         //region Entity setup
@@ -158,7 +161,9 @@ open class PersistenceConfiguration {
 
         for (bd in scanner.findCandidateComponents(org.deku.leoz.node.data.Package.name)) {
             // Setup event listeners for all entity classes
-            eclipseLinkProperties.setProperty("eclipselink.descriptor.customizer.${bd.beanClassName}", "org.deku.leoz.node.data.Customizer")
+            eclipseLinkProperties.setProperty(
+                    "${PersistenceUnitProperties.DESCRIPTOR_CUSTOMIZER_}${bd.beanClassName}",
+                    org.deku.leoz.node.data.Customizer::class.java.canonicalName)
         }
         //endregion
 
