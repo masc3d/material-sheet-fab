@@ -8,7 +8,6 @@ import com.querydsl.sql.SQLQueryFactory
 import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.data.entities.MstRoute
 import org.deku.leoz.node.data.entities.QMstRoute
-import org.deku.leoz.node.data.entities.sql.QSQLMstRoute
 import org.deku.leoz.node.data.repositories.master.RouteRepository
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -82,36 +81,6 @@ open class RouteRepositoryTest : DataTest() {
                     .setParameter(3, "63571")
                     .resultList
             log.info("${sw} ${result.count()}")
-        }
-    }
-
-    @Test
-    open fun testFindQueryDslSql() {
-        val dialect = H2Templates()
-        val config = Configuration(dialect)
-
-        val factory = SQLQueryFactory(config, this.dataSource, false)
-        val qRoute = QSQLMstRoute.mstRoute
-
-        val pLayer = Param(Int::class.java)
-        val pCountry = Param(String::class.java)
-        val pZipFrom = Param(String::class.java)
-        val q = factory
-                .from(qRoute)
-                .select(qRoute.id)
-                .where(qRoute.layer.eq(pLayer)
-                        .and(qRoute.country.eq(pCountry))
-                        .and(qRoute.zipFrom.eq(pZipFrom)))
-
-        for (i in 0..1000) {
-            val sw = Stopwatch.createStarted()
-            val result = q
-                    .set(pLayer, 1)
-                    .set(pCountry, "DE")
-                    .set(pZipFrom, "63571")
-                    .fetchFirst()
-
-            log.info("${result} ${sw}")
         }
     }
 

@@ -1,4 +1,9 @@
+import com.querydsl.codegen.BeanSerializer
+import com.querydsl.codegen.GenericExporter
+import com.querydsl.codegen.Keywords
+import com.querydsl.sql.codegen.MetaDataExporter
 import groovy.io.FileType
+import groovy.sql.Sql
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang3.ClassUtils
 import org.apache.openjpa.jdbc.meta.ReverseMappingTool
@@ -10,6 +15,11 @@ import org.jboss.forge.roaster.model.source.FieldSource
 import org.jboss.forge.roaster.model.source.JavaClassSource
 import org.jboss.forge.roaster.model.source.PropertySource
 
+import javax.persistence.Embeddable
+import javax.persistence.Embedded
+import javax.persistence.Entity
+import javax.persistence.MappedSuperclass
+import java.beans.Transient
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Types
@@ -21,11 +31,13 @@ buildscript {
         v_openjpa = '2.4.1'
         v_roaster = '2.19.1.Final'
     }
+
     repositories {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
     }
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
         // Flyway
@@ -41,6 +53,13 @@ buildscript {
         classpath "org.apache.commons:commons-lang3:$v_commons_lang"
         // Agent plugin
         classpath "gradle.plugin.com.zoltu:application-agent:1.0.12"
+        // QueryDSL SQL codegen
+        classpath "com.querydsl:querydsl-sql-codegen:$v_querydsl"
+        // JOOQ plugin
+        classpath "nu.studer:gradle-jooq-plugin:1.0.6"
+        classpath "org.jooq:jooq:$v_jooq"
+        classpath "org.jooq:jooq-meta:$v_jooq"
+        classpath "org.jooq:jooq-codegen:$v_jooq"
     }
 }
 
@@ -51,6 +70,7 @@ apply plugin: 'idea'
 apply plugin: 'org.flywaydb.flyway'
 //apply plugin: "com.zoltu.application-agent"
 apply plugin: PackagerPlugin
+apply plugin: 'nu.studer.jooq'
 
 sourceCompatibility = 1.8
 version = '0.58-RELEASE'
@@ -140,6 +160,8 @@ dependencies {
             "com.querydsl:querydsl-core:$v_querydsl",
             "com.querydsl:querydsl-jpa:$v_querydsl",
             "com.querydsl:querydsl-collections:$v_querydsl",
+            "com.querydsl:querydsl-sql-codegen:$v_querydsl",
+
 
             "org.flywaydb:flyway-core:4.0.3",
 
@@ -151,6 +173,10 @@ dependencies {
 
             // persistence
             "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
+
+            // jooq
+            "org.jooq:jooq:$v_jooq",
+            "org.jooq:jooq-codegen:$v_jooq",
 
             // ActiveMQ
             "org.apache.activemq:activemq-broker:$v_activemq",
@@ -547,8 +573,9 @@ task jpaClean(group: JPA_TASK_GROUP) {
         JPA_GENERATED_DIR.deleteDir()
     }
 }
-tasks.clean {
-    finalizedBy tasks.jpaClean
+
+tasks.clean.doFirst {
+    GENERATED_DIR.deleteDir()
 }
 
 /**
@@ -611,4 +638,44 @@ task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
 tasks.classes {
     dependsOn tasks.jpaWeaving
     mustRunAfter tasks.jpaWeaving
+}
+//endregion
+
+// Location for generated sources
+// Directory for apt must be dedicated (no other generators may write here)
+// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
+
+jooq {
+    main(sourceSets.main) {
+        jdbc {
+            url = DB_H2_JDBC_URL
+            driver = DB_H2_JDBC_DRIVER
+        }
+        generator {
+            generate {
+                jpaAnnotations = true
+                pojos = true
+                fluentSetters = false
+                pojosEqualsAndHashCode = true
+            }
+            database {
+                name = 'org.jooq.util.h2.H2Database'
+                inputSchema = 'PUBLIC'
+            }
+
+            target {
+                packageName = 'org.deku.leoz.node.jooq.entities'
+                directory = JOOQ_GENERATED_DIR.toString()
+            }
+        }
+    }
+}
+// JOOQ generation depends on schema migration
+tasks.generateMainJooqSchemaSource {
+    dependsOn tasks.flywayMigrate
+}
+tasks.compileJava {
+    dependsOn tasks.generateMainJooqSchemaSource
+    mustRunAfter tasks.generateMainJooqSchemaSource
 }

@@ -1,21 +1,35 @@
 package org.deku.leoz.node.prototype.data
 
+import com.avaje.ebean.Ebean
+import com.avaje.ebean.Finder
+import com.avaje.ebean.RawSqlBuilder
+import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.sql.Configuration
 import com.querydsl.sql.H2Templates
 import com.querydsl.sql.SQLQueryFactory
-import org.deku.leoz.node.test.DataTest
+import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.entities.MstRoute
+import org.deku.leoz.node.data.entities.MstStation
 import org.deku.leoz.node.data.entities.QMstRoute
-import org.deku.leoz.node.data.entities.sql.QSQLMstRoute
+import org.deku.leoz.node.data.repositories.master.RouteRepository
+import org.deku.leoz.node.jooq.entities.Tables
+import org.deku.leoz.node.test.DataTest
+import org.eclipse.persistence.config.HintValues
+import org.eclipse.persistence.config.QueryHints
+import org.jooq.DSLContext
+import org.jooq.impl.DSL
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.persistence.EntityManager
+import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceContext
-import javax.persistence.Query
 import javax.sql.DataSource
 
 /**
@@ -28,24 +42,218 @@ open class QueryPerformanceTest : DataTest() {
     private lateinit var entityManager: EntityManager
 
     @Inject
+    private lateinit var entityManagerFactory: EntityManagerFactory
+
+    @Inject
     private lateinit var dataSource: DataSource
 
-    val QUERYDSL_QUERY by lazy {
-        val qRoute = QMstRoute.mstRoute
-        JPAQuery<MstRoute>(this.entityManager)
-                .from(qRoute)
-                .select(qRoute.syncId.max())
-                .createQuery()
+    @Inject
+    private lateinit var routeRepository: RouteRepository
+
+    @Inject
+    private lateinit var dsl: DSLContext
+
+    private val executorService = Executors.newCachedThreadPool()
+
+    fun run(prepare: () -> Unit = {}, block: () -> Unit, threads: Int = 1, repeat: Int = 1) {
+        val sw = Stopwatch.createStarted()
+        val threadlist = mutableListOf<Future<*>>()
+        for (i in 0..threads) {
+            threadlist.add(executorService.submit {
+                try {
+                    val times = mutableListOf<Long>()
+                    for (j in 0..repeat) {
+                        val sw2 = Stopwatch.createStarted()
+                        block()
+                        times.add(sw2.elapsed(TimeUnit.MICROSECONDS))
+                    }
+                    var avg = 0L
+                    times.forEach { avg += it }
+                    avg /= times.count()
+
+                    log.info("Medium execution time ${avg}µs")
+                } catch(e: Throwable) {
+                    log.error(e.message, e)
+                }
+            })
+        }
+        threadlist.forEach { it.get() }
+        log.info("${sw}")
     }
 
     @Transactional
     @Test
-    open fun testSelectQueryDsl() {
-        for (i in 0..10) {
-            val sw = Stopwatch.createStarted()
-            val result = QUERYDSL_QUERY.singleResult
-            log.info("${result} ${sw}")
-        }
+    open fun testSelectMaxQueryDsl() {
+        val qRoute = QMstRoute.mstRoute
+        val q = JPAQuery<MstRoute>(this.entityManagerFactory.createEntityManager())
+                .from(qRoute)
+                .select(qRoute.syncId.max())
+                .createQuery()
+
+        for (i in 0..1000)
+            run(
+                    block = {
+                        val result = q.singleResult
+                    },
+                    threads = 4,
+                    repeat = 1000
+            )
+    }
+
+    @Transactional
+    @Test
+    open fun testSelectMaxQueryDslInline() {
+        for (i in 0..1000)
+            run(
+                    block = {
+                        val qRoute = QMstRoute.mstRoute
+                        val q = JPAQuery<MstRoute>(this.entityManagerFactory.createEntityManager())
+                                .from(qRoute)
+                                .select(qRoute.syncId.max())
+                                .createQuery()
+
+                        val result = q.singleResult
+                    },
+                    threads = 4,
+                    repeat = 1000
+            )
+    }
+
+    @Transactional
+    @Test
+    open fun testSelectMaxQueryDslCached() {
+        val qRoute = QMstRoute.mstRoute
+        val pSyncId = Param(Long::class.java)
+
+        val QUERY_NAME = "MstRoute.MaxSyncId"
+
+        // TODO: query result cache currently only works for queries returning entities, not for custom data/single values/aggregates etc.
+        val qdslQuery = JPAQuery<MstRoute>(this.entityManagerFactory.createEntityManager())
+                .from(qRoute)
+                .select(qRoute.syncId.max())
+
+        val query = qdslQuery.createQuery()
+
+        val sql = query.toString()
+        query.setHint(QueryHints.QUERY_RESULTS_CACHE, HintValues.TRUE)
+        query.setHint(QueryHints.QUERY_RESULTS_CACHE_SIZE, (500).toString())
+        this.entityManager.entityManagerFactory.addNamedQuery(QUERY_NAME, query)
+
+        for (i in 0..1000)
+            run(
+                    block = {
+                        val nq = this.entityManager
+                                .createNamedQuery(QUERY_NAME)
+
+//                        nq.setParameter(1, 100)
+                        val result = nq.resultList
+//                        log.info("${result}")
+                    },
+                    threads = 4,
+                    repeat = 1000
+            )
+    }
+
+    @Transactional
+    @Test
+    open fun testSelectEntityQueryDsl() {
+        val qRoute = QMstRoute.mstRoute
+
+        for (i in 0..1000)
+            run(
+                    block = {
+//                        val sw = Stopwatch.createStarted()
+                        val result = JPAQuery<MstRoute>(this.entityManager)
+                                .from(qRoute)
+                                .where(qRoute.syncId.eq(100))
+                                .createQuery()
+                                .singleResult
+//                        log.info("${result}")
+                    },
+                    threads = 4,
+                    repeat = 1000
+            )
+    }
+
+    @Transactional
+    @Test
+    open fun testSelectEntityQueryDslRepository() {
+        val qRoute = QMstRoute.mstRoute
+
+        for (i in 0..1000)
+            run(
+                    block = {
+//                        val sw = Stopwatch.createStarted()
+                        val result = this.routeRepository.findAll(qRoute.syncId.eq(100))
+//                        log.info("${result}")
+                    },
+                    threads = 4,
+                    repeat = 1000
+            )
+    }
+
+    @Transactional
+    @Test
+    open fun testSelectEntityQueryDslParameterized() {
+        val qRoute = QMstRoute.mstRoute
+
+        val pSyncId = Param(Long::class.java)
+        val q = JPAQuery<MstRoute>(this.entityManagerFactory.createEntityManager())
+                .from(qRoute)
+                .where(qRoute.syncId.eq(pSyncId))
+
+        for (i in 0..1000)
+            run(
+                    block = {
+//                        val sw = Stopwatch.createStarted()
+                        val result = q
+                                .set(pSyncId, 100)
+                                .createQuery()
+                                .singleResult
+//                        log.info("${result}")
+                    },
+                    threads = 4,
+                    repeat = 1000
+            )
+    }
+
+    @Transactional
+    @Test
+    open fun testSelectEntityQueryDslCached() {
+        val qRoute = QMstRoute.mstRoute
+        val pSyncId = Param(Long::class.java)
+
+        val QUERY_NAME = "MstRoute.SyncId"
+
+        // TODO: query result cache currently only works for queries returning entities, not for custom data/single values/aggregates etc.
+        val qdslQuery = JPAQuery<MstStation>(entityManager)
+                .from(qRoute)
+                .where(qRoute.syncId.eq(pSyncId))
+                .orderBy(qRoute.syncId.desc())
+                .set(pSyncId, 0)
+
+        val qdslQueryName = qdslQuery.toString()
+
+        val query = qdslQuery.createQuery()
+
+        val sql = query.toString()
+        query.setHint(QueryHints.QUERY_RESULTS_CACHE, HintValues.TRUE)
+        query.setHint(QueryHints.QUERY_RESULTS_CACHE_SIZE, (500).toString())
+        this.entityManager.entityManagerFactory.addNamedQuery(QUERY_NAME, query)
+
+        for (i in 0..1000)
+            run(
+                    block = {
+                        val nq = this.entityManager
+                                .createNamedQuery(QUERY_NAME)
+
+                        nq.setParameter(1, 100)
+                        val result = nq.resultList
+//                        log.info("${result}")
+                    },
+                    threads = 4,
+                    repeat = 1000
+            )
     }
 
     val CRITERIA_QUERY by lazy {
@@ -88,20 +296,26 @@ open class QueryPerformanceTest : DataTest() {
     @Test
     open fun testSelectJdbc() {
         val cn = this.dataSource.connection
-        for (i in 0..10) {
-            val sw = Stopwatch.createStarted()
 
-            val stmt = cn.createStatement()
+        run(
+                block = {
+                    val sw = Stopwatch.createStarted()
 
-            val result = stmt.executeQuery(SQL_QUERY)
-            result.next()
+                    val stmt = cn.createStatement()
 
-            val maxSyncId = result.getLong(1)
-            result.close()
-            stmt.close()
+                    val result = stmt.executeQuery(SQL_QUERY)
+                    result.next()
 
-            log.info("${maxSyncId} ${sw}")
-        }
+                    val maxSyncId = result.getLong(1)
+                    result.close()
+                    stmt.close()
+
+                    log.info("${maxSyncId} ${sw}")
+                },
+                threads = 10,
+                repeat = 10
+        )
+
         cn.close()
     }
 
@@ -109,36 +323,129 @@ open class QueryPerformanceTest : DataTest() {
     open fun testSelectJdbcPrepared() {
         val cn = this.dataSource.connection
 
-        val pstmt = cn.prepareStatement(SQL_QUERY)
-        for (i in 0..10) {
-            val sw = Stopwatch.createStarted()
+        val p = ThreadLocal.withInitial {
+            cn.prepareStatement(SQL_QUERY)
+        }
+        for (i in 0..100) {
+            run(
+                    block = {
+                        val pstmt = p.get()
+                        val sw = Stopwatch.createStarted()
 
-            val result = pstmt.executeQuery()
-            result.next()
+                        val result = pstmt.executeQuery()
+                        result.next()
 
-            val maxSyncId = result.getLong(1)
+                        val maxSyncId = result.getLong(1)
 
-            log.info("${maxSyncId} ${sw}")
+//                        log.info("${maxSyncId} ${sw}")
+                    },
+                    threads = 4,
+                    repeat = 1000
+            )
+
         }
         cn.close()
     }
 
+    @org.springframework.transaction.annotation.Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
     @Test
-    open fun testSelectQueryDslSql() {
-        val dialect = H2Templates()
-        val config = Configuration(dialect)
+    open fun testSelectMaxJooqPrepared() {
+        val field = Tables.MST_ROUTE.SYNC_ID.max()
 
-        val factory = SQLQueryFactory(config, this.dataSource, false)
-        val qRoute = QSQLMstRoute.mstRoute
-
-        val q = factory
-                .from(qRoute)
-                .select(qRoute.syncId.max())
-
-        for (i in 0..10) {
-            val sw = Stopwatch.createStarted()
-            val result = q.fetchOne()
-            log.info("${result} ${sw}")
+        val p = ThreadLocal.withInitial {
+            this.dsl
+                    .select(field)
+                    .from(Tables.MST_ROUTE)
+                    .keepStatement(true)
         }
+        for (i in 0..1000)
+            run(
+                    block = {
+
+                        val r = p.get().fetchOne().get(field)
+//                        log.info(r)
+                    },
+                    threads = 4,
+                    repeat = 1000)
+
+    }
+
+    @org.springframework.transaction.annotation.Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Test
+    open fun testSelectMaxJooqInline() {
+        val field = Tables.MST_ROUTE.SYNC_ID.max()
+
+        for (i in 0..1000)
+            run(
+                    block = {
+
+                        val r = this.dsl
+                                .select(field)
+                                .from(Tables.MST_ROUTE)
+//                        log.info(r)
+                    },
+                    threads = 4,
+                    repeat = 1000)
+
+    }
+
+    @org.springframework.transaction.annotation.Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Test
+    open fun testSelectEntityJooqPrepared() {
+        val tRoute = Tables.MST_ROUTE
+
+        val pSyncId = DSL.param("syncid", Long::class.java)
+        val p = ThreadLocal.withInitial {
+            this.dsl
+                    .select()
+                    .from(tRoute)
+                    .where(tRoute.SYNC_ID.eq(pSyncId))
+                    .keepStatement(true)
+        }
+
+        for (i in 0..1000)
+            run(
+                    block = {
+                        val q = p.get()
+                                .bind(pSyncId.name, 100)
+                                .fetchInto(org.deku.leoz.node.jooq.entities.tables.pojos.MstRoute::class.java)
+//                        log.info(r)
+                    },
+                    threads = 1,
+                    repeat = 1000)
+
+    }
+
+    @org.springframework.transaction.annotation.Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Test
+    open fun testSelectEntityJooq() {
+        val tRoute = Tables.MST_ROUTE
+
+        for (i in 0..1000)
+            run(
+                    block = {
+                        val r = this.dsl
+                                .select()
+                                .from(tRoute)
+                                .where(tRoute.SYNC_ID.eq(100))
+                                .fetchInto(org.deku.leoz.node.jooq.entities.tables.pojos.MstRoute::class.java)
+//                        log.info(r)
+                    },
+                    threads = 4,
+                    repeat = 1000)
+
+    }
+
+    @Transactional
+    @Test
+    open fun testEntityManagerFind() {
+        for (i in 0..1000)
+            run(
+                    block = {
+                        val f = this.entityManager.find(MstRoute::class.java, 46182L)
+                    },
+                    threads = 4,
+                    repeat = 1000
+            )
     }
 }

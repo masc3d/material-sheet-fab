@@ -10,6 +10,9 @@ buildscript {
 
         // JOOQ plugin
         classpath "nu.studer:gradle-jooq-plugin:1.0.6"
+        classpath "org.jooq:jooq:$v_jooq"
+        classpath "org.jooq:jooq-meta:$v_jooq"
+        classpath "org.jooq:jooq-codegen:$v_jooq"
         // mysql jdbc connector
         classpath "mysql:mysql-connector-java:$v_mysql"
         // Flyway
@@ -46,7 +49,7 @@ dependencies {
             "mysql:mysql-connector-java:$v_mysql",
 
             // jooq
-            "org.jooq:jooq:3.8.4"
+            "org.jooq:jooq:$v_jooq"
     )
 
     testCompile(

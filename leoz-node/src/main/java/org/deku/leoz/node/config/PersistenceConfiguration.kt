@@ -13,10 +13,18 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import org.jooq.SQLDialect
+import org.jooq.conf.Settings
+import org.jooq.conf.StatementType
+import org.jooq.impl.DataSourceConnectionProvider
+import org.jooq.impl.DefaultDSLContext
+import org.springframework.jdbc.datasource.DataSourceTransactionManager
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import java.io.File
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
+import javax.inject.Inject
 import javax.persistence.Entity
 import javax.persistence.EntityManagerFactory
 import javax.sql.DataSource
@@ -32,6 +40,7 @@ import javax.sql.DataSource
 open class PersistenceConfiguration {
     companion object {
         const val QUALIFIER = "db_embedded"
+        const val QUALIFIER_JOOQ = "db_embedded_jooq"
     }
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java.name)
@@ -130,6 +139,8 @@ open class PersistenceConfiguration {
 
         // Enable jdbc batch writing
         eclipseLinkProperties.setProperty("eclipselink.jdbc.batch-writing", "jdbc")
+        eclipseLinkProperties.setProperty("eclipselink.jdbc.bind-parameters", "true")
+        eclipseLinkProperties.setProperty("eclipselink.jdbc.cache-statements", "true")
 
         // Weaving is required for lazy loading (amongst other features). Requires a LoadTimeWeaver to be setup (may require -javaagent as JVMARGS depending on setup)
         eclipseLinkProperties.setProperty("eclipselink.weaving", "static")
@@ -157,6 +168,36 @@ open class PersistenceConfiguration {
     }
     //endregion
 
+
+    //region JOOQ
+    @Inject
+    private lateinit var jooqTransactionAwareDataSource: TransactionAwareDataSourceProxy
+
+    @Inject
+    private lateinit var jooqConnectionProvider: DataSourceConnectionProvider
+
+    @Bean
+    open fun jooqTransactionAwareDataSourceProxy(): TransactionAwareDataSourceProxy {
+        return TransactionAwareDataSourceProxy(dataSource())
+    }
+
+    @Bean
+    @Qualifier(QUALIFIER_JOOQ)
+    open fun jooqTransactionManager(): DataSourceTransactionManager {
+        return DataSourceTransactionManager(dataSource())
+    }
+
+    @Bean
+    open fun jooqConnectionProvider(): DataSourceConnectionProvider {
+        return DataSourceConnectionProvider(jooqTransactionAwareDataSource)
+    }
+
+    @Bean
+    open fun dslContext(): DefaultDSLContext {
+        val settings = Settings().withStatementType(StatementType.PREPARED_STATEMENT)
+        return DefaultDSLContext(jooqConnectionProvider, SQLDialect.H2, settings)
+    }
+    //endregion
 
     @PostConstruct
     open fun onInitialize() {
