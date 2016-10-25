@@ -28,7 +28,6 @@ import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.ui.fx.MainController
 import org.slf4j.LoggerFactory
 import sx.fx.controls.MaterialProgressIndicator
-import tornadofx.anchorpane
 import java.io.IOException
 import java.util.concurrent.ExecutorService
 
