@@ -1,5 +1,6 @@
 /** leo2 styles */
 .root {
+    /** CSS constants (unfortunately only works for colors as of jdk1.8.0_102)
     /** Color constant */
     -leoz-primary-color: #32629d;
     -leoz-secondary-color: #f8ae18;
@@ -48,6 +49,8 @@
 }
 
 .leoz-title {
+    /** Minor top padding to bring title more in line with image */
+    -fx-padding: 0.07em 0 0 0;
     -fx-font-size: 28;
     -fx-font-family: 'Futura Condensed Medium';
 }
@@ -104,6 +107,21 @@
     -fx-background-size: contain;
 }
 
+.leoz-textfield-search {
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 3, 2, 2;
+    -fx-background-image: url("../images/search-144px.png");
+    -fx-background-size: 20 20;
+    -fx-background-position: left 10 center;
+    -fx-background-repeat: no-repeat;
+    /*-fx-opacity: 0.85;*/
+    /*-fx-background-color: transparent;*/
+    /*-fx-border-width: 2pt;*/
+    /*-fx-border-color: transparent transparent #f8ae18 transparent;*/
+    /*-fx-prompt-text-fill: #5c5c5c;*/
+    -fx-padding: 0 0 0 27pt;
+}
+
 /** FormFX styles */
 .form-label {
     -fx-pref-width: 150;
@@ -135,37 +153,24 @@
 }
 
 .form-constraint ImageView {
-/*    -fx-image: url("");*/
+    /*    -fx-image: url("");*/
 }
 
 .form-content-box {
     -fx-padding: 5 5 5 5;
-    -fx-background-color: linear-gradient(from 0% 0% to 0% 20%, rgba(225,225,225,1), white);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 20%, rgba(225, 225, 225, 1), white);
     -fx-background-radius: 2, 2, 2, 2;
     -fx-border-color: darkgray;
     -fx-border-radius: 5;
 }
 
+/** sx.fx.MaterialProgressIndicator */
 .circular-progress {
-    -indicator-color:  #32629d;
-}
-.circular-progress .indicator {
-    -fx-stroke-type    : centered;
-    -fx-fill           : null;
-    -fx-stroke         : -indicator-color;
+    -indicator-color: #32629d;
 }
 
-.leoz-textfield-search {
-    -fx-background-insets: 0, 1, 2;
-    -fx-background-radius: 3, 2, 2;
-    -fx-background-image: url("../images/search-144px.png");
-    -fx-background-size: 20 20;
-    -fx-background-position: left 10 center;
-    -fx-background-repeat: no-repeat;
-    /*-fx-opacity: 0.85;*/
-    /*-fx-background-color: transparent;*/
-    /*-fx-border-width: 2pt;*/
-    /*-fx-border-color: transparent transparent #f8ae18 transparent;*/
-    /*-fx-prompt-text-fill: #5c5c5c;*/
-    -fx-padding: 0 0 0 27pt;
+.circular-progress .indicator {
+    -fx-stroke-type: centered;
+    -fx-fill: null;
+    -fx-stroke: -indicator-color;
 }
