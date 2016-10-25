@@ -10,7 +10,6 @@ import org.deku.leoz.central.data.entities.jooq.tables.*
 import org.deku.leoz.central.data.entities.jooq.tables.records.*
 import org.deku.leoz.central.data.repositories.GenericJooqRepository
 import org.deku.leoz.central.data.repositories.SyncJooqRepository
-import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.repositories.master.BundleVersionRepository
 import org.deku.leoz.node.data.entities.*
 import org.deku.leoz.node.data.entities.MstBundleVersion
@@ -52,7 +51,7 @@ open class DatabaseSyncService
 @Inject
 constructor(
         private val exceutorService: ScheduledExecutorService,
-        @Qualifier(PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
+        @Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
         @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER) txJooq: PlatformTransactionManager) {
     /**
      * Embedded service class
@@ -298,7 +297,7 @@ constructor(
         transactionJooq = TransactionTemplate(txJooq)
     }
 
-    @Transactional(value = PersistenceConfiguration.QUALIFIER)
+    @Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
     open fun sync(reload: Boolean) {
         val sw = Stopwatch.createStarted()
 

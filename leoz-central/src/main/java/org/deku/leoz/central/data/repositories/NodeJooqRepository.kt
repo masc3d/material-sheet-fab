@@ -1,9 +1,11 @@
 package org.deku.leoz.central.data.repositories
 
+import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.entities.jooq.Tables
 import org.deku.leoz.central.data.entities.jooq.tables.MstNode
 import org.deku.leoz.central.data.entities.jooq.tables.records.MstNodeRecord
 import org.jooq.DSLContext
+import org.springframework.beans.factory.annotation.Qualifier
 
 import javax.inject.Inject
 import javax.inject.Named
@@ -14,6 +16,7 @@ import javax.inject.Named
 @Named
 class NodeJooqRepository {
     @Inject
+    @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
     /**

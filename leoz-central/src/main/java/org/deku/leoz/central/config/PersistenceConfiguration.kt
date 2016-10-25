@@ -36,7 +36,7 @@ import javax.inject.Inject
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 open class PersistenceConfiguration {
     companion object {
-        const val QUALIFIER = "PersistenceConfigurationCentral"
+        const val QUALIFIER = "db_central"
     }
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java)
@@ -60,37 +60,35 @@ open class PersistenceConfiguration {
         val dataSourceProperties = Properties()
         dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull")
         dataSourceProperties.setProperty("connectTimeout", "1000")
+        dataSourceProperties.setProperty("serverTimezone", "GMT")
         dataSource.setConnectionProperties(dataSourceProperties)
 
         return dataSource
     }
 
-    @Inject
-    private val jooqTransactionAwareDataSource: TransactionAwareDataSourceProxy? = null
-
-    @Inject
-    private val jooqConnectionProvider: DataSourceConnectionProvider? = null
-
     // TODO: tomcat breakage without @Lazy. see above (dataSourceCentral())
     @Bean
-    open fun jooqTransactionAwareDataSourceProxy(): TransactionAwareDataSourceProxy {
+    @Qualifier(QUALIFIER)
+    open fun jooqCentralTransactionAwareDataSourceProxy(): TransactionAwareDataSourceProxy {
         return TransactionAwareDataSourceProxy(dataSourceCentral())
     }
 
     @Bean
     @Qualifier(QUALIFIER)
-    open fun jooqTransactionManager(): DataSourceTransactionManager {
+    open fun jooqCentralTransactionManager(): DataSourceTransactionManager {
         return DataSourceTransactionManager(dataSourceCentral())
     }
 
     @Bean
-    open fun jooqConnectionProvider(): DataSourceConnectionProvider {
-        return DataSourceConnectionProvider(jooqTransactionAwareDataSource)
+    @Qualifier(QUALIFIER)
+    open fun jooqCentralConnectionProvider(): DataSourceConnectionProvider {
+        return DataSourceConnectionProvider(this.jooqCentralTransactionAwareDataSourceProxy())
     }
 
     @Bean
-    open fun dslContext(): DefaultDSLContext {
-        return DefaultDSLContext(jooqConnectionProvider, SQLDialect.MYSQL)
+    @Qualifier(QUALIFIER)
+    open fun centralDslContext(): DefaultDSLContext {
+        return DefaultDSLContext(this.jooqCentralConnectionProvider(), SQLDialect.MYSQL)
     }
 
     @PostConstruct

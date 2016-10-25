@@ -189,13 +189,8 @@ open class PersistenceConfiguration {
 
 
     //region JOOQ
-    @Inject
-    private lateinit var jooqTransactionAwareDataSource: TransactionAwareDataSourceProxy
-
-    @Inject
-    private lateinit var jooqConnectionProvider: DataSourceConnectionProvider
-
     @Bean
+    @Qualifier(QUALIFIER_JOOQ)
     open fun jooqTransactionAwareDataSourceProxy(): TransactionAwareDataSourceProxy {
         return TransactionAwareDataSourceProxy(dataSource())
     }
@@ -207,14 +202,16 @@ open class PersistenceConfiguration {
     }
 
     @Bean
+    @Qualifier(QUALIFIER_JOOQ)
     open fun jooqConnectionProvider(): DataSourceConnectionProvider {
-        return DataSourceConnectionProvider(jooqTransactionAwareDataSource)
+        return DataSourceConnectionProvider(this.jooqTransactionAwareDataSourceProxy())
     }
 
     @Bean
+    @Qualifier(QUALIFIER_JOOQ)
     open fun dslContext(): DefaultDSLContext {
         val settings = Settings().withStatementType(StatementType.PREPARED_STATEMENT)
-        return DefaultDSLContext(jooqConnectionProvider, SQLDialect.H2, settings)
+        return DefaultDSLContext(this.jooqConnectionProvider(), SQLDialect.H2, settings)
     }
     //endregion
 
