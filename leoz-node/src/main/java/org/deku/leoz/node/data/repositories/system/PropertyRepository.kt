@@ -1,6 +1,6 @@
 package org.deku.leoz.node.data.repositories.system
 
-import org.deku.leoz.node.data.entities.SysProperty
+import org.deku.leoz.node.data.jpa.SysProperty
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QueryDslPredicateExecutor
 

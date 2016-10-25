@@ -4,10 +4,10 @@ import com.google.common.base.Strings
 import com.google.common.collect.Iterables
 import com.google.common.primitives.Ints
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.data.entities.MstRoutingLayer
-import org.deku.leoz.node.data.entities.QMstHolidayCtrl
-import org.deku.leoz.node.data.entities.QMstRoute
-import org.deku.leoz.node.data.entities.QMstRoutingLayer
+import org.deku.leoz.node.data.jpa.MstRoutingLayer
+import org.deku.leoz.node.data.jpa.QMstHolidayCtrl
+import org.deku.leoz.node.data.jpa.QMstRoute
+import org.deku.leoz.node.data.jpa.QMstRoutingLayer
 import org.deku.leoz.node.data.repositories.master.*
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.rest.entities.ShortDate

@@ -1,18 +1,16 @@
 import groovy.io.FileType
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang3.ClassUtils
-import org.apache.openjpa.jdbc.meta.ReverseMappingTool
-import org.apache.openjpa.jdbc.schema.Column
-import org.apache.openjpa.jdbc.schema.SchemaTool
 import org.deku.gradle.PackagerPlugin
 import org.jboss.forge.roaster.Roaster
 import org.jboss.forge.roaster.model.source.FieldSource
 import org.jboss.forge.roaster.model.source.JavaClassSource
 import org.jboss.forge.roaster.model.source.PropertySource
-
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.Types
+import org.jooq.util.DefaultGeneratorStrategy
+import org.jooq.util.Definition
+import org.jooq.util.GenerationTool
+import org.jooq.util.GeneratorStrategy
+import org.jooq.util.jaxb.*
 
 buildscript {
     ext {
@@ -32,8 +30,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
         // Flyway
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
-        // OpenJPA/Entitygen
-        classpath "org.apache.openjpa:openjpa-all:$v_openjpa"
         classpath "com.h2database:h2:1.4.192"
         // Eclipselink
         classpath "org.eclipse.persistence:eclipselink:$v_eclipselink"
@@ -323,56 +319,11 @@ flyway {
     locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
 }
 
-//region JPA class generation
-
-def JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.entities'
-def JPA_GENERATED_DIR = new File(GENERATED_DIR, 'jpa')
+def JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.jpa'
 def JPA_TASK_GROUP = 'jpa'
 
-//region JPA code generation
-def OPENJPA_SCHEMA_XML = new File(DB_DIR, 'openjpa-schema.xml')
-
-sourceSets {
-    main.java.srcDir JPA_GENERATED_DIR
-}
-
-// OpenJPA properties
-System.setProperty("openjpa.ConnectionDriverName", DB_H2_JDBC_DRIVER)
-System.setProperty("openjpa.ConnectionURL", DB_H2_JDBC_URL)
-System.setProperty("openjpa.Log", "DefaultLevel=INFO, Tool=INFO")
-System.setProperty("openjpa.jdbc.DBDictionary", "H2Dictionary")
-
-/**
- * Modified openjpa H2 dictionary
- */
-class H2Dictionary extends org.apache.openjpa.jdbc.sql.H2Dictionary {
-    public H2Dictionary() {
-        this.supportsNullTableForGetPrimaryKeys = false
-        this.supportsNullTableForGetIndexInfo = false
-
-        // OpenJPA contains a bug, where quoted column names are not escaped in generated @Column annotation.
-        // This will break the flyway "schema_version" column, but it's not used via jpa anyhow.
-        this.schemaCase = SCHEMA_CASE_PRESERVE
-    }
-
-    @Override
-    protected Column newColumn(ResultSet colMeta) throws SQLException {
-        def c = super.newColumn(colMeta)
-
-        // Map `BOOLEAN` to `BIT` as `BOOLEAN` is not in supported type map
-        if (c.type == Types.BOOLEAN) {
-            c.type = Types.BIT
-            c.javaType = Types.BOOLEAN
-        }
-        return c
-    }
-
-    @Override
-    int getPreferredType(int type) {
-        // Simply return the type as-is, circumvents base class Bit/Boolean mapping
-        // which causes boolean fields to be mapped as BLOB/byte[]
-        return type
-    }
+class Constants {
+    static def JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.jpa'
 }
 
 /**
@@ -399,55 +350,12 @@ static def generatePersistenceXml(File persistenceXml, List<String> classNames) 
 }
 
 /**
- * Generate openjpa schema xml file
- * @param persistenceXml Source persistence.xml to use
- * @param openJpaSchemaXml Destination xml file
- * @return
- */
-static def openJpaGenerateSchema(File persistenceXml, File openJpaSchemaXml) {
-    def params = [
-            "-properties", persistenceXml,
-            "-action", "reflect",
-            "-file", openJpaSchemaXml
-    ] as String[]
-
-    SchemaTool.main(params)
-}
-
-/**
- * Perform jpa reverse mapping (using openjpa)
- * @param persistenceXml Source persistence.xml to use
- * @param openJpaSchemaXml Source openjpa schema.xml to use
- * @param jpaGeneratedDir Destination generated sources dir
- * @param jpaGeneratedPackage Generated package name
- * @return
- */
-static
-def openJpaReverseMapping(File persistenceXml, File openJpaSchemaXml, File jpaGeneratedDir, String jpaGeneratedPackage) {
-    def params = [
-            "-properties", persistenceXml,
-            "-directory", jpaGeneratedDir,
-            "-pkg", jpaGeneratedPackage,
-            "-annotations", "true",
-            "-useGenericCollections", "true",
-            "-nullableAsObject", "true",
-            "-metadata", "none",
-            // Eclipselink is not capable of inner identity classes :(
-//                "-innerIdentityClasses", "true",
-//                "-identityClassSuffix", "PrimaryKey",
-            openJpaSchemaXml
-    ] as String[]
-
-    ReverseMappingTool.main(params)
-}
-
-/**
- * Performs post-processing on openjpa-generated entity classes.
+ * Performs post-processing on jpa-generated entity classes.
  * @param tablesXmlFile Source tables.xml to use
  * @param sourceDir Generated sources dir (to process)
  * @return List of entity class names that have been found
  */
-static def List<String> openJpaPostProcess(File tablesXmlFile, File sourceDir) {
+static def List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
     // Parse `tables.xml` for @Serializable uids and build look up map
     def tables = new XmlSlurper().parse(tablesXmlFile)
     def tableUidMap = new HashMap<String, String>()
@@ -480,6 +388,21 @@ static def List<String> openJpaPostProcess(File tablesXmlFile, File sourceDir) {
 
         String uid
         if (tableAnnotation != null) {
+            // Remove JPA annotations from jooq record classes (jooq can't be parameterized to do this :[)
+            if (jsource.superType.startsWith(org.jooq.impl.UpdatableRecordImpl.canonicalName)) {
+                jsource.removeAnnotation(tableAnnotation)
+
+                def entityAnnotation = jsource.annotations.find {
+                    it.qualifiedName == javax.persistence.Entity.canonicalName
+                }
+                if (entityAnnotation != null)
+                    jsource.removeAnnotation(entityAnnotation)
+
+                // Generate and write updated class
+                it.write(jsource.toString())
+                return
+            }
+
             entityClassNames.add(jsource.canonicalName)
 
             def tableName = tableAnnotation.values.find { it.name == "name" }.stringValue
@@ -501,11 +424,15 @@ static def List<String> openJpaPostProcess(File tablesXmlFile, File sourceDir) {
                 idClassUidByEntityClassName[idClassName] = idClassUid
             }
         } else {
+            if (idClassAnnotation == null) {
+                return
+            }
             uid = idClassUidByEntityClassName[jsource.canonicalName]
             if (uid == null)
                 throw new IllegalStateException("Missing uid for id class [${jsource.canonicalName}]")
         }
 
+        def uidLiteral = uid + "L"
         // Set @Serializable annotation if it's not there already
         if (jsource.annotations.find {
             it.qualifiedName == sx.io.serialization.Serializable.canonicalName
@@ -513,8 +440,15 @@ static def List<String> openJpaPostProcess(File tablesXmlFile, File sourceDir) {
             jsource
                     .addAnnotation()
                     .setName(sx.io.serialization.Serializable.canonicalName)
-                    .setLiteralValue("uid", uid + "L")
+                    .setLiteralValue("uid", uidLiteral)
         }
+
+        // Amend serializableVersionUID if applicable
+        def serializableUidField = jsource.fields.find {
+            it.name == "serialVersionUID"
+        }
+        if (serializableUidField != null)
+            serializableUidField.literalInitializer = uidLiteral
 
         // EclipseLink currently does not support primitive @Id fields
         // https://bugs.eclipse.org/bugs/show_bug.cgi?id=415027
@@ -555,56 +489,8 @@ static def List<String> openJpaPostProcess(File tablesXmlFile, File sourceDir) {
     return entityClassNames
 }
 
-/**
- * Clean genereated JPA files
- */
-task jpaClean(group: JPA_TASK_GROUP) {
-    doLast {
-        JPA_GENERATED_DIR.deleteDir()
-    }
-}
-
 tasks.clean.doFirst {
     GENERATED_DIR.deleteDir()
-}
-
-/**
- * Top-level task for generating jpa entities
- */
-task jpaGenerate(group: JPA_TASK_GROUP) {
-    dependsOn tasks.flywayMigrate
-    mustRunAfter tasks.flywayMigrate
-
-    inputs.dir FLYWAY_MIGRATION_DIR
-    outputs.dir JPA_GENERATED_DIR
-
-    doFirst {
-        JPA_GENERATED_DIR.deleteDir()
-        // Clean build dir before jpa generatino, as weaved class files may cause errors
-        new File(project.buildDir, 'classes').deleteDir()
-    }
-
-    doLast {
-        // Generate persistence.xml without classes (for reverse mapping)
-        generatePersistenceXml(DB_PERSISTENCE_XML, [])
-
-        // Generate openjpa schema xml
-        openJpaGenerateSchema(DB_PERSISTENCE_XML, OPENJPA_SCHEMA_XML)
-        // Generated reverse mapped classes
-        openJpaReverseMapping(DB_PERSISTENCE_XML, OPENJPA_SCHEMA_XML, JPA_GENERATED_DIR, JPA_GENERATED_PACKAGE)
-
-        // Post process generated java classes
-        List<String> entityClassNames = openJpaPostProcess(DB_TABLES_XML, JPA_GENERATED_DIR)
-
-        // Update persistence.xml to include generated classes. This is required for eclipselink static weaving
-        // which relies on a complete persistence.xml
-        generatePersistenceXml(DB_PERSISTENCE_XML, entityClassNames)
-    }
-}
-// Dependencies
-tasks.compileJava {
-    dependsOn tasks.jpaGenerate
-    mustRunAfter tasks.jpaGenerate
 }
 
 /**
@@ -635,38 +521,112 @@ tasks.classes {
 // Location for generated sources
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+def JOOQ_PACKAGE_NAME = "org.deku.leoz.node.data.jooq"
 def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
 
-jooq {
-    main(sourceSets.main) {
-        jdbc {
-            url = DB_H2_JDBC_URL
-            driver = DB_H2_JDBC_DRIVER
-        }
-        generator {
-            generate {
-                jpaAnnotations = true
-                pojos = true
-                fluentSetters = false
-                pojosEqualsAndHashCode = true
-            }
-            database {
-                name = 'org.jooq.util.h2.H2Database'
-                inputSchema = 'PUBLIC'
-            }
+sourceSets {
+    main.java.srcDir JOOQ_GENERATED_DIR
+}
 
-            target {
-                packageName = 'org.deku.leoz.node.jooq.entities'
-                directory = JOOQ_GENERATED_DIR.toString()
-            }
+public class CustomJooqGeneratorStrategy extends DefaultGeneratorStrategy {
+    @Override
+    String getJavaPackageName(Definition definition, GeneratorStrategy.Mode mode) {
+        def t = super.getJavaPackageName(definition, mode)
+        if (mode == GeneratorStrategy.Mode.POJO) {
+            return Constants.JPA_GENERATED_PACKAGE
         }
+        return t
     }
 }
-// JOOQ generation depends on schema migration
-tasks.generateMainJooqSchemaSource {
+
+println(this)
+
+def jooqConfiguration = new org.jooq.util.jaxb.Configuration()
+        .withJdbc(
+        new Jdbc()
+                .withDriver(DB_H2_JDBC_DRIVER)
+                .withUrl(DB_H2_JDBC_URL))
+        .withGenerator(
+        new Generator()
+                .withGenerate(
+                new Generate()
+                        .withJpaAnnotations(true)
+                        .withPojos(true)
+                        .withFluentSetters(false)
+                        .withPojosEqualsAndHashCode(true))
+                .withStrategy(new Strategy()
+                .withName('CustomJooqGeneratorStrategy'))
+                .withDatabase(
+                new Database()
+                        .withName('org.jooq.util.h2.H2Database')
+                        .withInputSchema('PUBLIC'))
+                .withTarget(
+                new Target()
+                        .withPackageName(JOOQ_PACKAGE_NAME)
+                        .withDirectory(JOOQ_GENERATED_DIR.toString())))
+
+task jooqGenerate(group: 'jooq') {
     dependsOn tasks.flywayMigrate
+    mustRunAfter tasks.flywayMigrate
+
+    inputs.dir FLYWAY_MIGRATION_DIR
+    outputs.dir JOOQ_GENERATED_DIR
+
+    doFirst {
+        JOOQ_GENERATED_DIR.deleteDir()
+    }
+
+    doLast {
+        GenerationTool.generate(jooqConfiguration)
+        // Post process generated java classes
+        List<String> entityClassNames = jpaPostProcess(DB_TABLES_XML, JOOQ_GENERATED_DIR)
+
+        // Update persistence.xml to include generated classes. This is required for eclipselink static weaving
+        // which relies on a complete persistence.xml
+        generatePersistenceXml(DB_PERSISTENCE_XML, entityClassNames)
+    }
 }
+// Dependencies
 tasks.compileJava {
-    dependsOn tasks.generateMainJooqSchemaSource
-    mustRunAfter tasks.generateMainJooqSchemaSource
+    dependsOn tasks.jooqGenerate
+    mustRunAfter tasks.jooqGenerate
 }
+
+
+//TODO: jooq plugin doesn't work correctly with customized generator strategy (class loading issue)
+//jooq {
+//    main(sourceSets.main) {
+//        jdbc {
+//            url = DB_H2_JDBC_URL
+//            driver = DB_H2_JDBC_DRIVER
+//        }
+//        generator {
+//            generate {
+//                jpaAnnotations = true
+//                pojos = true
+//                fluentSetters = false
+//                pojosEqualsAndHashCode = true
+//            }
+////            strategy {
+////                name = CustomJooqGeneratorStrategy.class.canonicalName
+////            }
+//            database {
+//                name = 'org.jooq.util.h2.H2Database'
+//                inputSchema = 'PUBLIC'
+//            }
+//
+//            target {
+//                packageName = 'org.deku.leoz.node.jooq.entities'
+//                directory = JOOQ_GENERATED_DIR.toString()
+//            }
+//        }
+//    }
+//}
+//// JOOQ generation depends on schema migration
+//tasks.generateMainJooqSchemaSource {
+//    dependsOn tasks.flywayMigrate
+//}
+//tasks.compileJava {
+//    dependsOn tasks.generateMainJooqSchemaSource
+//    mustRunAfter tasks.generateMainJooqSchemaSource
+//}

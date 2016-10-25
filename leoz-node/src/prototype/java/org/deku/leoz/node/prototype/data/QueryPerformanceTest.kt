@@ -6,9 +6,9 @@ import com.querydsl.sql.Configuration
 import com.querydsl.sql.H2Templates
 import com.querydsl.sql.SQLQueryFactory
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.data.entities.MstRoute
-import org.deku.leoz.node.data.entities.MstStation
-import org.deku.leoz.node.data.entities.QMstRoute
+import org.deku.leoz.node.data.jpa.MstRoute
+import org.deku.leoz.node.data.jpa.MstStation
+import org.deku.leoz.node.data.jpa.QMstRoute
 import org.deku.leoz.node.data.repositories.master.RouteRepository
 import org.deku.leoz.node.jooq.entities.Tables
 import org.deku.leoz.node.test.DataTest

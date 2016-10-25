@@ -1,8 +1,8 @@
 package org.deku.leoz.node.data.repositories.master.custom
 
 import com.google.common.collect.Lists
-import org.deku.leoz.node.data.entities.MstStation
-import org.deku.leoz.node.data.entities.QMstStation
+import org.deku.leoz.node.data.jpa.MstStation
+import org.deku.leoz.node.data.jpa.QMstStation
 import org.deku.leoz.node.data.repositories.master.StationRepository
 import javax.inject.Inject
 

@@ -1,7 +1,7 @@
 package org.deku.leoz.node.data.repositories.master
 
 import com.querydsl.core.types.Predicate
-import org.deku.leoz.node.data.entities.MstRoute
+import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.repositories.master.custom.RouteRepositoryCustom
 import org.eclipse.persistence.config.CacheUsage
 import org.springframework.data.jpa.repository.JpaRepository

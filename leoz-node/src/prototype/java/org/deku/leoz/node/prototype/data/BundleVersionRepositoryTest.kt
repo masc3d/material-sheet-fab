@@ -1,8 +1,8 @@
 package org.deku.leoz.node.prototype.data
 
 import org.deku.leoz.node.test.DataTest
-import org.deku.leoz.node.data.entities.MstBundleVersion
-import org.deku.leoz.node.data.entities.QMstCountry
+import org.deku.leoz.node.data.jpa.MstBundleVersion
+import org.deku.leoz.node.data.jpa.QMstCountry
 import org.deku.leoz.node.data.repositories.master.BundleVersionRepository
 import org.deku.leoz.node.data.repositories.master.CountryRepository
 import org.junit.Test
