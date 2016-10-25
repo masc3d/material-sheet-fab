@@ -10,6 +10,7 @@ mainClassName = "org.deku.leoz.ui.Main"
 
 buildscript {
     ext {
+        v_grizzly = '2.3.23'
         v_jersey = '2.23.2'
         v_kodein = '3.1.0'
     }
@@ -23,6 +24,16 @@ dependencies {
             project(':libs:sx-common'),
             project(':leoz-common'),
             project(':libs:sx-fx'),
+            project(':libs:sx-discovery'),
+
+            // Common
+            "org.apache.commons:commons-lang3:3.4",
+//            "org.reflections:reflections:0.9.10",
+            "net.java.dev.jna:jna-platform:$v_jna",
+
+            // Logging
+            "org.slf4j:slf4j-api:$v_slf4j",
+            "ch.qos.logback:logback-core:$v_logback",
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
@@ -32,39 +43,41 @@ dependencies {
             "com.github.salomonbrys.kodein:kodein:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
 
-            "org.reflections:reflections:0.9.10",
             // RX
             "io.reactivex:rxjava:1.2.1",
             "io.reactivex:rxkotlin:0.60.0",
             "io.reactivex:rxjavafx:0.2.0",
-            "com.github.thomasnield:rxkotlinfx:0.2.0",
+//            "com.github.thomasnield:rxkotlinfx:0.2.0",
 
             // JavaFX libs
 
             // Lightweight kotlin/javafx framework. TODO: only for EVALUATION and reference for now
-            "no.tornado:tornadofx:1.5.6",
+//            "no.tornado:tornadofx:1.5.6",
             // For automatic fx forms generation
             "com.dooapp.fxform2:core:$v_fxform2",
-            "javax.el:javax.el-api:3.0.0",
+//            "javax.el:javax.el-api:3.0.0",
             // FX controls
             "org.controlsfx:controlsfx:8.40.12",
             // RichTextFX
-            "org.fxmisc.richtext:richtextfx:0.7-M2",
+//            "org.fxmisc.richtext:richtextfx:0.7-M2",
 
             // JSR-303 bean validation
-            "org.hibernate:hibernate-validator:5.3.0.Final",
+//            "org.hibernate:hibernate-validator:5.3.0.Final",
 
-            // JAX-RS client
-            "org.glassfish.jersey.core:jersey-client:$v_jersey",
+            // JAX-RS
+            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
+            "org.glassfish.jersey.core:jersey-common:$v_jersey",
             "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey",
             "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey",
 
             // jackson JSON serializer
-            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-core:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
 
             // Webservice host libraries (leobridge)
-            "org.glassfish.jersey.containers:jersey-container-servlet:$v_jersey",
+            "org.glassfish.grizzly:grizzly-http-server:$v_grizzly",
+            "org.glassfish.jersey.core:jersey-server:$v_jersey",
             "org.glassfish.jersey.media:jersey-media-json-jackson:$v_jersey",
             "org.glassfish.jersey.containers:jersey-container-grizzly2-http:$v_jersey"
     )
