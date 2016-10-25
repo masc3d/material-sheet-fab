@@ -8,7 +8,7 @@ version '1.0-SNAPSHOT'
 buildscript {
     ext {
         v_flyway = '4.0.3'
-        v_mysql = '5.1.39'
+        v_mysql = '6.0.5'
 
         DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
         FLYWAY_MIGRATION_DIR = new File(project.projectDir, 'sql')
