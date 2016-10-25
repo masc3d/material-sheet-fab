@@ -1,5 +1,6 @@
 import org.flywaydb.gradle.FlywayExtension
 import org.flywaydb.gradle.task.FlywayMigrateTask
+import org.flywaydb.gradle.task.FlywayCleanTask
 import org.flywaydb.gradle.task.FlywayInfoTask
 
 group 'org.deku.leoz'
@@ -10,7 +11,7 @@ buildscript {
         v_flyway = '4.0.3'
         v_mysql = '6.0.5'
 
-        DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
+        DB_MYSQL_JDBC_DRIVER = 'com.mysql.cj.jdbc.Driver'
         FLYWAY_MIGRATION_DIR = new File(project.projectDir, 'sql')
     }
 
@@ -54,7 +55,7 @@ def createFlywayExtension() {
 
 // LEO integration database tasks
 
-def DB_DEV_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
+def DB_DEV_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false&serverTimezone=GMT'
 def DB_LEOX_JDBC_URL = 'jdbc:mysql://leox.derkurier.de:3306?useSSL=false&serverTimezone=GMT'
 
 task flywayDevMigrate(type: FlywayMigrateTask) {
@@ -65,6 +66,12 @@ task flywayDevMigrate(type: FlywayMigrateTask) {
 }
 
 task flywayDevInfo(type: FlywayInfoTask) {
+    extension = createFlywayExtension()
+
+    extension.url = DB_DEV_JDBC_URL
+}
+
+task flywayDevClean(type: FlywayCleanTask) {
     extension = createFlywayExtension()
 
     extension.url = DB_DEV_JDBC_URL
