@@ -152,6 +152,7 @@ constructor(
         private fun convert(cr: MstHolidayctrlRecord): MstHolidayCtrl {
             val d = MstHolidayCtrl()
 
+            d.id = cr.id.toLong()
             d.country = cr.country
             d.ctrlPos = cr.ctrlPos
             d.description = cr.description
@@ -170,6 +171,7 @@ constructor(
         private fun convert(cr: MstSectorRecord): MstSector {
             val d = MstSector()
 
+            d.id = cr.id.toLong()
             d.sectorFrom = cr.sectorfrom
             d.sectorTo = cr.sectorto
             d.timestamp = cr.timestamp
@@ -237,6 +239,7 @@ constructor(
          */
         private fun convert(ss: MstStationSectorRecord): MstStationSector {
             val s = MstStationSector()
+            s.id = ss.id.toLong()
             s.stationNr = ss.stationNr
             s.sector = ss.sector
             s.routingLayer = ss.routingLayer

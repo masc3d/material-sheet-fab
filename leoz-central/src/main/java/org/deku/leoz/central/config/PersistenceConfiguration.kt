@@ -52,7 +52,7 @@ open class PersistenceConfiguration {
         // part of jdbc url)
 
         val dataSource = DataSourceBuilder.create()
-                .driverClassName("com.mysql.jdbc.Driver")
+                .driverClassName(com.mysql.cj.jdbc.Driver::class.java.canonicalName)
                 .type(DriverManagerDataSource::class.java)
                 .build() as DriverManagerDataSource
 
