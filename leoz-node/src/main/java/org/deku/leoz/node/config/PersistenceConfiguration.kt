@@ -3,6 +3,7 @@ package org.deku.leoz.node.config
 import org.eclipse.persistence.config.BatchWriting
 import org.eclipse.persistence.config.CacheType
 import org.eclipse.persistence.config.PersistenceUnitProperties
+import org.eclipse.persistence.tools.profiler.PerformanceMonitor
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
 import org.slf4j.LoggerFactory
@@ -49,7 +50,14 @@ open class PersistenceConfiguration {
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java.name)
 
+    /**
+     * Enable SQL logging
+     */
     private val showSql = false
+    /**
+     * Enable profiling
+     */
+    private val profiling = false
 
     @Bean
     @FlywayDataSource
@@ -136,6 +144,12 @@ open class PersistenceConfiguration {
 
         //region Caching
         eclipseLinkProperties.setProperty(PersistenceUnitProperties.CACHE_SHARED_DEFAULT, "true")
+        //endregion
+
+        //region Profiling
+        if (this.profiling) {
+            eclipseLinkProperties.setProperty(PersistenceUnitProperties.PROFILER, PerformanceMonitor::class.java.simpleName)
+        }
         //endregion
 
         // Some master tables may have zero id values

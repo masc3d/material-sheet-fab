@@ -1,8 +1,5 @@
 package org.deku.leoz.node.prototype.data
 
-import com.avaje.ebean.Ebean
-import com.avaje.ebean.Finder
-import com.avaje.ebean.RawSqlBuilder
 import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.sql.Configuration
@@ -17,12 +14,15 @@ import org.deku.leoz.node.jooq.entities.Tables
 import org.deku.leoz.node.test.DataTest
 import org.eclipse.persistence.config.HintValues
 import org.eclipse.persistence.config.QueryHints
+import org.eclipse.persistence.sessions.factories.SessionManager
+import org.eclipse.persistence.tools.profiler.PerformanceMonitor
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
@@ -180,16 +180,24 @@ open class QueryPerformanceTest : DataTest() {
     open fun testSelectEntityQueryDslRepository() {
         val qRoute = QMstRoute.mstRoute
 
-        for (i in 0..1000)
+        val session = SessionManager.getManager().sessions.asIterable().first().value
+        val profiler = session.profiler
+
+        val r = Random()
+
+        for (i in 0..500)
             run(
                     block = {
 //                        val sw = Stopwatch.createStarted()
-                        val result = this.routeRepository.findAll(qRoute.syncId.eq(100))
+                        val result = this.routeRepository.findAll(qRoute.syncId.eq(r.nextInt(100).toLong()))
 //                        log.info("${result}")
                     },
                     threads = 4,
                     repeat = 1000
             )
+
+        if (profiler is PerformanceMonitor)
+            profiler.dumpResults()
     }
 
     @Transactional
@@ -241,13 +249,15 @@ open class QueryPerformanceTest : DataTest() {
         query.setHint(QueryHints.QUERY_RESULTS_CACHE_SIZE, (500).toString())
         this.entityManager.entityManagerFactory.addNamedQuery(QUERY_NAME, query)
 
+        val r = Random()
+
         for (i in 0..1000)
             run(
                     block = {
                         val nq = this.entityManager
                                 .createNamedQuery(QUERY_NAME)
 
-                        nq.setParameter(1, 100)
+                        nq.setParameter(1, r.nextInt(100).toLong())
                         val result = nq.resultList
 //                        log.info("${result}")
                     },
@@ -403,11 +413,13 @@ open class QueryPerformanceTest : DataTest() {
                     .keepStatement(true)
         }
 
-        for (i in 0..1000)
+        val r = Random()
+
+        for (i in 0..500)
             run(
                     block = {
                         val q = p.get()
-                                .bind(pSyncId.name, 100)
+                                .bind(pSyncId.name, r.nextInt(100).toLong())
                                 .fetchInto(org.deku.leoz.node.jooq.entities.tables.pojos.MstRoute::class.java)
 //                        log.info(r)
                     },
@@ -421,13 +433,15 @@ open class QueryPerformanceTest : DataTest() {
     open fun testSelectEntityJooq() {
         val tRoute = Tables.MST_ROUTE
 
+        val r = Random()
+
         for (i in 0..1000)
             run(
                     block = {
                         val r = this.dsl
                                 .select()
                                 .from(tRoute)
-                                .where(tRoute.SYNC_ID.eq(100))
+                                .where(tRoute.SYNC_ID.eq(r.nextInt(100).toLong()))
                                 .fetchInto(org.deku.leoz.node.jooq.entities.tables.pojos.MstRoute::class.java)
 //                        log.info(r)
                     },
