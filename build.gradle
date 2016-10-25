@@ -46,7 +46,7 @@ dependencies {
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
             // Misc
-            "org.apache.commons:commons-lang3:3.4",
+            "org.apache.commons:commons-lang3:3.5",
             // RX
             "io.reactivex:rxjava:1.2.1",
             "io.reactivex:rxkotlin:0.60.0"
