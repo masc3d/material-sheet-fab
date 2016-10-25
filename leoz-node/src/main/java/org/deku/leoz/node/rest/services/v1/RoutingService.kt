@@ -4,8 +4,8 @@ import com.google.common.base.Strings
 import com.google.common.collect.Iterables
 import com.google.common.primitives.Ints
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.data.entities.MstHolidayCtrlId
 import org.deku.leoz.node.data.entities.MstRoutingLayer
+import org.deku.leoz.node.data.entities.QMstHolidayCtrl
 import org.deku.leoz.node.data.entities.QMstRoute
 import org.deku.leoz.node.data.entities.QMstRoutingLayer
 import org.deku.leoz.node.data.repositories.master.*
@@ -22,7 +22,6 @@ import sx.rs.ApiKey
 import java.sql.Timestamp
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
@@ -360,10 +359,10 @@ class RoutingService : org.deku.leoz.rest.services.v1.RoutingService {
             else -> DayType.Workday
         }
 
-        val holidayCtrlId = MstHolidayCtrlId()
-        holidayCtrlId.holiday = date?.toTimestamp()
-        holidayCtrlId.country = country
-        val rHolidayCtrl = holidayCtrlJpaRepostitory.findOne(holidayCtrlId)
+        val qHolidayCtrl = QMstHolidayCtrl.mstHolidayCtrl
+        val rHolidayCtrl = holidayCtrlJpaRepostitory.findOne(
+                qHolidayCtrl.holiday.eq(date?.toTimestamp())
+                        .and(qHolidayCtrl.country.eq(country)))
 
         if (rHolidayCtrl != null) {
             if (rHolidayCtrl.ctrlPos == -1)
