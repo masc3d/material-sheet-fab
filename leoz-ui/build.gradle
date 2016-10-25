@@ -10,7 +10,7 @@ mainClassName = "org.deku.leoz.ui.Main"
 
 buildscript {
     ext {
-        v_grizzly = '2.3.23'
+        v_grizzly = '2.3.28'
         v_jersey = '2.23.2'
         v_kodein = '3.1.0'
     }
@@ -27,7 +27,7 @@ dependencies {
             project(':libs:sx-discovery'),
 
             // Common
-            "org.apache.commons:commons-lang3:3.4",
+            "org.apache.commons:commons-lang3:$v_commons_lang",
 //            "org.reflections:reflections:0.9.10",
             "net.java.dev.jna:jna-platform:$v_jna",
 

@@ -1,6 +1,6 @@
 package org.deku.leoz.central.config
 
-import com.mysql.jdbc.AbandonedConnectionCleanupThread
+import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread
 import org.jooq.SQLDialect
 import org.jooq.impl.DataSourceConnectionProvider
 import org.jooq.impl.DefaultDSLContext
@@ -115,7 +115,6 @@ open class PersistenceConfiguration {
             } catch (ex: SQLException) {
                 log.error("Error deregistering driver [${d}]", ex)
             }
-
         }
 
         // Close mysql connection cleanup thread

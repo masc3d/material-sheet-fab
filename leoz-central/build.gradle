@@ -2,7 +2,7 @@ import org.deku.gradle.PackagerPlugin
 
 buildscript {
     ext {
-        v_mysql = '5.1.39'
+        v_mysql = '6.0.5'
     }
 
     dependencies {
@@ -32,7 +32,7 @@ mainClassName = "org.deku.leoz.central.Main"
 
 // Database constants
 def DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
-def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
+def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false&serverTimezone=GMT'
 
 dependencies {
     // leoz webservice dependencies
