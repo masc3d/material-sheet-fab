@@ -1,5 +1,6 @@
 package org.deku.leoz.central.config
 
+import com.mysql.cj.core.conf.PropertyDefinitions
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread
 import org.jooq.SQLDialect
 import org.jooq.impl.DataSourceConnectionProvider
@@ -41,9 +42,6 @@ open class PersistenceConfiguration {
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java)
 
-    // TODO: tomcat deployment breaks with circular dependency when wither dataSourceCentral()
-    // or jooqTransactionAwareDataSourceProxy() are not @Lazy.
-    // This works perfectly fine when running standalone.
     @Bean
     @Qualifier(QUALIFIER)
     @ConfigurationProperties(prefix = "datasource.central")
@@ -56,17 +54,16 @@ open class PersistenceConfiguration {
                 .type(DriverManagerDataSource::class.java)
                 .build() as DriverManagerDataSource
 
-        // TODO: figure out how to get those into application.properties
+        // TODO: figure out how to get those into application.properties/yml
         val dataSourceProperties = Properties()
-        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull")
-        dataSourceProperties.setProperty("connectTimeout", "1000")
-        dataSourceProperties.setProperty("serverTimezone", "GMT")
+        dataSourceProperties.setProperty(PropertyDefinitions.PNAME_zeroDateTimeBehavior, PropertyDefinitions.ZERO_DATETIME_BEHAVIOR_CONVERT_TO_NULL)
+        dataSourceProperties.setProperty(PropertyDefinitions.PNAME_connectTimeout, "1000")
+        dataSourceProperties.setProperty(PropertyDefinitions.PNAME_serverTimezone, "GMT")
         dataSource.setConnectionProperties(dataSourceProperties)
 
         return dataSource
     }
 
-    // TODO: tomcat breakage without @Lazy. see above (dataSourceCentral())
     @Bean
     @Qualifier(QUALIFIER)
     open fun jooqCentralTransactionAwareDataSourceProxy(): TransactionAwareDataSourceProxy {
@@ -123,6 +120,7 @@ open class PersistenceConfiguration {
         }
     }
 
+    // TODO: example: aspect/DAOInterceptor
     //    @Aspect
     //    public class DAOInterceptor {
     //        private Logger log = Logger.getLog(DAOInterceptor.class.getName());
