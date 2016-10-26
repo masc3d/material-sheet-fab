@@ -13,6 +13,9 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
+import java.sql.Timestamp
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 import javax.inject.Inject
 import javax.persistence.EntityManager
@@ -35,7 +38,11 @@ open class RouteRepositoryTest : DataTest() {
 
     @Test
     open fun testFindAll() {
-        routeRepository.findAll(QMstRoute.mstRoute.timestamp.gt(GregorianCalendar(2014, 1, 1).time)).forEach {
+        val qRoute = QMstRoute.mstRoute
+
+        routeRepository.findAll(
+                qRoute.timestamp.gt(Timestamp.valueOf(LocalDateTime.of(2014, 1, 1, 0, 0, 0))))
+                .forEach {
             log.info("${it} ${it.station}")
             return
         }
