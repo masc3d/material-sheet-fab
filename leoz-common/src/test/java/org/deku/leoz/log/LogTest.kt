@@ -39,7 +39,7 @@ class LogTest : MessagingTest() {
         logRoot.addAppender(logAppender)
 
         // Generate some log messages
-        for (i in 0..99)
+        for (i in 0..10000)
             logRoot.info("Test!")
 
         // Dispose to make sure everything is flushed

@@ -6,10 +6,13 @@ import org.apache.activemq.artemis.api.jms.JMSFactoryType
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants
 import org.apache.activemq.artemis.jms.client.ActiveMQQueue
+import org.apache.activemq.artemis.jms.client.ActiveMQTopic
 import org.springframework.jms.connection.CachingConnectionFactory
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
+import sx.jms.Broker
 import sx.jms.Channel
+import sx.jms.artemis.ArtemisBroker
 import sx.jms.converters.DefaultConverter
 
 /**
@@ -19,6 +22,15 @@ object ArtemisConfiguration {
     // Leoz broker configuration only has a single user which is defined here
     val USERNAME = "leoz"
     val PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC"
+
+    val broker by lazy {
+        val broker = ArtemisBroker()
+        broker.user = Broker.User(
+                userName = ArtemisConfiguration.USERNAME,
+                password = ArtemisConfiguration.PASSWORD,
+                groupName = "")
+        broker
+    }
 
     val connectionFactory: CachingConnectionFactory by lazy {
         val transportParams = mutableMapOf<String, Any>()
@@ -43,5 +55,19 @@ object ArtemisConfiguration {
 
         c.priority = 1
         c
+    }
+
+    val entitySyncQueue: Channel.Configuration by lazy {
+        Channel.Configuration(
+                connectionFactory = this.connectionFactory,
+                destination = ActiveMQQueue("leoz.entity-sync.queue"),
+                converter = DefaultConverter(KryoSerializer().gzip))
+    }
+
+    val entitySyncTopic: Channel.Configuration by lazy {
+        Channel.Configuration(
+                connectionFactory = this.connectionFactory,
+                destination = ActiveMQTopic("leoz.entity-sync.topic"),
+                converter = DefaultConverter(KryoSerializer().gzip))
     }
 }

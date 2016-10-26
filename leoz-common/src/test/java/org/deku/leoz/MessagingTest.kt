@@ -19,7 +19,12 @@ abstract class MessagingTest {
      */
     val broker by lazy {
 //        ActiveMQConfiguration.instance.broker
-        ArtemisBroker()
+        val broker = ArtemisBroker()
+        broker.user = Broker.User(
+                userName = ArtemisConfiguration.USERNAME,
+                password = ArtemisConfiguration.PASSWORD,
+                groupName = "")
+        broker
     }
 
     @Before
