@@ -49,7 +49,9 @@ dependencies {
             "org.apache.commons:commons-lang3:3.5",
             // RX
             "io.reactivex:rxjava:1.2.1",
-            "io.reactivex:rxkotlin:0.60.0"
+            "io.reactivex:rxkotlin:0.60.0",
+            // Yml
+            "com.esotericsoftware.yamlbeans:yamlbeans:1.09"
     )
 
     provided(
