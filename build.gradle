@@ -4,6 +4,7 @@ version '1.0'
 buildscript {
     ext {
         v_activemq = '5.14.1'
+        v_artemis = '1.4.0'
         v_kotlin = '1.0.3'
         v_protostuff = '1.5.0'
     }
@@ -67,9 +68,10 @@ dependencies {
             // For ActiveMQ tunnel servlet
             "javax.servlet:javax.servlet-api:3.1.0",
 
-
             // Artemis
-            "org.apache.activemq:artemis-jms-server:1.4.0"
+            "org.apache.activemq:artemis-jms-server:$v_artemis",
+            "org.apache.activemq:artemis-amqp-protocol:$v_artemis",
+            "org.apache.activemq:artemis-openwire-protocol:$v_artemis"
     )
 
     testCompile(
