@@ -50,8 +50,6 @@ dependencies {
             // RX
             "io.reactivex:rxjava:1.2.1",
             "io.reactivex:rxkotlin:0.60.0",
-            // Yml
-            "com.esotericsoftware.yamlbeans:yamlbeans:1.09"
     )
 
     provided(
