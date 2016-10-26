@@ -471,7 +471,7 @@ class Channel @JvmOverloads constructor(
         messageConfigurer?.invoke(jmsMessage)
 
         // Send actual message
-        mp.send(destination, jmsMessage)
+        mp.send(jmsMessage)
 
         if (this.autoCommit)
             this.commit()
