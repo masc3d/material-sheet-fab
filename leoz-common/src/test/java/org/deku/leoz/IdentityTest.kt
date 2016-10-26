@@ -1,4 +1,4 @@
-package org.deku.leoz.node.test.auth
+package org.deku.leoz
 
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation

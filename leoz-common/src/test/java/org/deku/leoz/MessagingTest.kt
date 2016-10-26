@@ -3,7 +3,6 @@ package org.deku.leoz
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.config.ArtemisConfiguration
 import org.junit.After
 import org.junit.Before
 import sx.jms.Broker
@@ -18,8 +17,7 @@ abstract class MessagingTest {
      * Test broker
      */
     val broker by lazy {
-//        ActiveMQConfiguration.instance.broker
-        ArtemisBroker()
+        ActiveMQConfiguration.instance.broker
     }
 
     @Before
@@ -31,7 +29,6 @@ abstract class MessagingTest {
     @After
     @Throws(Exception::class)
     fun tearDown() {
-        ArtemisConfiguration.connectionFactory.destroy()
         this.broker.stop()
     }
 }

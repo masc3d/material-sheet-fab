@@ -44,9 +44,9 @@ dependencies {
             "com.esotericsoftware:kryo:4.0.0",
             "net.java.dev.jna:jna:$v_jna",
             "net.java.dev.jna:jna-platform:$v_jna",
-            // SnakeYAML
-            "org.yaml:snakeyaml:$v_snakeyaml"
-
+            // YAML
+            "org.yaml:snakeyaml:$v_snakeyaml",
+            "com.esotericsoftware.yamlbeans:yamlbeans:1.09"
     )
 
     provided(
