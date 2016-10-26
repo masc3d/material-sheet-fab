@@ -26,7 +26,7 @@ import java.util.concurrent.Executors
 @RunWith(SpringJUnit4ClassRunner::class)
 class EntitySyncTest : DataTest() {
     @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
-    private val entityManagerFactory: EntityManagerFactory? = null
+    private lateinit var entityManagerFactory: EntityManagerFactory
 
     private var listener: EntityPublisher? = null
     private var client: EntityConsumer? = null
@@ -46,13 +46,13 @@ class EntitySyncTest : DataTest() {
         listener = EntityPublisher(
                 notificationChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncTopic,
                 requestChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncQueue,
-                entityManagerFactory = entityManagerFactory!!,
+                entityManagerFactory = entityManagerFactory,
                 executor = Executors.newSingleThreadExecutor())
 
         client = EntityConsumer(
                 notificationChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncTopic,
                 requestChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncQueue,
-                entityManagerFactory = entityManagerFactory!!,
+                entityManagerFactory = entityManagerFactory,
                 executor = Executors.newSingleThreadExecutor())
     }
 

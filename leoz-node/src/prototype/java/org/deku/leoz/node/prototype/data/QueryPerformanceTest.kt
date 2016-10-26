@@ -10,7 +10,7 @@ import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstRoute
 import org.deku.leoz.node.data.repositories.master.RouteRepository
-import org.deku.leoz.node.jooq.entities.Tables
+import org.deku.leoz.node.data.jooq.Tables
 import org.deku.leoz.node.test.DataTest
 import org.eclipse.persistence.config.HintValues
 import org.eclipse.persistence.config.QueryHints
@@ -420,7 +420,7 @@ open class QueryPerformanceTest : DataTest() {
                     block = {
                         val q = p.get()
                                 .bind(pSyncId.name, r.nextInt(100).toLong())
-                                .fetchInto(org.deku.leoz.node.jooq.entities.tables.pojos.MstRoute::class.java)
+                                .fetchInto(org.deku.leoz.node.data.jpa.MstRoute::class.java)
 //                        log.info(r)
                     },
                     threads = 1,
@@ -442,7 +442,7 @@ open class QueryPerformanceTest : DataTest() {
                                 .select()
                                 .from(tRoute)
                                 .where(tRoute.SYNC_ID.eq(r.nextInt(100).toLong()))
-                                .fetchInto(org.deku.leoz.node.jooq.entities.tables.pojos.MstRoute::class.java)
+                                .fetchInto(org.deku.leoz.node.data.jpa.MstRoute::class.java)
 //                        log.info(r)
                     },
                     threads = 4,
