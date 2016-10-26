@@ -37,7 +37,7 @@ class StationService : org.deku.leoz.rest.services.internal.v1.StationService {
          * *
          * @return
          */
-        internal fun convert(d: org.deku.leoz.node.data.entities.MstStation): Station {
+        internal fun convert(d: org.deku.leoz.node.data.jpa.MstStation): Station {
             val rStation = Station()
             rStation.depotNr = d.stationNr
             rStation.depotMatchcode = d.ustid

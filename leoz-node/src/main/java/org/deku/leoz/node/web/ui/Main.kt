@@ -7,7 +7,7 @@ import com.vaadin.server.ThemeResource
 import com.vaadin.server.VaadinRequest
 import com.vaadin.spring.annotation.SpringUI
 import com.vaadin.ui.*
-import org.deku.leoz.node.data.entities.MstStation
+import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.repositories.master.StationRepository
 import org.slf4j.LoggerFactory
 import javax.inject.Inject

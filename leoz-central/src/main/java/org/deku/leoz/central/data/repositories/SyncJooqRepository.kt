@@ -1,11 +1,13 @@
 package org.deku.leoz.central.data.repositories
 
+import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.entities.jooq.Tables
 import org.deku.leoz.central.data.entities.jooq.tables.records.SysSyncRecord
 import org.jooq.DSLContext
 import org.jooq.Param
 import org.jooq.impl.DSL
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import javax.annotation.PreDestroy
 import javax.inject.Inject
 import javax.inject.Named
@@ -18,6 +20,7 @@ class SyncJooqRepository {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
+    @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
     /**

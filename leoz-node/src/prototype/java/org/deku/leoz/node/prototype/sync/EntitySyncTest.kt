@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Logger
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.data.entities.MstRoute
+import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.sync.EntityConsumer
 import org.deku.leoz.node.data.sync.EntityPublisher
 import org.junit.After

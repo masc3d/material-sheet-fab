@@ -1,10 +1,12 @@
 package org.deku.leoz.central.data.repositories
 
+import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.entities.jooq.Tables
 import org.deku.leoz.central.data.entities.jooq.tables.records.MstBundleVersionRecord
 import org.jooq.DSLContext
 import javax.inject.Inject
 import javax.inject.Named
+import org.springframework.beans.factory.annotation.Qualifier
 
 /**
  * Created by masc on 27/02/16.
@@ -12,6 +14,7 @@ import javax.inject.Named
 @Named
 class BundleVersionJooqRepository {
     @Inject
+    @Qualifier(PersistenceConfiguration.QUALIFIER)
     lateinit var dslContext: DSLContext
 
     fun findByAlias(bundleName: String, versionAlias: String): MstBundleVersionRecord? {

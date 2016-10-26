@@ -1,6 +1,6 @@
 package org.deku.leoz.node.data.repositories.master
 
-import org.deku.leoz.node.data.entities.MstStation
+import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.repositories.master.custom.StationRepositoryCustom
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QueryDslPredicateExecutor

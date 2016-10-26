@@ -1,6 +1,7 @@
 package org.deku.leoz.central.config
 
-import com.mysql.jdbc.AbandonedConnectionCleanupThread
+import com.mysql.cj.core.conf.PropertyDefinitions
+import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread
 import org.jooq.SQLDialect
 import org.jooq.impl.DataSourceConnectionProvider
 import org.jooq.impl.DefaultDSLContext
@@ -36,14 +37,11 @@ import javax.inject.Inject
 @EnableTransactionManagement(mode = AdviceMode.PROXY, proxyTargetClass = true)
 open class PersistenceConfiguration {
     companion object {
-        const val QUALIFIER = "PersistenceConfigurationCentral"
+        const val QUALIFIER = "db_central"
     }
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java)
 
-    // TODO: tomcat deployment breaks with circular dependency when wither dataSourceCentral()
-    // or jooqTransactionAwareDataSourceProxy() are not @Lazy.
-    // This works perfectly fine when running standalone.
     @Bean
     @Qualifier(QUALIFIER)
     @ConfigurationProperties(prefix = "datasource.central")
@@ -52,45 +50,42 @@ open class PersistenceConfiguration {
         // part of jdbc url)
 
         val dataSource = DataSourceBuilder.create()
-                .driverClassName("com.mysql.jdbc.Driver")
+                .driverClassName(com.mysql.cj.jdbc.Driver::class.java.canonicalName)
                 .type(DriverManagerDataSource::class.java)
                 .build() as DriverManagerDataSource
 
-        // TODO: figure out how to get those into application.properties
+        // TODO: figure out how to get those into application.properties/yml
         val dataSourceProperties = Properties()
-        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull")
-        dataSourceProperties.setProperty("connectTimeout", "1000")
+        dataSourceProperties.setProperty(PropertyDefinitions.PNAME_zeroDateTimeBehavior, PropertyDefinitions.ZERO_DATETIME_BEHAVIOR_CONVERT_TO_NULL)
+        dataSourceProperties.setProperty(PropertyDefinitions.PNAME_connectTimeout, "1000")
+        dataSourceProperties.setProperty(PropertyDefinitions.PNAME_serverTimezone, "GMT")
         dataSource.setConnectionProperties(dataSourceProperties)
 
         return dataSource
     }
 
-    @Inject
-    private val jooqTransactionAwareDataSource: TransactionAwareDataSourceProxy? = null
-
-    @Inject
-    private val jooqConnectionProvider: DataSourceConnectionProvider? = null
-
-    // TODO: tomcat breakage without @Lazy. see above (dataSourceCentral())
     @Bean
-    open fun jooqTransactionAwareDataSourceProxy(): TransactionAwareDataSourceProxy {
+    @Qualifier(QUALIFIER)
+    open fun jooqCentralTransactionAwareDataSourceProxy(): TransactionAwareDataSourceProxy {
         return TransactionAwareDataSourceProxy(dataSourceCentral())
     }
 
     @Bean
     @Qualifier(QUALIFIER)
-    open fun jooqTransactionManager(): DataSourceTransactionManager {
+    open fun jooqCentralTransactionManager(): DataSourceTransactionManager {
         return DataSourceTransactionManager(dataSourceCentral())
     }
 
     @Bean
-    open fun jooqConnectionProvider(): DataSourceConnectionProvider {
-        return DataSourceConnectionProvider(jooqTransactionAwareDataSource)
+    @Qualifier(QUALIFIER)
+    open fun jooqCentralConnectionProvider(): DataSourceConnectionProvider {
+        return DataSourceConnectionProvider(this.jooqCentralTransactionAwareDataSourceProxy())
     }
 
     @Bean
-    open fun dslContext(): DefaultDSLContext {
-        return DefaultDSLContext(jooqConnectionProvider, SQLDialect.MYSQL)
+    @Qualifier(QUALIFIER)
+    open fun centralDslContext(): DefaultDSLContext {
+        return DefaultDSLContext(this.jooqCentralConnectionProvider(), SQLDialect.MYSQL)
     }
 
     @PostConstruct
@@ -115,7 +110,6 @@ open class PersistenceConfiguration {
             } catch (ex: SQLException) {
                 log.error("Error deregistering driver [${d}]", ex)
             }
-
         }
 
         // Close mysql connection cleanup thread
@@ -126,6 +120,7 @@ open class PersistenceConfiguration {
         }
     }
 
+    // TODO: example: aspect/DAOInterceptor
     //    @Aspect
     //    public class DAOInterceptor {
     //        private Logger log = Logger.getLog(DAOInterceptor.class.getName());

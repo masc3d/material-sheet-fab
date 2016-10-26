@@ -3,6 +3,7 @@ package org.deku.leoz.node.config
 import org.eclipse.persistence.config.BatchWriting
 import org.eclipse.persistence.config.CacheType
 import org.eclipse.persistence.config.PersistenceUnitProperties
+import org.eclipse.persistence.tools.profiler.PerformanceMonitor
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
 import org.slf4j.LoggerFactory
@@ -49,7 +50,14 @@ open class PersistenceConfiguration {
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java.name)
 
+    /**
+     * Enable SQL logging
+     */
     private val showSql = false
+    /**
+     * Enable profiling
+     */
+    private val profiling = false
 
     @Bean
     @FlywayDataSource
@@ -138,6 +146,12 @@ open class PersistenceConfiguration {
         eclipseLinkProperties.setProperty(PersistenceUnitProperties.CACHE_SHARED_DEFAULT, "true")
         //endregion
 
+        //region Profiling
+        if (this.profiling) {
+            eclipseLinkProperties.setProperty(PersistenceUnitProperties.PROFILER, PerformanceMonitor::class.java.simpleName)
+        }
+        //endregion
+
         // Some master tables may have zero id values
         eclipseLinkProperties.setProperty(PersistenceUnitProperties.ID_VALIDATION, "NULL")
 
@@ -175,13 +189,8 @@ open class PersistenceConfiguration {
 
 
     //region JOOQ
-    @Inject
-    private lateinit var jooqTransactionAwareDataSource: TransactionAwareDataSourceProxy
-
-    @Inject
-    private lateinit var jooqConnectionProvider: DataSourceConnectionProvider
-
     @Bean
+    @Qualifier(QUALIFIER_JOOQ)
     open fun jooqTransactionAwareDataSourceProxy(): TransactionAwareDataSourceProxy {
         return TransactionAwareDataSourceProxy(dataSource())
     }
@@ -193,14 +202,16 @@ open class PersistenceConfiguration {
     }
 
     @Bean
+    @Qualifier(QUALIFIER_JOOQ)
     open fun jooqConnectionProvider(): DataSourceConnectionProvider {
-        return DataSourceConnectionProvider(jooqTransactionAwareDataSource)
+        return DataSourceConnectionProvider(this.jooqTransactionAwareDataSourceProxy())
     }
 
     @Bean
+    @Qualifier(QUALIFIER_JOOQ)
     open fun dslContext(): DefaultDSLContext {
         val settings = Settings().withStatementType(StatementType.PREPARED_STATEMENT)
-        return DefaultDSLContext(jooqConnectionProvider, SQLDialect.H2, settings)
+        return DefaultDSLContext(this.jooqConnectionProvider(), SQLDialect.H2, settings)
     }
     //endregion
 

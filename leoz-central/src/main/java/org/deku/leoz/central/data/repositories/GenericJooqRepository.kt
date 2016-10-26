@@ -1,11 +1,13 @@
 package org.deku.leoz.central.data.repositories
 
+import org.deku.leoz.central.config.PersistenceConfiguration
 import org.jooq.Cursor
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.TableField
 import org.jooq.impl.DSL
 import org.jooq.impl.TableImpl
+import org.springframework.beans.factory.annotation.Qualifier
 import java.sql.Timestamp
 import javax.inject.Inject
 import javax.inject.Named
@@ -17,6 +19,7 @@ import javax.inject.Named
 @Named
 class GenericJooqRepository {
     @Inject
+    @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
     /**

@@ -10,15 +10,14 @@ import org.deku.leoz.central.data.entities.jooq.tables.*
 import org.deku.leoz.central.data.entities.jooq.tables.records.*
 import org.deku.leoz.central.data.repositories.GenericJooqRepository
 import org.deku.leoz.central.data.repositories.SyncJooqRepository
-import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.repositories.master.BundleVersionRepository
-import org.deku.leoz.node.data.entities.*
-import org.deku.leoz.node.data.entities.MstBundleVersion
-import org.deku.leoz.node.data.entities.MstCountry
-import org.deku.leoz.node.data.entities.MstRoute
-import org.deku.leoz.node.data.entities.MstSector
-import org.deku.leoz.node.data.entities.MstStation
-import org.deku.leoz.node.data.entities.MstStationSector
+import org.deku.leoz.node.data.jpa.*
+import org.deku.leoz.node.data.jpa.MstBundleVersion
+import org.deku.leoz.node.data.jpa.MstCountry
+import org.deku.leoz.node.data.jpa.MstRoute
+import org.deku.leoz.node.data.jpa.MstSector
+import org.deku.leoz.node.data.jpa.MstStation
+import org.deku.leoz.node.data.jpa.MstStationSector
 import org.deku.leoz.node.data.repositories.master.*
 import org.deku.leoz.node.data.repositories.system.PropertyRepository
 import org.jooq.Record
@@ -52,7 +51,7 @@ open class DatabaseSyncService
 @Inject
 constructor(
         private val exceutorService: ScheduledExecutorService,
-        @Qualifier(PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
+        @Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
         @Qualifier(org.deku.leoz.central.config.PersistenceConfiguration.QUALIFIER) txJooq: PlatformTransactionManager) {
     /**
      * Embedded service class
@@ -153,6 +152,7 @@ constructor(
         private fun convert(cr: MstHolidayctrlRecord): MstHolidayCtrl {
             val d = MstHolidayCtrl()
 
+            d.id = cr.id.toLong()
             d.country = cr.country
             d.ctrlPos = cr.ctrlPos
             d.description = cr.description
@@ -171,6 +171,7 @@ constructor(
         private fun convert(cr: MstSectorRecord): MstSector {
             val d = MstSector()
 
+            d.id = cr.id.toLong()
             d.sectorFrom = cr.sectorfrom
             d.sectorTo = cr.sectorto
             d.timestamp = cr.timestamp
@@ -238,6 +239,7 @@ constructor(
          */
         private fun convert(ss: MstStationSectorRecord): MstStationSector {
             val s = MstStationSector()
+            s.id = ss.id.toLong()
             s.stationNr = ss.stationNr
             s.sector = ss.sector
             s.routingLayer = ss.routingLayer
@@ -298,7 +300,7 @@ constructor(
         transactionJooq = TransactionTemplate(txJooq)
     }
 
-    @Transactional(value = PersistenceConfiguration.QUALIFIER)
+    @Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
     open fun sync(reload: Boolean) {
         val sw = Stopwatch.createStarted()
 

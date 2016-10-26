@@ -1,3 +1,12 @@
+CREATE TABLE mst_bundle_version (
+  id      INTEGER NOT NULL IDENTITY PRIMARY KEY,
+  bundle  VARCHAR          DEFAULT NULL,
+  alias   VARCHAR          DEFAULT NULL,
+  version VARCHAR          DEFAULT NULL,
+  sync_id BIGINT  NOT NULL,
+  UNIQUE (alias, bundle)
+);
+
 CREATE TABLE mst_country (
   code           VARCHAR   NOT NULL,
   min_len        INTEGER,
@@ -47,13 +56,15 @@ CREATE TABLE mst_station (
 );
 
 CREATE TABLE mst_holiday_ctrl (
+  id          BIGINT    NOT NULL,
   country     VARCHAR   NOT NULL,
   holiday     TIMESTAMP NOT NULL,
   ctrl_pos    INTEGER,
   description VARCHAR,
   timestamp   TIMESTAMP NOT NULL,
   sync_id     BIGINT    NOT NULL,
-  PRIMARY KEY (country, holiday)
+  PRIMARY KEY (id),
+  UNIQUE (country, holiday)
 );
 
 CREATE TABLE mst_routing_layer (
@@ -94,6 +105,7 @@ CREATE INDEX idx_mst_route_timestamp
   ON mst_route (timestamp);
 
 CREATE TABLE mst_sector (
+  id          BIGINT    NOT NULL,
   sector_to   VARCHAR   NOT NULL,
   sector_from VARCHAR   NOT NULL,
   valid_from  TIMESTAMP NOT NULL,
@@ -101,24 +113,52 @@ CREATE TABLE mst_sector (
   via         VARCHAR,
   timestamp   TIMESTAMP NOT NULL,
   sync_id     BIGINT    NOT NULL,
-  PRIMARY KEY (sector_to, sector_from, valid_from)
+  PRIMARY KEY (id),
+  UNIQUE (sector_to, sector_from, valid_from)
 );
 
 CREATE TABLE mst_station_sector (
+  id            BIGINT  NOT NULL,
   station_nr    INTEGER NOT NULL,
   sector        VARCHAR NOT NULL,
   routing_layer INTEGER,
   timestamp     TIMESTAMP,
   sync_id       BIGINT  NOT NULL,
-  PRIMARY KEY (station_nr, sector)
+  PRIMARY KEY (id),
+  UNIQUE (station_nr, sector)
 );
 
 CREATE TABLE sys_property (
-  station     INTEGER NOT NULL,
   id          INTEGER NOT NULL,
+  station     INTEGER NOT NULL,
   description VARCHAR,
   is_enabled  BOOLEAN,
   value       VARCHAR,
   timestamp   TIMESTAMP,
-  PRIMARY KEY (station, id)
+  PRIMARY KEY (id),
+  UNIQUE (station, id)
 );
+
+CREATE INDEX idx_mst_bundle_version_sync_id
+  ON "mst_bundle_version" ("sync_id");
+
+CREATE INDEX idx_mst_country_sync_id
+  ON "mst_country" ("sync_id");
+
+CREATE INDEX idx_mst_holiday_ctrl_sync_id
+  ON "mst_holiday_ctrl" ("sync_id");
+
+CREATE INDEX idx_mst_route_sync_id
+  ON "mst_route" ("sync_id");
+
+CREATE INDEX idx_mst_routing_layer_sync_id
+  ON "mst_routing_layer" ("sync_id");
+
+CREATE INDEX idx_mst_sector_sync_id
+  ON "mst_sector" ("sync_id");
+
+CREATE INDEX idx_mst_station_sync_id
+  ON "mst_station" ("sync_id");
+
+CREATE INDEX idx_mst_station_sector_sync_id
+  ON "mst_station_sector" ("sync_id");

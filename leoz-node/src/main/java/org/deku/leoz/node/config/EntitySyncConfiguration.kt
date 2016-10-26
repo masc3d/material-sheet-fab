@@ -2,7 +2,7 @@ package org.deku.leoz.node.config
 
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.node.data.entities.*
+import org.deku.leoz.node.data.jpa.*
 import org.deku.leoz.node.data.sync.EntityConsumer
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
