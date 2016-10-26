@@ -34,6 +34,7 @@ class ArtemisBroker : Broker(NATIVE_TCP_PORT) {
         val nettyAcceptorParams = mutableMapOf<String, Any>()
         nettyAcceptorParams.put(TransportConstants.HOST_PROP_NAME, "0.0.0.0")
         nettyAcceptorParams.put(TransportConstants.PORT_PROP_NAME, 61616)
+        nettyAcceptorParams.put(TransportConstants.USE_NIO_PROP_NAME, true)
 
         // Setup security/authentication
         val adminRole = Role("admin", true, true, true, true, true, true, true, true)
