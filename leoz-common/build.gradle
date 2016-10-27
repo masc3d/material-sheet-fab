@@ -46,7 +46,6 @@ dependencies {
             "net.java.dev.jna:jna-platform:$v_jna",
             // YAML
             "org.yaml:snakeyaml:$v_snakeyaml",
-            "com.esotericsoftware.yamlbeans:yamlbeans:1.09"
     )
 
     provided(

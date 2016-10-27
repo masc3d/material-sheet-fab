@@ -134,7 +134,7 @@ open class App :
             val identityFile = StorageConfiguration.instance.identityConfigurationFile
             if (identityFile.exists()) {
                 try {
-                    identity = Identity.load(this.systemInformation, identityFile)
+                    identity = Identity.load(identityFile, this.systemInformation)
                 } catch (e: Exception) {
                     log.error(e.message, e)
                 }
