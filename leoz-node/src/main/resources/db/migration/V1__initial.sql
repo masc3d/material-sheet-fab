@@ -129,14 +129,11 @@ CREATE TABLE mst_station_sector (
 );
 
 CREATE TABLE sys_property (
-  id          INTEGER NOT NULL,
-  station     INTEGER NOT NULL,
-  description VARCHAR,
-  is_enabled  BOOLEAN,
-  value       VARCHAR,
-  timestamp   TIMESTAMP,
+  id    INTEGER NOT NULL,
+  key   VARCHAR,
+  value VARCHAR,
   PRIMARY KEY (id),
-  UNIQUE (station, id)
+  UNIQUE (key)
 );
 
 CREATE INDEX idx_mst_bundle_version_sync_id
