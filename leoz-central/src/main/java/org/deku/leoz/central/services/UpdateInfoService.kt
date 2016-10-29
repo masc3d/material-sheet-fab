@@ -33,9 +33,9 @@ class UpdateInfoService(
 
             // Determine version alias
             val versionAlias: String
-            if (updateInfoRequest.versionAlias != null) {
+            if (updateInfoRequest.versionAlias.isNotEmpty()) {
                 // Primarily use version alias of request, if provided
-                versionAlias = updateInfoRequest.versionAlias!!
+                versionAlias = updateInfoRequest.versionAlias
             } else {
                 // Lookup appropriate version alias by node key
                 if (updateInfoRequest.nodeKey.isNullOrEmpty())
@@ -68,11 +68,10 @@ class UpdateInfoService(
                         this.bundleRepository.listPlatforms(updateInfoRequest.bundleName, bundleVersion)
                     else ArrayList<String>()
 
-            val versionPattern = rVersion.version
-
             replyChannel!!.send(UpdateInfo(
                     bundleName = updateInfoRequest.bundleName,
-                    bundleVersionPattern = versionPattern,
+                    bundleVersionPattern = rVersion.version,
+                    bundleVersionAlias = rVersion.alias,
                     // TODO: support for desired restart time
                     latestDesignatedVersion = bundleVersion?.toString(),
                     latestDesignatedVersionPlatforms = bundleVersionPlatforms.map { it.toString() }.toTypedArray()))

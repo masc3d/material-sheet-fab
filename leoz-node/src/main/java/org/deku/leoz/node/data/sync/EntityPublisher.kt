@@ -27,9 +27,10 @@ class EntityPublisher(
         private val notificationChannelConfiguration: Channel.Configuration,
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory,
-        executor: Executor)
+        /** Executor used for listening/processing incoming messages */
+        listenerExecutor: Executor)
 :
-        SpringJmsListener({ Channel(requestChannelConfiguration) }, executor),
+        SpringJmsListener({ Channel(requestChannelConfiguration) }, listenerExecutor),
         Handler<EntityStateMessage> {
     init {
         this.addDelegate(this)
@@ -38,7 +39,6 @@ class EntityPublisher(
     /**
      * Publish entity update notification
      * @param entityType
-     * *
      * @param timestamp
      */
     @Throws(JMSException::class)

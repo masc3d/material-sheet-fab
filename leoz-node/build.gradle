@@ -10,6 +10,7 @@ import org.jooq.util.DefaultGeneratorStrategy
 import org.jooq.util.Definition
 import org.jooq.util.GenerationTool
 import org.jooq.util.GeneratorStrategy
+import org.jooq.util.h2.H2Database
 import org.jooq.util.jaxb.*
 
 buildscript {
@@ -41,8 +42,7 @@ buildscript {
         classpath "gradle.plugin.com.zoltu:application-agent:1.0.12"
         // QueryDSL SQL codegen
         classpath "com.querydsl:querydsl-sql-codegen:$v_querydsl"
-        // JOOQ plugin
-        classpath "nu.studer:gradle-jooq-plugin:1.0.6"
+        // JOOQ
         classpath "org.jooq:jooq:$v_jooq"
         classpath "org.jooq:jooq-meta:$v_jooq"
         classpath "org.jooq:jooq-codegen:$v_jooq"
@@ -56,20 +56,44 @@ apply plugin: 'idea'
 apply plugin: 'org.flywaydb.flyway'
 //apply plugin: "com.zoltu.application-agent"
 apply plugin: PackagerPlugin
-apply plugin: 'nu.studer.jooq'
 
 sourceCompatibility = 1.8
 version = '0.58-RELEASE'
 mainClassName = "org.deku.leoz.node.Main"
 
+def GENERATED_DIR = file("${project.projectDir}/src/generated")
+
+// Database constants
+def PROJECT_DB_DIR = new File(project.projectDir, 'src/main/resources/db')
+
+def DB_DIR = new File(project.buildDir, 'db')
+def DB_PERSISTENCE_XML = new File(DB_DIR, 'META-INF/persistence.xml')
+def DB_H2_JDBC_DRIVER = 'org.h2.Driver'
+// TODO: enabling TO_UPPER until DataGrip/IntelliJ support disabling it properly https://youtrack.jetbrains.com/issue/DBE-3292
+def DB_H2_JDBC_URL = "jdbc:h2:${DB_DIR}/leoz;database_to_upper=true"
+// Tables file which contains mapping to @Serializable uids
+def DB_TABLES_XML = new File(PROJECT_DB_DIR, "tables.xml")
+
+// SQL migrations (used for flyway eg.)
+def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
+
+def JOOQ_PACKAGE_NAME = "org.deku.leoz.node.data.jooq"
+def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
+
+class Constants {
+    static def JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.jpa'
+}
+
+def JPA_GENERATED_PACKAGE = Constants.JPA_GENERATED_PACKAGE
+def JPA_TASK_GROUP = 'jpa'
+
 // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
-// Location for generated sources
-// Directory for apt must be dedicated (no other generators may write here)
-// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
-def srcdir_apt = file("$projectDir/build/generated/source/kapt/main")
+clean {
+    GENERATED_DIR.deleteDir()
+}
 
 kapt {
     generateStubs = true
@@ -77,7 +101,8 @@ kapt {
 
 idea {
     module {
-        sourceDirs += srcdir_apt
+        // Add KAPT generated sources to intellij
+        sourceDirs += file("$projectDir/build/generated/source/kapt/main")
     }
 }
 
@@ -85,6 +110,11 @@ sourceSets {
     test {
         java {
             srcDirs += file("$projectDir/src/prototype/java")
+        }
+    }
+    main {
+        java {
+            srcDirs += JOOQ_GENERATED_DIR
         }
     }
 }
@@ -106,6 +136,7 @@ dependencies {
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
 
             // spring
             "org.springframework.data:spring-data-jpa:$v_spring_data_jpa",
@@ -249,6 +280,12 @@ dependencies {
     )
 }
 
+flyway {
+    driver = DB_H2_JDBC_DRIVER
+    url = DB_H2_JDBC_URL
+    locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
+}
+
 run {
     errorOutput = System.err
     standardOutput = System.out
@@ -273,7 +310,7 @@ packager {
     )
 }
 
-// Custom tasks
+//region Custom tasks
 
 // Include sx platform/binaries
 tasks.classes.dependsOn(copySxPlatformDirToBuild)
@@ -297,35 +334,110 @@ task copyVaadinWebapp(type: Sync) {
     into 'build/classes/main/VAADIN'
 }
 tasks.compileJava.dependsOn(copyVaadinWebapp)
+//endregion
 
-def GENERATED_DIR = file("${project.projectDir}/src/generated")
+//region JPA
+/**
+ * Task for statically weaving eclipselink entitiy classes.
+ * This must be a `JavaExec` path otherwise there's sporadic issues with StaticWeave not being able to find
+ * specific classes of subprojects.
+ */
+task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
+    inputs.dir compileJava.destinationDir
+    outputs.dir compileJava.destinationDir
 
-// Database constants
-def PROJECT_DB_DIR = new File(project.projectDir, 'src/main/resources/db')
+    dependsOn tasks.compileJava, tasks.compileKotlin
+    mustRunAfter tasks.compileJava, tasks.compileKotlin
 
-def DB_DIR = new File(project.buildDir, 'db')
-def DB_PERSISTENCE_XML = new File(DB_DIR, 'META-INF/persistence.xml')
-def DB_H2_JDBC_DRIVER = 'org.h2.Driver'
-def DB_H2_JDBC_URL = "jdbc:h2:${DB_DIR}/leoz;database_to_upper=false"
-// Tables file which contains mapping to @Serializable uids
-def DB_TABLES_XML = new File(PROJECT_DB_DIR, "tables.xml")
+    main 'org.eclipse.persistence.tools.weaving.jpa.StaticWeave'
+    args '-persistenceinfo', DB_DIR,
+            compileJava.destinationDir.getAbsolutePath(),
+            compileJava.destinationDir.getAbsolutePath()
+    classpath = configurations.compile
+}
+// Dependencies
+tasks.classes {
+    dependsOn tasks.jpaWeaving
+    mustRunAfter tasks.jpaWeaving
+}
+//endregion
 
-// SQL migrations (used for flyway eg.)
-def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
-
-flyway {
-    driver = DB_H2_JDBC_DRIVER
-    url = DB_H2_JDBC_URL
-    locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
+//region JOOQ
+/**
+ * JOOQ generator strategy
+ */
+public class CustomJooqGeneratorStrategy extends DefaultGeneratorStrategy {
+    @Override
+    String getJavaPackageName(Definition definition, GeneratorStrategy.Mode mode) {
+        def packageName = super.getJavaPackageName(definition, mode)
+        // Mangle package name for jpa pojos
+        if (mode == GeneratorStrategy.Mode.POJO) {
+            packageName = Constants.JPA_GENERATED_PACKAGE
+        }
+        return packageName
+    }
 }
 
-def JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.jpa'
-def JPA_TASK_GROUP = 'jpa'
+/**
+ * JOOQ generator configuration
+ */
+def jooqConfiguration = new Configuration()
+        .withJdbc(
+        new Jdbc()
+                .withDriver(DB_H2_JDBC_DRIVER)
+                .withUrl(DB_H2_JDBC_URL))
+        .withGenerator(
+        new Generator()
+                .withGenerate(
+                new Generate()
+                        .withJpaAnnotations(true)
+                        .withPojos(true)
+                        .withFluentSetters(false)
+                        .withPojosEqualsAndHashCode(true))
+                .withStrategy(new Strategy()
+                .withName(CustomJooqGeneratorStrategy.class.canonicalName))
+                .withDatabase(
+                new Database()
+                        .withName(H2Database.class.canonicalName)
+                        .withInputSchema('PUBLIC'))
+                .withTarget(
+                new Target()
+                        .withPackageName(JOOQ_PACKAGE_NAME)
+                        .withDirectory(JOOQ_GENERATED_DIR.toString())))
 
-class Constants {
-    static def JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.jpa'
+/**
+ * Task generating JOOQ and JPA classes.
+ * TODO: jooq plugin doesn't work correctly with customized generator strategy (class loading issue)
+ */
+task jooqGenerate(group: 'jooq') {
+    dependsOn tasks.flywayMigrate
+    mustRunAfter tasks.flywayMigrate
+
+    inputs.dir FLYWAY_MIGRATION_DIR
+    outputs.dir JOOQ_GENERATED_DIR
+
+    doFirst {
+        JOOQ_GENERATED_DIR.deleteDir()
+    }
+
+    doLast {
+        GenerationTool.generate(jooqConfiguration)
+        // Post process generated java classes
+        List<String> entityClassNames = jpaPostProcess(DB_TABLES_XML, JOOQ_GENERATED_DIR)
+
+        // Update persistence.xml to include generated classes. This is required for eclipselink static weaving
+        // which relies on a complete persistence.xml
+        generatePersistenceXml(DB_PERSISTENCE_XML, entityClassNames)
+    }
 }
+// Dependencies
+tasks.compileJava {
+    dependsOn tasks.jooqGenerate
+    mustRunAfter tasks.jooqGenerate
+}
+//endregion
 
+//region Support methods
 /**
  * Dynamically generate persistence.xml
  * @param persistenceXml Destination persistence.xml
@@ -360,7 +472,7 @@ static def List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
     def tables = new XmlSlurper().parse(tablesXmlFile)
     def tableUidMap = new HashMap<String, String>()
     tables.table.each {
-        tableUidMap[it.@name.toString()] = it
+        tableUidMap[it.@name.toString().toLowerCase()] = it
     }
 
     // Id classes are collected here
@@ -412,7 +524,7 @@ static def List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
                 return
 
             // Determine table uid
-            def tableEntry = tableUidMap[tableName]
+            def tableEntry = tableUidMap[tableName.toLowerCase()]
             if (tableEntry == null)
                 throw new IllegalStateException("Table [${tableName}] is missing entry in [${tablesXmlFile}]")
 
@@ -488,145 +600,4 @@ static def List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
 
     return entityClassNames
 }
-
-tasks.clean.doFirst {
-    GENERATED_DIR.deleteDir()
-}
-
-/**
- * Task for statically weaving eclipselink entitiy classes.
- * This must be a `JavaExec` path otherwise there's sporadic issues with StaticWeave not being able to find
- * specific classes of subprojects.
- */
-task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
-    inputs.dir compileJava.destinationDir
-    outputs.dir compileJava.destinationDir
-
-    dependsOn tasks.compileJava, tasks.compileKotlin
-    mustRunAfter tasks.compileJava, tasks.compileKotlin
-
-    main 'org.eclipse.persistence.tools.weaving.jpa.StaticWeave'
-    args '-persistenceinfo', DB_DIR,
-            compileJava.destinationDir.getAbsolutePath(),
-            compileJava.destinationDir.getAbsolutePath()
-    classpath = configurations.compile
-}
-// Dependencies
-tasks.classes {
-    dependsOn tasks.jpaWeaving
-    mustRunAfter tasks.jpaWeaving
-}
 //endregion
-
-// Location for generated sources
-// Directory for apt must be dedicated (no other generators may write here)
-// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
-def JOOQ_PACKAGE_NAME = "org.deku.leoz.node.data.jooq"
-def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
-
-sourceSets {
-    main.java.srcDir JOOQ_GENERATED_DIR
-}
-
-public class CustomJooqGeneratorStrategy extends DefaultGeneratorStrategy {
-    @Override
-    String getJavaPackageName(Definition definition, GeneratorStrategy.Mode mode) {
-        def t = super.getJavaPackageName(definition, mode)
-        if (mode == GeneratorStrategy.Mode.POJO) {
-            return Constants.JPA_GENERATED_PACKAGE
-        }
-        return t
-    }
-}
-
-println(this)
-
-def jooqConfiguration = new org.jooq.util.jaxb.Configuration()
-        .withJdbc(
-        new Jdbc()
-                .withDriver(DB_H2_JDBC_DRIVER)
-                .withUrl(DB_H2_JDBC_URL))
-        .withGenerator(
-        new Generator()
-                .withGenerate(
-                new Generate()
-                        .withJpaAnnotations(true)
-                        .withPojos(true)
-                        .withFluentSetters(false)
-                        .withPojosEqualsAndHashCode(true))
-                .withStrategy(new Strategy()
-                .withName('CustomJooqGeneratorStrategy'))
-                .withDatabase(
-                new Database()
-                        .withName('org.jooq.util.h2.H2Database')
-                        .withInputSchema('PUBLIC'))
-                .withTarget(
-                new Target()
-                        .withPackageName(JOOQ_PACKAGE_NAME)
-                        .withDirectory(JOOQ_GENERATED_DIR.toString())))
-
-task jooqGenerate(group: 'jooq') {
-    dependsOn tasks.flywayMigrate
-    mustRunAfter tasks.flywayMigrate
-
-    inputs.dir FLYWAY_MIGRATION_DIR
-    outputs.dir JOOQ_GENERATED_DIR
-
-    doFirst {
-        JOOQ_GENERATED_DIR.deleteDir()
-    }
-
-    doLast {
-        GenerationTool.generate(jooqConfiguration)
-        // Post process generated java classes
-        List<String> entityClassNames = jpaPostProcess(DB_TABLES_XML, JOOQ_GENERATED_DIR)
-
-        // Update persistence.xml to include generated classes. This is required for eclipselink static weaving
-        // which relies on a complete persistence.xml
-        generatePersistenceXml(DB_PERSISTENCE_XML, entityClassNames)
-    }
-}
-// Dependencies
-tasks.compileJava {
-    dependsOn tasks.jooqGenerate
-    mustRunAfter tasks.jooqGenerate
-}
-
-
-//TODO: jooq plugin doesn't work correctly with customized generator strategy (class loading issue)
-//jooq {
-//    main(sourceSets.main) {
-//        jdbc {
-//            url = DB_H2_JDBC_URL
-//            driver = DB_H2_JDBC_DRIVER
-//        }
-//        generator {
-//            generate {
-//                jpaAnnotations = true
-//                pojos = true
-//                fluentSetters = false
-//                pojosEqualsAndHashCode = true
-//            }
-////            strategy {
-////                name = CustomJooqGeneratorStrategy.class.canonicalName
-////            }
-//            database {
-//                name = 'org.jooq.util.h2.H2Database'
-//                inputSchema = 'PUBLIC'
-//            }
-//
-//            target {
-//                packageName = 'org.deku.leoz.node.jooq.entities'
-//                directory = JOOQ_GENERATED_DIR.toString()
-//            }
-//        }
-//    }
-//}
-//// JOOQ generation depends on schema migration
-//tasks.generateMainJooqSchemaSource {
-//    dependsOn tasks.flywayMigrate
-//}
-//tasks.compileJava {
-//    dependsOn tasks.generateMainJooqSchemaSource
-//    mustRunAfter tasks.generateMainJooqSchemaSource
-//}

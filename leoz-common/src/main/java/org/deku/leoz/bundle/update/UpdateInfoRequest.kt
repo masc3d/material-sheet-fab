@@ -13,4 +13,4 @@ data class UpdateInfoRequest(
         /** Name of bundle to request update info for */
         val bundleName: String = "",
         /** Optional version alias */
-        val versionAlias: String? = null)
+        val versionAlias: String = "")

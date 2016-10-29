@@ -33,8 +33,6 @@ class AuthorizationClientService(
         get() = identitySupplier()
 
     override fun run() {
-        var success = false
-
         // Setup message
         val authorizationRequest = AuthorizationRequestMessage()
         authorizationRequest.name = identity.name

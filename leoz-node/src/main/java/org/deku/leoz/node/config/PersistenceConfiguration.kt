@@ -78,7 +78,8 @@ open class PersistenceConfiguration {
 
         // Even though this is declared as "experimental" for h2 (http://www.h2database.com/javadoc/org/h2/engine/DbSettings.html#DATABASE_TO_UPPER)
         // Lowercase table/column names or much better readable in queries and schema migrations
-        params.put("DATABASE_TO_UPPER", "false")
+        // TODO: enabling TO_UPPER until DataGrip/IntelliJ support disabling it properly https://youtrack.jetbrains.com/issue/DBE-3292
+//        params.put("DATABASE_TO_UPPER", "false")
 
         // In-memory specific settings
         if (H2_IN_MEMORY) {

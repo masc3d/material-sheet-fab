@@ -2,7 +2,9 @@ package org.deku.leoz
 
 import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
+import sx.io.serialization.Serializable
 import java.io.File
+import java.lang.reflect.Constructor
 import java.security.MessageDigest
 import java.security.SecureRandom
 
@@ -13,9 +15,11 @@ import java.security.SecureRandom
  * @property systemInformation System information
  * Created by masc on 26.06.15.
  */
+@Serializable
 class Identity private constructor(
         val key: String,
         val name: String,
+        @Transient
         val systemInformation: SystemInformation) {
 
     /**
@@ -39,10 +43,20 @@ class Identity private constructor(
 
         override fun equals(other: Any?): Boolean {
             if (other is Identity.Key)
-                return this.value.equals(other.value)
+                return this.value == other.value
             else
                 return super.equals(other)
         }
+    }
+
+    /**
+     * State which may be persisted
+     */
+    class State(
+            var key: String = "",
+            var name: String = "") {
+
+        constructor(identity: Identity) : this(identity.key, identity.name) { }
     }
 
     /**
@@ -62,10 +76,6 @@ class Identity private constructor(
     }
 
     companion object {
-        // Property keys for file storage
-        private val PROP_NAME = "name"
-        private val PROP_KEY = "key"
-
         /**
          * Creates an identity with a random key and current system information
          * @return
@@ -93,21 +103,19 @@ class Identity private constructor(
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
-
         }
-
 
         /**
          * Read identity file
          * @param source
          * @return Identity instance
          */
-        fun load(systemInfo: SystemInformation, sourceFile: File): Identity {
-            val data = FilePersistence.loadMap(sourceFile)
+        fun load(sourceFile: File, systemInfo: SystemInformation): Identity {
+            val state = FilePersistence.load(State::class.java, sourceFile)
 
             return Identity(
-                    key = data.get(PROP_KEY) as String,
-                    name = data.get(PROP_NAME) as String,
+                    key = state.key,
+                    name = state.name,
                     systemInformation = systemInfo)
         }
     }
@@ -119,12 +127,7 @@ class Identity private constructor(
      */
     @Synchronized
     fun save(destinationFile: File) {
-        val data = mutableMapOf<String, Any>()
-
-        data.put(PROP_NAME, this.name)
-        data.put(PROP_KEY, this.key)
-
-        FilePersistence.dumpMap(data, destinationFile)
+        FilePersistence.save(State(this), destinationFile)
     }
 
     override fun toString(): String {

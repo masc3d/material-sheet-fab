@@ -64,7 +64,7 @@ open class EntitySyncConfiguration {
                 requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
                 notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
                 entityManagerFactory = this.entityManagerFactory,
-                executor = this.executorService)
+                listenerExecutor = this.executorService)
 
         // Wire database sync event
         this.databaseSyncService.eventDelegate.add(databaseSyncEvent)
