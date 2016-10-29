@@ -98,33 +98,33 @@ class ActiveMQBroker private constructor()
             throw IllegalStateException("Broker user not set")
 
         // Broker initialization
-        brokerService = BrokerService()
+        val brokerService = BrokerService()
 
         // Basic options (order is very relevant, eg. not setting broker name will result in borker data directory for persistence adapters)
-        brokerService!!.brokerName = this.brokerName
+        brokerService.brokerName = this.brokerName
         // Required for redelivery plugin/policy
-        brokerService!!.isSchedulerSupport = true
+        brokerService.isSchedulerSupport = true
         // Disabling activemq's integrated  shutdown hook, favoring consumer side ordered shutdown
-        brokerService!!.isUseShutdownHook = false
+        brokerService.isUseShutdownHook = false
 
         // Persistence setup
         val persistenceStoreDirectory = File(this.dataDirectory, "kahadb")
-        brokerService!!.dataDirectoryFile = persistenceStoreDirectory
+        brokerService.dataDirectoryFile = persistenceStoreDirectory
 
         val pa: PersistenceAdapter
-        pa = brokerService!!.persistenceAdapter as KahaDBPersistenceAdapter
+        pa = brokerService.persistenceAdapter as KahaDBPersistenceAdapter
         pa.isCheckForCorruptJournalFiles = true
 
         // Enforce our own persistence store directory for both regular store and scheduler, overriding the default which has broker name in its path
         pa.directory = persistenceStoreDirectory
-        brokerService!!.setSchedulerDirectory(persistenceStoreDirectory.resolve("scheduler").toString())
+        brokerService.setSchedulerDirectory(persistenceStoreDirectory.resolve("scheduler").toString())
 
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect
-        brokerService!!.addConnector("vm://${this.brokerName}")
+        brokerService.addConnector("vm://${this.brokerName}")
 
         // Statically defined transport connectors for native clients to connect to
-        brokerService!!.addConnector(String.format("tcp://0.0.0.0:%d",
+        brokerService.addConnector(String.format("tcp://0.0.0.0:%d",
                 this.nativeTcpPort))
 
         // Peer/network connectors for brokers to inter-connect
@@ -135,10 +135,10 @@ class ActiveMQBroker private constructor()
             nc.password = this.user!!.password
             nc.isDuplex = true
 
-            brokerService!!.addNetworkConnector(nc)
+            brokerService.addNetworkConnector(nc)
         }
         for (ts in externalTransportServers) {
-            brokerService!!.addConnector(ts)
+            brokerService.addConnector(ts)
         }
 
         // Broker plugins
@@ -244,7 +244,7 @@ class ActiveMQBroker private constructor()
                     val remoteUri = this.uriFromRemoteIp(remoteIp)
                     // Find peer broker matching hostname
                     val peerBroker = this@ActiveMQBroker.peerBrokers.firstOrNull {
-                        it.hostname.equals(remoteUri.host)
+                        it.hostname == remoteUri.host
                     }
                     if (peerBroker != null) {
                         this.peerBrokersByName.put(brokerInfo.brokerName, peerBroker)
@@ -273,19 +273,21 @@ class ActiveMQBroker private constructor()
         })
 
         // Add all plugins to broker service
-        brokerService!!.plugins = brokerPlugins.toArray(arrayOfNulls<BrokerPlugin>(0))
+        brokerService.plugins = brokerPlugins.toArray(arrayOfNulls<BrokerPlugin>(0))
 
         try {
-            brokerService!!.start()
+            brokerService.start()
         } catch (e: Exception) {
             try {
-                brokerService!!.stop()
+                brokerService.stop()
             } catch (e2: Exception) {
                 log.error(e2.message, e2)
             }
 
             throw e
         }
+
+        this.brokerService = brokerService
     }
 
     /**
