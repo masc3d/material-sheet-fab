@@ -16,5 +16,5 @@ fun <T> Class<*>.annotationOfType(type: Class<T>): T{
  */
 fun <T> Class<*>.annotationOfTypeOrNull(type: Class<T>): T? {
     @Suppress("UNCHECKED_CAST")
-    return this.annotations.find { it.annotationClass == type } as T?
+    return this.annotations.find { it.annotationClass.java == type } as T?
 }
