@@ -327,7 +327,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
 
                 val sendData = this@UdpDiscoveryService.serializer.serializeToByteArray(host)
                 val sendPacket = DatagramPacket(sendData, sendData.size, broadcast, this@UdpDiscoveryService.port)
-                this.log.info("Broadcasting to ${sendPacket.address}")
+                this.log.debug("Broadcasting to ${sendPacket.address}")
                 this.socket.send(sendPacket)
             }
         }
