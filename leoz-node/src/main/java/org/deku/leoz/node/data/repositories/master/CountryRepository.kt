@@ -15,14 +15,8 @@ interface CountryRepository :
         CountryRepositoryCustom
 
 
-/**
- * Created by JT on 13.05.15.
- */
 interface CountryRepositoryCustom
 
-/**
- * Created by JT on 12.05.15.
- */
 class CountryRepositoryImpl : CountryRepositoryCustom {
     @Inject
     private lateinit var routeRepository: CountryRepository

@@ -10,8 +10,9 @@ import javax.inject.Inject
 import javax.persistence.QueryHint
 
 /**
-* Created by masc on 16.05.15.
-*/
+ * Route repository
+ * Created by masc on 16.05.15.
+ */
 interface RouteRepository :
         JpaRepository<MstRoute, Long>,
         QueryDslPredicateExecutor<MstRoute>,
@@ -22,14 +23,8 @@ interface RouteRepository :
     override fun findAll(predicate: Predicate): Iterable<MstRoute>
 }
 
-/**
- * Created by JT on 13.05.15.
- */
 interface RouteRepositoryCustom
 
-/**
- * Created by JT on 13.05.15.
- */
 class RouteRepositoryImpl : RouteRepositoryCustom {
     @Inject
     private lateinit var mRouteRepository: RouteRepository

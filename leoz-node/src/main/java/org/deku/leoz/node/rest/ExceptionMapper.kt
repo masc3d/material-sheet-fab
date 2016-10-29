@@ -56,6 +56,9 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
             result = Error(Response.Status.BAD_REQUEST.statusCode, e)
         }
 
-        return Response.status(result.httpStatus!!).entity(result).type(MediaType.APPLICATION_JSON_TYPE).build()
+        return Response.status(result.httpStatus!!)
+                .entity(result)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .build()
     }
 }

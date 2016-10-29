@@ -15,17 +15,10 @@ interface StationRepository :
         JpaRepository<MstStation, Int>,
         QueryDslPredicateExecutor<MstStation>, StationRepositoryCustom
 
-
-/**
- * Created by masc on 07.05.15.
- */
 interface StationRepositoryCustom {
     fun findWithQuery(query: String): List<MstStation>
 }
 
-/**
- * Created by masc on 07.05.15.
- */
 class StationRepositoryImpl : StationRepositoryCustom {
     @Inject
     private lateinit var depotRepository: StationRepository

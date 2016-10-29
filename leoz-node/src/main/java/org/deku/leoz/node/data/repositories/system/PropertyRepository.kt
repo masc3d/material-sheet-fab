@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.QueryHints
 import org.springframework.data.querydsl.QueryDslPredicateExecutor
 import sx.annotationOfType
-import sx.annotationOfTypeOrNull
 import java.io.StringWriter
 import javax.persistence.QueryHint
 
@@ -63,7 +62,9 @@ fun PropertyRepository.saveObject(value: Any) {
 
     val sw = StringWriter()
     sw.use {
-        jsonObjectMapper.writer().writeValue(sw, value)
+        jsonObjectMapper
+                .writer()
+                .writeValue(sw, value)
     }
     this.save(SysProperty(a.key.value, sw.toString()))
 }
@@ -76,7 +77,9 @@ fun <T> PropertyRepository.loadObject(cls: Class<T>): T {
     try {
         val a = cls.annotationOfType(PropertyKey::class.java)
         val record = this.findOne(a.key.value)
-        return if (record != null) jsonObjectMapper.readerFor(cls).readValue(record.value) else cls.newInstance()
+        return if (record != null) jsonObjectMapper
+                .readerFor(cls)
+                .readValue(record.value) else cls.newInstance()
     } catch (e: InstantiationException) {
         throw e
     } catch (e: Exception) {
