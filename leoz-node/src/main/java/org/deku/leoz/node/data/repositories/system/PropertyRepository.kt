@@ -73,12 +73,14 @@ fun PropertyRepository.saveObject(value: Any) {
  * In case of deserialization failure this method will attempt to return a new instance of the class
  */
 fun <T> PropertyRepository.loadObject(cls: Class<T>): T {
-    return try {
+    try {
         val a = cls.annotationOfType(PropertyKey::class.java)
-
-        jsonObjectMapper.readerFor(cls).readValue(this.findOne(a.key.value)?.value)
+        val record = this.findOne(a.key.value)
+        return if (record != null) jsonObjectMapper.readerFor(cls).readValue(record.value) else cls.newInstance()
+    } catch (e: InstantiationException) {
+        throw e
     } catch (e: Exception) {
         LoggerFactory.getLogger(this.javaClass).error(e.message, e)
-        cls.newInstance()
+        return cls.newInstance()
     }
 }
