@@ -17,6 +17,6 @@ class ApiKeyRequestFilter : ApiKeyRequestFilterBase() {
     private lateinit var nodeJooqRepository: NodeJooqRepository
 
     override fun verify(apiKey: String): Boolean {
-        return nodeJooqRepository!!.hasAuthorizedKey(apiKey)
+        return nodeJooqRepository.hasAuthorizedKey(apiKey)
     }
 }

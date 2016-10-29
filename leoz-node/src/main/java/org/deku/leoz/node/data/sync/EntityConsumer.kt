@@ -25,17 +25,21 @@ class EntityConsumer
         private val notificationChannelConfiguration: Channel.Configuration,
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory,
-        executor: Executor)
+        /** Executor used for listening/processing incoming messages */
+        listenerExecutor: Executor)
 :
-        SpringJmsListener({ Channel(notificationChannelConfiguration) }, executor),
+        SpringJmsListener({ Channel(notificationChannelConfiguration) }, listenerExecutor),
         Handler<EntityStateMessage> {
 
+    /**
+     * Executor for internal tasks, eg issuing requests
+     */
     private var executorService: ExecutorService
 
     init {
 
         this.addDelegate(this)
-        executorService = Executors.newSingleThreadExecutor { r ->
+        this.executorService = Executors.newSingleThreadExecutor { r ->
             val t = Thread(r)
             t.priority = Thread.MIN_PRIORITY
             t

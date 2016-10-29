@@ -24,18 +24,18 @@ class StationRepositoryImpl : StationRepositoryCustom {
     private lateinit var depotRepository: StationRepository
 
     override fun findWithQuery(query: String): List<MstStation> {
-        val query = query.trim { it <= ' ' }
+        val token = query.trim { it <= ' ' }
 
         // QueryDSL
         val qStation = QMstStation.mstStation
         val depots = depotRepository.findAll(
-                qStation.stationNr.stringValue().containsIgnoreCase(query)
-                        .or(qStation.address1.containsIgnoreCase(query))
-                        .or(qStation.address2.containsIgnoreCase(query))
-                        .or(qStation.zip.startsWithIgnoreCase(query))
-                        .or(qStation.country.startsWithIgnoreCase(query))
-                        .or(qStation.city.containsIgnoreCase(query))
-                        .or(qStation.street.containsIgnoreCase(query)),
+                qStation.stationNr.stringValue().containsIgnoreCase(token)
+                        .or(qStation.address1.containsIgnoreCase(token))
+                        .or(qStation.address2.containsIgnoreCase(token))
+                        .or(qStation.zip.startsWithIgnoreCase(token))
+                        .or(qStation.country.startsWithIgnoreCase(token))
+                        .or(qStation.city.containsIgnoreCase(token))
+                        .or(qStation.street.containsIgnoreCase(token)),
                 qStation.stationNr.asc())
 
         // JPQL

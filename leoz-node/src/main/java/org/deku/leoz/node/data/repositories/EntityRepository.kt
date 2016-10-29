@@ -126,6 +126,7 @@ class EntityRepository(
         }
 
         // Select
+        @Suppress("UNCHECKED_CAST")
         cq.select(croot as Selection<out Nothing>)
         if (prSyncId != null)
             cq.where(prSyncId)

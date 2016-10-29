@@ -33,9 +33,9 @@ class UpdateInfoService(
 
             // Determine version alias
             val versionAlias: String
-            if (updateInfoRequest.versionAlias != null) {
+            if (updateInfoRequest.versionAlias.isNotEmpty()) {
                 // Primarily use version alias of request, if provided
-                versionAlias = updateInfoRequest.versionAlias!!
+                versionAlias = updateInfoRequest.versionAlias
             } else {
                 // Lookup appropriate version alias by node key
                 if (updateInfoRequest.nodeKey.isNullOrEmpty())

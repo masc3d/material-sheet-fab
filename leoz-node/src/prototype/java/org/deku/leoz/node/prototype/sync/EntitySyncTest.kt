@@ -47,13 +47,13 @@ class EntitySyncTest : DataTest() {
                 notificationChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncTopic,
                 requestChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncQueue,
                 entityManagerFactory = entityManagerFactory,
-                executor = Executors.newSingleThreadExecutor())
+                listenerExecutor = Executors.newSingleThreadExecutor())
 
         client = EntityConsumer(
                 notificationChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncTopic,
                 requestChannelConfiguration = ActiveMQConfiguration.Companion.instance.entitySyncQueue,
                 entityManagerFactory = entityManagerFactory,
-                executor = Executors.newSingleThreadExecutor())
+                listenerExecutor = Executors.newSingleThreadExecutor())
     }
 
     @After

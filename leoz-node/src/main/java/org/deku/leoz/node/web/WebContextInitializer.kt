@@ -15,7 +15,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory
 import org.jboss.resteasy.springmvc.ResteasyHandlerMapping
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
-import org.springframework.boot.context.embedded.ServletContextInitializer
+import org.springframework.boot.web.servlet.ServletContextInitializer
 import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory
 import org.springframework.context.annotation.Bean
