@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QueryDslPredicateExecutor
 
 /**
+ * Routing layer repository
  * Created by JT on 23.06.15.
  */
 interface RoutingLayerRepository :

@@ -78,6 +78,10 @@ subprojects {
         jcenter()
     }
 
+    test {
+        testLogging.showStandardStreams = true
+    }
+
     // Global jar configuration
     tasks.jar.doFirst {
         jar {

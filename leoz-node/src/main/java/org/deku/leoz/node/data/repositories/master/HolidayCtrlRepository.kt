@@ -5,7 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QueryDslPredicateExecutor
 
 /**
- * Created by JT on 15.05.15.
+ * Holiday repository
+ * Created by masc on 15.05.15.
  */
 interface HolidayCtrlRepository :
         JpaRepository<MstHolidayCtrl, Long>,

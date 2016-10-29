@@ -68,11 +68,10 @@ class UpdateInfoService(
                         this.bundleRepository.listPlatforms(updateInfoRequest.bundleName, bundleVersion)
                     else ArrayList<String>()
 
-            val versionPattern = rVersion.version
-
             replyChannel!!.send(UpdateInfo(
                     bundleName = updateInfoRequest.bundleName,
-                    bundleVersionPattern = versionPattern,
+                    bundleVersionPattern = rVersion.version,
+                    bundleVersionAlias = rVersion.alias,
                     // TODO: support for desired restart time
                     latestDesignatedVersion = bundleVersion?.toString(),
                     latestDesignatedVersionPlatforms = bundleVersionPlatforms.map { it.toString() }.toTypedArray()))

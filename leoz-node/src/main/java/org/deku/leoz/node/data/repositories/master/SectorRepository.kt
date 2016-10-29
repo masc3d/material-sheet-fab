@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.querydsl.QueryDslPredicateExecutor
 
 /**
+ * Sector repository
  * Created by masc on 16.05.15.
  */
 interface SectorRepository :

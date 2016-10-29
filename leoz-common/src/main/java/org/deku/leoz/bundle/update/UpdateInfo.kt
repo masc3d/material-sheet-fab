@@ -14,6 +14,8 @@ data class UpdateInfo(
         val bundleName: String = "",
         /** Bundle version pattern, eg. "2.+" or "+RELEASE" */
         val bundleVersionPattern: String = "",
+        /** Bundle version alias */
+        val bundleVersionAlias: String = "",
         /** Desired time for restarting if a bundle is self updating. If omitted the update is supposed to become active asap. */
         val desiredRestartTime: LocalTime? = null,
         /** Latest designated version for this bundle/node. Contains a string referring to {@link Bundle.Version} */

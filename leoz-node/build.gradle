@@ -69,7 +69,8 @@ def PROJECT_DB_DIR = new File(project.projectDir, 'src/main/resources/db')
 def DB_DIR = new File(project.buildDir, 'db')
 def DB_PERSISTENCE_XML = new File(DB_DIR, 'META-INF/persistence.xml')
 def DB_H2_JDBC_DRIVER = 'org.h2.Driver'
-def DB_H2_JDBC_URL = "jdbc:h2:${DB_DIR}/leoz;database_to_upper=false"
+// TODO: enabling TO_UPPER until DataGrip/IntelliJ support disabling it properly https://youtrack.jetbrains.com/issue/DBE-3292
+def DB_H2_JDBC_URL = "jdbc:h2:${DB_DIR}/leoz;database_to_upper=true"
 // Tables file which contains mapping to @Serializable uids
 def DB_TABLES_XML = new File(PROJECT_DB_DIR, "tables.xml")
 
@@ -135,6 +136,7 @@ dependencies {
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
 
             // spring
             "org.springframework.data:spring-data-jpa:$v_spring_data_jpa",
@@ -470,7 +472,7 @@ static def List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
     def tables = new XmlSlurper().parse(tablesXmlFile)
     def tableUidMap = new HashMap<String, String>()
     tables.table.each {
-        tableUidMap[it.@name.toString()] = it
+        tableUidMap[it.@name.toString().toLowerCase()] = it
     }
 
     // Id classes are collected here
@@ -522,7 +524,7 @@ static def List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
                 return
 
             // Determine table uid
-            def tableEntry = tableUidMap[tableName]
+            def tableEntry = tableUidMap[tableName.toLowerCase()]
             if (tableEntry == null)
                 throw new IllegalStateException("Table [${tableName}] is missing entry in [${tablesXmlFile}]")
 

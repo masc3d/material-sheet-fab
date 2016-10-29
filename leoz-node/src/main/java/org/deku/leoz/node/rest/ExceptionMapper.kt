@@ -20,13 +20,13 @@ import java.util.Optional
 @Named
 @Provider
 class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
-    internal var mLog = LoggerFactory.getLogger(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun toResponse(e: Exception): javax.ws.rs.core.Response {
         val result: Error
 
         if (e is ServiceException) {
-            result = Error(e.response.status, e.errorCode.ordinal, e.message)
+            result = Error(e.response.status, e.errorCode.ordinal, e.message ?: "")
 
         } else if (e is WebApplicationException) {
             //region WebApplicationException
@@ -35,30 +35,24 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
 
         } else if (e is JsonMappingException) {
             //region JsonMappingException
-            val locationMessage = (Iterable<*> { e.path.stream().map({ p -> p.getFieldName() }).iterator() } as Iterable<*>).joinToString(".")
+            val locationMessage = e.path.map { it.fieldName }.joinToString(".")
+            val cause = e.cause?.message ?: "unknown"
 
             result = Error(Response.Status.BAD_REQUEST.statusCode,
-                    String.format("JSON mapping error [%s]: %s", locationMessage,
-                            if (e.cause != null) e.cause.message else "unknown"))
+                    "JSON mapping error [${locationMessage}]: ${cause}")
             //endregion
 
         } else if (e is JsonProcessingException) {
             //region JsonProcessingException
             val jl = e.location
 
-            var locationMessage = Optional.empty<String>()
-            if (jl != null) {
-                locationMessage = Optional.of(String.format(" in line %d column %d", jl.lineNr, jl.columnNr))
-            }
-
+            val locationMessage: String = if (jl != null) " in line ${jl.lineNr} column ${jl.columnNr}" else ""
             result = Error(Response.Status.BAD_REQUEST.statusCode,
-                    String.format("JSON processing error%s: %s",
-                            locationMessage.orElse(""),
-                            e.originalMessage))
+                    "JSON processing error${locationMessage}: ${e.originalMessage}")
             //endregion
 
         } else {
-            mLog.error(e.message, e)
+            log.error(e.message, e)
             result = Error(Response.Status.BAD_REQUEST.statusCode, e)
         }
 

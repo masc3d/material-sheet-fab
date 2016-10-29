@@ -1,13 +1,13 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.bundle.update.BundleUpdateService
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.bundle.update.UpdateInfo
-import org.deku.leoz.config.RsyncConfiguration
+import org.deku.leoz.bundle.update.BundleUpdateService
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.LifecycleController
+import org.deku.leoz.node.data.repositories.system.*
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 import javax.inject.Named
+import javax.persistence.EntityManager
 
 /**
  * Leoz updater configuration
@@ -44,6 +45,17 @@ open class BundleUpdateServiceConfiguration {
         var rsyncHost: String? = null
     }
 
+
+    /**
+     * Bundle update service state
+     */
+    @PropertyKey(PropertyKeys.BUNDLE_UPDATE_SERVICE)
+    class State(
+            var versionAlias: String = "") {
+    }
+
+    private var state: State = State()
+
     @Inject
     private lateinit var settings: Settings
 
@@ -58,6 +70,10 @@ open class BundleUpdateServiceConfiguration {
 
     @Inject
     private lateinit var lifecycleController: LifecycleController
+
+    @Inject
+    private lateinit var propertyRepository: PropertyRepository
+
 
     /**
      * Local bundle repository
@@ -98,6 +114,7 @@ open class BundleUpdateServiceConfiguration {
     open fun bundleUpdateService(): BundleUpdateService {
         val installer = BundleConfiguration.bundleInstaller()
 
+        // Setup
         val updateService = BundleUpdateService(
                 executorService = this.executorService,
                 identity = App.instance.identity,
@@ -122,15 +139,28 @@ open class BundleUpdateServiceConfiguration {
                 cleanup = this.settings.cleanup,
                 requestChannel = Channel(ActiveMQConfiguration.instance.centralQueue)
         )
+
         updateService.enabled = this.settings.enabled
+
+        // Event handlers
+        updateService.ovInfoReceived.subscribe() {
+            this.state.versionAlias = it.bundleVersionAlias
+
+            this.propertyRepository.saveObject(this.state)
+        }
+
         return updateService
     }
 
+    /**
+     * Bundle update service instance
+     */
     private val bundleUpdateService by lazy { bundleUpdateService() }
-
 
     @PostConstruct
     fun onInitialize() {
+        this.state = this.propertyRepository.loadObject(State::class.java)
+
         this.lifecycleController.registerNetworkDependant(this.bundleUpdateService)
 
         // Register for update notifications (as long as automatic updates are enabled)
