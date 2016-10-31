@@ -106,6 +106,10 @@ class ActiveMQBroker private constructor()
         brokerService.isSchedulerSupport = true
         // Disabling activemq's integrated  shutdown hook, favoring consumer side ordered shutdown
         brokerService.isUseShutdownHook = false
+        // Allow temporary queue auto creation for producers.
+        // Fixes sporadic issues with request/response where a remote broker's producer responds via temporary queue before it had the opportunity to create it (per advisory message)
+        // For reference: https://issues.apache.org/jira/browse/AMQ-3253
+        brokerService.isAllowTempAutoCreationOnSend = true
 
         // Persistence setup
         val persistenceStoreDirectory = File(this.dataDirectory, "kahadb")
