@@ -48,7 +48,7 @@ open class EntitySyncConfiguration {
                 notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
                 requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
                 entityManagerFactory = this.entityManagerFactory,
-                executorService = this.executorService)
+                listenerExecutor = this.executorService)
     }
 
     @Inject
