@@ -9,6 +9,7 @@ import org.junit.Before
 import sx.jms.Broker
 import sx.jms.activemq.ActiveMQBroker
 import sx.jms.artemis.ArtemisBroker
+import java.io.File
 
 /**
  * Created by masc on 16.06.15.
@@ -18,12 +19,12 @@ abstract class MessagingTest {
      * Test broker
      */
     val broker by lazy {
-//        ActiveMQConfiguration.instance.broker
-        val broker = ArtemisBroker()
+        val broker = ActiveMQConfiguration.instance.broker
         broker.user = Broker.User(
-                userName = ArtemisConfiguration.USERNAME,
-                password = ArtemisConfiguration.PASSWORD,
-                groupName = "")
+                userName = ActiveMQConfiguration.USERNAME,
+                password = ActiveMQConfiguration.PASSWORD,
+                groupName = ActiveMQConfiguration.GROUPNAME)
+        broker.dataDirectory = File("build/activemq")
         broker
     }
 
@@ -36,7 +37,6 @@ abstract class MessagingTest {
     @After
     @Throws(Exception::class)
     fun tearDown() {
-        ArtemisConfiguration.connectionFactory.destroy()
         this.broker.stop()
     }
 }
