@@ -28,7 +28,7 @@ class LifecycleController {
      * An example where remote connectivity is not required is leoz-central, which basically communicates to itself
      * if it needs to.
      */
-    private val requiresRemoteConnection by lazy { !peerSettings.hostname.isNullOrEmpty() }
+    private val requiresRemoteConnection by lazy { !peerSettings.host.isNullOrEmpty() }
 
     /**
      * Broker listener

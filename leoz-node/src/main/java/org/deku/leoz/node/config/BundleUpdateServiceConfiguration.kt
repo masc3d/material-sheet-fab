@@ -87,7 +87,7 @@ open class BundleUpdateServiceConfiguration {
      * Remote bundle update repository
      * */
     val updateRepository: BundleRepository by lazy {
-        val remoteHostname = this.settings.rsyncHost ?: remotePeerSettings.hostname
+        val remoteHostname = this.settings.rsyncHost ?: remotePeerSettings.host
         if (remoteHostname != null && remoteHostname.length > 0) {
             BundleRepository(
                     rsyncModuleUri = RsyncConfiguration.createRsyncUri(

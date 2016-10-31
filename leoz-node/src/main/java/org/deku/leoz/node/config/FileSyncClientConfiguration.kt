@@ -52,7 +52,7 @@ open class FileSyncClientConfiguration {
                 identity = App.instance.identity,
                 rsyncEndpoint = Rsync.Endpoint(
                         moduleUri = RsyncConfiguration.createRsyncUri(
-                                remotePeerSettings.hostname!!,
+                                remotePeerSettings.host!!,
                                 remotePeerSettings.rsync.port!!,
                                 RsyncConfiguration.ModuleNames.TRANSFER),
                         password = RsyncConfiguration.PASSWORD,
