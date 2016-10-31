@@ -4,6 +4,7 @@ import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.node.rest.services.v1.RoutingService
 import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.rest.entities.ShortDate
+import org.deku.leoz.rest.entities.v1.Routing
 import org.deku.leoz.rest.entities.v1.RoutingRequest
 import org.deku.leoz.rest.services.ServiceErrorCode
 import org.junit.Assert
@@ -289,6 +290,66 @@ class RoutingLogicTest : DataTest() {
             Assert.assertEquals(r.labelContent, "020")
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.WRONG_PARAMETER_VALUE, e.errorCode)
+        }
+    }
+
+    /*
+    Check zipcode which is affected by regional holiday (Day after send date is holiday) - Weekend between these days
+     */
+    @Test
+    fun testRegionalHoliday01(){
+        try{
+            val mRequest : RoutingRequest = RoutingRequest()
+            mRequest.sendDate = ShortDate("2016-10-28")
+            val mConsignee : RoutingRequest.RequestParticipant = RoutingRequest.RequestParticipant()
+            mConsignee.country = "DE"
+            mConsignee.zip = "99084"
+            mRequest.consignee = mConsignee
+
+            val mRouting : Routing = mRoutingService.request(mRequest)
+            Assert.assertEquals(mRouting.deliveryDate!!.toString(), "2016-11-01")
+        }catch(e: Exception){
+            Assert.fail()
+        }
+    }
+
+    /*
+    Check zipcode which is affected by regional holiday (Day after send date is holiday)
+     */
+    @Test
+    fun testRegionalHoliday02(){
+        try{
+            val mRequest : RoutingRequest = RoutingRequest()
+            mRequest.sendDate = ShortDate("2016-10-31")
+            val mConsignee : RoutingRequest.RequestParticipant = RoutingRequest.RequestParticipant()
+            mConsignee.country = "DE"
+            mConsignee.zip = "40822"
+            mRequest.consignee = mConsignee
+
+            val mRouting : Routing = mRoutingService.request(mRequest)
+            Assert.assertEquals(mRouting.deliveryDate!!.toString(), "2016-11-02")
+        }catch(e: Exception){
+            Assert.fail()
+        }
+    }
+
+    /*
+    Check zipcode which is not affected by regional holiday
+     */
+    @Test
+    fun testRegionalHoliday03(){
+        try{
+            val mRequest : RoutingRequest = RoutingRequest()
+            mRequest.sendDate = ShortDate("2016-10-28")
+            val mConsignee : RoutingRequest.RequestParticipant = RoutingRequest.RequestParticipant()
+            mConsignee.country = "DE"
+            mConsignee.zip = "36286"
+            mRequest.consignee = mConsignee
+
+            val mRouting : Routing = mRoutingService.request(mRequest)
+            Assert.assertEquals(mRouting.deliveryDate!!.toString(), "2016-10-31")
+        }catch(e: Exception){
+            Assert.fail()
         }
     }
 }
