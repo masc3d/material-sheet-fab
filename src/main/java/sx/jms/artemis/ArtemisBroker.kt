@@ -13,6 +13,7 @@ import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl
 import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS
 import org.apache.activemq.artemis.spi.core.security.ActiveMQSecurityManagerImpl
 import sx.jms.Broker
+import java.io.File
 
 /**
  * Created by masc on 05/10/2016.
@@ -64,6 +65,12 @@ class ArtemisBroker : Broker(NATIVE_TCP_PORT) {
                         TransportConfiguration(
                                 NettyConnectorFactory::class.java.getName(), brokerConnectorParams))
 
+        val dataDirectory = this.dataDirectory
+        if (dataDirectory != null) {
+            System.setProperty("artemis.instance", dataDirectory.toString())
+        }
+
+        // Setup cluster/peer connectivity
         val staticConnectors = this.peerBrokers.map {
             val peerConnectorParams = mutableMapOf<String, Any>()
             peerConnectorParams.put(TransportConstants.HOST_PROP_NAME, it.hostname)

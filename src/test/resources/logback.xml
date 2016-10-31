@@ -10,4 +10,5 @@
     </root>
 
     <logger name="ROOT" level="INFO"/>
+    <logger name="org.apache.activemq.artemis" level="INFO"/>
 </configuration>

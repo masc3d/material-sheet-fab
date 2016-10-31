@@ -38,6 +38,20 @@ configurations {
     compile.extendsFrom provided
 }
 
+// Prototype tests
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file("$projectDir/src/prototype/java")
+        }
+    }
+}
+
+test {
+    exclude 'sx/jms/prototype/**'
+}
+
 dependencies {
     compile(
             project(':libs:sx-common'),
