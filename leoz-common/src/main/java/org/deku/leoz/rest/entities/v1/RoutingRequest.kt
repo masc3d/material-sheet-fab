@@ -31,6 +31,14 @@ class RoutingRequest {
         var desiredStation: String? = null
 
         constructor() {  }
+
+        constructor(country: String? = null, zip: String? = null, timeFrom: String? = null, timeTo: String? = null, desiredStation: String? = null) {
+            this.country = country
+            this.zip = zip
+            this.timeFrom = timeFrom
+            this.timeTo = timeTo
+            this.desiredStation = desiredStation
+        }
     }
 
     @ApiModelProperty(dataType = "date", example = "2015-06-01", position = 10, required = true, value = "Send date", allowableValues = "2015-06-01")

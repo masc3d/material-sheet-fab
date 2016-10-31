@@ -18,13 +18,13 @@ import javax.inject.Inject
 @ContextConfiguration(classes = arrayOf(RoutingService::class))
 class RoutingLogicTest : DataTest() {
     @Inject
-    private lateinit var mRoutingService: RoutingService
+    private lateinit var routingService: RoutingService
 
     @Test
     fun testRouting01() {
         try {
             val request = RoutingRequest()
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.errorCode)
         }
@@ -36,7 +36,7 @@ class RoutingLogicTest : DataTest() {
         try {
             val request = RoutingRequest()
             request.sendDate = ShortDate("2015-08-01")
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.errorCode)
         }
@@ -51,7 +51,7 @@ class RoutingLogicTest : DataTest() {
             val rp = RoutingRequest.RequestParticipant()
             rp.zip = "64850"
             request.sender = rp
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.errorCode)
         }
@@ -65,7 +65,7 @@ class RoutingLogicTest : DataTest() {
             val rp = RoutingRequest.RequestParticipant()
             rp.country = "DE"
             request.sender = rp
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.errorCode)
         }
@@ -80,7 +80,7 @@ class RoutingLogicTest : DataTest() {
             rp.country = "D"
             rp.zip = "64850"
             request.sender = rp
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.WRONG_PARAMETER_VALUE, e.errorCode)
         }
@@ -96,7 +96,7 @@ class RoutingLogicTest : DataTest() {
             rp.country = "DE"
             rp.zip = "6485"
             request.sender = rp
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.WRONG_PARAMETER_VALUE, e.errorCode)
         }
@@ -111,7 +111,7 @@ class RoutingLogicTest : DataTest() {
             rp.country = "DE"
             rp.zip = "A4850"
             request.sender = rp
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.WRONG_PARAMETER_VALUE, e.errorCode)
         }
@@ -125,7 +125,7 @@ class RoutingLogicTest : DataTest() {
             val rp = RoutingRequest.RequestParticipant()
             rp.country = "AT"
             request.consignee = rp
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.errorCode)
         }
@@ -140,7 +140,7 @@ class RoutingLogicTest : DataTest() {
             rp.country = "PL"
             rp.zip = "10010"
             request.sender = rp
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
             Assert.assertEquals(null, r.consignee)
             Assert.assertEquals(r.sender!!.station.toLong(), 514)
             Assert.assertEquals(r.sender!!.zipCode, "10-010")
@@ -159,7 +159,7 @@ class RoutingLogicTest : DataTest() {
     //            rp.setCountry("GB");
     //            rp.setZip("ab10 6");
     //            request.setSender(rp);
-    //            Routing r = mRoutingService.request(request);
+    //            Routing r = mthis.routingService.request(request);
     //            Assert.assertEquals(null, r.getConsignee());
     //            Assert.assertEquals(r.getSender().getStation(), "523");
     //            Assert.assertEquals(r.getSender().getZipCode(), "ab10 6");
@@ -182,7 +182,7 @@ class RoutingLogicTest : DataTest() {
             rpc.zip = "64850"
             request.consignee = rpc
 
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
             Assert.assertEquals(r.consignee!!.station.toLong(), 363)
             Assert.assertEquals(r.sender!!.dayType, "Saturday")
             Assert.assertEquals(r.sender!!.station.toLong(), 280)
@@ -207,7 +207,7 @@ class RoutingLogicTest : DataTest() {
             rpc.zip = "65850"
             request.consignee = rpc
 
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
             Assert.assertEquals(r.consignee!!.station.toLong(), 363)
             Assert.assertEquals(r.sender!!.dayType, "Saturday")
             Assert.assertEquals(r.sender!!.station.toLong(), 280)
@@ -232,7 +232,7 @@ class RoutingLogicTest : DataTest() {
             rpc.zip = "01108"
             request.consignee = rpc
 
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
             Assert.assertEquals(r.consignee!!.station.toLong(), 412)
             Assert.assertEquals(r.sender!!.dayType, "Saturday")
             Assert.assertEquals(r.sender!!.station.toLong(), 412)
@@ -257,7 +257,7 @@ class RoutingLogicTest : DataTest() {
             rpc.zip = "20148"
             request.consignee = rpc
 
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
             Assert.assertEquals(r.consignee!!.station.toLong(), 20)
             Assert.assertEquals(r.sender!!.dayType, "Saturday")
             Assert.assertEquals(r.sender!!.station.toLong(), 20)
@@ -282,7 +282,7 @@ class RoutingLogicTest : DataTest() {
             rpc.zip = "44623"
             request.consignee = rpc
 
-            val r = mRoutingService.request(request)
+            val r = this.routingService.request(request)
             Assert.assertEquals(r.consignee!!.station.toLong(), 20)
             Assert.assertEquals(r.sender!!.dayType, "Saturday")
             Assert.assertEquals(r.sender!!.station.toLong(), 16)
@@ -293,63 +293,48 @@ class RoutingLogicTest : DataTest() {
         }
     }
 
-    /*
-    Check zipcode which is affected by regional holiday (Day after send date is holiday) - Weekend between these days
+    /**
+     * Check zipcode which is affected by regional holiday (Day after send date is holiday) - Weekend between these days
      */
     @Test
-    fun testRegionalHoliday01(){
-        try{
-            val mRequest : RoutingRequest = RoutingRequest()
-            mRequest.sendDate = ShortDate("2016-10-28")
-            val mConsignee : RoutingRequest.RequestParticipant = RoutingRequest.RequestParticipant()
-            mConsignee.country = "DE"
-            mConsignee.zip = "99084"
-            mRequest.consignee = mConsignee
+    fun testRegionalHoliday01() {
+        val request: RoutingRequest = RoutingRequest()
+        request.sendDate = ShortDate("2016-10-28")
+        request.consignee = RoutingRequest.RequestParticipant(
+                country = "DE",
+                zip = "99084")
 
-            val mRouting : Routing = mRoutingService.request(mRequest)
-            Assert.assertEquals(mRouting.deliveryDate!!.toString(), "2016-11-01")
-        }catch(e: Exception){
-            Assert.fail()
-        }
+        val routing: Routing = this.routingService.request(request)
+        Assert.assertEquals(routing.deliveryDate!!.toString(), "2016-11-01")
     }
 
-    /*
-    Check zipcode which is affected by regional holiday (Day after send date is holiday)
+    /**
+     * Check zipcode which is affected by regional holiday (Day after send date is holiday)
      */
     @Test
-    fun testRegionalHoliday02(){
-        try{
-            val mRequest : RoutingRequest = RoutingRequest()
-            mRequest.sendDate = ShortDate("2016-10-31")
-            val mConsignee : RoutingRequest.RequestParticipant = RoutingRequest.RequestParticipant()
-            mConsignee.country = "DE"
-            mConsignee.zip = "40822"
-            mRequest.consignee = mConsignee
+    fun testRegionalHoliday02() {
+        val request: RoutingRequest = RoutingRequest()
+        request.sendDate = ShortDate("2016-10-31")
+        request.consignee = RoutingRequest.RequestParticipant(
+            country = "DE",
+            zip = "40822")
 
-            val mRouting : Routing = mRoutingService.request(mRequest)
-            Assert.assertEquals(mRouting.deliveryDate!!.toString(), "2016-11-02")
-        }catch(e: Exception){
-            Assert.fail()
-        }
+        val routing: Routing = this.routingService.request(request)
+        Assert.assertEquals(routing.deliveryDate!!.toString(), "2016-11-02")
     }
 
-    /*
-    Check zipcode which is not affected by regional holiday
+    /**
+     * Check zipcode which is not affected by regional holiday
      */
     @Test
-    fun testRegionalHoliday03(){
-        try{
-            val mRequest : RoutingRequest = RoutingRequest()
-            mRequest.sendDate = ShortDate("2016-10-28")
-            val mConsignee : RoutingRequest.RequestParticipant = RoutingRequest.RequestParticipant()
-            mConsignee.country = "DE"
-            mConsignee.zip = "36286"
-            mRequest.consignee = mConsignee
+    fun testRegionalHoliday03() {
+        val request: RoutingRequest = RoutingRequest()
+        request.sendDate = ShortDate("2016-10-28")
+        request.consignee = RoutingRequest.RequestParticipant(
+            country = "DE",
+            zip = "36286")
 
-            val mRouting : Routing = mRoutingService.request(mRequest)
-            Assert.assertEquals(mRouting.deliveryDate!!.toString(), "2016-10-31")
-        }catch(e: Exception){
-            Assert.fail()
-        }
+        val routing: Routing = this.routingService.request(request)
+        Assert.assertEquals(routing.deliveryDate!!.toString(), "2016-10-31")
     }
 }
