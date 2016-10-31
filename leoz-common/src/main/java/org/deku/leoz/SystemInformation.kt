@@ -53,41 +53,31 @@ class SystemInformation : Serializable {
         @JvmStatic fun create(): SystemInformation {
             var hostname: String = ""
             var hardwareAddress: String = ""
-            var ipv4: Inet4Address?
-            var ipv6: Inet6Address?
 
             val addresses = ArrayList<InetAddress>()
 
             var networkInterface: NetworkInterface? = null
             var localhost: InetAddress? = null
+
             try {
-                localhost = InetAddress.getLocalHost()
-                log.info("Local host address [${localhost}]")
-                networkInterface = NetworkInterface.getByInetAddress(localhost)
-                log.info("Network interface [${networkInterface}]")
+                for (nii in Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                    if (nii.isUp && !nii.isLoopback) {
+                        networkInterface = nii
+                        localhost = findIpv4Address(nii)
+                        break
+                    }
+                }
             } catch (e: Exception) {
                 log.warn(e.message, e)
             }
 
-            if (networkInterface == null) {
-                log.warn("No network interface referring to host name")
-
-                try {
-                    for (nii in Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                        if (nii.isUp && !nii.isLoopback) {
-                            networkInterface = nii
-                            localhost = findIpv4Address(nii)
-                            break
-                        }
-                    }
-                } catch (e: Exception) {
-                    log.warn(e.message, e)
-                }
-
-            }
-
             if (networkInterface != null) {
+                log.info("Network interface [${networkInterface}] [${localhost}]")
+
                 try {
+                    val ipv4: Inet4Address?
+                    val ipv6: Inet6Address?
+
                     // Hardware address
                     // Format hardware address
                     hardwareAddress = networkInterface.hardwareAddress.map { c -> java.lang.String.format("%02x", c) }.joinToString(":")
@@ -108,7 +98,6 @@ class SystemInformation : Serializable {
                 } catch (e: Exception) {
                     log.warn(e.message, e)
                 }
-
             }
 
             val si = SystemInformation()
