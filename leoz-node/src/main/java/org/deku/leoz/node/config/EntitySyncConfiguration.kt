@@ -2,12 +2,15 @@ package org.deku.leoz.node.config
 
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
+import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.jpa.*
 import org.deku.leoz.node.data.sync.EntityConsumer
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
+import sx.Lifecycle
 import sx.jms.Broker
 import sx.jms.activemq.ActiveMQBroker
 import java.util.concurrent.ScheduledExecutorService
@@ -35,8 +38,21 @@ open class EntitySyncConfiguration {
     @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
     private lateinit var entityManagerFactory: EntityManagerFactory
 
+    @Inject
+    private lateinit var lifecycleController: LifecycleController
+
     /** Entity sync consumer */
-    private var entityConsumer: EntityConsumer by Delegates.notNull()
+    @Bean
+    open fun entityConsumer(): EntityConsumer {
+        return EntityConsumer(
+                notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
+                requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
+                entityManagerFactory = this.entityManagerFactory,
+                executorService = this.executorService)
+    }
+
+    @Inject
+    private lateinit var entityConsumer: EntityConsumer
 
     /** Broker listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
@@ -73,13 +89,6 @@ open class EntitySyncConfiguration {
         ActiveMQBroker.instance.delegate.add(brokerEventListener)
         if (ActiveMQBroker.instance.isStarted)
             brokerEventListener.onStart()
-
-        // Entity sync consumer
-        this.entityConsumer = EntityConsumer(
-                notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
-                requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
-                entityManagerFactory = this.entityManagerFactory,
-                listenerExecutor = this.executorService)
     }
 
     @PreDestroy
