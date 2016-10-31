@@ -1,7 +1,9 @@
 package org.deku.leoz.node.config
 
 import com.google.common.base.Strings
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.ArtemisConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.slf4j.LoggerFactory
@@ -39,7 +41,6 @@ open class MessageBrokerConfiguration {
 
     @Inject
     private lateinit var peerSettings: RemotePeerSettings
-
 
     @PostConstruct
     fun onInitialize() {

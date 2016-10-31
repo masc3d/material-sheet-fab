@@ -10,14 +10,20 @@ import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.sync.EntityConsumer
 import org.deku.leoz.node.data.sync.EntityPublisher
 import org.deku.leoz.node.test.DataTest
+import org.deku.leoz.node.test.config.TestMessageBrokerConfiguration
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
+import sx.jms.Broker
 import sx.jms.Channel
+import sx.jms.activemq.ActiveMQBroker
+import sx.jms.artemis.ArtemisBroker
 import java.util.concurrent.Executors
+import javax.inject.Inject
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
 
@@ -26,38 +32,40 @@ import javax.persistence.PersistenceUnit
  */
 //@Ignore
 @RunWith(SpringJUnit4ClassRunner::class)
+@Import(TestMessageBrokerConfiguration::class)
 class EntitySyncTest : DataTest() {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)
     private lateinit var entityManagerFactory: EntityManagerFactory
 
     private var listener: EntityPublisher? = null
     private var client: EntityConsumer? = null
 
-    private val USE_ARTEMIS = false
+    @Inject
+    private lateinit var broker: Broker
 
     @Before
     @Throws(Exception::class)
     fun setup() {
-        val l = LoggerFactory.getLogger("org.deku.leoz.node") as Logger
-        l.level = Level.DEBUG
-
         // Enforcing tcp connection
         //ActiveMQContext.instance().getBroker().setLocalUri(new URI("tcp://localhost:61616"));
 
         // Starting broker
-        if (!USE_ARTEMIS)
-            ActiveMQConfiguration.instance.broker.start()
-        else
-            ArtemisConfiguration.broker.start()
+        this.broker.start()
 
         val notificationChannelConfig: Channel.Configuration
         val requestChannelConfig: Channel.Configuration
-        if (!USE_ARTEMIS) {
-            notificationChannelConfig = ActiveMQConfiguration.instance.entitySyncTopic
-            requestChannelConfig = ActiveMQConfiguration.instance.entitySyncQueue
-        } else {
-            notificationChannelConfig = ArtemisConfiguration.entitySyncTopic
-            requestChannelConfig = ArtemisConfiguration.entitySyncQueue
+        when (this.broker) {
+            is ActiveMQBroker -> {
+                notificationChannelConfig = ActiveMQConfiguration.instance.entitySyncTopic
+                requestChannelConfig = ActiveMQConfiguration.instance.entitySyncQueue
+            }
+            is ArtemisBroker -> {
+                notificationChannelConfig = ArtemisConfiguration.entitySyncTopic
+                requestChannelConfig = ArtemisConfiguration.entitySyncQueue
+            }
+            else -> throw UnsupportedOperationException("Unknown broker type")
         }
 
         listener = EntityPublisher(
@@ -77,12 +85,6 @@ class EntitySyncTest : DataTest() {
     fun tearDown() {
         client!!.close()
         listener!!.close()
-        if (!USE_ARTEMIS) {
-            ActiveMQConfiguration.instance.broker.close()
-        } else {
-            (ArtemisConfiguration.connectionFactory.targetConnectionFactory as ActiveMQConnectionFactory).close()
-            ArtemisConfiguration.broker.close()
-        }
     }
 
     @Test
