@@ -33,7 +33,7 @@ class EntitySyncTest : DataTest() {
     private var listener: EntityPublisher? = null
     private var client: EntityConsumer? = null
 
-    private val USE_ARTEMIS = true
+    private val USE_ARTEMIS = false
 
     @Before
     @Throws(Exception::class)
@@ -64,13 +64,13 @@ class EntitySyncTest : DataTest() {
                 notificationChannelConfiguration = notificationChannelConfig,
                 requestChannelConfiguration = requestChannelConfig,
                 entityManagerFactory = entityManagerFactory,
-                executor = Executors.newSingleThreadExecutor())
+                listenerExecutor = Executors.newSingleThreadExecutor())
 
         client = EntityConsumer(
                 notificationChannelConfiguration = notificationChannelConfig,
                 requestChannelConfiguration = requestChannelConfig,
                 entityManagerFactory = entityManagerFactory,
-                executor = Executors.newSingleThreadExecutor())
+                listenerExecutor = Executors.newSingleThreadExecutor())
     }
 
     @After
