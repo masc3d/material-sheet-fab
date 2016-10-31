@@ -17,8 +17,7 @@ import javax.inject.Named
  */
 @Named
 class LifecycleController {
-
-    val lifecycles = Collections.synchronizedList(ArrayList<WeakReference<Lifecycle>>())
+    val lifecycles = Collections.synchronizedList(ArrayList<Lifecycle>())
 
     @Inject
     private lateinit var peerSettings: RemotePeerSettings
@@ -38,7 +37,7 @@ class LifecycleController {
             // If remote connection is not required, lifecycles start when the broker starts
             if (!this@LifecycleController.requiresRemoteConnection) {
                 this@LifecycleController.lifecycles.iterator().forEach {
-                    it.get()?.restart()
+                    it.restart()
                 }
             }
         }
@@ -46,7 +45,7 @@ class LifecycleController {
         override fun onStop() {
             // All lifecycles end with the broker dying
             this@LifecycleController.lifecycles.iterator().forEach {
-                it.get()?.stop()
+                it.stop()
             }
         }
 
@@ -54,7 +53,7 @@ class LifecycleController {
             // Network dependent lifecycles need to restart if this application instance relies on remote connectivity
             if (this@LifecycleController.requiresRemoteConnection) {
                 this@LifecycleController.lifecycles.iterator().forEach {
-                    it.get()?.restart()
+                    it.restart()
                 }
             }
         }
@@ -63,7 +62,7 @@ class LifecycleController {
             //  Network dependent lifecycles need to stop if this application instance relies on remote connectivity
             if (this@LifecycleController.requiresRemoteConnection) {
                 this@LifecycleController.lifecycles.iterator().forEach {
-                    it.get()?.stop()
+                    it.stop()
                 }
             }
         }
@@ -75,7 +74,7 @@ class LifecycleController {
      * @param lifecycle Lifecycle to register
      */
     fun registerNetworkDependant(lifecycle: Lifecycle) {
-        this.lifecycles.add(WeakReference(lifecycle))
+        this.lifecycles.add(lifecycle)
     }
 
     @PostConstruct
