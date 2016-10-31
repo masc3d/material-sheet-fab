@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.google.common.base.CharMatcher
 import org.slf4j.LoggerFactory
 import java.io.Serializable
-import java.net.Inet4Address
-import java.net.Inet6Address
-import java.net.InetAddress
-import java.net.NetworkInterface
+import java.net.*
 import java.util.*
 
 /**
@@ -29,6 +26,33 @@ class SystemInformation : Serializable {
 
         /** Logger */
         private val log = LoggerFactory.getLogger(SystemInformation::class.java)
+
+        /**
+         * Wrapper for releveant network interface/address info
+         */
+        private data class InterfaceAddressInfo(
+                val networkInterface: NetworkInterface,
+                val interfaceAddress: InterfaceAddress) {
+        }
+
+        /**
+         * Network interfaces
+         */
+        private val interfaces by lazy {
+            NetworkInterface.getNetworkInterfaces().toList()
+                    // Filter interfaces
+                    .filter { !it.isLoopback && it.isUp && !it.isVirtual && !it.isPointToPoint }
+                    // Map relevant information to InterfaceAddressInfo
+                    .flatMap { it.interfaceAddresses.map { ia -> InterfaceAddressInfo(it, ia) } }
+                    // Filter by address criteria
+                    .filter {
+                        !it.interfaceAddress.address.isLoopbackAddress &&
+                                it.interfaceAddress.address.isSiteLocalAddress &&
+                                it.interfaceAddress.broadcast != null
+                    }
+                    .sortedBy { it.networkInterface.index }
+                    .toTypedArray()
+        }
 
         /**
          * Find appropriate ipv4 address
@@ -57,22 +81,37 @@ class SystemInformation : Serializable {
             val addresses = ArrayList<InetAddress>()
 
             var networkInterface: NetworkInterface? = null
-            var localhost: InetAddress? = null
+            var host: InetAddress? = null
 
+            // Fast interface lookup using .getLocalHost(). Works pretty well on OSX/Windows
             try {
-                for (nii in Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                    if (nii.isUp && !nii.isLoopback) {
-                        networkInterface = nii
-                        localhost = findIpv4Address(nii)
-                        break
-                    }
+                val localhost = InetAddress.getLocalHost()
+                if (!localhost.isLoopbackAddress) {
+                    host = localhost
+                    networkInterface = NetworkInterface.getByInetAddress(host)
                 }
             } catch (e: Exception) {
-                log.warn(e.message, e)
+                log.warn(e.message)
+            }
+
+            // Some (eg. linux) systems require a more refined lookup
+            if (networkInterface == null) {
+                try {
+                    val interfaces = this.interfaces
+                    for (nii in Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                        if (nii.isUp && !nii.isLoopback && !nii.isPointToPoint) {
+                            networkInterface = nii
+                            host = findIpv4Address(nii)
+                            break
+                        }
+                    }
+                } catch (e: Exception) {
+                    log.warn(e.message)
+                }
             }
 
             if (networkInterface != null) {
-                log.info("Network interface [${networkInterface}] [${localhost}]")
+                log.info("Network interface [${networkInterface}] [${host}]")
 
                 try {
                     val ipv4: Inet4Address?
@@ -85,7 +124,7 @@ class SystemInformation : Serializable {
                     // Hostname. getHostName()/getCanonicalHostName() as it does connection check/DNS resolve
                     // and may be slow in some scenarios (eg. windows). toString() is good enough and
                     // returns hostname without connection check/lookup
-                    hostname = localhost!!.hostName
+                    hostname = host!!.hostName
 
                     // Find network interface addresses
                     ipv4 = findIpv4Address(networkInterface)
@@ -96,7 +135,7 @@ class SystemInformation : Serializable {
                     if (ipv6 != null)
                         addresses.add(ipv6)
                 } catch (e: Exception) {
-                    log.warn(e.message, e)
+                    log.warn(e.message)
                 }
             }
 
