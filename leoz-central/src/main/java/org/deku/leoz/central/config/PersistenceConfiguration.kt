@@ -1,7 +1,6 @@
 package org.deku.leoz.central.config
 
-import com.mysql.cj.core.conf.PropertyDefinitions
-import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread
+import com.mysql.jdbc.AbandonedConnectionCleanupThread
 import org.jooq.SQLDialect
 import org.jooq.impl.DataSourceConnectionProvider
 import org.jooq.impl.DefaultDSLContext
@@ -25,7 +24,7 @@ import javax.annotation.PreDestroy
 import javax.inject.Inject
 
 /**
- * Leoz-central database persistence configuration
+ * Persistence configuration for leoz-central
  * Created by masc on 28.08.14.
  */
 @Configuration(PersistenceConfiguration.QUALIFIER)
@@ -46,19 +45,15 @@ open class PersistenceConfiguration {
     @Qualifier(QUALIFIER)
     @ConfigurationProperties(prefix = "datasource.central")
     open fun dataSourceCentral(): AbstractDataSource {
-        // When running within tomcat, spring can't figure out the driver type (even though mysql is
-        // part of jdbc url)
-
         val dataSource = DataSourceBuilder.create()
-                .driverClassName(com.mysql.cj.jdbc.Driver::class.java.canonicalName)
+                .driverClassName(com.mysql.jdbc.Driver::class.java.canonicalName)
                 .type(DriverManagerDataSource::class.java)
                 .build() as DriverManagerDataSource
 
-        // TODO: figure out how to get those into application.properties/yml
         val dataSourceProperties = Properties()
-        dataSourceProperties.setProperty(PropertyDefinitions.PNAME_zeroDateTimeBehavior, PropertyDefinitions.ZERO_DATETIME_BEHAVIOR_CONVERT_TO_NULL)
-        dataSourceProperties.setProperty(PropertyDefinitions.PNAME_connectTimeout, "1000")
-        dataSourceProperties.setProperty(PropertyDefinitions.PNAME_serverTimezone, "GMT")
+        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull")
+        dataSourceProperties.setProperty("connectTimeout", "1000")
+
         dataSource.setConnectionProperties(dataSourceProperties)
 
         return dataSource
