@@ -69,7 +69,9 @@ dependencies {
             "org.apache.httpcomponents:httpclient:$v_apache_httpclient",
             "com.thoughtworks.xstream:xstream:$v_xstream",
             // Artemis
-            "org.apache.activemq:artemis-jms-server:1.4.0",
+            "org.apache.activemq:artemis-jms-server:$v_artemis",
+            "org.apache.activemq:artemis-amqp-protocol:$v_artemis",
+            "org.apache.activemq:artemis-openwire-protocol:$v_artemis",
             // Spring
             "org.springframework:spring-jms:$v_spring"
     )

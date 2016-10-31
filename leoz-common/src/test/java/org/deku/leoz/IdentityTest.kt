@@ -1,6 +1,5 @@
 package org.deku.leoz
 
-import com.esotericsoftware.yamlbeans.YamlWriter
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
