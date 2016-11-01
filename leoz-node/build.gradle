@@ -92,7 +92,9 @@ sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
 clean {
-    GENERATED_DIR.deleteDir()
+    doFirst {
+        GENERATED_DIR.deleteDir()
+    }
 }
 
 kapt {
