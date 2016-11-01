@@ -298,13 +298,13 @@ class RoutingLogicTest : DataTest() {
      */
     @Test
     fun testRegionalHoliday01() {
-        val request: RoutingRequest = RoutingRequest()
-        request.sendDate = ShortDate("2016-10-28")
-        request.consignee = RoutingRequest.RequestParticipant(
-                country = "DE",
-                zip = "99084")
+        val request = RoutingRequest(
+                sendDate = ShortDate("2016-10-28"),
+                consignee = RoutingRequest.RequestParticipant(
+                        country = "DE",
+                        zip = "99084"))
 
-        val routing: Routing = this.routingService.request(request)
+        val routing = this.routingService.request(request)
         Assert.assertEquals(routing.deliveryDate!!.toString(), "2016-11-01")
     }
 
@@ -313,13 +313,13 @@ class RoutingLogicTest : DataTest() {
      */
     @Test
     fun testRegionalHoliday02() {
-        val request: RoutingRequest = RoutingRequest()
-        request.sendDate = ShortDate("2016-10-31")
-        request.consignee = RoutingRequest.RequestParticipant(
-            country = "DE",
-            zip = "40822")
+        val request = RoutingRequest(
+                sendDate = ShortDate("2016-10-31"),
+                consignee = RoutingRequest.RequestParticipant(
+                        country = "DE",
+                        zip = "40822"))
 
-        val routing: Routing = this.routingService.request(request)
+        val routing = this.routingService.request(request)
         Assert.assertEquals(routing.deliveryDate!!.toString(), "2016-11-02")
     }
 
@@ -328,13 +328,13 @@ class RoutingLogicTest : DataTest() {
      */
     @Test
     fun testRegionalHoliday03() {
-        val request: RoutingRequest = RoutingRequest()
-        request.sendDate = ShortDate("2016-10-28")
-        request.consignee = RoutingRequest.RequestParticipant(
-            country = "DE",
-            zip = "36286")
+        val request = RoutingRequest(
+                sendDate = ShortDate("2016-10-28"),
+                consignee = RoutingRequest.RequestParticipant(
+                        country = "DE",
+                        zip = "36286"))
 
-        val routing: Routing = this.routingService.request(request)
+        val routing = this.routingService.request(request)
         Assert.assertEquals(routing.deliveryDate!!.toString(), "2016-10-31")
     }
 }

@@ -58,4 +58,13 @@ class RoutingRequest {
 
     @ApiModelProperty(value = "Consignee", position = 40, required = false)
     var consignee: RequestParticipant? = null
+
+    constructor(sendDate: ShortDate? = null, desiredDeliveryDate: ShortDate? = null, services: Int? = null, weight: Float? = null, sender: RequestParticipant? = null, consignee: RequestParticipant? = null) {
+        this.sendDate = sendDate
+        this.desiredDeliveryDate = desiredDeliveryDate
+        this.services = services
+        this.weight = weight
+        this.sender = sender
+        this.consignee = consignee
+    }
 }
