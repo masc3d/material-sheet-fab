@@ -60,3 +60,4 @@ leoz.trace.db
 hibernate.cfg.xml
 openjpa-schema.xml
 .idea/dataSources
+.directory
