@@ -96,7 +96,7 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
                             Arrays.asList(
                                     *WebserviceFactory.depotService().find(fxSearchText.text)))
                 } catch (e: Exception) {
-                    log.error(e.message, e)
+                    log.error(e.message)
                     throw e
                 }
             }
