@@ -82,6 +82,11 @@ open class PersistenceConfiguration {
      */
     private val profiling = false
 
+    /**
+     * H2 server
+     */
+    private var h2Server: Server? = null
+
     @Bean
     @FlywayDataSource
     @Qualifier(QUALIFIER)
@@ -120,29 +125,6 @@ open class PersistenceConfiguration {
                         .joinToString(separator = ";", prefix = ";"))
 
         return JdbcConnectionPool.create(dataSource)
-    }
-
-    @Bean
-    @Qualifier(QUALIFIER)
-    open fun h2Server(): Server? {
-        val server: Server?
-
-        if (this.settings.h2.server.enabled) {
-            log.info("Starting H2 server on port [${this.settings.h2.server.port}]")
-
-            val args = mutableListOf<String>()
-            args.addAll(arrayOf("-baseDir", "${StorageConfiguration.instance.h2DatabaseFile.parentFile}"))
-            args.addAll(arrayOf("-tcpPort", "${this.settings.h2.server.port}"))
-            if (this.settings.h2.server.allowOthers)
-                args.add("-tcpAllowOthers")
-
-            server = Server.createTcpServer(*args.toTypedArray())
-            server.start()
-        } else {
-            server = null
-        }
-
-        return server
     }
 
     //region JPA
@@ -264,11 +246,29 @@ open class PersistenceConfiguration {
 
     @PostConstruct
     open fun onInitialize() {
+        val server: Server?
+
+        if (this.settings.h2.server.enabled) {
+            log.info("Starting H2 server on port [${this.settings.h2.server.port}]")
+
+            val args = mutableListOf<String>()
+            args.addAll(arrayOf("-baseDir", "${StorageConfiguration.instance.h2DatabaseFile.parentFile}"))
+            args.addAll(arrayOf("-tcpPort", "${this.settings.h2.server.port}"))
+            if (this.settings.h2.server.allowOthers)
+                args.add("-tcpAllowOthers")
+
+            server = Server.createTcpServer(*args.toTypedArray())
+            server.start()
+        } else {
+            server = null
+        }
+
+        this.h2Server = server
     }
 
     @PreDestroy
     open fun onDestroy() {
-        val server = this.h2Server()
+        val server = this.h2Server
         if (server != null) {
             log.info("Closing H2 server")
             server.stop()
