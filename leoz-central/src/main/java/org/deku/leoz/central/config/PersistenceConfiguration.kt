@@ -43,7 +43,7 @@ open class PersistenceConfiguration {
 
     @Bean
     @Qualifier(QUALIFIER)
-    @ConfigurationProperties(prefix = "datasource.central")
+    @ConfigurationProperties(prefix = "persistence.central.datasource")
     open fun dataSourceCentral(): AbstractDataSource {
         val dataSource = DataSourceBuilder.create()
                 .driverClassName(com.mysql.jdbc.Driver::class.java.canonicalName)

@@ -1,14 +1,15 @@
 package org.deku.leoz.node.peer
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.context.annotation.Configuration
 import javax.inject.Named
 
 /**
  * Configuration settings for connecting to a remote leoz peer/node
  */
-@Named
+@Configuration
 @ConfigurationProperties(prefix = "remote")
-class RemotePeerSettings {
+open class RemotePeerSettings {
     inner class Broker {
         /** Native broker port */
         var nativePort: Int? = null

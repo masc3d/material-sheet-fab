@@ -12,17 +12,6 @@ logging:
         # Shows config loading details on DEBUG log level
         org.springframework.boot.context.config: INFO
 
-# Central datasource
-datasource:
-    central:
-        url: jdbc:mysql://10.0.10.10:3306/dekuclient?useSSL=false
-        username: leoz
-        password: leoz
-
-# leoz-central is final destination, doesn't have a peer
-remote:
-    host: ''
-
 server:
     ssl:
         # SSL is enabled for leoz-central
@@ -34,6 +23,18 @@ server:
         # Resolved by simply just having one certificate in the keystore (removed self-signed)
         key-alias: le-1d4811c9-e696-4106-bfb2-03eb9d72bf6b
         key-password: FzgPjlHg4We3
+
+# Central datasource
+persistence:
+    central:
+        datasource:
+            url: jdbc:mysql://10.0.10.10:3306/dekuclient?useSSL=false
+            username: leoz
+            password: leoz
+
+# leoz-central is final destination, doesn't have a peer
+remote:
+    host: ''
 
 # Updater configuration
 update:

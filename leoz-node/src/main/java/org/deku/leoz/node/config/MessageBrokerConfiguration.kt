@@ -26,12 +26,12 @@ import javax.inject.Named
 open class MessageBrokerConfiguration {
     private val log = LoggerFactory.getLogger(MessageBrokerConfiguration::class.java)
 
-    @Named
-    @ConfigurationProperties(prefix = "broker")
     /**
      * Configuration properties
      */
-    class Settings {
+    @Configuration
+    @ConfigurationProperties(prefix = "broker")
+    open class Settings {
         var nativePort: Int? = null
         var httpContextPath: String? = null
     }

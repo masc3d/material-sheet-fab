@@ -24,9 +24,9 @@ import javax.inject.Named
 @Lazy(false)
 open class UpdateInfoServiceConfiguration {
 
-    @Named
+    @Configuration
     @ConfigurationProperties(prefix = "update.info-service")
-    class Settings {
+    open class Settings {
         /** Override local repostiory with remote leoz repository */
         var rsyncHost: String? = null
     }
