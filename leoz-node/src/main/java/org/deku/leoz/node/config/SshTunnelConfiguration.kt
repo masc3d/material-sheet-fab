@@ -23,9 +23,9 @@ open class SshTunnelConfiguration {
     /**
      * SSH tunnel configuration properties
      */
-    @Named
+    @Configuration
     @ConfigurationProperties(prefix = "ssh.tunnel")
-    class Settings {
+    open class Settings {
         var localPortRangeStart: Int by Delegates.notNull()
         var localPortRangeEnd: Int by Delegates.notNull()
 

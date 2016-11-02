@@ -32,9 +32,9 @@ import javax.persistence.EntityManager
 open class BundleUpdateServiceConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    @Named
+    @Configuration
     @ConfigurationProperties(prefix = "update")
-    class Settings {
+    open class Settings {
         /** Enable/disbale updates */
         var enabled: Boolean = false
         /** Perform automatic updates/retrieve update notifications */

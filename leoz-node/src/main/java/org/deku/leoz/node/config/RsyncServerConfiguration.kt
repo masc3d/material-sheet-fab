@@ -26,9 +26,9 @@ import kotlin.properties.Delegates
 @Lazy(false)
 open class RsyncServerConfiguration {
     /** Server properties holder */
-    @Named
+    @Configuration
     @ConfigurationProperties(prefix = "rsync.server")
-    class Settings {
+    open class Settings {
         var port: Int? = null
     }
 

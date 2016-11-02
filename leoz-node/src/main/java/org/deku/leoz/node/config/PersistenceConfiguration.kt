@@ -26,6 +26,7 @@ import org.jooq.impl.DefaultDSLContext
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
+import org.springframework.stereotype.Component
 import java.io.File
 import java.util.*
 import javax.annotation.PostConstruct
@@ -55,9 +56,9 @@ open class PersistenceConfiguration {
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java.name)
 
     /** Server properties holder */
-    @Named
+    @Configuration
     @ConfigurationProperties(prefix = "persistence")
-    private class Settings {
+    open class Settings {
         class H2 {
             class Server {
                 var port: Int = 0
