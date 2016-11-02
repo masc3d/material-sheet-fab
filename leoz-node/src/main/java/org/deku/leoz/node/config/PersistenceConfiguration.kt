@@ -127,6 +127,8 @@ open class PersistenceConfiguration {
         val server: Server?
 
         if (this.settings.h2.server.enabled) {
+            log.info("Starting H2 server on port [${this.settings.h2.server.port}]")
+
             val args = mutableListOf<String>()
             args.addAll(arrayOf("-baseDir", "${StorageConfiguration.instance.h2DatabaseFile.parentFile}"))
             args.addAll(arrayOf("-tcpPort", "${this.settings.h2.server.port}"))
@@ -265,8 +267,11 @@ open class PersistenceConfiguration {
 
     @PreDestroy
     open fun onDestroy() {
-        log.info("Closing H2 server")
-        this.h2Server()?.stop()
+        val server = this.h2Server()
+        if (server != null) {
+            log.info("Closing H2 server")
+            server.stop()
+        }
     }
 
     //        @Override
