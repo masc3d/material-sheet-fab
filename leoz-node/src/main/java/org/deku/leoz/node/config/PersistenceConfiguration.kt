@@ -6,6 +6,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
+import org.h2.tools.Server
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.flyway.FlywayDataSource
@@ -22,6 +23,7 @@ import org.jooq.conf.Settings
 import org.jooq.conf.StatementType
 import org.jooq.impl.DataSourceConnectionProvider
 import org.jooq.impl.DefaultDSLContext
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import java.io.File
@@ -29,6 +31,7 @@ import java.util.*
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
+import javax.inject.Named
 import javax.persistence.Entity
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
@@ -46,9 +49,28 @@ open class PersistenceConfiguration {
     companion object {
         const val QUALIFIER = "db_embedded"
         const val QUALIFIER_JOOQ = "db_embedded_jooq"
+        const val QUALIFIER_SERVER = "db_embedded_server"
     }
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java.name)
+
+    /** Server properties holder */
+    @Named
+    @ConfigurationProperties(prefix = "persistence")
+    private class Settings {
+        class H2 {
+            class Server {
+                var port: Int = 0
+                var enabled: Boolean = false
+                var allowOthers: Boolean = false
+            }
+            var server = Server()
+        }
+        var h2 = H2()
+    }
+
+    @Inject
+    private lateinit var settings: Settings
 
     /**
      * Enable SQL logging
@@ -97,6 +119,27 @@ open class PersistenceConfiguration {
                         .joinToString(separator = ";", prefix = ";"))
 
         return JdbcConnectionPool.create(dataSource)
+    }
+
+    @Bean
+    @Qualifier(QUALIFIER)
+    open fun h2Server(): Server? {
+        val server: Server?
+
+        if (this.settings.h2.server.enabled) {
+            val args = mutableListOf<String>()
+            args.addAll(arrayOf("-baseDir", "${StorageConfiguration.instance.h2DatabaseFile.parentFile}"))
+            args.addAll(arrayOf("-tcpPort", "${this.settings.h2.server.port}"))
+            if (this.settings.h2.server.allowOthers)
+                args.add("-tcpAllowOthers")
+
+            server = Server.createTcpServer(*args.toTypedArray())
+            server.start()
+        } else {
+            server = null
+        }
+
+        return server
     }
 
     //region JPA
@@ -211,7 +254,7 @@ open class PersistenceConfiguration {
     @Bean
     @Qualifier(QUALIFIER_JOOQ)
     open fun dslContext(): DefaultDSLContext {
-        val settings = Settings().withStatementType(StatementType.PREPARED_STATEMENT)
+        val settings = org.jooq.conf.Settings().withStatementType(StatementType.PREPARED_STATEMENT)
         return DefaultDSLContext(this.jooqConnectionProvider(), SQLDialect.H2, settings)
     }
     //endregion
@@ -222,7 +265,8 @@ open class PersistenceConfiguration {
 
     @PreDestroy
     open fun onDestroy() {
-
+        log.info("Closing H2 server")
+        this.h2Server()?.stop()
     }
 
     //        @Override

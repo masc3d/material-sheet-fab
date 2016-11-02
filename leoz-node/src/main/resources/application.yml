@@ -24,6 +24,16 @@ server:
         # SSL is disabled by default for egular leoz-nodes
         enabled: false
 
+persistence:
+    h2:
+        server:
+            # Enable h2 server for connecting to the embedded database while the application is running
+            enabled: false
+            # H2 server TCP port
+            port: 13100
+            # Allows connections on all network interfaces
+            allow-others: false
+
 # Broker settings
 broker:
     native-port: 13001
