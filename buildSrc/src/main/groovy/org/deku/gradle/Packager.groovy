@@ -337,7 +337,7 @@ class PackagerReleaseNativeBundleTask extends PackagerReleaseTask {
 
         // TODO: workaround for bug in jdk 1.8.0_60, where jars are not picked up when building bundle
         // Jars are already missing in packager bundle dir. This worked fine with jdk 1.8.0_51
-        if (SystemUtils.IS_OS_MAC_OSX) {
+        if (SystemUtils.IS_OS_MAC_OSX || SystemUtils.IS_OS_LINUX) {
             def releaseBundleJarPath = this.getReleaseBundle(PlatformId.current()).jarPath
             println "Copying jars -> [${releaseBundleJarPath}]"
             project.copy {
