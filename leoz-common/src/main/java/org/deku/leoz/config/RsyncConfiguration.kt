@@ -1,5 +1,6 @@
 package org.deku.leoz.config
 
+import org.slf4j.LoggerFactory
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import sx.rsync.Rsync
@@ -11,6 +12,7 @@ import java.net.URI
  * Created by masc on 15.09.15.
  */
 object RsyncConfiguration {
+    private val log = LoggerFactory.getLogger(this.javaClass)
     /**
      * Rsync default port
      */
@@ -37,17 +39,6 @@ object RsyncConfiguration {
 
     fun initialize() {
         Rsync.executable.baseFilename = "leoz-rsync"
-
-        try {
-            Rsync.executable.file
-        } catch(e: IllegalStateException) {
-            if (PlatformId.current().operatingSystem == OperatingSystem.LINUX) {
-                val nixRsyncFile = File("/usr/bin/rsync")
-                if (!nixRsyncFile.exists())
-                    throw IllegalStateException("Could not fallback to system `rsync` executable", e)
-
-                Rsync.executable.file = nixRsyncFile
-            }
-        }
+        log.info("Using [${Rsync.executable.file}]")
     }
 }
