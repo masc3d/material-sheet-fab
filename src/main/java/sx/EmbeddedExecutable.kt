@@ -2,6 +2,7 @@ package sx
 
 import org.apache.commons.lang3.SystemUtils
 import org.slf4j.LoggerFactory
+import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import java.io.File
 import java.nio.file.Files
@@ -18,7 +19,9 @@ import java.util.*
  */
 class EmbeddedExecutable(
         /** Rsync executable base filename */
-        public var baseFilename: String) {
+        var baseFilename: String,
+        /** Optional fallback */
+        val fallback: (() -> File?)? = null) {
 
     val log = LoggerFactory.getLogger(EmbeddedExecutable::class.java)
 
@@ -68,21 +71,21 @@ class EmbeddedExecutable(
                 }
                 .forEach { p ->
                     // Get file attribute view
-                    var fav = Files.getFileAttributeView(p, AclFileAttributeView::class.java)
+                    val fav = Files.getFileAttributeView(p, AclFileAttributeView::class.java)
 
                     if (fav != null) {
                         log.debug("Verifying executable permission for [${p}]")
 
-                        var oldAcls = fav.acl
-                        var newAcls = ArrayList<AclEntry>()
+                        val oldAcls = fav.acl
+                        val newAcls = ArrayList<AclEntry>()
                         var update = false
                         for (acl in oldAcls) {
                             // Add executable permission if it's not there yet
-                            var perms = acl.permissions()
+                            val perms = acl.permissions()
                             if (!perms.contains(AclEntryPermission.EXECUTE)) {
                                 perms.add(AclEntryPermission.EXECUTE)
                                 // Build new acl from old one with updated permissions
-                                var aclb = AclEntry.newBuilder(acl)
+                                val aclb = AclEntry.newBuilder(acl)
                                 aclb.setPermissions(perms)
                                 newAcls.add(aclb.build())
                                 update = true
@@ -108,12 +111,25 @@ class EmbeddedExecutable(
             if (field == null) {
                 log.debug("Searching for executable [${this.filename}]")
                 field = this.findExecutable()
+                if (field != null) {
+                    // Ensure executability for embedded rsync binaries
+                    this.setExecutablePermissions(field!!.parentFile)
+                } else {
+                    if (this.fallback != null) {
+                        // Fallback to system rsync on linux
+                        log.warn("Could not find executable [${filename}], attempting fallback")
+                        val fallbackExecutable = this.fallback.invoke()
+                        if (fallbackExecutable != null && !fallbackExecutable.exists())
+                            throw IllegalStateException("Fallback executable [${fallbackExecutable}] does not exist")
+
+                        field = fallbackExecutable
+                    }
+                }
+
                 if (field == null)
                     throw IllegalStateException("Could not find executable [${this.filename}]")
 
-                log.debug("Found executable [${field}]")
-
-                this.setExecutablePermissions(field!!.parentFile)
+                log.debug("Using executable [${field}]")
             }
 
             return field
