@@ -8,6 +8,7 @@ import com.vaadin.server.VaadinRequest
 import com.vaadin.spring.annotation.SpringUI
 import com.vaadin.ui.*
 import org.deku.leoz.node.data.jpa.MstStation
+import org.deku.leoz.node.data.jpa.QMstStation
 import org.deku.leoz.node.data.repositories.master.StationRepository
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -85,32 +86,33 @@ public class DepotsUI : UI() {
         filter.setInputPrompt("Filter depots..");
         filter.addTextChangeListener({ e -> refresh(e.getText()) })
 
+        val qStation = QMstStation.mstStation
         grid.setContainerDataSource(BeanItemContainer(MstStation::class.java));
         grid.setColumnOrder(
-                "stationNr",
-                "address1",
-                "address2",
-                "sector",
-                "street",
-                "houseNr",
-                "zip",
-                "city",
-                "country",
-                "servicePhone1",
-                "servicePhone2",
-                "contactPerson1",
-                "contactPerson2");
-        grid.removeColumn("billingAddress1")
-        grid.removeColumn("billingAddress2")
-        grid.removeColumn("billingCity")
-        grid.removeColumn("billingCountry")
-        grid.removeColumn("billingHouseNr")
-        grid.removeColumn("billingStreet")
-        grid.removeColumn("billingZip")
-        grid.removeColumn("posLat")
-        grid.removeColumn("posLong")
-        grid.removeColumn("strang")
-        grid.removeColumn("uStId")
+                qStation.stationNr.metadata.name,
+                qStation.address1.metadata.name,
+                qStation.address2.metadata.name,
+                qStation.sector.metadata.name,
+                qStation.street.metadata.name,
+                qStation.houseNr.metadata.name,
+                qStation.houseNr.metadata.name,
+                qStation.city.metadata.name,
+                qStation.country.metadata.name,
+                qStation.servicePhone1.metadata.name,
+                qStation.servicePhone2.metadata.name,
+                qStation.contactPerson1.metadata.name,
+                qStation.contactPerson2.metadata.name)
+        grid.removeColumn(qStation.billingAddress1.metadata.name)
+        grid.removeColumn(qStation.billingAddress2.metadata.name)
+        grid.removeColumn(qStation.billingCity.metadata.name)
+        grid.removeColumn(qStation.billingCountry.metadata.name)
+        grid.removeColumn(qStation.billingHouseNr.metadata.name)
+        grid.removeColumn(qStation.billingStreet.metadata.name)
+        grid.removeColumn(qStation.billingZip.metadata.name)
+        grid.removeColumn(qStation.posLat.metadata.name)
+        grid.removeColumn(qStation.posLong.metadata.name)
+        grid.removeColumn(qStation.strang.metadata.name)
+        grid.removeColumn(qStation.ustid.metadata.name)
 
         grid.setSelectionMode(Grid.SelectionMode.SINGLE);
         refresh();
