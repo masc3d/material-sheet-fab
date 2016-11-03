@@ -1,5 +1,6 @@
 package org.deku.gradle
 
+import org.apache.commons.lang3.SystemUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import sx.platform.PlatformId
@@ -108,12 +109,16 @@ class PackagerPlugin implements Plugin<Project> {
         }
 
         // Initialize rsync
-        Rsync.executable.file = Paths.get(project.project(':libs:sx-rsync').projectDir.toURI())
-                .resolve('platform')
-                .resolve(PlatformId.current().toString())
-                .resolve('bin')
-                .resolve('sx-rsync')
-                .toFile();
+        if (SystemUtils.IS_OS_LINUX) {
+            Rsync.executable.file = new File("/usr/bin/rsync")
+        } else {
+            Rsync.executable.file = Paths.get(project.project(':libs:sx-rsync').projectDir.toURI())
+                    .resolve('platform')
+                    .resolve(PlatformId.current().toString())
+                    .resolve('bin')
+                    .resolve('sx-rsync')
+                    .toFile();
+        }
     }
 }
 
