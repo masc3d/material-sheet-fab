@@ -8,7 +8,7 @@ import java.util.*
 
 /**
  * SSH tunnel provider.
- * Managing and providing SSH tunnels with multithreading support.
+ * Manages, provides and pools SSH tunnels. This class is threadsafe.
  * Created by masc on 25.11.15.
  * @property localPortRange Local port range to use
  * @property sshHosts Array of SSH hosts. Default credentials may be provided with an `SshHost` having empty string as hostname
