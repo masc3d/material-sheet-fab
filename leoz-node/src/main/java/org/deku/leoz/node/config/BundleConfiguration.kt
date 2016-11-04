@@ -3,21 +3,31 @@ package org.deku.leoz.node.config
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.config.BundleConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import sx.rsync.Rsync
 
 /**
  * Created by masc on 09/03/16.
  */
-object BundleConfiguration : BundleConfiguration() {
-    val localRepository: BundleRepository by lazy {
-        BundleRepository(
+@Configuration
+@Lazy(false)
+open class BundleConfiguration {
+    /**
+     * Local bundle repository
+     **/
+    @Bean
+    open fun localRepository(): BundleRepository{
+        return BundleRepository(
                 rsyncModuleUri = Rsync.URI(StorageConfiguration.instance.bundleRepositoryDirectory))
     }
 
     /**
      * Application wide bundle installer
      */
-    fun bundleInstaller(): BundleInstaller {
+    @Bean
+    open fun bundleInstaller(): BundleInstaller {
         return BundleInstaller(
                 StorageConfiguration.instance.bundleInstallationDirectory)
     }

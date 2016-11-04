@@ -34,18 +34,16 @@ open class UpdateConfiguration {
 
     @Inject
     private lateinit var settings: Settings
-
     @Inject
     private lateinit var remotePeerSettings: RemotePeerSettings
-
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
-
     @Inject
     private lateinit var nodeJooqRepository: NodeJooqRepository
-
     @Inject
     private lateinit var bundleVersionJooqRepository: BundleVersionJooqRepository
+    @Inject
+    private lateinit var localBundleRepository: BundleRepository
 
     @Bean
     open fun updateInfoService(): UpdateInfoService {
@@ -59,7 +57,7 @@ open class UpdateConfiguration {
                     rsyncPassword = RsyncConfiguration.PASSWORD,
                     sshTunnelProvider = SshConfiguration.tunnelProvider)
         } else {
-            BundleConfiguration.localRepository
+            this.localBundleRepository
         }
 
         return UpdateInfoService(

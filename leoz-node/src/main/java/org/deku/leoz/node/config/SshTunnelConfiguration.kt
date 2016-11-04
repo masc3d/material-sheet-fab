@@ -47,7 +47,7 @@ open class SshTunnelConfiguration {
     }
 
     @Inject
-    lateinit var settings: Settings
+    private lateinit var settings: Settings
 
     /**
      * SSH tunnel provider

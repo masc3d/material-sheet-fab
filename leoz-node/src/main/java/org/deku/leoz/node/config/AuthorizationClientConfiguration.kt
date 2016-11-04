@@ -1,5 +1,6 @@
 package org.deku.leoz.node.config
 
+import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
@@ -26,12 +27,12 @@ open class AuthorizationClientConfiguration {
 
     @Inject
     private lateinit var executorService: ScheduledExecutorService
-
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
-
     @Inject
     private lateinit var lifecycleController: LifecycleController
+    @Inject
+    private lateinit var bundleInstaller: BundleInstaller
 
     @Bean
     open fun authorizationClientService(): AuthorizationClientService {
@@ -45,8 +46,7 @@ open class AuthorizationClientConfiguration {
                     App.instance.initializeIdentity(recreate = true)
 
                     log.warn("Rebooting due to identity change")
-                    val installer = BundleConfiguration.bundleInstaller()
-                    installer.boot(App.instance.name)
+                    this.bundleInstaller.boot(App.instance.name)
                     App.instance.shutdown()
                 })
     }

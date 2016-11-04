@@ -31,16 +31,12 @@ open class FileSyncClientConfiguration {
 
     @Inject
     private lateinit var executorService: ScheduledExecutorService
-
     @Inject
     private lateinit var remotePeerSettings: RemotePeerSettings
-
     @Inject
     private lateinit var sshTunnelProvider: SshTunnelProvider
-
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
-
     @Inject
     private lateinit var lifecycleController: LifecycleController
 

@@ -20,6 +20,7 @@ import javax.annotation.PreDestroy
 import javax.inject.Inject
 
 /**
+ * SSH server configuration
  * Created by masc on 17.11.15.
  */
 @Configuration
@@ -48,8 +49,8 @@ open class SshServerConfiguration {
 
         sshd.setPasswordAuthenticator(object : PasswordAuthenticator {
             override fun authenticate(username: String?, password: String?, session: ServerSession?): Boolean {
-                return SshConfiguration.USERNAME.equals(username) &&
-                        SshConfiguration.PASSWORD.equals(password);
+                return SshConfiguration.USERNAME == username &&
+                        SshConfiguration.PASSWORD == password
             }
         });
 

@@ -1,5 +1,6 @@
 package org.deku.leoz.node.config
 
+import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.bundle.update.BundleUpdateService
@@ -32,23 +33,20 @@ open class UpdateConfiguration {
 
     @Inject
     private lateinit var settings: Settings
-
     @Inject
     private lateinit var remotePeerSettings: RemotePeerSettings
-
     @Inject
     private lateinit var executorService: ScheduledExecutorService
-
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
-
     @Inject
     private lateinit var lifecycleController: LifecycleController
-
     @Inject
     private lateinit var propertyRepository: PropertyRepository
-
-    /** SSH tunnel provider */
+    @Inject
+    private lateinit var localBundleRepository: BundleRepository
+    @Inject
+    private lateinit var bundleInstaller: BundleInstaller
     @Inject
     lateinit var sshTunnelProvider: SshTunnelProvider
 
@@ -79,15 +77,6 @@ open class UpdateConfiguration {
     private var state: State = State()
 
     /**
-     * Local bundle repository
-     **/
-    @Bean
-    open fun localRepository(): BundleRepository {
-        return BundleRepository(
-                Rsync.URI(StorageConfiguration.instance.bundleRepositoryDirectory))
-    }
-
-    /**
      * Bundle repository used for retrieving updates
      **/
     private val updateRepository by lazy {
@@ -102,7 +91,7 @@ open class UpdateConfiguration {
                     rsyncPassword = RsyncConfiguration.PASSWORD,
                     sshTunnelProvider = this.sshTunnelProvider)
         } else {
-            this.localRepository()
+            this.localBundleRepository
         }
     }
 
@@ -111,15 +100,13 @@ open class UpdateConfiguration {
      */
     @Bean
     open fun bundleUpdateService(): BundleUpdateService {
-        val installer = BundleConfiguration.bundleInstaller()
-
         // Setup
         val updateService = BundleUpdateService(
                 executorService = this.executorService,
                 identity = App.instance.identity,
-                installer = installer,
+                installer = this.bundleInstaller,
                 remoteRepository = this.updateRepository,
-                localRepository = this.localRepository(),
+                localRepository = this.localBundleRepository,
                 presets = listOf(
                         BundleUpdateService.Preset(
                                 bundleName = App.instance.name,

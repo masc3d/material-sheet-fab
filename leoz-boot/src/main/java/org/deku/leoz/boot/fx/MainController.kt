@@ -8,11 +8,11 @@ import javafx.fxml.Initializable
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import org.deku.leoz.boot.Application
-import org.deku.leoz.boot.config.BundleConfiguration
-import org.deku.leoz.boot.config.BundleRepositoryConfiguration
 import org.deku.leoz.boot.config.LogConfiguration
 import org.deku.leoz.boot.config.StorageConfiguration
+import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
+import org.deku.leoz.config.BundleConfiguration
 import sx.fx.TextAreaLogAppender
 import sx.platform.JvmUtil
 import sx.rsync.Rsync
@@ -135,7 +135,7 @@ class MainController : Initializable {
                         }
                 })
 
-                val installer = BundleConfiguration.installer()
+                val installer = BundleInstaller(StorageConfiguration.bundleInstallationDirectory)
 
                 if (Application.Parameters.uninstall) {
                     installer.uninstall(bundleName)
@@ -143,7 +143,7 @@ class MainController : Initializable {
                     if (!installer.hasBundle(bundleName) || Application.Parameters.forceDownload) {
                         val repository = if (Application.instance.repositoryUri != null)
                             BundleRepository(Application.instance.repositoryUri!!) else
-                            BundleRepositoryConfiguration.stagingRepository
+                            BundleConfiguration.stagingRepository
 
                         // Query for version matching pattern
                         val version = repository.queryLatestMatchingVersion(

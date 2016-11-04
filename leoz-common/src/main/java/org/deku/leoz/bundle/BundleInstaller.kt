@@ -14,7 +14,7 @@ import java.util.*
  */
 class BundleInstaller(
         /** Path containing bundles */
-        public val bundleContainerPath: File) {
+        val bundleContainerPath: File) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -176,20 +176,20 @@ class BundleInstaller(
                  forceDownload: Boolean = false,
                  onProgress: ((file: String, percentage: Double) -> Unit)? = null): Boolean {
 
-        var readyToInstall: Boolean
+        val readyToInstall: Boolean
 
         val bundlePath = this.bundlePath(bundleName)
         val bundleUpdatePath = this.bundleReadyPath(bundleName)
         val bundleDownloadPath = this.bundleDownloadPath(bundleName)
 
-        var bundle: Bundle? = this.tryLoadBundle(bundlePath, bundleName)
-        var readyBundle: Bundle? = this.tryLoadBundle(bundleUpdatePath, bundleName)
+        val bundle: Bundle? = this.tryLoadBundle(bundlePath, bundleName)
+        val readyBundle: Bundle? = this.tryLoadBundle(bundleUpdatePath, bundleName)
 
         if (bundle != null) log.info("Currently installed bundle [${bundle}]")
         if (readyBundle != null) log.info("Currently ready bundle [${readyBundle}]")
 
-        val installedBundleUpToDate = (bundle != null && version.equals(bundle.version))
-        val readyBundleUpToDate = (readyBundle != null && version.equals(readyBundle.version))
+        val installedBundleUpToDate = (bundle != null && version == bundle.version)
+        val readyBundleUpToDate = (readyBundle != null && version == readyBundle.version)
 
         if (!(installedBundleUpToDate || readyBundleUpToDate) || forceDownload) {
             // If an update is already in place, make it the current download path, possibly minimizing download time

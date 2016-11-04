@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleRepository
+import org.deku.leoz.config.BundleConfiguration
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevObject
@@ -35,14 +36,6 @@ import sx.platform.PlatformId
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Collectors
-
-class BundleConfiguration extends org.deku.leoz.config.BundleConfiguration {
-    private static BundleConfiguration instance = new BundleConfiguration()
-
-    public static BundleConfiguration instance() {
-        return this.instance
-    }
-}
 
 /**
  * Base class for all packager tasks
@@ -639,7 +632,7 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         }
 
         // Upload to bundle repository
-        BundleRepository ar = BundleConfiguration.instance().stagingRepository
+        BundleRepository ar = BundleConfiguration.INSTANCE.stagingRepository
         ar.upload(project.name, this.getReleasePath(), true)
     }
 }
@@ -654,7 +647,7 @@ class PackagerReleasePullTask extends PackagerReleaseTask {
         def releasePath = this.getReleasePath()
 
         def version = Bundle.Version.parse(project.version)
-        BundleRepository repository = BundleConfiguration.instance().stagingRepository
+        BundleRepository repository = BundleConfiguration.INSTANCE.stagingRepository
 
         def remoteVersions = repository.listVersions(project.name)
                 .stream()
