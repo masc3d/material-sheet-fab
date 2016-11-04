@@ -74,7 +74,7 @@ class SshTunnel(
     fun open() {
         synchronized(sync) {
             var session = this.session
-            log.info("SSH tunneled connection request to [${sshHost}:${remotePort}] via SSH port [${this.sshHost.port}] through [localhost:${this.localPort}]")
+            log.debug("SSH tunneled connection request to [${sshHost}:${remotePort}] via SSH port [${this.sshHost.port}] through [localhost:${this.localPort}]")
             if (session == null || !session.isOpen) {
                 this.close()
 

@@ -21,6 +21,6 @@ class SshTunnelProviderTest {
                 SshHosts.testHost)
 
         val tunnelResource = provider.request(SshHosts.testHost.hostname, 13002)
-        provider.close(tunnelResource!!)
+//        provider.close(tunnelResource!!)
     }
 }
