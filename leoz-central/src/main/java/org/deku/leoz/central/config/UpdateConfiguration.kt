@@ -8,9 +8,10 @@ import org.deku.leoz.central.services.UpdateInfoService
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.SshConfiguration
 import org.deku.leoz.node.config.BundleConfiguration
-import org.deku.leoz.node.config.BundleUpdateServiceConfiguration
+import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import javax.annotation.PostConstruct
@@ -22,7 +23,7 @@ import javax.inject.Named
  */
 @Configuration
 @Lazy(false)
-open class UpdateInfoServiceConfiguration {
+open class UpdateConfiguration {
 
     @Configuration
     @ConfigurationProperties(prefix = "update.info-service")
@@ -46,11 +47,11 @@ open class UpdateInfoServiceConfiguration {
     @Inject
     private lateinit var bundleVersionJooqRepository: BundleVersionJooqRepository
 
-    fun updateService(): UpdateInfoService {
+    @Bean
+    open fun updateInfoService(): UpdateInfoService {
         val rsyncHost = settings.rsyncHost
-        val bundleRepository: BundleRepository
-        if (rsyncHost != null && rsyncHost.length > 0) {
-            bundleRepository = BundleRepository(
+        val bundleRepository = if (rsyncHost != null && rsyncHost.length > 0) {
+            BundleRepository(
                     rsyncModuleUri = RsyncConfiguration.createRsyncUri(
                             hostName = rsyncHost,
                             port = RsyncConfiguration.DEFAULT_PORT,
@@ -58,9 +59,8 @@ open class UpdateInfoServiceConfiguration {
                     rsyncPassword = RsyncConfiguration.PASSWORD,
                     sshTunnelProvider = SshConfiguration.tunnelProvider)
         } else {
-            bundleRepository = BundleConfiguration.localRepository
+            BundleConfiguration.localRepository
         }
-
 
         return UpdateInfoService(
                 nodeJooqRepository = nodeJooqRepository,
@@ -68,12 +68,11 @@ open class UpdateInfoServiceConfiguration {
                 bundleRepository = bundleRepository)
     }
 
-    private val updateService by lazy { this.updateService() }
+    private val updateService by lazy { this.updateInfoService() }
 
     @PostConstruct
     fun onInitialize() {
         this.messageListenerConfiguration.centralQueueListener.addDelegate(
                 this.updateService)
-
     }
 }

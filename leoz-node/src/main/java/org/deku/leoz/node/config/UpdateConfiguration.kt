@@ -20,8 +20,6 @@ import sx.ssh.SshTunnelProvider
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.inject.Inject
-import javax.inject.Named
-import javax.persistence.EntityManager
 
 /**
  * Leoz updater configuration
@@ -29,32 +27,8 @@ import javax.persistence.EntityManager
  */
 @Configuration
 @Lazy(false)
-open class BundleUpdateServiceConfiguration {
+open class UpdateConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
-
-    @Configuration
-    @ConfigurationProperties(prefix = "update")
-    open class Settings {
-        /** Enable/disbale updates */
-        var enabled: Boolean = false
-        /** Perform automatic updates/retrieve update notifications */
-        var automatic: Boolean = true
-        /** Automatically clean out outdated and non-relevant bundles */
-        var cleanup: Boolean = true
-        /** Override rsync uri (defaults to remote peer/host and rsync port) */
-        var rsyncHost: String? = null
-    }
-
-
-    /**
-     * Bundle update service state
-     */
-    @PropertyKey(PropertyKeys.BUNDLE_UPDATE_SERVICE)
-    class State(
-            var versionAlias: String = "") {
-    }
-
-    private var state: State = State()
 
     @Inject
     private lateinit var settings: Settings
@@ -74,20 +48,51 @@ open class BundleUpdateServiceConfiguration {
     @Inject
     private lateinit var propertyRepository: PropertyRepository
 
+    /** SSH tunnel provider */
+    @Inject
+    lateinit var sshTunnelProvider: SshTunnelProvider
+
+    @Configuration
+    @ConfigurationProperties(prefix = "update")
+    open class Settings {
+        /** Enable/disbale updates */
+        var enabled: Boolean = false
+        /** Perform automatic updates/retrieve update notifications */
+        var automatic: Boolean = true
+        /** Automatically clean out outdated and non-relevant bundles */
+        var cleanup: Boolean = true
+        /** Override rsync uri (defaults to remote peer/host and rsync port) */
+        var rsyncHost: String? = null
+    }
+
+    /**
+     * Bundle update service state
+     */
+    @PropertyKey(PropertyKeys.BUNDLE_UPDATE_SERVICE)
+    class State(
+            var versionAlias: String = "") {
+    }
+
+    /**
+     * State of this configuration
+     */
+    private var state: State = State()
 
     /**
      * Local bundle repository
-     * */
-    val localRepository: BundleRepository by lazy({
-        BundleRepository(
+     **/
+    @Bean
+    open fun localRepository(): BundleRepository {
+        return BundleRepository(
                 Rsync.URI(StorageConfiguration.instance.bundleRepositoryDirectory))
-    })
+    }
 
     /**
-     * Remote bundle update repository
-     * */
-    val updateRepository: BundleRepository by lazy {
+     * Bundle repository used for retrieving updates
+     **/
+    private val updateRepository by lazy {
         val remoteHostname = this.settings.rsyncHost ?: remotePeerSettings.host
+
         if (remoteHostname != null && remoteHostname.length > 0) {
             BundleRepository(
                     rsyncModuleUri = RsyncConfiguration.createRsyncUri(
@@ -97,18 +102,12 @@ open class BundleUpdateServiceConfiguration {
                     rsyncPassword = RsyncConfiguration.PASSWORD,
                     sshTunnelProvider = this.sshTunnelProvider)
         } else {
-            this.localRepository
+            this.localRepository()
         }
     }
 
     /**
-     * SSH tunnel provider
-     */
-    @Inject
-    lateinit var sshTunnelProvider: SshTunnelProvider
-
-    /**
-     * Updater instance
+     * The actual bundle update service
      */
     @Bean
     open fun bundleUpdateService(): BundleUpdateService {
@@ -120,7 +119,7 @@ open class BundleUpdateServiceConfiguration {
                 identity = App.instance.identity,
                 installer = installer,
                 remoteRepository = this.updateRepository,
-                localRepository = this.localRepository,
+                localRepository = this.localRepository(),
                 presets = listOf(
                         BundleUpdateService.Preset(
                                 bundleName = App.instance.name,
@@ -152,21 +151,16 @@ open class BundleUpdateServiceConfiguration {
         return updateService
     }
 
-    /**
-     * Bundle update service instance
-     */
-    private val bundleUpdateService by lazy { bundleUpdateService() }
-
     @PostConstruct
     fun onInitialize() {
         this.state = this.propertyRepository.loadObject(State::class.java)
 
-        this.lifecycleController.registerNetworkDependant(this.bundleUpdateService)
+        this.lifecycleController.registerNetworkDependant(this.bundleUpdateService())
 
         // Register for update notifications (as long as automatic updates are enabled)
-        if (this@BundleUpdateServiceConfiguration.settings.automatic) {
+        if (this@UpdateConfiguration.settings.automatic) {
             this.messageListenerConfiguration.nodeNotificationListener.addDelegate(
-                    this.bundleUpdateService)
+                    this.bundleUpdateService())
         }
     }
 }

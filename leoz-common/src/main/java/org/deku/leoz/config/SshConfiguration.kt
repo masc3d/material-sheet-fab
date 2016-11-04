@@ -11,7 +11,7 @@ object SshConfiguration {
     val PASSWORD = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"
 
     val tunnelProvider = SshTunnelProvider(
-            localPortRange = IntRange(13200, 13250),
+            localPortRange = IntRange(13300, 13350),
 
             sshHosts = SshHost(
                     hostname = "leoz.derkurier.de",
