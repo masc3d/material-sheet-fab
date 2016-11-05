@@ -31,7 +31,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
         // Flyway
         classpath "org.flywaydb:flyway-gradle-plugin:$v_flyway"
-        classpath "com.h2database:h2:1.4.192"
+        classpath "com.h2database:h2:$v_h2"
         // Eclipselink
         classpath "org.eclipse.persistence:eclipselink:$v_eclipselink"
         // Roaster
@@ -79,6 +79,7 @@ def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
 
 def JOOQ_PACKAGE_NAME = "org.deku.leoz.node.data.jooq"
 def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
+def QUERYDSL_GENERATED_DIR = new File(GENERATED_DIR, 'querydsl')
 
 class Constants {
     static def JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.jpa'
@@ -97,9 +98,9 @@ clean {
     }
 }
 
-kapt {
-    generateStubs = true
-}
+//kapt {
+//    generateStubs = true
+//}
 
 idea {
     module {
@@ -117,6 +118,7 @@ sourceSets {
     main {
         java {
             srcDirs += JOOQ_GENERATED_DIR
+            srcDirs += QUERYDSL_GENERATED_DIR
         }
     }
 }
@@ -127,6 +129,7 @@ test {
 
 configurations {
     driver
+    querydslapt
 }
 
 dependencies {
@@ -181,14 +184,13 @@ dependencies {
             "com.querydsl:querydsl-collections:$v_querydsl",
             "com.querydsl:querydsl-sql-codegen:$v_querydsl",
 
-
             "org.flywaydb:flyway-core:4.0.3",
 
             // JSR-330
             "javax.inject:javax.inject:1",
 
             // databases
-            "com.h2database:h2:1.4.192",
+            "com.h2database:h2:$v_h2",
 
             // persistence
             "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
@@ -252,18 +254,19 @@ dependencies {
             "com.vaadin:vaadin-themes:$v_vaadin",
     )
 
-//    agent(
-//            "org.springframework:spring-instrument:$v_spring"
-//    )
-
     driver(
-            "com.h2database:h2:1.4.192"
+            "com.h2database:h2:$v_h2"
     )
 
+    // TODO: kapt disabled due to https://youtrack.jetbrains.com/issue/KT-14139. @see generateQueryDSL
     // QueryDSL codegen/annotation processor
-    kapt(
-            "com.querydsl:querydsl-apt:$v_querydsl:jpa",
-            "org.eclipse.persistence:javax.persistence:$v_javax_persistence")
+//    kapt(
+//            "com.querydsl:querydsl-apt:$v_querydsl:jpa",
+//            "org.eclipse.persistence:javax.persistence:$v_javax_persistence")
+
+    querydslapt(
+        "com.querydsl:querydsl-apt:$v_querydsl:jpa"
+    )
 
     testCompile(
             "junit:junit:$v_junit",
@@ -437,6 +440,27 @@ tasks.compileJava {
     dependsOn tasks.jooqGenerate
     mustRunAfter tasks.jooqGenerate
 }
+//endregion
+
+//region QueryDSL
+/**
+ * Generates querydsl classes
+ * Workaround for kapt issue https://youtrack.jetbrains.com/issue/KT-14139
+ */
+task queryDslGenerate(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
+    source = sourceSets.main.java // input source set
+    classpath = configurations.compile + configurations.querydslapt // add processor module to classpath
+    // specify javac arguments
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", "com.querydsl.apt.jpa.JPAAnnotationProcessor" // your processor here
+    ]
+    // specify output of generated code
+    destinationDir = QUERYDSL_GENERATED_DIR
+}
+tasks.queryDslGenerate.dependsOn(tasks.jooqGenerate)
+tasks.compileKotlin.dependsOn(tasks.queryDslGenerate)
+tasks.compileJava.dependsOn(tasks.queryDslGenerate)
 //endregion
 
 //region Support methods
