@@ -2,7 +2,8 @@ apply from: '../versions.gradle'
 
 buildscript {
     ext {
-        v_kotlin = '1.0.4'
+        //TODO: reverted to 1.0.3 for now (task dependenciy issue, copyMainKotlinClasses runs after compileGroovy, making it fail, as it can't find kt classes)
+        v_kotlin = '1.0.3'
         v_jsch = '0.0.9'
     }
 
