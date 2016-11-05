@@ -101,7 +101,7 @@ jooq {
             }
 
             target {
-                packageName = 'org.deku.leoz.central.data.entities.jooq'
+                packageName = 'org.deku.leoz.central.data.jooq'
                 directory = JOOQ_GENERATED_DIR.toString()
             }
         }

@@ -5,9 +5,13 @@ import com.querydsl.core.types.dsl.DateTimePath
 import com.querydsl.core.types.dsl.EntityPathBase
 import com.querydsl.core.types.dsl.NumberPath
 import com.querydsl.jpa.impl.JPAQuery
-import org.deku.leoz.central.data.entities.jooq.Tables
-import org.deku.leoz.central.data.entities.jooq.tables.*
-import org.deku.leoz.central.data.entities.jooq.tables.records.*
+import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.tables.*
+import org.deku.leoz.central.data.jooq.tables.records.*
+import org.deku.leoz.central.data.jooq.tables.MstHolidayctrl
+import org.deku.leoz.central.data.jooq.tables.MstRoutinglayer
+import org.deku.leoz.central.data.jooq.tables.records.*
+import org.deku.leoz.central.data.jooq.tables.records.*
 import org.deku.leoz.central.data.repository.GenericJooqRepository
 import org.deku.leoz.central.data.repository.SyncJooqRepository
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
@@ -308,7 +312,7 @@ constructor(
 
         this.updateEntities<MstBundleVersionRecord, MstBundleVersion>(
                 Tables.MST_BUNDLE_VERSION,
-                org.deku.leoz.central.data.entities.jooq.tables.MstBundleVersion.MST_BUNDLE_VERSION.SYNC_ID,
+                org.deku.leoz.central.data.jooq.tables.MstBundleVersion.MST_BUNDLE_VERSION.SYNC_ID,
                 bundleVersionRepository,
                 QMstBundleVersion.mstBundleVersion,
                 QMstBundleVersion.mstBundleVersion.syncId,
@@ -317,7 +321,7 @@ constructor(
 
         this.updateEntities<MstStationRecord, MstStation>(
                 Tables.MST_STATION,
-                org.deku.leoz.central.data.entities.jooq.tables.MstStation.MST_STATION.SYNC_ID,
+                org.deku.leoz.central.data.jooq.tables.MstStation.MST_STATION.SYNC_ID,
                 stationRepository,
                 QMstStation.mstStation,
                 QMstStation.mstStation.syncId,
@@ -326,7 +330,7 @@ constructor(
 
         this.updateEntities(
                 Tables.MST_COUNTRY,
-                org.deku.leoz.central.data.entities.jooq.tables.MstCountry.MST_COUNTRY.SYNC_ID,
+                org.deku.leoz.central.data.jooq.tables.MstCountry.MST_COUNTRY.SYNC_ID,
                 countryRepository,
                 QMstCountry.mstCountry,
                 QMstCountry.mstCountry.syncId,
@@ -335,7 +339,7 @@ constructor(
 
         this.updateEntities(
                 Tables.MST_HOLIDAYCTRL,
-                org.deku.leoz.central.data.entities.jooq.tables.MstHolidayctrl.MST_HOLIDAYCTRL.SYNC_ID,
+                MstHolidayctrl.MST_HOLIDAYCTRL.SYNC_ID,
                 holidayCtrlRepository,
                 QMstHolidayCtrl.mstHolidayCtrl,
                 QMstHolidayCtrl.mstHolidayCtrl.syncId,
@@ -344,7 +348,7 @@ constructor(
 
         this.updateEntities(
                 Tables.MST_ROUTE,
-                org.deku.leoz.central.data.entities.jooq.tables.MstRoute.MST_ROUTE.SYNC_ID,
+                org.deku.leoz.central.data.jooq.tables.MstRoute.MST_ROUTE.SYNC_ID,
                 routeRepository,
                 QMstRoute.mstRoute,
                 QMstRoute.mstRoute.syncId,
@@ -353,7 +357,7 @@ constructor(
 
         this.updateEntities(
                 Tables.MST_SECTOR,
-                org.deku.leoz.central.data.entities.jooq.tables.MstSector.MST_SECTOR.SYNC_ID,
+                org.deku.leoz.central.data.jooq.tables.MstSector.MST_SECTOR.SYNC_ID,
                 sectorRepository,
                 QMstSector.mstSector,
                 QMstSector.mstSector.syncId,
@@ -362,7 +366,7 @@ constructor(
 
         this.updateEntities(
                 Tables.MST_ROUTINGLAYER,
-                org.deku.leoz.central.data.entities.jooq.tables.MstRoutinglayer.MST_ROUTINGLAYER.SYNC_ID,
+                MstRoutinglayer.MST_ROUTINGLAYER.SYNC_ID,
                 routingLayerRepository,
                 QMstRoutingLayer.mstRoutingLayer,
                 QMstRoutingLayer.mstRoutingLayer.syncId,
@@ -371,7 +375,7 @@ constructor(
 
         this.updateEntities(
                 Tables.MST_STATION_SECTOR,
-                org.deku.leoz.central.data.entities.jooq.tables.MstStationSector.MST_STATION_SECTOR.SYNC_ID,
+                org.deku.leoz.central.data.jooq.tables.MstStationSector.MST_STATION_SECTOR.SYNC_ID,
                 stationSectorRepository,
                 QMstStationSector.mstStationSector,
                 QMstStationSector.mstStationSector.syncId,

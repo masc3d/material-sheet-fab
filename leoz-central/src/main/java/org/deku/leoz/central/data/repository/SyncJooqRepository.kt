@@ -1,8 +1,8 @@
 package org.deku.leoz.central.data.repository
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.entities.jooq.Tables
-import org.deku.leoz.central.data.entities.jooq.tables.records.SysSyncRecord
+import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.tables.records.SysSyncRecord
 import org.jooq.DSLContext
 import org.jooq.Param
 import org.jooq.impl.DSL
