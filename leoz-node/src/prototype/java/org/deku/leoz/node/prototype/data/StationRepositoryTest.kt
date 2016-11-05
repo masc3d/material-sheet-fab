@@ -1,7 +1,7 @@
 package org.deku.leoz.node.prototype.data
 
 import org.deku.leoz.node.test.DataTest
-import org.deku.leoz.node.data.repositories.master.StationRepository
+import org.deku.leoz.node.data.repository.master.StationRepository
 import org.junit.Test
 import javax.inject.Inject
 

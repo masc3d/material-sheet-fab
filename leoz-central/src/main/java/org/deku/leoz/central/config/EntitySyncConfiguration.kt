@@ -1,7 +1,7 @@
 package org.deku.leoz.central.config
 
 import org.deku.leoz.central.App
-import org.deku.leoz.central.services.DatabaseSyncService
+import org.deku.leoz.central.service.DatabaseSyncService
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.sync.EntityPublisher

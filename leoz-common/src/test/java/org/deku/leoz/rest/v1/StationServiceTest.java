@@ -1,8 +1,8 @@
 package org.deku.leoz.rest.v1;
 
 import org.deku.leoz.rest.WebserviceTest;
-import org.deku.leoz.rest.entities.internal.v1.Station;
-import org.deku.leoz.rest.services.internal.v1.StationService;
+import org.deku.leoz.rest.entity.internal.v1.Station;
+import org.deku.leoz.rest.service.internal.v1.StationService;
 import org.junit.Ignore;
 import org.junit.Test;
 

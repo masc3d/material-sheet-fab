@@ -9,7 +9,7 @@ import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstRoute
-import org.deku.leoz.node.data.repositories.master.RouteRepository
+import org.deku.leoz.node.data.repository.master.RouteRepository
 import org.deku.leoz.node.data.jooq.Tables
 import org.deku.leoz.node.test.DataTest
 import org.eclipse.persistence.config.HintValues

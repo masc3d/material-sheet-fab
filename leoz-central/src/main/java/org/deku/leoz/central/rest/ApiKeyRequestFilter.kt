@@ -1,6 +1,6 @@
 package org.deku.leoz.central.rest
 
-import org.deku.leoz.central.data.repositories.NodeJooqRepository
+import org.deku.leoz.central.data.repository.NodeJooqRepository
 import sx.rs.ApiKeyRequestFilterBase
 
 import javax.inject.Inject

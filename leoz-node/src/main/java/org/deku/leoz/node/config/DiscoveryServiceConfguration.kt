@@ -1,8 +1,8 @@
 package org.deku.leoz.node.config
 
 import org.apache.sshd.server.SshServer
-import org.deku.leoz.discovery.DiscoveryInfo
-import org.deku.leoz.discovery.DiscoveryService
+import org.deku.leoz.service.discovery.DiscoveryInfo
+import org.deku.leoz.service.discovery.DiscoveryService
 import org.deku.leoz.node.App
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.context.annotation.Bean

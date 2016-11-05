@@ -13,7 +13,7 @@ import org.deku.leoz.ui.Main
 import org.deku.leoz.ui.fx.ModuleController
 import org.deku.leoz.ui.fx.components.DepotDetailsController
 import org.deku.leoz.ui.fx.components.DepotListController
-import org.deku.leoz.rest.entities.internal.v1.Station
+import org.deku.leoz.rest.entity.internal.v1.Station
 import org.deku.leoz.ui.event.BusyNotifier
 import org.deku.leoz.ui.event.Event
 import rx.Observable

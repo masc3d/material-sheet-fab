@@ -19,7 +19,7 @@ import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.apache.commons.lang3.SystemUtils
-import org.deku.leoz.discovery.DiscoveryService
+import org.deku.leoz.service.discovery.DiscoveryService
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.config.Configurations
 import org.deku.leoz.ui.config.LogConfiguration

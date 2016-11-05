@@ -1,11 +1,11 @@
 package org.deku.leoz.central.rest.services.internal.v1
 
 import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.bundle.update.UpdateInfo
-import org.deku.leoz.bundle.update.UpdateInfoRequest
-import org.deku.leoz.central.data.repositories.NodeJooqRepository
+import org.deku.leoz.service.update.UpdateInfo
+import org.deku.leoz.service.update.UpdateInfoRequest
+import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
-import org.deku.leoz.node.data.repositories.master.BundleVersionRepository
+import org.deku.leoz.node.data.repository.master.BundleVersionRepository
 import org.slf4j.LoggerFactory
 import sx.rs.ApiKey
 import java.util.*
@@ -20,7 +20,7 @@ import javax.ws.rs.Path
 @Named
 @ApiKey(false)
 @Path("internal/v1/bundle")
-class BundleService : org.deku.leoz.node.rest.services.internal.v1.BundleService() {
+class BundleService : org.deku.leoz.node.rest.service.internal.v1.BundleService() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Central db node table repository */
@@ -35,7 +35,7 @@ class BundleService : org.deku.leoz.node.rest.services.internal.v1.BundleService
     private lateinit var bundleRepository: BundleRepository
 
     /**
-     * @see org.deku.leoz.rest.services.internal.v1.BundleService
+     * @see org.deku.leoz.rest.service.internal.v1.BundleService
      */
     override fun info(request: UpdateInfoRequest): UpdateInfo {
         // Determine version alias

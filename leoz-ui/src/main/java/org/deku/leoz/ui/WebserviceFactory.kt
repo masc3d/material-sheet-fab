@@ -5,9 +5,9 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
-import org.deku.leoz.discovery.DiscoveryInfo
-import org.deku.leoz.discovery.DiscoveryService
-import org.deku.leoz.rest.services.internal.v1.StationService
+import org.deku.leoz.service.discovery.DiscoveryInfo
+import org.deku.leoz.service.discovery.DiscoveryService
+import org.deku.leoz.rest.service.internal.v1.StationService
 import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.client.proxy.WebResourceFactory
 import org.glassfish.jersey.logging.LoggingFeature

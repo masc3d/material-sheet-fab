@@ -1,7 +1,7 @@
 package org.deku.leoz.central.config
 
 import org.deku.leoz.central.App
-import org.deku.leoz.central.services.FileSyncHostService
+import org.deku.leoz.central.service.FileSyncHostService
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import org.springframework.context.annotation.Bean

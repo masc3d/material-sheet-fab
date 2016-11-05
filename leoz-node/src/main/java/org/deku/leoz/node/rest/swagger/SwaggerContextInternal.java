@@ -47,7 +47,7 @@ public class SwaggerContextInternal implements SwaggerContext {
         // Setting the scanner during bootstrap, no need for configuration servlet
         ReflectiveJaxrsScanner scanner = new ReflectiveJaxrsScanner();
         // Confusing method name, this can actually be a list of packages (comma separated)
-        scanner.setResourcePackage("org.deku.leoz.rest.services.internal.v1");
+        scanner.setResourcePackage(org.deku.leoz.rest.service.internal.v1.Package.getName());
 
         mSwagger = swagger;
         mScanner = scanner;

@@ -1,12 +1,12 @@
 package org.deku.leoz.node.test.rest.v1
 
 import org.deku.leoz.node.rest.ServiceException
-import org.deku.leoz.node.rest.services.v1.RoutingService
+import org.deku.leoz.node.rest.service.v1.RoutingService
 import org.deku.leoz.node.test.DataTest
-import org.deku.leoz.rest.entities.ShortDate
-import org.deku.leoz.rest.entities.v1.Routing
-import org.deku.leoz.rest.entities.v1.RoutingRequest
-import org.deku.leoz.rest.services.ServiceErrorCode
+import org.deku.leoz.rest.entity.ShortDate
+import org.deku.leoz.rest.entity.v1.Routing
+import org.deku.leoz.rest.entity.v1.RoutingRequest
+import org.deku.leoz.rest.service.ServiceErrorCode
 import org.junit.Assert
 import org.junit.Test
 import org.springframework.test.context.ContextConfiguration
@@ -214,7 +214,7 @@ class RoutingLogicTest : DataTest() {
             Assert.assertEquals(r.deliveryDate!!.toString(), "2015-08-04")
             Assert.assertEquals(r.labelContent, "363")
         } catch (e: ServiceException) {
-            Assert.assertEquals(org.deku.leoz.rest.services.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
+            Assert.assertEquals(org.deku.leoz.rest.service.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
         }
     }
 
@@ -239,7 +239,7 @@ class RoutingLogicTest : DataTest() {
             Assert.assertEquals(r.deliveryDate!!.toString(), "2015-08-04")
             Assert.assertEquals(r.labelContent, "412")
         } catch (e: ServiceException) {
-            Assert.assertEquals(org.deku.leoz.rest.services.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
+            Assert.assertEquals(org.deku.leoz.rest.service.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
         }
     }
 
@@ -264,7 +264,7 @@ class RoutingLogicTest : DataTest() {
             Assert.assertEquals(r.deliveryDate!!.toString(), "2015-08-04")
             Assert.assertEquals(r.labelContent, "020")
         } catch (e: ServiceException) {
-            Assert.assertEquals(org.deku.leoz.rest.services.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
+            Assert.assertEquals(org.deku.leoz.rest.service.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
         }
     }
 

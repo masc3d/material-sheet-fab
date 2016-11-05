@@ -1,10 +1,10 @@
 package org.deku.leoz.central.config
 
 import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.bundle.update.UpdateInfoRequest
-import org.deku.leoz.central.data.repositories.BundleVersionJooqRepository
-import org.deku.leoz.central.data.repositories.NodeJooqRepository
-import org.deku.leoz.central.services.UpdateInfoService
+import org.deku.leoz.service.update.UpdateInfoRequest
+import org.deku.leoz.central.data.repository.BundleVersionJooqRepository
+import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.central.service.UpdateInfoService
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.SshConfiguration
 import org.deku.leoz.node.config.BundleConfiguration

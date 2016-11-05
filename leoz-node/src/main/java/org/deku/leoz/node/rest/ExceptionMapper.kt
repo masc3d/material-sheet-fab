@@ -3,7 +3,7 @@ package org.deku.leoz.node.rest
 import com.fasterxml.jackson.core.JsonLocation
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonMappingException
-import org.deku.leoz.rest.entities.v1.Error
+import org.deku.leoz.rest.entity.v1.Error
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

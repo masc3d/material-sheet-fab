@@ -8,7 +8,7 @@ import com.querydsl.sql.SQLQueryFactory
 import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.QMstRoute
-import org.deku.leoz.node.data.repositories.master.RouteRepository
+import org.deku.leoz.node.data.repository.master.RouteRepository
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional

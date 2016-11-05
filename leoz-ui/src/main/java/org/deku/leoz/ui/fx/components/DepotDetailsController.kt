@@ -7,7 +7,7 @@ import javafx.fxml.Initializable
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Pane
 import org.deku.leoz.ui.fx.FormSkin
-import org.deku.leoz.rest.entities.internal.v1.Station
+import org.deku.leoz.rest.entity.internal.v1.Station
 import java.net.URL
 import java.util.*
 

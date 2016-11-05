@@ -6,7 +6,7 @@ import org.deku.leoz.node.App
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.messaging.entities.FileSyncMessage
 import org.deku.leoz.node.peer.RemotePeerSettings
-import org.deku.leoz.node.services.FileSyncClientService
+import org.deku.leoz.node.service.FileSyncClientService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

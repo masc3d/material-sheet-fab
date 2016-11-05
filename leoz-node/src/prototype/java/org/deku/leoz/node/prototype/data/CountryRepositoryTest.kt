@@ -2,7 +2,7 @@ package org.deku.leoz.node.prototype.data
 
 import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.data.jpa.QMstCountry
-import org.deku.leoz.node.data.repositories.master.CountryRepository
+import org.deku.leoz.node.data.repository.master.CountryRepository
 import org.junit.Test
 import java.sql.Timestamp
 import java.time.LocalDateTime

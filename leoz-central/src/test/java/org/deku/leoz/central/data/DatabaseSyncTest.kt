@@ -2,7 +2,7 @@ package org.deku.leoz.central.data
 
 import com.google.common.base.Stopwatch
 import org.deku.leoz.central.DataTest
-import org.deku.leoz.central.services.DatabaseSyncService
+import org.deku.leoz.central.service.DatabaseSyncService
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Import
@@ -13,7 +13,7 @@ import javax.inject.Inject
  */
 @Import(
         org.deku.leoz.central.config.DatabaseSyncConfiguration::class,
-        org.deku.leoz.central.services.DatabaseSyncService::class)
+        org.deku.leoz.central.service.DatabaseSyncService::class)
 class DatabaseSyncTest : DataTest() {
     private val log = LoggerFactory.getLogger(DatabaseSyncTest::class.java)
 

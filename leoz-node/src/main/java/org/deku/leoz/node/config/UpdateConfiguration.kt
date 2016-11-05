@@ -3,12 +3,12 @@ package org.deku.leoz.node.config
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.bundle.update.BundleUpdateService
+import org.deku.leoz.service.update.BundleUpdateService
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.LifecycleController
-import org.deku.leoz.node.data.repositories.system.*
+import org.deku.leoz.node.data.repository.system.*
 import org.deku.leoz.node.peer.RemotePeerSettings
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties

@@ -2,7 +2,7 @@ package org.deku.leoz.central.data
 
 import org.deku.leoz.central.DataTest
 import org.deku.leoz.central.data.entities.jooq.tables.records.MstNodeRecord
-import org.deku.leoz.central.data.repositories.NodeJooqRepository
+import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.junit.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

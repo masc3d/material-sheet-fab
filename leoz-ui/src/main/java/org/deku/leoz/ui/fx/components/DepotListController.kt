@@ -23,7 +23,7 @@ import javafx.util.Callback
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.bridge.MessageFactory
 import org.deku.leoz.ui.fx.Controller
-import org.deku.leoz.rest.entities.internal.v1.Station
+import org.deku.leoz.rest.entity.internal.v1.Station
 import org.deku.leoz.ui.*
 import org.deku.leoz.ui.event.BusyNotifier
 import org.deku.leoz.ui.event.BusyNotifier.*
