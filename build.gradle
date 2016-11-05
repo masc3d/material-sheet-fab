@@ -5,7 +5,7 @@ buildscript {
     ext {
         v_activemq = '5.14.1'
         v_artemis = '1.4.0'
-        v_kotlin = '1.0.3'
+        v_kotlin = '1.0.4'
         v_protostuff = '1.5.0'
     }
 
@@ -60,7 +60,7 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             // Guava
-            "com.google.guava:guava:19.0",
+            "com.google.guava:guava:20.0",
             // JMS
             "javax.jms:jms-api:1.1-rev-1"
     )
