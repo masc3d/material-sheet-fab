@@ -3,7 +3,7 @@ version = '1.0'
 
 buildscript {
     ext {
-        v_kotlin = '1.0.3'
+        v_kotlin = '1.0.4'
         v_slf4j = '1.7.21'
     }
 
@@ -49,7 +49,7 @@ dependencies {
             // Misc
             "org.apache.commons:commons-lang3:3.5",
             // RX
-            "io.reactivex:rxjava:1.2.1",
+            "io.reactivex:rxjava:1.2.2",
             "io.reactivex:rxkotlin:0.60.0",
     )
 
