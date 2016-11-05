@@ -1,10 +1,10 @@
-package org.deku.leoz.node.data.sync
+package org.deku.leoz.node.service.sync
 
 import com.google.common.base.Stopwatch
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.data.repository.EntityRepository
-import org.deku.leoz.node.messaging.entities.EntityStateMessage
-import org.deku.leoz.node.messaging.entities.EntityUpdateMessage
+import org.deku.leoz.node.service.sync.EntityStateMessage
+import org.deku.leoz.node.service.sync.EntityUpdateMessage
 import org.eclipse.persistence.queries.ScrollableCursor
 import sx.jms.Channel
 import sx.jms.Handler

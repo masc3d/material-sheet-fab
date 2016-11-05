@@ -7,8 +7,8 @@ import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
-import org.deku.leoz.node.data.sync.EntityConsumer
-import org.deku.leoz.node.data.sync.EntityPublisher
+import org.deku.leoz.node.service.sync.EntityConsumer
+import org.deku.leoz.node.service.sync.EntityPublisher
 import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.test.config.TestMessageBrokerConfiguration
 import org.junit.After

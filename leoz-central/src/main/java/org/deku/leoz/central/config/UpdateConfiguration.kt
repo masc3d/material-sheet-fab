@@ -9,7 +9,7 @@ import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.SshConfiguration
 import org.deku.leoz.node.config.BundleConfiguration
 import org.deku.leoz.node.config.UpdateConfiguration
-import org.deku.leoz.node.peer.RemotePeerSettings
+import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -35,7 +35,7 @@ open class UpdateConfiguration {
     @Inject
     private lateinit var settings: Settings
     @Inject
-    private lateinit var remotePeerSettings: RemotePeerSettings
+    private lateinit var remotePeerSettings: RemotePeerConfiguration
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
     @Inject

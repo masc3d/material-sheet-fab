@@ -5,7 +5,7 @@ import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
 import org.deku.leoz.node.App
-import org.deku.leoz.node.peer.RemotePeerSettings
+import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
@@ -40,7 +40,7 @@ open class MessageBrokerConfiguration {
     private lateinit var settings: Settings
 
     @Inject
-    private lateinit var peerSettings: RemotePeerSettings
+    private lateinit var peerSettings: RemotePeerConfiguration
 
     @PostConstruct
     fun onInitialize() {

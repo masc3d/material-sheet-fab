@@ -1,9 +1,9 @@
-package org.deku.leoz.node.service
+package org.deku.leoz.node.service.filesync
 
 import com.google.common.base.Stopwatch
 import org.deku.leoz.Identity
 import org.deku.leoz.io.WatchServiceFactory
-import org.deku.leoz.node.messaging.entities.FileSyncMessage
+import org.deku.leoz.node.service.filesync.FileSyncMessage
 import org.slf4j.LoggerFactory
 import sx.Lifecycle
 import sx.concurrent.Service

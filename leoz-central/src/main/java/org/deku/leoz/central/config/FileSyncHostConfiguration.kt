@@ -3,7 +3,7 @@ package org.deku.leoz.central.config
 import org.deku.leoz.central.App
 import org.deku.leoz.central.service.FileSyncHostService
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.node.messaging.entities.FileSyncMessage
+import org.deku.leoz.node.service.filesync.FileSyncMessage
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy

@@ -4,9 +4,9 @@ import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.LifecycleController
-import org.deku.leoz.node.messaging.entities.FileSyncMessage
-import org.deku.leoz.node.peer.RemotePeerSettings
-import org.deku.leoz.node.service.FileSyncClientService
+import org.deku.leoz.node.service.filesync.FileSyncMessage
+import org.deku.leoz.node.config.RemotePeerConfiguration
+import org.deku.leoz.node.service.filesync.FileSyncClientService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -32,7 +32,7 @@ open class FileSyncClientConfiguration {
     @Inject
     private lateinit var executorService: ScheduledExecutorService
     @Inject
-    private lateinit var remotePeerSettings: RemotePeerSettings
+    private lateinit var remotePeerSettings: RemotePeerConfiguration
     @Inject
     private lateinit var sshTunnelProvider: SshTunnelProvider
     @Inject

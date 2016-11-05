@@ -1,4 +1,4 @@
-package org.deku.leoz.node.messaging.entities
+package org.deku.leoz.node.service.filesync
 
 import sx.io.serialization.Serializable
 

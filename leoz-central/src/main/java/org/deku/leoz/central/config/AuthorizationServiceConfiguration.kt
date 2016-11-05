@@ -1,7 +1,7 @@
 package org.deku.leoz.central.config
 
 import org.deku.leoz.central.service.AuthorizationService
-import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
+import org.deku.leoz.node.service.authorization.AuthorizationRequestMessage
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import javax.annotation.PostConstruct

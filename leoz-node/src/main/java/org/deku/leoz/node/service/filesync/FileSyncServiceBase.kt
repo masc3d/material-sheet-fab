@@ -1,7 +1,7 @@
-package org.deku.leoz.node.service
+package org.deku.leoz.node.service.filesync
 
 import org.deku.leoz.Identity
-import org.deku.leoz.node.messaging.entities.FileSyncMessage
+import org.deku.leoz.node.service.filesync.FileSyncMessage
 import sx.Disposable
 import sx.jms.Handler
 import java.io.File

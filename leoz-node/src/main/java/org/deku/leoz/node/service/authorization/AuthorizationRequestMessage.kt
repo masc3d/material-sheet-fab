@@ -1,4 +1,4 @@
-package org.deku.leoz.node.messaging.entities
+package org.deku.leoz.node.service.authorization
 
 import sx.io.serialization.Serializable
 

@@ -4,7 +4,7 @@ import org.deku.leoz.central.App
 import org.deku.leoz.central.service.DatabaseSyncService
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.data.sync.EntityPublisher
+import org.deku.leoz.node.service.sync.EntityPublisher
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy

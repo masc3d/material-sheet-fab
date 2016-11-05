@@ -2,8 +2,8 @@ package org.deku.leoz.central.service
 
 import org.deku.leoz.Identity
 import org.deku.leoz.io.WatchServiceFactory
-import org.deku.leoz.node.messaging.entities.FileSyncMessage
-import org.deku.leoz.node.service.FileSyncServiceBase
+import org.deku.leoz.node.service.filesync.FileSyncMessage
+import org.deku.leoz.node.service.filesync.FileSyncServiceBase
 import org.slf4j.LoggerFactory
 import sx.concurrent.Service
 import sx.jms.Channel

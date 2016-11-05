@@ -1,11 +1,11 @@
-package org.deku.leoz.node.service
+package org.deku.leoz.node.service.authorization
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.deku.leoz.Identity
 import org.deku.leoz.node.config.StorageConfiguration
-import org.deku.leoz.node.messaging.entities.AuthorizationMessage
-import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
+import org.deku.leoz.node.service.authorization.AuthorizationMessage
+import org.deku.leoz.node.service.authorization.AuthorizationRequestMessage
 import org.slf4j.LoggerFactory
 import sx.concurrent.Service
 import sx.jms.Channel

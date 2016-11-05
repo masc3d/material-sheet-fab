@@ -1,7 +1,7 @@
 package org.deku.leoz.node
 
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.node.peer.RemotePeerSettings
+import org.deku.leoz.node.config.RemotePeerConfiguration
 import sx.Lifecycle
 import sx.jms.Broker
 import java.lang.ref.WeakReference
@@ -20,7 +20,7 @@ class LifecycleController {
     val lifecycles = Collections.synchronizedList(ArrayList<Lifecycle>())
 
     @Inject
-    private lateinit var peerSettings: RemotePeerSettings
+    private lateinit var peerSettings: RemotePeerConfiguration
 
     /**
      * Indiciates if a remote connection is required for network dependent lifecycles.

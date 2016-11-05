@@ -2,8 +2,8 @@ package org.deku.leoz.central.service
 
 import org.deku.leoz.Identity
 import org.deku.leoz.central.data.repository.NodeJooqRepository
-import org.deku.leoz.node.messaging.entities.AuthorizationMessage
-import org.deku.leoz.node.messaging.entities.AuthorizationRequestMessage
+import org.deku.leoz.node.service.authorization.AuthorizationMessage
+import org.deku.leoz.node.service.authorization.AuthorizationRequestMessage
 import org.slf4j.LoggerFactory
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
