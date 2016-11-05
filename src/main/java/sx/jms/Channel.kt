@@ -3,6 +3,7 @@ package sx.jms
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.LazyInstance
+import sx.io.serialization.Serializer
 import java.io.Closeable
 import java.time.Duration
 import java.util.*
@@ -551,6 +552,8 @@ class Channel @JvmOverloads constructor(
 
         if (jmsMessage == null)
             throw TimeoutException("Timeout while waiting for message [${messageType.simpleName}]")
+
+        Serializer.types.register(messageType)
 
         return messageType.cast(
                 this.converter.fromMessage(
