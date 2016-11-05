@@ -20,6 +20,7 @@ interface BundleService {
     companion object {
         const val BUNDLE = "bundle"
         const val ALIAS = "alias"
+        const val KEY = "key"
     }
 
     /**
@@ -28,15 +29,7 @@ interface BundleService {
      * @param versionAlias Version alias
      */
     @GET
-    @Path("/info/{${BUNDLE}}/{${ALIAS}}")
-    @ApiOperation(value = "Retrieve bundle information")
-    fun info(@PathParam(BUNDLE) bundleName: String, @PathParam(ALIAS) versionAlias: String): UpdateInfo
-
-    @POST
-    @Path("/info/request")
-    @ApiOperation(value = "Request update information")
-    @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
-    )
-    fun info(@ApiParam(value = "Request") request: UpdateInfoRequest): UpdateInfo
+    @Path("/info/{${BUNDLE}}")
+    @ApiOperation(value = "Retrieve bundle information by alias")
+    fun info(@PathParam(BUNDLE) bundleName: String, @QueryParam(ALIAS) versionAlias: String? = null, @QueryParam(KEY) nodeKey: String? = null): UpdateInfo
 }

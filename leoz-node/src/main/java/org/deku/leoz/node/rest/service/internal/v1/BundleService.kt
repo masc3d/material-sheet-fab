@@ -29,9 +29,25 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
     private lateinit var bundleRepository: BundleRepository
 
     /**
+     * Look up version alias by node key
+     */
+    open fun aliasByNodeKey(nodeKey: String): String {
+        // Implemented only in leoz-central
+        throw UnsupportedOperationException("Node key lookup not supported")
+    }
+
+    /**
      * @see org.deku.leoz.rest.service.internal.v1.BundleService
      */
-    override fun info(bundleName: String, versionAlias: String): UpdateInfo {
+    override fun info(bundleName: String, versionAlias: String?, nodeKey: String?): UpdateInfo {
+        var versionAlias = versionAlias
+        if (versionAlias == null) {
+            if (nodeKey == null)
+                throw IllegalArgumentException("Missing criteria")
+
+            versionAlias = this.aliasByNodeKey(nodeKey)
+        }
+
         val qTable = QMstBundleVersion.mstBundleVersion
         val rVersion = bundleVersionRepository.findOne(
                 qTable.bundle.eq(bundleName)
@@ -60,13 +76,5 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
                 bundleVersionPattern = rVersion.version,
                 latestDesignatedVersion = latestDesignatedVersion?.toString(),
                 latestDesignatedVersionPlatforms = latestDesignatedVersionPlatforms.map { it.toString() }.toTypedArray())
-    }
-
-    /**
-     * @see org.deku.leoz.rest.service.internal.v1.BundleService
-     */
-    override fun info(request: UpdateInfoRequest): UpdateInfo {
-        // Implemented only in leoz-central
-        throw UnsupportedOperationException("not implemented")
     }
 }
