@@ -12,7 +12,6 @@ buildscript {
     ext {
         v_grizzly = '2.3.28'
         v_jersey = '2.23.2'
-        v_kodein = '3.1.0'
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"

@@ -30,6 +30,9 @@ dependencies {
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
             // logging
             "org.apache.commons:commons-lang3:$v_commons_lang",
             "ch.qos.logback:logback-classic:$v_logback",

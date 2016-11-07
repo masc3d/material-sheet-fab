@@ -4,6 +4,7 @@ import io.undertow.server.handlers.resource.Resource
 import io.undertow.server.handlers.resource.ResourceChangeListener
 import io.undertow.server.handlers.resource.ResourceManager
 import io.undertow.server.handlers.resource.URLResource
+import org.deku.leoz.config.RestConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.MessageBrokerConfiguration
 import org.jboss.resteasy.core.Dispatcher
@@ -37,7 +38,6 @@ class WebContextInitializer : ServletContextInitializer {
     var mLog = LoggerFactory.getLogger(WebContextInitializer::class.java.name)
 
     companion object {
-        val RESTEASY_MAPPING_PATH = "/rs/api"
         private val STATIC_CONTENT_CLASSPATH = "/webapp"
         private val WELCOME_FILES = arrayOf("index.html")
     }
@@ -70,7 +70,7 @@ class WebContextInitializer : ServletContextInitializer {
         // * DispatcherServletAutoConfiguration.class,
 
         // Configuring resteasy handler mapping
-        //mResteasyHandlerMapping.setPrefix("/rs/api");
+        //mResteasyHandlerMapping.setPrefix(RestConfiguration.MAPPING_PREFIX);
         //mResteasyHandlerMapping.setThrowNotFound(false);
 
         // Resteasy dispatcher servlet configuration (variant 2)
@@ -83,10 +83,10 @@ class WebContextInitializer : ServletContextInitializer {
         servletContext.setAttribute(Registry::class.java.name, mResteasyDeployment.registry)
 
         var sr = servletContext.addServlet(HttpServletDispatcher::class.java.name, HttpServletDispatcher::class.java)
-        sr.setInitParameter("resteasy.servlet.mapping.prefix", RESTEASY_MAPPING_PATH)
+        sr.setInitParameter("resteasy.servlet.mapping.prefix", RestConfiguration.MAPPING_PREFIX)
         sr.setInitParameter("javax.ws.rs.Application", "org.deku.leoz.node.rest.WebserviceApplication")
         sr.setLoadOnStartup(1)
-        sr.addMapping(RESTEASY_MAPPING_PATH + "/*")
+        sr.addMapping(RestConfiguration.MAPPING_PREFIX + "/*")
 
         try {
             sr = servletContext.addServlet(HttpExternalTunnelServlet::class.java.name,

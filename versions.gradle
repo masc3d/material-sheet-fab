@@ -21,7 +21,7 @@ buildscript {
         v_jna = '4.2.2'
         v_jooq = '3.8.6'
         v_junit = '4.12'
-        // TODO: kotlin 1.0.4 currently has an issue with projects using kapt, when used as a (clean) dpendency erroneously executing `compileKotlinAfterJava` after `jar`, resulting in build errors
+        v_kodein = '3.1.0'
         v_kotlin = '1.0.4'
         v_kryo = '4.0.0'
         v_logback = '1.1.7'

@@ -1,5 +1,6 @@
 package org.deku.leoz.node.config
 
+import org.deku.leoz.config.RestConfiguration
 import org.deku.leoz.node.web.WebContextInitializer
 import org.deku.leoz.rest.RestClient
 import org.springframework.context.annotation.Bean
@@ -20,7 +21,7 @@ open class RestClientConfiguration {
     open fun restClient(): RestClient {
         val uri = URI("https://${remotePeerConfiguration.host!!}:${remotePeerConfiguration.httpPort!!}")
                 .resolve(remotePeerConfiguration.httpPath!!)
-                .resolve(WebContextInitializer.RESTEASY_MAPPING_PATH)
+                .resolve(RestConfiguration.MAPPING_PREFIX)
 
         // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
         val ignoreSslCertificate = !remotePeerConfiguration.host!!.endsWith("derkurier.de")

@@ -5,6 +5,7 @@ import io.swagger.jaxrs.config.ReflectiveJaxrsScanner;
 import io.swagger.models.Contact;
 import io.swagger.models.Info;
 import io.swagger.models.Swagger;
+import org.deku.leoz.config.RestConfiguration;
 import sx.LazyInstance;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,7 +35,7 @@ public class SwaggerContextInternal implements SwaggerContext {
                         .email("wolfgang.drewelies@derkurier.de"));
 
         Swagger swagger = new Swagger().info(info);
-        swagger.basePath("/rs/api");
+        swagger.basePath(RestConfiguration.INSTANCE.getMAPPING_PREFIX());
 
 //    swagger.securityDefinition("api_key", new ApiKeyAuthDefinition("api_key", In.HEADER));
 //    swagger.securityDefinition("petstore_auth",
