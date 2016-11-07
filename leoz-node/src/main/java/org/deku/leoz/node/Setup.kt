@@ -53,9 +53,9 @@ class Setup(
     override fun install() {
         log.info("Installing service")
 
-        var classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
+        val classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
 
-        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
+        val pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
                 "//IS/${this.serviceId}",
                 "--DisplayName=Leoz service (${this.serviceId})",
                 "--Description=Leoz system service (${this.serviceId})",
@@ -104,7 +104,7 @@ class Setup(
     override fun start() {
         log.info("Starting service")
 
-        var pb: ProcessBuilder = ProcessBuilder("net", "start", "${serviceId}")
+        var pb: ProcessBuilder = ProcessBuilder("net", "start", serviceId)
         this.execute(pb)
 
         log.info("Started sucessfully")
@@ -121,7 +121,7 @@ class Setup(
 
         log.info("Stopping service")
 
-        var pb: ProcessBuilder = ProcessBuilder("net", "stop", "${serviceId}")
+        val pb: ProcessBuilder = ProcessBuilder("net", "stop", serviceId)
         this.execute(pb)
 
         log.info("Stopped successfully")
@@ -131,11 +131,11 @@ class Setup(
      * Execute command
      */
     private fun execute(pb: ProcessBuilder) {
-        var output = StringBuffer()
-        var error = StringBuffer()
+        val output = StringBuffer()
+        val error = StringBuffer()
 
         // Execute
-        var pe: ProcessExecutor = ProcessExecutor(pb,
+        val pe: ProcessExecutor = ProcessExecutor(pb,
                 outputHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = output),
                 errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
@@ -168,14 +168,14 @@ class Setup(
      * Determimes service status
      */
     private fun serviceStatus(): ServiceStatus {
-        val pb: ProcessBuilder = ProcessBuilder("sc", "query", "${serviceId}")
+        val pb: ProcessBuilder = ProcessBuilder("sc", "query", serviceId)
 
-        var output = StringBuffer()
-        var error = StringBuffer()
+        val output = StringBuffer()
+        val error = StringBuffer()
 
         try {
             // Execute
-            var pe: ProcessExecutor = ProcessExecutor(pb,
+            val pe: ProcessExecutor = ProcessExecutor(pb,
                     outputHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = output),
                     errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
