@@ -389,12 +389,15 @@ class BundleRepository(
         // Final destination path for download
         val destPath = localRepoBundlePath
                 .resolve(version.toString())
-        if (destPath.exists())
-            return false
 
         // Temporary download path
         val downloadPath = destPath.parentFile.resolve(destPath.name + DOWNLOAD_SUFFIX)
-        downloadPath.mkdirs()
+
+        if (destPath.exists()) {
+            Files.move(destPath.toPath(), downloadPath.toPath())
+        } else {
+            downloadPath.mkdirs()
+        }
 
         // Local version of bundle
         val localVersions = localRepository.listVersions(bundleName)

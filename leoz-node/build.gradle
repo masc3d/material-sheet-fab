@@ -169,6 +169,8 @@ dependencies {
             "org.jboss.resteasy:resteasy-jaxrs:$v_resteasy",
             "org.jboss.resteasy:resteasy-spring:$v_resteasy",
             "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+
 
             // jackson JSON serializer
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",

@@ -77,7 +77,7 @@ ssh:
     server:
         port: 13003
     tunnel:
-        # Default settings for stablsihing ssh tunneled connections
+        # Default settings for establishing ssh tunneled connections
         username: leoz
         password: MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8
         port: 13003

@@ -10,6 +10,8 @@ import org.deku.leoz.node.App
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.repository.system.*
 import org.deku.leoz.node.config.RemotePeerConfiguration
+import org.deku.leoz.rest.RestClient
+import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -47,6 +49,8 @@ open class UpdateConfiguration {
     private lateinit var localBundleRepository: BundleRepository
     @Inject
     private lateinit var bundleInstaller: BundleInstaller
+    @Inject
+    private lateinit var restClient: RestClient
     @Inject
     lateinit var sshTunnelProvider: SshTunnelProvider
 
@@ -103,6 +107,7 @@ open class UpdateConfiguration {
         // Setup
         val updateService = BundleUpdateService(
                 executorService = this.executorService,
+                bundleService = { this.restClient.proxy(BundleService::class.java) },
                 identity = App.instance.identity,
                 installer = this.bundleInstaller,
                 remoteRepository = this.updateRepository,
@@ -120,11 +125,8 @@ open class UpdateConfiguration {
                         BundleUpdateService.Preset(
                                 bundleName = BundleType.LEOZ_BOOT.value,
                                 install = true,
-                                storeInLocalRepository = true)
-                ),
-                cleanup = this.settings.cleanup,
-                requestChannel = Channel(ActiveMQConfiguration.instance.centralQueue)
-        )
+                                storeInLocalRepository = true)),
+                cleanup = this.settings.cleanup)
 
         updateService.enabled = this.settings.enabled
 

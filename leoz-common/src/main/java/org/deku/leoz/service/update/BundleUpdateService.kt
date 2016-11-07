@@ -5,11 +5,9 @@ import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.boot
-import org.deku.leoz.service.update.UpdateInfo
-import org.deku.leoz.service.update.UpdateInfoRequest
+import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.slf4j.LoggerFactory
 import rx.lang.kotlin.PublishSubject
-import rx.subjects.PublishSubject
 import sx.Lifecycle
 import sx.concurrent.Service
 import sx.jms.Channel
@@ -22,7 +20,7 @@ import java.util.concurrent.ScheduledExecutorService
  * Updater suoporting async/background updates of bundles.
  * Can be added as a message handler to a notification topic message listener for push update notifications.
  * @property executorService Executor service
- * @property requestChannel The JMS channel to issue update info requests on
+ * @property bundleService Bundle service for requesting bundle/version information
  * @property identity Id of this leoz node
  * @property installer Bundle installer for installing bundles locally
  * @property remoteRepository Remote bundle repository. The bundle name of this repository has to match the installer name
@@ -33,7 +31,7 @@ import java.util.concurrent.ScheduledExecutorService
  */
 class BundleUpdateService(
         private val executorService: ScheduledExecutorService,
-        private val requestChannel: Channel,
+        private val bundleService: () -> BundleService,
         val identity: Identity,
         val installer: BundleInstaller,
         val remoteRepository: BundleRepository,
@@ -58,7 +56,7 @@ class BundleUpdateService(
             val install: Boolean = false,
             val storeInLocalRepository: Boolean = false,
             val requiresBoot: Boolean = false
-    ) { }
+    ) {}
 
     /**
      * Update presets
@@ -148,16 +146,14 @@ class BundleUpdateService(
         log.info("Requesting version info for [${bundleName}]")
 
         // Request currently assigned version for this bundle and node
-        val updateInfo = this.requestChannel.sendRequest(UpdateInfoRequest(this.identity.key, bundleName)).use {
-            it.receive(UpdateInfo::class.java)
-        }
+        val updateInfo = this.bundleService().info(bundleName = bundleName, nodeKey = this.identity.key)
 
         log.info("Update info [${updateInfo}]")
         ovsInfoReceived.onNext(updateInfo)
 
         if (updateInfo.latestDesignatedVersion != null) {
             val latestDesignatedVersion = Bundle.Version.parse(updateInfo.latestDesignatedVersion)
-            val platforms = updateInfo.latestDesignatedVersionPlatforms.map { PlatformId.parse(it) }
+            val latestDesignatedPlatforms = updateInfo.latestDesignatedVersionPlatforms.map { PlatformId.parse(it) }
             val fullBundleName = "${bundleName}-${latestDesignatedVersion}"
 
             // The repository to actually install from.
@@ -172,7 +168,15 @@ class BundleUpdateService(
 
                 repositoryToInstallFrom = this.localRepository
 
-                if (!this.localRepository.listVersions(bundleName).contains(latestDesignatedVersion)) {
+                val existsLocally = this.localRepository
+                        .listVersions(bundleName)
+                        .contains(latestDesignatedVersion)
+
+                val allPlatformsExistLocally = latestDesignatedPlatforms
+                        .subtract(this.localRepository.listPlatforms(bundleName, latestDesignatedVersion))
+                        .count() == 0
+
+                if (!existsLocally || !allPlatformsExistLocally) {
                     this.remoteRepository.download(
                             bundleName = bundleName,
                             version = latestDesignatedVersion,
@@ -191,7 +195,7 @@ class BundleUpdateService(
 
             if (preset.install) {
                 val currentPlatform = PlatformId.current()
-                if (platforms.contains(currentPlatform)) {
+                if (latestDesignatedPlatforms.contains(currentPlatform)) {
                     val readyToInstall = this.installer.download(
                             bundleRepository = repositoryToInstallFrom,
                             bundleName = bundleName,

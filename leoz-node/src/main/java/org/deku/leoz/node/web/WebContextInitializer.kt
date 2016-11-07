@@ -33,12 +33,12 @@ import javax.servlet.ServletException
  * Created by masc on 27.05.15.
  */
 @Named
-internal class WebContextInitializer : ServletContextInitializer {
+class WebContextInitializer : ServletContextInitializer {
     var mLog = LoggerFactory.getLogger(WebContextInitializer::class.java.name)
 
     companion object {
+        val RESTEASY_MAPPING_PATH = "/rs/api"
         private val STATIC_CONTENT_CLASSPATH = "/webapp"
-        private val RESTEASY_MAPPING_PATH = "/rs/api"
         private val WELCOME_FILES = arrayOf("index.html")
     }
 

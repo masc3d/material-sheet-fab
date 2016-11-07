@@ -73,7 +73,9 @@ dependencies {
             "org.apache.activemq:artemis-amqp-protocol:$v_artemis",
             "org.apache.activemq:artemis-openwire-protocol:$v_artemis",
             // Spring
-            "org.springframework:spring-jms:$v_spring"
+            "org.springframework:spring-jms:$v_spring",
+            // Resteasy Client
+            "org.jboss.resteasy:resteasy-client:$v_resteasy"
     )
 
     testCompile(
