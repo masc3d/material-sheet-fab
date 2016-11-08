@@ -36,10 +36,10 @@ class Message {
                 if (jt.isScalarValue) {
                     val value: Any
                     if (!jt.isNumeric && !jt.isBoolean) {
-                        try {
-                            value = jp.readValueAs(Date::class.java)
+                        value = try {
+                            jp.readValueAs(Date::class.java)
                         } catch (e: Exception) {
-                            value = jp.readValueAs(Any::class.java)
+                            jp.readValueAs(Any::class.java)
                         }
 
                     } else {
