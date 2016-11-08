@@ -14,34 +14,69 @@ import kotlin.properties.Delegates
  * Created by masc on 26.06.15.
  */
 abstract class StorageConfiguration(
+        val baseName: String = "leoz",
         /** Base name for process specific files/directories */
-        val appName: String) {
+        val appName: String,
+        /** Private base directory. Defaults to a system specific path */
+        val privateBaseDirectory: File = DEFAULT_PRIVATE_BASE_DIRECTORY,
+        /** Public base directory. Defaults ot a system specific path */
+        val publicBaseDirectory: File = DEFAULT_PUBLIC_BASE_DIRECTORY) {
     /** Logger */
-    private var log = LoggerFactory.getLogger(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    companion object {
+        val DEFAULT_PRIVATE_BASE_DIRECTORY =
+                if (SystemUtils.IS_OS_WINDOWS) File(System.getenv("ALLUSERSPROFILE")) else File(System.getProperty("user.home"))
+
+        val DEFAULT_PUBLIC_BASE_DIRECTORY =
+                if (SystemUtils.IS_OS_WINDOWS) File(System.getenv("PUBLIC")) else DEFAULT_PRIVATE_BASE_DIRECTORY
+    }
 
     // Directories
 
     /**
-     * Common system application data path
+     * Private base directory name
      */
-    var applicationDataPath: File by Delegates.notNull()
-
-    /**
-     * Common system public data path
-     */
-    var publicDataPath: File by Delegates.notNull()
+    val privateDirectoryName by lazy {
+        if (SystemUtils.IS_OS_WINDOWS) baseName.capitalize() else "." + baseName.toLowerCase()
+    }
 
     /**
      * Private leoz directory
      */
-    // TODO: change back to val once kotlin bug complaining about uninitialized val (even though it's initialized in init) is resolved
-    var privateDirectory: File by Delegates.notNull()
+    val privateDirectory by lazy {
+        val d = File(this.privateBaseDirectory, privateDirectoryName)
+        if (!d.exists()) {
+            try {
+                d.mkdirs()
+
+                // Set permissions if the directory was created
+                if (SystemUtils.IS_OS_WINDOWS) {
+                    Files.getFileAttributeView(
+                            d.toPath(),
+                            DosFileAttributeView::class.java).setHidden(true)
+
+                    PermissionUtil.setAclAllowEverything(
+                            path = d,
+                            principals = *arrayOf(
+                                    PermissionUtil.Win32.SID.Users.fqn,
+                                    PermissionUtil.Win32.SID.LocalSystem.fqn))
+                }
+            } catch(e: Exception) {
+                if (d.exists()) {
+                    d.deleteRecursively()
+                }
+                throw e
+            }
+        }
+        d
+    }
 
     /**
      * Public leoz directory
      */
     val publicDirectory: File by lazy {
-        val d = File(this.publicDataPath, "Leoz")
+        val d = File(this.publicBaseDirectory, this.baseName.capitalize())
         d.mkdirs()
         d
     }
@@ -113,57 +148,13 @@ abstract class StorageConfiguration(
     /** c'tor */
     init {
         // Initialize directories
-        var baseDirectoryName: String
-        if (SystemUtils.IS_OS_WINDOWS) {
-            this.applicationDataPath = File(System.getenv("ALLUSERSPROFILE"))
-            baseDirectoryName = "Leoz"
-            this.publicDataPath = File(System.getenv("PUBLIC"))
-        } else {
-            this.applicationDataPath = File(System.getProperty("user.home"))
-            baseDirectoryName = ".leoz"
-            this.publicDataPath = this.applicationDataPath
-        }
-        if (Strings.isNullOrEmpty(this.applicationDataPath.name))
+        if (Strings.isNullOrEmpty(this.privateBaseDirectory.name))
             throw UnsupportedOperationException("Base application data path could not be determined");
 
-        this.privateDirectory = File(this.applicationDataPath, baseDirectoryName)
         this.log.trace("Storage configuration base directory [${privateDirectory}]")
-
-        this.publicDataPath.mkdirs()
-
-        // Set permissions if the directory was created
-        if (!this.privateDirectory.exists()) {
-            try {
-                this.privateDirectory.mkdirs()
-
-                if (SystemUtils.IS_OS_WINDOWS) {
-                    Files.getFileAttributeView(
-                            this.privateDirectory.toPath(),
-                            DosFileAttributeView::class.java).setHidden(true)
-
-                    PermissionUtil.setAclAllowEverything(
-                            path = this.privateDirectory,
-                            principals = *arrayOf(
-                                    PermissionUtil.Win32.SID.Users.fqn,
-                                    PermissionUtil.Win32.SID.LocalSystem.fqn))
-                }
-            } catch(e: Exception) {
-                if (this.privateDirectory.exists()) {
-                    this.privateDirectory.deleteRecursively()
-                }
-                throw e
-            }
-        }
 
         if (!this.bundleLockFile.exists()) {
             this.bundleLockFile.createNewFile()
         }
-    }
-
-    /**
-     * Initialize storage configuration
-     */
-    fun initalize() {
-        // All intialization is passive (via c'tor) for now
     }
 }

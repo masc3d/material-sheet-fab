@@ -12,22 +12,16 @@ import javax.inject.Inject
  * Created by masc on 07/11/2016.
  */
 @Configuration
-open class RestClientConfiguration {
+open class RestClientConfiguration : org.deku.leoz.config.RestConfiguration() {
 
     @Inject
     private lateinit var remotePeerConfiguration: RemotePeerConfiguration
 
     @Bean
     open fun restClient(): RestClient {
-        val uri = URI("https://${remotePeerConfiguration.host!!}:${remotePeerConfiguration.httpPort!!}")
-                .resolve(remotePeerConfiguration.httpPath!!)
-                .resolve(RestConfiguration.MAPPING_PREFIX)
-
-        // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
-        val ignoreSslCertificate = !remotePeerConfiguration.host!!.endsWith("derkurier.de")
-
-        return RestClient(
-                baseUri = uri,
-                ignoreSslCertificate = ignoreSslCertificate)
+        return this.createClient(
+                host = remotePeerConfiguration.host!!,
+                port = remotePeerConfiguration.httpPort!!,
+                https = true)
     }
 }

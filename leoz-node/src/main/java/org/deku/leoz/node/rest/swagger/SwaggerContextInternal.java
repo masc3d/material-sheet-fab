@@ -35,7 +35,7 @@ public class SwaggerContextInternal implements SwaggerContext {
                         .email("wolfgang.drewelies@derkurier.de"));
 
         Swagger swagger = new Swagger().info(info);
-        swagger.basePath(RestConfiguration.INSTANCE.getMAPPING_PREFIX());
+        swagger.basePath(RestConfiguration.Companion.getMAPPING_PREFIX());
 
 //    swagger.securityDefinition("api_key", new ApiKeyAuthDefinition("api_key", In.HEADER));
 //    swagger.securityDefinition("petstore_auth",

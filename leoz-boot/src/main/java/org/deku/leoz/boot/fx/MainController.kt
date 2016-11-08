@@ -1,5 +1,9 @@
 package org.deku.leoz.boot.fx
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import com.google.common.base.Strings
 import javafx.application.Platform
 import javafx.event.EventHandler
@@ -8,6 +12,7 @@ import javafx.fxml.Initializable
 import javafx.scene.control.*
 import javafx.scene.input.MouseEvent
 import org.deku.leoz.boot.Application
+import org.deku.leoz.boot.Settings
 import org.deku.leoz.boot.config.LogConfiguration
 import org.deku.leoz.boot.config.StorageConfiguration
 import org.deku.leoz.bundle.BundleInstaller
@@ -37,6 +42,12 @@ class MainController : Initializable {
     lateinit var uxProgressIndicator: ProgressIndicator
     @FXML
     lateinit var uxClose: Button
+
+    private val settings: Settings by Kodein.global.lazy.instance()
+
+    private val logConfiguration: LogConfiguration by Kodein.global.lazy.instance()
+
+    private val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
 
     var logAppender: TextAreaLogAppender? = null
 
@@ -70,14 +81,13 @@ class MainController : Initializable {
         // TODO. separate main installation logic from UI controller
         thread {
             var verb: String = "Initializing"
-            var verbPast: String
+            val verbPast: String
 
             try {
-                LogConfiguration.initialize()
-                LogConfiguration.addAppender(TextAreaLogAppender(uxTextArea, 1000))
+                this.logConfiguration.initialize()
+                this.logConfiguration.addAppender(TextAreaLogAppender(uxTextArea, 1000))
 
-                StorageConfiguration.initalize()
-                LogConfiguration.logFile = StorageConfiguration.logFile
+                this.logConfiguration.logFile = this.storageConfiguration.logFile
 
                 log.info(JvmUtil.shortInfoText)
 
@@ -87,8 +97,7 @@ class MainController : Initializable {
                     // Printing jar manifest will fail when running from IDE eg. that's ok.
                 }
 
-
-                if (Strings.isNullOrEmpty(Application.Parameters.bundle)) {
+                if (Strings.isNullOrEmpty(this.settings.bundle)) {
                     // Nothing to do
                     throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting");
                 }
@@ -98,7 +107,7 @@ class MainController : Initializable {
 
                 val bundleName = Application.instance.bundle
 
-                when (Application.Parameters.uninstall) {
+                when (this.settings.uninstall) {
                     true -> {
                         verb = "Uninstalling"
                         verbPast = "Uninstalled"
@@ -110,10 +119,10 @@ class MainController : Initializable {
                 }
                 verb += " ${bundleName}"
 
-                log.info("${verb}")
+                log.info(verb)
 
                 Platform.runLater {
-                    uxTitle.text = "${verb}"
+                    uxTitle.text = verb
                     uxProgressBar.progressProperty().addListener { v, o, n ->
                         uxProgressIndicator.isVisible = (n.toDouble() == ProgressBar.INDETERMINATE_PROGRESS || (n.toDouble() >= 0.0 && n.toDouble() < 1))
                     }
@@ -135,12 +144,12 @@ class MainController : Initializable {
                         }
                 })
 
-                val installer = BundleInstaller(StorageConfiguration.bundleInstallationDirectory)
+                val installer = BundleInstaller(this.storageConfiguration.bundleInstallationDirectory)
 
-                if (Application.Parameters.uninstall) {
+                if (this.settings.uninstall) {
                     installer.uninstall(bundleName)
                 } else {
-                    if (!installer.hasBundle(bundleName) || Application.Parameters.forceDownload) {
+                    if (!installer.hasBundle(bundleName) || this.settings.forceDownload) {
                         val repository = if (Application.instance.repositoryUri != null)
                             BundleRepository(Application.instance.repositoryUri!!) else
                             BundleConfiguration.stagingRepository
@@ -148,7 +157,7 @@ class MainController : Initializable {
                         // Query for version matching pattern
                         val version = repository.queryLatestMatchingVersion(
                                 bundleName,
-                                Application.Parameters.versionPattern)
+                                this.settings.versionPattern)
 
                         // Download bundle
                         startProgress = 0.3
@@ -157,7 +166,7 @@ class MainController : Initializable {
                                 bundleRepository = repository,
                                 bundleName = bundleName,
                                 version = version,
-                                forceDownload = Application.Parameters.forceDownload,
+                                forceDownload = this.settings.forceDownload,
                                 onProgress = { f, p ->
                                     if (p > 0.0)
                                         Platform.runLater {
@@ -190,7 +199,7 @@ class MainController : Initializable {
                 }
             }
 
-            if (Application.Parameters.hideUi || GraphicsEnvironment.isHeadless()) {
+            if (this.settings.hideUi || GraphicsEnvironment.isHeadless()) {
                 System.exit(Application.instance.exitCode)
             }
         }

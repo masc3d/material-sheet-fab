@@ -2,6 +2,10 @@ package org.deku.leoz.boot
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
@@ -9,7 +13,7 @@ import javafx.scene.image.Image
 import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
-import org.deku.leoz.boot.config.StorageConfiguration
+import org.deku.leoz.boot.config.*
 import org.deku.leoz.boot.fx.ResizeHelper
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleType
@@ -21,13 +25,7 @@ import java.awt.SplashScreen
 import java.io.File
 import java.util.*
 import kotlin.properties.Delegates
-
-/**
- * Main application entry point
- */
-fun main(args: Array<String>) {
-    javafx.application.Application.launch(Application::class.java, *args)
-}
+import kotlin.reflect.KDeclarationContainer
 
 /**
  * Main application (javafx) class
@@ -35,40 +33,40 @@ fun main(args: Array<String>) {
  */
 class Application : javafx.application.Application() {
 
-    object Parameters {
-        @Parameter(description = "Command args")
-        var args: List<String> = ArrayList()
+    companion object {
+        /** Application singleton instance */
+        var instance: Application by Delegates.notNull()
+            private set
 
-        @Parameter(names = arrayOf("--bundle"), description = "Bundle to boot")
-        var bundle: String = ""
+        private fun set(instance: Application) {
+            this.instance = instance
+        }
 
-        @Parameter(names = arrayOf("--repository"), description = "Repository URI")
-        var repositoryUriString: String? = null
-
-        @Parameter(names = arrayOf("--no-ui"), description = "Don't show user interface")
-        var hideUi: Boolean = false
-
-        @Parameter(names = arrayOf("--force-download"), description = "Force download")
-        var forceDownload: Boolean = false
-
-        @Parameter(names = arrayOf("--version"), description = "Version pattern override")
-        var versionPattern: String = "+RELEASE"
-
-        @Parameter(names = arrayOf("--uninstall"), description = "Uninstall bundle")
-        var uninstall: Boolean = false
+        /**
+         * Main application entry point
+         */
+        @JvmStatic fun main(args: Array<String>) {
+            javafx.application.Application.launch(Application::class.java, *args)
+        }
     }
+
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    /**
+     * Application settings
+     */
+    private val settings: Settings by Kodein.global.lazy.instance()
+
     /** Bundle to install */
     val bundle by lazy({
-        Parameters.bundle
+        this.settings.bundle
     })
 
     /** Bundle repository URI */
     val repositoryUri: Rsync.URI?
-        get() = if (Parameters.repositoryUriString != null)
-            Rsync.URI(Parameters.repositoryUriString!!) else
+        get() = if (this.settings.repositoryUriString != null)
+            Rsync.URI(this.settings.repositoryUriString!!) else
             null
 
     /** Primary stage */
@@ -88,20 +86,23 @@ class Application : javafx.application.Application() {
      * @param onProgress Progress callback
      */
     fun selfInstall(onProgress: ((p: Double) -> Unit) = {}) {
-        if (StorageConfiguration.nativeBundleBasePath == null)
+        val storage: StorageConfiguration  = Kodein.global.instance()
+        if (storage.nativeBundleBasePath == null) {
+            log.warn("Skipping self-installation as native bundle base path could not be determined (not running from native bundle)")
             return
+        }
 
-        val nativeBundlePath = StorageConfiguration.nativeBundleBasePath!!
+        val nativeBundlePath = storage.nativeBundleBasePath!!
         log.info("Native bundle path [${nativeBundlePath}")
 
-        if (nativeBundlePath.parentFile == StorageConfiguration.bundleInstallationDirectory)
+        if (nativeBundlePath.parentFile == storage.bundleInstallationDirectory)
             return
 
         log.info("Performing self verification")
         Bundle.load(nativeBundlePath).verify()
 
         val srcPath = nativeBundlePath
-        val destPath = File(StorageConfiguration.bundleInstallationDirectory, BundleType.LEOZ_BOOT.value)
+        val destPath = File(storage.bundleInstallationDirectory, BundleType.LEOZ_BOOT.value)
 
         val rc = RsyncClient()
         val source = Rsync.URI(srcPath)
@@ -133,8 +134,14 @@ class Application : javafx.application.Application() {
                 return
             }
 
+            Kodein.global.addImport(ApplicationConfiguration.module)
+            Kodein.global.addImport(DiscoveryConfiguration.module)
+            Kodein.global.addImport(LogConfiguration.module)
+            Kodein.global.addImport(RestConfiguration.module)
+            Kodein.global.addImport(StorageConfiguration.module)
+
             // Parse leoz-boot command line params
-            JCommander(Parameters, *instance.parameters.raw.toTypedArray())
+            JCommander(this.settings, *this.parameters.raw.toTypedArray())
 
             this.primaryStage = primaryStage
 
@@ -163,7 +170,7 @@ class Application : javafx.application.Application() {
             primaryStage.initStyle(StageStyle.UNDECORATED)
             primaryStage.y = (screenBounds.height - rootBounds.height) / 2
             primaryStage.x = (screenBounds.width - rootBounds.width) / 2
-            if (Parameters.hideUi) {
+            if (this.settings.hideUi) {
                 primaryStage.hide()
             } else {
                 primaryStage.show()
@@ -183,15 +190,5 @@ class Application : javafx.application.Application() {
     override fun stop() {
         super.stop()
         System.exit(this.exitCode)
-    }
-
-    companion object {
-        /** Application singleton instance */
-        var instance: Application by Delegates.notNull()
-            private set
-
-        private fun set(instance: Application) {
-            this.instance = instance
-        }
     }
 }

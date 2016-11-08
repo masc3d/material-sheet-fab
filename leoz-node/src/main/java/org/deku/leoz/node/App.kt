@@ -173,7 +173,6 @@ open class App :
         isInitialized = true
 
         // Acquire lock on bundle path
-        StorageConfiguration.instance.initalize()
         val bundlePath = StorageConfiguration.instance.bundleLockFile
         log.trace("Acquiring lock on bundle path [${bundlePath}]")
         this.bundlePathLock = FileChannel
