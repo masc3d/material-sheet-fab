@@ -19,10 +19,11 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /**
- * Lightweight universal udp discovery service
+ * Lightweight universal udp discovery service. Instances act as a discovery server and client at the same time
  * @param executorService Executor service to use
  * @property port Port to listen on
- * @param nodeUid Discovery node unique. Defaults to a random UUID string.
+ * @param uid Discovery node unique id. Defaults to a random UUID string.
+ * @param serverEnabled Enables listener for answering broadcast request. Defaults to true.
  * @param TInfo (Optional) Info block type.
  * The class must be serializable, should be immutable and implement `.equals`for change notifications.
  * A kotlin data class using only `val`s is a good match.
@@ -32,7 +33,8 @@ import kotlin.concurrent.withLock
 open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         executorService: ScheduledExecutorService,
         val port: Int,
-        val nodeUid: String = UUID.randomUUID().toString(),
+        val uid: String = UUID.randomUUID().toString(),
+        val serverEnabled: Boolean = true,
         infoClass: Class<TInfo>,
         private val serializer: Serializer = KryoSerializer())
 :
@@ -274,7 +276,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                     // Send response for this host
                     val response = this@UdpDiscoveryService.serializer.serializeToByteArray(
                             Node(address = InetSocketAddress(0).address,
-                                    uid = this@UdpDiscoveryService.nodeUid,
+                                    uid = this@UdpDiscoveryService.uid,
                                     info = this@UdpDiscoveryService.info))
 
                     log.debug("Answering to ${packet.address} size [${response.size}]")
@@ -318,7 +320,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 // Create host entry for this interface/address
                 val host = Node(
                         address = it.interfaceAddress.address,
-                        uid = this@UdpDiscoveryService.nodeUid,
+                        uid = this@UdpDiscoveryService.uid,
                         removed = !this@UdpDiscoveryService.running,
                         info = this@UdpDiscoveryService.info)
 
@@ -421,21 +423,23 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     override fun onStart() {
         this.running = true
 
-        /**
-         * Server run cycle as a supplemental task
-         */
-        this.submitSupplementalTask {
-            while (this.running) {
-                try {
-                    this.server.get().run()
-                } catch(e: BindException) {
-                    log.error(e.message, e)
-                    log.warn("Could not bind server, falling back to client only mode")
-                    break
-                } catch(e: Exception) {
-                    log.error(e.message, e)
-                    // Prevent CPU hogging on unexpected exceptions
-                    Thread.sleep(2000)
+        if (this.serverEnabled) {
+            /**
+             * Server run cycle as a supplemental task
+             */
+            this.submitSupplementalTask {
+                while (this.running) {
+                    try {
+                        this.server.get().run()
+                    } catch(e: BindException) {
+                        log.error(e.message, e)
+                        log.warn("Could not bind server, falling back to client only mode")
+                        break
+                    } catch(e: Exception) {
+                        log.error(e.message, e)
+                        // Prevent CPU hogging on unexpected exceptions
+                        Thread.sleep(2000)
+                    }
                 }
             }
         }
