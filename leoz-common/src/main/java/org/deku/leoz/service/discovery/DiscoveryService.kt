@@ -21,10 +21,12 @@ class DiscoveryService(
         executorService: ScheduledExecutorService,
         port: Int = DiscoveryService.DEFAULT_PORT,
         uid: String = UUID.randomUUID().toString(),
-        val bundleType: BundleType)
+        val bundleType: BundleType,
+        serverEnabled: Boolean = true)
 : UdpDiscoveryService<DiscoveryInfo>(
         executorService = executorService,
-        nodeUid = uid,
+        uid = uid,
+        serverEnabled = serverEnabled,
         infoClass = DiscoveryInfo::class.java,
         port = port) {
 

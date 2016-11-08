@@ -56,14 +56,14 @@ object Configurations {
         bind<DiscoveryService>() with singleton {
             DiscoveryService(
                     executorService = instance(),
-                    bundleType = BundleType.LEOZ_UI)
+                    bundleType = BundleType.LEOZ_UI,
+                    serverEnabled = false)
         }
 
         /** Leo bridge */
         bind<LeoBridge>() with singleton {
             LeoBridge()
         }
-
     }
 
     /**

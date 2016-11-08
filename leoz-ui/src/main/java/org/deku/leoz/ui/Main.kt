@@ -113,9 +113,6 @@ class Main : Application() {
         val splashStage = Stage()
 
         executor.submit {
-            log.debug("Initializing storage")
-            StorageConfiguration.initalize()
-
             log.debug("Initializing log")
             LogConfiguration.logFile = StorageConfiguration.logFile
             LogConfiguration.initialize()
