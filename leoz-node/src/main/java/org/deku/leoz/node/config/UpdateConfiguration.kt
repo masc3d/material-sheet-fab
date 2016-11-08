@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Lazy
 import sx.jms.Channel
 import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
+import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.inject.Inject
@@ -42,6 +43,8 @@ open class UpdateConfiguration {
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
     @Inject
+    private lateinit var sshTunnelProvider: SshTunnelProvider
+    @Inject
     private lateinit var lifecycleController: LifecycleController
     @Inject
     private lateinit var propertyRepository: PropertyRepository
@@ -50,9 +53,17 @@ open class UpdateConfiguration {
     @Inject
     private lateinit var bundleInstaller: BundleInstaller
     @Inject
-    private lateinit var restClient: RestClient
+    private lateinit var restClient: Optional<RestClient>
     @Inject
-    lateinit var sshTunnelProvider: SshTunnelProvider
+    private lateinit var bundleService: org.deku.leoz.node.rest.service.internal.v1.BundleService
+
+    /**
+     * Bundle service proxy, either returns proxy via RestClient if available (leoz-node) or a
+     * direct reference to the BundleService of this procesws (leoz-central)
+     */
+    private val bundleServiceProxy by lazy {
+        if (this.restClient.isPresent) this.restClient.get().proxy(BundleService::class.java) else this.bundleService
+    }
 
     @Configuration
     @ConfigurationProperties(prefix = "update")
@@ -107,7 +118,7 @@ open class UpdateConfiguration {
         // Setup
         val updateService = BundleUpdateService(
                 executorService = this.executorService,
-                bundleService = { this.restClient.proxy(BundleService::class.java) },
+                bundleService = { this.bundleServiceProxy },
                 identity = App.instance.identity,
                 installer = this.bundleInstaller,
                 remoteRepository = this.updateRepository,

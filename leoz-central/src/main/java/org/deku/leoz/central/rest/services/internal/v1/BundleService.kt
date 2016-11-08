@@ -1,12 +1,14 @@
 package org.deku.leoz.central.rest.services.internal.v1
 
 import org.deku.leoz.bundle.BundleRepository
+import org.deku.leoz.central.App
 import org.deku.leoz.service.update.UpdateInfo
 import org.deku.leoz.service.update.UpdateInfoRequest
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.Profile
 import sx.rs.ApiKey
 import java.util.*
 import javax.inject.Inject
@@ -19,6 +21,7 @@ import javax.ws.rs.Path
  */
 @Named
 @ApiKey(false)
+@Profile(App.PROFILE_CENTRAL)
 @Path("internal/v1/bundle")
 class BundleService : org.deku.leoz.node.rest.service.internal.v1.BundleService() {
     private val log = LoggerFactory.getLogger(this.javaClass)
