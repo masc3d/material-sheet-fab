@@ -8,14 +8,12 @@
 .idea/gradle.xml
 .idea/kotlinc.xml
 .idea/libraries
+.idea/dataSources
 build
 buildSrc/build
 buildSrc/src/import
 dataSources.local.xml
-dataSources.xml
 hibernate.cfg.xml
-leo2-bridge-com/Release*
-leo2-bridge-com/packages/
 leoz-boot/bin
 leoz-boot/build
 leoz-boot/platform/
