@@ -2,6 +2,7 @@ package sx.net
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import rx.Observable
 import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.synchronized
 import sx.Disposable
@@ -13,8 +14,8 @@ import sx.io.serialization.Serializer
 import java.net.*
 import java.time.Duration
 import java.util.*
-import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -37,7 +38,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         val serverEnabled: Boolean = true,
         infoClass: Class<TInfo>,
         private val serializer: Serializer = KryoSerializer())
-:
+    :
         Service(
                 executorService = executorService,
                 period = Duration.ofSeconds(30)) {
@@ -197,8 +198,28 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     /**
      * Update event
      */
-    val rxOnUpdate by lazy { rxOnUpdateSubject.asObservable() }
-    private val rxOnUpdateSubject = PublishSubject<UpdateEvent<TInfo>>().synchronized()
+    val updatedEventRx by lazy { updatedEvent.asObservable() }
+    private val updatedEvent = PublishSubject<UpdateEvent<TInfo>>().synchronized()
+
+    /**
+     * Performs discovery for a specific node with timeout support
+     * @param predicate Filter predicate
+     * @param timeout Timeout
+     */
+    fun discoverRx(predicate: (TInfo) -> Boolean, timeout: Duration): Observable<Node<TInfo>> {
+        return this.updatedEventRx
+                .filter {
+                    it.type == UpdateEvent.Type.Changed
+                }
+                .map { it.node }
+                .mergeWith(
+                        Observable.from(this.directory))
+                .filter {
+                    if (it.info != null) predicate(it.info) else true
+                }
+                .distinct()
+                .timeout(timeout.toMillis(), TimeUnit.MILLISECONDS)
+    }
 
     /**
      * Updates a directory entry, notifying on change
@@ -226,7 +247,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         }
 
         if (updated) {
-            this.rxOnUpdateSubject.onNext(UpdateEvent(UpdateEvent.Type.Changed, node))
+            this.updatedEvent.onNext(UpdateEvent(UpdateEvent.Type.Changed, node))
         }
     }
 
@@ -257,8 +278,6 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
 
         override fun run() {
             try {
-                this.log.trace("Starting discovery host cycle")
-
                 val packet = DatagramPacket(buffer, buffer.size)
                 this.socket.receive(packet)
 
@@ -336,8 +355,6 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
 
         override fun run() {
             try {
-                this.log.trace("Starting discovery client cycle")
-
                 this.broadcast()
 
                 val interfaceAddresses = this@UdpDiscoveryService.interfaces.get()
@@ -394,7 +411,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
 
                         // Either no info has been received for a non-local address
                         (node == null && !interfaceAddresses.containsKey(it.value.address))
-                        // or the node has been activelx removed
+                                // or the node has been activelx removed
                                 || (node != null && node.removed)
                     }
 
@@ -402,7 +419,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                     removed.forEach {
                         log.info("Removing entry for ${it.key}")
                         this@UdpDiscoveryService._directory.remove(it.key)
-                        this@UdpDiscoveryService.rxOnUpdateSubject.onNext(UpdateEvent(UpdateEvent.Type.Removed, it.value))
+                        this@UdpDiscoveryService.updatedEvent.onNext(UpdateEvent(UpdateEvent.Type.Removed, it.value))
                     }
                 }
             } catch(e: SocketException) {

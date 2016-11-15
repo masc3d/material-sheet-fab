@@ -3,19 +3,22 @@ package sx.net
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import rx.lang.kotlin.subscribeWith
+import rx.schedulers.Schedulers
 import sx.Copyable
 import sx.io.serialization.Serializable
+import sx.net.UdpDiscoveryService
+import java.time.Duration
 import java.util.concurrent.Executors
 
 /**
  * Created by masc on 22/08/16.
  */
-class UdpDiscoveryServiceTest {
+class UdpDiscoveryServicePrototype {
     val log = LoggerFactory.getLogger(this.javaClass)
 
-    @Ignore
     @Test
-    fun testService() {
+    fun runService() {
         /**
          * Exxample info class
          */
@@ -32,12 +35,23 @@ class UdpDiscoveryServiceTest {
                 infoClass = Info::class.java,
                 port = 20000)
 
-        ds.rxOnUpdate.subscribe {
-            log.info("Event ${it}")
-            ds.directory.forEach {
-                log.info("HOST ${it}")
-            }
-        }
+//        ds.rxOnUpdate.subscribe {
+//            log.info("Event ${it}")
+//            ds.directory.forEach {
+//                log.info("HOST ${it}")
+//            }
+//        }
+
+        ds.discoverRx( { true }, Duration.ofSeconds(3))
+                .first()
+                .subscribeWith {
+                    onNext {
+                        log.info("DISCOVERED ${it}")
+                    }
+                    onError {
+                        log.error(it.message, it)
+                    }
+                }
 
         ds.start()
         Thread.sleep(5000)

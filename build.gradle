@@ -20,6 +20,18 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    test {
+        java {
+            srcDirs += file("$projectDir/src/prototype/java")
+        }
+    }
+}
+
+test {
+    include '*Test'
+}
+
 dependencies {
     compile(
             project(':libs:sx-common'),
