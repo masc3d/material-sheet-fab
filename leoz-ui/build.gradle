@@ -11,7 +11,7 @@ mainClassName = "org.deku.leoz.ui.Main"
 buildscript {
     ext {
         v_grizzly = '2.3.28'
-        v_jersey = '2.23.2'
+        v_jersey = '2.24'
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
@@ -45,8 +45,9 @@ dependencies {
             // RX
             "io.reactivex:rxjava:1.2.2",
             "io.reactivex:rxkotlin:0.60.0",
-            "io.reactivex:rxjavafx:0.2.0",
-//            "com.github.thomasnield:rxkotlinfx:0.2.0",
+            "io.reactivex:rxjavafx:0.3.0",
+            "com.github.thomasnield:rxkotlinfx:0.3.0",
+            "org.reactfx:reactfx:2.0-M5",
 
             // JavaFX libs
 
@@ -61,7 +62,7 @@ dependencies {
 
             // JSR-303 bean validation
             "javax.el:javax.el-api:3.0.0",
-            "org.hibernate:hibernate-validator:5.3.0.Final",
+            "org.hibernate:hibernate-validator:5.3.2.Final",
 
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",

@@ -2,7 +2,7 @@ buildscript {
     ext {
         // Versions
         v_activemq = '5.14.1'
-        v_artemis = '1.4.0'
+        v_artemis = '1.5.0'
         v_apache_httpclient = '4.5.2'
         v_commons_lang = '3.5'
         v_commons_io = '2.5'
@@ -11,7 +11,7 @@ buildscript {
         v_flyway = '4.0.3'
         v_fxform2 = '8.0.18'
         v_guava = '20.0'
-        v_h2 = '1.4.192'
+        v_h2 = '1.4.193'
         v_ini4j = '0.5.4'
         v_jackson = '2.8.4'
         v_javassist = '3.20.0-GA'
@@ -31,13 +31,13 @@ buildscript {
         v_slf4j = '1.7.21'
         v_snappy = '1.1.2.4'
         v_snakeyaml = '1.17'
-        v_spring = '4.3.3.RELEASE'
+        v_spring = '4.3.4.RELEASE'
         v_spring_data_jpa = '1.10.5.RELEASE'
         v_spring_data_commons = '1.12.5.RELEASE'
-        v_springboot = '1.4.1.RELEASE'
+        v_springboot = '1.4.2.RELEASE'
         v_sshd = '1.3.0'
         v_swagger = '1.5.10'
-        v_vaadin = '7.7.3'
+        v_vaadin = '7.7.4'
         v_xstream = '1.4.9'
     }
 }
