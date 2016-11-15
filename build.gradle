@@ -39,14 +39,6 @@ buildscript {
     }
 }
 
-// TODO. sometimes packager creates corrupt archives, presumably since intellij's MAKE confuses gradle's uptodate detection, thus forcing rerun of all tasks when running a release task
-//if (gradle.startParameter.taskNames.contains("releaseUpdate") ||
-//        gradle.startParameter.taskNames.contains("releasePush") ||
-//        gradle.startParameter.taskNames.contains("releaseSfx")) {
-//    println "Detected packager deployment task, enforcing re-run of all tasks"
-//    gradle.startParameter.rerunTasks = true
-//}
-
 // Start parameters
 // TODO. not available since gradle-2.14. may have to find another way
 //gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
