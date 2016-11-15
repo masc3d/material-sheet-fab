@@ -98,7 +98,7 @@ object WebserviceFactory {
     }
 
     init {
-        this.discoveryService.rxOnUpdate.subscribe {
+        this.discoveryService.updatedEventRx.subscribe {
             this.update()
         }
 

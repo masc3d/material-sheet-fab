@@ -123,7 +123,7 @@ class Message {
     override fun toString(): String {
         var message = ""
         for (entry in attributes.entries) {
-            if (message.length > 0)
+            if (message.isNotEmpty())
                 message += ", "
             message += String.format("%s:%s", entry.key, entry.value)
         }
