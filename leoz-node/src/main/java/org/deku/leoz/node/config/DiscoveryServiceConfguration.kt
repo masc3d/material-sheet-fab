@@ -21,7 +21,7 @@ import javax.inject.Inject
 open class DiscoveryServiceConfguration {
 
     @Inject
-    private lateinit var rsyncSettings: RsyncServerConfiguration.Settings
+    private lateinit var rsyncSettings: RsyncConfiguration.Settings
 
     @Inject
     private lateinit var brokerSettings: MessageBrokerConfiguration.Settings

@@ -24,7 +24,7 @@ import kotlin.properties.Delegates
 @Named
 @Configuration
 @Lazy(false)
-open class RsyncServerConfiguration {
+open class RsyncConfiguration : org.deku.leoz.config.RsyncConfiguration() {
     /** Server properties holder */
     @Configuration
     @ConfigurationProperties(prefix = "rsync.server")
@@ -64,7 +64,7 @@ open class RsyncServerConfiguration {
             config.forwardLookup = false
 
             // Users
-            var user = Rsync.User(RsyncConfiguration.USERNAME, RsyncConfiguration.PASSWORD)
+            val user = Rsync.User(RsyncConfiguration.USERNAME, RsyncConfiguration.PASSWORD)
 
             // Bundles module
             for (module in this.rsyncModules) {

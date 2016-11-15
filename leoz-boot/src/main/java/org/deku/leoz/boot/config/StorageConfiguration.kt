@@ -1,6 +1,7 @@
 package org.deku.leoz.boot.config
 
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.singleton
 import org.deku.leoz.bundle.BundleType
 import java.io.File
@@ -24,7 +25,7 @@ class StorageConfiguration : org.deku.leoz.config.StorageConfiguration(appName =
 
     companion object {
         val module = Kodein.Module {
-            bind<StorageConfiguration>() with singleton { StorageConfiguration() }
+            bind<StorageConfiguration>() with eagerSingleton { StorageConfiguration() }
         }
     }
 }

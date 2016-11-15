@@ -84,10 +84,7 @@ class MainController : Initializable {
             val verbPast: String
 
             try {
-                this.logConfiguration.initialize()
                 this.logConfiguration.addAppender(TextAreaLogAppender(uxTextArea, 1000))
-
-                this.logConfiguration.logFile = this.storageConfiguration.logFile
 
                 log.info(JvmUtil.shortInfoText)
 
@@ -102,10 +99,7 @@ class MainController : Initializable {
                     throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting");
                 }
 
-                // Initialize rsync
-                Rsync.executable.baseFilename = "leoz-rsync"
-
-                val bundleName = Application.instance.bundle
+                val bundleName = this.settings.bundle
 
                 when (this.settings.uninstall) {
                     true -> {

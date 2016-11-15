@@ -17,7 +17,7 @@ import java.io.File
  * Base class for leoz Log configuration
  * Created by masc on 24-Jul-15.
  */
-abstract class LogConfiguration : Disposable {
+abstract class LogConfiguration protected constructor() : Disposable {
     /** Root logger */
     protected var rootLogger: Logger
     /** Logger context */
@@ -76,14 +76,6 @@ abstract class LogConfiguration : Disposable {
         set(v: Level) { this.rootLogger.level = v }
 
     /**
-     * c'tor
-     */
-    protected constructor() {
-        this.rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
-        this.loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
-    }
-
-    /**
      * Initialize logging. This method is supposed to also reinitialize all configured loggers.
      */
     open fun initialize() {
@@ -110,5 +102,10 @@ abstract class LogConfiguration : Disposable {
      */
     override fun close() {
         this.logFile = null
+    }
+
+    init {
+        this.rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
+        this.loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
     }
 }

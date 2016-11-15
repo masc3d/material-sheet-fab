@@ -11,33 +11,39 @@ import java.net.URI
  * Rsync configuration (like usernames and passwords)
  * Created by masc on 15.09.15.
  */
-object RsyncConfiguration {
+open class RsyncConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    /**
-     * Rsync default port
-     */
-    val DEFAULT_PORT = 13002
+
+    companion object {
+        /**
+         * Rsync default port
+         */
+        val DEFAULT_PORT = 13002
+
+        /**
+         * Default leoz rsync user
+         */
+        val USERNAME: String = "leoz"
+        /**
+         * Rsync password used by all leoz instances
+         */
+        val PASSWORD: String = "2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x"
+
+        fun createRsyncUri(hostName: String, port: Int? = null, moduleName: String): Rsync.URI {
+            val uri = URI("rsync", USERNAME, hostName, port ?: -1, "/${moduleName}", null, null)
+            return Rsync.URI(uri)
+        }
+    }
 
     /**
-     * Default leoz rsync user
+     * Rsync module names
      */
-    val USERNAME: String = "leoz"
-    /**
-     * Rsync password used by all leoz instances
-     */
-    val PASSWORD: String = "2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x"
-
     object ModuleNames {
         val BUNDLES = "bundles"
         val TRANSFER = "transfer"
     }
 
-    fun createRsyncUri(hostName: String, port: Int? = null, moduleName: String): Rsync.URI {
-        val uri = URI("rsync", USERNAME, hostName, port ?: -1, "/${moduleName}", null, null)
-        return Rsync.URI(uri)
-    }
-
-    fun initialize() {
+    init {
         Rsync.executable.baseFilename = "leoz-rsync"
         log.info("Using [${Rsync.executable.file}]")
     }

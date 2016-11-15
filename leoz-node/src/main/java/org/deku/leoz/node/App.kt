@@ -186,7 +186,6 @@ open class App :
             LogConfiguration.instance.jmsAppenderEnabled = true
         }
         LogConfiguration.instance.initialize()
-        RsyncConfiguration.initialize()
 
         log.info("${this.name} [${version}] ${JvmUtil.shortInfoText}")
 

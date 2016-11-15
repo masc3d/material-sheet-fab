@@ -19,6 +19,7 @@ import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleType
 import org.slf4j.LoggerFactory
 import sx.JarManifest
+import sx.Stopwatch
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import java.awt.SplashScreen
@@ -57,11 +58,6 @@ class Application : javafx.application.Application() {
      * Application settings
      */
     private val settings: Settings by Kodein.global.lazy.instance()
-
-    /** Bundle to install */
-    val bundle by lazy({
-        this.settings.bundle
-    })
 
     /** Bundle repository URI */
     val repositoryUri: Rsync.URI?
@@ -134,11 +130,14 @@ class Application : javafx.application.Application() {
                 return
             }
 
+            val sw = Stopwatch.createStarted()
             Kodein.global.addImport(ApplicationConfiguration.module)
-            Kodein.global.addImport(DiscoveryConfiguration.module)
-            Kodein.global.addImport(LogConfiguration.module)
-            Kodein.global.addImport(RestConfiguration.module)
             Kodein.global.addImport(StorageConfiguration.module)
+            Kodein.global.addImport(LogConfiguration.module)
+            Kodein.global.addImport(RsyncConfiguration.module)
+            Kodein.global.addImport(DiscoveryConfiguration.module)
+            Kodein.global.addImport(RestConfiguration.module)
+            log.debug("Injetion completed [${sw}]")
 
             // Parse leoz-boot command line params
             JCommander(this.settings, *this.parameters.raw.toTypedArray())

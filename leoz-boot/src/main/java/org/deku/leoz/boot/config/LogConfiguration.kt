@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.eagerSingleton
+import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.singleton
 
 /**
@@ -13,7 +15,15 @@ import com.github.salomonbrys.kodein.singleton
 class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     companion object {
         val module = Kodein.Module {
-            bind<LogConfiguration>() with singleton { LogConfiguration() }
+            bind<LogConfiguration>() with eagerSingleton {
+                val config = LogConfiguration()
+
+                // Setup file logging
+                val storageConfiguration: StorageConfiguration = instance()
+                config.logFile = storageConfiguration.logFile
+
+                config
+            }
         }
     }
 }
