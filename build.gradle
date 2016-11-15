@@ -4,7 +4,7 @@ version '1.0'
 buildscript {
     ext {
         v_activemq = '5.14.1'
-        v_artemis = '1.4.0'
+        v_artemis = '1.5.0'
         v_kotlin = '1.0.5'
         v_protostuff = '1.5.0'
     }
@@ -67,7 +67,7 @@ dependencies {
 
     provided(
             // Spring
-            "org.springframework:spring-jms:4.3.3.RELEASE",
+            "org.springframework:spring-jms:4.3.4.RELEASE",
             // ActiveMQ
             "org.apache.activemq:activemq-broker:$v_activemq",
             "org.apache.activemq:activemq-kahadb-store:$v_activemq",
