@@ -30,7 +30,6 @@ class Boot {
     // Injections
     private val storage: StorageConfiguration by Kodein.global.lazy.instance()
     private val installer: BundleInstaller by Kodein.global.lazy.instance()
-    private val jarManifest: JarManifest by Kodein.global.lazy.instance()
 
     /**
      * Event
@@ -126,5 +125,7 @@ class Boot {
 
             onNext(Event(100.0))
         }
+                // Eliminate duplicate consecutive updates
+                .distinctUntilChanged()
     }
 }

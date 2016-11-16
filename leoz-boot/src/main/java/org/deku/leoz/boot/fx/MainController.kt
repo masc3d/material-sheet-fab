@@ -4,7 +4,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
-import com.google.common.base.Strings
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
@@ -14,14 +13,13 @@ import org.deku.leoz.boot.Boot
 import org.deku.leoz.boot.Settings
 import org.deku.leoz.boot.config.LogConfiguration
 import rx.Observable
+import rx.javafx.kt.observeOnFx
 import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.subscribeWith
-import rx.schedulers.JavaFxScheduler
 import rx.schedulers.Schedulers
 import sx.JarManifest
 import sx.fx.TextAreaLogAppender
 import sx.platform.JvmUtil
-import java.awt.GraphicsEnvironment
 import java.net.URL
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
@@ -84,7 +82,8 @@ class MainController : Initializable {
 
         task
                 .subscribeOn(Schedulers.from(this.executorService))
-                .observeOn(JavaFxScheduler.getInstance())
+                .onBackpressureBuffer()
+                .observeOnFx()
                 .subscribeWith {
                     onNext {
                         uxProgressBar.progress = it.progress

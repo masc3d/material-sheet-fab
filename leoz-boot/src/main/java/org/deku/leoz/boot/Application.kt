@@ -20,6 +20,7 @@ import org.deku.leoz.boot.fx.ResizeHelper
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.lang.kotlin.subscribeWith
+import rx.schedulers.JavaFxScheduler
 import sx.Stopwatch
 import java.awt.GraphicsEnvironment
 import java.awt.SplashScreen
