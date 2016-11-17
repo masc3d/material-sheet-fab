@@ -24,6 +24,7 @@ import rx.lang.kotlin.subscribeWith
 import sx.Stopwatch
 import java.awt.GraphicsEnvironment
 import java.awt.SplashScreen
+import kotlin.concurrent.thread
 import kotlin.properties.Delegates
 
 /**
@@ -31,7 +32,6 @@ import kotlin.properties.Delegates
  * Created by masc on 29-Jul-15.
  */
 class Application : javafx.application.Application() {
-
     companion object {
         /**
          * Main application entry point
@@ -78,7 +78,9 @@ class Application : javafx.application.Application() {
                 return
             }
 
+
             // Injection setup
+            log.info("Setting up injection")
             val sw = Stopwatch.createStarted()
             Kodein.global.addImport(ApplicationConfiguration.module)
             Kodein.global.addImport(StorageConfiguration.module)
@@ -87,6 +89,7 @@ class Application : javafx.application.Application() {
             Kodein.global.addImport(DiscoveryConfiguration.module)
             Kodein.global.addImport(RestConfiguration.module)
             Kodein.global.addImport(BundleConfiguration.module)
+            log.info("Done setting up injection")
 
             // Uncaught threaded exception handler
             Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {
@@ -100,14 +103,6 @@ class Application : javafx.application.Application() {
 
             // Parse leoz-boot command line params
             JCommander(this.settings, *this.parameters.raw.toTypedArray())
-
-            if (Strings.isNullOrEmpty(this.settings.bundle)) {
-                // Nothing to do
-                throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting");
-            }
-
-            // Show splash screen
-            val splash = SplashScreen.getSplashScreen()
 
             if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
                 // Execute boot task on this thread
@@ -142,11 +137,6 @@ class Application : javafx.application.Application() {
                 primaryStage.y = (screenBounds.height - rootBounds.height) / 2
                 primaryStage.x = (screenBounds.width - rootBounds.width) / 2
                 primaryStage.show()
-
-                // Dismiss splash
-                if (splash != null) {
-                    splash.close()
-                }
 
                 // Execute boot task via main controller
                 Platform.runLater {

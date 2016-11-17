@@ -6,7 +6,7 @@ apply plugin: PackagerPlugin
 
 version '0.22-RELEASE'
 sourceCompatibility = 1.8
-mainClassName = "org.deku.leoz.boot.ApplicationKt"
+mainClassName = "org.deku.leoz.boot.Application"
 
 buildscript {
     dependencies {
@@ -59,13 +59,6 @@ sourceSets {
     main.resources.srcDir 'src/main/java'
 }
 
-jar {
-    manifest {
-        attributes(
-                'SplashScreen-Image': 'images/DEKU.splash.png'
-        )
-    }
-}
 tasks.classes.dependsOn(copySxPlatformDirToBuild)
 tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
 

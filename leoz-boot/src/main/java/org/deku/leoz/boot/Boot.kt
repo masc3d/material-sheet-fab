@@ -124,6 +124,9 @@ class Boot {
      */
     fun uninstallTask(bundleName: String): Observable<Event> {
         return task<Event> {
+            if (Strings.isNullOrEmpty(bundleName))
+                throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting")
+
             this.installer.uninstall(bundleName)
         }
     }
@@ -138,10 +141,8 @@ class Boot {
                     versionPattern: String = "",
                     bundleRepositoryUri: String? = null): Observable<Event> {
         return task<Event> { onNext ->
-            if (Strings.isNullOrEmpty(bundleName)) {
-                // Nothing to do
-                throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting");
-            }
+            if (Strings.isNullOrEmpty(bundleName))
+                throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting")
 
             if (!this.installer.hasBundle(bundleName) || forceDownload) {
                 val repository = if (bundleRepositoryUri != null)
