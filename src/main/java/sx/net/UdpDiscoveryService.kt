@@ -4,7 +4,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.lang.kotlin.PublishSubject
-import rx.lang.kotlin.onError
 import rx.lang.kotlin.synchronized
 import sx.Disposable
 import sx.LazyInstance
@@ -208,16 +207,20 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
      * @param predicate Filter predicate
      * @param timeout Timeout
      */
-    fun discoverTask(predicate: (TInfo) -> Boolean, timeout: Duration): Observable<Node<TInfo>> {
+    fun discoverFirstTask(predicate: (TInfo) -> Boolean, timeout: Duration): Observable<Node<TInfo>> {
         return this.updatedEvent
                 .filter {
                     it.type == UpdateEvent.Type.Changed
                 }
-                .map { it.node }
-                .mergeWith(
-                        Observable.from(this.directory))
+                .map {
+                    it.node
+                }
+                .mergeWith(Observable.create<Node<TInfo>> { sub ->
+                    this.directory.forEach { sub.onNext(it) }
+                    sub.onCompleted()
+                })
                 .filter {
-                    if (it.info != null) predicate(it.info) else true
+                    if (it.info != null) predicate(it.info) else false
                 }
                 .distinct()
                 .timeout(timeout.toMillis(), TimeUnit.MILLISECONDS)
@@ -228,6 +231,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                         else -> throw it
                     }
                 }
+                .first()
     }
 
     /**
@@ -253,10 +257,10 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 log.info("Updating info for ${node}")
                 this._directory[nodeId] = node
             }
-        }
 
-        if (updated) {
-            this.updatedEventSubject.onNext(UpdateEvent(UpdateEvent.Type.Changed, node))
+            if (updated) {
+                this.updatedEventSubject.onNext(UpdateEvent(UpdateEvent.Type.Changed, node))
+            }
         }
     }
 
