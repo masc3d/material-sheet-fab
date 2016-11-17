@@ -1,6 +1,7 @@
 package org.deku.leoz.boot.config
 
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.singleton
 import org.deku.leoz.boot.Settings
 import sx.JarManifest
@@ -18,6 +19,7 @@ class ApplicationConfiguration {
             /** Application wide settings */
             bind<Settings>() with singleton { Settings() }
             bind<ScheduledExecutorService>() with singleton { CompositeExecutorService.create(scheduledCorePoolSize = 2) }
+            bind<ExecutorService>() with singleton { instance<ScheduledExecutorService>() }
             bind<JarManifest>() with singleton {
                 JarManifest(this.javaClass)
             }

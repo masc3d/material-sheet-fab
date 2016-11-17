@@ -101,7 +101,7 @@ open class UpdateConfiguration {
             BundleRepository(
                     rsyncModuleUri = RsyncConfiguration.createRsyncUri(
                             hostName = remoteHostname,
-                            port = remotePeerSettings.rsync.port,
+                            port = remotePeerSettings.rsync.port ?: RsyncConfiguration.DEFAULT_PORT,
                             moduleName = RsyncConfiguration.ModuleNames.BUNDLES),
                     rsyncPassword = RsyncConfiguration.PASSWORD,
                     sshTunnelProvider = this.sshTunnelProvider)

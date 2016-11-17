@@ -10,7 +10,7 @@ import sx.rsync.Rsync
 object BundleConfiguration {
     val stagingRepository: BundleRepository by lazy({
         BundleRepository(
-                rsyncModuleUri = Rsync.URI("rsync://leoz@leoz.derkurier.de:${RsyncConfiguration.DEFAULT_PORT}/bundles"),
+                rsyncModuleUri = Rsync.URI("rsync://${RsyncConfiguration.USERNAME}@leoz.derkurier.de:${RsyncConfiguration.DEFAULT_PORT}/${RsyncConfiguration.ModuleNames.BUNDLES}"),
                 rsyncPassword = RsyncConfiguration.PASSWORD,
                 sshTunnelProvider = SshConfiguration.tunnelProvider)
     })

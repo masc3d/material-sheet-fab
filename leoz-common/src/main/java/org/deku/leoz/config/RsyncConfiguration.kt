@@ -29,7 +29,7 @@ open class RsyncConfiguration {
          */
         val PASSWORD: String = "2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x"
 
-        fun createRsyncUri(hostName: String, port: Int? = null, moduleName: String): Rsync.URI {
+        fun createRsyncUri(hostName: String, port: Int = DEFAULT_PORT, moduleName: String): Rsync.URI {
             val uri = URI("rsync", USERNAME, hostName, port ?: -1, "/${moduleName}", null, null)
             return Rsync.URI(uri)
         }

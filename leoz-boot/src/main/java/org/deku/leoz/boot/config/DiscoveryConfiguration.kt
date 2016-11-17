@@ -16,11 +16,13 @@ class DiscoveryConfiguration {
         val module = Kodein.Module {
             /** Discovery service */
             bind<DiscoveryService>() with eagerSingleton {
-                DiscoveryService(
+                val service = DiscoveryService(
                         executorService = instance(),
                         bundleType = BundleType.LEOZ_BOOT,
                         serverEnabled = false
                 )
+                service.start()
+                service
             }
         }
     }

@@ -19,8 +19,8 @@ import org.deku.leoz.boot.fx.MainController
 import org.deku.leoz.boot.fx.ResizeHelper
 import org.slf4j.LoggerFactory
 import rx.Observable
+import rx.lang.kotlin.cast
 import rx.lang.kotlin.subscribeWith
-import rx.schedulers.JavaFxScheduler
 import sx.Stopwatch
 import java.awt.GraphicsEnvironment
 import java.awt.SplashScreen
@@ -50,15 +50,16 @@ class Application : javafx.application.Application() {
     private var primaryStage: Stage by Delegates.notNull()
         private set
 
-    /**
-     * Calculate progress of intermediate steps
-     * @param startProgress Start of progress for intermediate step
-     * @param endProgress End of progress for intermediate step
-     * @param progress Current progress (from 0.0 to 1.0)
-     */
-    private fun skewProgress(startProgress: Double, endProgress: Double, progress: Double): Double {
-        val range = endProgress - startProgress
-        return startProgress + (range * progress)
+    private val boot by lazy { Boot() }
+
+    private val bootTask by lazy {
+        this.boot.bootTask(
+                bundleName = settings.bundle,
+                discover = settings.discoverLocalNode,
+                forceDownload = settings.forceDownload,
+                uninstall = settings.uninstall,
+                versionAlias = settings.versionAlias,
+                versionPattern = settings.versionPattern ?: "")
     }
 
     /**
@@ -66,6 +67,8 @@ class Application : javafx.application.Application() {
      */
     override fun start(primaryStage: Stage) {
         try {
+            this.primaryStage = primaryStage
+
             // Leoz bundle process commandline interface
             val setup = Setup()
             val command = setup.parse(this.parameters.raw.toTypedArray())
@@ -84,7 +87,6 @@ class Application : javafx.application.Application() {
             Kodein.global.addImport(DiscoveryConfiguration.module)
             Kodein.global.addImport(RestConfiguration.module)
             Kodein.global.addImport(BundleConfiguration.module)
-            log.debug("Injetion completed [${sw}]")
 
             // Uncaught threaded exception handler
             Thread.setDefaultUncaughtExceptionHandler(object : Thread.UncaughtExceptionHandler {
@@ -99,40 +101,17 @@ class Application : javafx.application.Application() {
             // Parse leoz-boot command line params
             JCommander(this.settings, *this.parameters.raw.toTypedArray())
 
-            this.primaryStage = primaryStage
-
             if (Strings.isNullOrEmpty(this.settings.bundle)) {
                 // Nothing to do
                 throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting");
             }
-
-            val boot = Boot()
-            val bootTask = if (settings.uninstall)
-                boot.uninstallTask(this.settings.bundle)
-            else
-                boot.installTask(
-                        bundleName = this.settings.bundle,
-                        forceDownload = this.settings.forceDownload,
-                        versionAlias = "",
-                        versionPattern = this.settings.versionPattern,
-                        bundleRepositoryUri = this.settings.repositoryUriString)
-
-            val task = Observable.concat(
-                    boot.selfInstallTask()
-                            .map {
-                                Boot.Event(this.skewProgress(0.0, 0.3, it.progress))
-                            },
-                    bootTask
-                            .map {
-                                Boot.Event(this.skewProgress(0.3, 1.0, it.progress))
-                            })
 
             // Show splash screen
             val splash = SplashScreen.getSplashScreen()
 
             if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
                 // Execute boot task on this thread
-                task.subscribeWith {
+                this.bootTask.subscribeWith {
                     onCompleted {
                         this@Application.exit(0)
                     }
@@ -162,11 +141,7 @@ class Application : javafx.application.Application() {
                 primaryStage.initStyle(StageStyle.UNDECORATED)
                 primaryStage.y = (screenBounds.height - rootBounds.height) / 2
                 primaryStage.x = (screenBounds.width - rootBounds.width) / 2
-                if (this.settings.hideUi) {
-                    primaryStage.hide()
-                } else {
-                    primaryStage.show()
-                }
+                primaryStage.show()
 
                 // Dismiss splash
                 if (splash != null) {
@@ -175,7 +150,7 @@ class Application : javafx.application.Application() {
 
                 // Execute boot task via main controller
                 Platform.runLater {
-                    controller.run(task)
+                    controller.run(this.bootTask)
                 }
             }
         } catch(e: Exception) {
