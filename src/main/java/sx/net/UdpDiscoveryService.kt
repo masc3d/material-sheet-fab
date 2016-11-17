@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.lang.kotlin.PublishSubject
+import rx.lang.kotlin.onError
 import rx.lang.kotlin.synchronized
 import sx.Disposable
 import sx.LazyInstance
@@ -16,6 +17,7 @@ import java.time.Duration
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -198,16 +200,16 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     /**
      * Update event
      */
-    val updatedEventRx by lazy { updatedEvent.asObservable() }
-    private val updatedEvent = PublishSubject<UpdateEvent<TInfo>>().synchronized()
+    val updatedEvent by lazy { updatedEventSubject.asObservable() }
+    private val updatedEventSubject = PublishSubject<UpdateEvent<TInfo>>().synchronized()
 
     /**
      * Performs discovery for a specific node with timeout support
      * @param predicate Filter predicate
      * @param timeout Timeout
      */
-    fun discoverRx(predicate: (TInfo) -> Boolean, timeout: Duration): Observable<Node<TInfo>> {
-        return this.updatedEventRx
+    fun discoverTask(predicate: (TInfo) -> Boolean, timeout: Duration): Observable<Node<TInfo>> {
+        return this.updatedEvent
                 .filter {
                     it.type == UpdateEvent.Type.Changed
                 }
@@ -219,6 +221,13 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 }
                 .distinct()
                 .timeout(timeout.toMillis(), TimeUnit.MILLISECONDS)
+                .onErrorReturn {
+                    // Remap exception
+                    when (it) {
+                        is TimeoutException -> throw TimeoutException("Active discovery timed out")
+                        else -> throw it
+                    }
+                }
     }
 
     /**
@@ -247,7 +256,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         }
 
         if (updated) {
-            this.updatedEvent.onNext(UpdateEvent(UpdateEvent.Type.Changed, node))
+            this.updatedEventSubject.onNext(UpdateEvent(UpdateEvent.Type.Changed, node))
         }
     }
 
@@ -286,7 +295,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 val host = this@UdpDiscoveryService.serializer.deserializeFrom(
                         packet.data.copyOf(packet.data.size)) as Node<TInfo>
 
-                if (!this@UdpDiscoveryService.interfaces.get().containsKey(packet.address)) {
+                if (host.uid != this@UdpDiscoveryService.uid) {
                     log.debug("Received info from [${host.address}]")
 
                     // Update directory from requesting host
@@ -384,7 +393,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                                     info = node.info)
                         }
 
-                        if (!interfaceAddresses.containsKey(node.address)) {
+                        if (node.uid != this@UdpDiscoveryService.uid) {
                             if (node.uid != null) {
                                 val nodeId = NodeId(node.uid!!, node.address)
                                 // Only process replies which do not relate to/are not sent by this host
@@ -396,7 +405,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                                 log.warn("Ignoring node [${node}], uid is null")
                             }
                         } else {
-                            this.log.trace("Ignoring reply for local host [${node.address}]")
+                            this.log.trace("Ignoring reply for local node [${node}]")
                         }
                     } catch(e: SocketTimeoutException) {
                         break
@@ -419,7 +428,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                     removed.forEach {
                         log.info("Removing entry for ${it.key}")
                         this@UdpDiscoveryService._directory.remove(it.key)
-                        this@UdpDiscoveryService.updatedEvent.onNext(UpdateEvent(UpdateEvent.Type.Removed, it.value))
+                        this@UdpDiscoveryService.updatedEventSubject.onNext(UpdateEvent(UpdateEvent.Type.Removed, it.value))
                     }
                 }
             } catch(e: SocketException) {
