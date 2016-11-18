@@ -1,45 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.*?><?import javafx.scene.image.Image?><?import javafx.scene.image.ImageView?><?import javafx.scene.layout.*?><?import javafx.scene.text.Font?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import sx.fx.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import sx.fx.controls.MaterialProgressIndicator?>
+
 <VBox prefHeight="426.0" prefWidth="650.0" styleClass="leoz-undecorated" stylesheets="@../css/leoz-boot.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.deku.leoz.boot.fx.MainController">
-   <children>
-      <AnchorPane maxWidth="1.7976931348623157E308">
-         <children>
-            <BorderPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-               <center>
-                  <HBox spacing="8.0">
-                     <children>
-                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/DEKU.icon.256px.png" />
-                           </image>
-                        </ImageView>
-                        <Label fx:id="uxTitle" maxWidth="1.7976931348623157E308" text="Installing Leoz">
-                           <font>
-                              <Font name="System Bold" size="24.0" />
-                           </font>
-                        </Label>
-                        <ProgressIndicator fx:id="uxProgressIndicator" prefHeight="21.0" prefWidth="21.0" />
-                     </children>
-                  </HBox>
-               </center>
-               <right>
-                  <Button fx:id="uxClose" mnemonicParsing="false" text="Close" BorderPane.alignment="CENTER" />
-               </right>
-            </BorderPane>
-         </children>
-         <VBox.margin>
-            <Insets bottom="12.0" />
-         </VBox.margin>
-      </AnchorPane>
-      <ProgressBar fx:id="uxProgressBar" maxWidth="1.7976931348623157E308" progress="0.0">
-         <VBox.margin>
-            <Insets bottom="12.0" />
-         </VBox.margin>
-      </ProgressBar>
-      <TextArea fx:id="uxTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-text-fill: gray;" VBox.vgrow="ALWAYS" />
-   </children>
-   <padding>
-      <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
-   </padding>
+    <children>
+        <AnchorPane maxWidth="1.7976931348623157E308">
+            <children>
+                <BorderPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                    <center>
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                            <children>
+                                <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/DEKU.icon.256px.png" />
+                                    </image>
+                           <HBox.margin>
+                              <Insets right="12.0" />
+                           </HBox.margin>
+                                </ImageView>
+                                <Label fx:id="uxTitle" maxWidth="1.7976931348623157E308" text="Installing Leoz">
+                                    <font>
+                                        <Font name="System Bold" size="24.0" />
+                                    </font>
+                                </Label>
+                                <AnchorPane>
+                                    <children>
+                                        <MaterialProgressIndicator fx:id="uxProgressIndicator" prefHeight="26.0" prefWidth="47.0" visible="false" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="12.0" />
+                                    </children>
+                                </AnchorPane>
+                            </children>
+                        </HBox>
+                    </center>
+                    <right>
+                        <Button fx:id="uxClose" mnemonicParsing="false" text="Close" BorderPane.alignment="CENTER" />
+                    </right>
+                </BorderPane>
+            </children>
+            <VBox.margin>
+                <Insets bottom="12.0" />
+            </VBox.margin>
+        </AnchorPane>
+        <ProgressBar fx:id="uxProgressBar" maxWidth="1.7976931348623157E308" progress="0.34">
+            <VBox.margin>
+                <Insets bottom="12.0" />
+            </VBox.margin>
+        </ProgressBar>
+        <TextArea fx:id="uxTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-text-fill: gray;" VBox.vgrow="ALWAYS" />
+    </children>
+    <padding>
+        <Insets bottom="24.0" left="24.0" right="24.0" top="12.0" />
+    </padding>
 </VBox>

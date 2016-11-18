@@ -19,6 +19,7 @@ import rx.lang.kotlin.subscribeWith
 import rx.schedulers.Schedulers
 import sx.JarManifest
 import sx.fx.TextAreaLogAppender
+import sx.fx.controls.MaterialProgressIndicator
 import sx.platform.JvmUtil
 import java.net.URL
 import java.util.*
@@ -38,7 +39,7 @@ class MainController : Initializable {
     @FXML
     lateinit var uxProgressBar: ProgressBar
     @FXML
-    lateinit var uxProgressIndicator: ProgressIndicator
+    lateinit var uxProgressIndicator: MaterialProgressIndicator
     @FXML
     lateinit var uxClose: Button
 
@@ -110,8 +111,11 @@ class MainController : Initializable {
      */
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         uxTitle.text = ""
-        uxProgressBar.progressProperty().addListener { v, o, n ->
-            uxProgressIndicator.isVisible = (n.toDouble() == ProgressBar.INDETERMINATE_PROGRESS || (n.toDouble() >= 0.0 && n.toDouble() < 1))
+        uxProgressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS)
+        uxProgressBar.progressProperty().addListener { s, o, n ->
+            val progress = n.toDouble()
+            val visible = (progress == ProgressBar.INDETERMINATE_PROGRESS || (progress >= 0.0 && progress < 1))
+            uxProgressIndicator.isVisible = visible
         }
         uxClose.onMouseClicked = object : EventHandler<MouseEvent> {
             override fun handle(event: MouseEvent?) {

@@ -55,7 +55,7 @@ class Application : javafx.application.Application() {
     private val bootTask by lazy {
         this.boot.bootTask(
                 bundleName = settings.bundle,
-                discover = settings.discoverLocalNode,
+                discover = settings.discover,
                 forceDownload = settings.forceDownload,
                 uninstall = settings.uninstall,
                 versionAlias = settings.versionAlias,

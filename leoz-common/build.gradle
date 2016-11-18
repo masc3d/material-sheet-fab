@@ -78,7 +78,8 @@ dependencies {
             // Spring
             "org.springframework:spring-jms:$v_spring",
             // Resteasy Client
-            "org.jboss.resteasy:resteasy-client:$v_resteasy"
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
+            "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy"
     )
 
     testCompile(

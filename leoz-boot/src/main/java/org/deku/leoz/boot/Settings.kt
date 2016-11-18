@@ -16,8 +16,8 @@ class Settings {
     @Parameter(names = arrayOf("--no-ui"), description = "Don't show user interface")
     var hideUi: Boolean = false
 
-    @Parameter(names = arrayOf("--discover-local-node"), description = "Attempts to discover a local node instead of directly connecting to central.")
-    var discoverLocalNode: Boolean = false
+    @Parameter(names = arrayOf("--discover"), description = "Attempts to discover a local node instead of directly connecting to central.")
+    var discover: Boolean = false
 
     @Parameter(names = arrayOf("--force-download"), description = "Force download")
     var forceDownload: Boolean = false

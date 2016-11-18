@@ -12,13 +12,17 @@ import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.BundleConfiguration
+import org.deku.leoz.rest.RestClient
+import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.deku.leoz.service.discovery.DiscoveryService
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.lang.kotlin.cast
+import rx.lang.kotlin.subscribeWith
+import rx.util.async.Async
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
-import sx.rx.task
+import sx.rx.*
 import java.io.File
 import java.time.Duration
 
@@ -34,6 +38,7 @@ class Boot {
     private val installer: BundleInstaller by Kodein.global.lazy.instance()
     private val discoveryService: DiscoveryService by Kodein.global.lazy.instance()
     private val restConfiguration: RestConfiguration by Kodein.global.lazy.instance()
+    private val restClient: RestClient by Kodein.global.lazy.instance()
 
     /**
      * Event
@@ -52,6 +57,9 @@ class Boot {
      * @param progress Current progress (from 0.0 to 1.0)
      */
     private fun skewProgress(startProgress: Double, endProgress: Double, progress: Double): Double {
+        if (progress < 0)
+            return progress
+
         val range = endProgress - startProgress
         return startProgress + (range * progress)
     }
@@ -66,7 +74,7 @@ class Boot {
                 },
                 timeout = Duration.ofSeconds(2))
                 .doOnNext {
-                    val httpHost = it.address.toString()
+                    val httpHost = it.address.hostAddress.toString()
                     log.info("Setting REST host based on discovery to ${httpHost}")
                     restConfiguration.httpHost = httpHost
                     restConfiguration.https = false
@@ -144,6 +152,14 @@ class Boot {
             if (Strings.isNullOrEmpty(bundleName))
                 throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting")
 
+            val bundleService = this.restClient.proxy(BundleService::class.java)
+
+            val updateInfo = Observable.fromCallable {
+               bundleService.info(bundleName = bundleName, versionAlias = "release")
+            }.toBlocking().first()
+
+            log.info("${updateInfo}")
+
             if (!this.installer.hasBundle(bundleName) || forceDownload) {
                 val repository = if (bundleRepositoryUri != null)
                     BundleRepository(Rsync.URI(bundleRepositoryUri)) else
@@ -165,6 +181,8 @@ class Boot {
                         }
                 )
             }
+
+            onNext(Event(-1.0))
 
             this.installer.install(bundleName)
 
@@ -195,6 +213,7 @@ class Boot {
             this.installTask(
                     bundleName = bundleName,
                     forceDownload = forceDownload,
+                    discover = discover,
                     versionAlias = versionAlias,
                     versionPattern = versionPattern ?: "")
 
