@@ -1,5 +1,6 @@
 buildscript {
     ext {
+        v_jvm = '25.112-b15'
         // Versions
         v_activemq = '5.14.1'
         v_artemis = '1.5.0'
