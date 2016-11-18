@@ -1,6 +1,7 @@
 buildscript {
     ext {
-        v_jvm = '25.112-b15'
+        // Required JVM/JDK version. Do not include the '-bxx' suffix of the version, as it may differ across platforms
+        v_jvm = '25.112'
         // Versions
         v_activemq = '5.14.1'
         v_artemis = '1.5.0'
