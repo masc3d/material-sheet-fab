@@ -16,6 +16,7 @@ import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.config.BundleConfiguration
+import org.deku.leoz.config.SshConfiguration
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevObject
@@ -633,7 +634,11 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
 
         // Upload to bundle repository
         BundleRepository ar = BundleConfiguration.stagingRepository
-        ar.upload(project.name, this.getReleasePath(), true)
+        try {
+            ar.upload(project.name, this.getReleasePath(), true)
+        } finally {
+            SshConfiguration.tunnelProvider.close()
+        }
     }
 }
 
@@ -649,15 +654,19 @@ class PackagerReleasePullTask extends PackagerReleaseTask {
         def version = Bundle.Version.parse(project.version)
         BundleRepository repository = BundleConfiguration.stagingRepository
 
-        def remoteVersions = repository.listVersions(project.name)
-                .stream()
-                .filter { v -> v.compareTo(version) <= 0 }
-                .sorted().collect(Collectors.toList()).reverse()
+        try {
+            def remoteVersions = repository.listVersions(project.name)
+                    .stream()
+                    .filter { v -> v.compareTo(version) <= 0 }
+                    .sorted().collect(Collectors.toList()).reverse()
 
-        if (remoteVersions.size() == 0)
-            throw new IllegalStateException("No remote versions <= ${version}")
+            if (remoteVersions.size() == 0)
+                throw new IllegalStateException("No remote versions <= ${version}")
 
-        repository.download(project.name, remoteVersions.get(0), releasePath, new ArrayList<File>(), true, true)
+            repository.download(project.name, remoteVersions.get(0), releasePath, new ArrayList<File>(), true, true)
+        } finally {
+            SshConfiguration.tunnelProvider.close()
+        }
     }
 }
 

@@ -22,6 +22,8 @@ import rx.Observable
 import rx.lang.kotlin.cast
 import rx.lang.kotlin.subscribeWith
 import sx.Stopwatch
+import sx.ssh.SshTunnel
+import sx.ssh.SshTunnelProvider
 import java.awt.GraphicsEnvironment
 import java.awt.SplashScreen
 import kotlin.concurrent.thread
@@ -45,6 +47,8 @@ class Application : javafx.application.Application() {
 
     /** Application settings */
     private val settings: Settings by Kodein.global.lazy.instance()
+
+    private val sshTunnelProvider: SshTunnelProvider by Kodein.global.lazy.instance()
 
     /** Primary stage */
     private var primaryStage: Stage by Delegates.notNull()
@@ -83,6 +87,7 @@ class Application : javafx.application.Application() {
             Kodein.global.addImport(DiscoveryConfiguration.module)
             Kodein.global.addImport(RestConfiguration.module)
             Kodein.global.addImport(BundleConfiguration.module)
+            Kodein.global.addImport(SshConfiguration.module)
             log.info("Done setting up injection")
 
             // Uncaught threaded exception handler
@@ -154,5 +159,10 @@ class Application : javafx.application.Application() {
             Platform.exit()
             System.exit(exitCode)
         }
+    }
+
+    override fun stop() {
+        //this.sshTunnelProvider.close()
+        super.stop()
     }
 }

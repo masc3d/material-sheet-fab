@@ -23,6 +23,7 @@ import rx.util.async.Async
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import sx.rx.*
+import sx.ssh.SshTunnelProvider
 import java.io.File
 import java.time.Duration
 
@@ -39,6 +40,7 @@ class Boot {
     private val bundleConfiguration: BundleConfiguration by Kodein.global.lazy.instance()
     private val installer: BundleInstaller by Kodein.global.lazy.instance()
     private val discoveryService: DiscoveryService by Kodein.global.lazy.instance()
+    private val sshTunnelProvider: SshTunnelProvider by Kodein.global.lazy.instance()
 
     /**
      * Event
@@ -250,5 +252,9 @@ class Boot {
                         .map {
                             Boot.Event(this.skewProgress(0.3, 1.0, it.progress))
                         })
+                .doAfterTerminate {
+                    // Cleanup
+                    sshTunnelProvider.close()
+                }
     }
 }
