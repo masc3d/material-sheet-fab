@@ -21,24 +21,22 @@
                     <center>
                         <HBox alignment="CENTER_LEFT" spacing="12.0">
                             <children>
-                                <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../images/DEKU.icon.256px.png" />
-                                    </image>
-                           <HBox.margin>
-                              <Insets right="12.0" />
-                           </HBox.margin>
-                                </ImageView>
+                        <AnchorPane>
+                           <children>
+                                        <MaterialProgressIndicator fx:id="uxProgressIndicator" prefHeight="24.0" prefWidth="24.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                      <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                          <image>
+                                              <Image url="@../images/DEKU.icon.256px.png" />
+                                          </image>
+                                      </ImageView>
+                           </children>
+                        </AnchorPane>
                                 <Label fx:id="uxTitle" maxWidth="1.7976931348623157E308" text="Installing Leoz">
                                     <font>
                                         <Font name="System Bold" size="24.0" />
                                     </font>
                                 </Label>
-                                <AnchorPane>
-                                    <children>
-                                        <MaterialProgressIndicator fx:id="uxProgressIndicator" prefHeight="26.0" prefWidth="47.0" visible="false" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="12.0" />
-                                    </children>
-                                </AnchorPane>
+                                <AnchorPane />
                             </children>
                         </HBox>
                     </center>
