@@ -632,7 +632,7 @@ class PackagerReleasePushTask extends PackagerReleaseTask {
         }
 
         // Upload to bundle repository
-        BundleRepository ar = BundleConfiguration.INSTANCE.stagingRepository
+        BundleRepository ar = BundleConfiguration.stagingRepository
         ar.upload(project.name, this.getReleasePath(), true)
     }
 }
@@ -647,7 +647,7 @@ class PackagerReleasePullTask extends PackagerReleaseTask {
         def releasePath = this.getReleasePath()
 
         def version = Bundle.Version.parse(project.version)
-        BundleRepository repository = BundleConfiguration.INSTANCE.stagingRepository
+        BundleRepository repository = BundleConfiguration.stagingRepository
 
         def remoteVersions = repository.listVersions(project.name)
                 .stream()

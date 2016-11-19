@@ -11,7 +11,7 @@ import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.config.BundleConfiguration
+import org.deku.leoz.boot.config.BundleConfiguration
 import org.deku.leoz.rest.RestClient
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.deku.leoz.service.discovery.DiscoveryService
@@ -34,11 +34,11 @@ class Boot {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     // Injections
-    private val storage: StorageConfiguration by Kodein.global.lazy.instance()
+    private val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
+    private val restConfiguration: RestConfiguration by Kodein.global.lazy.instance()
+    private val bundleConfiguration: BundleConfiguration by Kodein.global.lazy.instance()
     private val installer: BundleInstaller by Kodein.global.lazy.instance()
     private val discoveryService: DiscoveryService by Kodein.global.lazy.instance()
-    private val restConfiguration: RestConfiguration by Kodein.global.lazy.instance()
-    private val restClient: RestClient by Kodein.global.lazy.instance()
 
     /**
      * Event
@@ -67,17 +67,20 @@ class Boot {
     /**
      * Discovers leoz-node in local network and amends configurations to connect to this host
      */
-    fun discoverTask(): Observable<Any> {
-        return discoveryService.discoverFirstTask(
+    fun discover(): Observable<Any> {
+        return discoveryService.discoverFirst(
                 predicate = {
                     it.bundleType == BundleType.LEOZ_NODE
                 },
                 timeout = Duration.ofSeconds(2))
                 .doOnNext {
-                    val httpHost = it.address.hostAddress.toString()
-                    log.info("Setting REST host based on discovery to ${httpHost}")
-                    restConfiguration.httpHost = httpHost
+                    val host = it.address.hostAddress.toString()
+
+                    // Update REST configuration. This will affect all subsequent REST client invocations
+                    log.info("Setting REST host based on discovery to ${host}")
+                    restConfiguration.httpHost = host
                     restConfiguration.https = false
+                    bundleConfiguration.rsyncHost = host
                 }
                 .onErrorReturn {
                     throw DiscoveryException(it)
@@ -89,24 +92,24 @@ class Boot {
      * Performs self-instllation of leoz-boot (into leoz bundles directory)
      * @param onProgress Progress callback
      */
-    fun selfInstallTask(): Observable<Event> {
+    fun selfInstall(): Observable<Event> {
         return task<Event> { onNext ->
-            if (storage.nativeBundleBasePath == null) {
+            if (storageConfiguration.nativeBundleBasePath == null) {
                 log.warn("Skipping self-installation as native bundle base path could not be determined (not running from native bundle)")
                 return@task
             }
 
-            val nativeBundlePath = storage.nativeBundleBasePath!!
+            val nativeBundlePath = storageConfiguration.nativeBundleBasePath!!
             log.info("Native bundle path [${nativeBundlePath}")
 
-            if (nativeBundlePath.parentFile == storage.bundleInstallationDirectory)
+            if (nativeBundlePath.parentFile == storageConfiguration.bundleInstallationDirectory)
                 return@task
 
             log.info("Performing self verification")
             Bundle.load(nativeBundlePath).verify()
 
             val srcPath = nativeBundlePath
-            val destPath = File(storage.bundleInstallationDirectory, BundleType.LEOZ_BOOT.value)
+            val destPath = File(storageConfiguration.bundleInstallationDirectory, BundleType.LEOZ_BOOT.value)
 
             val rc = RsyncClient()
             val source = Rsync.URI(srcPath)
@@ -130,7 +133,7 @@ class Boot {
     /**
      * Uninstall bundle
      */
-    fun uninstallTask(bundleName: String): Observable<Event> {
+    fun uninstall(bundleName: String): Observable<Event> {
         return task<Event> {
             if (Strings.isNullOrEmpty(bundleName))
                 throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting")
@@ -142,33 +145,37 @@ class Boot {
     /**
      * Install bundle
      */
-    fun installTask(bundleName: String,
-                    forceDownload: Boolean,
-                    discover: Boolean = false,
-                    versionAlias: String,
-                    versionPattern: String = "",
-                    bundleRepositoryUri: String? = null): Observable<Event> {
+    fun install(bundleName: String,
+                forceDownload: Boolean,
+                versionAlias: String? = null,
+                versionPattern: String? = null): Observable<Event> {
         return task<Event> { onNext ->
             if (Strings.isNullOrEmpty(bundleName))
                 throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting")
 
-            val bundleService = this.restClient.proxy(BundleService::class.java)
+            if (versionAlias == null && versionPattern == null)
+                throw IllegalArgumentException("Either version alias or pattern must be provided")
 
-            val updateInfo = Observable.fromCallable {
-               bundleService.info(bundleName = bundleName, versionAlias = "release")
-            }.toBlocking().first()
+            val finalVersionPattern: String
+            if (versionPattern != null) {
+                finalVersionPattern = versionPattern
+            } else {
+                val restClient: RestClient = Kodein.global.instance()
+                val bundleService = restClient.proxy(BundleService::class.java)
 
-            log.info("${updateInfo}")
+                val updateInfo = bundleService.info(bundleName = bundleName, versionAlias = versionAlias)
+                log.info("${updateInfo}")
+
+                finalVersionPattern = updateInfo.bundleVersionPattern
+            }
 
             if (!this.installer.hasBundle(bundleName) || forceDownload) {
-                val repository = if (bundleRepositoryUri != null)
-                    BundleRepository(Rsync.URI(bundleRepositoryUri)) else
-                    BundleConfiguration.stagingRepository
+                val repository: BundleRepository = Kodein.global.instance()
 
                 // Query for version matching pattern
                 val version = repository.queryLatestMatchingVersion(
                         bundleName,
-                        versionPattern)
+                        finalVersionPattern)
 
                 // Download bundle
                 this.installer.download(
@@ -194,34 +201,46 @@ class Boot {
 
     /**
      * Compound boot task
+     * @param settings Boot task settings
      */
-    fun bootTask(bundleName: String,
-                 discover: Boolean = false,
-                 forceDownload: Boolean = false,
-                 uninstall: Boolean = false,
-                 versionAlias: String,
-                 versionPattern: String = ""): Observable<Event> {
-
+    fun boot(settings: Settings): Observable<Event> {
+        val discoveryTask: Observable<Any>
         // Discovery task
-        val discoveryTask = if (discover) this.discoverTask() else Observable.empty()
+        if (!settings.rsyncHost.isNullOrEmpty() && !settings.httpHost.isNullOrEmpty()) {
+            log.info("Skipping discovery")
+            discoveryTask = Observable.empty()
+        } else {
+            discoveryTask = if (settings.discover)
+                this.discover()
+            else
+                Observable.empty()
+        }
+
+        if (settings.httpHost != null)
+            restConfiguration.httpHost = settings.httpHost!!
+
+        if (settings.https != null)
+            restConfiguration.https = settings.https!!
+
+        if (settings.rsyncHost != null)
+            bundleConfiguration.rsyncHost = settings.rsyncHost!!
 
         // Main task
-        val mainTask = if (uninstall)
-            this.uninstallTask(
-                    bundleName = bundleName)
+        val mainTask = if (settings.uninstall)
+            this.uninstall(
+                    bundleName = settings.bundle)
         else
-            this.installTask(
-                    bundleName = bundleName,
-                    forceDownload = forceDownload,
-                    discover = discover,
-                    versionAlias = versionAlias,
-                    versionPattern = versionPattern ?: "")
+            this.install(
+                    bundleName = settings.bundle,
+                    forceDownload = settings.forceDownload,
+                    versionAlias = settings.versionAlias,
+                    versionPattern = settings.versionPattern)
 
         // Concat tasks and skew progress events
         return Observable.concat(
                 Observable.mergeDelayError(
                         discoveryTask.ignoreElements().cast(),
-                        this.selfInstallTask()
+                        this.selfInstall()
                                 .map {
                                     Boot.Event(this.skewProgress(0.0, 0.3, it.progress))
                                 }

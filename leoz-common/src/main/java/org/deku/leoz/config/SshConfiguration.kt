@@ -6,22 +6,24 @@ import sx.ssh.SshTunnelProvider
 /**
  * Created by masc on 17.11.15.
  */
-object SshConfiguration {
-    val USERNAME = "leoz"
-    val PASSWORD = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"
+abstract class SshConfiguration {
+    companion object {
+        val USERNAME = "leoz"
+        val PASSWORD = "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"
 
-    /**
-     * Static tunnel provider
-     */
-    val tunnelProvider by lazy {
-        SshTunnelProvider(
-                localPortRange = IntRange(13300, 13350),
+        /**
+         * Static tunnel provider
+         */
+        @JvmStatic val tunnelProvider by lazy {
+            SshTunnelProvider(
+                    localPortRange = IntRange(13300, 13350),
 
-                sshHosts = SshHost(
-                        hostname = "",
-                        port = 13003,
-                        username = USERNAME,
-                        password = PASSWORD)
-        )
+                    sshHosts = SshHost(
+                            hostname = "",
+                            port = 13003,
+                            username = USERNAME,
+                            password = PASSWORD)
+            )
+        }
     }
 }

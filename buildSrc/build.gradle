@@ -38,6 +38,10 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
+
             "org.apache.commons:commons-lang3:$v_commons_lang",
             "org.apache.commons:commons-compress:1.11",
             "commons-io:commons-io:$v_commons_io",

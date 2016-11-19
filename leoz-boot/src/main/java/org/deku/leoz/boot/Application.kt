@@ -53,13 +53,7 @@ class Application : javafx.application.Application() {
     private val boot by lazy { Boot() }
 
     private val bootTask by lazy {
-        this.boot.bootTask(
-                bundleName = settings.bundle,
-                discover = settings.discover,
-                forceDownload = settings.forceDownload,
-                uninstall = settings.uninstall,
-                versionAlias = settings.versionAlias,
-                versionPattern = settings.versionPattern ?: "")
+        this.boot.boot(this.settings)
     }
 
     /**
