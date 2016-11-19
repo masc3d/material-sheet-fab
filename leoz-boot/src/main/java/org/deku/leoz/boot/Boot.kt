@@ -210,20 +210,21 @@ class Boot {
             log.info("Skipping discovery")
             discoveryTask = Observable.empty()
         } else {
-            discoveryTask = if (settings.discover)
+            discoveryTask = (if (settings.discover)
                 this.discover()
             else
-                Observable.empty()
+                Observable.empty())
+                    .concatWith(Observable.fromCallable {
+                        if (settings.httpHost != null)
+                            restConfiguration.httpHost = settings.httpHost!!
+
+                        if (settings.https != null)
+                            restConfiguration.https = settings.https!!
+
+                        if (settings.rsyncHost != null)
+                            bundleConfiguration.rsyncHost = settings.rsyncHost!!
+                    })
         }
-
-        if (settings.httpHost != null)
-            restConfiguration.httpHost = settings.httpHost!!
-
-        if (settings.https != null)
-            restConfiguration.https = settings.https!!
-
-        if (settings.rsyncHost != null)
-            bundleConfiguration.rsyncHost = settings.rsyncHost!!
 
         // Main task
         val mainTask = if (settings.uninstall)
