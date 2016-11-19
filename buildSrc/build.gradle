@@ -106,6 +106,7 @@ task syncClasses(type: Sync) {
             '**/bundle/BundleProcess*',
             '**/bundle/BundleType*',
             '**/config/BundleConfiguration*',
+            '**/config/HostConfiguration*',
             '**/config/RsyncConfiguration*',
             '**/config/SshConfiguration*',
             '**/platform/**',
