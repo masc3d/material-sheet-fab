@@ -134,7 +134,6 @@ class SshTunnel(
                 } catch(e: Exception) {
                     log.error(e.message, e)
                 } finally {
-                    session.removeSessionListener(this.sessionListener)
                     this.session = null
                 }
             }

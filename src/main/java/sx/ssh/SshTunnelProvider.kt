@@ -5,6 +5,8 @@ import java.io.Closeable
 import java.net.BindException
 import java.time.Duration
 import java.util.*
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * SSH tunnel provider.
@@ -16,11 +18,11 @@ import java.util.*
 class SshTunnelProvider(
         val localPortRange: IntRange,
         vararg sshHosts: SshHost
-) {
+) : AutoCloseable {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Synchronization object */
-    private val sync = Object()
+    private val lock = ReentrantLock()
     /** SSH tunnel configuration by hostname */
     private val sshHosts = HashMap<String, SshHost>()
     /** Local port pool */
@@ -79,11 +81,11 @@ class SshTunnelProvider(
 
         var tunnelResource: TunnelResource? = null
 
-        synchronized(sync) {
+        lock.withLock {
             // Lookup tunnel spec
             val sshHost = this.sshHosts.getOrPut(hostname,
                     {
-                        val defaultSshHost = this.sshHosts.get("") ?: return@synchronized null
+                        val defaultSshHost = this.sshHosts.get("") ?: return@withLock null
 
                         SshHost(
                                 hostname = hostname,
@@ -136,7 +138,7 @@ class SshTunnelProvider(
                     tunnel.open()
                 } catch(e: Throwable) {
                     tunnel.close()
-                    this.release(tunnelResource!!.key)
+                    release(tunnelResource!!.key)
 
                     if (e is BindException) {
                         // Local port in use, remove from port range and retry
@@ -162,7 +164,7 @@ class SshTunnelProvider(
      * Purge tunnel
      */
     private fun purge(tunnel: SshTunnel) {
-        synchronized(sync) {
+        lock.withLock {
             tunnel.close()
 
             val key = TunnelKey(host = tunnel.sshHost.hostname, port = tunnel.remotePort)
@@ -195,13 +197,32 @@ class SshTunnelProvider(
     private fun release(key: TunnelKey) {
         log.trace("Releasing tunnel with key [${key}]")
 
-        synchronized(sync) {
+        lock.withLock {
             val tunnelPool = this.poolForKey(key)
-            val tunnel = tunnelPool.allocated[Thread.currentThread().id] ?: throw IllegalArgumentException("Unknown tunnel resource [${key}]")
+            val tunnel = tunnelPool.allocated[Thread.currentThread().id]
 
-            // Remove tunnel record and push local port back into pool
-            tunnelPool.allocated.remove(Thread.currentThread().id)
-            tunnelPool.released.push(tunnel)
+            if (tunnel != null) {
+                // Remove tunnel record and push local port back into pool
+                tunnelPool.allocated.remove(Thread.currentThread().id)
+                tunnelPool.released.push(tunnel)
+            }
+        }
+    }
+
+    override fun close() {
+        lock.withLock {
+            this.tunnelPools.flatMap {
+                val list = arrayListOf(*it.value.released.toTypedArray())
+                list.addAll(it.value.released)
+                list
+            }.forEach {
+                try {
+                    log.info("Closing tunnel ${it}")
+                    it.close()
+                } catch(e: Throwable) {
+                    log.error(e.message, e)
+                }
+            }
         }
     }
 }
