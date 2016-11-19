@@ -42,7 +42,7 @@ class UdpDiscoveryServicePrototype {
 //            }
 //        }
 
-        ds.discoverFirstTask( { true }, Duration.ofSeconds(3))
+        ds.discoverFirst( { true }, Duration.ofSeconds(3))
                 .first()
                 .subscribeWith {
                     onNext {

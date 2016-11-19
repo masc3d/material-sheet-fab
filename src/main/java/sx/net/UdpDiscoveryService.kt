@@ -207,7 +207,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
      * @param predicate Filter predicate
      * @param timeout Timeout
      */
-    fun discoverFirstTask(predicate: (TInfo) -> Boolean, timeout: Duration): Observable<Node<TInfo>> {
+    fun discoverFirst(predicate: (TInfo) -> Boolean, timeout: Duration): Observable<Node<TInfo>> {
         return this.updatedEvent
                 .filter {
                     it.type == UpdateEvent.Type.Changed
