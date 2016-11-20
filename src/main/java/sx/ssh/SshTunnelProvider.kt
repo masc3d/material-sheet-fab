@@ -212,7 +212,7 @@ class SshTunnelProvider(
     override fun close() {
         lock.withLock {
             this.tunnelPools.flatMap {
-                val list = arrayListOf(*it.value.released.toTypedArray())
+                val list = arrayListOf(*it.value.allocated.values.toTypedArray())
                 list.addAll(it.value.released)
                 list
             }.forEach {
