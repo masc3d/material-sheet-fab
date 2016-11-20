@@ -20,12 +20,14 @@ import rx.Observable
 import rx.lang.kotlin.cast
 import rx.lang.kotlin.subscribeWith
 import rx.util.async.Async
+import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import sx.rx.*
 import sx.ssh.SshTunnelProvider
 import java.io.File
 import java.time.Duration
+import java.util.*
 
 /**
  * Boot model
@@ -178,6 +180,10 @@ class Boot {
                 val version = repository.queryLatestMatchingVersion(
                         bundleName,
                         finalVersionPattern)
+
+                val platforms = repository.listPlatforms(bundleName, version)
+                if (!platforms.contains(PlatformId.current()))
+                    throw NoSuchElementException("Bundle not available for this platform [${PlatformId.current()}]")
 
                 // Download bundle
                 this.installer.download(

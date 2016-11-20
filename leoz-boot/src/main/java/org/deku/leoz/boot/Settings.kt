@@ -40,4 +40,8 @@ class Settings {
 
     @Parameter(names = arrayOf("--rsync-host"), description = "Rsync host to connect to for retrieving bundles")
     var rsyncHost: String? = null
+
+    override fun toString(): String {
+        return "bundle=${bundle}, versionAlias=${versionAlias}, versionPattern=${versionPattern}, discover=${discover}, hideUi=${hideUi}, uninstall=${uninstall}, httpHost=${httpHost}, https=${https}, rsyncHost=${rsyncHost}"
+    }
 }

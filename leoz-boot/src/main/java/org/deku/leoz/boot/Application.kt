@@ -48,8 +48,6 @@ class Application : javafx.application.Application() {
     /** Application settings */
     private val settings: Settings by Kodein.global.lazy.instance()
 
-    private val sshTunnelProvider: SshTunnelProvider by Kodein.global.lazy.instance()
-
     /** Primary stage */
     private var primaryStage: Stage by Delegates.notNull()
         private set
@@ -99,6 +97,8 @@ class Application : javafx.application.Application() {
                     }
                 }
             })
+
+            log.info("${this.settings}")
 
             // Parse leoz-boot command line
             JCommander(this.settings, *this.parameters.raw.toTypedArray())
@@ -162,7 +162,6 @@ class Application : javafx.application.Application() {
     }
 
     override fun stop() {
-        //this.sshTunnelProvider.close()
         super.stop()
     }
 }
