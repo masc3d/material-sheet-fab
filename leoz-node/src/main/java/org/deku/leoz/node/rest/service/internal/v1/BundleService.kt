@@ -43,6 +43,7 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
      * @see org.deku.leoz.rest.service.internal.v1.BundleService
      */
     override fun info(bundleName: String, versionAlias: String?, nodeKey: String?): UpdateInfo {
+        @Suppress("NAME_SHADOWING")
         var versionAlias = versionAlias
         if (versionAlias == null) {
             if (nodeKey == null)

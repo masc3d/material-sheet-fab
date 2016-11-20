@@ -100,7 +100,7 @@ class Application : javafx.application.Application() {
                 }
             })
 
-            // Parse leoz-boot command line params
+            // Parse leoz-boot command line
             JCommander(this.settings, *this.parameters.raw.toTypedArray())
 
             if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
