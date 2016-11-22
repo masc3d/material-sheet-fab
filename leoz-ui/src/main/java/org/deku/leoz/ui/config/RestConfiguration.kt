@@ -26,21 +26,23 @@ class RestConfiguration : org.deku.leoz.config.RestConfiguration() {
 
                 val discoveryService: DiscoveryService = instance()
                 discoveryService.updatedEvent.subscribe {
-                    var foundService: DiscoveryInfo.Service? = null
-                    val host = discoveryService.directory.firstOrNull {
-                        foundService = it.info?.services?.firstOrNull { it.type == DiscoveryInfo.ServiceType.HTTP }
-                        foundService != null
-                    }
+                    data class Result(val host: String, val service: DiscoveryInfo.Service)
+                    val result = discoveryService.directory
+                            .mapNotNull {
+                                val service = it.info?.services?.firstOrNull { it.type == DiscoveryInfo.ServiceType.HTTP }
+                                if (service == null) return@mapNotNull null
 
-                    val service = foundService
-                    if (host != null && service != null) {
-                        config.httpHost = host.address.hostName
+                                Result(host = it.address.hostName, service = service)
+                            }
+                            .firstOrNull()
+
+                    if (result != null) {
+                        config.httpHost = result.host
                         config.https = false
                         log.info("Updated REST host to ${config.httpHost}")
                     }
                 }
-
-                config
+                return@eagerSingleton config
             }
 
             /** Rest client */

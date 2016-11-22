@@ -17,7 +17,11 @@ import javax.net.ssl.X509TrustManager
 import javax.ws.rs.client.WebTarget
 
 /**
- * REST client supporting both Jersey or Resteasy (client), depending on which framework is on the classpath
+ * REST client supporting both Jersey or Resteasy (client), depending on which framework is on the classpath.
+ * The reason for currently supporting both:
+ * - Jersey/grizzly is generally more easily to embedd as a light-weight REST server (as used in `leoz-ui`/bridge)
+ * - RESTeasy performs better under load, especially with undertow/netty, thus it's the currently the better choice for `leoz-node`
+ * - RESTeasy client cannot be used when jersey is on the classpath (as javax.ws.rs factories loads whatever it finds first, which will cause cast issues)
  * @param baseUri Optional base URI (can also be set via property)
  * @property ignoreSslCertificate Ignore SSL certificates
  * Created by masc on 06/11/2016.
