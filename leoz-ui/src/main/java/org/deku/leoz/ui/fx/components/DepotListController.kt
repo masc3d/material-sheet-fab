@@ -19,7 +19,7 @@ import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.input.MouseEvent
 import javafx.util.Callback
 import org.deku.leoz.rest.entity.internal.v1.Station
-import org.deku.leoz.ui.WebserviceFactory
+import org.deku.leoz.rest.service.internal.v1.StationService
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.bridge.MessageFactory
 import org.deku.leoz.ui.event.BusyNotifier
@@ -84,12 +84,13 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
         override fun call(): ObservableList<Station> {
             busy {
                 try {
+                    val stationService: StationService = Kodein.global.instance()
                     // Invoke depot webservice and deliver as observable depot list
                     return FXCollections.observableArrayList(
                             Arrays.asList(
-                                    *WebserviceFactory.depotService().find(fxSearchText.text)))
-                } catch (e: Exception) {
-                    log.error(e.message)
+                                    *stationService.find(fxSearchText.text)))
+                } catch (e: Throwable) {
+                    log.error(e.message, e)
                     throw e
                 }
             }

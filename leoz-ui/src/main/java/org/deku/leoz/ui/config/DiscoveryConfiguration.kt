@@ -7,6 +7,7 @@ import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.service.discovery.DiscoveryService
 
 /**
+ * Discovery configuration
  * Created by masc on 22/11/2016.
  */
 class DiscoveryConfiguration {

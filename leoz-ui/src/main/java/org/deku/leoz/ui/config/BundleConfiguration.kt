@@ -8,6 +8,7 @@ import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.service.update.BundleUpdateService
 
 /**
+ * Bundle configuration
  * Created by masc on 22/11/2016.
  */
 class BundleConfiguration : org.deku.leoz.config.BundleConfiguration() {
