@@ -21,7 +21,7 @@ import java.util.concurrent.ScheduledExecutorService
  * Can be added as a message handler to a notification topic message listener for push update notifications.
  * @property executorService Executor service
  * @property bundleService Bundle service for requesting bundle/version information
- * @property identity Id of this leoz node
+ * @property identity Id of this leoz node. If this parameter is ommitted, the version alias must be provided per update  preset.
  * @property installer Bundle installer for installing bundles locally
  * @property remoteRepository Remote bundle repository. The bundle name of this repository has to match the installer name
  * @property localRepository Optional local repository
@@ -32,9 +32,9 @@ import java.util.concurrent.ScheduledExecutorService
 class BundleUpdateService(
         private val executorService: ScheduledExecutorService,
         private val bundleService: () -> BundleService,
-        val identity: Identity,
+        val identity: Identity? = null,
         val installer: BundleInstaller,
-        val remoteRepository: BundleRepository,
+        val remoteRepository: () -> BundleRepository,
         val localRepository: BundleRepository? = null,
         presets: List<Preset>,
         val cleanup: Boolean = true)
@@ -47,12 +47,14 @@ class BundleUpdateService(
     /**
      * Bundle update preset
      * @param bundleName Bundle to update
+     * @param versionAlias Bundle version alias to look for. This parameter can only be omitted if an identity was previded to the service.
      * @param install Bundle should be installed
      * @param storeInLocalRepository Bundle should be stored in local repository
      * @param requiresBoot Bundle requires (re)boot of module/process
      */
     data class Preset(
             val bundleName: String,
+            val versionAlias: String? = null,
             val install: Boolean = false,
             val storeInLocalRepository: Boolean = false,
             val requiresBoot: Boolean = false
@@ -95,11 +97,11 @@ class BundleUpdateService(
         this.presets = presets.sortedBy { p -> p.requiresBoot }
     }
 
-    private val ovsInfoReceived by lazy { PublishSubject<UpdateInfo>() }
+    private val infoReceivedEventSubject by lazy { PublishSubject<UpdateInfo>() }
     /**
      * Update info received event
      */
-    val ovInfoReceived = ovsInfoReceived.asObservable()
+    val infoReceived = infoReceivedEventSubject.asObservable()
 
     /**
      * Update notification message handler
@@ -108,7 +110,7 @@ class BundleUpdateService(
         val updateInfo = message
         log.info("Received update notification [${updateInfo}]")
 
-        ovsInfoReceived.onNext(updateInfo)
+        infoReceivedEventSubject.onNext(updateInfo)
 
         val preset = this.presets.firstOrNull { s -> s.bundleName.compareTo(updateInfo.bundleName, ignoreCase = true) == 0 }
         if (preset != null) {
@@ -143,13 +145,13 @@ class BundleUpdateService(
             return
         }
 
-        log.info("Requesting version info for [${bundleName}]")
+        log.info("Requesting version info for [${bundleName}] alias [${preset.versionAlias}] node key [${this.identity?.key}]")
 
         // Request currently assigned version for this bundle and node
-        val updateInfo = this.bundleService().info(bundleName = bundleName, nodeKey = this.identity.key)
+        val updateInfo = this.bundleService().info(bundleName = bundleName, versionAlias = preset.versionAlias,  nodeKey = this.identity?.key)
 
-        log.info("Update info [${updateInfo}]")
-        ovsInfoReceived.onNext(updateInfo)
+        log.info("${updateInfo}")
+        infoReceivedEventSubject.onNext(updateInfo)
 
         if (updateInfo.latestDesignatedVersion != null) {
             val latestDesignatedVersion = Bundle.Version.parse(updateInfo.latestDesignatedVersion)
@@ -177,7 +179,7 @@ class BundleUpdateService(
                         .count() == 0
 
                 if (!existsLocally || !allPlatformsExistLocally) {
-                    this.remoteRepository.download(
+                    this.remoteRepository().download(
                             bundleName = bundleName,
                             version = latestDesignatedVersion,
                             localRepository = this.localRepository)
@@ -185,7 +187,7 @@ class BundleUpdateService(
                     log.info("Bundle [${fullBundleName}] already exists in local repository")
                 }
             } else {
-                repositoryToInstallFrom = this.remoteRepository
+                repositoryToInstallFrom = this.remoteRepository()
             }
 
             // Clean older bundles

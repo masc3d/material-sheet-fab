@@ -76,6 +76,9 @@ class MainController : Controller(), Initializable {
     /** Leo bridge */
     private val leoBridge: LeoBridge by Kodein.global.lazy.instance()
 
+    /** Log configuration */
+    private val logConfiguration: LogConfiguration by Kodein.global.lazy.instance()
+
     private val executorService: ExecutorService by Kodein.global.lazy.instance()
 
     /**
@@ -362,7 +365,7 @@ class MainController : Controller(), Initializable {
 
         if (show)  {
             // Create text area
-            val t = LogConfiguration.textAreaLogAppender.textArea
+            val t = this.logConfiguration.textAreaLogAppender.textArea
             t.isEditable = false
             t.styleClass.add("leoz-log")
             AnchorPane.setTopAnchor(t, 0.0)

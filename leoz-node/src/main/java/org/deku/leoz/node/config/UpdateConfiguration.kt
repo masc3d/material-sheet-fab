@@ -121,7 +121,7 @@ open class UpdateConfiguration {
                 bundleService = { this.bundleServiceProxy },
                 identity = App.instance.identity,
                 installer = this.bundleInstaller,
-                remoteRepository = this.updateRepository,
+                remoteRepository = { this.updateRepository },
                 localRepository = this.localBundleRepository,
                 presets = listOf(
                         BundleUpdateService.Preset(
@@ -142,7 +142,7 @@ open class UpdateConfiguration {
         updateService.enabled = this.settings.enabled
 
         // Event handlers
-        updateService.ovInfoReceived.subscribe() {
+        updateService.infoReceived.subscribe() {
             this.state.versionAlias = it.bundleVersionAlias
 
             this.propertyRepository.saveObject(this.state)

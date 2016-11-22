@@ -171,7 +171,6 @@ dependencies {
             "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
 
-
             // jackson JSON serializer
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
@@ -279,11 +278,6 @@ dependencies {
             "org.springframework.boot:spring-boot-starter-test:$v_springboot",
 
             project(':libs:sx-common')
-    )
-
-    compile(
-            "org.jboss.forge.roaster:roaster-api:$v_roaster",
-            "org.jboss.forge.roaster:roaster-jdt:$v_roaster"
     )
 }
 

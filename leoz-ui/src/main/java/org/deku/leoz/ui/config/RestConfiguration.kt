@@ -1,15 +1,12 @@
-package org.deku.leoz.boot.config
+package org.deku.leoz.ui.config
 
-import com.github.salomonbrys.kodein.*
-import com.github.salomonbrys.kodein.conf.global
-import org.deku.leoz.boot.Settings
-import org.deku.leoz.bundle.BundleType
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.eagerSingleton
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.provider
 import org.deku.leoz.config.HostConfiguration
 import org.deku.leoz.rest.RestClient
-import org.deku.leoz.service.discovery.DiscoveryService
-import rx.Observable
-import rx.lang.kotlin.cast
-import java.time.Duration
+import org.deku.leoz.rest.service.internal.v1.BundleService
 
 /**
  * Rest configuration
@@ -26,8 +23,13 @@ class RestConfiguration : org.deku.leoz.config.RestConfiguration() {
             /** Rest client */
             bind<RestClient>() with provider {
                 val config: RestConfiguration = instance()
-
                 config.createClient(config.httpHost, DEFAULT_PORT, config.https)
+            }
+
+            /** Bundle service */
+            bind<BundleService>() with provider {
+                val restClient: RestClient = instance()
+                restClient.proxy(BundleService::class.java)
             }
         }
     }
@@ -35,10 +37,10 @@ class RestConfiguration : org.deku.leoz.config.RestConfiguration() {
     /**
      * HTTP host to use for rest clients
      */
-    var httpHost: String = HostConfiguration.CENTRAL_HOST
+    var httpHost: String = "localhost"
 
     /**
      * Connect via HTTPS
      */
-    var https: Boolean = true
+    var https: Boolean = false
 }

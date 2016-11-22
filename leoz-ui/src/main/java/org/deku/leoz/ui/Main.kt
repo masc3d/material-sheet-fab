@@ -21,9 +21,7 @@ import javafx.stage.StageStyle
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.service.discovery.DiscoveryService
 import org.deku.leoz.ui.bridge.LeoBridge
-import org.deku.leoz.ui.config.Configurations
-import org.deku.leoz.ui.config.LogConfiguration
-import org.deku.leoz.ui.config.StorageConfiguration
+import org.deku.leoz.ui.config.*
 import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.ui.fx.MainController
 import org.slf4j.LoggerFactory
@@ -52,6 +50,10 @@ class Main : Application() {
 
     /** Localization */
     private val i18n: org.deku.leoz.ui.Localization by Kodein.global.lazy.instance()
+
+    private val logConfiguration: LogConfiguration by Kodein.global.lazy.instance()
+
+    private val leoBridge: LeoBridge by Kodein.global.lazy.instance()
 
     /**
      * Main user interface controller
@@ -99,8 +101,14 @@ class Main : Application() {
         log.debug("Initializing injection")
 
         // Setup injection
-        Kodein.global.addImport(Configurations.application)
-        Kodein.global.addImport(Configurations.messenging)
+        Kodein.global.addImport(ApplicationConfiguration.module)
+        Kodein.global.addImport(StorageConfiguration.module)
+        Kodein.global.addImport(LogConfiguration.module)
+        Kodein.global.addImport(MessagingConfiguration.module)
+        Kodein.global.addImport(RestConfiguration.module)
+        Kodein.global.addImport(BundleConfiguration.module)
+        Kodein.global.addImport(LeoBridgeConfiguration.module)
+        Kodein.global.addImport(DiscoveryConfiguration.module)
 
         log.debug("Initializing executor")
         // Initialize application
@@ -113,10 +121,6 @@ class Main : Application() {
         val splashStage = Stage()
 
         executor.submit {
-            log.debug("Initializing log")
-            LogConfiguration.logFile = StorageConfiguration.logFile
-            LogConfiguration.initialize()
-
             // Sidechained UI initialization
             executor.submit {
                 log.debug("Loading fonts")
@@ -129,6 +133,10 @@ class Main : Application() {
                 this.loadFont("/fonts/Menlo-Bold.ttf")
 
                 val root = mainController.fxRoot
+
+                leoBridge.ovMessageReceived.subscribe {
+                    this.toForeground()
+                }
 
                 Platform.runLater {
                     // Main scene
@@ -156,25 +164,6 @@ class Main : Application() {
                     if (SystemUtils.IS_OS_MAC) {
                         primaryStage.widthProperty().addListener { v, o, n -> updateIcon() }
                         primaryStage.heightProperty().addListener { v, o, n -> updateIcon() }
-                    }
-
-                    executor.submit {
-                        // Start discovery service
-                        Kodein.global.instance<DiscoveryService>().start()
-
-                        // Background task initialization
-                        log.info("Staring LeoBridge")
-                        val leoBridge: LeoBridge = Kodein.global.instance()
-
-                        // Start leo bridge (asynchronously so it doesn't slow down startup)
-                        try {
-                            leoBridge.ovMessageReceived.subscribe {
-                                this.toForeground()
-                            }
-                            leoBridge.start()
-                        } catch (e: IOException) {
-                            log.error(e.message, e)
-                        }
                     }
 
                     Platform.runLater {

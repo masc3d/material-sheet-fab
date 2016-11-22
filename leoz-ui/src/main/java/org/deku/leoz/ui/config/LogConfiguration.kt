@@ -1,18 +1,31 @@
 package org.deku.leoz.ui.config
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.eagerSingleton
+import com.github.salomonbrys.kodein.instance
 import javafx.scene.control.TextArea
-import org.deku.leoz.config.StorageConfiguration
 import sx.fx.TextAreaLogAppender
 
 /**
+ * Log configuration
  * Created by masc on 26/09/2016.
  */
-object LogConfiguration : org.deku.leoz.config.LogConfiguration() {
+class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     val textAreaLogAppender by lazy { TextAreaLogAppender(TextArea()) }
 
-    override fun initialize() {
-        super.initialize()
+    companion object {
+        val module = Kodein.Module {
+            bind<LogConfiguration>() with eagerSingleton {
+                val storageConfiguration: StorageConfiguration = instance()
+                val config = LogConfiguration()
+                config.logFile = storageConfiguration.logFile
+                config
+            }
+        }
+    }
 
+    init {
         this.addAppender(this.textAreaLogAppender)
     }
 }
