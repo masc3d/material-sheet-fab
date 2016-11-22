@@ -12,7 +12,6 @@ import javafx.scene.control.ProgressIndicator
 import javafx.scene.image.Image
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Background
-import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.stage.Screen
@@ -26,14 +25,13 @@ import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.ui.fx.MainController
 import org.slf4j.LoggerFactory
 import sx.fx.controls.MaterialProgressIndicator
-import java.io.IOException
 import java.util.concurrent.ExecutorService
 
 /**
  * Main application class
  */
-class Main : Application() {
-    private val log = LoggerFactory.getLogger(Main::class.java)
+class Application : Application() {
+    private val log = LoggerFactory.getLogger(org.deku.leoz.ui.Application::class.java)
 
     companion object {
         /**
@@ -41,7 +39,7 @@ class Main : Application() {
          * @param args
          */
         @JvmStatic fun main(args: Array<String>) {
-            javafx.application.Application.launch(Main::class.java, *args)
+            javafx.application.Application.launch(org.deku.leoz.ui.Application::class.java, *args)
         }
     }
 

@@ -9,13 +9,11 @@ import javafx.fxml.Initializable
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.image.Image
-import org.deku.leoz.ui.Main
 import org.deku.leoz.ui.Settings
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.bridge.Message
 import org.deku.leoz.ui.fx.ModuleController
 import org.slf4j.LoggerFactory
-import rx.subjects.PublishSubject
 import rx.lang.kotlin.PublishSubject
 import java.net.URL
 import java.util.*

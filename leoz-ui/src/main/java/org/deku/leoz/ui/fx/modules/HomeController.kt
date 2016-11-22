@@ -5,8 +5,6 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import javafx.scene.image.Image
-import org.deku.leoz.ui.Localization
-import org.deku.leoz.ui.Main
 import org.deku.leoz.ui.fx.ModuleController
 
 /**

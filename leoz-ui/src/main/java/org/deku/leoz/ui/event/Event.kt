@@ -1,7 +1,6 @@
 package org.deku.leoz.ui.event
 
 import rx.subjects.PublishSubject
-import java.lang.ref.WeakReference
 
 /**
  * Created by masc on 20/08/16.

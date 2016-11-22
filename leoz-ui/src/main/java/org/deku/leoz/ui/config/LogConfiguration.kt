@@ -1,7 +1,6 @@
 package org.deku.leoz.ui.config
 
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.instance
 import javafx.scene.control.TextArea

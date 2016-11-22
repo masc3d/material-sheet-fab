@@ -8,15 +8,10 @@ import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Node
 import javafx.scene.image.Image
-import org.deku.leoz.ui.Localization
-import org.deku.leoz.ui.Main
+import org.deku.leoz.ui.event.Event
 import org.deku.leoz.ui.fx.ModuleController
 import org.deku.leoz.ui.fx.components.DepotDetailsController
 import org.deku.leoz.ui.fx.components.DepotListController
-import org.deku.leoz.rest.entity.internal.v1.Station
-import org.deku.leoz.ui.event.BusyNotifier
-import org.deku.leoz.ui.event.Event
-import rx.Observable
 import rx.subjects.PublishSubject
 import java.net.URL
 import java.util.*

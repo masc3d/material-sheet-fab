@@ -1,6 +1,5 @@
 package org.deku.leoz.ui
 
-import sx.util.Utf8ResourceBundleControl
 import java.util.*
 
 /**

@@ -1,9 +1,6 @@
 package org.deku.leoz.ui.event
 
-import org.deku.leoz.ui.event.Event
-import rx.Observable
 import rx.subjects.PublishSubject
-import java.lang.ref.WeakReference
 
 /**
  * Busy notifier interface.

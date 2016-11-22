@@ -6,7 +6,7 @@ apply plugin: PackagerPlugin
 
 sourceCompatibility = 1.8
 version = '0.12-RELEASE'
-mainClassName = "org.deku.leoz.ui.Main"
+mainClassName = "org.deku.leoz.ui.Application"
 
 buildscript {
     ext {

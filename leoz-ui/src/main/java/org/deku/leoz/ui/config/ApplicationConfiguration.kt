@@ -3,10 +3,7 @@ package org.deku.leoz.ui.config
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.singleton
-import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.service.discovery.DiscoveryService
 import org.deku.leoz.ui.Settings
-import org.deku.leoz.ui.bridge.LeoBridge
 import sx.JarManifest
 import sx.concurrent.task.CompositeExecutorService
 import java.util.*
