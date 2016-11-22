@@ -29,8 +29,8 @@ import javax.ws.rs.client.WebTarget
 class RestClient(val baseUri: URI,
                  val ignoreSslCertificate: Boolean = false) {
 
-    private val connectTimeout = Duration.ofSeconds(2)
-    private val socketTimeout = Duration.ofSeconds(2)
+    private val connectTimeout = Duration.ofSeconds(5)
+    private val socketTimeout = Duration.ofSeconds(5)
 
     private val ignoringCertificateSslContext by lazy {
         val ignoringCertificateSslContext = SSLContext.getInstance("TLS")
