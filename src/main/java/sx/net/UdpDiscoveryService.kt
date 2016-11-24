@@ -420,12 +420,12 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 this@UdpDiscoveryService.lock.withLock {
                     // Find all non-local addresses for which no replies have been received
                     val removed = this@UdpDiscoveryService._directory.filter {
-                        val node = nodesById[it.key]
+                        if (it.key.uid == this@UdpDiscoveryService.uid)
+                            return@filter false
 
-                        // Either no info has been received for a non-local address
-                        (node == null && !interfaceAddresses.containsKey(it.value.address))
-                                // or the node has been activelx removed
-                                || (node != null && node.removed)
+                        // Either no info has been received for a non-local address or the node has been activelx removed
+                        val node = nodesById[it.key]
+                        return@filter (node == null || node.removed)
                     }
 
                     // Remove them and notify
