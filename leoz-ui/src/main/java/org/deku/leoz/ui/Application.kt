@@ -107,6 +107,7 @@ class Application : Application() {
         Kodein.global.addImport(BundleConfiguration.module)
         Kodein.global.addImport(LeoBridgeConfiguration.module)
         Kodein.global.addImport(DiscoveryConfiguration.module)
+        Kodein.global.addImport(ConnectionConfiguration.module)
 
         log.debug("Initializing executor")
         // Initialize application

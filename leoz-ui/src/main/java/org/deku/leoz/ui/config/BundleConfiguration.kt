@@ -2,8 +2,10 @@ package org.deku.leoz.ui.config
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
 import org.deku.leoz.bundle.BundleInstaller
+import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.service.update.BundleUpdateService
 
@@ -23,13 +25,18 @@ class BundleConfiguration : org.deku.leoz.config.BundleConfiguration() {
                 BundleInstaller(storageConfig.bundleInstallationDirectory)
             }
 
+            bind<BundleRepository>() with provider {
+                val config: BundleConfiguration = instance()
+                createRepository(config.rsyncHost)
+            }
+
             bind<BundleUpdateService>() with singleton {
                 val config: BundleConfiguration = instance()
                 val service = BundleUpdateService(
                         executorService = instance(),
                         bundleService = { instance() },
                         installer = instance(),
-                        remoteRepository = { createRepository(config.rsyncHost) },
+                        remoteRepository = { instance() },
                         presets = listOf(
                                 BundleUpdateService.Preset(
                                         bundleName = BundleType.LEOZ_BOOT.value,

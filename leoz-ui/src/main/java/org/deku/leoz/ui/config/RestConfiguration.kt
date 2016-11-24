@@ -22,27 +22,7 @@ class RestConfiguration : org.deku.leoz.config.RestConfiguration() {
         val module = Kodein.Module {
             /** Rest configuration */
             bind<RestConfiguration>() with eagerSingleton {
-                val config = RestConfiguration()
-
-                val discoveryService: DiscoveryService = instance()
-                discoveryService.updatedEvent.subscribe {
-                    data class Result(val host: String, val service: DiscoveryInfo.Service)
-                    val result = discoveryService.directory
-                            .mapNotNull {
-                                val service = it.info?.services?.firstOrNull { it.type == DiscoveryInfo.ServiceType.HTTP }
-                                if (service == null) return@mapNotNull null
-
-                                Result(host = it.address.hostName, service = service)
-                            }
-                            .firstOrNull()
-
-                    if (result != null) {
-                        config.httpHost = result.host
-                        config.https = false
-                        log.info("Updated REST host to ${config.httpHost}")
-                    }
-                }
-                return@eagerSingleton config
+                RestConfiguration()
             }
 
             /** Rest client */
