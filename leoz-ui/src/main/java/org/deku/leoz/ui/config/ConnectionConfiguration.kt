@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.conf.global
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.service.discovery.DiscoveryInfo
 import org.deku.leoz.service.discovery.DiscoveryService
+import org.deku.leoz.service.update.BundleUpdateService
 import org.slf4j.LoggerFactory
 import rx.lang.kotlin.PublishSubject
 import sx.net.UdpDiscoveryService
@@ -55,8 +56,8 @@ class ConnectionConfiguration {
             this.restConfiguration.httpHost = newHost
             this.bundleConfiguration.rsyncHost = newHost
             log.info("Updated remote host to [${newHost}]")
-        }
 
-        _nodeUpdatedEvent.onNext(n)
+            _nodeUpdatedEvent.onNext(n)
+        }
     }
 }

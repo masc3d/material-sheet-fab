@@ -48,7 +48,7 @@ class RestConfiguration : org.deku.leoz.config.RestConfiguration() {
     /**
      * HTTP host to use for rest clients
      */
-    var httpHost: String = "localhost"
+    var httpHost: String= "localhost"
 
     /**
      * Connect via HTTPS
