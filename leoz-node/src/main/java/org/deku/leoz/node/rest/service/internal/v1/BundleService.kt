@@ -2,6 +2,7 @@ package org.deku.leoz.node.rest.service.internal.v1
 
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.node.App
+import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.service.update.UpdateInfo
 import org.deku.leoz.service.update.UpdateInfoRequest
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
@@ -31,6 +32,9 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
     @Inject
     private lateinit var bundleRepository: BundleRepository
 
+    @Inject
+    private lateinit var updateConfiguration: UpdateConfiguration
+
     /**
      * Look up version alias by node key
      */
@@ -46,10 +50,15 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
         @Suppress("NAME_SHADOWING")
         var versionAlias = versionAlias
         if (versionAlias == null) {
-            if (nodeKey == null)
-                throw IllegalArgumentException("Missing criteria")
+            if (nodeKey == null) {
+                val instanceVersionAlias = this.updateConfiguration.versionAlias
+                if (instanceVersionAlias.isNullOrEmpty())
+                    throw IllegalArgumentException("Missing criteria")
 
-            versionAlias = this.aliasByNodeKey(nodeKey)
+                versionAlias = instanceVersionAlias
+            } else {
+                versionAlias = this.aliasByNodeKey(nodeKey)
+            }
         }
 
         val qTable = QMstBundleVersion.mstBundleVersion

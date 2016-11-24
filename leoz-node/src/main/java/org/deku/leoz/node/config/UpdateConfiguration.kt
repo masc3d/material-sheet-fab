@@ -92,6 +92,11 @@ open class UpdateConfiguration {
     private var state: State = State()
 
     /**
+     * The version alias for this application instance.
+     */
+    val versionAlias: String get() = this.state.versionAlias
+
+    /**
      * Bundle repository used for retrieving updates
      **/
     private val updateRepository by lazy {
@@ -143,9 +148,11 @@ open class UpdateConfiguration {
 
         // Event handlers
         updateService.infoReceived.subscribe() {
-            this.state.versionAlias = it.bundleVersionAlias
-
-            this.propertyRepository.saveObject(this.state)
+            if (it.bundleName == App.instance.name) {
+                // Store the version alias persistently.
+                this.state.versionAlias = it.bundleVersionAlias
+                this.propertyRepository.saveObject(this.state)
+            }
         }
 
         return updateService
