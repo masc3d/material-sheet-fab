@@ -58,6 +58,8 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
     @FXML
     private lateinit var fxDepotTableStreetColumn: TableColumn<Any, Any>
 
+    private val CSS_ERROR = "leoz-error"
+
     /** LeoBridge instance */
     private val leoBridge: LeoBridge by Kodein.global.lazy.instance()
 
@@ -102,11 +104,13 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
             controller.fxDepotTableView.items = stations
             if (controller.requestedDepotId != null)
                 selectDepot(controller.requestedDepotId)
-            controller.fxSearchText.styleClass.remove("leoz-error")
+            controller.fxSearchText.styleClass.remove(CSS_ERROR)
         }
 
         override fun failed() {
-            fxSearchText.styleClass.add("leoz-error")
+            val errorStyle = CSS_ERROR
+            fxSearchText.styleClass.remove(errorStyle)
+            fxSearchText.styleClass.add(errorStyle)
         }
     }
 
