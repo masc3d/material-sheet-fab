@@ -14,6 +14,7 @@ import sx.jms.Channel
 import sx.jms.Handler
 import sx.platform.PlatformId
 import java.time.Duration
+import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 
 /**
@@ -27,6 +28,8 @@ import java.util.concurrent.ScheduledExecutorService
  * @property localRepository Optional local repository
  * @property presets Bundke update presets
  * @property cleanup Automatically clean out outdated and non-relevant bundles
+ * @property alwaysQueryRepository Useful for setup/testing where the bundle repository host is different from the one
+ * hosting the BundleService. Defaults to false, as in productive setups both are the same.
  * Created by masc on 12.10.15.
  */
 class BundleUpdateService(
@@ -37,8 +40,9 @@ class BundleUpdateService(
         val remoteRepository: () -> BundleRepository,
         val localRepository: BundleRepository? = null,
         presets: List<Preset>,
-        val cleanup: Boolean = true)
-:
+        val cleanup: Boolean = true,
+        val alwaysQueryRepository: Boolean = false)
+    :
         Handler<UpdateInfo>,
         Lifecycle {
 
@@ -47,7 +51,7 @@ class BundleUpdateService(
     /**
      * Bundle update preset
      * @param bundleName Bundle to update
-     * @param versionAlias Bundle version alias to look for. This parameter can only be omitted if an identity was previded to the service.
+     * @param versionAlias Bundle version alias to look for. This parameter can be omitted if a (node) identity is provided to the service,
      * @param install Bundle should be installed
      * @param storeInLocalRepository Bundle should be stored in local repository
      * @param requiresBoot Bundle requires (re)boot of module/process
@@ -148,79 +152,97 @@ class BundleUpdateService(
         log.info("Requesting version info for [${bundleName}] alias [${preset.versionAlias}] node key [${this.identity?.key}]")
 
         // Request currently assigned version for this bundle and node
-        val updateInfo = this.bundleService().info(bundleName = bundleName, versionAlias = preset.versionAlias,  nodeKey = this.identity?.key)
+        val updateInfo = this.bundleService().info(
+                bundleName = bundleName,
+                versionAlias = preset.versionAlias,
+                nodeKey = this.identity?.key)
 
+        // Log info and emit event
         log.info("${updateInfo}")
-        infoReceivedEventSubject.onNext(updateInfo)
+        this.infoReceivedEventSubject.onNext(updateInfo)
 
-        if (updateInfo.latestDesignatedVersion != null) {
-            val latestDesignatedVersion = Bundle.Version.parse(updateInfo.latestDesignatedVersion)
-            val latestDesignatedPlatforms = updateInfo.latestDesignatedVersionPlatforms.map { PlatformId.parse(it) }
-            val fullBundleName = "${bundleName}-${latestDesignatedVersion}"
+        // Actual download & Installation
+        val remoteRepository = this.remoteRepository()
+        val latestDesignatedVersion: Bundle.Version
+        val latestDesignatedPlatforms: List<PlatformId>
 
-            // The repository to actually install from.
-            // This may be the local repository if this bundle is supposed to be downloaded to local repository anyway
-            // or the remote repository if it's installed directly.
-            val repositoryToInstallFrom: BundleRepository
+        if (this.alwaysQueryRepository) {
+            // Query remote repository directly
+            latestDesignatedVersion = remoteRepository.queryLatestMatchingVersion(
+                    bundleName,
+                    updateInfo.bundleVersionPattern)
 
-            if (preset.storeInLocalRepository) {
-                // Synchronize to local repository
-                if (this.localRepository == null)
-                    throw IllegalStateException("Cannot store bundle [${preset.bundleName}] as local repository is not set")
-
-                repositoryToInstallFrom = this.localRepository
-
-                val existsLocally = this.localRepository
-                        .listVersions(bundleName)
-                        .contains(latestDesignatedVersion)
-
-                val allPlatformsExistLocally = latestDesignatedPlatforms
-                        .subtract(this.localRepository.listPlatforms(bundleName, latestDesignatedVersion))
-                        .count() == 0
-
-                if (!existsLocally || !allPlatformsExistLocally) {
-                    this.remoteRepository().download(
-                            bundleName = bundleName,
-                            version = latestDesignatedVersion,
-                            localRepository = this.localRepository)
-                } else {
-                    log.info("Bundle [${fullBundleName}] already exists in local repository")
-                }
-            } else {
-                repositoryToInstallFrom = this.remoteRepository()
-            }
-
-            // Clean older bundles
-            if (this.localRepository != null && this.cleanup) {
-                this.localRepository.clean(bundleName, listOf(latestDesignatedVersion))
-            }
-
-            if (preset.install) {
-                val currentPlatform = PlatformId.current()
-                if (latestDesignatedPlatforms.contains(currentPlatform)) {
-                    val readyToInstall = this.installer.download(
-                            bundleRepository = repositoryToInstallFrom,
-                            bundleName = bundleName,
-                            version = latestDesignatedVersion)
-
-                    if (readyToInstall) {
-                        if (preset.requiresBoot) {
-                            // TODO: add support for updateInfo.desiredStartTime
-                            this.installer.boot(bundleName)
-                        } else {
-                            this.installer.install(bundleName)
-                        }
-                    } else {
-                        log.info("Bundle [${bundleName}] is already uptodate.")
-                    }
-                } else {
-                    log.warn("Bundle [${fullBundleName}] is not available for this platform [${currentPlatform}]")
-                }
-            }
+            latestDesignatedPlatforms = remoteRepository.listPlatforms(bundleName, latestDesignatedVersion)
         } else {
-            log.warn("No appropriate version available for bundle [${bundleName}]")
+            // Rely on info delivered by BundleService
+            if (updateInfo.latestDesignatedVersion == null)
+                throw NoSuchElementException("No appropriate version available for bundle [${bundleName}]")
+
+            latestDesignatedVersion = Bundle.Version.parse(updateInfo.latestDesignatedVersion)
+            latestDesignatedPlatforms = updateInfo.latestDesignatedVersionPlatforms.map { PlatformId.parse(it) }
         }
 
+        val fullBundleName = "${bundleName}-${latestDesignatedVersion}"
+
+        // The repository to actually install from.
+        // This may be the local repository if this bundle is supposed to be downloaded to local repository anyway
+        // or the remote repository if it's installed directly.
+        val repositoryToInstallFrom: BundleRepository
+
+        if (preset.storeInLocalRepository) {
+            // Synchronize to local repository
+            if (this.localRepository == null)
+                throw IllegalStateException("Cannot store bundle [${preset.bundleName}] as local repository is not set")
+
+            repositoryToInstallFrom = this.localRepository
+
+            val existsLocally = this.localRepository
+                    .listVersions(bundleName)
+                    .contains(latestDesignatedVersion)
+
+            val allPlatformsExistLocally = latestDesignatedPlatforms
+                    .subtract(this.localRepository.listPlatforms(bundleName, latestDesignatedVersion))
+                    .count() == 0
+
+            if (!existsLocally || !allPlatformsExistLocally) {
+                remoteRepository.download(
+                        bundleName = bundleName,
+                        version = latestDesignatedVersion,
+                        localRepository = this.localRepository)
+            } else {
+                log.info("Bundle [${fullBundleName}] already exists in local repository")
+            }
+        } else {
+            repositoryToInstallFrom = this.remoteRepository()
+        }
+
+        // Clean older bundles
+        if (this.localRepository != null && this.cleanup) {
+            this.localRepository.clean(bundleName, listOf(latestDesignatedVersion))
+        }
+
+        if (preset.install) {
+            val currentPlatform = PlatformId.current()
+            if (latestDesignatedPlatforms.contains(currentPlatform)) {
+                val readyToInstall = this.installer.download(
+                        bundleRepository = repositoryToInstallFrom,
+                        bundleName = bundleName,
+                        version = latestDesignatedVersion)
+
+                if (readyToInstall) {
+                    if (preset.requiresBoot) {
+                        // TODO: add support for updateInfo.desiredStartTime
+                        this.installer.boot(bundleName)
+                    } else {
+                        this.installer.install(bundleName)
+                    }
+                } else {
+                    log.info("Bundle [${bundleName}] is already uptodate.")
+                }
+            } else {
+                log.warn("Bundle [${fullBundleName}] is not available for this platform [${currentPlatform}]")
+            }
+        }
 
         log.info("Update sequence for bundle [${bundleName}] complete")
     }
