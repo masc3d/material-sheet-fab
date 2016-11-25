@@ -25,7 +25,7 @@ import kotlin.concurrent.withLock
  * @param executorService Executor service to use
  * @property port Port to listen on
  * @param uid Discovery node unique id. Defaults to a random UUID string.
- * @param serverEnabled Enables listener for answering broadcast request. Defaults to true.
+ * @param passive Passive operation. When set to true, the service only supports queries no listener will be running, thus no requests can be answered. The discovery service acts Defaults ot false.
  * @param TInfo (Optional) Info block type.
  * The class must be serializable, should be immutable and implement `.equals`for change notifications.
  * A kotlin data class using only `val`s is a good match.
@@ -36,7 +36,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         executorService: ScheduledExecutorService,
         val port: Int,
         val uid: String = UUID.randomUUID().toString(),
-        val serverEnabled: Boolean = true,
+        val passive: Boolean = false,
         infoClass: Class<TInfo>,
         private val serializer: Serializer = KryoSerializer())
     :
@@ -47,7 +47,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     private var running = false
 
     private val BUFFER_SIZE = 16 * 1024
-    private val RECEIVE_TIMEOUT = Duration.ofSeconds(2)
+    private val RECEIVE_TIMEOUT = Duration.ofSeconds(4)
 
     /** Node identification/key */
     data class NodeId(val uid: String, val address: InetAddress)
@@ -64,6 +64,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
             val uid: String? = null,
             address: InetAddress? = null,
             val removed: Boolean = false,
+            val passive: Boolean = false,
             val info: TInfo? = null) {
         /**
          * Address data (as InetAddress is not universally serializable)
@@ -252,6 +253,17 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 log.trace("No entry for node [${nodeId}]")
             }
 
+            if (node.removed) {
+                log.info("Removing entry for ${nodeId}")
+                val removedNode = this@UdpDiscoveryService._directory.remove(nodeId)
+                if (removedNode != null)
+                    this@UdpDiscoveryService.updatedEventSubject.onNext(UpdateEvent(UpdateEvent.Type.Removed, removedNode))
+            } else {
+                // Ignore changes of passive nodes, as they cannot actively respond
+                if (node.passive)
+                    return
+            }
+
             updated = (existing != node)
             if (updated) {
                 log.info("Updating info for ${node}")
@@ -309,6 +321,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                     val response = this@UdpDiscoveryService.serializer.serializeToByteArray(
                             Node(address = InetSocketAddress(0).address,
                                     uid = this@UdpDiscoveryService.uid,
+                                    passive = this@UdpDiscoveryService.passive,
                                     info = this@UdpDiscoveryService.info))
 
                     log.debug("Answering to ${packet.address} size [${response.size}]")
@@ -354,6 +367,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                         address = it.interfaceAddress.address,
                         uid = this@UdpDiscoveryService.uid,
                         removed = !this@UdpDiscoveryService.running,
+                        passive = this@UdpDiscoveryService.passive,
                         info = this@UdpDiscoveryService.info)
 
                 // Update directory with received host info
@@ -369,8 +383,6 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
         override fun run() {
             try {
                 this.broadcast()
-
-                val interfaceAddresses = this@UdpDiscoveryService.interfaces.get()
 
                 this.log.trace("Processing replies")
 
@@ -394,6 +406,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                                     address = receivePacket.address,
                                     uid = node.uid,
                                     removed = node.removed,
+                                    passive = this@UdpDiscoveryService.passive,
                                     info = node.info)
                         }
 
@@ -420,19 +433,17 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 this@UdpDiscoveryService.lock.withLock {
                     // Find all non-local addresses for which no replies have been received
                     val removed = this@UdpDiscoveryService._directory.filter {
+                        // Ignore entries that refer to this node
                         if (it.key.uid == this@UdpDiscoveryService.uid)
                             return@filter false
 
-                        // Either no info has been received for a non-local address or the node has been activelx removed
-                        val node = nodesById[it.key]
-                        return@filter (node == null || node.removed)
+                        // Return nodes for which no response was received
+                        return@filter nodesById[it.key] == null
                     }
 
                     // Remove them and notify
                     removed.forEach {
-                        log.info("Removing entry for ${it.key}")
-                        this@UdpDiscoveryService._directory.remove(it.key)
-                        this@UdpDiscoveryService.updatedEventSubject.onNext(UpdateEvent(UpdateEvent.Type.Removed, it.value))
+                        this@UdpDiscoveryService.updateDirectory(it.value, this.log)
                     }
                 }
             } catch(e: SocketException) {
@@ -453,7 +464,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     override fun onStart() {
         this.running = true
 
-        if (this.serverEnabled) {
+        if (!this.passive) {
             /**
              * Server run cycle as a supplemental task
              */
