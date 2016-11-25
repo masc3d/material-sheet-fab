@@ -79,8 +79,6 @@ class Application : Application() {
      */
     @Throws(Exception::class)
     override fun start(primaryStage: Stage) {
-        log.info("JavaFX application start")
-
         // Support for command line interface
         val setup = Setup()
         val command = setup.parse(this.parameters.raw.toTypedArray())
