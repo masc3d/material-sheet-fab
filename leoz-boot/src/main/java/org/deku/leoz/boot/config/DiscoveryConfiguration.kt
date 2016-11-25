@@ -19,7 +19,7 @@ class DiscoveryConfiguration {
                 val service = DiscoveryService(
                         executorService = instance(),
                         bundleType = BundleType.LEOZ_BOOT,
-                        serverEnabled = false
+                        passive = true
                 )
                 service.start()
                 service

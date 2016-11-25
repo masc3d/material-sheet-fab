@@ -22,11 +22,11 @@ class DiscoveryService(
         port: Int = DiscoveryService.DEFAULT_PORT,
         uid: String = UUID.randomUUID().toString(),
         val bundleType: BundleType,
-        serverEnabled: Boolean = true)
+        passive: Boolean = false)
 : UdpDiscoveryService<DiscoveryInfo>(
         executorService = executorService,
         uid = uid,
-        serverEnabled = serverEnabled,
+        passive = passive,
         infoClass = DiscoveryInfo::class.java,
         port = port) {
 
