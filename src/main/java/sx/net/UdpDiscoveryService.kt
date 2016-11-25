@@ -406,7 +406,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                                     address = receivePacket.address,
                                     uid = node.uid,
                                     removed = node.removed,
-                                    passive = this@UdpDiscoveryService.passive,
+                                    passive = node.passive,
                                     info = node.info)
                         }
 
