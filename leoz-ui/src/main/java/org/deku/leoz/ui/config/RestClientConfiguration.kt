@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.provider
+import org.deku.leoz.config.RestConfiguration
 import org.deku.leoz.rest.RestClient
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.deku.leoz.rest.service.internal.v1.StationService
@@ -15,20 +16,20 @@ import org.slf4j.LoggerFactory
  * Rest configuration
  * Created by masc on 08/11/2016.
  */
-class RestConfiguration : org.deku.leoz.config.RestConfiguration() {
+class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
     companion object {
-        val log = LoggerFactory.getLogger(RestConfiguration::class.java)
+        val log = LoggerFactory.getLogger(RestClientConfiguration::class.java)
 
         val module = Kodein.Module {
             /** Rest configuration */
-            bind<RestConfiguration>() with eagerSingleton {
-                RestConfiguration()
+            bind<RestClientConfiguration>() with eagerSingleton {
+                RestClientConfiguration()
             }
 
             /** Rest client */
             bind<RestClient>() with provider {
-                val config: RestConfiguration = instance()
-                config.createClient(config.httpHost, DEFAULT_PORT, config.https)
+                val config: RestClientConfiguration = instance()
+                config.createClient(config.httpHost, RestConfiguration.DEFAULT_PORT, config.https)
             }
 
             /** Bundle service */

@@ -83,7 +83,7 @@ class Application : javafx.application.Application() {
             Kodein.global.addImport(LogConfiguration.module)
             Kodein.global.addImport(RsyncConfiguration.module)
             Kodein.global.addImport(DiscoveryConfiguration.module)
-            Kodein.global.addImport(RestConfiguration.module)
+            Kodein.global.addImport(RestClientConfiguration.module)
             Kodein.global.addImport(BundleConfiguration.module)
             Kodein.global.addImport(SshConfiguration.module)
             log.info("Done setting up injection")

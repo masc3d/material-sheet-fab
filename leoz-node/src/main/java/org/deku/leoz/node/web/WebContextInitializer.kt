@@ -4,6 +4,7 @@ import io.undertow.server.handlers.resource.Resource
 import io.undertow.server.handlers.resource.ResourceChangeListener
 import io.undertow.server.handlers.resource.ResourceManager
 import io.undertow.server.handlers.resource.URLResource
+import org.deku.leoz.config.RestClientConfiguration
 import org.deku.leoz.config.RestConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.config.MessageBrokerConfiguration

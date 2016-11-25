@@ -5,7 +5,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.google.common.base.Strings
-import org.deku.leoz.boot.config.RestConfiguration
+import org.deku.leoz.boot.config.RestClientConfiguration
 import org.deku.leoz.boot.config.StorageConfiguration
 import org.deku.leoz.bundle.Bundle
 import org.deku.leoz.bundle.BundleInstaller
@@ -38,7 +38,7 @@ class Boot {
 
     // Injections
     private val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
-    private val restConfiguration: RestConfiguration by Kodein.global.lazy.instance()
+    private val restConfiguration: RestClientConfiguration by Kodein.global.lazy.instance()
     private val bundleConfiguration: BundleConfiguration by Kodein.global.lazy.instance()
     private val installer: BundleInstaller by Kodein.global.lazy.instance()
     private val discoveryService: DiscoveryService by Kodein.global.lazy.instance()

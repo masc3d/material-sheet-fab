@@ -103,7 +103,7 @@ class Application : Application() {
         Kodein.global.addImport(StorageConfiguration.module)
         Kodein.global.addImport(LogConfiguration.module)
         Kodein.global.addImport(MessagingConfiguration.module)
-        Kodein.global.addImport(RestConfiguration.module)
+        Kodein.global.addImport(RestClientConfiguration.module)
         Kodein.global.addImport(BundleConfiguration.module)
         Kodein.global.addImport(BundleUpdateConfiguration.module)
         Kodein.global.addImport(LeoBridgeConfiguration.module)

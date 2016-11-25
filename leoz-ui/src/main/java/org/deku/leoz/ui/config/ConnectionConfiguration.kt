@@ -35,7 +35,7 @@ class ConnectionConfiguration {
     }
 
     // Injections
-    val restConfiguration: RestConfiguration by Kodein.global.lazy.instance()
+    val restConfiguration: RestClientConfiguration by Kodein.global.lazy.instance()
     val bundleConfiguration: BundleConfiguration by Kodein.global.lazy.instance()
 
     // Events

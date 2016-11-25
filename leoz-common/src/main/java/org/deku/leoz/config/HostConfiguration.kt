@@ -5,6 +5,7 @@ package org.deku.leoz.config
  */
 class HostConfiguration {
     companion object {
-        val CENTRAL_HOST = "leoz.derkurier.de"
+        const val CENTRAL_DOMAIN = "derkurier.de"
+        const val CENTRAL_HOST = "leoz.${CENTRAL_DOMAIN}"
     }
 }

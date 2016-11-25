@@ -1,6 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.RestConfiguration
+import org.deku.leoz.config.RestClientConfiguration
 import org.deku.leoz.node.App
 import org.deku.leoz.node.web.WebContextInitializer
 import org.deku.leoz.rest.RestClient
@@ -15,7 +15,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Profile(App.PROFILE_CLIENT_NODE)
-open class RestClientConfiguration : org.deku.leoz.config.RestConfiguration() {
+open class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
 
     @Inject
     private lateinit var remotePeerConfiguration: RemotePeerConfiguration
