@@ -48,7 +48,7 @@ class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuArch) {
             val platform = when {
                 SystemUtils.IS_OS_WINDOWS -> OperatingSystem.WINDOWS
                 SystemUtils.IS_OS_LINUX -> OperatingSystem.LINUX
-                SystemUtils.IS_OS_MAC_OSX -> OperatingSystem.OSX
+                SystemUtils.IS_OS_MAC -> OperatingSystem.OSX
                 else -> throw IllegalStateException("Unsupported platform")
             }
 
