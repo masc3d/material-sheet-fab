@@ -267,7 +267,7 @@ class PackagerNativeBundleTask extends PackagerTask {
                     "-appclass", mainClassName,
                     "-Bruntime=${jre_home}"
 
-            if (SystemUtils.IS_OS_MAC_OSX && osxIcon)
+            if (SystemUtils.IS_OS_MAC && osxIcon)
                 commandLine += "-Bicon=${osxIcon}"
 
             if (SystemUtils.IS_OS_WINDOWS && windowsIcon)
@@ -299,7 +299,7 @@ class PackagerReleaseNativeBundleTask extends PackagerReleaseTask {
 
         def packagerBundlePath = Paths.get(packagerPlatformDir.toURI())
                 .resolve('bundles')
-                .resolve(SystemUtils.IS_OS_MAC_OSX ? "" : project.name)
+                .resolve(SystemUtils.IS_OS_MAC ? "" : project.name)
                 .toFile()
 
         if (!packagerBundlePath.exists())
@@ -331,7 +331,7 @@ class PackagerReleaseNativeBundleTask extends PackagerReleaseTask {
 
         // TODO: workaround for bug in jdk 1.8.0_60, where jars are not picked up when building bundle
         // Jars are already missing in packager bundle dir. This worked fine with jdk 1.8.0_51
-        if (SystemUtils.IS_OS_MAC_OSX || SystemUtils.IS_OS_LINUX) {
+        if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
             def releaseBundleJarPath = this.getReleaseBundle(PlatformId.current()).jarPath
             println "Copying jars -> [${releaseBundleJarPath}]"
             project.copy {

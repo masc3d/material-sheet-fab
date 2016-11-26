@@ -29,7 +29,7 @@ object WatchServiceFactory {
      * Create appropriate watch service for this platform
      */
     fun newWatchService(): WatchService {
-        if (SystemUtils.IS_OS_MAC_OSX) {
+        if (SystemUtils.IS_OS_MAC) {
             // Provide barbary watch service on OSX as the default implementation is polling and buggy too.
             return com.barbarysoftware.watchservice.WatchServiceFactory.newWatchService()
         } else {

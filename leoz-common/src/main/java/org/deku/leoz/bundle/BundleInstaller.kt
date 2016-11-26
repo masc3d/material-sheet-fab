@@ -43,7 +43,7 @@ class BundleInstaller(
         fun getNativeBundlePath(
                 bundlePath: File,
                 bundleName: String? = null): File {
-            return if (SystemUtils.IS_OS_MAC_OSX)
+            return if (SystemUtils.IS_OS_MAC)
                 File(bundlePath, "${bundleName ?: bundlePath.name}.app")
             else
                 bundlePath

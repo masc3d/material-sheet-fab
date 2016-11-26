@@ -44,7 +44,11 @@ class Bundle : Serializable {
             SystemUtils.IS_OS_WINDOWS -> ".exe"
             else -> ""
         }
-        File(this.path!!, "${this.name!!}${extension}")
+
+        when {
+            SystemUtils.IS_OS_MAC -> File(this.path!!.resolve("Contents").resolve("MacOS"), this.name!!)
+            else -> File(this.path!!, "${this.name!!}${extension}")
+        }
     }
 
     /** Bundle version */
@@ -501,7 +505,7 @@ class Bundle : Serializable {
         val error = StringBuffer()
 
         val command = ArrayList<String>()
-        if (SystemUtils.IS_OS_MAC_OSX) {
+        if (SystemUtils.IS_OS_MAC) {
             command.add("open")
             command.add(this.path!!.toString())
             command.add("--args")
@@ -510,8 +514,7 @@ class Bundle : Serializable {
         }
         command.addAll(args)
 
-        if (!SystemUtils.IS_OS_MAC_OSX)
-            this.executable.setExecutable(true)
+        this.executable.setExecutable(true)
 
         val pb = ProcessBuilder(command)
         if (wait) {
