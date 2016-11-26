@@ -39,6 +39,14 @@ class Bundle : Serializable {
     var name: String? = null
         private set
 
+    val executable: File by lazy {
+        val extension = when {
+            SystemUtils.IS_OS_WINDOWS -> ".exe"
+            else -> ""
+        }
+        File(this.path!!, "${this.name!!}${extension}")
+    }
+
     /** Bundle version */
     @XmlAttribute
     @XmlJavaTypeAdapter(Bundle.Version.XmlAdapter::class)
@@ -114,7 +122,7 @@ class Bundle : Serializable {
 
     /** Bumdle configuration file */
     val configFile: File by lazy(LazyThreadSafetyMode.NONE, {
-        var nioConfigFile = Files.find(this.jarPath.toPath(), 1, BiPredicate {
+        val nioConfigFile = Files.find(this.jarPath.toPath(), 1, BiPredicate {
             p, a ->
             a.isRegularFile && p.fileName.toString().endsWith(".cfg")
         }
@@ -171,11 +179,11 @@ class Bundle : Serializable {
             val fileEntries = ArrayList<FileEntry>()
 
             // Walk bundle directory and calculate md5 for each regular file
-            var pathUri = bundlePath.toURI()
-            var nPath = Paths.get(pathUri)
+            val pathUri = bundlePath.toURI()
+            val nPath = Paths.get(pathUri)
 
             // Remove existing manifest
-            var manifestFile = Bundle.manifestFile(bundlePath)
+            val manifestFile = Bundle.manifestFile(bundlePath)
             if (manifestFile.exists()) manifestFile.delete()
 
             Files.walk(nPath)
@@ -193,13 +201,13 @@ class Bundle : Serializable {
                     }
 
             // Create bundle instance
-            var bundle = Bundle(bundlePath, bundleName, version, platformId, fileEntries)
+            val bundle = Bundle(bundlePath, bundleName, version, platformId, fileEntries)
 
             // Serialize bundle to manifest
-            var context = JAXBContext.newInstance(Bundle::class.java)
-            var m = context.createMarshaller();
+            val context = JAXBContext.newInstance(Bundle::class.java)
+            val m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-            var os = FileOutputStream(bundle.manifestFile).buffered()
+            val os = FileOutputStream(bundle.manifestFile).buffered()
             try {
                 m.marshal(bundle, os)
             } finally {
@@ -216,11 +224,11 @@ class Bundle : Serializable {
         @JvmStatic fun load(bundlePath: File): Bundle {
             val manifestFile = Bundle.manifestFile(bundlePath)
 
-            var context = JAXBContext.newInstance(Bundle::class.java)
-            var m = context.createUnmarshaller();
-            var inputStream = FileInputStream(manifestFile).buffered()
+            val context = JAXBContext.newInstance(Bundle::class.java)
+            val m = context.createUnmarshaller();
+            val inputStream = FileInputStream(manifestFile).buffered()
             try {
-                var bundle = m.unmarshal(inputStream) as Bundle
+                val bundle = m.unmarshal(inputStream) as Bundle
                 bundle.path = bundlePath
                 return bundle
             } finally {
@@ -246,15 +254,15 @@ class Bundle : Serializable {
         val nPath = Paths.get(this.path!!.toURI())
 
         // Hashed check list to verify left-overs
-        var checkList = this.fileEntries.associateBy { s -> s.uriPath } as HashMap
+        val checkList = this.fileEntries.associateBy { s -> s.uriPath } as HashMap
 
-        for (entry in this.fileEntries.asSequence().filter { e -> !e.uriPath!!.equals(MANIFEST_FILENAME) }) {
+        for (entry in this.fileEntries.asSequence().filter { e -> e.uriPath!! != MANIFEST_FILENAME }) {
             val path = Paths.get(nPath.toUri().resolve(entry.uriPath))
             if (!Files.exists(path))
                 throw VerificationException("File [${path} does not exist")
 
             val md5 = Bundle.hashFile(path.toFile())
-            if (!entry.md5.equals(md5))
+            if (entry.md5 != md5)
                 throw VerificationException("File [${path}] has invalid md5 [${md5}] expected [${entry.md5}]")
 
             checkList.remove(entry.uriPath)
@@ -301,7 +309,7 @@ class Bundle : Serializable {
                 // Determine end of numeric components
                 var end = version.indexOfFirst({ c -> !c.isDigit() && c != '.' })
 
-                var suffix: String
+                val suffix: String
                 if (end < 0) {
                     end = version.length
                     suffix = ""
@@ -316,7 +324,7 @@ class Bundle : Serializable {
                 else
                     ArrayList<Int>()
 
-                if (components.size == 0)
+                if (components.isEmpty())
                     throw IllegalArgumentException("Empty version string [${version}]")
 
                 return Version(components, suffix)
@@ -365,7 +373,13 @@ class Bundle : Serializable {
 
         override fun toString(): String {
             return this.components.joinToString(".") +
-                    if (this.suffix.length > 0) "-" + suffix else ""
+                    if (this.suffix.isNotEmpty()) "-" + suffix else ""
+        }
+
+        override fun hashCode(): Int {
+            var result = components.hashCode()
+            result = 31 * result + suffix.hashCode()
+            return result
         }
     }
 
@@ -492,9 +506,12 @@ class Bundle : Serializable {
             command.add(this.path!!.toString())
             command.add("--args")
         } else {
-            command.add(File(this.path!!, this.name).toString())
+            command.add(this.executable.toString())
         }
         command.addAll(args)
+
+        if (!SystemUtils.IS_OS_MAC_OSX)
+            this.executable.setExecutable(true)
 
         val pb = ProcessBuilder(command)
         if (wait) {
@@ -506,7 +523,7 @@ class Bundle : Serializable {
             try {
                 pe.waitFor()
             } catch(e: Exception) {
-                if (error.length > 0) log.error(error.toString())
+                if (error.isNotEmpty()) log.error(error.toString())
                 throw e
             }
         } else {
@@ -526,7 +543,7 @@ fun Iterable<Bundle.Version>.filter(pattern: String): Iterable<Bundle.Version> {
             // Split by wildcard (+) including empty elements
             .split(Regex("\\+"), 0)
             // Replace with regex wildcard and quote content
-            .map { p -> if (p.length > 0) Pattern.quote(p) else ".+" }
+            .map { p -> if (p.isNotEmpty()) Pattern.quote(p) else ".+" }
 
     val re = Regex("^" + l.joinToString("") + "$")
 
