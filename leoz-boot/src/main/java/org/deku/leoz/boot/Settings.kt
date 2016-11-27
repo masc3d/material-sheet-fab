@@ -16,7 +16,7 @@ class Settings {
     @Parameter(names = arrayOf("--no-ui"), description = "Don't show user interface")
     var hideUi: Boolean = false
 
-    @Parameter(names = arrayOf("--discover"), description = "Attempts to discover a local node instead of directly connecting to central.")
+    @Parameter(names = arrayOf("--discover"), description = "Attempts to discover a local node for retrieving bundke info and downloading the bunlde. If this switch is omitted leoz-boot connects to the central host (leoz.derkurier.de)")
     var discover: Boolean = false
 
     @Parameter(names = arrayOf("--force-download"), description = "Force download")
