@@ -148,7 +148,7 @@ class Setup(
      */
     override fun uninstall() {
         if (serviceStatus() == ServiceStatus.NOT_FOUND) {
-            log.info("Service not found. That's ok")
+            log.info("Service already uninstalled")
             return
         }
 
