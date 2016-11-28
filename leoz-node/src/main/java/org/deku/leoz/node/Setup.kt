@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.google.common.base.Strings
+import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.YamlPersistence
 import org.deku.leoz.bundle.BundleProcessInterface
 import org.deku.leoz.bundle.BundleType
@@ -80,31 +81,37 @@ class Setup(
      * @param description Service description
      */
     override fun install() {
-        log.info("Installing service")
+        when {
+            SystemUtils.IS_OS_WINDOWS -> {
+                log.info("Installing service")
 
-        val classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
+                val classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
 
-        val pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
-                "//IS/${this.serviceId}",
-                "--DisplayName=Leoz service (${this.serviceId})",
-                "--Description=Leoz system service (${this.serviceId})",
-                "--Install=${this.leozsvcExecutable.file.toString()}",
-                "--Startup=auto",
-                "--LogPath=${this.storageConfiguration.logDirectory}",
-                "--LogPrefix=leoz-svc",
-                "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
-                "--StartMode=jvm",
-                "--StopMode=jvm",
-                "--StartClass=${mainClass.canonicalName}",
-                "--StartMethod=main",
-                "--StopClass=${mainClass.canonicalName}",
-                "--StopMethod=stop",
-                "--Classpath=${classPath}")
+                val pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
+                        "//IS/${this.serviceId}",
+                        "--DisplayName=Leoz service (${this.serviceId})",
+                        "--Description=Leoz system service (${this.serviceId})",
+                        "--Install=${this.leozsvcExecutable.file.toString()}",
+                        "--Startup=auto",
+                        "--LogPath=${this.storageConfiguration.logDirectory}",
+                        "--LogPrefix=leoz-svc",
+                        "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
+                        "--StartMode=jvm",
+                        "--StopMode=jvm",
+                        "--StartClass=${mainClass.canonicalName}",
+                        "--StartMethod=main",
+                        "--StopClass=${mainClass.canonicalName}",
+                        "--StopMethod=stop",
+                        "--Classpath=${classPath}")
 
-        log.trace("Command ${java.lang.String.join(" ", pb.command())}")
-        this.execute(pb)
+                log.trace("Command ${java.lang.String.join(" ", pb.command())}")
+                this.execute(pb)
 
-        log.info("Installed successfully")
+                log.info("Installed successfully")
+            }
+            else -> {}
+        }
+
     }
 
     /**
@@ -147,48 +154,61 @@ class Setup(
      * Uninstalls node system service
      */
     override fun uninstall() {
-        if (serviceStatus() == ServiceStatus.NOT_FOUND) {
-            log.info("Service already uninstalled")
-            return
+        when {
+            SystemUtils.IS_OS_WINDOWS -> {
+                if (serviceStatus() == ServiceStatus.NOT_FOUND) {
+                    log.info("Service already uninstalled")
+                    return
+                }
+
+                log.info("Uninstalling service")
+
+                val pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
+                        "//DS/${serviceId}")
+
+                this.execute(pb)
+
+                log.info("Uninstalled successfully")
+            }
         }
 
-        log.info("Uninstalling service")
-
-        val pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
-                "//DS/${serviceId}")
-
-        this.execute(pb)
-
-        log.info("Uninstalled successfully")
     }
 
     /**
      * Start
      */
     override fun start() {
-        log.info("Starting service")
+        when {
+            SystemUtils.IS_OS_WINDOWS -> {
+                log.info("Starting service")
 
-        val pb: ProcessBuilder = ProcessBuilder("net", "start", serviceId)
-        this.execute(pb)
+                val pb: ProcessBuilder = ProcessBuilder("net", "start", serviceId)
+                this.execute(pb)
 
-        log.info("Started sucessfully")
+                log.info("Started sucessfully")
+            }
+        }
     }
 
     /**
      * Stop
      */
     override fun stop() {
-        if (serviceStatus() != ServiceStatus.NOT_STOPPED) {
-            log.info("Service does not need to be stopped")
-            return
+        when {
+            SystemUtils.IS_OS_WINDOWS -> {
+                if (serviceStatus() != ServiceStatus.NOT_STOPPED) {
+                    log.info("Service does not need to be stopped")
+                    return
+                }
+
+                log.info("Stopping service")
+
+                val pb: ProcessBuilder = ProcessBuilder("net", "stop", serviceId)
+                this.execute(pb)
+
+                log.info("Stopped successfully")
+            }
         }
-
-        log.info("Stopping service")
-
-        val pb: ProcessBuilder = ProcessBuilder("net", "stop", serviceId)
-        this.execute(pb)
-
-        log.info("Stopped successfully")
     }
 
     /**
@@ -232,36 +252,41 @@ class Setup(
      * Determimes service status
      */
     private fun serviceStatus(): ServiceStatus {
-        val pb: ProcessBuilder = ProcessBuilder("sc", "query", serviceId)
+        when {
+            SystemUtils.IS_OS_WINDOWS -> {
+                val pb: ProcessBuilder = ProcessBuilder("sc", "query", serviceId)
 
-        val output = StringBuffer()
-        val error = StringBuffer()
+                val output = StringBuffer()
+                val error = StringBuffer()
 
-        try {
-            // Execute
-            val pe: ProcessExecutor = ProcessExecutor(pb,
-                    outputHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = output),
-                    errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
+                try {
+                    // Execute
+                    val pe: ProcessExecutor = ProcessExecutor(pb,
+                            outputHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = output),
+                            errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
-            pe.start()
-            pe.waitFor()
+                    pe.start()
+                    pe.waitFor()
 
-            val re = Regex("STATE.*:.*([0-9]+)[\\s]+([A-Z]+).*")
-            val mr = re.find(output.toString())
-            if (mr != null) {
-                val state = mr.groups[1]!!.value.toInt()
-                when (state) {
-                    1 -> return ServiceStatus.STOPPED
-                    else -> return ServiceStatus.NOT_STOPPED
+                    val re = Regex("STATE.*:.*([0-9]+)[\\s]+([A-Z]+).*")
+                    val mr = re.find(output.toString())
+                    if (mr != null) {
+                        val state = mr.groups[1]!!.value.toInt()
+                        when (state) {
+                            1 -> return ServiceStatus.STOPPED
+                            else -> return ServiceStatus.NOT_STOPPED
+                        }
+                    }
+                } catch(e: ProcessExecutor.ProcessException) {
+                    when (e.errorCode) {
+                        1060 -> return ServiceStatus.NOT_FOUND
+                        else -> throw e
+                    }
                 }
-            }
-        } catch(e: ProcessExecutor.ProcessException) {
-            when (e.errorCode) {
-                1060 -> return ServiceStatus.NOT_FOUND
-                else -> throw e
-            }
-        }
 
-        return ServiceStatus.NOT_STOPPED
+                return ServiceStatus.NOT_STOPPED
+            }
+            else -> throw UnsupportedOperationException("OS not supported")
+        }
     }
 }
