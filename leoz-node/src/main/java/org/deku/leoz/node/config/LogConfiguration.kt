@@ -64,8 +64,9 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
         super.initialize()
 
         val storageConfiguration: StorageConfiguration = Kodein.global.instance()
-        this.logFile = storageConfiguration.logFile
-
+        if (this.logFile == null) {
+            this.logFile = storageConfiguration.logFile
+        }
 
         if (this.jmsAppenderEnabled) {
             this.jmsLogAppender!!.start()

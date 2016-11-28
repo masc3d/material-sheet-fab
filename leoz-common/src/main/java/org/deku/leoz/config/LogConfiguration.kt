@@ -68,6 +68,8 @@ abstract class LogConfiguration protected constructor() : Disposable {
 
                 this.fileAppender = fileAppender
             }
+
+            field = value
         }
 
     /** Root logger level */
