@@ -5,11 +5,22 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.google.common.base.Strings
+import org.deku.leoz.YamlPersistence
 import org.deku.leoz.bundle.BundleProcessInterface
+import org.deku.leoz.bundle.BundleType
+import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.yaml.snakeyaml.DumperOptions
+import org.yaml.snakeyaml.Yaml
+import org.yaml.snakeyaml.nodes.Tag
 import sx.EmbeddedExecutable
 import sx.ProcessExecutor
+import sx.annotationOfType
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -19,23 +30,37 @@ import java.nio.file.Paths
  * @param serviceId Short service id, used for leoz-svc identifier: //IS/<serviceId>
  **/
 class Setup(
-        val serviceId: String,
+        val bundleName: String,
         val mainClass: Class<*>) : BundleProcessInterface() {
 
     private var log = LoggerFactory.getLogger(this.javaClass)
 
     private var basePath: Path
 
-    private val leozsvcExecutable: EmbeddedExecutable by lazy({
+    private val leozsvcExecutable: EmbeddedExecutable by lazy {
         EmbeddedExecutable("leoz-svc")
-    })
+    }
 
+    /**
+     * Short service id, used for leoz-svc identifier: //IS/<serviceId>
+     */
+    private val serviceId: String
+        get() = this.bundleName
+
+    /**
+     * Service status
+     */
     private enum class ServiceStatus {
         STOPPED,
         NOT_STOPPED,
         NOT_FOUND
     }
 
+    val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
+
+    /**
+     * c'tor
+     */
     init {
         val codeSourcePath = Paths.get(this.javaClass.protectionDomain.codeSource.location.toURI())
         if (codeSourcePath.toString().endsWith(".jar")) {
@@ -48,8 +73,6 @@ class Setup(
 
         log.trace("Setup base path [${basePath}]")
     }
-
-    val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
 
     /**
      * Installs node as a system service
@@ -84,6 +107,41 @@ class Setup(
         log.info("Installed successfully")
     }
 
+    /**
+     * Prepare for productive environment
+     */
+    override fun prepareProduction() {
+        when (this.bundleName) {
+            BundleType.LEOZ_NODE.value -> {
+                if (storageConfiguration.applicationConfigurationFile.exists()) {
+                    log.warn("Skipping generation of productive configuration file [${storageConfiguration.applicationConfigurationFile}]")
+                    return
+                }
+
+                log.info("Generating productive configuration file [${storageConfiguration.applicationConfigurationFile}]")
+
+                val remotePeerConfig = RemotePeerConfiguration()
+                remotePeerConfig.host = "leoz.derkurier.de"
+
+                val configurationProperty = remotePeerConfig.javaClass.annotationOfType(ConfigurationProperties::class.java)
+                if (configurationProperty.prefix.contains("."))
+                    throw UnsupportedOperationException("Nested yaml path not supported for configuration file generation (yet)")
+
+                val configContent = mapOf<String, Any>(Pair(configurationProperty.prefix, remotePeerConfig))
+
+                try {
+                    YamlPersistence.save(
+                            obj = configContent,
+                            skipNulls = true,
+                            skipTags = true,
+                            toFile = storageConfiguration.applicationConfigurationFile)
+                } catch(e: Exception) {
+                    storageConfiguration.applicationConfigurationFile.delete()
+                    throw(e)
+                }
+            }
+        }
+    }
 
     /**
      * Uninstalls node system service

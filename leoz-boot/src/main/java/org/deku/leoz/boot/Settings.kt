@@ -41,6 +41,9 @@ class Settings {
     @Parameter(names = arrayOf("--rsync-host"), description = "Rsync host to connect to for retrieving bundles")
     var rsyncHost: String? = null
 
+    @Parameter(names = arrayOf("--productive"), description = "This switch will be added to the `install` command when calling the bundle process interface, so the installation prepares operation within productive environment, eg. creating appropriate configuration files.")
+    var productive: Boolean = false
+
     override fun toString(): String {
         return "bundle=${bundle}, versionAlias=${versionAlias}, versionPattern=${versionPattern}, discover=${discover}, hideUi=${hideUi}, uninstall=${uninstall}, httpHost=${httpHost}, https=${https}, rsyncHost=${rsyncHost}"
     }

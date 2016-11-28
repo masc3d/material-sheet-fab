@@ -50,10 +50,4 @@ class Setup : BundleProcessInterface() {
                 desktopLinkFile.delete()
         }
     }
-
-    override fun start() {
-    }
-
-    override fun stop() {
-    }
 }

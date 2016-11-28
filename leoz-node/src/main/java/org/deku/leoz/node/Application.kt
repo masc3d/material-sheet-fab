@@ -206,14 +206,7 @@ open class Application :
 
         //region Spring configuration
         run { // Set additional config file location for spring
-            val configLocations = ArrayList<URL>()
-
-            // Add local home configuration
-            try {
-                configLocations.add(URL("file:" + this.storageConfiguration.applicationConfigurationFile.toString()))
-            } catch (e: MalformedURLException) {
-                log.error(e.message, e)
-            }
+            val configLocations = arrayListOf<URL>()
 
             // Add application.properties from all classpaths
             // TODO: needs refinement, should only read application.properties from specific jars
@@ -223,8 +216,15 @@ open class Application :
                 log.error(e.message, e)
             }
 
-            System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY,
-                    Lists.reverse(configLocations).asSequence().map({ u -> u.toString() }).joinToString(","))
+            // Add local home configuration
+            try {
+                configLocations.add(URL("file:" + this.storageConfiguration.applicationConfigurationFile.toString()))
+            } catch (e: MalformedURLException) {
+                log.error(e.message, e)
+            }
+
+            val configPropertyValue = configLocations.map({ u -> u.toString() }).joinToString(",")
+            System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY, configPropertyValue)
 
             // Register shutdown hook
             Runtime.getRuntime().addShutdownHook(object : Thread("App shutdown hook") {

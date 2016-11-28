@@ -118,7 +118,7 @@ open class Main {
 
         // Support for leoz bundle process commandline interface
         val setup = Setup(
-                serviceId = this.app.name,
+                bundleName = this.app.name,
                 mainClass = this.javaClass)
 
         val storageConfiguration: StorageConfiguration = Kodein.global.instance()

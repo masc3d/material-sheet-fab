@@ -111,7 +111,7 @@ class Identity private constructor(
          * @return Identity instance
          */
         fun load(sourceFile: File, systemInfo: SystemInformation): Identity {
-            val state = FilePersistence.load(State::class.java, sourceFile)
+            val state = YamlPersistence.load(State::class.java, sourceFile)
 
             return Identity(
                     key = state.key,
@@ -127,7 +127,7 @@ class Identity private constructor(
      */
     @Synchronized
     fun save(destinationFile: File) {
-        FilePersistence.save(State(this), destinationFile)
+        YamlPersistence.save(State(this), destinationFile)
     }
 
     override fun toString(): String {

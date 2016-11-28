@@ -5,25 +5,20 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.google.common.base.Strings
+import org.deku.leoz.boot.config.BundleConfiguration
 import org.deku.leoz.boot.config.RestClientConfiguration
 import org.deku.leoz.boot.config.StorageConfiguration
-import org.deku.leoz.bundle.Bundle
-import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.boot.config.BundleConfiguration
+import org.deku.leoz.bundle.*
 import org.deku.leoz.rest.RestClient
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.deku.leoz.service.discovery.DiscoveryService
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.lang.kotlin.cast
-import rx.lang.kotlin.subscribeWith
-import rx.util.async.Async
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
-import sx.rx.*
+import sx.rx.task
 import sx.ssh.SshTunnelProvider
 import java.io.File
 import java.time.Duration
@@ -257,7 +252,12 @@ class Boot {
                 mainTask
                         .map {
                             Boot.Event(this.skewProgress(0.3, 1.0, it.progress))
-                        })
+                        },
+                task {
+                    if (settings.productive)
+                        this.installer.bundle(settings.bundle).prepareProduction()
+
+                })
                 .doAfterTerminate {
                     // Cleanup
                     sshTunnelProvider.close()

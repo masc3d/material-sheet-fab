@@ -13,7 +13,7 @@ import kotlin.properties.Delegates
  * Base class for loez local storage configurations
  * Created by masc on 26.06.15.
  */
-abstract class StorageConfiguration(
+open class StorageConfiguration(
         val baseName: String = "leoz",
         /** Base name for process specific files/directories */
         val appName: String,

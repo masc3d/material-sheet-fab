@@ -97,7 +97,7 @@ class BundleInstaller(
      * Current bundle
      * @param bundleName Bundle name
      */
-    public fun bundle(bundleName: String): Bundle {
+    fun bundle(bundleName: String): Bundle {
         return Bundle(getNativeBundlePath(this.bundlePath(bundleName)), bundleName)
     }
 
