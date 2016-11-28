@@ -36,6 +36,7 @@ class Setup(
 
     private var log = LoggerFactory.getLogger(this.javaClass)
 
+    /** Setup base path */
     private var basePath: Path
 
     private val leozsvcExecutable: EmbeddedExecutable by lazy {
@@ -230,21 +231,9 @@ class Setup(
         finally {
             // Evaluate/log output
             if (output.isNotEmpty())
-                this.logProcessOutput(output.toString())
+                log.info(output.toString())
             if (error.isNotEmpty())
-                this.logProcessOutput(error.toString(), isError = true)
-        }
-    }
-
-    /**
-     * Logs process output line by line, skipping blank lines
-     */
-    private fun logProcessOutput(output: String, isError: Boolean = false) {
-        if (!Strings.isNullOrEmpty(output)) {
-            if (isError)
-                log.error(output)
-            else
-                log.info(output)
+                log.error(output.toString())
         }
     }
 
