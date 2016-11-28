@@ -1,6 +1,9 @@
 package org.deku.leoz.central
 
+import com.github.salomonbrys.kodein.Kodein
+import org.deku.leoz.central.config.ApplicationConfiguration
 import org.deku.leoz.central.config.StorageConfiguration
+import org.deku.leoz.node.config.LogConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -25,11 +28,15 @@ open class Main : org.deku.leoz.node.Main() {
          * @throws Exception
          */
         @JvmStatic fun main(args: Array<String>) {
-            // Inject derived app instance into base class singletons
-            org.deku.leoz.node.App.injectableInstance.set({ App.instance })
-            org.deku.leoz.node.config.StorageConfiguration.injectableInstance.set({ StorageConfiguration.instance })
-
             Main().run(args)
         }
+    }
+
+    override val modules: List<Kodein.Module> by lazy {
+        listOf(
+                StorageConfiguration.module,
+                LogConfiguration.module,
+                ApplicationConfiguration.module
+        )
     }
 }

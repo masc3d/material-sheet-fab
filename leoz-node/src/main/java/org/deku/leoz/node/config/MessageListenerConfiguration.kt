@@ -1,7 +1,7 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -21,7 +21,7 @@ import javax.inject.Inject
  * Initializes message listener(s) and their message handlers
  * Created by masc on 20.06.15.
  */
-@Profile(App.PROFILE_CLIENT_NODE)
+@Profile(Application.PROFILE_CLIENT_NODE)
 @Configuration
 @Service
 @Lazy(false)
@@ -29,12 +29,14 @@ open class MessageListenerConfiguration {
     private val log = LoggerFactory.getLogger(MessageListenerConfiguration::class.java)
 
     @Inject
+    private lateinit var application: Application
+    @Inject
     private lateinit var executorService: ExecutorService
 
     // Listeners
     val nodeQueueListener by lazy {
         SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.nodeQueue(App.instance.identity.keyInstance)) },
+                { Channel(ActiveMQConfiguration.instance.nodeQueue(this.application.identity.keyInstance)) },
                 executorService)
     }
 

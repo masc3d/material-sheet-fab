@@ -1,7 +1,12 @@
 package org.deku.leoz.node
 
 import ch.qos.logback.classic.LoggerContext
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import com.vaadin.spring.boot.VaadinAutoConfiguration
+import org.deku.leoz.node.config.ApplicationConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
@@ -83,11 +88,21 @@ open class Main {
          * This one is only used externally, eg. by the service wrapper when running as a service.
          */
         @Suppress("unused_parameter") @JvmStatic fun stop(args: Array<String>) {
-            App.instance.shutdown()
+            val app: Application = Kodein.global.instance()
+            app.shutdown()
         }
     }
 
-    private val app = App.instance
+    /** Application instance */
+    private val app: Application by Kodein.global.lazy.instance()
+
+    /** Kodein modules */
+    protected open val modules: List<Kodein.Module> by lazy {
+        listOf(
+                StorageConfiguration.module,
+                LogConfiguration.module,
+                ApplicationConfiguration.module)
+    }
 
     /**
      * Main instance entry point
@@ -96,28 +111,36 @@ open class Main {
     protected fun run(args: Array<String>?) {
         log.trace("Main arguments [${args!!.joinToString(", ")}]")
 
+        // Kodein injection
+        this.modules.forEach {
+            Kodein.global.addImport(it)
+        }
+
         // Support for leoz bundle process commandline interface
         val setup = Setup(
                 serviceId = this.app.name,
                 mainClass = this.javaClass)
 
+        val storageConfiguration: StorageConfiguration = Kodein.global.instance()
+        val logConfiguration: LogConfiguration = Kodein.global.instance()
+
         val command = setup.parse(args)
         if (command != null) {
             try {
                 // Setup should write to dedicated logfile
-                LogConfiguration.instance.logFile = StorageConfiguration.instance.setupLogFile
-                LogConfiguration.instance.initialize()
+                logConfiguration.logFile = storageConfiguration.setupLogFile
+                logConfiguration.initialize()
                 // Run setup command
                 command.run()
             } catch (e: Exception) {
                 log.error(e.message, e)
                 System.exit(-1)
             } finally {
-                LogConfiguration.instance.close()
+                logConfiguration.close()
             }
         } else {
             // Initialize and start application
-            App.instance.initialize()
+            this.app.initialize()
             try {
                 val springApplication = SpringApplicationBuilder()
                         .beanNameGenerator(object : AnnotationBeanNameGenerator() {

@@ -1,6 +1,10 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.central.App
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.eagerSingleton
+import com.github.salomonbrys.kodein.instance
+import org.deku.leoz.central.Application
 
 /**
  * Leoz-central storage configuration (deriving from leoz-node's storage configuration)
@@ -11,7 +15,16 @@ class StorageConfiguration private constructor(appName: String)
         org.deku.leoz.node.config.StorageConfiguration(appName)
 {
     companion object {
-        /** Singleton instance */
-        val instance by lazy({ StorageConfiguration(App.instance.name) })
+        val module = Kodein.Module {
+            bind<StorageConfiguration>() with eagerSingleton {
+                val application: Application = instance()
+                StorageConfiguration(application.name)
+            }
+
+            bind<org.deku.leoz.node.config.StorageConfiguration>() with eagerSingleton {
+                val storageConfiguration: StorageConfiguration = instance()
+                storageConfiguration
+            }
+        }
     }
 }

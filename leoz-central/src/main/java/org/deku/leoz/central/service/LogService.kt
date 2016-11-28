@@ -16,6 +16,7 @@ import sx.jms.Channel
 import sx.jms.Handler
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 import javax.inject.Named
 
 /**
@@ -27,6 +28,9 @@ class LogService
 :
         Handler<LogMessage> {
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    @Inject
+    private lateinit var storageConfiguration: StorageConfiguration
 
     /** Loggers by node id */
     private val loggers = HashMap<String, Logger>()
@@ -101,7 +105,7 @@ class LogService
         rollingPolicy.setParent(fileAppender)
         rollingPolicy.maxHistory = 10
         rollingPolicy.fileNamePattern = "${baseFilename}-%d{yyyy-MM-dd}"
-        if (extension.length > 0)
+        if (extension.isNotEmpty())
             rollingPolicy.fileNamePattern += ".${extension}"
         rollingPolicy.start()
         fileAppender.rollingPolicy = rollingPolicy
@@ -136,7 +140,7 @@ class LogService
      * @param baseName Base name without extension
      */
     private fun getLogFile(baseName: String): File {
-        return StorageConfiguration.instance.logDirectory.resolve("nodes").resolve("${baseName}.log")
+        return storageConfiguration.logDirectory.resolve("nodes").resolve("${baseName}.log")
     }
 
     /**

@@ -16,7 +16,6 @@ open class LogServiceConfiguration {
 
     @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
-
     @Inject
     private lateinit var logService: LogService
 

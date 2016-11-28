@@ -1,7 +1,7 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.jpa.*
 import org.deku.leoz.node.service.sync.EntityConsumer
@@ -26,8 +26,8 @@ import kotlin.properties.Delegates
  * Sets up entity/database synchronization over the message bus.
  * Created by masc on 20.06.15.
  */
-@Configuration(App.PROFILE_CLIENT_NODE)
-@Profile(App.PROFILE_CLIENT_NODE)
+@Configuration(Application.PROFILE_CLIENT_NODE)
+@Profile(Application.PROFILE_CLIENT_NODE)
 @Lazy(false)
 open class EntitySyncConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)

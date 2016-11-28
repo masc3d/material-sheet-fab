@@ -3,7 +3,7 @@ package org.deku.leoz.node.config
 import org.apache.sshd.server.SshServer
 import org.deku.leoz.service.discovery.DiscoveryInfo
 import org.deku.leoz.service.discovery.DiscoveryService
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -21,14 +21,13 @@ import javax.inject.Inject
 open class DiscoveryServiceConfguration {
 
     @Inject
+    private lateinit var application: Application
+    @Inject
     private lateinit var rsyncSettings: RsyncConfiguration.Settings
-
     @Inject
     private lateinit var brokerSettings: MessageBrokerConfiguration.Settings
-
     @Inject
     private lateinit var serverSettings: ServerProperties
-
     @Inject
     private lateinit var executorService: ScheduledExecutorService
 
@@ -36,8 +35,8 @@ open class DiscoveryServiceConfguration {
     open fun discoveryService(): DiscoveryService {
         return DiscoveryService(
                 executorService = this.executorService,
-                uid = App.instance.identity.shortKey,
-                bundleType = App.instance.bundleType)
+                uid = this.application.identity.shortKey,
+                bundleType = this.application.bundleType)
     }
 
     @PostConstruct

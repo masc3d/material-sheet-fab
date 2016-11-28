@@ -2,7 +2,7 @@ package org.deku.leoz.node.config
 
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.service.filesync.FileSyncMessage
 import org.deku.leoz.node.config.RemotePeerConfiguration
@@ -24,11 +24,13 @@ import javax.inject.Inject
  * Created by masc on 08-Mar-16.
  */
 @Configuration
-@Profile(App.PROFILE_CLIENT_NODE)
+@Profile(Application.PROFILE_CLIENT_NODE)
 @Lazy(false)
 open class FileSyncClientConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    @Inject
+    private lateinit var application: Application
     @Inject
     private lateinit var executorService: ScheduledExecutorService
     @Inject
@@ -39,13 +41,15 @@ open class FileSyncClientConfiguration {
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
     @Inject
     private lateinit var lifecycleController: LifecycleController
+    @Inject
+    private lateinit var storageConfiguration: StorageConfiguration
 
     @Bean
     open fun fileSyncClientService(): FileSyncClientService {
         return FileSyncClientService(
                 executorService = this.executorService,
-                baseDirectory = StorageConfiguration.instance.transferDirectory,
-                identity = App.instance.identity,
+                baseDirectory = storageConfiguration.transferDirectory,
+                identity = this.application.identity,
                 rsyncEndpoint = Rsync.Endpoint(
                         moduleUri = RsyncConfiguration.createRsyncUri(
                                 remotePeerSettings.host!!,

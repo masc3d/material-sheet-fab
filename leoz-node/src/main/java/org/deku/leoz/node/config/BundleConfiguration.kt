@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.rsync.Rsync
+import javax.inject.Inject
 
 /**
  * Created by masc on 09/03/16.
@@ -14,13 +15,16 @@ import sx.rsync.Rsync
 @Configuration
 @Lazy(false)
 open class BundleConfiguration {
+    @Inject
+    private lateinit var storageConfiguration: StorageConfiguration
+
     /**
      * Local bundle repository
      **/
     @Bean
     open fun localRepository(): BundleRepository{
         return BundleRepository(
-                rsyncModuleUri = Rsync.URI(StorageConfiguration.instance.bundleRepositoryDirectory))
+                rsyncModuleUri = Rsync.URI(storageConfiguration.bundleRepositoryDirectory))
     }
 
     /**
@@ -29,6 +33,6 @@ open class BundleConfiguration {
     @Bean
     open fun bundleInstaller(): BundleInstaller {
         return BundleInstaller(
-                StorageConfiguration.instance.bundleInstallationDirectory)
+                storageConfiguration.bundleInstallationDirectory)
     }
 }

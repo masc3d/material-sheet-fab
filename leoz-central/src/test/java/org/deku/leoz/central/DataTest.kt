@@ -22,8 +22,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 open class DataTest {
     companion object {
         init {
-            org.deku.leoz.node.App.injectableInstance.set({ App.instance })
-            org.deku.leoz.node.App.instance.initialize()
+            org.deku.leoz.node.Application.injectableInstance.set({ Application.instance })
+            org.deku.leoz.node.Application.instance.initialize()
         }
     }
 }

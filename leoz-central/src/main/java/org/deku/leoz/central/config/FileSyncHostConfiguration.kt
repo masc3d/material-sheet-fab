@@ -1,6 +1,6 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.central.App
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.service.FileSyncHostService
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.service.filesync.FileSyncMessage
@@ -21,8 +21,11 @@ import javax.inject.Inject
 open class FileSyncHostConfiguration {
 
     @Inject
+    private lateinit var application: Application
+    @Inject
+    private lateinit var storageConfiguration: StorageConfiguration
+    @Inject
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
-
     @Inject
     private lateinit var executorService: ScheduledExecutorService
 
@@ -32,9 +35,9 @@ open class FileSyncHostConfiguration {
     @Bean
     open fun fileSyncService(): FileSyncHostService {
         return FileSyncHostService(
-                baseDirectory = StorageConfiguration.instance.transferDirectory,
+                baseDirectory = storageConfiguration.transferDirectory,
                 executorService = this.executorService,
-                identity = App.instance.identity,
+                identity = this.application.identity,
                 nodeChannelSupplier = { it -> Channel(ActiveMQConfiguration.instance.nodeQueue(it)) })
     }
     private val fileSyncService by lazy { fileSyncService() }

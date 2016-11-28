@@ -5,7 +5,7 @@ import org.deku.leoz.service.update.BundleUpdateService
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.service.update.UpdateInfo
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.rest.entity.internal.v1.ApplicationVersion
 import org.slf4j.LoggerFactory
@@ -25,19 +25,23 @@ class ApplicationService : org.deku.leoz.rest.service.internal.v1.ApplicationSer
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
-    lateinit var bundleUpdateService: BundleUpdateService
+    private lateinit var application: Application
+    @Inject
+    private lateinit var storageConfiguration: StorageConfiguration
+    @Inject
+    private lateinit var bundleUpdateService: BundleUpdateService
 
     override fun restart() {
         val bundleInstaller = BundleInstaller(
-                StorageConfiguration.instance.bundleInstallationDirectory)
+                storageConfiguration.bundleInstallationDirectory)
 
-        bundleInstaller.boot(App.instance.name)
+        bundleInstaller.boot(this.application.name)
     }
 
     override fun getVersion(): ApplicationVersion {
         return ApplicationVersion(
-                App.instance.name,
-                App.instance.version)
+                this.application.name,
+                this.application.version)
     }
 
     override fun bundleUpdate() {

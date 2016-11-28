@@ -4,7 +4,7 @@ import com.google.common.base.Strings
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -37,18 +37,21 @@ open class MessageBrokerConfiguration {
     }
 
     @Inject
+    private lateinit var application: Application
+    @Inject
     private lateinit var settings: Settings
-
     @Inject
     private lateinit var peerSettings: RemotePeerConfiguration
+    @Inject
+    private lateinit var storageConfiguration: StorageConfiguration
 
     @PostConstruct
     fun onInitialize() {
 
         // Broker configuration, must occur before tunnel servlet starts
         log.info("Configuring messaging broker")
-        ActiveMQBroker.instance.brokerName = "leoz-aq-${App.instance.identity.keyInstance.short}"
-        ActiveMQBroker.instance.dataDirectory = StorageConfiguration.instance.activeMqDataDirectory
+        ActiveMQBroker.instance.brokerName = "leoz-aq-${this.application.identity.keyInstance.short}"
+        ActiveMQBroker.instance.dataDirectory = storageConfiguration.activeMqDataDirectory
         ActiveMQBroker.instance.nativeTcpPort = this.settings.nativePort
 
         if (!Strings.isNullOrEmpty(peerSettings.host)) {

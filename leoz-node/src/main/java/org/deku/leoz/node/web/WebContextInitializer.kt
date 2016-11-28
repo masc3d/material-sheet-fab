@@ -6,7 +6,7 @@ import io.undertow.server.handlers.resource.ResourceManager
 import io.undertow.server.handlers.resource.URLResource
 import org.deku.leoz.config.RestClientConfiguration
 import org.deku.leoz.config.RestConfiguration
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.MessageBrokerConfiguration
 import org.jboss.resteasy.core.Dispatcher
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
@@ -36,7 +36,7 @@ import javax.servlet.ServletException
  */
 @Named
 class WebContextInitializer : ServletContextInitializer {
-    var mLog = LoggerFactory.getLogger(WebContextInitializer::class.java.name)
+    var log = LoggerFactory.getLogger(WebContextInitializer::class.java.name)
 
     companion object {
         private val STATIC_CONTENT_CLASSPATH = "/webapp"
@@ -44,23 +44,22 @@ class WebContextInitializer : ServletContextInitializer {
     }
 
     @Inject
-    private lateinit var mResteasyDeployment: ResteasyDeployment
-
+    private lateinit var application: Application
     @Inject
-    private lateinit var mResteasyHandlerMapping: ResteasyHandlerMapping
-
+    private lateinit var resteasyDeployment: ResteasyDeployment
     @Inject
-    private lateinit var mSpringBeanProcessor: SpringBeanProcessor
-
+    private lateinit var resteasyHandlerMapping: ResteasyHandlerMapping
     @Inject
-    private lateinit var mBrokerSettings: MessageBrokerConfiguration.Settings
+    private lateinit var springBeanProcessor: SpringBeanProcessor
+    @Inject
+    private lateinit var brokerSettings: MessageBrokerConfiguration.Settings
 
     @Throws(ServletException::class)
     override fun onStartup(servletContext: ServletContext) {
-        mLog.info("Leoz webcontext startup")
+        log.info("Leoz webcontext startup")
 
         // Inject web application context
-        App.instance.setApplicationContext(WebApplicationContextUtils.getWebApplicationContext(servletContext))
+        this.application.setApplicationContext(WebApplicationContextUtils.getWebApplicationContext(servletContext))
 
         //region Setup servlets
 
@@ -79,9 +78,9 @@ class WebContextInitializer : ServletContextInitializer {
         // * faster startup time (~2 seconds) as spring-webmvc/dispatcher not needed
         // * uses dedicated http dispatcher servlet for resteasy (ResteasyHandlerMappng has issues
         //   as it throws errors on any invalid resource, ven for paths outside scope/prefix)
-        servletContext.setAttribute(ResteasyProviderFactory::class.java.name, mResteasyDeployment.providerFactory)
-        servletContext.setAttribute(Dispatcher::class.java.name, mResteasyDeployment.dispatcher)
-        servletContext.setAttribute(Registry::class.java.name, mResteasyDeployment.registry)
+        servletContext.setAttribute(ResteasyProviderFactory::class.java.name, resteasyDeployment.providerFactory)
+        servletContext.setAttribute(Dispatcher::class.java.name, resteasyDeployment.dispatcher)
+        servletContext.setAttribute(Registry::class.java.name, resteasyDeployment.registry)
 
         var sr = servletContext.addServlet(HttpServletDispatcher::class.java.name, HttpServletDispatcher::class.java)
         sr.setInitParameter("resteasy.servlet.mapping.prefix", RestConfiguration.MAPPING_PREFIX)
@@ -94,7 +93,7 @@ class WebContextInitializer : ServletContextInitializer {
                     HttpExternalTunnelServlet(
                             URI("http://localhost:8080/leoz/jms")))
             sr.setLoadOnStartup(1)
-            sr.addMapping(this.mBrokerSettings.httpContextPath!! + "/*")
+            sr.addMapping(this.brokerSettings.httpContextPath!! + "/*")
         } catch (e: URISyntaxException) {
             throw ServletException(e)
         }

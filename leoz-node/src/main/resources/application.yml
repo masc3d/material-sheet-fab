@@ -81,13 +81,13 @@ ssh:
         username: leoz
         password: MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8
         port: 13003
-
-        # Host specific overrides
-        hosts:
-            central:
-                hostname: leoz.derkurier.de
-                password: MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8
-                port: 13003
-                username: leoz
         local-port-range-start: 13200
         local-port-range-end: 13250
+
+        # Host specific overrides
+#        hosts:
+#            central:
+#                hostname: leoz.derkurier.de
+#                password: MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8
+#                port: 13003
+#                username: leoz

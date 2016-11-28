@@ -9,14 +9,14 @@ import sx.LazyInstance
  * Derives from leoz node, overriding app specifics like spring profile and application name
  * Created by masc on 30.05.15.
  */
-class App private constructor() : org.deku.leoz.node.App() {
-    private val log = LoggerFactory.getLogger(App::class.java)
+class Application : org.deku.leoz.node.Application() {
+    private val log = LoggerFactory.getLogger(Application::class.java)
 
     override val name: String
         get() = "leoz-central"
 
     override val type: Class<out Any>
-        get() = App::class.java
+        get() = Application::class.java
 
     override val bundleType: BundleType
         get() = BundleType.LEOZ_CENTRAL
@@ -27,9 +27,6 @@ class App private constructor() : org.deku.leoz.node.App() {
     }
 
     companion object {
-        @JvmStatic val injectableInstance = LazyInstance({ App() })
-        @JvmStatic val instance by lazy({ injectableInstance.get() })
-
         const val PROFILE_CENTRAL = "central"
     }
 }

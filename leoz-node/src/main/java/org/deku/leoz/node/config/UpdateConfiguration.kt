@@ -6,7 +6,7 @@ import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.service.update.BundleUpdateService
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.RsyncConfiguration
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.repository.system.*
 import org.deku.leoz.node.config.RemotePeerConfiguration
@@ -34,6 +34,8 @@ import javax.inject.Inject
 open class UpdateConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    @Inject
+    private lateinit var application: Application
     @Inject
     private lateinit var settings: Settings
     @Inject
@@ -124,13 +126,13 @@ open class UpdateConfiguration {
         val updateService = BundleUpdateService(
                 executorService = this.executorService,
                 bundleService = { this.bundleServiceProxy },
-                identity = App.instance.identity,
+                identity = this.application.identity,
                 installer = this.bundleInstaller,
                 remoteRepository = { this.updateRepository },
                 localRepository = this.localBundleRepository,
                 presets = listOf(
                         BundleUpdateService.Preset(
-                                bundleName = App.instance.name,
+                                bundleName = this.application.name,
                                 install = true,
                                 storeInLocalRepository = false,
                                 requiresBoot = true),
@@ -148,7 +150,7 @@ open class UpdateConfiguration {
 
         // Event handlers
         updateService.infoReceived.subscribe() {
-            if (it.bundleName == App.instance.name) {
+            if (it.bundleName == this.application.name) {
                 // Store the version alias persistently.
                 this.state.versionAlias = it.bundleVersionAlias
                 this.propertyRepository.saveObject(this.state)

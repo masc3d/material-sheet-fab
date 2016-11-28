@@ -3,7 +3,7 @@ package org.deku.leoz.node.config
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.service.authorization.AuthorizationMessage
 import org.deku.leoz.node.service.authorization.AuthorizationClientService
@@ -33,21 +33,23 @@ open class AuthorizationClientConfiguration {
     private lateinit var lifecycleController: LifecycleController
     @Inject
     private lateinit var bundleInstaller: BundleInstaller
+    @Inject
+    private lateinit var application: Application
 
     @Bean
     open fun authorizationClientService(): AuthorizationClientService {
         return AuthorizationClientService(
                 executorService = this.executorService,
                 channelConfiguration = ActiveMQConfiguration.instance.centralQueue,
-                identitySupplier = { App.instance.identity },
+                identitySupplier = { this.application.identity },
                 onRejected = { identity ->
                     log.warn("Authorization rejected for identity [${identity}]")
                     // If rejected, create new identity and restart
-                    App.instance.initializeIdentity(recreate = true)
+                    this.application.initializeIdentity(recreate = true)
 
                     log.warn("Rebooting due to identity change")
-                    this.bundleInstaller.boot(App.instance.name)
-                    App.instance.shutdown()
+                    this.bundleInstaller.boot(this.application.name)
+                    this.application.shutdown()
                 })
     }
     private val authorizationClientService by lazy { authorizationClientService() }

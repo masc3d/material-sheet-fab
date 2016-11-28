@@ -1,6 +1,9 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.node.App
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.eagerSingleton
+import com.github.salomonbrys.kodein.instance
+import org.deku.leoz.node.Application
 import org.slf4j.LoggerFactory
 import sx.LazyInstance
 import java.io.File
@@ -14,11 +17,15 @@ open class StorageConfiguration protected constructor(appName: String)
         org.deku.leoz.config.StorageConfiguration(appName = appName)
 {
     companion object {
-        val injectableInstance = LazyInstance({ StorageConfiguration(App.instance.name) })
-        val instance by lazy({ injectableInstance.get() })
+        val module = Kodein.Module {
+            bind<StorageConfiguration>() with eagerSingleton {
+                val application: Application = instance()
+                StorageConfiguration(application.name)
+            }
+        }
     }
 
-    private var log = LoggerFactory.getLogger(this.javaClass)
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     // Directories
     /** Local embedded activemq data directory */

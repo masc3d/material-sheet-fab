@@ -4,6 +4,7 @@ import org.deku.leoz.config.RsyncConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import sx.rsync.Rsync
+import javax.inject.Inject
 import javax.inject.Named
 
 /**
@@ -15,6 +16,10 @@ import javax.inject.Named
 @Configuration(RsyncModuleConfiguration.QUALIFIER)
 open class RsyncModuleConfiguration {
 
+
+    @Inject
+    private lateinit var storageConfiguration: StorageConfiguration
+
     companion object {
         const val QUALIFIER = "RsyncModuleConfigurationCentral"
     }
@@ -23,6 +28,6 @@ open class RsyncModuleConfiguration {
     open fun transferModule(): Rsync.Module {
         return Rsync.Module(
                 RsyncConfiguration.ModuleNames.TRANSFER,
-                StorageConfiguration.instance.transferDirectory)
+                storageConfiguration.transferDirectory)
     }
 }

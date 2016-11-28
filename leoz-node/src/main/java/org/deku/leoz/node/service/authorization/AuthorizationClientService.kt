@@ -2,6 +2,10 @@ package org.deku.leoz.node.service.authorization
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.Identity
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.node.service.authorization.AuthorizationMessage
@@ -31,6 +35,8 @@ class AuthorizationClientService(
 
     private val identity: Identity
         get() = identitySupplier()
+
+    private val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
 
     override fun run() {
         // Setup message
@@ -63,7 +69,7 @@ class AuthorizationClientService(
         if (authorizationMessage.rejected) {
             onRejected(identity)
         } else {
-            identity.save(StorageConfiguration.instance.identityConfigurationFile)
+            identity.save(storageConfiguration.identityConfigurationFile)
         }
 
         // Stop service when authorization process completed

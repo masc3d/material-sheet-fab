@@ -1,6 +1,6 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.central.App
+import org.deku.leoz.central.Application
 import org.deku.leoz.central.service.DatabaseSyncService
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
@@ -22,7 +22,7 @@ import javax.persistence.PersistenceUnit
  * Leoz-central entity sync configuration
  * Created by masc on 20.06.15.
  */
-@Configuration(App.PROFILE_CENTRAL)
+@Configuration(Application.PROFILE_CENTRAL)
 @Lazy(false)
 open class EntitySyncConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)

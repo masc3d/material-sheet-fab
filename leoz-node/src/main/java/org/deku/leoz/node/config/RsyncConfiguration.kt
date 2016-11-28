@@ -36,11 +36,11 @@ open class RsyncConfiguration : org.deku.leoz.config.RsyncConfiguration() {
 
     @Inject
     private lateinit var settings: Settings
+    @Inject
+    private lateinit var storageConfiguration: StorageConfiguration
 
     /** Rsync server instance */
     private var rsyncServer: RsyncServer by Delegates.notNull()
-
-    private val storageConfiguration by lazy({ StorageConfiguration.instance })
 
     /**
      * Pulls in all application wide rsync modules

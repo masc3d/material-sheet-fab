@@ -1,5 +1,9 @@
 package org.deku.leoz.node
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import com.google.common.base.Strings
 import org.deku.leoz.bundle.BundleProcessInterface
 import org.deku.leoz.node.config.StorageConfiguration
@@ -45,6 +49,8 @@ class Setup(
         log.trace("Setup base path [${basePath}]")
     }
 
+    val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
+
     /**
      * Installs node as a system service
      * @param serviceName Service name
@@ -61,7 +67,7 @@ class Setup(
                 "--Description=Leoz system service (${this.serviceId})",
                 "--Install=${this.leozsvcExecutable.file.toString()}",
                 "--Startup=auto",
-                "--LogPath=${StorageConfiguration.instance.logDirectory}",
+                "--LogPath=${this.storageConfiguration.logDirectory}",
                 "--LogPrefix=leoz-svc",
                 "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
                 "--StartMode=jvm",
@@ -90,7 +96,7 @@ class Setup(
 
         log.info("Uninstalling service")
 
-        var pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
+        val pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
                 "//DS/${serviceId}")
 
         this.execute(pb)
@@ -104,7 +110,7 @@ class Setup(
     override fun start() {
         log.info("Starting service")
 
-        var pb: ProcessBuilder = ProcessBuilder("net", "start", serviceId)
+        val pb: ProcessBuilder = ProcessBuilder("net", "start", serviceId)
         this.execute(pb)
 
         log.info("Started sucessfully")
@@ -145,9 +151,9 @@ class Setup(
         }
         finally {
             // Evaluate/log output
-            if (output.length > 0)
+            if (output.isNotEmpty())
                 this.logProcessOutput(output.toString())
-            if (error.length > 0)
+            if (error.isNotEmpty())
                 this.logProcessOutput(error.toString(), isError = true)
         }
     }

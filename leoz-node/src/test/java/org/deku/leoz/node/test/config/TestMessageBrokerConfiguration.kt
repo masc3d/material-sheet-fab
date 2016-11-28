@@ -4,7 +4,7 @@ import com.google.common.base.Strings
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.StorageConfiguration
 import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.slf4j.LoggerFactory

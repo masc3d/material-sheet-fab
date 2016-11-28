@@ -1,7 +1,7 @@
 package org.deku.leoz.node.rest.service.internal.v1
 
 import org.deku.leoz.bundle.BundleRepository
-import org.deku.leoz.node.App
+import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.service.update.UpdateInfo
 import org.deku.leoz.service.update.UpdateInfoRequest
@@ -20,7 +20,7 @@ import javax.ws.rs.Path
  */
 @Named
 @ApiKey(false)
-@Profile(App.PROFILE_CLIENT_NODE)
+@Profile(Application.PROFILE_CLIENT_NODE)
 @Path("internal/v1/bundle")
 open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService {
     private val log = LoggerFactory.getLogger(this.javaClass)

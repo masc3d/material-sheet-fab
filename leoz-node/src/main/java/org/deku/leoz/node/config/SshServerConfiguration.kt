@@ -32,9 +32,13 @@ open class SshServerConfiguration {
     companion object {
         const val DEFAULT_PORT = 13003
     }
+
     init {
         this.sshServer = SshServer.setUpDefaultServer()
     }
+
+    @Inject
+    private lateinit var storageConfiguration: StorageConfiguration
 
     @PostConstruct
     fun onInitialize() {
@@ -43,7 +47,7 @@ open class SshServerConfiguration {
         sshd.setPort(SshServerConfiguration.DEFAULT_PORT)
 
         sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(
-                File(StorageConfiguration.instance.sshDataDirectory, "hostkey.ser")))
+                File(storageConfiguration.sshDataDirectory, "hostkey.ser")))
 
         sshd.tcpipForwardingFilter = AcceptAllForwardingFilter()
 
