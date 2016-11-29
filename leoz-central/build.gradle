@@ -1,5 +1,7 @@
 import org.deku.gradle.PackagerPlugin
 
+import java.nio.file.Files
+
 buildscript {
     ext {
         v_mysql = '5.1.40'
@@ -150,6 +152,23 @@ distributions {
         contents {
             from projectBuildSupplementalsDir
         }
+    }
+}
+
+tasks.installDist {
+    doLast {
+        def src = project.buildDir.toPath()
+                .resolve("install")
+                .resolve(project.name)
+
+        def dst = project.rootDir.toPath()
+                .resolve("vm")
+                .resolve(project.name)
+
+        println("Moving [${src}] to [${dst}]")
+
+        dst.deleteDir()
+        Files.move(src, dst)
     }
 }
 

@@ -1,6 +1,7 @@
 import sx.platform.PlatformId
 
 import java.lang.management.ManagementFactory
+import java.nio.file.Files
 import java.nio.file.Paths
 
 version = '0.1'
@@ -66,6 +67,7 @@ subprojects {
 
     // Common plugins
     apply plugin: 'base'
+    apply plugin: 'distribution'
     apply plugin: 'java'
     // For generating dependency reports
     apply plugin: 'project-report'
@@ -84,7 +86,7 @@ subprojects {
         testLogging.showStandardStreams = true
     }
 
-    // Global jar configuration
+// Global jar configuration
     jar {
         doFirst {
             jar {
@@ -119,9 +121,9 @@ subprojects {
         projectPlatformDir = new File(project.projectDir, 'platform')
     }
 
-    /**
-     * Task copying platform specific files from sx-common to project dir
-     */
+/**
+ * Task copying platform specific files from sx-common to project dir
+ */
     task copySxPlatformDirToProject(type: Copy) {
         from sxRsyncPlatformDir
         into projectPlatformDir
@@ -130,9 +132,9 @@ subprojects {
         rename 'sx-rsync(.*)', 'leoz-rsync$1'
     }
 
-    /**
-     * Task copying platform specific files from sx-common to project build dir
-     */
+/**
+ * Task copying platform specific files from sx-common to project build dir
+ */
     task copySxPlatformDirToBuild(type: Copy) {
         from sxRsyncPlatformDir
         into projectBuildPlatformDir
@@ -142,17 +144,17 @@ subprojects {
     }
     tasks.copySxPlatformDirToBuild.dependsOn(tasks.copySxPlatformDirToProject)
 
-    /**
-     * Task copying architecture specific global files to project dri
-     */
+/**
+ * Task copying architecture specific global files to project dri
+ */
     task copyGlobalPlatformDirToProject(type: Copy) {
         from globalPlatformDir
         into projectPlatformDir
     }
 
-    /**
-     * Task copying architecture specific global files to project build dir
-     */
+/**
+ * Task copying architecture specific global files to project build dir
+ */
     task copyGlobalPlatformDirToBuild(type: Copy) {
         from globalPlatformDir
         into projectBuildPlatformDir

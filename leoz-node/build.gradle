@@ -13,6 +13,8 @@ import org.jooq.util.GeneratorStrategy
 import org.jooq.util.h2.H2Database
 import org.jooq.util.jaxb.*
 
+import java.nio.file.Files
+
 buildscript {
     ext {
         v_aspectj = '1.8.9'
@@ -266,7 +268,7 @@ dependencies {
 //            "org.eclipse.persistence:javax.persistence:$v_javax_persistence")
 
     querydslapt(
-        "com.querydsl:querydsl-apt:$v_querydsl:jpa"
+            "com.querydsl:querydsl-apt:$v_querydsl:jpa"
     )
 
     testCompile(
@@ -298,6 +300,23 @@ distributions {
         contents {
             from projectBuildSupplementalsDir
         }
+    }
+}
+
+tasks.installDist {
+    doLast {
+        def src = project.buildDir.toPath()
+                .resolve("install")
+                .resolve(project.name)
+
+        def dst = project.rootDir.toPath()
+                .resolve("vm")
+                .resolve(project.name)
+
+        println("Moving [${src}] to [${dst}]")
+
+        dst.deleteDir()
+        Files.move(src, dst)
     }
 }
 
