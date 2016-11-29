@@ -2,14 +2,12 @@ package org.deku.leoz.node
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.google.common.collect.Lists
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
@@ -27,7 +25,6 @@ import org.springframework.context.ApplicationListener
 import sx.Disposable
 import sx.Dispose
 import sx.JarManifest
-import sx.LazyInstance
 import sx.logging.slf4j.info
 import sx.platform.JvmUtil
 import java.io.IOException
@@ -37,7 +34,6 @@ import java.nio.channels.FileChannel
 import java.nio.channels.FileLock
 import java.nio.file.StandardOpenOption
 import java.util.*
-import java.util.function.Supplier
 import kotlin.properties.Delegates
 
 /**
@@ -205,26 +201,28 @@ open class Application :
         })
 
         //region Spring configuration
-        run { // Set additional config file location for spring
+        run {
+            // Set additional config file location for spring
             val configLocations = arrayListOf<URL>()
 
-            // Add application.properties from all classpaths
-            // TODO: needs refinement, should only read application.properties from specific jars
-            try {
-                configLocations.addAll(Collections.list(Thread.currentThread().contextClassLoader.getResources("application.yml")))
-            } catch (e: IOException) {
-                log.error(e.message, e)
-            }
+            // Add application.properties from other classpaths/jars
+            configLocations.addAll(
+                    Thread.currentThread().contextClassLoader.getResources("application.yml")
+                            .toList()
+                            // When application was derived from, the derived jar configuration will always be delivered first, thus reversing the order of embdded configurations
+                            .reversed())
 
             // Add local home configuration
-            try {
-                configLocations.add(URL("file:" + this.storageConfiguration.applicationConfigurationFile.toString()))
-            } catch (e: MalformedURLException) {
-                log.error(e.message, e)
+            configLocations.add(this.storageConfiguration.applicationConfigurationFile.toURI().toURL())
+
+            // Log configuration locations
+            configLocations.forEach {
+                log.info("Using configuration location [${it}]")
             }
 
-            val configPropertyValue = configLocations.map({ u -> u.toString() }).reversed().joinToString(",")
-            System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY, configPropertyValue)
+            System.setProperty(
+                    ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY,
+                    configLocations.map { u -> u.toString() }.joinToString(","))
 
             // Register shutdown hook
             Runtime.getRuntime().addShutdownHook(object : Thread("App shutdown hook") {
@@ -234,7 +232,6 @@ open class Application :
                     log.info("Shutdown hook completed")
                 }
             })
-
         }
         //endregion
     }
