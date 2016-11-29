@@ -156,8 +156,8 @@ tasks.installDist {
                 .resolve("install")
                 .resolve(project.name)
 
-        def dst = project.rootDir.toPath()
-                .resolve("vm")
+        def dst = g_vm_dist_path
+                .toPath()
                 .resolve(project.name)
 
         println("Moving [${src}] to [${dst}]")

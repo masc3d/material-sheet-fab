@@ -57,4 +57,5 @@ openjpa-schema.xml
 out
 release
 vm/.vagrant
+vm/dist
 workspace.xml

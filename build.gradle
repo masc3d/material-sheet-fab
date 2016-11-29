@@ -1,7 +1,6 @@
 import sx.platform.PlatformId
 
 import java.lang.management.ManagementFactory
-import java.nio.file.Files
 import java.nio.file.Paths
 
 version = '0.1'
@@ -36,6 +35,11 @@ buildscript {
         g_windows_icon = Paths.get(project.rootDir.toURI())
                 .resolve('images')
                 .resolve('DEKU.icon.ico')
+                .toFile()
+
+        g_vm_dist_path = project.rootDir.toPath()
+                .resolve('vm')
+                .resolve('dist')
                 .toFile()
     }
 
