@@ -114,15 +114,10 @@ jooq {
 }
 // JOOQ generation depends on schema migration
 tasks.generateMainJooqSchemaSource {
-    dependsOn tasks.flywayMigrate
-}
+    inputs.dir FLYWAY_MIGRATION_DIR
+    outputs.dir JOOQ_GENERATED_DIR
 
-tasks.flywayMigrate {
-    // TODO: doFirst is always executed even if task is uptodate, which will in turn make generation task run on every build. it's only remedied by the build task detecting there's no actual changes, preventing repeated compilation
-    // TODO: attaching (an even empty) doLast action to an existing task will prevent the task from being uptodate ever (why?, possibly a gradle bug)
-    doFirst {
-        JOOQ_GENERATED_DIR.deleteDir()
-    }
+    dependsOn tasks.flywayMigrate
 }
 
 clean {
