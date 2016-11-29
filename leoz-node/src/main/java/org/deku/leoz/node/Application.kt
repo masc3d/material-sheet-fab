@@ -223,7 +223,7 @@ open class Application :
                 log.error(e.message, e)
             }
 
-            val configPropertyValue = configLocations.map({ u -> u.toString() }).joinToString(",")
+            val configPropertyValue = configLocations.map({ u -> u.toString() }).reversed().joinToString(",")
             System.setProperty(ConfigFileApplicationListener.CONFIG_LOCATION_PROPERTY, configPropertyValue)
 
             // Register shutdown hook
