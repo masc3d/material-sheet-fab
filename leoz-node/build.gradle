@@ -119,7 +119,6 @@ sourceSets {
             srcDirs += QUERYDSL_GENERATED_DIR
         }
         // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
-        output.classesDir = new File(project.buildDir, "classes-weaved")
         output.resourcesDir = sourceSets.main.output.classesDir
     }
 }
@@ -127,7 +126,8 @@ sourceSets {
 
 compileJava {
     dependsOn processResources
-    destinationDir = new File(project.buildDir, "classes")
+    // Bend compilation destination path, the final classes are produced by `jpaWeaving`
+    destinationDir = new File(project.buildDir, "classes-unweaved")
 }
 
 test {
