@@ -12,7 +12,7 @@ import org.jooq.util.GenerationTool
 import org.jooq.util.GeneratorStrategy
 import org.jooq.util.h2.H2Database
 import org.jooq.util.jaxb.*
-
+import java.io.File
 import java.nio.file.Files
 
 buildscript {
@@ -90,10 +90,6 @@ class Constants {
 def JPA_GENERATED_PACKAGE = Constants.JPA_GENERATED_PACKAGE
 def JPA_TASK_GROUP = 'jpa'
 
-// Required for eclipse modelgen to find xml resources (eg. persistence.xml)
-sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
-compileJava.dependsOn(processResources)
-
 clean {
     doFirst {
         GENERATED_DIR.deleteDir()
@@ -122,7 +118,16 @@ sourceSets {
             srcDirs += JOOQ_GENERATED_DIR
             srcDirs += QUERYDSL_GENERATED_DIR
         }
+        // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
+        output.classesDir = new File(project.buildDir, "classes-weaved")
+        output.resourcesDir = sourceSets.main.output.classesDir
     }
+}
+
+
+compileJava {
+    dependsOn processResources
+    destinationDir = new File(project.buildDir, "classes")
 }
 
 test {
@@ -364,7 +369,7 @@ tasks.compileJava.dependsOn(copyVaadinWebapp)
  */
 task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
     inputs.dir compileJava.destinationDir
-    outputs.dir compileJava.destinationDir
+    outputs.dir sourceSets.main.output.classesDir
 
     dependsOn tasks.compileJava, tasks.compileKotlin
     mustRunAfter tasks.compileJava, tasks.compileKotlin
@@ -372,7 +377,7 @@ task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
     main 'org.eclipse.persistence.tools.weaving.jpa.StaticWeave'
     args '-persistenceinfo', DB_DIR,
             compileJava.destinationDir.getAbsolutePath(),
-            compileJava.destinationDir.getAbsolutePath()
+            sourceSets.main.output.classesDir
     classpath = configurations.compile
 }
 // Dependencies
@@ -463,7 +468,7 @@ tasks.compileJava {
  * Workaround for kapt issue https://youtrack.jetbrains.com/issue/KT-14139
  */
 task queryDslGenerate(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
-    source = sourceSets.main.java // input source set
+    source = sourceSets.main.java.srcDirs.collect().findAll { it != QUERYDSL_GENERATED_DIR } // input source set
     classpath = configurations.compile + configurations.querydslapt // add processor module to classpath
     // specify javac arguments
     options.compilerArgs = [
