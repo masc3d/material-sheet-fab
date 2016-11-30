@@ -25,6 +25,7 @@ import org.deku.leoz.ui.fx.Controller
 import org.deku.leoz.ui.fx.MainController
 import org.slf4j.LoggerFactory
 import sx.fx.controls.MaterialProgressIndicator
+import sx.io.ProcessLockFile
 import java.util.concurrent.ExecutorService
 
 /**
@@ -48,10 +49,14 @@ class Application : Application() {
 
     /** Localization */
     private val i18n: org.deku.leoz.ui.Localization by Kodein.global.lazy.instance()
-
     private val logConfiguration: LogConfiguration by Kodein.global.lazy.instance()
-
     private val leoBridge: LeoBridge by Kodein.global.lazy.instance()
+
+    private val processLockFile by lazy {
+        val storageConfiguration = StorageConfiguration()
+        ProcessLockFile(lockFile = storageConfiguration.bundleLockFile,
+                pidFile = storageConfiguration.bundlePidFile)
+    }
 
     /**
      * Main user interface controller
@@ -79,6 +84,7 @@ class Application : Application() {
      */
     @Throws(Exception::class)
     override fun start(primaryStage: Stage) {
+
         // Support for command line interface
         val setup = Setup()
         val command = setup.parse(this.parameters.raw.toTypedArray())
@@ -94,11 +100,19 @@ class Application : Application() {
             return
         }
 
+        if (!this.processLockFile.isOwner) {
+            log.warn("Process locked, shutting down [${this.processLockFile}}")
+            System.exit(-1)
+            return
+        }
+
+        log.info("Acquired process lock [${this.processLockFile}]")
+
         log.debug("Initializing injection")
 
-        // Setup injection
-        Kodein.global.addImport(ApplicationConfiguration.module)
+        // Injection
         Kodein.global.addImport(StorageConfiguration.module)
+        Kodein.global.addImport(ApplicationConfiguration.module)
         Kodein.global.addImport(LogConfiguration.module)
         Kodein.global.addImport(MessagingConfiguration.module)
         Kodein.global.addImport(RestClientConfiguration.module)

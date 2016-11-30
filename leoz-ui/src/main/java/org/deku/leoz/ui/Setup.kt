@@ -2,9 +2,10 @@ package org.deku.leoz.ui
 
 import com.sun.jna.platform.win32.Shell32Util
 import org.apache.commons.lang3.SystemUtils
-import org.deku.leoz.bundle.Bundle
-import org.deku.leoz.bundle.BundleProcessInterface
+import org.deku.leoz.bundle.*
+import org.deku.leoz.ui.config.StorageConfiguration
 import org.slf4j.LoggerFactory
+import sx.io.ProcessLockFile
 import sx.io.WindowsShellLink
 import java.io.File
 
@@ -48,6 +49,32 @@ class Setup : BundleProcessInterface() {
         if (desktopLinkFile != null) {
             if (desktopLinkFile.exists())
                 desktopLinkFile.delete()
+        }
+    }
+
+    override fun start() {
+        val storageConfiguration: StorageConfiguration = StorageConfiguration()
+
+        val bundle = Bundle.load(
+                BundleInstaller.getNativeBundlePath(
+                        File(storageConfiguration.bundleInstallationDirectory, BundleType.LEOZ_UI.value)))
+
+        bundle.execute(wait = false)
+    }
+
+    override fun stop() {
+        val storageConfiguration: StorageConfiguration =  StorageConfiguration()
+
+        val processLockFile = ProcessLockFile(
+                lockFile = storageConfiguration.bundleLockFile,
+                pidFile = storageConfiguration.bundlePidFile)
+
+        if (!processLockFile.isOwner) {
+            val pid = processLockFile.pid
+
+            // Signal kill and wait for lock to become available
+            sx.Process.kill(pid)
+            processLockFile.waitForLock()
         }
     }
 }
