@@ -82,67 +82,63 @@ open class StorageConfiguration(
     }
 
     /** Local data directory */
-    val dataDirectory: File by lazy({
+    val dataDirectory: File by lazy {
         val d = File(File(this.privateDirectory, "data"), this.appName)
         d.mkdirs()
         d
-    })
+    }
 
     /** Etc/settings directory */
-    val etcDirectory: File by lazy({
+    val etcDirectory: File by lazy {
         val d = File(File(this.privateDirectory, "etc"), this.appName)
         d.mkdirs()
         d
-    })
+    }
 
     /** Local log directory */
-    val logDirectory: File by lazy({
+    val logDirectory: File by lazy {
         val d = File(this.privateDirectory, "log");
         d.mkdirs()
         d
-    })
+    }
 
     /** Local bundles directory */
-    protected val bundlesDirectory: File by lazy({
+    protected val bundlesDirectory: File by lazy {
         val d = File(this.privateDirectory, "bundles")
         d.mkdirs()
         d
-    })
+    }
 
-    val bundleInstallationDirectory: File by lazy({
+    val bundleInstallationDirectory: File by lazy {
         val d = File(this.bundlesDirectory, "install")
         d.mkdirs()
         d
-    })
+    }
 
     /** Run directory, containing runtime related files, eg. bundle lock files */
-    val runDirectory: File by lazy({
+    val runDirectory: File by lazy {
         val d = File(this.privateDirectory, "run")
         d.mkdirs()
         d
-    })
+    }
 
     /** Lock file for this application */
-    val bundleLockFile: File by lazy({
-        this.lockFile(this.appName)
-    })
+    val bundleLockFile: File by lazy {
+        File(this.runDirectory, this.appName + ".lock")
+    }
+
+    val bundlePidFile: File by lazy {
+        File(this.runDirectory, this.appName + ".pid")
+    }
 
     /** Application log file */
-    val logFile: File by lazy({
+    val logFile: File by lazy {
         File(this.logDirectory, "${this.appName}.log")
-    })
+    }
 
     /** Setup log file */
-    val setupLogFile: File by lazy({
+    val setupLogFile: File by lazy {
         File(this.logDirectory, "${this.appName}-setup.log")
-    })
-
-    /**
-     * Lock file for specific bundle
-     * @param bundleName Bundle name
-     **/
-    fun lockFile(bundleName: String): File {
-        return File(this.runDirectory, bundleName + ".lock")
     }
 
     /** c'tor */

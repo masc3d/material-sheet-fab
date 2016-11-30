@@ -25,6 +25,7 @@ import org.springframework.context.ApplicationListener
 import sx.Disposable
 import sx.Dispose
 import sx.JarManifest
+import sx.io.ProcessLockFile
 import sx.logging.slf4j.info
 import sx.platform.JvmUtil
 import java.io.IOException
@@ -105,7 +106,7 @@ open class Application :
     /**
      * Lock for preventing duplicate processes
      */
-    private var bundlePathLock: FileLock by Delegates.notNull()
+    private var processLockFile: ProcessLockFile by Delegates.notNull()
 
     /** Application wide Node identity */
     var identity: Identity by Delegates.notNull()
@@ -169,11 +170,17 @@ open class Application :
         isInitialized = true
 
         // Acquire lock on bundle path
-        val bundlePath = this.storageConfiguration.bundleLockFile
-        log.trace("Acquiring lock on bundle path [${bundlePath}]")
-        this.bundlePathLock = FileChannel
-                .open(bundlePath.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)
-                .lock()
+        log.trace("Acquiring lock on bundle path [${this.storageConfiguration.bundleLockFile}]")
+        this.processLockFile = ProcessLockFile(
+                lockFile = this.storageConfiguration.bundleLockFile,
+                pidFile = this.storageConfiguration.bundlePidFile)
+
+        if (!this.processLockFile.isOwner) {
+            log.info("Waiting for lock on [${this.processLockFile}]")
+            this.processLockFile.waitForLock()
+        }
+
+        log.info("Acquired lock [${this.processLockFile}}")
 
         this.profile = profile
 
