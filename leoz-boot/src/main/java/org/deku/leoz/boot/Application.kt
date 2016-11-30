@@ -39,6 +39,15 @@ class Application : javafx.application.Application() {
          * Main application entry point
          */
         @JvmStatic fun main(args: Array<String>) {
+            // Leoz bundle process commandline interface
+            val setup = Setup()
+            val command = setup.parse(args)
+            if (command != null) {
+                command.run()
+                System.exit(0)
+                return
+            }
+
             javafx.application.Application.launch(Application::class.java, *args)
         }
     }
@@ -64,16 +73,6 @@ class Application : javafx.application.Application() {
     override fun start(primaryStage: Stage) {
         try {
             this.primaryStage = primaryStage
-
-            // Leoz bundle process commandline interface
-            val setup = Setup()
-            val command = setup.parse(this.parameters.raw.toTypedArray())
-            if (command != null) {
-                command.run()
-                System.exit(0)
-                return
-            }
-
 
             // Injection setup
             log.info("Setting up injection")

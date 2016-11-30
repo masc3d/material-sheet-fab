@@ -40,6 +40,15 @@ class Application : Application() {
          * @param args
          */
         @JvmStatic fun main(args: Array<String>) {
+            // Support for command line interface
+            val setup = Setup()
+            val command = setup.parse(args)
+            if (command != null) {
+                command.run()
+                System.exit(0)
+                return
+            }
+
             javafx.application.Application.launch(org.deku.leoz.ui.Application::class.java, *args)
         }
     }
@@ -84,21 +93,6 @@ class Application : Application() {
      */
     @Throws(Exception::class)
     override fun start(primaryStage: Stage) {
-
-        // Support for command line interface
-        val setup = Setup()
-        val command = setup.parse(this.parameters.raw.toTypedArray())
-        if (command != null) {
-            try {
-                command.run()
-                System.exit(0)
-            } catch (e: Exception) {
-                log.error(e.message, e)
-                System.exit(-1)
-            }
-
-            return
-        }
 
         if (!this.processLockFile.isOwner) {
             log.warn("Process locked, shutting down [${this.processLockFile}}")
