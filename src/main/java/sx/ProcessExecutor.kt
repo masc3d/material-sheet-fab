@@ -1,6 +1,7 @@
 package sx
 
 import org.slf4j.LoggerFactory
+import java.lang.Process
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -63,14 +64,14 @@ class ProcessExecutor @JvmOverloads constructor(
             val processedOutput = if (this.trim) output.trim() else output
 
             // Optionally omit empty lines
-            if (this.omitEmptyLines && processedOutput.length == 0)
+            if (this.omitEmptyLines && processedOutput.isEmpty())
                 return
 
             this.onProcessedOutput(processedOutput)
 
             // Optionally collect output
             if (collectInto != null) {
-                if (collectInto.length > 0)
+                if (collectInto.isNotEmpty())
                     collectInto.append(StandardSystemProperty.LINE_SEPARATOR.value())
                 collectInto.append(processedOutput)
             }
@@ -105,7 +106,7 @@ class ProcessExecutor @JvmOverloads constructor(
 
             var exception: Exception? = null
             try {
-                var exitCode = process!!.waitFor()
+                val exitCode = process!!.waitFor()
                 // Don't throw process exception if exit oode was non zero while the process was being
                 // stopped/destroyed. (observed especially on windows)
                 if (exitCode != 0 && !stopping && !shutdownHookInvoked)
@@ -190,7 +191,7 @@ class ProcessExecutor @JvmOverloads constructor(
         if (process == null)
             throw IllegalStateException("Process not started")
 
-        var returnCode: Int
+        val returnCode: Int
         try {
             returnCode = process!!.waitFor()
         } finally {
