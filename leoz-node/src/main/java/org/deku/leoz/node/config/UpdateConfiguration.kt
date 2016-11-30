@@ -122,6 +122,9 @@ open class UpdateConfiguration {
      */
     @Bean
     open fun bundleUpdateService(): BundleUpdateService {
+        val rsyncHostDiffers =
+                !this.settings.rsyncHost.isNullOrEmpty() &&
+                this.settings.rsyncHost != this.remotePeerSettings.host
         // Setup
         val updateService = BundleUpdateService(
                 executorService = this.executorService,
@@ -144,7 +147,8 @@ open class UpdateConfiguration {
                                 bundleName = BundleType.LEOZ_BOOT.value,
                                 install = true,
                                 storeInLocalRepository = true)),
-                cleanup = this.settings.cleanup)
+                cleanup = this.settings.cleanup,
+                alwaysQueryRepository = rsyncHostDiffers)
 
         updateService.enabled = this.settings.enabled
 
