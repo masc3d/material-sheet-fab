@@ -4,7 +4,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
-import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.YamlPersistence
 import org.deku.leoz.bundle.BundleProcessInterface
@@ -13,15 +12,9 @@ import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.yaml.snakeyaml.DumperOptions
-import org.yaml.snakeyaml.Yaml
-import org.yaml.snakeyaml.nodes.Tag
 import sx.EmbeddedExecutable
 import sx.ProcessExecutor
 import sx.annotationOfType
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStreamWriter
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -70,7 +63,7 @@ class Setup(
             this.basePath = codeSourcePath.parent.parent
         } else {
             // Assume running from ide, working dir plus arch bin path
-            this.basePath =  Paths.get("").toAbsolutePath()
+            this.basePath = Paths.get("").toAbsolutePath()
         }
 
         log.trace("Setup base path [${basePath}]")
@@ -88,7 +81,7 @@ class Setup(
 
                 val classPath = Paths.get(mainClass.protectionDomain.codeSource.location.toURI())
 
-                val pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
+                val command = listOf(this.leozsvcExecutable.file.toString(),
                         "//IS/${this.serviceId}",
                         "--DisplayName=Leoz service (${this.serviceId})",
                         "--Description=Leoz system service (${this.serviceId})",
@@ -105,12 +98,13 @@ class Setup(
                         "--StopMethod=stop",
                         "--Classpath=${classPath}")
 
-                log.trace("Command ${java.lang.String.join(" ", pb.command())}")
-                this.execute(pb)
+                log.trace("Command ${java.lang.String.join(" ", command)}")
+                this.execute(command)
 
                 log.info("Installed successfully")
             }
-            else -> {}
+            else -> {
+            }
         }
 
     }
@@ -164,10 +158,9 @@ class Setup(
 
                 log.info("Uninstalling service")
 
-                val pb: ProcessBuilder = ProcessBuilder(this.leozsvcExecutable.file.toString(),
-                        "//DS/${serviceId}")
-
-                this.execute(pb)
+                this.execute(listOf(
+                        this.leozsvcExecutable.file.toString(),
+                        "//DS/${serviceId}"))
 
                 log.info("Uninstalled successfully")
             }
@@ -183,8 +176,7 @@ class Setup(
             SystemUtils.IS_OS_WINDOWS -> {
                 log.info("Starting service")
 
-                val pb: ProcessBuilder = ProcessBuilder("net", "start", serviceId)
-                this.execute(pb)
+                this.execute(listOf("net", "start", serviceId))
 
                 log.info("Started sucessfully")
             }
@@ -204,8 +196,7 @@ class Setup(
 
                 log.info("Stopping service")
 
-                val pb: ProcessBuilder = ProcessBuilder("net", "stop", serviceId)
-                this.execute(pb)
+                this.execute(listOf("net", "stop", serviceId))
 
                 log.info("Stopped successfully")
             }
@@ -215,25 +206,25 @@ class Setup(
     /**
      * Execute command
      */
-    private fun execute(pb: ProcessBuilder) {
-        val output = StringBuffer()
-        val error = StringBuffer()
+    private fun execute(command: List<String>) {
 
-        // Execute
-        val pe: ProcessExecutor = ProcessExecutor(pb,
-                outputHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = output),
-                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
+        /** Log helper */
+        fun logResult(result: ProcessExecutor.Result) {
+            if (result.output.isNotEmpty())
+                log.info(result.output)
+            if (result.error.isNotEmpty())
+                log.error(result.error)
+        }
 
         try {
-            pe.start()
-            pe.waitFor();
-        }
-        finally {
-            // Evaluate/log output
-            if (output.isNotEmpty())
-                log.info(output.toString())
-            if (error.isNotEmpty())
-                log.error(output.toString())
+            logResult(
+                    ProcessExecutor.run(
+                            command = command,
+                            trim = true,
+                            omitEmptyLines = true))
+        } catch(e: ProcessExecutor.ProcessRunException) {
+            logResult(e.result)
+            throw(e)
         }
     }
 
@@ -243,22 +234,14 @@ class Setup(
     private fun serviceStatus(): ServiceStatus {
         when {
             SystemUtils.IS_OS_WINDOWS -> {
-                val pb: ProcessBuilder = ProcessBuilder("sc", "query", serviceId)
-
-                val output = StringBuffer()
-                val error = StringBuffer()
-
                 try {
-                    // Execute
-                    val pe: ProcessExecutor = ProcessExecutor(pb,
-                            outputHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = output),
-                            errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
-
-                    pe.start()
-                    pe.waitFor()
+                    val result = ProcessExecutor.run(
+                            command = listOf("sc", "query", serviceId),
+                            trim = true,
+                            omitEmptyLines = true)
 
                     val re = Regex("STATE.*:.*([0-9]+)[\\s]+([A-Z]+).*")
-                    val mr = re.find(output.toString())
+                    val mr = re.find(result.output)
                     if (mr != null) {
                         val state = mr.groups[1]!!.value.toInt()
                         when (state) {

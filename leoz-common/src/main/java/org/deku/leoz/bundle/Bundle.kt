@@ -518,7 +518,7 @@ class Bundle : Serializable {
 
         val pb = ProcessBuilder(command)
         if (wait) {
-            val pe = ProcessExecutor(pb, errorHandler = ProcessExecutor.DefaultStreamHandler(
+            val pe = ProcessExecutor(pb, errorHandler = ProcessExecutor.DefaultTextStreamHandler(
                     trim = true,
                     omitEmptyLines = true,
                     collectInto = error))
