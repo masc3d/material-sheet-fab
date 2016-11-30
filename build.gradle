@@ -51,12 +51,9 @@ buildscript {
     dependencies {
         classpath "ca.cutterslade.gradle:gradle-dependency-analyze:1.1.0"
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
+        classpath 'org.kordamp.gradle:stats-gradle-plugin:0.2.0'
     }
 }
-
-// Start parameters
-// TODO. not available since gradle-2.14. may have to find another way
-//gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
 
 // Common configuration for subprojects
 subprojects {
@@ -79,6 +76,8 @@ subprojects {
     apply plugin: 'ca.cutterslade.analyze'
     // Plugin for showing dependency updates
     apply plugin: 'com.github.ben-manes.versions'
+    // Plugin for showing code statistics (Sourcefiles, LOC) `gradlew stats`
+    apply plugin: 'org.kordamp.gradle.stats'
 
     // Global repositories
     repositories {
