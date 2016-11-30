@@ -55,8 +55,8 @@ class RsyncServer(
          * @param path Path to save configuration files to
          */
         fun save(path: File) {
-            var secretsFile = File(path, SECRETS_FILENAME)
-            var configFile = File(path, CONFIG_FILENAME)
+            val secretsFile = File(path, SECRETS_FILENAME)
+            val configFile = File(path, CONFIG_FILENAME)
 
             // Set secrets file for modules where it's not set
             this.modules.asSequence().filter { m -> m.secretsFile == null }.forEach { m ->
@@ -70,31 +70,6 @@ class RsyncServer(
             } finally {
                 os.close()
             }
-
-            // Amend secrets file permissions
-            // Skipping permissions for now. Should up tot he consumer to have this right (using acls/parent folder perms)
-            // Leaving this code here in case it's still needed for amending permissions in detail
-            //            val nioSecretsFile = secretsFile.toPath()
-            //            var aclFav = Files.getFileAttributeView(nioSecretsFile, AclFileAttributeView::class.java)
-            //            if (aclFav != null) {
-            //                var fowner = Files.getOwner(nioSecretsFile)
-            //                val acls = ArrayList<AclEntry>()
-            //                acls.add(AclEntry.newBuilder()
-            //                        .setType(AclEntryType.ALLOW)
-            //                        .setPrincipal(fowner)
-            //                        .setPermissions(AclEntryPermission.values().toSet()).build())
-            //                aclFav.acl = acls
-            //            } else {
-            //                var posixFav = Files.getFileAttributeView(nioSecretsFile, PosixFileAttributeView::class.java)
-            //                if (posixFav != null) {
-            //                    val perms = HashSet<PosixFilePermission>()
-            //                    perms.add(PosixFilePermission.OWNER_READ)
-            //                    perms.add(PosixFilePermission.OWNER_WRITE)
-            //                    posixFav.setPermissions(perms)
-            //                } else {
-            //                    log.warn("Could not set secret file permissions")
-            //                }
-            //            }
 
             // Save configuration file
             os = FileOutputStream(configFile).buffered()
@@ -112,8 +87,8 @@ class RsyncServer(
         fun save(os: OutputStream) {
             fun convertBoolean(b: Boolean): String = if (b) "yes" else "no"
 
-            var ini = Ini()
-            var globalSection = ini.config.globalSectionName
+            val ini = Ini()
+            val globalSection = ini.config.globalSectionName
 
             ini.config.isEmptySection = true
             ini.config.isGlobalSection = true
@@ -131,7 +106,7 @@ class RsyncServer(
                 ini.put(globalSection, "log file", Rsync.URI(this.logFile!!, asDirectory = false))
 
             for (module in this.modules) {
-                var section = ini.add(module.name)
+                val section = ini.add(module.name)
                 section.add("path", Rsync.URI(module.path, asDirectory = false))
                 if (module.secretsFile != null)
                     section.add("secrets file", Rsync.URI(module.secretsFile!!, asDirectory = false))
@@ -149,7 +124,7 @@ class RsyncServer(
          * @param file File to save to
          */
         fun saveSecrets(file: File) {
-            var os = FileOutputStream(file).buffered()
+            val os = FileOutputStream(file).buffered()
             try {
                 this.saveSecrets(os)
             } finally {
@@ -162,7 +137,7 @@ class RsyncServer(
          * @param os Output stream
          */
         fun saveSecrets(os: OutputStream) {
-            var ow = PrintWriter(os)
+            val ow = PrintWriter(os)
 
             this.modules.asSequence()
                     .flatMap { m -> m.permissions.keys.asSequence() }
@@ -202,10 +177,10 @@ class RsyncServer(
 
         val processExecutor = ProcessExecutor(
                 ProcessBuilder(command),
-                errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
+                errorHandler = ProcessExecutor.DefaultTextStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
         processExecutor.onTermination = { ex ->
-            if (error.length > 0) this.log.error(error.toString())
+            if (error.isNotEmpty()) this.log.error("${error}")
             this.onTermination(ex)
         }
         processExecutor.start()

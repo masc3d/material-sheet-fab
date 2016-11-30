@@ -249,22 +249,22 @@ class RsyncClient() {
 
             val error = StringBuffer()
             val pe: ProcessExecutor = ProcessExecutor(pb,
-                    outputHandler = object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
+                    outputHandler = object : ProcessExecutor.DefaultTextStreamHandler(trim = true, omitEmptyLines = true) {
                         override fun onProcessedOutput(output: String) {
-                            var lr = ListRecord.tryParse(output)
+                            val lr = ListRecord.tryParse(output)
                             if (lr != null) {
                                 result.add(lr)
                             }
                         }
                     },
-                    errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
+                    errorHandler = ProcessExecutor.DefaultTextStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
             pe.start()
 
             try {
                 pe.waitFor()
             } catch(e: Exception) {
-                if (error.length > 0) log.error(error.toString())
+                if (error.isNotEmpty()) log.error(error.toString())
                 throw e
             }
         })
@@ -354,7 +354,7 @@ class RsyncClient() {
             val error = StringBuffer()
 
             val pe = ProcessExecutor(pb,
-                    outputHandler = object : ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true) {
+                    outputHandler = object : ProcessExecutor.DefaultTextStreamHandler(trim = true, omitEmptyLines = true) {
                         override fun onProcessedOutput(output: String) {
                             val fr = FileRecord.tryParse(output)
                             if (fr != null) {
@@ -373,14 +373,14 @@ class RsyncClient() {
                             }
                         }
                     },
-                    errorHandler = ProcessExecutor.DefaultStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
+                    errorHandler = ProcessExecutor.DefaultTextStreamHandler(trim = true, omitEmptyLines = true, collectInto = error))
 
             pe.start()
 
             try {
                 pe.waitFor()
             } catch(e: Exception) {
-                if (error.length > 0) log.error(error.toString())
+                if (error.isNotEmpty()) log.error(error.toString())
                 throw e
             }
 
