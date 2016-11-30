@@ -1,10 +1,10 @@
 package sx
 
 import org.slf4j.LoggerFactory
-import java.lang.Process
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.lang.Process
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
@@ -12,6 +12,10 @@ import java.util.concurrent.TimeUnit
  * Process executor with threaded stream reading support.
  * Unlike with process builder, process executor will attempt to destroy the process instance when it's disposed
  * or the jvm shutdowns down.
+ *
+ * Limitations:
+ * * Currently only supports text streams, not binary
+ *
  * @param processBuilder Process builder
  * @param terminationTimeout Timeout on graceful termination before terminating process forcibly.
  * This timeout is applied when the process is terminated passively via shutdown hook or actively
@@ -21,14 +25,18 @@ import java.util.concurrent.TimeUnit
 class ProcessExecutor @JvmOverloads constructor(
         private val processBuilder: ProcessBuilder,
         private val terminationTimeout: Duration = Duration.ofSeconds(10),
-        private val outputHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler(),
-        private val errorHandler: ProcessExecutor.StreamHandler = ProcessExecutor.DefaultStreamHandler())
-:
-        Disposable
-{
+        private val outputHandler: ProcessExecutor.TextStreamHandler = ProcessExecutor.DefaultTextStreamHandler(),
+        private val errorHandler: ProcessExecutor.TextStreamHandler = ProcessExecutor.DefaultTextStreamHandler())
+    :
+        Disposable {
+    /** Logger */
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    /** Process */
     var process: Process? = null
         private set
+
+    // Threads
     private var outputReaderThread: StreamReaderThread? = null
     private var errorReaderThread: StreamReaderThread? = null
     private var monitorThread: MonitorThread? = null
@@ -39,26 +47,68 @@ class ProcessExecutor @JvmOverloads constructor(
     /**
      * Process exception
      */
-    inner class ProcessException(val errorCode: Int) : java.lang.Exception("Process failed with error code [${errorCode}]")
+    open class ProcessException(val errorCode: Int) : java.lang.Exception("Process failed with error code [${errorCode}]")
+
+    /**
+     * Process result class
+     */
+    class Result(val exitCode: Int, val output: String, val error: String) { }
+
+    /**
+     * Process run exception (for synchronous executions
+     */
+    class ProcessRunException(val result: Result) : ProcessException(result.exitCode) { }
 
     /**
      * Stream handler interface
      */
-    interface StreamHandler {
+    interface TextStreamHandler {
         /**
          * Called for each line of output.
          */
         fun onOutput(output: String)
     }
 
+    companion object {
+        /**
+         * Convenience method for running a command synchronously
+         */
+        fun run(command: List<String>, trim: Boolean = false, omitEmptyLines: Boolean = false): Result {
+            val pb: ProcessBuilder = ProcessBuilder(command)
+
+            val output = StringBuffer()
+            val error = StringBuffer()
+
+            try {
+                // Execute
+                val pe: ProcessExecutor = ProcessExecutor(pb,
+                        outputHandler = DefaultTextStreamHandler(
+                                trim = trim,
+                                omitEmptyLines = omitEmptyLines,
+                                collectInto = output),
+                        errorHandler = ProcessExecutor.DefaultTextStreamHandler(
+                                trim = trim,
+                                omitEmptyLines = omitEmptyLines,
+                                collectInto = error))
+
+                pe.start()
+                pe.waitFor()
+
+                return Result(0, output.toString(), error.toString())
+            } catch(e: ProcessExecutor.ProcessException) {
+                throw ProcessRunException(Result(e.errorCode, output.toString(), error.toString()))
+            }
+        }
+    }
+
     /**
      * Default stream handler, collecting both error and output
      */
-    open class DefaultStreamHandler @JvmOverloads constructor(
+    open class DefaultTextStreamHandler @JvmOverloads constructor(
             val trim: Boolean = false,
             val omitEmptyLines: Boolean = false,
             val collectInto: StringBuffer? = null
-    ) : StreamHandler {
+    ) : TextStreamHandler {
         override fun onOutput(output: String) {
             // Optionally trim
             val processedOutput = if (this.trim) output.trim() else output
@@ -80,7 +130,8 @@ class ProcessExecutor @JvmOverloads constructor(
         /**
          * Derived classes can override this method for handling processed output
          */
-        protected open fun onProcessedOutput(output: String) { }
+        protected open fun onProcessedOutput(output: String) {
+        }
     }
 
     /**
@@ -135,7 +186,7 @@ class ProcessExecutor @JvmOverloads constructor(
      */
     private inner class StreamReaderThread(
             var stream: InputStream,
-            var action: StreamHandler) : Thread() {
+            var action: TextStreamHandler) : Thread() {
 
         var reader: BufferedReader
 
@@ -146,7 +197,7 @@ class ProcessExecutor @JvmOverloads constructor(
         override fun run() {
             try {
                 var line: String? = null
-                while ( { line = reader.readLine(); line }() != null) {
+                while ({ line = reader.readLine(); line }() != null) {
                     action.onOutput(line!!)
                 }
             } catch (ex: Exception) {
@@ -173,7 +224,6 @@ class ProcessExecutor @JvmOverloads constructor(
 
         // Add stream handlers
         outputReaderThread = StreamReaderThread(process!!.inputStream, outputHandler)
-
         errorReaderThread = StreamReaderThread(process!!.errorStream, errorHandler)
 
         outputReaderThread!!.start()
