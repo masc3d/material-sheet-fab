@@ -69,27 +69,8 @@ class BundleRepository(
         return Files.find(path,
                 1,
                 BiPredicate { p, b ->
-                    !p.equals(path) && this.isValidFilename(p.fileName.toString())
+                    p != path && this.isValidFilename(p.fileName.toString())
                 })
-    }
-
-    /**
-     * Bundle path for specific platform
-     * @param path Base path
-     * @param bundleName Bundle name
-     * @param platform Platform
-     */
-    private fun nativeBundlePath(path: File, bundleName: String, platform: PlatformId): File {
-        return if (platform.operatingSystem == OperatingSystem.OSX) File(path, "${bundleName}.app") else path
-    }
-
-    /**
-     * Bundle path
-     * @param path Base path
-     * @param bundleName Bundle name
-     */
-    private fun nativeBundlePath(path: File, bundleName: String): File {
-        return this.nativeBundlePath(path, bundleName, PlatformId.current())
     }
 
     /**
@@ -197,7 +178,7 @@ class BundleRepository(
         // Verify this is an artifact version folder (having only platform ids as subfolder)
         val bundles = ArrayList<Bundle>()
         this.walkPlatformFolders(nSrcPath).forEach { p ->
-            val bundlePath = this.nativeBundlePath(p.toFile(), bundleName, PlatformId.parse(p.fileName.toString()))
+            val bundlePath = p.toFile()
             val a = Bundle.load(bundlePath)
             logInfo("Found [${a}]")
             bundles.add(a)
@@ -205,9 +186,9 @@ class BundleRepository(
 
         if (bundles.size > 1) {
             bundles.takeLast(bundles.size - 1).forEach { a ->
-                if (!bundles[0].version!!.equals(a.version))
+                if (bundles[0].version!! != a.version)
                     throw IllegalStateException("Inconsistent artifact versions")
-                if (!bundles[0].javaVersion.equals(a.javaVersion))
+                if (bundles[0].javaVersion != a.javaVersion)
                     throw IllegalStateException("Inconsistent java versions")
             }
         }
@@ -287,7 +268,7 @@ class BundleRepository(
 
         var source = this.rsyncModuleUri.resolve(bundleName).resolve(version, platformId)
         var destination = Rsync.URI(destPath)
-        var copyDestinations = copyPaths.asSequence().map { Rsync.URI(it) }
+        val copyDestinations = copyPaths.asSequence().map { Rsync.URI(it) }
 
         if (isOsx) {
             val osxBundleName = "${bundleName}.app"
@@ -318,10 +299,9 @@ class BundleRepository(
         if (onProgress != null) onProgress(currentFile, 0.95)
 
         if (verify) {
-            val bundlePath = this.nativeBundlePath(destPath, bundleName)
+            val bundlePath = destPath
             log.info("Verifying bundle [${bundlePath}]")
-            Bundle.load(bundlePath)
-                    .verify()
+            Bundle.load(bundlePath).verify()
         }
 
         if (onProgress != null) onProgress(currentFile, 1.0)
@@ -358,7 +338,7 @@ class BundleRepository(
 
         if (verify) {
             this.walkPlatformFolders(destPath.toPath()).forEach { p ->
-                val bundlePath = this.nativeBundlePath(p.toFile(), bundleName, PlatformId.parse(p.fileName.toString()))
+                val bundlePath = p.toFile()
                 logInfo("Verifying bundle [${bundlePath}]")
                 Bundle.load(bundlePath).verify()
             }

@@ -3,6 +3,8 @@ package org.deku.leoz.bundle
 import org.deku.leoz.config.BundleTestConfiguration
 import org.junit.Assert
 import org.junit.Test
+import sx.platform.CpuArch
+import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 
 /**
@@ -52,7 +54,7 @@ class BundleTest {
 
     @Test
     fun testLoad() {
-        var path = BundleTestConfiguration.releasePath.resolve(PlatformId.current().toString())
+        var path = BundleTestConfiguration.releasePath.resolve(PlatformId(OperatingSystem.WINDOWS, CpuArch.X64).toString())
 
         Bundle.load(path)
     }

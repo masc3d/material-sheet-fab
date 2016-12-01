@@ -10,15 +10,17 @@ import sx.io.WindowsShellLink
 import java.io.File
 
 /**
+ * Bundle process interface
  * Created by masc on 05-Feb-16.
  */
 class Setup : BundleProcessInterface() {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val CSIDL_DESKTOP = 0
 
-    private val bundle by lazy({
+    private val bundle by lazy {
         Bundle.load(this.javaClass)
-    })
+    }
+
     private val desktopLinkFile by lazy {
         when {
             SystemUtils.IS_OS_WINDOWS -> {
@@ -55,10 +57,7 @@ class Setup : BundleProcessInterface() {
     override fun start() {
         val storageConfiguration: StorageConfiguration = StorageConfiguration()
 
-        val bundle = Bundle.load(
-                BundleInstaller.getNativeBundlePath(
-                        File(storageConfiguration.bundleInstallationDirectory, BundleType.LEOZ_UI.value)))
-
+        val bundle = Bundle.load(File(storageConfiguration.bundleInstallationDirectory, BundleType.LEOZ_UI.value))
         bundle.execute(wait = false)
     }
 

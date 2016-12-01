@@ -31,23 +31,6 @@ class BundleInstaller(
                     !name.endsWith(OLD_SUFFIX) &&
                     !name.endsWith(DOWNLOAD_SUFFIX)
         }
-
-        /**
-         * Gets the bundle path ready for use with the Bundle class
-         * This path is plaform specific, as on some platform the bundle resides in a subfolder
-         * (eg. on OSX ${bundleName}.app)
-         * @param bundlePath Bundle base path
-         * @param bundleName Optional bundle name, hinting for native path. If not provided the bundle base path
-         * name is expected to be the same as the bundle name
-         */
-        fun getNativeBundlePath(
-                bundlePath: File,
-                bundleName: String? = null): File {
-            return if (SystemUtils.IS_OS_MAC)
-                File(bundlePath, "${bundleName ?: bundlePath.name}.app")
-            else
-                bundlePath
-        }
     }
 
     init {
@@ -73,16 +56,8 @@ class BundleInstaller(
      * Creates bundle path
      * @param bundleName Bundle name
      */
-    private fun bundlePath(bundleName: String): File {
+    fun bundlePath(bundleName: String): File {
         return File(bundleContainerPath, bundleName)
-    }
-
-    /**
-     * Create native bundle path
-     * @param bundleName Bundle name
-     */
-    private fun nativeBundlePath(bundleName: String): File {
-        return getNativeBundlePath(this.bundlePath(bundleName))
     }
 
     /**
@@ -91,14 +66,6 @@ class BundleInstaller(
      */
     private fun oldBundlePath(bundleName: String): File {
         return File(bundleContainerPath, "${bundleName}${OLD_SUFFIX}")
-    }
-
-    /**
-     * Current bundle
-     * @param bundleName Bundle name
-     */
-    fun bundle(bundleName: String): Bundle {
-        return Bundle(getNativeBundlePath(this.bundlePath(bundleName)), bundleName)
     }
 
     /**
@@ -140,7 +107,7 @@ class BundleInstaller(
     private fun tryLoadBundle(bundlePath: File, bundleName: String): Bundle? {
         if (bundlePath.exists()) {
             try {
-                return Bundle.load(getNativeBundlePath(bundlePath, bundleName))
+                return Bundle.load(bundlePath)
             } catch(e: Exception) {
                 this.log.error(e.message, e)
             }
@@ -277,7 +244,7 @@ class BundleInstaller(
         if (!omitNativeInstallation) {
             // Create a stub bundle instance if needed
             if (bundle == null)
-                bundle = this.bundle(bundleName)
+                bundle = Bundle.load(bundlePath)
 
             bundle.install()
             bundle.start()
@@ -296,7 +263,7 @@ class BundleInstaller(
         val bundlePath = this.bundlePath(bundleName)
 
         if (bundlePath.exists()) {
-            val bundle = this.bundle(bundleName)
+            val bundle = Bundle.load(bundlePath)
             bundle.stop()
             bundle.uninstall()
             log.info("Uninstalled sucessfully.")

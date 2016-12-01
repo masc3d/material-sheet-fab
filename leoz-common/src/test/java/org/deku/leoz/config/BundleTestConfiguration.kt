@@ -13,7 +13,6 @@ object BundleTestConfiguration {
 
     val releasePath = Paths.get("").toAbsolutePath()
             .parent
-            .parent
             .resolve("release")
             .resolve("test")
             .toFile()

@@ -108,18 +108,6 @@ abstract class PackagerReleaseTask extends PackagerTask {
     }
 
     /**
-     * Builds path to bundle within platform release path
-     * @param platformId Platform
-     * @return
-     */
-    def File getReleasePlatformBundlePath(PlatformId platformId) {
-        if (platformId.operatingSystem == OperatingSystem.OSX)
-            return new File(this.getReleasePlatformPath(platformId), "${project.name}.app")
-        else
-            this.getReleasePlatformPath(platformId)
-    }
-
-    /**
      * Builds a release path for current project and platform/arch
      * @param basePath Release base path
      * @return
@@ -129,21 +117,13 @@ abstract class PackagerReleaseTask extends PackagerTask {
     }
 
     /**
-     * Builds path to bundle within platform release path for current platform/project
-     * @return
-     */
-    def File getReleasePlatformBundlePath() {
-        return this.getReleasePlatformBundlePath(PlatformId.current())
-    }
-
-    /**
      * Returns bundle for platform
      * @param platformId
      * @return
      */
     def Bundle getReleaseBundle(PlatformId platformId) {
         return new Bundle(
-                this.getReleasePlatformBundlePath(platformId),
+                this.getReleasePlatformPath(platformId),
                 project.name,
                 Bundle.Version.parse(project.version),
                 platformId)
@@ -344,7 +324,7 @@ class PackagerReleaseNativeBundleTask extends PackagerReleaseTask {
 
         println "Creating bundle manifest"
         Bundle.create(
-                this.getReleasePlatformBundlePath(),
+                this.getReleasePlatformPath(),
                 project.name,
                 PlatformId.current(),
                 Bundle.Version.parse(project.version))
@@ -367,7 +347,7 @@ class PackagerReleaseUpdateTask extends PackagerReleaseTask {
 
             def File releasePlatformPath = it.toFile()
             def PlatformId platformId = PlatformId.parse(releasePlatformPath.name)
-            def releaseBundle = Bundle.load(this.getReleasePlatformBundlePath(platformId))
+            def releaseBundle = Bundle.load(this.getReleasePlatformPath(platformId))
 
             // Java version check here to prevent updating jars of a native bundle built with a different version
             if (!releaseBundle.javaVersion.equals(SystemUtils.JAVA_VERSION))
@@ -408,11 +388,13 @@ class PackagerReleaseUpdateTask extends PackagerReleaseTask {
             bundleConfig.save()
 
             println "Creating bundle manifest"
-            Bundle.create(
-                    this.getReleasePlatformBundlePath(platformId),
+            def bundle = Bundle.create(
+                    this.getReleasePlatformPath(platformId),
                     project.name,
                     platformId,
                     Bundle.Version.parse(project.version))
+
+            bundle.executable.setExecutable(true)
         }
     }
 }

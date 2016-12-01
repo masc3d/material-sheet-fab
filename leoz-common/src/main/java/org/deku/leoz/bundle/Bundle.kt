@@ -14,13 +14,15 @@ import java.util.*
 import java.util.function.BiPredicate
 import java.util.jar.JarFile
 import java.util.regex.Pattern
+import java.util.stream.Collectors
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller
 import javax.xml.bind.annotation.XmlAttribute
 import javax.xml.bind.annotation.XmlElement
 import javax.xml.bind.annotation.XmlRootElement
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
-
+import kotlinx.support.jdk8.collections.*
+import kotlinx.support.jdk8.streams.toList
 
 /**
  * Represents a local/physical leoz bundle including a manifest containing metadata
@@ -46,7 +48,7 @@ class Bundle : Serializable {
         }
 
         when {
-            SystemUtils.IS_OS_MAC -> File(this.path!!.resolve("Contents").resolve("MacOS"), this.name!!)
+            SystemUtils.IS_OS_MAC -> File(this.contentPath.resolve("MacOS"), this.name!!)
             else -> File(this.path!!, "${this.name!!}${extension}")
         }
     }
@@ -102,6 +104,7 @@ class Bundle : Serializable {
         val nioContentPath: Path
         if (this.platform!!.operatingSystem == OperatingSystem.OSX) {
             nioContentPath = nioBasePath
+                    .resolve("${this.name}.app")
                     .resolve("Contents")
         } else {
             nioContentPath = nioBasePath
@@ -121,7 +124,7 @@ class Bundle : Serializable {
 
     /** Manifest file path */
     val manifestFile: File by lazy(LazyThreadSafetyMode.NONE, {
-        Bundle.manifestFile(this.path!!)
+        Bundle.manifestFile(this.path!!, this.name!!, this.platform!!.operatingSystem)
     })
 
     /** Bumdle configuration file */
@@ -159,6 +162,7 @@ class Bundle : Serializable {
      */
     companion object {
         val MANIFEST_FILENAME = "manifest.xml"
+        val log = LoggerFactory.getLogger(Bundle::class.java)
 
         fun hashFile(file: File): String {
             return com.google.common.io.Files.hash(file, Hashing.md5()).toString()
@@ -169,8 +173,14 @@ class Bundle : Serializable {
          * @param path Bundle path
          * @return Manifest file or null if not found
          */
-        private fun manifestFile(path: File): File {
-            return File(path, MANIFEST_FILENAME)
+        private fun manifestFile(path: File, bundleName: String, os: OperatingSystem): File {
+            return when (os) {
+                OperatingSystem.OSX -> path.toPath()
+                        .resolve("${bundleName}.app")
+                        .resolve(MANIFEST_FILENAME)
+                        .toFile()
+                else -> File(path, MANIFEST_FILENAME)
+            }
         }
 
         /**
@@ -182,12 +192,13 @@ class Bundle : Serializable {
         @JvmStatic fun create(bundlePath: File, bundleName: String, platformId: PlatformId, version: Version): Bundle {
             val fileEntries = ArrayList<FileEntry>()
 
+            // Remove existing manifest
+            val manifestFile = Bundle.manifestFile(bundlePath, bundleName, platformId.operatingSystem)
+
             // Walk bundle directory and calculate md5 for each regular file
-            val pathUri = bundlePath.toURI()
+            val pathUri = manifestFile.parentFile.toURI()
             val nPath = Paths.get(pathUri)
 
-            // Remove existing manifest
-            val manifestFile = Bundle.manifestFile(bundlePath)
             if (manifestFile.exists()) manifestFile.delete()
 
             Files.walk(nPath)
@@ -226,7 +237,25 @@ class Bundle : Serializable {
          * @param bundlePath Bundle path
          */
         @JvmStatic fun load(bundlePath: File): Bundle {
-            val manifestFile = Bundle.manifestFile(bundlePath)
+            if (!bundlePath.exists())
+                throw IllegalArgumentException("Path [${bundlePath}] does not exist")
+
+            var manifestFile: File = File(bundlePath, MANIFEST_FILENAME)
+            if (!manifestFile.exists()) {
+                // Look for OSX .app path
+                val osxManifestFile = Files.find(bundlePath.toPath(), 1, BiPredicate { t, u ->
+                    u.isDirectory && t.fileName.toString().endsWith(".app")
+                })
+                        .toList()
+                        .firstOrNull()
+                        ?.resolve(MANIFEST_FILENAME)
+                        ?.toFile()
+
+                if (osxManifestFile == null)
+                    throw IllegalArgumentException("Could not locate manifest within bundle path [${bundlePath}]")
+
+                manifestFile = osxManifestFile
+            }
 
             val context = JAXBContext.newInstance(Bundle::class.java)
             val m = context.createUnmarshaller();
@@ -234,6 +263,11 @@ class Bundle : Serializable {
             try {
                 val bundle = m.unmarshal(inputStream) as Bundle
                 bundle.path = bundlePath
+
+                // Shallow folder structure sanity check
+                if (!bundle.jarPath.exists())
+                    throw IllegalStateException("Bundle content path does not exist")
+
                 return bundle
             } finally {
                 inputStream.close()
@@ -243,11 +277,21 @@ class Bundle : Serializable {
         /**
          * Load current bundle by class.
          * @param c Class contained in one of the native bzndle jars
+         * @throws IllegalStateException If not running from jar
          */
         @JvmStatic fun load(c: Class<*>): Bundle {
             val jarFile = File(c.protectionDomain.codeSource.location.toURI())
-            JarFile(jarFile)
-            return load(jarFile.parentFile.parentFile)
+
+            if (!jarFile.toString().toLowerCase().endsWith(".jar"))
+                throw IllegalStateException("Cannot load bundle from class, not running from jar")
+
+            // The following relative path conventinos are specific to the javafx native packager/bundle structure
+            val bundlePath = when {
+                SystemUtils.IS_OS_MAC -> jarFile.parentFile.parentFile.parentFile.parentFile
+                else -> jarFile.parentFile.parentFile
+            }
+
+            return load(bundlePath)
         }
     }
 
@@ -255,7 +299,7 @@ class Bundle : Serializable {
      * Verify manifest against files in a path
      */
     fun verify() {
-        val nPath = Paths.get(this.path!!.toURI())
+        val nPath = Paths.get(this.manifestFile.parentFile.toURI())
 
         // Hashed check list to verify left-overs
         val checkList = this.fileEntries.associateBy { s -> s.uriPath } as HashMap
@@ -505,13 +549,7 @@ class Bundle : Serializable {
         val error = StringBuffer()
 
         val command = ArrayList<String>()
-        if (SystemUtils.IS_OS_MAC) {
-            command.add("open")
-            command.add(this.path!!.toString())
-            command.add("--args")
-        } else {
-            command.add(this.executable.toString())
-        }
+        command.add(this.executable.toString())
         command.addAll(args)
 
         this.executable.setExecutable(true)

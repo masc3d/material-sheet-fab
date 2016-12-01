@@ -52,8 +52,6 @@ fun Bundle.uninstall() {
  * @param bundleName Bundle name
  **/
 fun BundleInstaller.boot(bundleName: String) {
-    val leozBoot = Bundle.load(
-            BundleInstaller.getNativeBundlePath(File(this.bundleContainerPath, BundleType.LEOZ_BOOT.value)))
-
+    val leozBoot = Bundle.load(File(this.bundleContainerPath, BundleType.LEOZ_BOOT.value))
     leozBoot.execute(wait = false, args = *arrayOf("--no-ui", "--bundle", bundleName))
 }

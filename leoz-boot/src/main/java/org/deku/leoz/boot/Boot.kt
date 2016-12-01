@@ -93,21 +93,26 @@ class Boot {
      */
     fun selfInstall(): Observable<Event> {
         return task<Event> { onNext ->
-            if (storageConfiguration.nativeBundleBasePath == null) {
-                log.warn("Skipping self-installation as native bundle base path could not be determined (not running from native bundle)")
+            if(File(this.javaClass.protectionDomain.codeSource.location.toURI()).isDirectory) {
+                log.warn("Not running from jar file, skipping self-installation")
                 return@task
             }
 
-            val nativeBundlePath = storageConfiguration.nativeBundleBasePath!!
-            log.info("Native bundle path [${nativeBundlePath}")
+            val runtimeBundle = Bundle.load(this.javaClass)
+            val bundleInstallationDirectory = storageConfiguration.bundleInstallationDirectory.toPath()
 
-            if (nativeBundlePath.parentFile == storageConfiguration.bundleInstallationDirectory)
+            val runtimeBundlePath = runtimeBundle.path!!.toPath()
+            log.info("Runtime bundle path [${runtimeBundlePath}")
+
+            if (runtimeBundlePath.toAbsolutePath().startsWith(bundleInstallationDirectory.toAbsolutePath())) {
+                log.info("Skipping self-installation, already running from bundle installation path")
                 return@task
+            }
 
             log.info("Performing self verification")
-            Bundle.load(nativeBundlePath).verify()
+            runtimeBundle.verify()
 
-            val srcPath = nativeBundlePath
+            val srcPath = runtimeBundlePath
             val destPath = File(storageConfiguration.bundleInstallationDirectory, BundleType.LEOZ_BOOT.value)
 
             val rc = RsyncClient()
@@ -255,8 +260,9 @@ class Boot {
                         },
                 task {
                     if (settings.productive)
-                        this.installer.bundle(settings.bundle).prepareProduction()
-
+                        Bundle.load(
+                                this.installer.bundlePath(settings.bundle))
+                                .prepareProduction()
                 })
                 .doAfterTerminate {
                     // Cleanup
