@@ -55,6 +55,25 @@ buildscript {
     }
 }
 
+apply plugin: 'java'
+
+clean {
+    doLast {
+        // Clean buildSrc import/build directories
+        def buildSrcPath = project.rootDir.toPath()
+                .resolve('buildSrc')
+
+        buildSrcPath
+                .resolve('src')
+                .resolve('import')
+                .deleteDir()
+
+        buildSrcPath
+                .resolve('build')
+                .deleteDir()
+    }
+}
+
 // Common configuration for subprojects
 subprojects {
 
