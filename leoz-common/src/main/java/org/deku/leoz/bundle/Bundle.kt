@@ -553,6 +553,13 @@ class Bundle : Serializable {
         command.addAll(args)
 
         this.executable.setExecutable(true)
+        if (SystemUtils.IS_OS_MAC) {
+            // On OSX jspawnhelper must be executable (in case the bundle is executing itself, as leoz-ui does when executing with `start`)
+            val spawnHelper = File(this.contentPath, "PlugIns/Java.runtime/Contents/Home/jre/lib/jspawnhelper")
+            if (spawnHelper.exists()) {
+                spawnHelper.setExecutable(true)
+            }
+        }
 
         val pb = ProcessBuilder(command)
         if (wait) {
