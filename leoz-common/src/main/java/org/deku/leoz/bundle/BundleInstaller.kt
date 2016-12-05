@@ -168,9 +168,7 @@ class BundleInstaller(
             }
 
             val platform = PlatformId.current()
-            var copyPaths = this.listBundlePaths()
-            if (platform.operatingSystem == OperatingSystem.OSX)
-                copyPaths = copyPaths.map { f -> File(f, "${f.name}.app") }
+            val copyPaths = this.listBundlePaths()
 
             bundleRepository.download(
                     bundleName,

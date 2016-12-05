@@ -264,27 +264,39 @@ class BundleRepository(
                                onProgress: ((file: String, percentage: Double) -> Unit)? = null) {
         val rc = this.createRsyncClient()
 
-        val isOsx = platformId.operatingSystem == OperatingSystem.OSX
+        val source: Rsync.URI
+        val destination: Rsync.URI
+        val copyDestinations: List<Rsync.URI>
 
-        var source = this.rsyncModuleUri.resolve(bundleName).resolve(version, platformId)
-        var destination = Rsync.URI(destPath)
-        val copyDestinations = copyPaths.asSequence().map { Rsync.URI(it) }
-
-        if (isOsx) {
-            val osxBundleName = "${bundleName}.app"
-            source = source.resolve(osxBundleName)
-            destination = destination.resolve(osxBundleName)
-            if (destPath.parentFile.exists())
+        when (platformId.operatingSystem) {
+            OperatingSystem.OSX -> {
+                // OSX specific optimization for copying from other local bundles.
+                // Amending source/dest/copy paths to consistently point inside the OSX bundle specific app folder
+                val osxBundleName = "${bundleName}.app"
+                source = this.rsyncModuleUri
+                        .resolve(bundleName)
+                        .resolve(version, platformId)
+                        .resolve(osxBundleName)
+                destination = Rsync.URI(destPath)
+                        .resolve(osxBundleName)
+                copyDestinations = copyPaths.map { Rsync.URI(it).resolve("${it.name}.app") }
                 File(destPath, osxBundleName).mkdirs()
+            }
+            else -> {
+                source = this.rsyncModuleUri
+                        .resolve(bundleName)
+                        .resolve(version, platformId)
+                destination = Rsync.URI(destPath)
+                copyDestinations = copyPaths.map { Rsync.URI(it) }
+            }
         }
-
-        rc.copyDestinations = copyDestinations.toMutableList()
 
         log.info("Synchronizing [${source}] -> [${destination}]")
 
         var currentFile: String = ""
         var currentPercentage: Double = 0.0
         if (onProgress != null) onProgress(currentFile, 0.0)
+        rc.copyDestinations = copyDestinations
         rc.sync(source, destination,
                 onFile = { r ->
                     log.info("Updating [${r.flags}] [${r.path}]")
