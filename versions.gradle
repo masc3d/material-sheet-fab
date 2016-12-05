@@ -29,7 +29,7 @@ buildscript {
         v_kryo = '4.0.0'
         v_logback = '1.1.7'
         v_protostuff = '1.5.1'
-        v_rxjava = '1.2.2'
+        v_rxjava = '1.2.3'
         v_resteasy = '3.0.19.Final'
         v_slf4j = '1.7.21'
         v_snappy = '1.1.2.4'

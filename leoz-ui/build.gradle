@@ -42,7 +42,7 @@ dependencies {
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
 
             // RX
-            "io.reactivex:rxjava:1.2.2",
+            "io.reactivex:rxjava:$v_rxjava",
             "io.reactivex:rxkotlin:0.60.0",
             "io.reactivex:rxjavafx:0.3.0",
             "com.github.thomasnield:rxkotlinfx:0.3.0",
