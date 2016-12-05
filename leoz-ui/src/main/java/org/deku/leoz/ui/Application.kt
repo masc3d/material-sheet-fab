@@ -108,6 +108,7 @@ class Application : Application() {
         Kodein.global.addImport(StorageConfiguration.module)
         Kodein.global.addImport(ApplicationConfiguration.module)
         Kodein.global.addImport(LogConfiguration.module)
+        Kodein.global.addImport(RsyncConfiguration.module)
         Kodein.global.addImport(MessagingConfiguration.module)
         Kodein.global.addImport(RestClientConfiguration.module)
         Kodein.global.addImport(BundleConfiguration.module)
