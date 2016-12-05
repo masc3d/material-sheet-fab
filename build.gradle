@@ -49,7 +49,7 @@ dependencies {
             // Misc
             "org.apache.commons:commons-lang3:3.5",
             // RX
-            "io.reactivex:rxjava:1.2.2",
+            "io.reactivex:rxjava:1.2.3",
             "io.reactivex:rxjava-async-util:0.21.0",
             "io.reactivex:rxkotlin:0.60.0",
     )
