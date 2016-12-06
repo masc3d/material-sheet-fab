@@ -1,3 +1,5 @@
 include ':app'
 include ':libs:sx-common'
+include ':libs:sx-android'
 project(':libs:sx-common').projectDir = file('../libs/sx-common')
+project(':libs:sx-android').projectDir = file('../libs/sx-android')

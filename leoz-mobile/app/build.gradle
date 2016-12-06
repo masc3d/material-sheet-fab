@@ -6,19 +6,29 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
         classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1'
+    }
+
+    ext {
+        v_android_buildtools = '25.0.0'
+        v_android_support = '25.0.1'
+        v_rxlifecycle = '1.0'
+        v_roboelectric = '3.1.2'
     }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.getkeepsafe.dexcount'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    buildToolsVersion v_android_buildtools
     defaultConfig {
-        applicationId "android.leoz.deku.org.leoz"
+        applicationId "org.deku.leoz.android"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 16
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -28,6 +38,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            debuggable true
+        }
     }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -35,16 +48,66 @@ android {
 }
 
 dependencies {
-    compile project(':libs:sx-common')
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile(
+            project(':libs:sx-common'),
+            fileTree(dir: 'libs', include: ['*.jar']),
 
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support:design:25.0.1'
+            // Android
+            "com.android.support:support-annotations:$v_android_support",
+            "com.android.support:appcompat-v7:$v_android_support",
+            "com.android.support:design:$v_android_support",
+            "com.android.support:cardview-v7:$v_android_support",
+            "com.android.support:recyclerview-v7:$v_android_support",
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-    testCompile 'junit:junit:4.12'
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein-android:3.0.0",
+
+            // Logging
+            "org.slf4j:slf4j-api:$v_slf4j",
+            "org.slf4j:jul-to-slf4j:$v_slf4j",
+            "com.github.tony19:logback-android-classic:1.1.1-5",
+
+            // Reactive
+            "io.reactivex:rxjava:$v_rxjava",
+            "io.reactivex:rxandroid:1.2.1",
+            "io.reactivex:rxkotlin:0.60.0",
+            "io.reactivex:rxjava-async-util:0.21.0",
+            "com.github.davidmoten:rxjava-extras:0.7.9.10",
+            "com.jakewharton.rxbinding:rxbinding:1.0.0",
+            "com.trello:rxlifecycle:$v_rxlifecycle",
+            "com.trello:rxlifecycle-kotlin:$v_rxlifecycle",
+            "com.trello:rxlifecycle-components:$v_rxlifecycle",
+    )
+
+    testCompile(
+            "junit:junit:$v_junit",
+            "org.robolectric:robolectric:$v_roboelectric",
+            "org.robolectric:shadows-multidex:$v_roboelectric",
+    )
+
+    androidTestCompile(
+            "junit:junit:$v_junit",
+            "com.android.support:support-annotations:$v_android_support",
+            "com.android.support.test:runner:0.5",
+            "com.android.support.test:rules:0.5",
+//            dependencies.create('com.android.support.test.espresso:espresso-core:2.2.2') {
+//                exclude group: 'com.android.support', module: 'support-annotations'
+//            }
+    )
+}
+
+/** Mange apk name for all output variants */
+android.applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+        def outputFile = output.outputFile
+        outputFile = new File(
+                outputFile.parent.toString(),
+                outputFile.name.replace(project.name, String.format("%s-%s", project.parent.name, android.defaultConfig.versionName)));
+        println "${output.name} apk filename: ${outputFile}"
+        output.outputFile = file(outputFile.toString());
+    }
 }

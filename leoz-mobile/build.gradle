@@ -9,6 +9,10 @@ buildscript {
         mavenCentral()
         jcenter()
     }
+
+    dependencies {
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+    }
 }
 
 subprojects {
@@ -17,6 +21,7 @@ subprojects {
             mavenCentral()
             jcenter()
         }
+
     }
 
     repositories {
@@ -24,8 +29,16 @@ subprojects {
         jcenter()
     }
 
+    apply plugin: 'com.github.ben-manes.versions'
+    apply plugin: 'project-report'
+
     // Set boot classpath for all subprojects (eliminates warning in conjunction with setting sourceCompatibility)
     tasks.withType(JavaCompile) {
         options.bootClasspath = ManagementFactory.getRuntimeMXBean().bootClassPath
     }
+}
+
+task clean(type: Delete) {
+    group 'build'
+    delete rootProject.buildDir
 }
