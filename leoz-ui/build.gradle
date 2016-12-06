@@ -20,7 +20,7 @@ buildscript {
 dependencies {
     compile(
             project(':libs:sx-common'),
-            project(':leoz-common'),
+            project(':leoz-core'),
             project(':libs:sx-fx'),
             project(':libs:sx-discovery'),
 

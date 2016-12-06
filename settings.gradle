@@ -10,7 +10,7 @@ include ':libs:sx-ssh'
 include ':libs:sx-serialization'
 include ':libs:barbarywatchservice'
 
-include ':leoz-common'
+include ':leoz-core'
 include ':leoz-node'
 include ':leoz-central'
 include ':leoz-central-schema'

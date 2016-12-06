@@ -4,6 +4,7 @@
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/leoz-central-schema" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/barbarywatchservice" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libs/sx-android" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/sx-common" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/sx-discovery" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/sx-fx" vcs="Git" />
