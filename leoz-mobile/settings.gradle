@@ -1,5 +1,9 @@
 include ':app'
 include ':libs:sx-common'
 include ':libs:sx-android'
+include ':libs:sx-serialization'
+include ':leoz-common'
 project(':libs:sx-common').projectDir = file('../libs/sx-common')
 project(':libs:sx-android').projectDir = file('../libs/sx-android')
+project(':libs:sx-serialization').projectDir = file('../libs/sx-serialization')
+project(':leoz-common').projectDir = file('../leoz-common')

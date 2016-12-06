@@ -50,6 +50,8 @@ android {
 dependencies {
     compile(
             project(':libs:sx-common'),
+            project(':libs:sx-android'),
+            project(':leoz-common'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             // Android
