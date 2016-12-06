@@ -1,0 +1,31 @@
+import java.lang.management.ManagementFactory
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+apply from: '../versions.gradle'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+}
+
+subprojects {
+    buildscript {
+        repositories {
+            mavenCentral()
+            jcenter()
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    // Set boot classpath for all subprojects (eliminates warning in conjunction with setting sourceCompatibility)
+    tasks.withType(JavaCompile) {
+        options.bootClasspath = ManagementFactory.getRuntimeMXBean().bootClassPath
+    }
+}

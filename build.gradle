@@ -3,8 +3,6 @@ import sx.platform.PlatformId
 import java.lang.management.ManagementFactory
 import java.nio.file.Paths
 
-version = '0.1'
-
 apply from: 'versions.gradle'
 
 def assertJvmVersion(String vmVersion) {
@@ -74,9 +72,8 @@ clean {
     }
 }
 
-// Common configuration for subprojects
+// Common configuration for all subprojects (including android)
 subprojects {
-
     // Common subproject buildscript configuration
     buildscript {
         repositories {
@@ -85,30 +82,39 @@ subprojects {
         }
     }
 
-    // Common plugins
-    apply plugin: 'base'
-    apply plugin: 'distribution'
-    apply plugin: 'java'
-    // For generating dependency reports
-    apply plugin: 'project-report'
-    // Analzye tasks (analyze* for showing unused dependencies eg.)
-    apply plugin: 'ca.cutterslade.analyze'
-    // Plugin for showing dependency updates
-    apply plugin: 'com.github.ben-manes.versions'
-    // Plugin for showing code statistics (Sourcefiles, LOC) `gradlew stats`
-    apply plugin: 'org.kordamp.gradle.stats'
-
     // Global repositories
     repositories {
         mavenCentral()
         jcenter()
     }
 
+    // For generating dependency reports
+    apply plugin: 'project-report'
+    // Plugin for showing dependency updates
+    apply plugin: 'com.github.ben-manes.versions'
+    // Plugin for showing code statistics (Sourcefiles, LOC) `gradlew stats`
+    apply plugin: 'org.kordamp.gradle.stats'
+
+    // Set boot classpath for all subprojects (eliminates warning in conjunction with setting sourceCompatibility)
+    tasks.withType(JavaCompile) {
+        options.bootClasspath = ManagementFactory.getRuntimeMXBean().bootClassPath
+    }
+}
+
+// Common configuration for all non-android subprojects
+configure(subprojects.findAll { it.path != ':leoz-mobile:app' }) {
+    // Common plugins
+    apply plugin: 'base'
+    apply plugin: 'distribution'
+    apply plugin: 'java'
+    // Analzye tasks (analyze* for showing unused dependencies eg.)
+    apply plugin: 'ca.cutterslade.analyze'
+
     test {
         testLogging.showStandardStreams = true
     }
 
-// Global jar configuration
+    // Global jar configuration
     jar {
         doFirst {
             jar {
@@ -143,9 +149,9 @@ subprojects {
         projectPlatformDir = new File(project.projectDir, 'platform')
     }
 
-/**
- * Task copying platform specific files from sx-common to project dir
- */
+    /**
+    * Task copying platform specific files from sx-common to project dir
+    */
     task copySxPlatformDirToProject(type: Copy) {
         from sxRsyncPlatformDir
         into projectPlatformDir
@@ -154,9 +160,9 @@ subprojects {
         rename 'sx-rsync(.*)', 'leoz-rsync$1'
     }
 
-/**
- * Task copying platform specific files from sx-common to project build dir
- */
+    /**
+     * Task copying platform specific files from sx-common to project build dir
+     */
     task copySxPlatformDirToBuild(type: Copy) {
         from sxRsyncPlatformDir
         into projectBuildPlatformDir
@@ -166,21 +172,20 @@ subprojects {
     }
     tasks.copySxPlatformDirToBuild.dependsOn(tasks.copySxPlatformDirToProject)
 
-/**
- * Task copying architecture specific global files to project dri
- */
+    /**
+     * Task copying architecture specific global files to project dri
+     */
     task copyGlobalPlatformDirToProject(type: Copy) {
         from globalPlatformDir
         into projectPlatformDir
     }
 
-/**
- * Task copying architecture specific global files to project build dir
- */
+    /**
+     * Task copying architecture specific global files to project build dir
+     */
     task copyGlobalPlatformDirToBuild(type: Copy) {
         from globalPlatformDir
         into projectBuildPlatformDir
     }
     tasks.copyGlobalPlatformDirToBuild.dependsOn(tasks.copyGlobalPlatformDirToProject)
 }
-

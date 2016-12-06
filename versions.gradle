@@ -12,7 +12,8 @@ buildscript {
         v_eclipselink = '2.6.4'
         v_flyway = '4.0.3'
         v_fxform2 = '8.0.18'
-        v_guava = '20.0'
+        // IMPORTANT: as guava is used in buildSrc, guava versions >= 20.0 break android build (NoSuchMethod.. ListenableFuture)
+        v_guava = '19.0'
         v_h2 = '1.4.193'
         v_ini4j = '0.5.4'
         v_jackson = '2.8.4'
