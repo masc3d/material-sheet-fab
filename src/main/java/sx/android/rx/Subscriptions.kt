@@ -1,7 +1,6 @@
 package sx.android.rx
 
-import com.trello.rxlifecycle.ActivityEvent
-import com.trello.rxlifecycle.FragmentEvent
+import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.components.RxActivity
 import com.trello.rxlifecycle.components.RxFragment
 import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
