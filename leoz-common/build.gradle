@@ -43,8 +43,6 @@ dependencies {
             "com.google.guava:guava:$v_guava",
             // Commons
             "commons-io:commons-io:$v_commons_io",
-            // javax
-            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
             // kryo
             "com.esotericsoftware:kryo:4.0.0",
             "net.java.dev.jna:jna:$v_jna",

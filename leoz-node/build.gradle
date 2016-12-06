@@ -234,7 +234,10 @@ dependencies {
             "org.springframework:spring-aspects:$v_spring",
 
             // json doc
-            "io.swagger:swagger-jaxrs:$v_swagger",
+            dependencies.create("io.swagger:swagger-jaxrs:$v_swagger") {
+                // Conflicts with resteasy/classpath which uses a newer version of the spec
+                exclude group: 'javax.ws.rs', module: 'jsr311-api'
+            },
             "org.javassist:javassist:$v_javassist",
 
             // hawt.io
