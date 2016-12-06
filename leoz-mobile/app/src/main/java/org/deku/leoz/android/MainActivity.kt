@@ -1,4 +1,4 @@
-package android.leoz.deku.org.leoz
+package org.deku.leoz.android
 
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
