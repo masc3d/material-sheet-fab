@@ -59,9 +59,10 @@ apply plugin: 'org.flywaydb.flyway'
 //apply plugin: "com.zoltu.application-agent"
 apply plugin: PackagerPlugin
 
+group = 'org.deku.leoz'
 sourceCompatibility = 1.8
 version = '0.58-RELEASE'
-mainClassName = "org.deku.leoz.node.Main"
+mainClassName = 'org.deku.leoz.node.Main'
 
 def GENERATED_DIR = file("${project.projectDir}/src/generated")
 

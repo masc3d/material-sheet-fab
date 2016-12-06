@@ -15,7 +15,7 @@ import java.util.*
  * LocalTime wrapper for rest operations, serializing to short time format (eg. "10:00")
  * Created by masc on 29.05.15.
  */
-@JsonSerialize(using = ToStringSerializer::class)
+@JsonSerialize(using = com.fasterxml.jackson.databind.ser.std.ToStringSerializer::class)
 class ShortTime {
     val localTime: LocalTime
 

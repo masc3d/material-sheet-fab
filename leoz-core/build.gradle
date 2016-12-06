@@ -1,6 +1,3 @@
-sourceCompatibility = 1.8
-version = '1.0'
-
 apply plugin: 'kotlin'
 
 buildscript {
@@ -8,6 +5,10 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
+
+group = 'org.deku.leoz'
+sourceCompatibility = 1.8
+version = '1.0'
 
 configurations {
     provided {
@@ -27,6 +28,7 @@ dependencies {
             project(':libs:sx-discovery'),
             // Watchservice replacement for OSX
             project(':libs:barbarywatchservice'),
+            project(':leoz-common'),
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",

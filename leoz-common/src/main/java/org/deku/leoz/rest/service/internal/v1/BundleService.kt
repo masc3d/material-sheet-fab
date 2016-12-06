@@ -12,8 +12,8 @@ import javax.ws.rs.core.MediaType
  * Created by JT on 05.02.16.
  */
 @Path("internal/v1/bundle")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+@Consumes(javax.ws.rs.core.MediaType.APPLICATION_JSON)
 @Api(value = "Bundle operations")
 interface BundleService {
 
@@ -31,5 +31,5 @@ interface BundleService {
     @GET
     @Path("/info/{${BUNDLE}}")
     @ApiOperation(value = "Retrieve bundle information by alias")
-    fun info(@PathParam(BUNDLE) bundleName: String, @QueryParam(ALIAS) versionAlias: String? = null, @QueryParam(KEY) nodeKey: String? = null): UpdateInfo
+    fun info(@PathParam(BUNDLE) bundleName: String, @QueryParam(ALIAS) versionAlias: String? = null, @QueryParam(KEY) nodeKey: String? = null): org.deku.leoz.service.update.UpdateInfo
 }

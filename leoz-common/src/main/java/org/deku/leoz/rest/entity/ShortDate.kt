@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
  * LocalDate wrapper for rest operations, serializing date in short iso format (eg. "2015-01-01")
  * Created by masc on 21.04.15.
  */
-@JsonSerialize(using = ToStringSerializer::class)
+@JsonSerialize(using = com.fasterxml.jackson.databind.ser.std.ToStringSerializer::class)
 class ShortDate {
     val localDate: LocalDate
 

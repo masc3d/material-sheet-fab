@@ -1,5 +1,9 @@
 package org.deku.leoz.central
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import org.deku.leoz.central.config.ApplicationConfiguration
 import org.deku.leoz.node.config.ExecutorConfiguration
 import org.junit.Ignore
 import org.junit.runner.RunWith
@@ -22,8 +26,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 open class DataTest {
     companion object {
         init {
-            org.deku.leoz.node.Application.injectableInstance.set({ Application.instance })
-            org.deku.leoz.node.Application.instance.initialize()
+            Kodein.global.addImport(ApplicationConfiguration.module)
+
+            Kodein.global.instance<Application>().initialize()
         }
     }
 }

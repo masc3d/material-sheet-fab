@@ -1,13 +1,9 @@
 package org.deku.leoz.rest.entity.v1
 
-import com.google.common.base.Strings
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.annotations.*
 import org.deku.leoz.rest.entity.ShortDate
 import org.deku.leoz.rest.entity.ShortTime
-
 import java.time.LocalDate
-
 
 /**
  * Routing service request response
@@ -23,19 +19,19 @@ class Routing {
     class Participant {
         @ApiModelProperty(dataType = "string", example = "020", position = 10, required = true, value = "Station number", allowableValues = "010 - 999")
         var station: Int = 0
-        
+
         val stationFormatted: String?
-            get() = Strings.padStart(station.toString(), 3, '0')
-        
+            get() = this.station.toString().padStart(3, '0')
+
         @ApiModelProperty(dataType = "string", example = "PL", position = 20, required = true, value = "Country two-letter ISO-3166")
         var country: String = ""
-        
+
         @ApiModelProperty(dataType = "string", example = "01-1010", position = 30, required = true, value = "Zipcode contry conform")
         var zipCode: String = ""
-        
+
         @ApiModelProperty(dataType = "string", example = "WR", position = 40, required = true, value = "Zone", allowableValues = "A,B,C,D,WR,UL")
         var zone: String = ""
-        
+
         @ApiModelProperty(dataType = "string", example = "X", position = 50, required = true, value = "Sector", allowableValues = "A-Z")
         var sector: String = ""
 
@@ -71,10 +67,10 @@ class Routing {
     }
 
     @ApiModelProperty(position = 30)
-    var sender: Routing.Participant? = Participant()
+    var sender: Participant? = Participant()
 
     @ApiModelProperty(position = 40)
-    var consignee: Routing.Participant? = Participant()
+    var consignee: Participant? = Participant()
 
     @ApiModelProperty(dataType = "string", example = "F,N", position = 50, required = true, value = "Used via hubs: \"F,N\"")
     var viaHubs: Array<String>? = null
@@ -91,5 +87,6 @@ class Routing {
     @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Delivery date", allowableValues = "2015-06-01")
     var deliveryDate: ShortDate? = null
 
-    constructor() {  }
+    constructor() {
+    }
 }

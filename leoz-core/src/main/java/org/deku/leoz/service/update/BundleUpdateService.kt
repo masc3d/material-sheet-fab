@@ -152,7 +152,7 @@ class BundleUpdateService(
         log.info("Requesting version info for [${bundleName}] alias [${preset.versionAlias}] node key [${this.identity?.key}]")
 
         // Request currently assigned version for this bundle and node
-        val updateInfo = this.bundleService().info(
+        val updateInfo: UpdateInfo = this.bundleService().info(
                 bundleName = bundleName,
                 versionAlias = preset.versionAlias,
                 nodeKey = this.identity?.key)
@@ -178,7 +178,7 @@ class BundleUpdateService(
             if (updateInfo.latestDesignatedVersion == null)
                 throw NoSuchElementException("No appropriate version available for bundle [${bundleName}]")
 
-            latestDesignatedVersion = Bundle.Version.parse(updateInfo.latestDesignatedVersion)
+            latestDesignatedVersion = Bundle.Version.parse(updateInfo.latestDesignatedVersion!!)
             latestDesignatedPlatforms = updateInfo.latestDesignatedVersionPlatforms.map { PlatformId.parse(it) }
         }
 

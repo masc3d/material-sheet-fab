@@ -1,0 +1,49 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+group = 'org.deku.leoz'
+version = '1.0'
+sourceCompatibility = 1.7
+
+configurations {
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile(
+            project(':libs:sx-common'),
+            project(':libs:sx-serialization'),
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+    )
+
+    provided(
+            // Swagger for json doc
+            "io.swagger:swagger-annotations:$v_swagger",
+            "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
+            // JAX-RS
+            "javax.ws.rs:javax.ws.rs-api:2.0.1"
+    )
+
+    testCompile(
+            "junit:junit:$v_junit"
+    )
+}

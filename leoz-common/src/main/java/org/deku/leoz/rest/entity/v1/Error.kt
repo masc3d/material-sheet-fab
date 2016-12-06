@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModel
 /**
  * REST service error
  */
-@ApiModel(value = "Error", description = "Service error")
+@io.swagger.annotations.ApiModel(value = "Error", description = "Service error")
 class Error(
         val httpStatus: Int?,
         val code: Int?,
