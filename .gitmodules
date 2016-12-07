@@ -51,4 +51,4 @@ url=https://github.com/masc3d/BarbaryWatchService.git
 	url = ssh://git@git.derkurier.de:13020/leoz/sx-ssh.git
 [submodule "libs/sx-android"]
 	path = libs/sx-android
-	url = ssh://git@git.o81.5/var/git/lib/java/sx-android.git
+	url = ssh://git@git.derkurier.de:13020/leoz/sx-android.git
