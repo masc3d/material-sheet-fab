@@ -3,7 +3,7 @@ package org.deku.leoz.rest.entity.v1
 import io.swagger.annotations.*
 import org.deku.leoz.rest.entity.ShortDate
 import org.deku.leoz.rest.entity.ShortTime
-import java.time.LocalDate
+import java.util.*
 
 /**
  * Routing service request response
@@ -60,7 +60,7 @@ class Routing {
         var partnerManager: String = ""
 
         @ApiModelProperty(hidden = true)
-        var date: LocalDate? = null
+        var date: Date? = null
 
         @ApiModelProperty(hidden = true)
         var message: String? = ""

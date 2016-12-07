@@ -5,15 +5,16 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1'
     }
 
     ext {
         v_android_buildtools = '25.0.0'
         v_android_support = '25.0.1'
+        v_feign = '8.18.0'
+        v_roboelectric = '3.1.4'
         v_rxlifecycle = '1.0'
-        v_roboelectric = '3.1.2'
     }
 }
 
@@ -25,6 +26,7 @@ apply plugin: 'com.getkeepsafe.dexcount'
 android {
     compileSdkVersion 25
     buildToolsVersion v_android_buildtools
+
     defaultConfig {
         applicationId "org.deku.leoz.android"
         minSdkVersion 16
@@ -32,19 +34,65 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
+            minifyEnabled false
             debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
+            testProguardFile('proguard-rules.pro')
         }
     }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/kodein-android-compileKotlin.kotlin_module'
+        exclude 'META-INF/kodein-compileKotlin.kotlin_module'
+        exclude 'META-INF/kotlin-runtime.kotlin_module'
+        exclude 'META-INF/kotlin-stdlib.kotlin_module'
+        exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/rxjava-async-util.properties'
+        exclude 'META-INF/rxjava.properties'
+        exclude 'META-INF/rxkotlin.properties'
+        exclude 'META-INF/rxkotlin-compileKotlin.kotlin_module'
+        exclude 'META-INF/rxlifecycle-kotlin-compileReleaseKotlin.kotlin_module'
+        exclude 'META-INF/sx-android-compileReleaseKotlin.kotlin_module'
+        exclude 'META-INF/sx-common-compileKotlin.kotlin_module'
+        exclude 'kotlin/annotation/annotation.kotlin_builtins'
+        exclude 'kotlin/collections/collections.kotlin_builtins'
+        exclude 'kotlin/internal/internal.kotlin_builtins'
+        exclude 'kotlin/kotlin.kotlin_builtins'
+        exclude 'kotlin/ranges/ranges.kotlin_builtins'
+        exclude 'kotlin/reflect/reflect.kotlin_builtins'
+    }
+}
+
+dexcount {
+    format = "list"
+    includeClasses = false
+    includeFieldCount = true
+    includeTotalMethodCount = false
+    orderByMethodCount = false
+    verbose = false
+    maxTreeDepth = Integer.MAX_VALUE
+    teamCityIntegration = false
+    enableForInstantRun = false
+    teamCitySlug = null
+    runOnEachAssemble = false
 }
 
 dependencies {
@@ -60,6 +108,7 @@ dependencies {
             "com.android.support:design:$v_android_support",
             "com.android.support:cardview-v7:$v_android_support",
             "com.android.support:recyclerview-v7:$v_android_support",
+            'com.android.support:multidex:1.0.1',
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
@@ -71,18 +120,32 @@ dependencies {
             // Logging
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jul-to-slf4j:$v_slf4j",
-            "com.github.tony19:logback-android-classic:1.1.1-5",
+            "com.github.tony19:logback-android-classic:1.1.1-6",
 
             // Reactive
             "io.reactivex:rxjava:$v_rxjava",
             "io.reactivex:rxandroid:1.2.1",
             "io.reactivex:rxkotlin:0.60.0",
             "io.reactivex:rxjava-async-util:0.21.0",
-            "com.github.davidmoten:rxjava-extras:0.7.9.10",
+            "com.github.davidmoten:rxjava-extras:0.8.0.5",
             "com.jakewharton.rxbinding:rxbinding:1.0.0",
             "com.trello:rxlifecycle:$v_rxlifecycle",
             "com.trello:rxlifecycle-kotlin:$v_rxlifecycle",
             "com.trello:rxlifecycle-components:$v_rxlifecycle",
+
+            // REST
+            "com.netflix.feign:feign-core:$v_feign",
+            "com.netflix.feign:feign-jackson:$v_feign",
+            "com.netflix.feign:feign-jaxrs:$v_feign",
+
+            // Requery
+            'io.requery:requery:1.0.2',
+            'io.requery:requery-android:1.0.2',
+    )
+
+    provided(
+            'io.requery:requery-processor:1.0.2',
+            "io.swagger:swagger-annotations:$v_swagger",
     )
 
     testCompile(

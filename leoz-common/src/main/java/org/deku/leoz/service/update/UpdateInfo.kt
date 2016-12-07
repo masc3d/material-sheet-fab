@@ -2,6 +2,7 @@ package org.deku.leoz.service.update
 
 import sx.io.serialization.Serializable
 import java.time.LocalTime
+import java.util.*
 
 /**
  * Update info/notification message.
@@ -17,7 +18,7 @@ data class UpdateInfo(
         /** Bundle version alias */
         val bundleVersionAlias: String = "",
         /** Desired time for restarting if a bundle is self updating. If omitted the update is supposed to become active asap. */
-        val desiredRestartTime: LocalTime? = null,
+        val desiredRestartTime: Date? = null,
         /** Latest designated version for this bundle/node. Contains a string referring to {@link Bundle.Version} */
         val latestDesignatedVersion: String? = null,
         /** Plaforms the latest deisgnated version is available for. Contains a list of strings referring to {@link PlatformId} */

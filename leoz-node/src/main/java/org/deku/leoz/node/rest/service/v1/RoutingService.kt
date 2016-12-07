@@ -19,6 +19,8 @@ import org.deku.leoz.rest.service.ServiceErrorCode
 import org.deku.leoz.rest.service.v1.RoutingService
 import org.slf4j.LoggerFactory
 import sx.rs.ApiKey
+import sx.time.toDate
+import sx.time.toLocalDate
 import java.sql.Timestamp
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -93,9 +95,9 @@ class RoutingService : org.deku.leoz.rest.service.v1.RoutingService {
 
         //TODO rWereLayer bitmaske suchen
 
-        val sendDate = routingRequest.sendDate?.localDate
+        val sendDate = routingRequest.sendDate?.date?.toLocalDate()
         val routingValidDate = sendDate
-        val desiredDeliveryDate: LocalDate? = routingRequest.desiredDeliveryDate?.localDate
+        val desiredDeliveryDate: LocalDate? = routingRequest.desiredDeliveryDate?.date?.toLocalDate()
 
         var deliveryDate: LocalDate? = null
 
@@ -145,7 +147,7 @@ class RoutingService : org.deku.leoz.rest.service.v1.RoutingService {
             consigneeParticipant = consigneeParticipants.first()
             if (Strings.isNullOrEmpty(consigneeParticipant.message)) {
                 routing.consignee = consigneeParticipant
-                deliveryDate = consigneeParticipant.date
+                deliveryDate = consigneeParticipant.date?.toLocalDate()
             }
             consigneeParticipant.date = null
             consigneeParticipant.message = null
@@ -155,8 +157,8 @@ class RoutingService : org.deku.leoz.rest.service.v1.RoutingService {
 
         val viaHubs = arrayOf("") // {"NST", "N1"};
 
-        routing.sendDate = ShortDate(sendDate!!)
-        routing.deliveryDate = if (deliveryDate != null) ShortDate(deliveryDate) else null
+        routing.sendDate = ShortDate(sendDate!!.toDate())
+        routing.deliveryDate = if (deliveryDate != null) ShortDate(deliveryDate.toDate()) else null
         routing.labelContent = if (consigneeParticipant != null) consigneeParticipant.stationFormatted ?: "" else ""
         routing.viaHubs = viaHubs
         routing.message = "OK"
@@ -301,7 +303,7 @@ class RoutingService : org.deku.leoz.rest.service.v1.RoutingService {
             "S" -> {
                 //                mqueryRouteLayer.setDayType(getDayType(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl()).toString());
                 //TODO nächsten Linientag ermitteln
-                participant.date = sendDate
+                participant.date = sendDate?.toDate()
                 //                mqueryRouteLayer.setDate(getNextDeliveryDay(sendDate, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl()));
                 //                if (date.equals(null))
                 //                    date = getNextDeliveryDay(date, mqueryRouteLayer.getCountry(), routeFound.getHolidayCtrl());
@@ -310,13 +312,13 @@ class RoutingService : org.deku.leoz.rest.service.v1.RoutingService {
                 val deliveryDate = desiredDeliveryDate
                         ?: getNextDeliveryDay(sendDate, participant.country, rRoute.holidayCtrl!!, participant.term)
 
-                participant.date = deliveryDate
+                participant.date = deliveryDate.toDate()
             }
         }
 
         participant.dayType =
                 this.getDayType(
-                        participant.date,
+                        participant.date?.toLocalDate(),
                         requestParticipant?.country?.toUpperCase(),
                         rRoute.holidayCtrl!!
                 ).toString()

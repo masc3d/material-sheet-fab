@@ -16,15 +16,6 @@ version = '1.0'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-configurations {
-    provided {
-        dependencies.all { dep ->
-            configurations.default.exclude group: dep.group, module: dep.name
-        }
-    }
-    compile.extendsFrom provided
-}
-
 repositories {
     mavenCentral()
 }
@@ -36,7 +27,7 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
     )
 
-    provided(
+    compileOnly(
             // Swagger for json doc
             "io.swagger:swagger-annotations:$v_swagger",
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",

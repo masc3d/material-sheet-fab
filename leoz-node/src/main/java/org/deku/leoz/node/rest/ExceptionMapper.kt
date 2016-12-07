@@ -35,6 +35,7 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
 
         } else if (e is JsonMappingException) {
             //region JsonMappingException
+            log.error(e.message)
             val locationMessage = e.path.map { it.fieldName }.joinToString(".")
             val cause = e.cause?.message ?: "unknown"
 
@@ -44,6 +45,7 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
 
         } else if (e is JsonProcessingException) {
             //region JsonProcessingException
+            log.error(e.message)
             val jl = e.location
 
             val locationMessage: String = if (jl != null) " in line ${jl.lineNr} column ${jl.columnNr}" else ""

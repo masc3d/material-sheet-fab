@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.ApplicationConfiguration
+import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
 
 /**
@@ -19,6 +20,7 @@ class AppTest {
             lRoot.level = Level.INFO
 
             Kodein.global.addImport(ApplicationConfiguration.module)
+            Kodein.global.addImport(StorageConfiguration.module)
 
             Kodein.global.instance<Application>().initialize()
         }

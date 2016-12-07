@@ -15,3 +15,41 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# Required for kodein
+-keepattributes Signature
+
+# Keeping attributes `EnclosingMethod` and `InnerClasses`
+# eliminates warnigs: Ignoring InnerClasses attribute for an anonymous inner class
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+
+# Logback classes must be kept for correct function (especially when using xml configuration)
+# -keep class ch.qos.logback.classic.** { *; }
+
+-dontwarn au.com.bytecode.opencsv.bean.**
+-dontwarn ch.qos.logback.**
+-dontwarn com.google.common.**
+
+-dontwarn com.fasterxml.jackson.**
+-dontwarn com.github.davidmoten.rx.**
+-dontwarn com.github.salomonbrys.kodein.**
+-dontwarn javax.ws.**
+-dontwarn javax.xml.**
+-dontwarn org.apache.commons.logging.**
+-dontwarn org.ini4j.spi.**
+-dontwarn org.slf4j.**
+-dontwarn rx.internal.**
+-dontwarn sx.concurrent.**
+-dontwarn sx.io.**
+-dontwarn sx.junit.**
+-dontwarn sx.platform.**
+-dontwarn sx.EmbeddedExecutable**
+-dontwarn sx.ProcessExecutor**
+-dontwarn sx.Disposable
+-dontwarn sx.LazyInstance
+-dontwarn sx.Process**
+
+-dontwarn com.trello.rxlifecycle.**
+
+-dontwarn feign.DefaultMethodHandler
