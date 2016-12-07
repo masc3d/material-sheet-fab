@@ -29,15 +29,6 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    provided {
-        dependencies.all { dep ->
-            configurations.default.exclude group: dep.group, module: dep.name
-        }
-    }
-    compile.extendsFrom provided
-}
-
 // Prototype tests
 
 sourceSets {
@@ -65,7 +56,7 @@ dependencies {
             "javax.jms:jms-api:1.1-rev-1"
     )
 
-    provided(
+    compileOnly(
             // Spring
             "org.springframework:spring-jms:4.3.4.RELEASE",
             // ActiveMQ
@@ -83,7 +74,10 @@ dependencies {
             "javax.servlet:javax.servlet-api:3.1.0",
 
             // Artemis
-            "org.apache.activemq:artemis-jms-server:$v_artemis",
+            dependencies.create("org.apache.activemq:artemis-jms-server:$v_artemis") {
+                // Conflicts with jms 1.1 which is required by activemq 5.x
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
             "org.apache.activemq:artemis-amqp-protocol:$v_artemis",
             "org.apache.activemq:artemis-openwire-protocol:$v_artemis"
     )
