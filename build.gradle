@@ -27,6 +27,7 @@ dependencies {
             project(':libs:sx-ssh'),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            "org.apache.commons:commons-lang3:3.5",
             // Ini/conf file support
             'org.ini4j:ini4j:0.5.4'
     )
