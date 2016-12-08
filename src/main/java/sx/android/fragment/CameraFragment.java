@@ -12,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.ViewSwitcher;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import sx.android.Camera;
 import sx.android.Function;
 import sx.android.R;
@@ -143,10 +146,11 @@ public class CameraFragment extends Fragment {
         mOkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEventDispatcher.emit(new EventDispatcher.Runnable<Listener>() {
+                mEventDispatcher.emit(new Function1<Listener, Unit>() {
                     @Override
-                    public void run(Listener listener) {
+                    public Unit invoke(Listener listener) {
                         listener.onCameraFragmentPictureTaken(mImageData);
+                        return Unit.INSTANCE;
                     }
                 });
                 showCamera();
@@ -156,10 +160,11 @@ public class CameraFragment extends Fragment {
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mEventDispatcher.emit(new EventDispatcher.Runnable<Listener>() {
+                mEventDispatcher.emit(new Function1<Listener, Unit>() {
                     @Override
-                    public void run(Listener listener) {
+                    public Unit invoke(Listener listener) {
                         listener.onCameraFragmentDiscarded();
+                        return Unit.INSTANCE;
                     }
                 });
                 showCamera();
@@ -196,10 +201,11 @@ public class CameraFragment extends Fragment {
                 if (mCameraView != null && mCameraView.hasSurface()) {
                     mCameraButton.setInnerColor(mControlsColorDarkened);
                     mCameraButton.setEnabled(false);
-                    mEventDispatcher.emit(new EventDispatcher.Runnable<Listener>() {
+                    mEventDispatcher.emit(new Function1<Listener, Unit>() {
                         @Override
-                        public void run(Listener listener) {
+                        public Unit invoke(Listener listener) {
                             listener.onCameraFragmentShutter();
+                            return Unit.INSTANCE;
                         }
                     });
 
