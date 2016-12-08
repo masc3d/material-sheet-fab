@@ -56,7 +56,6 @@ apply plugin: 'application'
 apply plugin: 'distribution'
 apply plugin: 'idea'
 apply plugin: 'org.flywaydb.flyway'
-//apply plugin: "com.zoltu.application-agent"
 apply plugin: PackagerPlugin
 
 group = 'org.deku.leoz'
