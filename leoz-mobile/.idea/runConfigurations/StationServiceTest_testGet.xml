@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="StationServiceTest.testGet" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
-    <module name="app" />
+    <module name="leoz-mobile-app" />
     <option name="TESTING_TYPE" value="3" />
     <option name="INSTRUMENTATION_RUNNER_CLASS" value="android.support.test.runner.AndroidJUnitRunner" />
     <option name="METHOD_NAME" value="testGet" />
