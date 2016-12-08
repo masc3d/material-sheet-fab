@@ -21,5 +21,11 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="leoz-mobile.db" uuid="ae436508-c461-4859-93db-60d66ed664eb">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/leoz-mobile/leoz-mobile-data/db/leoz-mobile.db</jdbc-url>
+    </data-source>
   </component>
 </project>

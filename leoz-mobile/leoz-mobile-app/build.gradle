@@ -4,9 +4,11 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1'
+        classpath(
+            "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
+            "com.android.tools.build:gradle:2.2.3",
+            "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1",
+        )
     }
 
     ext {
@@ -23,6 +25,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.getkeepsafe.dexcount'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 android {
     compileSdkVersion 25
@@ -99,10 +104,11 @@ dexcount {
 
 dependencies {
     compile(
+            project(':leoz-mobile-data'),
+            project(':leoz-common'),
             project(':libs:sx-common'),
             project(':libs:sx-android'),
             project(':libs:sx-serialization'),
-            project(':leoz-common'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             // Android

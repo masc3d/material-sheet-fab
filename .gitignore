@@ -46,6 +46,7 @@ leoz-webservice/build
 leoz-webservice/src/main/java/org/leo2/jooq/dekuclient
 leoz.mv.db
 leoz.trace.db
+leoz-mobile.db
 libraries/leoz-common/build
 libraries/leoz-common/reports/dependencies
 libs/build
