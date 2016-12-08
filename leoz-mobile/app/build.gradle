@@ -13,6 +13,7 @@ buildscript {
         v_android_buildtools = '25.0.0'
         v_android_support = '25.0.1'
         v_feign = '8.18.0'
+        v_requery = '1.0.2'
         v_roboelectric = '3.1.4'
         v_rxlifecycle = '1.0'
     }
@@ -55,6 +56,7 @@ android {
     }
 
     packagingOptions {
+        // Exclude duplicates ad unnecessary files for a clean apk
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
@@ -115,7 +117,7 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Kodein
-            "com.github.salomonbrys.kodein:kodein-android:3.0.0",
+            "com.github.salomonbrys.kodein:kodein-android:3.1.0",
 
             // Logging
             "org.slf4j:slf4j-api:$v_slf4j",
@@ -139,13 +141,19 @@ dependencies {
             "com.netflix.feign:feign-jaxrs:$v_feign",
 
             // Requery
-            'io.requery:requery:1.0.2',
-            'io.requery:requery-android:1.0.2',
+            "io.requery:requery:$v_requery",
+            "io.requery:requery-android:$v_requery",
+
+            // Flyway
+            "org.sqldroid:sqldroid:1.0.3",
+            "org.flywaydb:flyway-core:$v_flyway",
+
+            // Miscellaneous
+            "io.swagger:swagger-annotations:$v_swagger",
     )
 
     provided(
             'io.requery:requery-processor:1.0.2',
-            "io.swagger:swagger-annotations:$v_swagger",
     )
 
     testCompile(

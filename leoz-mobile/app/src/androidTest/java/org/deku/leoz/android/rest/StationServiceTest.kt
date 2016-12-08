@@ -25,7 +25,9 @@ class StationServiceTest {
                 .encoder(JacksonEncoder())
                 .decoder(JacksonDecoder())
                 .contract(JAXRSContract())
-                .target(StationService::class.java, "http://10.0.2.2:13000/rs/api")
+                .target(StationService::class.java,
+                        "https://leoz.derkurier.de:13000/rs/api"
+                )
 
         Observable.fromCallable { stationService.get() }
                 .subscribeWith {
