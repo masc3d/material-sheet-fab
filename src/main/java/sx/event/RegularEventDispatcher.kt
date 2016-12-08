@@ -15,52 +15,46 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package sx.event;
+package sx.event
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayList
 
 /**
  * Multicast event dispatcher without thread-safety.
  * Instance methods are NOT thread-safe for performance reasons.
  * Consumers need to ensure thread safety if needed
- *
  * @author masc
  */
-public class RegularEventDispatcher<T extends EventListener> extends EventDispatcher<T> {
+open class RegularEventDispatcher<T : EventListener> : EventDispatcher<T>() {
     /**
      * Weak references of listeners
      * TODO: Use a hashed type of list eg. LinkedHashSet or possibly a hashset which allows duplicates
      * for better performance especially when removing listeners (there may be a lot)
      */
-    private final ArrayList<ListenerReference> _listeners = new ArrayList<ListenerReference>();
+    private val _listeners = ArrayList<ListenerReference>()
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void add(T listener) {
-        _listeners.add(new ListenerReference(listener, (Class<T>)listener.getClass()));
+    override fun add(listener: T) {
+        _listeners.add(ListenerReference(listener, listener.javaClass))
     }
 
-    @Override
-    public void remove(final T listener) {
-        ArrayList<ListenerReference> toRemove = new ArrayList<>();
+    override fun remove(listener: T) {
+        val toRemove = ArrayList<ListenerReference>()
 
-        for (ListenerReference l : _listeners) {
-            if (l.get() == listener) {
-                toRemove.add(l);
+        for (l in _listeners) {
+            if (l.get() === listener) {
+                toRemove.add(l)
             }
         }
 
-        _listeners.removeAll(toRemove);
+        _listeners.removeAll(toRemove)
     }
 
-    @Override
-    protected void remove(List<ListenerReference> listeners) {
-        _listeners.removeAll(listeners);
+    override fun remove(listeners: List<ListenerReference>) {
+        _listeners.removeAll(listeners)
     }
 
-    @Override
-    protected List<ListenerReference> getListeners() {
-        return new ArrayList<ListenerReference>(_listeners);
-    }
+    override val listeners: List<ListenerReference>
+        get() {
+            return ArrayList<ListenerReference>(_listeners)
+        }
 }
