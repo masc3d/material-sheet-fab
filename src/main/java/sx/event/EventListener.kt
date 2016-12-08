@@ -15,12 +15,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package sx.event;
+package sx.event
 
 /**
  * Generic event listener
- *
  * @author masc
  */
-public interface EventListener extends java.util.EventListener {
-}
+interface EventListener : java.util.EventListener
