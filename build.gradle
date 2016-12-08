@@ -41,6 +41,7 @@ dependencies {
     )
 
     testCompile(
+            "com.esotericsoftware:kryo:4.0.0",
             "junit:junit:4.12"
     )
 }
