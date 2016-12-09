@@ -8,6 +8,7 @@ include ':libs:sx-fx'
 include ':libs:sx-rsync'
 include ':libs:sx-ssh'
 include ':libs:sx-serialization'
+//include ':libs:sx-android'
 include ':libs:barbarywatchservice'
 
 include ':leoz-common'
@@ -19,5 +20,7 @@ include ':leoz-boot'
 include ':leoz-ui'
 
 // TODO: IntelliJ android support plugin still has a few bugs, causing errors on build. Those are non-fatal, but annoying. Use AndroidStudio with `leoz-mobile` root project until they are fixed.
-//include ':leoz-mobile:app'
-
+//include ':leoz-mobile-app'
+//project(':leoz-mobile-app').projectDir = file('leoz-mobile/leoz-mobile-app')
+include ':leoz-mobile-data'
+project(':leoz-mobile-data').projectDir = file('leoz-mobile/leoz-mobile-data')

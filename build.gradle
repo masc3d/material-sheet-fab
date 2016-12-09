@@ -102,7 +102,7 @@ subprojects {
 }
 
 // Common configuration for all non-android subprojects
-configure(subprojects.findAll { it.path != ':leoz-mobile:app' }) {
+configure(subprojects.findAll { it.path != ':leoz-mobile-app' && it.path != ':libs:sx-android' }) {
     apply plugin: 'java'
     // Analzye tasks (analyze* for showing unused dependencies eg.)
     apply plugin: 'ca.cutterslade.analyze'

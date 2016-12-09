@@ -20,7 +20,6 @@ buildscript {
         v_aspectj = '1.8.9'
         v_querydsl = '4.1.4'
         v_openjpa = '2.4.1'
-        v_roaster = '2.19.1.Final'
     }
 
     repositories {
@@ -63,6 +62,7 @@ sourceCompatibility = 1.8
 version = '0.58-RELEASE'
 mainClassName = 'org.deku.leoz.node.Main'
 
+//region Constants
 def GENERATED_DIR = file("${project.projectDir}/src/generated")
 
 // Database constants
@@ -89,6 +89,7 @@ class Constants {
 
 def JPA_GENERATED_PACKAGE = Constants.JPA_GENERATED_PACKAGE
 def JPA_TASK_GROUP = 'jpa'
+//endregion
 
 clean {
     doFirst {
