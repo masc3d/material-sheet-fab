@@ -19,7 +19,8 @@ include ':leoz-central-schema'
 include ':leoz-boot'
 include ':leoz-ui'
 
-// TODO: IntelliJ android support plugin still has a few bugs, causing errors on build. Those are non-fatal, but annoying. Use AndroidStudio with `leoz-mobile` root project until they are fixed.
+// TODO: IntelliJ reports `Write access is allowed from write-safe contexts only.` on every build as soon as an adnroid project has been added. Not critical but very annoying.
+// TODO: IntelliJ runs wrong gradle task when android subprojects have been added (https://youtrack.jetbrains.com/issue/IDEA-165274). Workaround is to execute gradle tasks via console.
 //include ':leoz-mobile-app'
 //project(':leoz-mobile-app').projectDir = file('leoz-mobile/leoz-mobile-app')
 include ':leoz-mobile-data'

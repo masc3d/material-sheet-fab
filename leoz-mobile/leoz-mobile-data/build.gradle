@@ -262,6 +262,7 @@ repositories {
 }
 //endregion
 
+//region Support methods
 /**
  * Performs post-processing on jpa-generated entity classes.
  * @param sourceDir Generated sources dir (to process)
@@ -317,3 +318,4 @@ static def jpaPostProcess(File sourceDir) {
         it.write(jtype.toString())
     })
 }
+//endregion
