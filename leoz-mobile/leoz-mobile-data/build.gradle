@@ -45,27 +45,37 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 //region Constants
+
+// Database related parameters
 def DB_FILENAME = 'leoz-mobile.db'
 def DB_RESOURCES_DIR = new File(project.projectDir, 'src/main/resources/db')
 def DB_DIR = new File(project.buildDir, 'db')
 def DB_FILE = new File(DB_DIR, DB_FILENAME)
 
+// Flyway parameters
 def FLYWAY_MIGRATION_DIR = new File(DB_RESOURCES_DIR, 'migration')
 def FLYWAY_TASK_GROUP = 'flyway'
 
+// JDBC parameters
 def JDBC_DRIVER = 'org.sqlite.JDBC'
 def JDBC_URL = "jdbc:sqlite:${DB_FILE}"
 
+/** Base directory for generated classes */
 def GENERATED_DIR = file("${project.projectDir}/src/generated")
+/** The base path for generated classes by jooq */
+def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
+/** Folder where kapt generates source files */
+def KAPT_GENERATED_DIR = new File(project.buildDir, 'generated/source/kapt/main')
+/** A destination folder where we sync kapt generated classes to, referring to kaptSync task/workaround see below */
+def KAPT_DST_GENERATED_DIR = new File(GENERATED_DIR, 'kapt')
 
 class Constants {
+    /** Package name for jooq generated classes */
     static def JOOQ_PACKAGE_NAME = 'org.deku.leoz.android.data.jooq'
+    /** Package name for jpa classes */
     static def JPA_PACKAGE_NAME = 'org.deku.leoz.android.data.jpa'
 }
 
-def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
-def KAPT_GENERATED_DIR = new File(project.buildDir, 'generated/source/kapt/main')
-def KAPT_DST_GENERATED_DIR = new File(GENERATED_DIR, 'kapt')
 def JOOQ_PACKAGE_NAME = Constants.JOOQ_PACKAGE_NAME
 def JPA_PACKAGE_NAME = Constants.JPA_PACKAGE_NAME
 //endregion
@@ -81,7 +91,7 @@ idea {
     }
 }
 
-// TODO: stupid workaround for making AndroidStudio see kapt generated classes. Unlike IJ, adding anything below builddir to idea module will be ignored
+// TODO: stupid workaround for making AndroidStudio see kapt generated classes. Unlike IJ, AndroidStudio seems to ignore .java files in build dir even when they're explicltly added to `sourceDirs` via idea plugin
 task kaptSync(type: Sync) {
     from KAPT_GENERATED_DIR
     into KAPT_DST_GENERATED_DIR
