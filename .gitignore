@@ -60,3 +60,4 @@ release
 vm/.vagrant
 vm/dist
 workspace.xml
+local.properties
