@@ -20,22 +20,44 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    // TODO: compileOnly doesn't work property with AndroidStudio (will compile, but doesn't see classes in editor etc.)
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
+}
+
 dependencies {
     compile(
             project(':libs:sx-common'),
             project(':libs:sx-serialization'),
-            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein-android:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
     )
 
-    compileOnly(
+    provided(
             // Swagger for json doc
             "io.swagger:swagger-annotations:$v_swagger",
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             // JAX-RS
-            "javax.ws.rs:javax.ws.rs-api:2.0.1"
+            "javax.ws.rs:javax.ws.rs-api:2.0.1",
+            // REST
+            "com.netflix.feign:feign-core:$v_feign",
+            "com.netflix.feign:feign-jackson:$v_feign",
+            "com.netflix.feign:feign-jaxrs:$v_feign",
     )
 
     testCompile(
-            "junit:junit:$v_junit"
+            "junit:junit:$v_junit",
+            // REST
+            "com.netflix.feign:feign-core:$v_feign",
+            "com.netflix.feign:feign-jackson:$v_feign",
+            "com.netflix.feign:feign-jaxrs:$v_feign",
     )
 }

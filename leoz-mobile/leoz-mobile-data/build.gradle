@@ -8,9 +8,7 @@ import org.jooq.util.GeneratorStrategy
 import org.jooq.util.sqlite.SQLiteDatabase
 import org.jooq.util.jaxb.*
 import org.jboss.forge.roaster.Roaster
-import org.jboss.forge.roaster.model.source.FieldSource
-import org.jboss.forge.roaster.model.source.JavaClassSource
-import org.jboss.forge.roaster.model.source.PropertySource
+import org.jboss.forge.roaster.model.source.*
 
 buildscript {
     ext {
@@ -111,8 +109,17 @@ dependencies {
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein-android:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
+
             // javax.persistence
             "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
+
+            // rx
+            "io.reactivex:rxjava:$v_rxjava",
+            "io.reactivex:rxkotlin:$v_rxkotlin",
+            "com.github.davidmoten:rxjava-extras:0.8.0.5",
 
             // Requery
             "io.requery:requery:$v_requery",
@@ -166,7 +173,11 @@ flyway {
     locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
 }
 
-task flywayMigrateWorkaround(group: FLYWAY_TASK_GROUP) {
+// TODO: masc20161210. workaround for flyway bug https://github.com/flyway/flyway/issues/1180
+// Replacing affected flyway tasks with alternative implementation that circumvents locking issue
+
+tasks.remove(tasks.flywayMigrate)
+task flywayMigrate(group: FLYWAY_TASK_GROUP) {
     inputs.dir FLYWAY_MIGRATION_DIR
     outputs.files DB_FILE
     doLast {
@@ -177,6 +188,15 @@ task flywayMigrateWorkaround(group: FLYWAY_TASK_GROUP) {
         flyway.migrate()
     }
 }
+
+tasks.remove(tasks.flywayClean)
+task flywayClean(group: FLYWAY_TASK_GROUP) {
+    doLast {
+        DB_FILE.delete()
+    }
+}
+
+tasks.clean.dependsOn(flywayClean)
 
 //region JOOQ
 /**
@@ -213,7 +233,6 @@ def jooqConfiguration = new Configuration()
                         .withDaos(false)
 //                        .withPojos(true)
                         .withInterfaces(true)
-                        .withInstanceFields(false)
 //                        .withPojosEqualsAndHashCode(true)
                         .withJpaAnnotations(true)
                         .withFluentSetters(false))
@@ -234,8 +253,8 @@ def jooqConfiguration = new Configuration()
  * TODO: jooq plugin doesn't work correctly with customized generator strategy (class loading issue)
  */
 task jooqGenerate(group: 'jooq') {
-    dependsOn tasks.flywayMigrateWorkaround
-    mustRunAfter tasks.flywayMigrateWorkaround
+    dependsOn tasks.flywayMigrate
+    mustRunAfter tasks.flywayMigrate
 
     inputs.dir FLYWAY_MIGRATION_DIR
     outputs.dir JOOQ_GENERATED_DIR
@@ -299,6 +318,22 @@ static def jpaPostProcess(File sourceDir) {
                     .findAll { !propertyMethods.contains(it) }
                     .each {
                 jsource.removeMethod(it)
+            }
+
+            jsource.methods.each {
+                def columnAnnotation = it.annotations.find { it.qualifiedName == javax.persistence.Column.canonicalName }
+
+                if (columnAnnotation != null) {
+                    def c = (AnnotationSource) columnAnnotation
+
+                    def name = 'name'
+                    def val = c.getStringValue(name)
+
+                    // Field names to escape
+                    if (val == 'timestamp') {
+                        c.setStringValue(name, "'${val}'")
+                    }
+                }
             }
         } else if (type instanceof JavaClassSource) {
             // Post-processing for java classes

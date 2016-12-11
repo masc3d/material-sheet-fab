@@ -29,7 +29,7 @@ CREATE TABLE mst_station (
   ustid            VARCHAR,
   web_address      VARCHAR,
   zip              VARCHAR,
-  timestamp        TIMESTAMP NOT NULL,
+  'timestamp'      TIMESTAMP NOT NULL,
   sync_id          BIGINT    NOT NULL,
   PRIMARY KEY (station_nr)
 );

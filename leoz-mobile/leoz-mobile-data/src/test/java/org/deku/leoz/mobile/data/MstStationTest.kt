@@ -1,46 +1,40 @@
 package org.deku.leoz.mobile.data
 
-import org.junit.Test
-import org.deku.leoz.android.data.jpa.*
-import io.requery.sql.EntityDataStore
-import io.requery.rx.SingleEntityStore
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
 import io.requery.Persistable
-import org.deku.leoz.android.data.jpa.Models
-import io.requery.sql.TableCreationMode
 import io.requery.rx.RxSupport
+import io.requery.rx.SingleEntityStore
+import io.requery.sql.EntityDataStore
+import org.deku.leoz.android.data.jpa.Models
+import org.deku.leoz.android.data.jpa.MstStation
+import org.junit.Test
 import org.sqlite.SQLiteDataSource
 import org.sqlite.javax.SQLiteConnectionPoolDataSource
-import java.sql.DriverManager
-
+import rx.lang.kotlin.subscribeWith
 
 /**
  * Created by n3 on 09/12/2016.
  */
 class MstStationTest {
-
-    /**
-     * @return [EntityDataStore] single instance for the application.
-     * *
-     *
-     *
-     * * Note if you're using Dagger you can make this part of your application level module returning
-     * * `@Provides @Singleton`.
-     */
-    val entityStore by lazy {
-        EntityDataStore<Persistable>(this.dataSource, Models.JPA)
+    companion object {
+        init {
+            Kodein.global.addImport(DatabaseConfiguration.module)
+        }
     }
 
-    val dataSource by lazy {
-        val ds = SQLiteDataSource()
-        ds.url = "jdbc:sqlite:build/db/leoz-mobile.db"
-        ds
-    }
+    val entityStore: SingleEntityStore<Persistable> by Kodein.global.lazy.instance()
+
     @Test
     fun testSelect() {
         val r = Models.JPA
 
-        entityStore.select(MstStation::class.java).get().each {
-            println(it)
+        entityStore.select(MstStation::class.java).get().toObservable().subscribeWith {
+            onNext {
+                println(it)
+            }
         }
     }
 }
