@@ -1,4 +1,4 @@
-package org.deku.leoz.android.rest
+package org.deku.leoz.mobile.rest
 
 import android.support.test.runner.AndroidJUnit4
 import org.junit.Test
@@ -12,7 +12,7 @@ import android.support.test.InstrumentationRegistry
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import org.deku.leoz.config.RestConfiguration
+import org.deku.leoz.mobile.config.RestConfiguration
 import org.deku.leoz.rest.entity.internal.v1.Station
 import rx.Observable
 import rx.lang.kotlin.subscribeWith

@@ -1,6 +1,6 @@
 package org.deku.leoz.mobile.data
 
-import org.deku.leoz.android.data.jpa.*
+import org.deku.leoz.mobile.data.jpa.*
 
 /**
  * Created by n3 on 09/12/2016.

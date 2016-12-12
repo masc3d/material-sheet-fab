@@ -69,9 +69,9 @@ def KAPT_DST_GENERATED_DIR = new File(GENERATED_DIR, 'kapt')
 
 class Constants {
     /** Package name for jooq generated classes */
-    static def JOOQ_PACKAGE_NAME = 'org.deku.leoz.android.data.jooq'
+    static def JOOQ_PACKAGE_NAME = 'org.deku.leoz.mobile.data.jooq'
     /** Package name for jpa classes */
-    static def JPA_PACKAGE_NAME = 'org.deku.leoz.android.data.jpa'
+    static def JPA_PACKAGE_NAME = 'org.deku.leoz.mobile.data.jpa'
 }
 
 def JOOQ_PACKAGE_NAME = Constants.JOOQ_PACKAGE_NAME
@@ -110,7 +110,7 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Kodein
-            "com.github.salomonbrys.kodein:kodein-android:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
 
             // javax.persistence

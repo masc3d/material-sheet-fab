@@ -37,7 +37,7 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Kodein
-            "com.github.salomonbrys.kodein:kodein-android:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
     )
 

@@ -7,7 +7,7 @@ import feign.Feign
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
 import feign.jaxrs.JAXRSContract
-import org.deku.leoz.config.RestConfiguration
+import org.deku.leoz.mobile.config.RestConfiguration
 import org.deku.leoz.rest.service.internal.v1.StationService
 import org.junit.Test
 import rx.Observable
@@ -19,7 +19,7 @@ import rx.lang.kotlin.subscribeWith
 class StationServiceTest {
     companion object {
         init {
-            Kodein.global.addImport(RestConfiguration.module)
+            Kodein.global.addImport(org.deku.leoz.mobile.config.RestConfiguration.module)
         }
     }
 

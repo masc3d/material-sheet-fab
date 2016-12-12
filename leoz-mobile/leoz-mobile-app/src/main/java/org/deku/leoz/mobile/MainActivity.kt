@@ -1,4 +1,4 @@
-package org.deku.leoz.android
+package org.deku.leoz.mobile
 
 import android.os.Bundle
 import android.support.design.widget.NavigationView

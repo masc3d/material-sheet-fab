@@ -32,7 +32,7 @@ android {
     buildToolsVersion v_android_buildtools
 
     defaultConfig {
-        applicationId "org.deku.leoz.android"
+        applicationId "org.deku.leoz.mobile"
         minSdkVersion 16
         targetSdkVersion 16
         versionCode 1

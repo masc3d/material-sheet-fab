@@ -8,8 +8,8 @@ import io.requery.Persistable
 import io.requery.rx.RxSupport
 import io.requery.rx.SingleEntityStore
 import io.requery.sql.EntityDataStore
-import org.deku.leoz.android.data.jpa.Models
-import org.deku.leoz.android.data.jpa.MstStation
+import org.deku.leoz.mobile.data.jpa.Models
+import org.deku.leoz.mobile.data.jpa.MstStation
 import org.junit.Test
 import org.sqlite.SQLiteDataSource
 import org.sqlite.javax.SQLiteConnectionPoolDataSource

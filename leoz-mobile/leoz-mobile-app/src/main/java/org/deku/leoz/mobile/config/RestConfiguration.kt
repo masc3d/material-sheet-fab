@@ -1,4 +1,4 @@
-package org.deku.leoz.config
+package org.deku.leoz.mobile.config
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
