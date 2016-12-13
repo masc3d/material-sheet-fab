@@ -10,7 +10,7 @@ import java.nio.file.attribute.DosFileAttributeView
 import kotlin.properties.Delegates
 
 /**
- * Base class for loez local storage configurations
+ * Leoz core storage class, resembles the top level storage/directory structure for all leoz-core based projects
  * Created by masc on 26.06.15.
  */
 open class Storage(
