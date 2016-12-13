@@ -4,6 +4,7 @@ import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
+import org.deku.leoz.node.Storage
 import org.deku.leoz.node.service.filesync.FileSyncMessage
 import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.deku.leoz.node.service.filesync.FileSyncClientService
@@ -42,13 +43,13 @@ open class FileSyncClientConfiguration {
     @Inject
     private lateinit var lifecycleController: LifecycleController
     @Inject
-    private lateinit var storageConfiguration: StorageConfiguration
+    private lateinit var storage: Storage
 
     @Bean
     open fun fileSyncClientService(): FileSyncClientService {
         return FileSyncClientService(
                 executorService = this.executorService,
-                baseDirectory = storageConfiguration.transferDirectory,
+                baseDirectory = storage.transferDirectory,
                 identity = this.application.identity,
                 rsyncEndpoint = Rsync.Endpoint(
                         moduleUri = RsyncConfiguration.createRsyncUri(

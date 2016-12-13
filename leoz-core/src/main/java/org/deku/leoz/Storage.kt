@@ -1,4 +1,4 @@
-package org.deku.leoz.config
+package org.deku.leoz
 
 import com.google.common.base.Strings
 import org.apache.commons.lang3.SystemUtils
@@ -13,7 +13,7 @@ import kotlin.properties.Delegates
  * Base class for loez local storage configurations
  * Created by masc on 26.06.15.
  */
-open class StorageConfiguration(
+open class Storage(
         val baseName: String = "leoz",
         /** Base name for process specific files/directories */
         val appName: String,
@@ -38,7 +38,7 @@ open class StorageConfiguration(
      * Private base directory name
      */
     val privateDirectoryName by lazy {
-        if (SystemUtils.IS_OS_WINDOWS) baseName.capitalize() else "." + baseName.toLowerCase()
+        if (SystemUtils.IS_OS_WINDOWS) baseName.capitalize() else "" + baseName.toLowerCase()
     }
 
     /**

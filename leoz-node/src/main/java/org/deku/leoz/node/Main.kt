@@ -9,6 +9,7 @@ import com.vaadin.spring.boot.VaadinAutoConfiguration
 import org.deku.leoz.node.config.ApplicationConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
+import org.deku.leoz.node.Storage
 import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanDefinition
@@ -121,14 +122,14 @@ open class Main {
                 bundleName = this.app.name,
                 mainClass = this.javaClass)
 
-        val storageConfiguration: StorageConfiguration = Kodein.global.instance()
+        val storage: Storage = Kodein.global.instance()
         val logConfiguration: LogConfiguration = Kodein.global.instance()
 
         val command = setup.parse(args)
         if (command != null) {
             try {
                 // Setup should write to dedicated logfile
-                logConfiguration.logFile = storageConfiguration.setupLogFile
+                logConfiguration.logFile = storage.setupLogFile
                 logConfiguration.initialize()
                 // Run setup command
                 command.run()

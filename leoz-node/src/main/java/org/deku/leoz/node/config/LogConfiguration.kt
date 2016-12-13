@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.log.LogAppender
 import org.deku.leoz.node.Application
+import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 
 /**
@@ -63,7 +64,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     override fun initialize() {
         super.initialize()
 
-        val storageConfiguration: StorageConfiguration = Kodein.global.instance()
+        val storageConfiguration: Storage = Kodein.global.instance()
         if (this.logFile == null) {
             this.logFile = storageConfiguration.logFile
         }

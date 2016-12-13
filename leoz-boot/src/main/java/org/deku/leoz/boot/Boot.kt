@@ -5,9 +5,9 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.google.common.base.Strings
+import org.deku.leoz.Storage
 import org.deku.leoz.boot.config.BundleConfiguration
 import org.deku.leoz.boot.config.RestClientConfiguration
-import org.deku.leoz.boot.config.StorageConfiguration
 import org.deku.leoz.bundle.*
 import org.deku.leoz.rest.RestClient
 import org.deku.leoz.rest.service.internal.v1.BundleService
@@ -32,7 +32,7 @@ class Boot {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     // Injections
-    private val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
+    private val storage: Storage by Kodein.global.lazy.instance()
     private val restConfiguration: RestClientConfiguration by Kodein.global.lazy.instance()
     private val bundleConfiguration: BundleConfiguration by Kodein.global.lazy.instance()
     private val installer: BundleInstaller by Kodein.global.lazy.instance()
@@ -99,7 +99,7 @@ class Boot {
             }
 
             val runtimeBundle = Bundle.load(this.javaClass)
-            val bundleInstallationDirectory = storageConfiguration.bundleInstallationDirectory.toPath()
+            val bundleInstallationDirectory = storage.bundleInstallationDirectory.toPath()
 
             val runtimeBundlePath = runtimeBundle.path!!.toPath()
             log.info("Runtime bundle path [${runtimeBundlePath}")
@@ -113,7 +113,7 @@ class Boot {
             runtimeBundle.verify()
 
             val srcPath = runtimeBundlePath
-            val destPath = File(storageConfiguration.bundleInstallationDirectory, BundleType.LEOZ_BOOT.value)
+            val destPath = File(storage.bundleInstallationDirectory, BundleType.LEOZ_BOOT.value)
 
             val rc = RsyncClient()
             val source = Rsync.URI(srcPath)

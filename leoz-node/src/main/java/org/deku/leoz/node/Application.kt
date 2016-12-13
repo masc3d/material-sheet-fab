@@ -9,7 +9,7 @@ import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.node.config.LogConfiguration
-import org.deku.leoz.node.config.StorageConfiguration
+import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.springframework.beans.BeansException
 import org.springframework.boot.ExitCodeGenerator
@@ -118,7 +118,7 @@ open class Application :
     }
 
     /** Storage configuration */
-    private val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
+    private val storage: Storage by Kodein.global.lazy.instance()
     /** Log configuration */
     private val logConfiguration: LogConfiguration by Kodein.global.lazy.instance()
 
@@ -131,7 +131,7 @@ open class Application :
 
         if (!recreate) {
             // Verify and read existing identity file
-            val identityFile = this.storageConfiguration.identityConfigurationFile
+            val identityFile = this.storage.identityConfigurationFile
             if (identityFile.exists()) {
                 try {
                     identity = Identity.load(identityFile, this.systemInformation)
@@ -149,7 +149,7 @@ open class Application :
 
             // Store updates/created identity
             try {
-                identity.save(this.storageConfiguration.identityConfigurationFile)
+                identity.save(this.storage.identityConfigurationFile)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
@@ -170,10 +170,10 @@ open class Application :
         isInitialized = true
 
         // Acquire lock on bundle path
-        log.trace("Acquiring lock on bundle path [${this.storageConfiguration.bundleLockFile}]")
+        log.trace("Acquiring lock on bundle path [${this.storage.bundleLockFile}]")
         this.processLockFile = ProcessLockFile(
-                lockFile = this.storageConfiguration.bundleLockFile,
-                pidFile = this.storageConfiguration.bundlePidFile)
+                lockFile = this.storage.bundleLockFile,
+                pidFile = this.storage.bundlePidFile)
 
         if (!this.processLockFile.isOwner) {
             log.info("Waiting for lock on [${this.processLockFile}]")
@@ -220,7 +220,7 @@ open class Application :
                             .reversed())
 
             // Add local home configuration
-            configLocations.add(this.storageConfiguration.applicationConfigurationFile.toURI().toURL())
+            configLocations.add(this.storage.applicationConfigurationFile.toURI().toURL())
 
             // Log configuration locations
             configLocations.forEach {

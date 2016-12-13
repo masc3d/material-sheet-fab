@@ -1,5 +1,6 @@
 package org.deku.leoz.node.config
 
+import org.deku.leoz.node.Storage
 import org.eclipse.persistence.config.BatchWriting
 import org.eclipse.persistence.config.CacheType
 import org.eclipse.persistence.config.PersistenceUnitProperties
@@ -73,7 +74,7 @@ open class PersistenceConfiguration {
     @Inject
     private lateinit var settings: Settings
     @Inject
-    private lateinit var storageConfiguration: StorageConfiguration
+    private lateinit var storage: Storage
 
     /**
      * Enable SQL logging
@@ -98,7 +99,7 @@ open class PersistenceConfiguration {
 
         // Base URI
         val baseUri: String = if (!H2_IN_MEMORY) {
-            "jdbc:h2:file:${storageConfiguration.h2DatabaseFile}"
+            "jdbc:h2:file:${storage.h2DatabaseFile}"
         } else {
             "jdbc:h2:mem:db1"
         }
@@ -254,7 +255,7 @@ open class PersistenceConfiguration {
             log.info("Starting H2 server on port [${this.settings.h2.server.port}]")
 
             val args = mutableListOf<String>()
-            args.addAll(arrayOf("-baseDir", "${storageConfiguration.h2DatabaseFile.parentFile}"))
+            args.addAll(arrayOf("-baseDir", "${storage.h2DatabaseFile.parentFile}"))
             args.addAll(arrayOf("-tcpPort", "${this.settings.h2.server.port}"))
             if (this.settings.h2.server.allowOthers)
                 args.add("-tcpAllowOthers")

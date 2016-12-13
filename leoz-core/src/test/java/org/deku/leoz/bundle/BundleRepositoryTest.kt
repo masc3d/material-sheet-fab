@@ -3,7 +3,7 @@ package org.deku.leoz.bundle
 import ch.qos.logback.classic.Level
 import org.deku.leoz.config.BundleTestConfiguration
 import org.deku.leoz.config.RsyncTestConfiguration
-import org.deku.leoz.config.StorageTestConfiguration
+import org.deku.leoz.config.StorageTest
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -49,7 +49,7 @@ class BundleRepositoryTest {
 
     @Test
     fun testDownload() {
-        val path = File(StorageTestConfiguration.bundlesTestDirectory, BundleType.LEOZ_BOOT.value)
+        val path = File(StorageTest.bundlesTestDirectory, BundleType.LEOZ_BOOT.value)
 
         BundleTestConfiguration.remoteRepository.download(
                 BundleType.LEOZ_BOOT.value,

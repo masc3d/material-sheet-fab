@@ -18,6 +18,8 @@ import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.apache.commons.lang3.SystemUtils
+import org.deku.leoz.Storage
+import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.service.discovery.DiscoveryService
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.config.*
@@ -62,9 +64,10 @@ class Application : Application() {
     private val leoBridge: LeoBridge by Kodein.global.lazy.instance()
 
     private val processLockFile by lazy {
-        val storageConfiguration = StorageConfiguration()
-        ProcessLockFile(lockFile = storageConfiguration.bundleLockFile,
-                pidFile = storageConfiguration.bundlePidFile)
+        val storage = StorageConfiguration.createStorage()
+        ProcessLockFile(
+                lockFile = storage.bundleLockFile,
+                pidFile = storage.bundlePidFile)
     }
 
     /**

@@ -3,6 +3,7 @@ package org.deku.leoz.node.test
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import org.deku.leoz.node.Application
+import org.deku.leoz.node.Storage
 import org.deku.leoz.node.config.*
 import org.junit.Ignore
 import org.junit.runner.RunWith

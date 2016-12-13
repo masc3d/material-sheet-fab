@@ -8,8 +8,8 @@ import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import org.apache.commons.io.FilenameUtils
 import org.deku.leoz.Identity
-import org.deku.leoz.central.config.StorageConfiguration
 import org.deku.leoz.log.LogMessage
+import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.slf4j.Marker
 import sx.jms.Channel
@@ -30,7 +30,7 @@ class LogService
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
-    private lateinit var storageConfiguration: StorageConfiguration
+    private lateinit var storage: Storage
 
     /** Loggers by node id */
     private val loggers = HashMap<String, Logger>()
@@ -140,7 +140,7 @@ class LogService
      * @param baseName Base name without extension
      */
     private fun getLogFile(baseName: String): File {
-        return storageConfiguration.logDirectory.resolve("nodes").resolve("${baseName}.log")
+        return storage.logDirectory.resolve("nodes").resolve("${baseName}.log")
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.deku.leoz.central.config
 
 import org.deku.leoz.config.RsyncConfiguration
+import org.deku.leoz.node.Storage
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import sx.rsync.Rsync
@@ -18,7 +19,7 @@ open class RsyncModuleConfiguration {
 
 
     @Inject
-    private lateinit var storageConfiguration: StorageConfiguration
+    private lateinit var storage: Storage
 
     companion object {
         const val QUALIFIER = "RsyncModuleConfigurationCentral"
@@ -28,6 +29,6 @@ open class RsyncModuleConfiguration {
     open fun transferModule(): Rsync.Module {
         return Rsync.Module(
                 RsyncConfiguration.ModuleNames.TRANSFER,
-                storageConfiguration.transferDirectory)
+                storage.transferDirectory)
     }
 }

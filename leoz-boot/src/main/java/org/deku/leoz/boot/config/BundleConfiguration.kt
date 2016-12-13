@@ -1,6 +1,7 @@
 package org.deku.leoz.boot.config
 
 import com.github.salomonbrys.kodein.*
+import org.deku.leoz.Storage
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.config.HostConfiguration
@@ -15,7 +16,7 @@ class BundleConfiguration : org.deku.leoz.config.BundleConfiguration() {
                 BundleConfiguration()
             }
             bind<BundleInstaller>() with singleton {
-                val storage: StorageConfiguration = instance()
+                val storage: Storage = instance()
                 BundleInstaller(storage.bundleInstallationDirectory)
             }
             bind<BundleRepository>() with provider {

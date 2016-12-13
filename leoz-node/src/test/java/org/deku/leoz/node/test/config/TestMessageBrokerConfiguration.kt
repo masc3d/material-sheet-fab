@@ -1,14 +1,9 @@
 package org.deku.leoz.node.test.config
 
-import com.google.common.base.Strings
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
-import org.deku.leoz.node.Application
-import org.deku.leoz.node.config.StorageConfiguration
-import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.slf4j.LoggerFactory
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -17,8 +12,6 @@ import sx.jms.activemq.ActiveMQBroker
 import java.io.File
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
-import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * ActiveMQ broker configuration

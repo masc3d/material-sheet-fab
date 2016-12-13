@@ -2,6 +2,7 @@ package org.deku.leoz.ui
 
 import com.sun.jna.platform.win32.Shell32Util
 import org.apache.commons.lang3.SystemUtils
+import org.deku.leoz.Storage
 import org.deku.leoz.bundle.*
 import org.deku.leoz.ui.config.StorageConfiguration
 import org.slf4j.LoggerFactory
@@ -55,18 +56,18 @@ class Setup : BundleProcessInterface() {
     }
 
     override fun start() {
-        val storageConfiguration: StorageConfiguration = StorageConfiguration()
+        val storageConfiguration: Storage = StorageConfiguration.createStorage()
 
         val bundle = Bundle.load(File(storageConfiguration.bundleInstallationDirectory, BundleType.LEOZ_UI.value))
         bundle.execute(wait = false)
     }
 
     override fun stop() {
-        val storageConfiguration: StorageConfiguration =  StorageConfiguration()
+        val storage: Storage =  StorageConfiguration.createStorage()
 
         val processLockFile = ProcessLockFile(
-                lockFile = storageConfiguration.bundleLockFile,
-                pidFile = storageConfiguration.bundlePidFile)
+                lockFile = storage.bundleLockFile,
+                pidFile = storage.bundlePidFile)
 
         if (!processLockFile.isOwner) {
             val pid = processLockFile.pid

@@ -6,7 +6,7 @@ import org.deku.leoz.bundle.boot
 import org.deku.leoz.service.update.UpdateInfo
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.Application
-import org.deku.leoz.node.config.StorageConfiguration
+import org.deku.leoz.node.Storage
 import org.deku.leoz.rest.entity.internal.v1.ApplicationVersion
 import org.slf4j.LoggerFactory
 import sx.jms.Channel
@@ -27,13 +27,13 @@ class ApplicationService : org.deku.leoz.rest.service.internal.v1.ApplicationSer
     @Inject
     private lateinit var application: Application
     @Inject
-    private lateinit var storageConfiguration: StorageConfiguration
+    private lateinit var storage: Storage
     @Inject
     private lateinit var bundleUpdateService: BundleUpdateService
 
     override fun restart() {
         val bundleInstaller = BundleInstaller(
-                storageConfiguration.bundleInstallationDirectory)
+                storage.bundleInstallationDirectory)
 
         bundleInstaller.boot(this.application.name)
     }

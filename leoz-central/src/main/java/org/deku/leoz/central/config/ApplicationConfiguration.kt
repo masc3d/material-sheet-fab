@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.central.Application
+import org.deku.leoz.node.Storage
 import org.deku.leoz.node.config.LogConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -30,7 +31,7 @@ open class ApplicationConfiguration {
     }
 
     @Bean
-    open fun storageConfiguration(): StorageConfiguration {
+    open fun storage(): Storage {
         return Kodein.global.instance()
     }
 

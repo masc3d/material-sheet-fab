@@ -1,6 +1,7 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.bundle.BundleType
+import org.deku.leoz.node.Storage
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import sx.rsync.Rsync
@@ -19,17 +20,17 @@ open class RsyncModuleConfiguration {
     }
 
     @Inject
-    private lateinit var storageConfiguration: StorageConfiguration
+    private lateinit var storage: Storage
 
     @Bean
     open fun bundlesModule(): Rsync.Module {
         // Create bundle entry directories
         BundleType.values()
-                .map { storageConfiguration.bundleRepositoryDirectory.resolve(it.value) }
+                .map { storage.bundleRepositoryDirectory.resolve(it.value) }
                 .forEach { it.mkdirs() }
 
         return Rsync.Module(
                 org.deku.leoz.config.RsyncConfiguration.ModuleNames.BUNDLES,
-                storageConfiguration.bundleRepositoryDirectory)
+                storage.bundleRepositoryDirectory)
     }
 }

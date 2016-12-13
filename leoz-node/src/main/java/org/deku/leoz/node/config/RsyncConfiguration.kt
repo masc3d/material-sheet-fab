@@ -1,6 +1,7 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.config.RsyncConfiguration
+import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
@@ -37,7 +38,7 @@ open class RsyncConfiguration : org.deku.leoz.config.RsyncConfiguration() {
     @Inject
     private lateinit var settings: Settings
     @Inject
-    private lateinit var storageConfiguration: StorageConfiguration
+    private lateinit var storage: Storage
 
     /** Rsync server instance */
     private var rsyncServer: RsyncServer by Delegates.notNull()
@@ -59,7 +60,7 @@ open class RsyncConfiguration : org.deku.leoz.config.RsyncConfiguration() {
             // Limit connections to loopback interface. Rsync server is only reachable via (ssh) tunneling
             config.address = InetAddress.getLoopbackAddress().hostAddress
             config.port = this.settings.port
-            config.logFile = File(this.storageConfiguration.logDirectory, "leoz-rsyncd.log")
+            config.logFile = File(this.storage.logDirectory, "leoz-rsyncd.log")
             config.reverseLookup = false
             config.forwardLookup = false
 
@@ -73,7 +74,7 @@ open class RsyncConfiguration : org.deku.leoz.config.RsyncConfiguration() {
             }
 
             // Initialize and start server
-            rsyncServer = RsyncServer(this.storageConfiguration.etcDirectory, config)
+            rsyncServer = RsyncServer(this.storage.etcDirectory, config)
             rsyncServer.onTermination = { e ->
                 if (e != null) log.error(e.message, e)
             }

@@ -9,7 +9,7 @@ import org.deku.leoz.YamlPersistence
 import org.deku.leoz.bundle.BundleProcessInterface
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.node.config.RemotePeerConfiguration
-import org.deku.leoz.node.config.StorageConfiguration
+import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import sx.EmbeddedExecutable
@@ -51,7 +51,7 @@ class Setup(
         NOT_FOUND
     }
 
-    val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
+    val storage: Storage by Kodein.global.lazy.instance()
 
     /**
      * c'tor
@@ -87,7 +87,7 @@ class Setup(
                         "--Description=Leoz system service (${this.serviceId})",
                         "--Install=${this.leozsvcExecutable.file.toString()}",
                         "--Startup=auto",
-                        "--LogPath=${this.storageConfiguration.logDirectory}",
+                        "--LogPath=${this.storage.logDirectory}",
                         "--LogPrefix=leoz-svc",
                         "--Jvm=${basePath.resolve("runtime").resolve("bin").resolve("server").resolve("jvm.dll")}",
                         "--StartMode=jvm",
@@ -115,12 +115,12 @@ class Setup(
     override fun prepareProduction() {
         when (this.bundleName) {
             BundleType.LEOZ_NODE.value -> {
-                if (storageConfiguration.applicationConfigurationFile.exists()) {
-                    log.warn("Skipping generation of productive configuration file [${storageConfiguration.applicationConfigurationFile}]")
+                if (storage.applicationConfigurationFile.exists()) {
+                    log.warn("Skipping generation of productive configuration file [${storage.applicationConfigurationFile}]")
                     return
                 }
 
-                log.info("Generating productive configuration file [${storageConfiguration.applicationConfigurationFile}]")
+                log.info("Generating productive configuration file [${storage.applicationConfigurationFile}]")
 
                 val remotePeerConfig = RemotePeerConfiguration()
                 remotePeerConfig.host = "leoz.derkurier.de"
@@ -136,9 +136,9 @@ class Setup(
                             obj = configContent,
                             skipNulls = true,
                             skipTags = true,
-                            toFile = storageConfiguration.applicationConfigurationFile)
+                            toFile = storage.applicationConfigurationFile)
                 } catch(e: Exception) {
-                    storageConfiguration.applicationConfigurationFile.delete()
+                    storage.applicationConfigurationFile.delete()
                     throw(e)
                 }
             }

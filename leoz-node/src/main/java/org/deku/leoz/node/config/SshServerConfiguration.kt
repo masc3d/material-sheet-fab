@@ -10,6 +10,7 @@ import org.apache.sshd.server.forward.DirectTcpipFactoryFixed
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
 import org.apache.sshd.server.session.ServerSession
 import org.deku.leoz.config.SshConfiguration
+import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -38,7 +39,7 @@ open class SshServerConfiguration {
     }
 
     @Inject
-    private lateinit var storageConfiguration: StorageConfiguration
+    private lateinit var storage: Storage
 
     @PostConstruct
     fun onInitialize() {
@@ -47,7 +48,7 @@ open class SshServerConfiguration {
         sshd.setPort(SshServerConfiguration.DEFAULT_PORT)
 
         sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(
-                File(storageConfiguration.sshDataDirectory, "hostkey.ser")))
+                File(storage.sshDataDirectory, "hostkey.ser")))
 
         sshd.tcpipForwardingFilter = AcceptAllForwardingFilter()
 

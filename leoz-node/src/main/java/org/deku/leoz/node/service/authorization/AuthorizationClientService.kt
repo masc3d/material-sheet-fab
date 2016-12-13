@@ -7,7 +7,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.Identity
-import org.deku.leoz.node.config.StorageConfiguration
+import org.deku.leoz.node.Storage
 import org.deku.leoz.node.service.authorization.AuthorizationMessage
 import org.deku.leoz.node.service.authorization.AuthorizationRequestMessage
 import org.slf4j.LoggerFactory
@@ -36,7 +36,7 @@ class AuthorizationClientService(
     private val identity: Identity
         get() = identitySupplier()
 
-    private val storageConfiguration: StorageConfiguration by Kodein.global.lazy.instance()
+    private val storage: Storage by Kodein.global.lazy.instance()
 
     override fun run() {
         // Setup message
@@ -69,7 +69,7 @@ class AuthorizationClientService(
         if (authorizationMessage.rejected) {
             onRejected(identity)
         } else {
-            identity.save(storageConfiguration.identityConfigurationFile)
+            identity.save(storage.identityConfigurationFile)
         }
 
         // Stop service when authorization process completed

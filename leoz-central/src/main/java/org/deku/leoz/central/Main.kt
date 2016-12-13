@@ -2,8 +2,8 @@ package org.deku.leoz.central
 
 import com.github.salomonbrys.kodein.Kodein
 import org.deku.leoz.central.config.ApplicationConfiguration
-import org.deku.leoz.central.config.StorageConfiguration
 import org.deku.leoz.node.config.LogConfiguration
+import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration

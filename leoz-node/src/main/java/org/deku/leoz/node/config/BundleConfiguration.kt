@@ -3,6 +3,7 @@ package org.deku.leoz.node.config
 import org.deku.leoz.bundle.BundleInstaller
 import org.deku.leoz.bundle.BundleRepository
 import org.deku.leoz.config.BundleConfiguration
+import org.deku.leoz.node.Storage
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -16,7 +17,7 @@ import javax.inject.Inject
 @Lazy(false)
 open class BundleConfiguration {
     @Inject
-    private lateinit var storageConfiguration: StorageConfiguration
+    private lateinit var storage: Storage
 
     /**
      * Local bundle repository
@@ -24,7 +25,7 @@ open class BundleConfiguration {
     @Bean
     open fun localRepository(): BundleRepository{
         return BundleRepository(
-                rsyncModuleUri = Rsync.URI(storageConfiguration.bundleRepositoryDirectory))
+                rsyncModuleUri = Rsync.URI(storage.bundleRepositoryDirectory))
     }
 
     /**
@@ -33,6 +34,6 @@ open class BundleConfiguration {
     @Bean
     open fun bundleInstaller(): BundleInstaller {
         return BundleInstaller(
-                storageConfiguration.bundleInstallationDirectory)
+                storage.bundleInstallationDirectory)
     }
 }

@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.instance
 import javafx.scene.control.TextArea
+import org.deku.leoz.Storage
 import sx.fx.TextAreaLogAppender
 
 /**
@@ -16,7 +17,7 @@ class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     companion object {
         val module = Kodein.Module {
             bind<LogConfiguration>() with eagerSingleton {
-                val storageConfiguration: StorageConfiguration = instance()
+                val storageConfiguration: Storage = instance()
                 val config = LogConfiguration()
                 config.logFile = storageConfiguration.logFile
                 config
