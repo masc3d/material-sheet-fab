@@ -31,12 +31,16 @@
 -dontwarn ch.qos.logback.**
 -dontwarn com.google.common.**
 
+-dontwarn javax.**
+
 -dontwarn com.fasterxml.jackson.**
 -dontwarn com.github.davidmoten.rx.**
 -dontwarn com.github.salomonbrys.kodein.**
--dontwarn javax.ws.**
--dontwarn javax.xml.**
+-dontwarn com.trello.rxlifecycle.**
+-dontwarn okio.**
 -dontwarn org.apache.commons.logging.**
+-dontwarn org.eclipse.persistence.**
+-dontwarn org.flywaydb.**
 -dontwarn org.ini4j.spi.**
 -dontwarn org.slf4j.**
 -dontwarn rx.internal.**
@@ -50,6 +54,5 @@
 -dontwarn sx.LazyInstance
 -dontwarn sx.Process**
 
--dontwarn com.trello.rxlifecycle.**
 
 -dontwarn feign.DefaultMethodHandler

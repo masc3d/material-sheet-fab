@@ -4,11 +4,11 @@ import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.instance
+import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.android.ContextHolder
 import org.slf4j.LoggerFactory
-import sx.android.BuildConfig
 
 /**
  * Created by n3 on 12/12/2016.

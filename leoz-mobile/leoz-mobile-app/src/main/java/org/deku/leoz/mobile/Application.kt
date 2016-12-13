@@ -3,6 +3,7 @@ package org.deku.leoz.mobile
 import android.content.Context
 import android.content.pm.PackageManager
 import android.support.multidex.MultiDexApplication
+import com.facebook.stetho.Stetho
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory
  * Application
  * Created by n3 on 10/12/2016.
  */
-class Application : MultiDexApplication() {
+open class Application : MultiDexApplication() {
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     override fun onCreate() {

@@ -16,6 +16,7 @@ buildscript {
         v_android_support = '25.0.1'
         v_roboelectric = '3.1.4'
         v_rxlifecycle = '1.0'
+        v_stetho = '1.4.1'
     }
 }
 
@@ -26,6 +27,9 @@ apply plugin: 'com.getkeepsafe.dexcount'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
+
+def sdk = android.getSdkDirectory().toString()
+def adb = android.getAdbExe().toString()
 
 android {
     compileSdkVersion 25
@@ -158,6 +162,12 @@ dependencies {
             "io.swagger:swagger-annotations:$v_swagger",
     )
 
+    debugCompile(
+            // Stetho
+            "com.facebook.stetho:stetho:$v_stetho",
+            "com.facebook.stetho:stetho-okhttp:$v_stetho",
+    )
+
     testCompile(
             "junit:junit:$v_junit",
             "org.robolectric:robolectric:$v_roboelectric",
@@ -186,3 +196,16 @@ android.applicationVariants.all { variant ->
         output.outputFile = file(outputFile.toString());
     }
 }
+
+
+/**
+ * Task for syncing mobile data project flyway sql migrations to android assets.
+ * Should run prior to assembly of apk.
+ * Flyway was a specific internal scanning mechanism on android which only scans assets.
+ */
+task flywaySyncMigrations(type: Sync) {
+    from new File(project.rootDir, 'leoz-mobile-data/src/main/resources/db/migration')
+    into new File(project.projectDir, 'src/main/assets/db/migration')
+}
+tasks.preBuild.dependsOn(tasks.flywaySyncMigrations)
+
