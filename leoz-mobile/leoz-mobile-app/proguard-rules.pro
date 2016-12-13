@@ -27,6 +27,8 @@
 # Logback classes must be kept for correct function (especially when using xml configuration)
 # -keep class ch.qos.logback.classic.** { *; }
 
+-keep class org.sqldroid.** { *; }
+
 -dontwarn au.com.bytecode.opencsv.bean.**
 -dontwarn ch.qos.logback.**
 -dontwarn com.google.common.**
@@ -53,6 +55,5 @@
 -dontwarn sx.Disposable
 -dontwarn sx.LazyInstance
 -dontwarn sx.Process**
-
 
 -dontwarn feign.DefaultMethodHandler

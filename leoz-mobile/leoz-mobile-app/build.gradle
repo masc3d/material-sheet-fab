@@ -45,10 +45,21 @@ android {
         multiDexEnabled true
     }
 
+
+    signingConfigs {
+        release {
+            keyAlias 'leoz-mobile'
+            keyPassword '6TL3IpcUhOv7K1dZ'
+            storeFile new File(project.projectDir, '../leoz-mobile.jks')
+            storePassword 'QzIKjZeRkct3B0on'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             minifyEnabled false
