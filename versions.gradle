@@ -36,7 +36,7 @@ buildscript {
         v_requery = '1.0.2'
         v_resteasy = '3.0.19.Final'
         v_roaster = '2.19.4.Final'
-        v_slf4j = '1.7.21'
+        v_slf4j = '1.7.22'
         v_snappy = '1.1.2.4'
         v_snakeyaml = '1.17'
         v_spring = '4.3.4.RELEASE'

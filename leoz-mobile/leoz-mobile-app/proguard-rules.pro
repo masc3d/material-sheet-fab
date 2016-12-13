@@ -29,6 +29,12 @@
 
 -keep class org.sqldroid.** { *; }
 
+# Parceler library
+-keep interface org.parceler.Parcel
+-keep @org.parceler.Parcel class * { *; }
+-keep class **$$Parcelable { *; }
+
+# Warnings
 -dontwarn au.com.bytecode.opencsv.bean.**
 -dontwarn ch.qos.logback.**
 -dontwarn com.google.common.**

@@ -31,6 +31,10 @@ targetCompatibility = 1.7
 def sdk = android.getSdkDirectory().toString()
 def adb = android.getAdbExe().toString()
 
+kapt {
+    generateStubs true
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion v_android_buildtools
@@ -171,6 +175,8 @@ dependencies {
 
             // Miscellaneous
             "io.swagger:swagger-annotations:$v_swagger",
+
+            "org.parceler:parceler-api:1.1.6"
     )
 
     debugCompile(
@@ -194,6 +200,10 @@ dependencies {
 //                exclude group: 'com.android.support', module: 'support-annotations'
 //            }
     )
+
+    kapt(
+            "org.parceler:parceler:1.1.6"
+    )
 }
 
 /** Mange apk name for all output variants */
@@ -212,7 +222,7 @@ android.applicationVariants.all { variant ->
 /**
  * Task for syncing mobile data project flyway sql migrations to android assets.
  * Should run prior to assembly of apk.
- * Flyway was a specific internal scanning mechanism on android which only scans assets.
+ * Flyway uses a specific internal scanning mechanism for android, only scanning assets
  */
 task flywaySyncMigrations(type: Sync) {
     from new File(project.rootDir, 'leoz-mobile-data/src/main/resources/db/migration')
