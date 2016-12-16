@@ -5,7 +5,6 @@ import io.swagger.jaxrs.config.ReflectiveJaxrsScanner;
 import io.swagger.models.Contact;
 import io.swagger.models.Info;
 import io.swagger.models.Swagger;
-import org.deku.leoz.config.RestClientConfiguration;
 import org.deku.leoz.config.RestConfiguration;
 import sx.LazyInstance;
 

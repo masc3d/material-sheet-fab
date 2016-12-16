@@ -179,6 +179,8 @@ dependencies {
             "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
 
+            "com.paypal.springboot:resteasy-spring-boot-starter:2.2.1-RELEASE",
+
             // jackson JSON serializer
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",

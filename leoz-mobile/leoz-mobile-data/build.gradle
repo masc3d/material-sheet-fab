@@ -103,6 +103,16 @@ configurations {
     driver
 }
 
+configurations {
+    // TODO: compileOnly doesn't work property with AndroidStudio (will compile, but doesn't see classes in editor etc.)
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
+}
+
 dependencies {
     compile(
             fileTree(dir: 'libs', include: ['*.jar']),
@@ -125,7 +135,7 @@ dependencies {
             "io.requery:requery:$v_requery",
     )
 
-    compileOnly(
+    provided(
             // Roaster
             "org.jboss.forge.roaster:roaster-api:$v_roaster",
             "org.jboss.forge.roaster:roaster-jdt:$v_roaster",

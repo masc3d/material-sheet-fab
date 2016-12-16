@@ -13,11 +13,11 @@ import org.deku.leoz.rest.service.internal.v1.StationService
 /**
  * Created by n3 on 10/12/2016.
  */
-class RestConfiguration {
+class RestFeignClientConfiguration {
     companion object {
         val module = Kodein.Module {
-            bind<RestConfiguration>() with singleton {
-                RestConfiguration()
+            bind<RestFeignClientConfiguration>() with singleton {
+                RestFeignClientConfiguration()
             }
 
             bind<Feign.Builder>() with singleton {
@@ -29,7 +29,7 @@ class RestConfiguration {
 
             bind<StationService>() with provider {
                 val builder: Feign.Builder = instance()
-                val config: RestConfiguration = instance()
+                val config: RestFeignClientConfiguration = instance()
                 builder.target(StationService::class.java, config.url)
             }
         }

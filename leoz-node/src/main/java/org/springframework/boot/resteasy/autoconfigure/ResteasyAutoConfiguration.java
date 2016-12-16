@@ -33,28 +33,26 @@ import org.springframework.core.Ordered;
 @EnableConfigurationProperties
 @Configuration
 public class ResteasyAutoConfiguration {
+    @ConditionalOnMissingBean(ResteasyProviderFactory.class)
+    @Bean
+    public ResteasyProviderFactory providerFactory() {
+        return new ResteasyProviderFactory();
+    }
 
     @ConditionalOnMissingBean(ResteasyDeployment.class)
     @ConfigurationProperties(prefix="resteasy.deployment")
     @Bean(initMethod="start", destroyMethod="stop")
-    public ResteasyDeployment resteasyDeployment(final SpringBeanProcessor springBeanProcessor) {
-        ResteasyDeployment resteasyDeployment = new ResteasyDeployment() {
-            public void start() {
-                super.start();
-                if (springBeanProcessor.getRegistry() == null) {
-                    springBeanProcessor.setRegistry(this.getRegistry());
-                }
-            }
-        };
-        resteasyDeployment.setProviderFactory(springBeanProcessor.getProviderFactory());
+    public ResteasyDeployment resteasyDeployment(/**final SpringBeanProcessor springBeanProcessor*/) {
+        ResteasyDeployment resteasyDeployment = new ResteasyDeployment();
+        resteasyDeployment.setProviderFactory(this.providerFactory());
         return resteasyDeployment;
     }
 
     @ConditionalOnMissingBean(SpringBeanProcessor.class)
     @Bean
     public SpringBeanProcessor springBeanProcessor() {
-        SpringBeanProcessor springBeanProcessor = new SpringBeanProcessor();
-        springBeanProcessor.setProviderFactory(new ResteasyProviderFactory());
+        SpringBeanProcessor springBeanProcessor = new SpringBeanProcessor(this.resteasyDeployment());
+        springBeanProcessor.setProviderFactory(this.providerFactory());
         return springBeanProcessor;
     }
 
