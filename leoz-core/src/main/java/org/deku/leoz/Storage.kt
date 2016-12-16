@@ -38,7 +38,10 @@ open class Storage(
      * Private base directory name
      */
     val privateDirectoryName by lazy {
-        if (SystemUtils.IS_OS_WINDOWS) baseName.capitalize() else "" + baseName.toLowerCase()
+        if (SystemUtils.IS_OS_WINDOWS)
+            baseName.capitalize()
+        else
+            ".${baseName.toLowerCase()}"
     }
 
     /**
