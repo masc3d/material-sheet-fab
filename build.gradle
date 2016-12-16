@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     ext {
-        v_kotlin = '1.0.5-2'
+        v_kotlin = '1.0.5-3'
         v_android_buildtools = '25.0.0'
         v_android_support = '25.0.1'
     }
@@ -62,8 +62,9 @@ dependencies {
     compile "com.android.support:design:$v_android_support"
 
     // RX
-    compile "io.reactivex:rxjava:1.2.3"
+    compile "io.reactivex:rxjava:1.2.4"
     compile "io.reactivex:rxandroid:1.2.1"
+
     def v_rxlifecycle = '1.0'
     compile "com.trello:rxlifecycle:$v_rxlifecycle"
     compile "com.trello:rxlifecycle-kotlin:$v_rxlifecycle"
