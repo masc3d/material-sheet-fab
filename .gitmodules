@@ -19,7 +19,7 @@
 [submodule "vm/puppet/modules/tomcat"]
 	path = vm/puppet/modules/tomcat
 	url = https://github.com/example42/puppet-tomcat.git
-[submodule "sx-common"]
+[submodule "libs/sx-common"]
 	path = libs/sx-common
 url=ssh://git@git.derkurier.de:13020/leoz/sx-common.git
 [submodule "leoz-bridge-com/Libraries/CLAP"]
