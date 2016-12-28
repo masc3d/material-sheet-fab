@@ -31,5 +31,5 @@ interface BundleService {
     @GET
     @Path("/info/{${BUNDLE}}")
     @ApiOperation(value = "Retrieve bundle information by alias")
-    fun info(@PathParam(BUNDLE) bundleName: String, @QueryParam(ALIAS) versionAlias: String? = null, @QueryParam(KEY) nodeKey: String? = null): org.deku.leoz.service.update.UpdateInfo
+    fun info(@ApiParam(example = "leoz-boot", value = "Bundle name" ) @PathParam(BUNDLE) bundleName: String, @QueryParam(ALIAS) versionAlias: String? = null, @QueryParam(KEY) nodeKey: String? = null): org.deku.leoz.service.update.UpdateInfo
 }
