@@ -17,7 +17,7 @@ import java.nio.file.Files
 
 buildscript {
     ext {
-        v_aspectj = '1.8.9'
+        v_aspectj = '1.8.10'
         v_querydsl = '4.1.4'
         v_openjpa = '2.4.1'
     }
@@ -226,7 +226,7 @@ dependencies {
             "com.thoughtworks.xstream:xstream:$v_xstream",
 
             // Artemis
-            "org.apache.activemq:artemis-jms-server:1.4.0",
+            "org.apache.activemq:artemis-jms-server:$v_artemis",
 
             // ssh support
             "org.apache.sshd:sshd-core:$v_sshd",
@@ -261,7 +261,7 @@ dependencies {
             "org.aspectj:aspectjweaver:$v_aspectj",
 
             // TODO: for testing vaadin
-            "com.vaadin:vaadin-spring-boot:1.1.0",
+            "com.vaadin:vaadin-spring-boot:1.1.1",
             "com.vaadin:vaadin-client:$v_vaadin",
             "com.vaadin:vaadin-client-compiled:$v_vaadin",
             "com.vaadin:vaadin-widgets:$v_vaadin",

@@ -34,12 +34,12 @@ dependencies {
             // RX
             "io.reactivex:rxjava:$v_rxjava",
             "io.reactivex:rxkotlin:$v_rxkotlin",
-            "io.reactivex:rxjavafx:0.3.0",
-            "com.github.thomasnield:rxkotlinfx:0.3.0",
+            "io.reactivex:rxjavafx:$v_rxjavafx",
+            "com.github.thomasnield:rxkotlinfx:$v_rxkotlinfx",
             "org.reactfx:reactfx:2.0-M5",
 
             // command line
-            "com.beust:jcommander:1.58",
+            "com.beust:jcommander:1.60",
 
             // ini/conf file
             "org.ini4j:ini4j:$v_ini4j",
