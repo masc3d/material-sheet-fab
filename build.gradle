@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.0.5-3'
+        v_kotlin = '1.0.6'
         v_slf4j = '1.7.22'
         v_protostuff = '1.5.2'
     }
