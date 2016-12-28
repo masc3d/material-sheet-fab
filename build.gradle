@@ -3,9 +3,9 @@ version '1.0'
 
 buildscript {
     ext {
-        v_activemq = '5.14.2'
+        v_activemq = '5.14.3'
         v_artemis = '1.5.1'
-        v_kotlin = '1.0.5-3'
+        v_kotlin = '1.0.6'
         v_protostuff = '1.5.0'
     }
 
@@ -58,7 +58,7 @@ dependencies {
 
     compileOnly(
             // Spring
-            "org.springframework:spring-jms:4.3.4.RELEASE",
+            "org.springframework:spring-jms:4.3.5.RELEASE",
             // ActiveMQ
             "org.apache.activemq:activemq-broker:$v_activemq",
             "org.apache.activemq:activemq-kahadb-store:$v_activemq",
@@ -84,6 +84,6 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.1.7"
+            "ch.qos.logback:logback-classic:1.1.8"
     )
 }
