@@ -9,7 +9,7 @@ def assertJvmVersion(String vmVersion) {
     def jvm = ManagementFactory.getRuntimeMXBean()
     println("JVM version [${jvm.specVersion}] [${jvm.vmVersion}]")
     if (!jvm.vmVersion.startsWith(vmVersion))
-        throw new IllegalStateException("JVM/JDK version should match [${vmVersion}]")
+        throw new IllegalStateException("JVM/JDK version is [${jvm.vmVersion}], should start with [${vmVersion}]")
 }
 
 assertJvmVersion(v_jvm)

@@ -59,7 +59,7 @@ apply plugin: PackagerPlugin
 
 group = 'org.deku.leoz'
 sourceCompatibility = 1.8
-version = '0.58-RELEASE'
+version = '0.59-SNAPSHOT'
 mainClassName = 'org.deku.leoz.node.Main'
 
 //region Constants
