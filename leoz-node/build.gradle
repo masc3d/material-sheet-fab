@@ -1,6 +1,7 @@
 import groovy.io.FileType
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang3.ClassUtils
+import org.apache.commons.lang3.SystemUtils
 import org.deku.gradle.PackagerPlugin
 import org.jboss.forge.roaster.Roaster
 import org.jboss.forge.roaster.model.source.FieldSource
@@ -384,11 +385,12 @@ task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
     args '-persistenceinfo', DB_DIR,
             compileJava.destinationDir.getAbsolutePath(),
             sourceSets.main.output.classesDir
-    
-    environment = [
-        'CLASSPATH': configurations.compile.join(';')
-    ]
-    //classpath = configurations.compile
+}
+// masc20170118. workaround for path limit on windows systems
+if (SystemUtils.IS_OS_WINDOWS) {
+    tasks.jpaWeaving.environment = [ 'CLASSPATH': configurations.compile.join(';') ]
+} else {
+    tasks.jpaWeaving.classpath = configurations.compile
 }
 // Dependencies
 tasks.classes {
