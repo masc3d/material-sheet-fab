@@ -384,7 +384,11 @@ task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
     args '-persistenceinfo', DB_DIR,
             compileJava.destinationDir.getAbsolutePath(),
             sourceSets.main.output.classesDir
-    classpath = configurations.compile
+    
+    environment = [
+        'CLASSPATH': configurations.compile.join(';')
+    ]
+    //classpath = configurations.compile
 }
 // Dependencies
 tasks.classes {
