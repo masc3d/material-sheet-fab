@@ -86,14 +86,20 @@ dependencies {
             // Artemis
             dependencies.create("org.apache.activemq:artemis-jms-server:$v_artemis") {
                 // Conflicts with jms 1.1 which is required by activemq 5.x
+                exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
                 exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
             },
             dependencies.create("org.apache.activemq:artemis-jms-client:$v_artemis") {
                 // Conflicts with jms 1.1 which is required by activemq 5.x
                 exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
             },
-            "org.apache.activemq:artemis-amqp-protocol:$v_artemis",
-            "org.apache.activemq:artemis-openwire-protocol:$v_artemis"
+            dependencies.create("org.apache.activemq:artemis-amqp-protocol:$v_artemis") {
+                exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            dependencies.create("org.apache.activemq:artemis-openwire-protocol:$v_artemis") {
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            }
     )
 
     testCompile(
