@@ -9,6 +9,7 @@ include ':libs:sx-rsync'
 include ':libs:sx-ssh'
 include ':libs:sx-serialization'
 include ':libs:sx-packager'
+include ':libs:sx-packager-gradle'
 //include ':libs:sx-android'
 include ':libs:barbarywatchservice'
 

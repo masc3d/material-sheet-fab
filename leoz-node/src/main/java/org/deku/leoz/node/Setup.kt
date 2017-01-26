@@ -6,7 +6,7 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.apache.commons.lang3.SystemUtils
 import org.deku.leoz.YamlPersistence
-import org.deku.leoz.bundle.BundleProcessInterface
+import sx.packager.BundleProcessInterface
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.deku.leoz.node.Storage

@@ -4,8 +4,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
-import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleRepository
+import sx.packager.BundleInstaller
+import sx.packager.BundleRepository
 import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
 

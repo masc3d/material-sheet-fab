@@ -1,6 +1,6 @@
 package org.deku.leoz.config
 
-import org.deku.leoz.bundle.BundleRepository
+import sx.packager.BundleRepository
 import sx.rsync.Rsync
 import java.nio.file.Paths
 

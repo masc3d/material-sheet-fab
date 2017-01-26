@@ -1,7 +1,7 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleRepository
+import sx.packager.BundleInstaller
+import sx.packager.BundleRepository
 import org.deku.leoz.config.BundleConfiguration
 import org.deku.leoz.node.Storage
 import org.springframework.context.annotation.Bean
@@ -23,7 +23,7 @@ open class BundleConfiguration {
      * Local bundle repository
      **/
     @Bean
-    open fun localRepository(): BundleRepository{
+    open fun localRepository(): BundleRepository {
         return BundleRepository(
                 rsyncModuleUri = Rsync.URI(storage.bundleRepositoryDirectory))
     }

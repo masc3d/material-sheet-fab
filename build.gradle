@@ -1,8 +1,8 @@
+import sx.packager.BundleRepository
 import sx.platform.PlatformId
 import sx.ssh.SshTunnelProvider
 import sx.ssh.SshHost
 import sx.rsync.Rsync
-import org.deku.leoz.bundle.BundleRepository
 import java.lang.management.ManagementFactory
 import java.nio.file.Paths
 
@@ -21,39 +21,48 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        maven {
+            url 'leoz-build/repo'
+        }
     }
 
     dependencies {
-        classpath "ca.cutterslade.gradle:gradle-dependency-analyze:1.1.0"
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
-        classpath 'org.kordamp.gradle:stats-gradle-plugin:0.2.0'
+        classpath "sx:sx-ssh:0.1"
+        classpath "sx:sx-packager-gradle:0.1"
+        classpath "sx:sx-serialization:0.1"
+
+        classpath(
+                "ca.cutterslade.gradle:gradle-dependency-analyze:1.1.0",
+                'com.github.ben-manes:gradle-versions-plugin:0.13.0',
+                'org.kordamp.gradle:stats-gradle-plugin:0.2.0'
+        )
     }
+}
 
-    ext {
-        // Leoz release path, relative to root project
-        g_platform_identifier = PlatformId.current().toString()
+ext {
+    // Leoz release path, relative to root project
+    g_platform_identifier = PlatformId.current().toString()
 
-        g_release_path = Paths.get(project.rootDir.toURI())
-                .resolve("release")
-                .toFile()
+    g_release_path = Paths.get(project.rootDir.toURI())
+            .resolve("release")
+            .toFile()
 
-        g_bin_path = new File(project.rootDir, 'bin')
+    g_bin_path = new File(project.rootDir, 'bin')
 
-        g_osx_icon = Paths.get(project.rootDir.toURI())
-                .resolve('images')
-                .resolve('DEKU.icon.icns')
-                .toFile()
+    g_osx_icon = Paths.get(project.rootDir.toURI())
+            .resolve('images')
+            .resolve('DEKU.icon.icns')
+            .toFile()
 
-        g_windows_icon = Paths.get(project.rootDir.toURI())
-                .resolve('images')
-                .resolve('DEKU.icon.ico')
-                .toFile()
+    g_windows_icon = Paths.get(project.rootDir.toURI())
+            .resolve('images')
+            .resolve('DEKU.icon.ico')
+            .toFile()
 
-        g_vm_dist_path = project.rootDir.toPath()
-                .resolve('vm')
-                .resolve('dist')
-                .toFile()
-    }
+    g_vm_dist_path = project.rootDir.toPath()
+            .resolve('vm')
+            .resolve('dist')
+            .toFile()
 }
 
 apply plugin: 'java'
@@ -116,25 +125,6 @@ configure(
         testLogging.showStandardStreams = true
     }
 
-    // Setup common sx-packager-gradle plugin properties for all subprojects
-    plugins.withType(org.deku.gradle.PackagerPlugin).whenPluginAdded {
-        SshTunnelProvider mySshTunnelProvider = new SshTunnelProvider(
-                new kotlin.ranges.IntRange(13300, 13350),
-                new SshHost(
-                        "",
-                        13003,
-                        "leoz",
-                        "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
-
-        packager {
-            sshTunnelProvider = mySshTunnelProvider
-            bundleRepository = new BundleRepository(
-                    new Rsync.URI("rsync://leoz@leoz.derkurier.de:13002/bundles"),
-                    '2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x',
-                    mySshTunnelProvider)
-        }
-    }
-
     // Global jar configuration
     jar {
         doFirst {
@@ -160,21 +150,44 @@ configure(
 
     ext {
         globalPlatformDir = new File(project.rootDir, 'platform')
-        sxRsyncPlatformDir = new File(project(':libs:sx-rsync').projectDir, 'platform')
+        rsyncPlatformDir = new File(project(':libs:sx-rsync').projectDir, 'platform')
 
-        projectBuildSupplementalsDir = new File(project.buildDir, 'supplementals')
-        projectBuildPlatformDir = new File(projectBuildSupplementalsDir, 'platform')
-        projectBuildCurrentPlatformDir = new File(projectBuildPlatformDir, g_platform_identifier)
-        platformDirRelative = new File('platform')
-
+        buildSupplementalsDir = new File(project.buildDir, 'supplementals')
+        buildPlatformDir = new File(buildSupplementalsDir, 'platform')
         projectPlatformDir = new File(project.projectDir, 'platform')
+    }
+
+    // Setup common sx-packager-gradle plugin properties for all subprojects
+    plugins.withType(sx.packager.gradle.PackagerPlugin).whenPluginAdded {
+        SshTunnelProvider mySshTunnelProvider = new SshTunnelProvider(
+                new kotlin.ranges.IntRange(13300, 13350),
+                new SshHost(
+                        "",
+                        13003,
+                        "leoz",
+                        "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
+
+        packager {
+            sshTunnelProvider = mySshTunnelProvider
+            bundleRepository = new BundleRepository(
+                    new Rsync.URI("rsync://leoz@leoz.derkurier.de:13002/bundles"),
+                    '2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x',
+                    mySshTunnelProvider)
+
+            releaseBasePath = g_release_path
+            osxIcon = g_osx_icon
+            windowsIcon = g_windows_icon
+            supplementalPlatformDirs(
+                    (buildPlatformDir): file('platform')
+            )
+        }
     }
 
     /**
     * Task copying platform specific files from sx-common to project dir
     */
-    task copySxPlatformDirToProject(type: Copy) {
-        from sxRsyncPlatformDir
+    task copyRsyncPlatformDirToProject(type: Copy) {
+        from rsyncPlatformDir
         into projectPlatformDir
         // Rename generic name to leoz specific process name, as it's easier to handle,
         // when eg. looking at process names while leoz is running
@@ -184,14 +197,14 @@ configure(
     /**
      * Task copying platform specific files from sx-common to project build dir
      */
-    task copySxPlatformDirToBuild(type: Copy) {
-        from sxRsyncPlatformDir
-        into projectBuildPlatformDir
+    task copyRsyncPlatformDirToBuild(type: Copy) {
+        from rsyncPlatformDir
+        into buildPlatformDir
         // Rename generic name to leoz specific process name, as it's easier to handle,
         // when eg. looking at process names while leoz is running
         rename 'sx-rsync(.*)', 'leoz-rsync$1'
     }
-    tasks.copySxPlatformDirToBuild.dependsOn(tasks.copySxPlatformDirToProject)
+    tasks.copyRsyncPlatformDirToBuild.dependsOn(tasks.copyRsyncPlatformDirToProject)
 
     /**
      * Task copying architecture specific global files to project dri
@@ -206,7 +219,7 @@ configure(
      */
     task copyGlobalPlatformDirToBuild(type: Copy) {
         from globalPlatformDir
-        into projectBuildPlatformDir
+        into buildPlatformDir
     }
     tasks.copyGlobalPlatformDirToBuild.dependsOn(tasks.copyGlobalPlatformDirToProject)
 }

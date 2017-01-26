@@ -15,6 +15,10 @@ import org.deku.leoz.service.discovery.DiscoveryService
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.lang.kotlin.cast
+import sx.packager.Bundle
+import sx.packager.BundleInstaller
+import sx.packager.BundleRepository
+import sx.packager.prepareProduction
 import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient

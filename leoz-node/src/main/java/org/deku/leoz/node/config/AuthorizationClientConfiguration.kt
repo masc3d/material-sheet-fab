@@ -1,6 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.bundle.BundleInstaller
+import sx.packager.BundleInstaller
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.Application

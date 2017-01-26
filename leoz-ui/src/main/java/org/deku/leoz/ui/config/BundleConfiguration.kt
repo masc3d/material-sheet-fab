@@ -2,8 +2,8 @@ package org.deku.leoz.ui.config
 
 import com.github.salomonbrys.kodein.*
 import org.deku.leoz.Storage
-import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleRepository
+import sx.packager.BundleInstaller
+import sx.packager.BundleRepository
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.service.update.BundleUpdateService
 

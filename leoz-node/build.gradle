@@ -2,7 +2,6 @@ import groovy.io.FileType
 import groovy.xml.MarkupBuilder
 import org.apache.commons.lang3.ClassUtils
 import org.apache.commons.lang3.SystemUtils
-import org.deku.gradle.PackagerPlugin
 import org.jboss.forge.roaster.Roaster
 import org.jboss.forge.roaster.model.source.FieldSource
 import org.jboss.forge.roaster.model.source.JavaClassSource
@@ -16,6 +15,9 @@ import org.jooq.util.jaxb.*
 import java.io.File
 import java.nio.file.Files
 
+import sx.ssh.SshTunnelProvider
+import sx.ssh.SshHost
+
 buildscript {
     ext {
         v_aspectj = '1.8.10'
@@ -25,7 +27,10 @@ buildscript {
 
     repositories {
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url 'https://plugins.gradle.org/m2/'
+        }
+        maven {
+            url '../leoz-build/repo'
         }
     }
 
@@ -56,7 +61,7 @@ apply plugin: 'application'
 apply plugin: 'distribution'
 apply plugin: 'idea'
 apply plugin: 'org.flywaydb.flyway'
-apply plugin: PackagerPlugin
+apply plugin: 'sx-packager'
 
 group = 'org.deku.leoz'
 sourceCompatibility = 1.8
@@ -310,7 +315,7 @@ run {
 distributions {
     main {
         contents {
-            from projectBuildSupplementalsDir
+            from buildSupplementalsDir
         }
     }
 }
@@ -334,18 +339,12 @@ tasks.installDist {
 
 packager {
     title = "Leoz Node"
-    releaseBasePath = g_release_path
-    osxIcon = g_osx_icon
-    windowsIcon = g_windows_icon
-    supplementalPlatformDirs(
-            (projectBuildPlatformDir): (platformDirRelative)
-    )
 }
 
 //region Custom tasks
 
 // Include sx platform/binaries
-tasks.classes.dependsOn(copySxPlatformDirToBuild)
+tasks.classes.dependsOn(copyRsyncPlatformDirToBuild)
 // Include leoz global platform/binaries
 tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
 

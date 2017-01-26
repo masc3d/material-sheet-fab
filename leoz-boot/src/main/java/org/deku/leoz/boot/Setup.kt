@@ -1,6 +1,6 @@
 package org.deku.leoz.boot
 
-import org.deku.leoz.bundle.BundleProcessInterface
+import sx.packager.BundleProcessInterface
 
 /**
  * Setup/bundle process interface implementation

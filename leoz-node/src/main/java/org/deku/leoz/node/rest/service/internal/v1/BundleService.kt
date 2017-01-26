@@ -1,6 +1,6 @@
 package org.deku.leoz.node.rest.service.internal.v1
 
-import org.deku.leoz.bundle.BundleRepository
+import sx.packager.BundleRepository
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.service.update.UpdateInfo

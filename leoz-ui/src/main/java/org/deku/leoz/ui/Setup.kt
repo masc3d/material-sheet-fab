@@ -8,6 +8,8 @@ import org.deku.leoz.ui.config.StorageConfiguration
 import org.slf4j.LoggerFactory
 import sx.io.ProcessLockFile
 import sx.io.WindowsShellLink
+import sx.packager.Bundle
+import sx.packager.BundleProcessInterface
 import java.io.File
 
 /**

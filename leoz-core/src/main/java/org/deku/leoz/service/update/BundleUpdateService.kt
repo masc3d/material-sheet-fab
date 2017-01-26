@@ -1,9 +1,9 @@
 package org.deku.leoz.service.update
 
 import org.deku.leoz.Identity
-import org.deku.leoz.bundle.Bundle
-import org.deku.leoz.bundle.BundleInstaller
-import org.deku.leoz.bundle.BundleRepository
+import sx.packager.Bundle
+import sx.packager.BundleInstaller
+import sx.packager.BundleRepository
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.slf4j.LoggerFactory

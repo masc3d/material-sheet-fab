@@ -3,6 +3,8 @@ package org.deku.leoz.bundle
 import org.deku.leoz.config.BundleTestConfiguration
 import org.junit.Assert
 import org.junit.Test
+import sx.packager.Bundle
+import sx.packager.filter
 import sx.platform.CpuArch
 import sx.platform.OperatingSystem
 import sx.platform.PlatformId

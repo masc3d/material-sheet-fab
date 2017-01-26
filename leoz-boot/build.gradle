@@ -1,9 +1,7 @@
-import org.deku.gradle.PackagerPlugin
-
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: 'distribution'
-apply plugin: PackagerPlugin
+apply plugin: 'sx-packager'
 
 version '0.27-RELEASE'
 sourceCompatibility = 1.8
@@ -64,24 +62,18 @@ sourceSets {
     main.resources.srcDir 'src/main/java'
 }
 
-tasks.classes.dependsOn(copySxPlatformDirToBuild)
+tasks.classes.dependsOn(copyRsyncPlatformDirToBuild)
 tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
 
 distributions {
     main {
         contents {
-            from projectBuildSupplementalsDir
+            from buildSupplementalsDir
         }
     }
 }
 
 packager {
     title = "Leoz Boot"
-    releaseBasePath = g_release_path
-    osxIcon = g_osx_icon
-    windowsIcon = g_windows_icon
-    supplementalPlatformDirs(
-            (projectBuildPlatformDir): (platformDirRelative)
-    )
     createSelfExtractingArchive = true
 }

@@ -1,9 +1,7 @@
-import org.deku.gradle.PackagerPlugin
-
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: 'distribution'
-apply plugin: PackagerPlugin
+apply plugin: 'sx-packager'
 
 sourceCompatibility = 1.8
 version = '0.16-SNAPSHOT'
@@ -127,14 +125,8 @@ dependencies {
 // Non-standard, but nicer to keep .fxml files together with classes
 sourceSets.main.resources.srcDir 'src/main/java'
 
-tasks.classes.dependsOn(copySxPlatformDirToBuild)
+tasks.classes.dependsOn(copyRsyncPlatformDirToBuild)
 
 packager {
     title = "Leoz UI"
-    releaseBasePath = g_release_path
-    osxIcon = g_osx_icon
-    windowsIcon = g_windows_icon
-    supplementalPlatformDirs(
-            (projectBuildPlatformDir): (platformDirRelative)
-    )
 }
