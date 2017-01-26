@@ -1,6 +1,10 @@
 apply plugin: 'kotlin'
 
 buildscript {
+    repositories {
+        mavenCentral()
+    }
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
@@ -20,6 +24,11 @@ configurations {
     compile.extendsFrom provided
 }
 
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
 dependencies {
     compile(
             project(':libs:sx-common'),
@@ -27,6 +36,7 @@ dependencies {
             project(':libs:sx-rsync'),
             project(':libs:sx-serialization'),
             project(':libs:sx-discovery'),
+            project(':libs:sx-packager'),
             // Watchservice replacement for OSX
             project(':libs:barbarywatchservice'),
             project(':leoz-common'),

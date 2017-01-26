@@ -1,142 +1,17 @@
-apply from: '../versions.gradle'
-
-buildscript {
-    ext {
-        //TODO: reverted to 1.0.3 for now (task dependenciy issue, copyMainKotlinClasses runs after compileGroovy, making it fail, as it can't find kt classes)
-        v_kotlin = '1.0.3'
-        v_jsch = '0.0.9'
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
-    }
-
-    repositories {
-        mavenCentral()
-    }
-}
-
 apply plugin: 'java'
-apply plugin: 'kotlin'
 
 repositories {
     mavenCentral()
     jcenter()
-}
 
-
-configurations {
-    // TODO: custom `provided` configuration, as `compileOnly` doesn't work well with IntelliJ
-    provided {
-        dependencies.all { dep ->
-            configurations.default.exclude group: dep.group, module: dep.name
-        }
+    maven {
+        url '../leoz-build/repo'
     }
-    compile.extendsFrom provided
 }
 
 dependencies {
-    // Kotlin
     compile(
-            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
-            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
-            "org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3",
-
-            // Kodein
-            "com.github.salomonbrys.kodein:kodein:$v_kodein",
-            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
-
-            "org.apache.commons:commons-lang3:$v_commons_lang",
-            "org.apache.commons:commons-compress:1.11",
-            "commons-io:commons-io:$v_commons_io",
-            "org.tukaani:xz:1.5",
-            "org.eclipse.jgit:org.eclipse.jgit:4.3.1.201605051710-r",
-            "com.google.guava:guava:$v_guava",
-            "org.ini4j:ini4j:$v_ini4j",
-
-            // For authenticating ssh/jgit against key agent
-            "com.jcraft:jsch.agentproxy.connector-factory:$v_jsch",
-            "com.jcraft:jsch.agentproxy.jsch:$v_jsch",
-            "com.jcraft:jsch.agentproxy.sshagent:$v_jsch",
-            "com.jcraft:jsch.agentproxy.pageant:$v_jsch"
+            "sx:sx-serialization:0.1",
+            "sx:sx-packager-gradle:0.1"
     )
-
-    // Unused deps required for compilation
-    provided(
-            "javax.ws.rs:javax.ws.rs-api:$v_javax_ws_rs",
-            "ch.qos.logback:logback-classic:$v_logback",
-            "javax.servlet:javax.servlet-api:$v_javax_servlet",
-            "org.apache.activemq:activemq-broker:$v_activemq",
-            "org.apache.activemq:activemq-kahadb-store:$v_activemq",
-            "org.apache.activemq:activemq-jms-pool:$v_activemq",
-            "org.apache.activemq:activemq-jaas:$v_activemq",
-            "org.apache.activemq:activemq-mqtt:$v_activemq",
-            dependencies.create("org.apache.activemq:activemq-http:$v_activemq") {
-                exclude group: 'org.springframework'
-                exclude group: 'org.apache.activemq', module: 'activemq-spring'
-                exclude group: 'org.eclipse.jetty.aggregate'
-            },
-            "org.apache.sshd:sshd-core:$v_sshd",
-            "org.springframework:spring-jms:$v_spring",
-            "com.esotericsoftware:kryo:$v_kryo",
-            "org.xerial.snappy:snappy-java:$v_snappy"
-    )
-
-    testCompile group: 'junit', name: 'junit', version: v_junit
 }
-
-sourceSets {
-    // See workaround below
-    //main.java.srcDirs += '../libs/sx-common/src/main/java'
-    //main.java.srcDirs += '../libs/leoz-common/src/main/java'
-}
-
-// TODO: workaround for intellij's inability of having sources outside the content root of a module
-// https://youtrack.jetbrains.com/issue/IDEA-122577
-// TODO: remove as soon as fix is released in IntelliJ 15.1
-def srcdir_import = file("$projectDir/src/import/java")
-
-sourceSets {
-    main.java.srcDirs += srcdir_import
-}
-
-// Task for importing classes from other projects
-task syncClasses(type: Sync) {
-    onlyIf {
-        !srcdir_import.exists()
-    }
-
-    from '../leoz-core/src/main/java', '../libs/sx-common/src/main/java', '../libs/sx-ssh/src/main/java', '../libs/sx-rsync/src/main/java', '../libs/sx-serialization/src/main/java'
-    into srcdir_import
-    include '**/bundle/Bundle.kt',
-            '**/bundle/BundleInstaller*',
-            '**/bundle/BundleRepository*',
-            '**/bundle/BundleProcess*',
-            '**/bundle/BundleType*',
-            '**/config/BundleConfiguration*',
-            '**/config/HostConfiguration*',
-            '**/config/RsyncConfiguration*',
-            '**/config/SshConfiguration*',
-            '**/platform/**',
-            '**/rsync/**',
-            '**/logging/slf4j/**',
-            '**/system/**',
-            '**/io/PermissionUtil*',
-            '**/io/serialization/Serializer**',
-            '**/Action*/',
-            '**/Disposable*/',
-            '**/EmbeddedExecutable*/',
-            '**/ProcessExecutor*',
-            '**/StandardSystemProperty*',
-            '**/ssh/**'
-    includeEmptyDirs = false
-}
-
-// Clean build directory if class sync task performed action
-tasks.syncClasses.doLast {
-    new File(project.projectDir, 'build').deleteDir()
-}
-
-// Copy classes before compilation
-compileJava.dependsOn(syncClasses)
-compileKotlin.dependsOn(syncClasses)

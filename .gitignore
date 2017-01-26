@@ -61,3 +61,4 @@ vm/.vagrant
 vm/dist
 workspace.xml
 local.properties
+libs/sx-packager-gradle/.idea/libraries

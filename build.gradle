@@ -1,5 +1,8 @@
 import sx.platform.PlatformId
-
+import sx.ssh.SshTunnelProvider
+import sx.ssh.SshHost
+import sx.rsync.Rsync
+import org.deku.leoz.bundle.BundleRepository
 import java.lang.management.ManagementFactory
 import java.nio.file.Paths
 
@@ -15,6 +18,17 @@ def assertJvmVersion(String vmVersion) {
 assertJvmVersion(v_jvm)
 
 buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "ca.cutterslade.gradle:gradle-dependency-analyze:1.1.0"
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
+        classpath 'org.kordamp.gradle:stats-gradle-plugin:0.2.0'
+    }
+
     ext {
         // Leoz release path, relative to root project
         g_platform_identifier = PlatformId.current().toString()
@@ -39,17 +53,6 @@ buildscript {
                 .resolve('vm')
                 .resolve('dist')
                 .toFile()
-    }
-
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-
-    dependencies {
-        classpath "ca.cutterslade.gradle:gradle-dependency-analyze:1.1.0"
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
-        classpath 'org.kordamp.gradle:stats-gradle-plugin:0.2.0'
     }
 }
 
@@ -102,13 +105,34 @@ subprojects {
 }
 
 // Common configuration for all non-android subprojects
-configure(subprojects.findAll { it.path != ':leoz-mobile-app' && it.path != ':libs:sx-android' }) {
+configure(
+        subprojects.findAll { it.path != ':leoz-mobile-app' && it.path != ':libs:sx-android' }
+) {
     apply plugin: 'java'
     // Analzye tasks (analyze* for showing unused dependencies eg.)
     apply plugin: 'ca.cutterslade.analyze'
 
     test {
         testLogging.showStandardStreams = true
+    }
+
+    // Setup common sx-packager-gradle plugin properties for all subprojects
+    plugins.withType(org.deku.gradle.PackagerPlugin).whenPluginAdded {
+        SshTunnelProvider mySshTunnelProvider = new SshTunnelProvider(
+                new kotlin.ranges.IntRange(13300, 13350),
+                new SshHost(
+                        "",
+                        13003,
+                        "leoz",
+                        "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
+
+        packager {
+            sshTunnelProvider = mySshTunnelProvider
+            bundleRepository = new BundleRepository(
+                    new Rsync.URI("rsync://leoz@leoz.derkurier.de:13002/bundles"),
+                    '2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x',
+                    mySshTunnelProvider)
+        }
     }
 
     // Global jar configuration

@@ -8,6 +8,7 @@ include ':libs:sx-fx'
 include ':libs:sx-rsync'
 include ':libs:sx-ssh'
 include ':libs:sx-serialization'
+include ':libs:sx-packager'
 //include ':libs:sx-android'
 include ':libs:barbarywatchservice'
 
@@ -25,3 +26,4 @@ include ':leoz-ui'
 //project(':leoz-mobile-app').projectDir = file('leoz-mobile/leoz-mobile-app')
 include ':leoz-mobile-data'
 project(':leoz-mobile-data').projectDir = file('leoz-mobile/leoz-mobile-data')
+

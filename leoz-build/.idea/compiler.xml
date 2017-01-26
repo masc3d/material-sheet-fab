@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <wildcardResourcePatterns>
+      <entry name="!?*.java" />
+      <entry name="!?*.form" />
+      <entry name="!?*.class" />
+      <entry name="!?*.groovy" />
+      <entry name="!?*.scala" />
+      <entry name="!?*.flex" />
+      <entry name="!?*.kt" />
+      <entry name="!?*.clj" />
+    </wildcardResourcePatterns>
+    <bytecodeTargetLevel>
+      <module name="leoz-build_main" target="1.5" />
+      <module name="leoz-build_test" target="1.5" />
+      <module name="sx-common_main" target="1.7" />
+      <module name="sx-common_test" target="1.7" />
+      <module name="sx-packager-gradle_main" target="1.8" />
+      <module name="sx-packager-gradle_test" target="1.8" />
+      <module name="sx-packager_main" target="1.5" />
+      <module name="sx-packager_test" target="1.5" />
+      <module name="sx-rsync_main" target="1.8" />
+      <module name="sx-rsync_test" target="1.8" />
+      <module name="sx-serialization_main" target="1.8" />
+      <module name="sx-serialization_test" target="1.8" />
+      <module name="sx-ssh_main" target="1.8" />
+      <module name="sx-ssh_test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

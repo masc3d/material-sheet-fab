@@ -10,5 +10,6 @@ enum class BundleType(val value: String) {
     LEOZ_CENTRAL("leoz-central"),
     LEOZ_NODE("leoz-node"),
     LEOZ_UI("leoz-ui"),
-    LEOZ_BOOT("leoz-boot")
+    LEOZ_BOOT("leoz-boot"),
+    LEOZ_MOBILE("leoz-mobile")
 }
