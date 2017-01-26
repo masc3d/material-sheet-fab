@@ -45,19 +45,19 @@ class Rsync() {
         /**
          * @param path Local path
          */
-        constructor(path: java.nio.file.Path, asDirectory: Boolean = true) : this(path.toUri(), asDirectory) {
+        @JvmOverloads constructor(path: java.nio.file.Path, asDirectory: Boolean = true) : this(path.toUri(), asDirectory) {
         }
 
         /**
          * @param uri URI string
          */
-        constructor(uri: String, asDirectory: Boolean = true) : this(java.net.URI(uri), asDirectory) {
+        @JvmOverloads constructor(uri: String, asDirectory: Boolean = true) : this(java.net.URI(uri), asDirectory) {
         }
 
         /**
          * @param file Local file
          */
-        constructor(file: File, asDirectory: Boolean = true) : this(file.toURI(), asDirectory) {
+        @JvmOverloads constructor(file: File, asDirectory: Boolean = true) : this(file.toURI(), asDirectory) {
         }
 
         // Extension methods for java.net.URI
