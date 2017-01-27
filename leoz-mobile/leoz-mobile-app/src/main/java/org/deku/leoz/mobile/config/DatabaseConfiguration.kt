@@ -1,9 +1,7 @@
 package org.deku.leoz.mobile.config
 
 import android.content.Context
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.eagerSingleton
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.flywaydb.core.Flyway

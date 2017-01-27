@@ -1,9 +1,6 @@
 package org.deku.leoz.ui.config
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.eagerSingleton
-import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.provider
+import com.github.salomonbrys.kodein.*
 import org.deku.leoz.config.RestConfiguration
 import org.deku.leoz.rest.RestClient
 import org.deku.leoz.rest.service.internal.v1.BundleService

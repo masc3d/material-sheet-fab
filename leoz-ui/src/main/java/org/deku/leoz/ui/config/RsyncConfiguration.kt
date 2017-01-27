@@ -1,7 +1,6 @@
 package org.deku.leoz.ui.config
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.eagerSingleton
+import com.github.salomonbrys.kodein.*
 
 /**
  * Created by masc on 05/12/2016.

@@ -1,8 +1,6 @@
 package org.deku.leoz.boot.config
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.eagerSingleton
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.*
 import org.deku.leoz.Storage
 
 /**

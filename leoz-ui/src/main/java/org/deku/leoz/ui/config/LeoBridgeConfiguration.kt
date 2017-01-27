@@ -1,8 +1,6 @@
 package org.deku.leoz.ui.config
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.eagerSingleton
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.*
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ExecutorService

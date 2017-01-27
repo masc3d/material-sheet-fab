@@ -37,7 +37,7 @@ dependencies {
             "org.reactfx:reactfx:2.0-M5",
 
             // command line
-            "com.beust:jcommander:1.60",
+            "com.beust:jcommander:1.62",
 
             // ini/conf file
             "org.ini4j:ini4j:$v_ini4j",

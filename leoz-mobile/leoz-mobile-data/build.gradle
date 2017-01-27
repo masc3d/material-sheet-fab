@@ -12,7 +12,7 @@ import org.jboss.forge.roaster.model.source.*
 
 buildscript {
     ext {
-        v_xerial_sqlite = '3.15.1'
+        v_xerial_sqlite = '3.16.1'
     }
 
     dependencies {
@@ -129,7 +129,7 @@ dependencies {
             // rx
             "io.reactivex:rxjava:$v_rxjava",
             "io.reactivex:rxkotlin:$v_rxkotlin",
-            "com.github.davidmoten:rxjava-extras:0.8.0.5",
+            "com.github.davidmoten:rxjava-extras:0.8.0.6",
 
             // Requery
             "io.requery:requery:$v_requery",

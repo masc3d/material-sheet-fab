@@ -1,9 +1,7 @@
 package org.deku.leoz.node.config
 
-import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.eagerSingleton
-import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.log.LogAppender
 import org.deku.leoz.node.Application

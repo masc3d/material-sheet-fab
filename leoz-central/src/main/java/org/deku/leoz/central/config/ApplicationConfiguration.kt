@@ -1,9 +1,7 @@
 package org.deku.leoz.central.config
 
-import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.eagerSingleton
-import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.central.Application
 import org.deku.leoz.node.Storage
 import org.deku.leoz.node.config.LogConfiguration

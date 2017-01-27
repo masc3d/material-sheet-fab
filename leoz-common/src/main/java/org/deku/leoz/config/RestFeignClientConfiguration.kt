@@ -1,9 +1,6 @@
 package org.deku.leoz.config
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.provider
-import com.github.salomonbrys.kodein.singleton
+import com.github.salomonbrys.kodein.*
 import feign.Feign
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder

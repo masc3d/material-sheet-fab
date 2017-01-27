@@ -1,8 +1,6 @@
 package org.deku.leoz.ui.config
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.singleton
+import com.github.salomonbrys.kodein.*
 import org.deku.leoz.ui.Settings
 import sx.JarManifest
 import sx.concurrent.task.CompositeExecutorService

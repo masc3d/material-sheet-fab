@@ -3,10 +3,9 @@ package org.deku.leoz.mobile
 import android.content.Context
 import android.content.pm.PackageManager
 import android.support.multidex.MultiDexApplication
-import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.singleton
 import org.deku.leoz.mobile.config.DatabaseConfiguration
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.config.StorageConfiguration

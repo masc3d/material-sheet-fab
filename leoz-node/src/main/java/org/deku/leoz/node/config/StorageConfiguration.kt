@@ -1,8 +1,6 @@
 package org.deku.leoz.node.config
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.eagerSingleton
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.*
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 

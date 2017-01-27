@@ -9,16 +9,16 @@ buildscript {
         classpath(
             "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
             "com.android.tools.build:gradle:2.2.3",
-            "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1",
+            "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2",
         )
     }
 
     ext {
         v_android_buildtools = '25.0.2'
         v_android_support = '25.1.0'
-        v_roboelectric = '3.1.4'
+        v_roboelectric = '3.2.2'
         v_rxlifecycle = '1.0'
-        v_stetho = '1.4.1'
+        v_stetho = '1.4.2'
     }
 }
 
@@ -156,7 +156,7 @@ dependencies {
             "io.reactivex:rxandroid:1.2.1",
             "io.reactivex:rxkotlin:$v_rxkotlin",
             "io.reactivex:rxjava-async-util:0.21.0",
-            "com.github.davidmoten:rxjava-extras:0.8.0.5",
+            "com.github.davidmoten:rxjava-extras:0.8.0.6",
             "com.jakewharton.rxbinding:rxbinding:1.0.0",
             "com.trello:rxlifecycle:$v_rxlifecycle",
             "com.trello:rxlifecycle-kotlin:$v_rxlifecycle",
