@@ -5,7 +5,7 @@ buildscript {
     ext {
         v_kotlin = '1.0.6'
         v_android_buildtools = '25.0.2'
-        v_android_support = '25.0.1'
+        v_android_support = '25.1.0'
     }
 
     dependencies {
@@ -62,7 +62,7 @@ dependencies {
     compile "com.android.support:design:$v_android_support"
 
     // RX
-    compile "io.reactivex:rxjava:1.2.4"
+    compile "io.reactivex:rxjava:1.2.5"
     compile "io.reactivex:rxandroid:1.2.1"
 
     def v_rxlifecycle = '1.0'
