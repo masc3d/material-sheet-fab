@@ -61,10 +61,13 @@ open class UpdateConfiguration {
 
     /**
      * Bundle service proxy, either returns proxy via RestClient if available (leoz-node) or a
-     * direct reference to the BundleService of this procesws (leoz-central)
+     * direct reference to the BundleService of this process (leoz-central)
      */
     private val bundleServiceProxy by lazy {
-        if (this.restClient.isPresent) this.restClient.get().proxy(BundleService::class.java) else this.bundleService
+        if (this.restClient.isPresent)
+            this.restClient.get().proxy(BundleService::class.java)
+        else
+            this.bundleService
     }
 
     @Configuration

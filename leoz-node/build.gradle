@@ -451,7 +451,6 @@ task jooqGenerate(group: 'jooq') {
 
     inputs.dir FLYWAY_MIGRATION_DIR
     outputs.dir JOOQ_GENERATED_DIR
-
     doFirst {
         JOOQ_GENERATED_DIR.deleteDir()
     }
@@ -479,7 +478,7 @@ tasks.compileJava {
  * Workaround for kapt issue https://youtrack.jetbrains.com/issue/KT-14139
  */
 task queryDslGenerate(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
-    source = sourceSets.main.java.srcDirs.collect().findAll { it != QUERYDSL_GENERATED_DIR } // input source set
+    source = JOOQ_GENERATED_DIR
     classpath = configurations.compile + configurations.querydslapt // add processor module to classpath
     // specify javac arguments
     options.compilerArgs = [
