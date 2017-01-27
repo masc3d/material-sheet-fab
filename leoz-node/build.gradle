@@ -15,9 +15,6 @@ import org.jooq.util.jaxb.*
 import java.io.File
 import java.nio.file.Files
 
-import sx.ssh.SshTunnelProvider
-import sx.ssh.SshHost
-
 buildscript {
     ext {
         v_aspectj = '1.8.10'
