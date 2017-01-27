@@ -4,7 +4,7 @@ version '1.0'
 buildscript {
     ext {
         v_activemq = '5.14.3'
-        v_artemis = '1.5.1'
+        v_artemis = '1.5.2'
         v_kotlin = '1.0.6'
         v_protostuff = '1.5.0'
     }
@@ -61,14 +61,14 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             // Guava
-            "com.google.guava:guava:20.0",
+            "com.google.guava:guava:21.0",
             // JMS
             "javax.jms:jms-api:1.1-rev-1"
     )
 
     provided(
             // Spring
-            "org.springframework:spring-jms:4.3.5.RELEASE",
+            "org.springframework:spring-jms:4.3.6.RELEASE",
             // ActiveMQ
             "org.apache.activemq:activemq-broker:$v_activemq",
             "org.apache.activemq:activemq-kahadb-store:$v_activemq",
@@ -104,6 +104,6 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.1.8"
+            "ch.qos.logback:logback-classic:1.1.9"
     )
 }
