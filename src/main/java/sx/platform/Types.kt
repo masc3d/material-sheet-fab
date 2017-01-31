@@ -6,7 +6,8 @@ package sx.platform
 enum class OperatingSystem(val os: String) {
     OSX("osx"),
     WINDOWS("win"),
-    LINUX("linux");
+    LINUX("linux"),
+    ANDROID("android");
 
     override fun toString(): String {
         return this.os
@@ -18,7 +19,8 @@ enum class OperatingSystem(val os: String) {
  */
 enum class CpuArch(val cpuArch: String) {
     X86("32"),
-    X64("64");
+    X64("64"),
+    ANY("");
 
     override fun toString(): String {
         return this.cpuArch
