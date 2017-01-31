@@ -62,4 +62,7 @@
 -dontwarn sx.LazyInstance
 -dontwarn sx.Process**
 
+-dontwarn com.esotericsoftware.**
+-dontwarn org.objenesis.**
+
 -dontwarn feign.DefaultMethodHandler

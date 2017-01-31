@@ -1,15 +1,18 @@
-//import org.deku.gradle.PackagerPlugin
-
 buildscript {
     repositories {
+        mavenCentral()
         jcenter()
+        maven {
+            url '../../leoz-build/repo'
+        }
     }
 
     dependencies {
         classpath(
-            "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
-            "com.android.tools.build:gradle:2.2.3",
-            "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2",
+                "sx:sx-packager-gradle:0.1",
+                "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
+                "com.android.tools.build:gradle:2.2.3",
+                "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2",
         )
     }
 
@@ -26,6 +29,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'sx-packager-android'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -46,11 +50,10 @@ android {
         minSdkVersion 16
         targetSdkVersion 16
         versionCode 1
-        versionName "1.0"
+        versionName "0.1-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
-
 
     signingConfigs {
         release {
@@ -182,7 +185,7 @@ dependencies {
 
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:4.0.0") {
-                exclude group:'org.ow2.asm', module: 'asm'
+                exclude group: 'org.ow2.asm', module: 'asm'
             }
     )
 
@@ -213,19 +216,6 @@ dependencies {
     )
 }
 
-/** Mange apk name for all output variants */
-android.applicationVariants.all { variant ->
-    variant.outputs.each { output ->
-        def outputFile = output.outputFile
-        outputFile = new File(
-                outputFile.parent.toString(),
-                outputFile.name.replace(project.name, String.format("%s-%s", project.parent.name, android.defaultConfig.versionName)));
-        println "${output.name} apk filename: ${outputFile}"
-        output.outputFile = file(outputFile.toString());
-    }
-}
-
-
 /**
  * Task for syncing mobile data project flyway sql migrations to android assets.
  * Should run prior to assembly of apk.
@@ -236,4 +226,12 @@ task flywaySyncMigrations(type: Sync) {
     into new File(project.projectDir, 'src/main/assets/db/migration')
 }
 tasks.preBuild.dependsOn(tasks.flywaySyncMigrations)
+
+packager {
+    title = 'Leoz Mobile'
+    releaseBasePath = project.rootDir.toPath()
+            .parent
+            .resolve('release')
+            .toFile()
+}
 
