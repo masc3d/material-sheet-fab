@@ -67,23 +67,6 @@ ext {
 
 apply plugin: 'java'
 
-clean {
-    doLast {
-        // Clean buildSrc import/build directories
-        def buildSrcPath = project.rootDir.toPath()
-                .resolve('buildSrc')
-
-        buildSrcPath
-                .resolve('src')
-                .resolve('import')
-                .deleteDir()
-
-        buildSrcPath
-                .resolve('build')
-                .deleteDir()
-    }
-}
-
 // Common configuration for all subprojects (including android)
 subprojects {
     // Common subproject buildscript configuration
@@ -177,6 +160,7 @@ configure(
             releaseBasePath = g_release_path
             osxIcon = g_osx_icon
             windowsIcon = g_windows_icon
+            nativePlatformDir = new File(project(':libs:sx-rsync').projectDir, 'platform')
             supplementalPlatformDirs(
                     (buildPlatformDir): file('platform')
             )

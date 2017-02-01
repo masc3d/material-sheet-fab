@@ -9,10 +9,10 @@ buildscript {
 
     dependencies {
         classpath(
-                "sx:sx-packager-gradle:0.1",
-                "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.android.tools.build:gradle:2.2.3",
+                "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2",
+                "sx:sx-packager-gradle:0.1",
         )
     }
 
@@ -229,9 +229,4 @@ tasks.preBuild.dependsOn(tasks.flywaySyncMigrations)
 
 packager {
     title = 'Leoz Mobile'
-    releaseBasePath = project.rootDir.toPath()
-            .parent
-            .resolve('release')
-            .toFile()
 }
-
