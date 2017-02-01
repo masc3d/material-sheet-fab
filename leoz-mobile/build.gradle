@@ -25,6 +25,13 @@ buildscript {
     }
 }
 
+// Find subprojects outside the root folder (shared) and use dedicated build dir to avoid build/cache clashes
+subprojects.findAll {
+    !it.project.projectDir.toString().startsWith(rootDir.toString())
+}.each {
+    it.buildDir = new File(it.buildDir, project.name)
+}
+
 subprojects {
     buildscript {
         repositories {
