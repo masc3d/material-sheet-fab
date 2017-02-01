@@ -24,14 +24,14 @@ class PlatformId(val operatingSystem: OperatingSystem, val cpuArch: CpuArch) {
         @JvmStatic fun parse(identifier: String): PlatformId {
             val id  = identifier.toLowerCase()
 
-            val regex = Regex("^([a-z]+)([0-9]{2}?)$")
+            val regex = Regex("^([a-z]+)([0-9]{2})?$")
             val matchResult = regex.find(id)
 
             if (matchResult == null)
                 throw IllegalArgumentException("Invalid platform id [${identifier}]")
 
             val sPlatform = matchResult.groups[1]?.value
-            val sCpuArch = matchResult.groups[2]?.value
+            val sCpuArch = matchResult.groups[2]?.value ?: ""
 
             val p = OperatingSystem.values().firstOrNull() { it.toString().equals(sPlatform) }
             if (p == null)
