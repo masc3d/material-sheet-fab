@@ -144,25 +144,8 @@ tasks.compileKotlin.dependsOn(tasks.generateMainJooqSchemaSource)
 distributions {
     main {
         contents {
-            from buildSupplementalsDir
+            from project.buildSupplementalsDir
         }
-    }
-}
-
-tasks.installDist {
-    doLast {
-        def src = project.buildDir.toPath()
-                .resolve("install")
-                .resolve(project.name)
-
-        def dst = g_vm_dist_path
-                .toPath()
-                .resolve(project.name)
-
-        println("Moving [${src}] to [${dst}]")
-
-        dst.deleteDir()
-        Files.move(src, dst)
     }
 }
 
