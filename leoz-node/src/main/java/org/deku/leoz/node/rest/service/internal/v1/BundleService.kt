@@ -1,5 +1,6 @@
 package org.deku.leoz.node.rest.service.internal.v1
 
+import org.deku.leoz.bundle.BundleType
 import sx.packager.BundleRepository
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
@@ -9,11 +10,16 @@ import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
+import sx.platform.OperatingSystem
 import sx.rs.ApiKey
+import java.io.File
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
+import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.Path
+import javax.ws.rs.WebApplicationException
+import javax.ws.rs.core.Context
 
 /**
  * Created by masc on 01/11/2016.
@@ -34,6 +40,9 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
 
     @Inject
     private lateinit var updateConfiguration: UpdateConfiguration
+
+    @Context
+    private lateinit var response: HttpServletResponse
 
     /**
      * Look up version alias by node key
@@ -89,5 +98,24 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
                 bundleVersionPattern = rVersion.version,
                 latestDesignatedVersion = latestDesignatedVersion?.toString(),
                 latestDesignatedVersionPlatforms = latestDesignatedVersionPlatforms.map { it.toString() }.toTypedArray())
+    }
+
+    /**
+     * @see org.deku.leoz.rest.service.internal.v1.BundleService
+     */
+    override fun donwload(bundleName: String, version: String): File {
+        if (!this.bundleRepository.rsyncModuleUri.isFile())
+            throw WebApplicationException("Bundle repository is not local [${this.bundleRepository.rsyncModuleUri}]")
+
+        val downloadFile = File(this.bundleRepository.rsyncModuleUri.uri)
+                .resolve(bundleName)
+                .resolve(version)
+                .resolve(OperatingSystem.ANDROID.toString())
+                .resolve("${bundleName}-${version}.apk")
+
+        if (downloadFile.exists())
+            response.setHeader("Content-Disposition", "attachment; filename=\"${downloadFile.name}\"")
+
+        return downloadFile
     }
 }
