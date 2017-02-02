@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="org.deku.leoz.mobile"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.deku.leoz.mobile">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -21,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="org.deku.leoz.mobile.prototype.proto_MainActivity"></activity>
     </application>
 
 </manifest>
