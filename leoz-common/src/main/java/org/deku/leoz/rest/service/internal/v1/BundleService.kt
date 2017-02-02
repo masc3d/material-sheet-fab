@@ -1,12 +1,10 @@
 package org.deku.leoz.rest.service.internal.v1
 
-import io.swagger.annotations.*
-import org.deku.leoz.service.update.UpdateInfo
-import org.deku.leoz.service.update.UpdateInfoRequest
-import org.deku.leoz.rest.entity.v1.Routing
-import org.deku.leoz.rest.entity.v1.RoutingRequest
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
+import java.io.File
 import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
 
 /**
  * Created by JT on 05.02.16.
@@ -21,6 +19,7 @@ interface BundleService {
         const val BUNDLE = "bundle"
         const val ALIAS = "alias"
         const val KEY = "key"
+        const val VERSION = "version"
     }
 
     /**
@@ -31,5 +30,18 @@ interface BundleService {
     @GET
     @Path("/info/{${BUNDLE}}")
     @ApiOperation(value = "Retrieve bundle information by alias")
-    fun info(@ApiParam(example = "leoz-boot", value = "Bundle name" ) @PathParam(BUNDLE) bundleName: String, @QueryParam(ALIAS) versionAlias: String? = null, @QueryParam(KEY) nodeKey: String? = null): org.deku.leoz.service.update.UpdateInfo
+    fun info(
+            @PathParam(BUNDLE) @ApiParam(example = "leoz-boot", value = "Bundle name") bundleName: String,
+            @QueryParam(ALIAS) versionAlias: String? = null,
+            @QueryParam(KEY) nodeKey: String? = null
+    ): org.deku.leoz.service.update.UpdateInfo
+
+    @GET
+    @Path("/download/{${BUNDLE}}/{${VERSION}}")
+    @ApiOperation(value = "Download bundle. Only supported for android bundles (for now)")
+    @Produces("application/vnd.android.package-archive")
+    fun donwload(
+            @PathParam(BUNDLE) @ApiParam(example = "leoz-mobile", value = "Bundle name") bundleName: String,
+            @PathParam(VERSION) version: String
+    ): File
 }

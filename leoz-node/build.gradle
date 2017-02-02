@@ -261,7 +261,7 @@ dependencies {
             "org.aspectj:aspectjweaver:$v_aspectj",
 
             // TODO: for testing vaadin
-            "com.vaadin:vaadin-spring-boot:1.1.1",
+            "com.vaadin:vaadin-spring-boot:1.2.0",
             "com.vaadin:vaadin-client:$v_vaadin",
             "com.vaadin:vaadin-client-compiled:$v_vaadin",
             "com.vaadin:vaadin-widgets:$v_vaadin",
@@ -309,25 +309,8 @@ run {
 distributions {
     main {
         contents {
-            from buildSupplementalsDir
+            from project.buildSupplementalsDir
         }
-    }
-}
-
-tasks.installDist {
-    doLast {
-        def src = project.buildDir.toPath()
-                .resolve("install")
-                .resolve(project.name)
-
-        def dst = g_vm_dist_path
-                .toPath()
-                .resolve(project.name)
-
-        println("Moving [${src}] to [${dst}]")
-
-        dst.deleteDir()
-        Files.move(src, dst)
     }
 }
 

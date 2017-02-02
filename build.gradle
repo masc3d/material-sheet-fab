@@ -4,6 +4,7 @@ import sx.ssh.SshTunnelProvider
 import sx.ssh.SshHost
 import sx.rsync.Rsync
 import java.lang.management.ManagementFactory
+import java.nio.file.Files
 import java.nio.file.Paths
 
 apply from: 'versions.gradle'
@@ -164,6 +165,27 @@ configure(
             supplementalPlatformDirs(
                     (buildPlatformDir): file('platform')
             )
+        }
+    }
+
+    plugins.withType(DistributionPlugin).whenPluginAdded {
+        project.gradle.projectsEvaluated {
+            tasks.installDist {
+                doLast {
+                    def src = project.buildDir.toPath()
+                            .resolve("install")
+                            .resolve(project.name)
+
+                    def dst = g_vm_dist_path
+                            .toPath()
+                            .resolve(project.name)
+
+                    println("Moving [${src}] to [${dst}]")
+
+                    if (Files.exists(dst)) dst.deleteDir()
+                    Files.move(src, dst)
+                }
+            }
         }
     }
 

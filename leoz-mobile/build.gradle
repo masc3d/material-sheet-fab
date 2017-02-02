@@ -25,6 +25,13 @@ buildscript {
     }
 }
 
+// Find subprojects outside the root folder (shared) and use dedicated build dir to avoid build/cache clashes
+subprojects.findAll {
+    !it.project.projectDir.toString().startsWith(rootDir.toString())
+}.each {
+    it.buildDir = new File(it.buildDir, project.name)
+}
+
 subprojects {
     buildscript {
         repositories {
@@ -60,7 +67,7 @@ subprojects {
         packager {
             sshTunnelProvider = mySshTunnelProvider
             bundleRepository = new BundleRepository(
-                    new Rsync.URI("rsync://leoz@leoz.derkurier.de:13002/bundles"),
+                    new Rsync.URI("rsync://leoz@leoz-dev:13002/bundles"),
                     '2FBVQsfQqZOgpbSSipdZuatQCuaogyfYc9noFYRZO6gz3TwGRDLDiGXkRJ70yw5x',
                     mySshTunnelProvider)
 
@@ -75,6 +82,8 @@ subprojects {
                     .resolve('sx-rsync')
                     .resolve('platform')
                     .toFile()
+
+            gitRoot = project.rootDir.parentFile
         }
     }
 }

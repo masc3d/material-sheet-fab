@@ -229,4 +229,5 @@ tasks.preBuild.dependsOn(tasks.flywaySyncMigrations)
 
 packager {
     title = 'Leoz Mobile'
+    bundleName = 'leoz-mobile'
 }
