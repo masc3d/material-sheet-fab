@@ -14,30 +14,64 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     android:weightSum="1">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@mipmap/img_deku_logo"
-        android:scaleType="fitCenter"
-        android:layout_weight="0.61" />
+        android:layout_height="match_parent"
+        android:layout_weight="0.61">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="@string/app_name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textStyle="normal|bold" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/img_deku_logo"
+            android:scaleType="fitCenter"
+            android:layout_weight="0.61" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="....."
-        android:textAlignment="center"
-        android:gravity="center" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textStyle="normal|bold"
+            android:layout_weight="0.61" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="@string/lblUser_suff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lblNavUser"
+                android:layout_weight="1"
+                android:textSize="10sp"
+                android:textAlignment="viewStart" />
+
+            <TextView
+                android:text="@string/lbl_StationID_suff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lblNavStationID"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lblNavAppVersion"
+                android:layout_weight="1"
+                android:textSize="10sp"
+                android:textAlignment="viewEnd"
+                android:text="@string/AppVersion_suff" />
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,15 +1,22 @@
 package org.deku.leoz.mobile
 
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.nav_header_main.*
+import org.deku.leoz.mobile.prototype.proto_MainActivity
 
 class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -19,7 +26,21 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
         this.setContentView(R.layout.activity_main)
         setSupportActionBar(this.toolbar)
 
-        this.fab.setOnClickListener { view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show() }
+        this.fab.setOnClickListener { view -> Snackbar.make(view, "Call Supervisor for assistance?", Snackbar.LENGTH_LONG).setAction("Action", {
+            val alertDialog = AlertDialog.Builder(this)
+            alertDialog.setPositiveButton(
+                "Yes",
+                DialogInterface.OnClickListener { dialogInterface, i ->
+                    var mIntent : Intent
+                    mIntent = Intent(this, proto_MainActivity::class.java)
+                    startActivity(mIntent)
+                }
+            )
+            alertDialog.setNegativeButton("No", null)
+            alertDialog.setTitle("Call assistance?")
+            alertDialog.setMessage("Are you sure you want to call a supervisor?")
+            alertDialog.show()
+        }).show() }
 
         val toggle = ActionBarDrawerToggle(
                 this,
@@ -45,6 +66,7 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menuInflater.inflate(R.menu.main, menu)
+        this.lblNavAppVersion.setText("${applicationContext.getString(R.string.AppVersion_suff)} ${BuildConfig.VERSION_CODE}")
         return true
     }
 
