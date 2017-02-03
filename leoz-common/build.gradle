@@ -55,6 +55,8 @@ dependencies {
 
     testCompile(
             "junit:junit:$v_junit",
+            "ch.qos.logback:logback-classic:$v_logback",
+
             // REST
             "com.netflix.feign:feign-core:$v_feign",
             "com.netflix.feign:feign-jackson:$v_feign",
