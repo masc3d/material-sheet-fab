@@ -15,13 +15,12 @@ import javax.ws.rs.client.WebTarget;
  * Created by masc on 25.07.14.
  */
 public abstract class WebserviceTest {
-    private Client client;
     private WebTarget target;
 
     @Before
     public void setUp() throws Exception {
         // Setup client
-        this.client = ClientBuilder.newClient();
+        Client client = ClientBuilder.newClient();
         client.register(JacksonJsonProvider.class);
 
         // Setup target
@@ -36,7 +35,7 @@ public abstract class WebserviceTest {
 
     /** Convenience method to get service instance
      * @param c service interface class*/
-    public <T> T getService(Class<T> c) {
+    protected <T> T getService(Class<T> c) {
         return ((ResteasyWebTarget)target).proxy(c);
     }
 }

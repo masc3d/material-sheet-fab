@@ -21,12 +21,9 @@ import javax.inject.Named
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.Path
 import javax.ws.rs.WebApplicationException
-import javax.ws.rs.core.Context
-import javax.ws.rs.core.Response
 import java.nio.file.Files.readAllBytes
 import java.nio.file.Paths
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.StreamingOutput
+import javax.ws.rs.core.*
 
 
 /**
@@ -127,7 +124,8 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
 
         return Response
                 .ok(downloadFile, MediaType.APPLICATION_OCTET_STREAM)
-                .header("content-disposition", "attachment; filename=\"${downloadFile.name}\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${downloadFile.name}\"")
+                .header(HttpHeaders.CONTENT_LENGTH, downloadFile.length().toString())
                 .build()
     }
 }

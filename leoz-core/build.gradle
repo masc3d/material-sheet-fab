@@ -30,7 +30,6 @@ repositories {
 }
 
 test {
-    testLogging.showStandardStreams = false
     exclude 'org/deku/leoz/proto/**'
 }
 

@@ -38,10 +38,13 @@ interface BundleService {
             @QueryParam(KEY) nodeKey: String? = null
     ): org.deku.leoz.service.update.UpdateInfo
 
+    /**
+     * Download bundle
+     * @return JAX/RS response. The input stream can be retrieved using by calling .readEntity(InputStream::class.java)
+     */
     @GET
     @Path("/download/{${BUNDLE}}/{${VERSION}}")
     @ApiOperation(value = "Download bundle. Only supported for android bundles (for now)")
-    //@Produces("application/vnd.android.package-archive")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     fun download(
             @PathParam(BUNDLE) @ApiParam(example = "leoz-mobile", value = "Bundle name") bundleName: String,

@@ -8,7 +8,6 @@ import feign.jackson.JacksonEncoder
 import feign.jaxrs.JAXRSContract
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.deku.leoz.rest.service.internal.v1.StationService
-import sx.LazyInstance
 import sx.net.TrustingSSLSocketFactory
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSession
@@ -21,24 +20,17 @@ class RestFeignClientConfiguration {
     /**
      * A client without https cerfificate validation
      */
-    private val clientWithoutSslValidation: Client = Client.Default(
-            TrustingSSLSocketFactory.get(),
-            object : HostnameVerifier {
-                override fun verify(s: String, sslSession: SSLSession): Boolean {
-                    return true
-                }
-            })
+    private val clientWithoutSslValidation: Client by lazy {
+        Client.Default(
+                TrustingSSLSocketFactory.get(),
+                object : HostnameVerifier {
+                    override fun verify(s: String, sslSession: SSLSession): Boolean {
+                        return true
+                    }
+                })
+    }
 
-    /**
-     * Feign builder
-     */
-    private val builder = LazyInstance<Feign.Builder>({
-        Feign.builder()
-                .client(if (sslValidation) Client.Default(null, null) else clientWithoutSslValidation)
-                .encoder(JacksonEncoder())
-                .decoder(JacksonDecoder())
-                .contract(JAXRSContract())
-    })
+    private val client: Client by lazy { Client.Default(null, null) }
 
     /**
      * REST base url
@@ -49,10 +41,6 @@ class RestFeignClientConfiguration {
      * Toggle SSL validation
      */
     var sslValidation = true
-        set(value) {
-            field = value
-            this.builder.reset()
-        }
 
     companion object {
         /**
@@ -63,14 +51,25 @@ class RestFeignClientConfiguration {
                 RestFeignClientConfiguration()
             }
 
+            bind<Feign.Builder>() with provider {
+                val config: RestFeignClientConfiguration = instance()
+                Feign.builder()
+                        .client(if (config.sslValidation) config.client else config.clientWithoutSslValidation)
+                        .encoder(JacksonEncoder())
+                        .decoder(JacksonDecoder())
+                        .contract(JAXRSContract())
+            }
+
             bind<StationService>() with provider {
                 val config: RestFeignClientConfiguration = instance()
-                config.builder.get().target(StationService::class.java, config.url)
+                val builder: Feign.Builder = instance()
+                builder.target(StationService::class.java, config.url)
             }
 
             bind<BundleService>() with provider {
                 val config: RestFeignClientConfiguration = instance()
-                config.builder.get().target(BundleService::class.java, config.url)
+                val builder: Feign.Builder = instance()
+                builder.target(BundleService::class.java, config.url)
             }
         }
     }

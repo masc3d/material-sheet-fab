@@ -27,10 +27,8 @@ class BundleServiceTest : WebserviceTest() {
                 "0.1-SNAPSHOT")
 
         val stream = response.readEntity(InputStream::class.java)
-
         val bstream = ByteArrayOutputStream()
         stream.copyTo(bstream)
-
         log.info("Received ${bstream.size()} bytes")
     }
 }
