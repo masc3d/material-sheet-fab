@@ -1,4 +1,4 @@
-package org.deku.leoz.log
+package org.deku.leoz.proto.log
 
 import ch.qos.logback.classic.Logger
 import org.deku.leoz.Identity
@@ -6,6 +6,8 @@ import org.deku.leoz.MessagingTest
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.log.LogAppender
+import org.deku.leoz.log.LogMessage
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory

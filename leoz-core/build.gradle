@@ -29,6 +29,11 @@ repositories {
     jcenter()
 }
 
+test {
+    testLogging.showStandardStreams = false
+    exclude 'org/deku/leoz/proto/**'
+}
+
 dependencies {
     compile(
             project(':libs:sx-common'),
@@ -107,6 +112,7 @@ dependencies {
 
     testCompile(
             "junit:junit:$v_junit",
+            "ch.qos.logback:logback-classic:1.1.9",
             // webservice client libraries for test cases
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
             // jackson JSON serializer

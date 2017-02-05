@@ -1,4 +1,4 @@
-package org.deku.leoz.messaging
+package org.deku.leoz.proto.messaging
 
 import org.deku.leoz.MessagingTest
 import org.deku.leoz.config.ActiveMQConfiguration
