@@ -29,7 +29,6 @@ class LogConfiguration(
             bind<LogConfiguration>() with eagerSingleton {
                 val storage: Storage = instance()
                 val context: Context = instance()
-                val application: Application = instance()
 
                 LogConfiguration(
                         path = storage.logPath,
