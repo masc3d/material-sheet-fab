@@ -20,17 +20,26 @@ repositories {
     mavenCentral()
 }
 
+//region Prototype test setup
+configurations {
+    prototypeCompile.extendsFrom testCompile
+    prototypeRuntime.extendsFrom testRuntime
+}
+
 sourceSets {
-    test {
-        java {
-            srcDirs += file("$projectDir/src/prototype/java")
-        }
+    prototype {
+        java.srcDirs = ['src/prototype/java']
+        resources.srcDirs = ['src/prototype/resources']
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
     }
 }
 
-test {
-    include '*Test'
+task prototype(type: Test, description: 'Run prototype tests.') {
+    testClassesDir sourceSets.prototype.output.classesDir
+    classpath = sourceSets.prototype.runtimeClasspath
 }
+//endregion
 
 dependencies {
     compile(
