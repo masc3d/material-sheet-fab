@@ -25,6 +25,6 @@ include ':leoz-ui'
 // TODO: IntelliJ runs wrong gradle task when android subprojects have been added (https://youtrack.jetbrains.com/issue/IDEA-165274). Workaround is to execute gradle tasks via console.
 //include ':leoz-mobile-app'
 //project(':leoz-mobile-app').projectDir = file('leoz-mobile/leoz-mobile-app')
-include ':leoz-mobile-data'
-project(':leoz-mobile-data').projectDir = file('leoz-mobile/leoz-mobile-data')
+//include ':leoz-mobile-data'
+//project(':leoz-mobile-data').projectDir = file('leoz-mobile/leoz-mobile-data')
 
