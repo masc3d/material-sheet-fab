@@ -68,7 +68,6 @@ class RxTest {
         })
     }
 
-    @Ignore
     @Test
     fun testRxReplaySingle() {
         val emitCount = AtomicInteger(0)
@@ -93,7 +92,6 @@ class RxTest {
         cov.toCompletable().await()
     }
 
-    @Ignore
     @Test
     fun testRxReplayMerged() {
         val emitCount = AtomicInteger(0)
@@ -118,7 +116,6 @@ class RxTest {
         cov.toCompletable().await()
     }
 
-    @Ignore
     @Test
     fun testRxCacheSingle() {
         val emitCount = AtomicInteger(0)
@@ -146,7 +143,6 @@ class RxTest {
         cov.toCompletable().await()
     }
 
-    @Ignore
     @Test
     fun testRxCacheMerged() {
         val emitCount = AtomicInteger(0)
@@ -174,7 +170,6 @@ class RxTest {
         cov.toCompletable().await()
     }
 
-    @Ignore
     @Test
     fun testRxCacheCompletableAfterCompletion() {
         val o = this.observableDelayedNumbers(COUNT, DELAY)
@@ -193,7 +188,6 @@ class RxTest {
         o.toCompletable().await()
     }
 
-    @Ignore
     @Test
     fun testRxSubscribeAwaitable() {
         val emitCount = AtomicInteger(0)
@@ -211,7 +205,6 @@ class RxTest {
         Assert.assertTrue(emitCount.get() == COUNT)
     }
 
-    @Ignore
     @Test
     fun testRxSubscribeAwaitableCancellation() {
         var seenError = false
@@ -240,7 +233,6 @@ class RxTest {
         Assert.assertTrue(seenError)
     }
 
-    @Ignore
     @Test
     fun testRxSubscribeAwaitableAwaitAfterCompletion() {
         val emitCount = AtomicInteger(0)
