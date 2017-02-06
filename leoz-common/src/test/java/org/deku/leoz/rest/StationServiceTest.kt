@@ -16,13 +16,12 @@ import rx.lang.kotlin.subscribeWith
 class StationServiceTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    companion object {
-        init {
-            Kodein.global.mutable = true
-            Kodein.global.clear()
+    private val kodein = Kodein {
+        import(FeignRestClientConfiguration.module)
+    }
 
-            Kodein.global.addImport(FeignRestClientConfiguration.module)
-        }
+    init {
+        Kodein.global.addExtend(this.kodein)
     }
 
     @Test

@@ -18,20 +18,22 @@ import java.io.ByteArrayOutputStream
 class BundleServiceTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    companion object {
-        init {
-            Kodein.global.addImport(FeignRestClientConfiguration.module)
+    private val kodein = Kodein {
+        import(FeignRestClientConfiguration.module)
+    }
 
-            val config: FeignRestClientConfiguration = Kodein.global.instance()
-            config.sslValidation = false
-            config.url = "https://leoz-dev:13000/rs/api"
-        }
+    init {
+        Kodein.global.addExtend(this.kodein)
+
+        val config: FeignRestClientConfiguration = this.kodein.instance()
+        config.sslValidation = false
+        config.url = "https://leoz-dev:13000/rs/api"
     }
 
     @Test
     fun testDownload() {
         // For binary response stream, need to build target manually, so we can inject a decoder implementation
-        val feignBuilder: Feign.Builder = Kodein.global.instance()
+        val feignBuilder: Feign.Builder = this.kodein.instance()
 
         val bundleService: BundleService = feignBuilder.target(
                 apiType = BundleService::class.java,

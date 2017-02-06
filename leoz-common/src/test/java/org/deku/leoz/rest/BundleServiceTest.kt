@@ -18,15 +18,13 @@ import java.io.ByteArrayOutputStream
 class BundleServiceTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    companion object {
-        init {
-            Kodein.global.mutable = true
-            Kodein.global.clear()
+    private val kodein = Kodein {
+        import(FeignRestClientConfiguration.module)
+    }
 
-            Kodein.global.addImport(FeignRestClientConfiguration.module)
-
-            val config: FeignRestClientConfiguration = Kodein.global.instance()
-        }
+    init {
+        Kodein.global.addExtend(this.kodein)
+        val config: FeignRestClientConfiguration = this.kodein.instance()
     }
 
     @Test
