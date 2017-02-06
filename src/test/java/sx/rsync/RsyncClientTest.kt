@@ -13,7 +13,6 @@ import kotlin.concurrent.thread
 /**
  * Created by masc on 15.08.15.
  */
-@Ignore
 class RsyncClientTest {
     val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -41,7 +40,6 @@ class RsyncClientTest {
         return rsyncClient
     }
 
-    @Ignore
     @Test
     fun testSync() {
         val rsyncClient = this.createRsyncClient()
@@ -51,7 +49,6 @@ class RsyncClientTest {
         rsyncClient.sync(source, destination, { fr -> println(fr) }, {})
     }
 
-    @Ignore
     @Test
     fun testThreadedSync() {
         val threads = ArrayList<Thread>()
@@ -75,7 +72,6 @@ class RsyncClientTest {
         threads.forEach { t -> t.join() }
     }
 
-    @Ignore
     @Test
     fun testTunneledSync() {
         val rsyncClient = this.createRsyncClient(this.sshTunnelProvider)
@@ -85,7 +81,6 @@ class RsyncClientTest {
         rsyncClient.sync(source, destination, { fr -> println(fr) }, {})
     }
 
-    @Ignore
     @Test
     fun testThreadedTunneledSync() {
         val rsyncClient = this.createRsyncClient(this.sshTunnelProvider)
@@ -109,7 +104,6 @@ class RsyncClientTest {
         threads.forEach { t -> t.join() }
     }
 
-    @Ignore
     @Test
     fun testList() {
         val rsyncClient = this.createRsyncClient()
@@ -118,7 +112,6 @@ class RsyncClientTest {
         var result = rsyncClient.list(uri)
     }
 
-    @Ignore
     @Test
     fun testTunneledList() {
         val rsyncClient = this.createRsyncClient(this.sshTunnelProvider)

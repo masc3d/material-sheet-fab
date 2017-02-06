@@ -8,7 +8,6 @@ import java.nio.file.Paths
 /**
  * Created by masc on 01.09.15.
  */
-@Ignore
 class RsyncServerTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -33,7 +32,6 @@ class RsyncServerTest {
         return config
     }
 
-    @Ignore
     @Test
     fun testConfiguration() {
         var config = this.createConfiguration()
@@ -45,7 +43,6 @@ class RsyncServerTest {
         config.saveSecrets(System.out)
     }
 
-    @Ignore
     @Test
     fun testServer() {
         var config = this.createConfiguration()
