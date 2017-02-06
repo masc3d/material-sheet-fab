@@ -7,7 +7,6 @@ import org.junit.Test
 /**
  * Created by masc on 23.11.15.
  */
-@Ignore
 class SshTunnelTest {
     @Test
     fun testConnection() {

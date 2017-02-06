@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory
 /**
  * Created by masc on 19-Feb-16.
  */
-@Ignore
 class SshTunnelProviderTest {
     @Before
     fun setup() {
