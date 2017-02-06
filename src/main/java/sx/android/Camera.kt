@@ -4,8 +4,8 @@ package sx.android
  * Camera accessor with caching support
  * Created by masc on 26.11.14.
  */
+@Suppress("DEPRECATION")
 class Camera {
-
     private var _hardwareCamera: android.hardware.Camera? = null
     /**
      * Hardware camera instance
