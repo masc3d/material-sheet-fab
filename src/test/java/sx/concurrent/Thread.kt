@@ -18,7 +18,6 @@ import kotlin.concurrent.thread
 class Thread {
     val log = LoggerFactory.getLogger(this.javaClass)
 
-    @Ignore
     @Test
     fun testInterrupt() {
         val t = thread {
@@ -34,7 +33,6 @@ class Thread {
         t.join()
     }
 
-    @Ignore
     @Test
     fun testObservableFutureInterrupt() {
         val f = Executors.newSingleThreadExecutor().submit {
