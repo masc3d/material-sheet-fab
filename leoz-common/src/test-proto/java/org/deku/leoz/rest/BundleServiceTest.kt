@@ -20,23 +20,26 @@ class BundleServiceTest {
 
     companion object {
         init {
-            Kodein.global.mutable = true
-            Kodein.global.clear()
-
             Kodein.global.addImport(FeignRestClientConfiguration.module)
 
             val config: FeignRestClientConfiguration = Kodein.global.instance()
+            config.sslValidation = false
+            config.url = "https://leoz-dev:13000/rs/api"
         }
     }
 
     @Test
-    fun testInfo() {
-        val bundleService: BundleService = Kodein.global.instance()
+    fun testDownload() {
+        // For binary response stream, need to build target manually, so we can inject a decoder implementation
+        val feignBuilder: Feign.Builder = Kodein.global.instance()
 
-        val info = bundleService.info(
-                bundleName = "leoz-boot",
-                versionAlias = "release")
+        val bundleService: BundleService = feignBuilder.target(
+                apiType = BundleService::class.java,
+                output = ByteArrayOutputStream(),
+                progressCallback = { p: Float, bytesCopied: Long ->
+                    log.debug("Progress ${"%.2f".format(p)}% ${bytesCopied}")
+                })
 
-        log.info("${info}")
+        bundleService.download("leoz-mobile", "0.1-SNAPSHOT")
     }
 }

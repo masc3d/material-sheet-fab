@@ -11,7 +11,6 @@ import javax.ws.rs.client.WebTarget;
 
 /**
  * Webservice test base class
- *
  * Created by masc on 25.07.14.
  */
 public abstract class WebserviceTest {

@@ -105,6 +105,9 @@ configure(
     // Analzye tasks (analyze* for showing unused dependencies eg.)
     apply plugin: 'ca.cutterslade.analyze'
 
+    // Remove dependency to check task, as analysis plugin is good for hinting at dependency, but there's also false positives
+    check.dependsOn.remove('analyzeDependencies')
+
     // Global jar configuration
     jar {
         doFirst {

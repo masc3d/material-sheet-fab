@@ -3,7 +3,7 @@ package org.deku.leoz.rest
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import org.deku.leoz.config.RestFeignClientConfiguration
+import org.deku.leoz.config.FeignRestClientConfiguration
 import org.deku.leoz.rest.service.internal.v1.StationService
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -18,7 +18,10 @@ class StationServiceTest {
 
     companion object {
         init {
-            Kodein.global.addImport(RestFeignClientConfiguration.module)
+            Kodein.global.mutable = true
+            Kodein.global.clear()
+
+            Kodein.global.addImport(FeignRestClientConfiguration.module)
         }
     }
 
@@ -26,11 +29,7 @@ class StationServiceTest {
     fun testGet() {
         val stationService: StationService = Kodein.global.instance()
 
-        Observable.fromCallable { stationService.get() }
-                .subscribeWith {
-                    onNext {
-                        log.info("Received ${it.count()} statinos")
-                    }
-                }
+        val stations = stationService.get()
+        log.info("Received ${stations.count()} stations")
     }
 }

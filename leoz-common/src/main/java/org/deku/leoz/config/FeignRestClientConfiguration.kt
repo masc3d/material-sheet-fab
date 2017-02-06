@@ -1,6 +1,11 @@
 package org.deku.leoz.config
 
-import com.github.salomonbrys.kodein.*
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.singleton
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.provider
+import com.github.salomonbrys.kodein.bind
 import feign.Client
 import feign.Feign
 import feign.jackson.JacksonDecoder
@@ -9,6 +14,8 @@ import feign.jaxrs.JAXRSContract
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.deku.leoz.rest.service.internal.v1.StationService
 import sx.net.TrustingSSLSocketFactory
+import java.io.OutputStream
+import java.lang.reflect.Type
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSession
 
@@ -16,7 +23,7 @@ import javax.net.ssl.SSLSession
  * Feign REST client configuration
  * Created by n3 on 10/12/2016.
  */
-class RestFeignClientConfiguration {
+class FeignRestClientConfiguration {
     /**
      * A client without https cerfificate validation
      */
@@ -30,6 +37,9 @@ class RestFeignClientConfiguration {
                 })
     }
 
+    /**
+     * Default feign client
+     */
     private val client: Client by lazy { Client.Default(null, null) }
 
     /**
@@ -44,15 +54,34 @@ class RestFeignClientConfiguration {
 
     companion object {
         /**
+         * Convenience extension method for creating feign target with streaming support
+         */
+        fun <T> Feign.Builder.target(
+                apiType: Class<T>,
+                output: OutputStream,
+                progressCallback: ((p: Float, bytesCopied: Long) -> Unit)? = null): T {
+
+            val config: FeignRestClientConfiguration = Kodein.global.instance()
+
+            return this.decoder(
+                    sx.feign.StreamDecoder(
+                            fallbackDecoder = JacksonDecoder(),
+                            output = output,
+                            progressCallback = progressCallback
+                    ))
+                    .target(apiType, config.url)
+        }
+
+        /**
          * Injection module
          */
         val module = Kodein.Module {
-            bind<RestFeignClientConfiguration>() with singleton {
-                RestFeignClientConfiguration()
+            bind<FeignRestClientConfiguration>() with singleton {
+                FeignRestClientConfiguration()
             }
 
             bind<Feign.Builder>() with provider {
-                val config: RestFeignClientConfiguration = instance()
+                val config: FeignRestClientConfiguration = instance()
                 Feign.builder()
                         .client(if (config.sslValidation) config.client else config.clientWithoutSslValidation)
                         .encoder(JacksonEncoder())
@@ -61,13 +90,13 @@ class RestFeignClientConfiguration {
             }
 
             bind<StationService>() with provider {
-                val config: RestFeignClientConfiguration = instance()
+                val config: FeignRestClientConfiguration = instance()
                 val builder: Feign.Builder = instance()
                 builder.target(StationService::class.java, config.url)
             }
 
             bind<BundleService>() with provider {
-                val config: RestFeignClientConfiguration = instance()
+                val config: FeignRestClientConfiguration = instance()
                 val builder: Feign.Builder = instance()
                 builder.target(BundleService::class.java, config.url)
             }

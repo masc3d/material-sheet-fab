@@ -4,10 +4,13 @@ import org.deku.leoz.rest.WebserviceTest
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import sx.io.copyTo
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+import javax.ws.rs.core.HttpHeaders
 
 /**
+ * BundleService test
  * Created by masc on 05/02/2017.
  */
 class BundleServiceTest : WebserviceTest() {
@@ -26,9 +29,12 @@ class BundleServiceTest : WebserviceTest() {
                 "leoz-mobile",
                 "0.1-SNAPSHOT")
 
-        val stream = response.readEntity(InputStream::class.java)
-        val bstream = ByteArrayOutputStream()
-        stream.copyTo(bstream)
-        log.info("Received ${bstream.size()} bytes")
+        response.readEntity(InputStream::class.java).copyTo(
+                ByteArrayOutputStream(),
+                length = response.headers.get(HttpHeaders.CONTENT_LENGTH)?.first().toString().toLong(),
+                progressCallback = { p, bytesCopied ->
+                    log.info("Received ${"%.2f".format(p)}% ${bytesCopied} bytes")
+                }
+        )
     }
 }
