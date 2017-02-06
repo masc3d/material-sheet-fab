@@ -31,22 +31,23 @@ repositories {
 
 //region Prototype test setup
 configurations {
-    testProtoCompile.extendsFrom testCompile
-    testProtoRuntime.extendsFrom testRuntime
+    prototypeCompile.extendsFrom testCompile
+    prototypeRuntime.extendsFrom testRuntime
 }
 
 sourceSets {
-    testProto {
-        java.srcDirs = ['src/test-proto/java']
-        resources.srcDirs = ['src/test-proto/resources']
+    def prototypeBaseDir = file('src/prototype')
+    prototype {
+        java.srcDirs = [new File(prototypeBaseDir, 'java')]
+        resources.srcDirs = [new File(prototypeBaseDir, 'resources')]
         compileClasspath += main.output + test.output
         runtimeClasspath += main.output + test.output
     }
 }
 
-task testProto(type: Test, description: 'Run prototype tests.', group: 'verification') {
-    testClassesDir sourceSets.testProto.output.classesDir
-    classpath = sourceSets.testProto.runtimeClasspath
+task prototype(type: Test, description: 'Run prototype tests.') {
+    testClassesDir sourceSets.prototype.output.classesDir
+    classpath = sourceSets.prototype.runtimeClasspath
 }
 //endregion
 
@@ -105,17 +106,6 @@ dependencies {
             // HTTP support
             "org.apache.httpcomponents:httpclient:$v_apache_httpclient",
             "com.thoughtworks.xstream:xstream:$v_xstream",
-            // Artemis
-            dependencies.create("org.apache.activemq:artemis-jms-server:$v_artemis") {
-                // Conflicts with jms 1.1 which is required by activemq 5.x
-                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
-            },
-            dependencies.create("org.apache.activemq:artemis-jms-client:$v_artemis") {
-                // Conflicts with jms 1.1 which is required by activemq 5.x
-                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
-            },
-            "org.apache.activemq:artemis-amqp-protocol:$v_artemis",
-            "org.apache.activemq:artemis-openwire-protocol:$v_artemis",
             // Spring
             "org.springframework:spring-jms:$v_spring",
             // RESTeasy client

@@ -11,7 +11,6 @@ import sx.junit.LoggingStopwatchRule;
 /**
  * Created by masc on 20.04.15.
  */
-@Ignore
 public class RoutingServiceTest extends WebserviceTest {
     @Rule
     public LoggingStopwatchRule sw = new LoggingStopwatchRule();

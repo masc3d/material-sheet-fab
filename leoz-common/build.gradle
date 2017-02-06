@@ -31,24 +31,26 @@ configurations {
     compile.extendsFrom provided
 }
 
+
 //region Prototype test setup
 configurations {
-    testProtoCompile.extendsFrom testCompile
-    testProtoRuntime.extendsFrom testRuntime
+    prototypeCompile.extendsFrom testCompile
+    prototypeRuntime.extendsFrom testRuntime
 }
 
 sourceSets {
-    testProto {
-        java.srcDirs = ['src/test-proto/java']
-        resources.srcDirs = ['src/test-proto/resources']
+    def prototypeBaseDir = file('src/prototype')
+    prototype {
+        java.srcDirs = [new File(prototypeBaseDir, 'java')]
+        resources.srcDirs = [new File(prototypeBaseDir, 'resources')]
         compileClasspath += main.output + test.output
         runtimeClasspath += main.output + test.output
     }
 }
 
-task testProto(type: Test, description: 'Run prototype tests.', group: 'verification') {
-    testClassesDir = sourceSets.testProto.output.classesDir
-    classpath = sourceSets.testProto.runtimeClasspath
+task prototype(type: Test, description: 'Run prototype tests.') {
+    testClassesDir sourceSets.prototype.output.classesDir
+    classpath = sourceSets.prototype.runtimeClasspath
 }
 //endregion
 

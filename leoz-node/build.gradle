@@ -109,11 +109,6 @@ idea {
 }
 
 sourceSets {
-    test {
-        java {
-            srcDirs += file("$projectDir/src/prototype/java")
-        }
-    }
     main {
         java {
             srcDirs += JOOQ_GENERATED_DIR
@@ -131,9 +126,27 @@ compileJava {
     destinationDir = new File(project.buildDir, "classes-unweaved")
 }
 
-test {
-    exclude 'org/deku/leoz/node/prototype/**'
+//region Prototype test setup
+configurations {
+    prototypeCompile.extendsFrom testCompile
+    prototypeRuntime.extendsFrom testRuntime
 }
+
+sourceSets {
+    def prototypeBaseDir = file('src/prototype')
+    prototype {
+        java.srcDirs = [new File(prototypeBaseDir, 'java')]
+        resources.srcDirs = [new File(prototypeBaseDir, 'resources')]
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+task prototype(type: Test, description: 'Run prototype tests.') {
+    testClassesDir sourceSets.prototype.output.classesDir
+    classpath = sourceSets.prototype.runtimeClasspath
+}
+//endregion
 
 configurations {
     driver
@@ -224,9 +237,6 @@ dependencies {
             // http support
             "org.apache.httpcomponents:httpclient:$v_apache_httpclient",
             "com.thoughtworks.xstream:xstream:$v_xstream",
-
-            // Artemis
-            "org.apache.activemq:artemis-jms-server:$v_artemis",
 
             // ssh support
             "org.apache.sshd:sshd-core:$v_sshd",
