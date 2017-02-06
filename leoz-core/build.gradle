@@ -29,9 +29,26 @@ repositories {
     jcenter()
 }
 
-test {
-    exclude 'org/deku/leoz/proto/**'
+//region Prototype test setup
+configurations {
+    testProtoCompile.extendsFrom testCompile
+    testProtoRuntime.extendsFrom testRuntime
 }
+
+sourceSets {
+    testProto {
+        java.srcDirs = ['src/test-proto/java']
+        resources.srcDirs = ['src/test-proto/resources']
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+task testProto(type: Test, description: 'Run prototype tests.', group: 'verification') {
+    testClassesDir sourceSets.testProto.output.classesDir
+    classpath = sourceSets.testProto.runtimeClasspath
+}
+//endregion
 
 dependencies {
     compile(

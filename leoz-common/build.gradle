@@ -46,7 +46,7 @@ sourceSets {
     }
 }
 
-task testProto(type: Test, description: 'Runs prototype tests.', group: 'Verification') {
+task testProto(type: Test, description: 'Run prototype tests.', group: 'verification') {
     testClassesDir = sourceSets.testProto.output.classesDir
     classpath = sourceSets.testProto.runtimeClasspath
 }
