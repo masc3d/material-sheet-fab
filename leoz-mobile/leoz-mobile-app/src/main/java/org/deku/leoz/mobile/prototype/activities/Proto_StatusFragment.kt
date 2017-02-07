@@ -2,32 +2,55 @@ package org.deku.leoz.mobile.prototype.activities
 
 import android.content.Context
 import android.net.Uri
+import android.net.wifi.SupplicantState
+import android.net.wifi.WifiInfo
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_proto_status.*
 
 import org.deku.leoz.mobile.R
+import org.slf4j.LoggerFactory
 
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [ProtoStatusFragment.OnFragmentInteractionListener] interface
+ * [Proto_StatusFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [ProtoStatusFragment.newInstance] factory method to
+ * Use the [Proto_StatusFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ProtoStatusFragment : Fragment() {
+class Proto_StatusFragment : Fragment() {
 
+    val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
     private var mParam2: String? = null
+    private val mWiFiManager: WifiManager = activity.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
     private var mListener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //mWiFiManager = activity.getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+        if(mWiFiManager.isWifiEnabled){
+            var mWiFiInfo : WifiInfo = mWiFiManager.connectionInfo
+            if(mWiFiInfo.supplicantState == SupplicantState.COMPLETED){
+                lblWifiStatus.text = "WiFi: ${WifiManager.calculateSignalLevel(mWiFiInfo.rssi, 5)}/5"
+            }else{
+                log.debug("WiFi not connected")
+                lblWifiStatus.text = "Wifi: not connected"
+            }
+        }else{
+            log.debug("WiFi not enabled")
+            lblWifiStatus.text = "WiFi: N/A"
+        }
+
         if (arguments != null) {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
@@ -89,11 +112,11 @@ class ProtoStatusFragment : Fragment() {
          * *
          * @param param2 Parameter 2.
          * *
-         * @return A new instance of fragment ProtoStatusFragment.
+         * @return A new instance of fragment Proto_StatusFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): ProtoStatusFragment {
-            val fragment = ProtoStatusFragment()
+        fun newInstance(param1: String, param2: String): Proto_StatusFragment {
+            val fragment = Proto_StatusFragment()
             val args = Bundle()
             args.putString(ARG_PARAM1, param1)
             args.putString(ARG_PARAM2, param2)

@@ -4,9 +4,9 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.prototype.activities.ProtoStatusFragment
+import org.deku.leoz.mobile.prototype.activities.Proto_StatusFragment
 
-class Proto_sso_Menue : AppCompatActivity(), ProtoStatusFragment.OnFragmentInteractionListener {
+class Proto_sso_Menue : AppCompatActivity(), Proto_StatusFragment.OnFragmentInteractionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

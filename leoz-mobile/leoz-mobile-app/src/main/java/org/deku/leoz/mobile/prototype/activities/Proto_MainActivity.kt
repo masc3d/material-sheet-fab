@@ -12,7 +12,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Menue
 import org.slf4j.LoggerFactory
 
-class Proto_MainActivity : AppCompatActivity(), View.OnClickListener, ProtoStatusFragment.OnFragmentInteractionListener {
+class Proto_MainActivity : AppCompatActivity(), View.OnClickListener, Proto_StatusFragment.OnFragmentInteractionListener {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +36,7 @@ class Proto_MainActivity : AppCompatActivity(), View.OnClickListener, ProtoStatu
             }
             else -> {
                 log.debug("OnClick Event unhandled [$v]")
-                Snackbar.make(v, "Not implemented yet", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
         }
     }
