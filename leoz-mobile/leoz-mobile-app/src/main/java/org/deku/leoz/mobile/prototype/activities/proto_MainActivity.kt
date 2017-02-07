@@ -28,7 +28,7 @@ class Proto_MainActivity : AppCompatActivity(), View.OnClickListener, ProtoStatu
             btnProtoHUB -> {
                 //mIntent = Intent(applicationContext, this.javaClass)
                 //startActivity(mIntent)
-                Snackbar.make(v, "Not implemented yet", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(v, getString(R.string.hint_not_available_yet), Snackbar.LENGTH_SHORT).show()
             }
             btnProtoSSO -> {
                 mIntent = Intent(applicationContext, Proto_sso_Menue::class.java)
