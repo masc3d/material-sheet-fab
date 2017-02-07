@@ -9,7 +9,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="org.deku.leoz.mobile.prototype.activities.proto_MainActivity">
+    tools:context="org.deku.leoz.mobile.prototype.activities.Proto_MainActivity"
+    android:background="@drawable/deku_background_selector">
 
     <LinearLayout
         android:orientation="vertical"
@@ -44,16 +45,18 @@
 
                 <ImageButton
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@mipmap/ic_launcher"
+                    android:layout_height="100dp"
+                    app:srcCompat="@mipmap/ic_hub"
                     android:id="@+id/btnProtoHUB"
-                    android:layout_weight="1"
                     android:alpha="1"
-                    android:background="@android:color/transparent" />
+                    android:background="@android:color/transparent"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter" />
 
                 <ImageButton
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="100dp"
                     app:srcCompat="@mipmap/ic_launcher"
                     android:id="@+id/btnProtoSSO"
                     android:layout_weight="1"
@@ -68,7 +71,7 @@
 
                 <ImageButton
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="100dp"
                     app:srcCompat="@mipmap/ic_launcher"
                     android:id="@+id/imageButton5"
                     android:layout_weight="1"
@@ -76,7 +79,7 @@
 
                 <ImageButton
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="100dp"
                     app:srcCompat="@mipmap/ic_launcher"
                     android:id="@+id/imageButton4"
                     android:layout_weight="1"
@@ -90,7 +93,7 @@
 
                 <ImageButton
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="100dp"
                     app:srcCompat="@mipmap/ic_launcher"
                     android:id="@+id/imageButton6"
                     android:layout_weight="1"
@@ -102,43 +105,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
-                android:orientation="horizontal"
+            <fragment
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
-                android:textAlignment="gravity"
-                android:layout_alignParentBottom="true">
+                android:name="org.deku.leoz.mobile.prototype.activities.ProtoStatusFragment"
+                android:id="@+id/fragment"
+                tools:layout="@layout/fragment_proto_status"
+                android:layout_alignParentBottom="true" />
 
-                <TextView
-                    android:text="WiFi: OK"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/textView6"
-                    android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:textAllCaps="false"
-                    android:textIsSelectable="false"
-                    android:textColor="@color/colorAccent" />
-
-                <TextView
-                    android:text="Mobile: OK"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/textView5"
-                    android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorAccent" />
-
-                <TextView
-                    android:text="Sync: OK"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/textView4"
-                    android:layout_weight="1"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorAccent" />
-            </LinearLayout>
         </RelativeLayout>
 
     </LinearLayout>

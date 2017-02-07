@@ -21,8 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".prototype.activities.proto_MainActivity" />
-        <activity android:name=".prototype.activities.smallsort.proto_sso_menue"></activity>
+        <activity android:name=".prototype.activities.Proto_MainActivity" />
+        <activity android:name=".prototype.activities.smallsort.Proto_sso_Menue"></activity>
     </application>
 
 </manifest>

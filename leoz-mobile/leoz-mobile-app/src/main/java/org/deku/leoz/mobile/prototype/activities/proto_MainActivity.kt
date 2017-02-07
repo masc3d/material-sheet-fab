@@ -1,18 +1,19 @@
 package org.deku.leoz.mobile.prototype.activities
 
 import android.content.Intent
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.View
-import android.view.View.OnClickListener
 import kotlinx.android.synthetic.main.activity_proto__main.*
 
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.prototype.activities.smallsort.proto_sso_menue
+import org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Menue
 import org.slf4j.LoggerFactory
 
-class proto_MainActivity : AppCompatActivity(), View.OnClickListener {
+class Proto_MainActivity : AppCompatActivity(), View.OnClickListener, ProtoStatusFragment.OnFragmentInteractionListener {
+
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +31,7 @@ class proto_MainActivity : AppCompatActivity(), View.OnClickListener {
                 Snackbar.make(v, "Not implemented yet", Snackbar.LENGTH_SHORT).show()
             }
             btnProtoSSO -> {
-                mIntent = Intent(applicationContext, proto_sso_menue::class.java)
+                mIntent = Intent(applicationContext, Proto_sso_Menue::class.java)
                 startActivity(mIntent)
             }
             else -> {
@@ -38,5 +39,9 @@ class proto_MainActivity : AppCompatActivity(), View.OnClickListener {
                 Snackbar.make(v, "Not implemented yet", Snackbar.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onFragmentInteraction(uri: Uri?) {
+        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

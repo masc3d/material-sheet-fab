@@ -16,7 +16,7 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
-import org.deku.leoz.mobile.prototype.activities.proto_MainActivity
+import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
 
 class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -32,7 +32,7 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
                 "Yes",
                 DialogInterface.OnClickListener { dialogInterface, i ->
                     var mIntent : Intent
-                    mIntent = Intent(this, proto_MainActivity::class.java)
+                    mIntent = Intent(this, Proto_MainActivity::class.java)
                     startActivity(mIntent)
                 }
             )
