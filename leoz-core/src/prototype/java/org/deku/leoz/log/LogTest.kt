@@ -6,6 +6,8 @@ import org.deku.leoz.MessagingTest
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.log.LogAppender
+import org.deku.leoz.log.LogMessage
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -20,8 +22,7 @@ import java.util.concurrent.Executors
 /**
  * @author masc
  */
-@Ignore
-class LogTest : MessagingTest() {
+class LogTest : org.deku.leoz.MessagingTest() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Test
@@ -30,8 +31,8 @@ class LogTest : MessagingTest() {
         // Setup log appender
         val logAppender = LogAppender(
                 broker = this.broker,
-                logChannelConfiguration= ActiveMQConfiguration.instance.centralLogQueue,
-                identitySupplier = { Identity.create(BundleType.LEOZ_NODE.value, SystemInformation.create()) })
+                logChannelConfiguration= ActiveMQConfiguration.Companion.instance.centralLogQueue,
+                identitySupplier = { Identity.Companion.create(BundleType.LEOZ_NODE.value, SystemInformation.Companion.create()) })
         logAppender.start()
 
         val logRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
@@ -51,7 +52,7 @@ class LogTest : MessagingTest() {
     fun testReceive() {
         // Setup log message listener
         val listener = object : SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.centralLogQueue) },
+                { Channel(ActiveMQConfiguration.Companion.instance.centralLogQueue) },
                 Executors.newSingleThreadExecutor()) {
 
         }

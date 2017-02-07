@@ -10,7 +10,7 @@ import sx.logging.slf4j.*
 /**
  * Created by masc on 20/02/16.
  */
-class QueueTest : MessagingTest() {
+class QueueTest : org.deku.leoz.MessagingTest() {
     val log = LoggerFactory.getLogger(this.javaClass)
     val configuration = ActiveMQConfiguration.instance
 

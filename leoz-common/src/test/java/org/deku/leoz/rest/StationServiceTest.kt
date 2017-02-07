@@ -3,13 +3,10 @@ package org.deku.leoz.rest
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import feign.Feign
-import feign.jackson.JacksonDecoder
-import feign.jackson.JacksonEncoder
-import feign.jaxrs.JAXRSContract
-import org.deku.leoz.config.RestFeignClientConfiguration
+import org.deku.leoz.config.FeignRestClientConfiguration
 import org.deku.leoz.rest.service.internal.v1.StationService
 import org.junit.Test
+import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.lang.kotlin.subscribeWith
 
@@ -17,23 +14,21 @@ import rx.lang.kotlin.subscribeWith
  * Created by n3 on 10/12/2016.
  */
 class StationServiceTest {
-    companion object {
-        init {
-            Kodein.global.addImport(RestFeignClientConfiguration.module)
-        }
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    private val kodein = Kodein {
+        import(FeignRestClientConfiguration.module)
+    }
+
+    init {
+        Kodein.global.addExtend(this.kodein)
     }
 
     @Test
     fun testGet() {
         val stationService: StationService = Kodein.global.instance()
 
-        Observable.fromCallable { stationService.get() }
-                .subscribeWith {
-                    onNext {
-                        it.forEach {
-                            println(it)
-                        }
-                    }
-                }
+        val stations = stationService.get()
+        log.info("Received ${stations.count()} stations")
     }
 }

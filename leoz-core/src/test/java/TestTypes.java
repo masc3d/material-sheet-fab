@@ -9,7 +9,6 @@ import java.time.format.FormatStyle;
 /**
  * Created by masc on 30.05.15.
  */
-@Ignore
 public class TestTypes {
 
     @Test

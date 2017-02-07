@@ -15,7 +15,6 @@ import java.net.URI;
 /**
  * Created by masc on 20.04.15.
  */
-@Ignore
 public class WebserviceTest {
     private Client client;
     private WebTarget target;

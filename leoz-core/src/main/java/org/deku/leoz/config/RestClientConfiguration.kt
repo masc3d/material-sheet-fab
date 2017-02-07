@@ -1,11 +1,10 @@
 package org.deku.leoz.config
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.factory
 import org.deku.leoz.rest.RestClient
 import java.net.URI
 
 /**
+ * Base class for JAX/RS REST client configurations
  * Created by masc on 07/11/2016.
  */
 abstract class RestClientConfiguration {

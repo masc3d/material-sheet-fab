@@ -30,8 +30,6 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(LogConfiguration.module)
         Kodein.global.addImport(DatabaseConfiguration.module)
 
-        Kodein.global.getOrConstruct()
-
         log.info("${this.name} v${this.version} application start")
     }
 

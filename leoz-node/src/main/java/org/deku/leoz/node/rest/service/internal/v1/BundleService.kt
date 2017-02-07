@@ -13,15 +13,21 @@ import org.springframework.context.annotation.Profile
 import sx.platform.OperatingSystem
 import sx.rs.ApiKey
 import java.io.File
+import java.io.IOException
+import java.nio.file.Files
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.Path
 import javax.ws.rs.WebApplicationException
-import javax.ws.rs.core.Context
+import java.nio.file.Files.readAllBytes
+import java.nio.file.Paths
+import javax.ws.rs.core.*
+
 
 /**
+ * BundleService implementation
  * Created by masc on 01/11/2016.
  */
 @Named
@@ -103,7 +109,7 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
     /**
      * @see org.deku.leoz.rest.service.internal.v1.BundleService
      */
-    override fun donwload(bundleName: String, version: String): File {
+    override fun download(bundleName: String, version: String): Response {
         if (!this.bundleRepository.rsyncModuleUri.isFile())
             throw WebApplicationException("Bundle repository is not local [${this.bundleRepository.rsyncModuleUri}]")
 
@@ -113,9 +119,13 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
                 .resolve(OperatingSystem.ANDROID.toString())
                 .resolve("${bundleName}-${version}.apk")
 
-        if (downloadFile.exists())
-            response.setHeader("Content-Disposition", "attachment; filename=\"${downloadFile.name}\"")
+        if (!downloadFile.exists())
+            throw WebApplicationException("No such file")
 
-        return downloadFile
+        return Response
+                .ok(downloadFile, MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${downloadFile.name}\"")
+                .header(HttpHeaders.CONTENT_LENGTH, downloadFile.length().toString())
+                .build()
     }
 }

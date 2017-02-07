@@ -13,6 +13,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.config.RestFeignClientConfiguration
+import org.deku.leoz.mobile.WebserviceTest
 import org.deku.leoz.rest.entity.internal.v1.Station
 import rx.Observable
 import rx.lang.kotlin.subscribeWith
@@ -22,12 +23,7 @@ import sx.rx.task
  * Created by n3 on 06/12/2016.
  */
 @RunWith(AndroidJUnit4::class)
-class StationServiceTest {
-    companion object {
-        init {
-            Kodein.global.addImport(RestFeignClientConfiguration.module)
-        }
-    }
+class StationServiceTest : WebserviceTest() {
 
     @Test
     fun testGet() {

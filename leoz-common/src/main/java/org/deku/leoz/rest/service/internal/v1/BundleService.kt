@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import java.io.File
 import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 /**
  * Created by JT on 05.02.16.
@@ -36,12 +38,16 @@ interface BundleService {
             @QueryParam(KEY) nodeKey: String? = null
     ): org.deku.leoz.service.update.UpdateInfo
 
+    /**
+     * Download bundle
+     * @return JAX/RS response. The input stream can be retrieved using by calling .readEntity(InputStream::class.java)
+     */
     @GET
     @Path("/download/{${BUNDLE}}/{${VERSION}}")
     @ApiOperation(value = "Download bundle. Only supported for android bundles (for now)")
-    @Produces("application/vnd.android.package-archive")
-    fun donwload(
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    fun download(
             @PathParam(BUNDLE) @ApiParam(example = "leoz-mobile", value = "Bundle name") bundleName: String,
             @PathParam(VERSION) version: String
-    ): File
+    ): Response
 }

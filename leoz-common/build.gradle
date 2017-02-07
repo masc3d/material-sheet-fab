@@ -10,6 +10,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: 'idea'
 
 group = 'org.deku.leoz'
 version = '1.0'
@@ -30,14 +31,39 @@ configurations {
     compile.extendsFrom provided
 }
 
+
+//region Prototype test setup
+configurations {
+    prototypeCompile.extendsFrom testCompile
+    prototypeRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+    def prototypeBaseDir = file('src/prototype')
+    prototype {
+        java.srcDirs = [new File(prototypeBaseDir, 'java')]
+        resources.srcDirs = [new File(prototypeBaseDir, 'resources')]
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+task prototype(type: Test, description: 'Run prototype tests.') {
+    testClassesDir sourceSets.prototype.output.classesDir
+    classpath = sourceSets.prototype.runtimeClasspath
+}
+//endregion
+
 dependencies {
     compile(
             project(':libs:sx-common'),
             project(':libs:sx-serialization'),
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Kodein
             "com.github.salomonbrys.kodein:kodein:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-core:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
     )
 
@@ -55,6 +81,8 @@ dependencies {
 
     testCompile(
             "junit:junit:$v_junit",
+            "ch.qos.logback:logback-classic:$v_logback",
+
             // REST
             "com.netflix.feign:feign-core:$v_feign",
             "com.netflix.feign:feign-jackson:$v_feign",

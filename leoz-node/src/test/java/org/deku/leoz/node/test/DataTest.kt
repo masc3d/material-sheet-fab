@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 /**
  * Created by masc on 15.05.15.
  */
-@Ignore
 @RunWith(SpringJUnit4ClassRunner::class)
 @SpringBootTest(classes = arrayOf(
         ApplicationConfiguration::class,
