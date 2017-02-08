@@ -47,7 +47,7 @@ dependencies {
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
             // RX
-            "io.reactivex:rxjava:1.2.5",
+            "io.reactivex:rxjava:1.2.6",
             "io.reactivex:rxjava-async-util:0.21.0",
             "io.reactivex:rxkotlin:0.60.0",
     )
@@ -68,6 +68,6 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.1.9"
+            "ch.qos.logback:logback-classic:1.1.10"
     )
 }
