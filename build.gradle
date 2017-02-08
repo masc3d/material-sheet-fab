@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
     compile(
-            project(':libs:sx-common'),
+            project(':sx-common'),
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             // Logging
