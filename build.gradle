@@ -23,8 +23,8 @@ repositories {
 
 dependencies {
     compile(
-            project(':libs:sx-common'),
-            project(':libs:sx-ssh'),
+            project(':sx-common'),
+            project(':sx-ssh'),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.apache.commons:commons-lang3:3.5",
