@@ -36,7 +36,7 @@ def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
 dependencies {
     // leoz webservice dependencies
     compile(
-            project(':libs:sx-common'),
+            project(':sx-common'),
             project(':leoz-core'),
             project(':leoz-node'),
 
@@ -52,7 +52,7 @@ dependencies {
     )
 
     testCompile(
-            project(':libs:sx-common'),
+            project(':sx-common'),
             "junit:junit:$v_junit",
             // webservice client libraries for test cases
             "org.jboss.resteasy:resteasy-client:$v_resteasy",

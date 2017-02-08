@@ -15,9 +15,9 @@ buildscript {
 
 dependencies {
     compile(
-            project(':libs:sx-common'),
-            project(':libs:sx-fx'),
-            project(':libs:sx-ssh'),
+            project(':sx-common'),
+            project(':sx-fx'),
+            project(':sx-ssh'),
             project(':leoz-core'),
 
             // Kotlin

@@ -1,12 +1,12 @@
 include ':leoz-mobile-app'
 include ':leoz-mobile-data'
 include ':leoz-common'
-include ':libs:sx-common'
-include ':libs:sx-android'
-include ':libs:sx-serialization'
+include ':sx-common'
+include ':sx-android'
+include ':sx-serialization'
 
 // Mangle project paths
-project(':libs:sx-common').projectDir = file('../libs/sx-common')
-project(':libs:sx-android').projectDir = file('../libs/sx-android')
-project(':libs:sx-serialization').projectDir = file('../libs/sx-serialization')
+project(':sx-common').projectDir = file('../libs/sx-common')
+project(':sx-android').projectDir = file('../libs/sx-android')
+project(':sx-serialization').projectDir = file('../libs/sx-serialization')
 project(':leoz-common').projectDir = file('../leoz-common')

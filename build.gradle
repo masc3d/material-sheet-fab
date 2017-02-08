@@ -133,7 +133,7 @@ configure(
 
     ext {
         globalPlatformDir = new File(project.rootDir, 'platform')
-        rsyncPlatformDir = new File(project(':libs:sx-rsync').projectDir, 'platform')
+        rsyncPlatformDir = new File(project(':sx-rsync').projectDir, 'platform')
 
         buildSupplementalsDir = new File(project.buildDir, 'supplementals')
         buildPlatformDir = new File(buildSupplementalsDir, 'platform')
@@ -160,7 +160,7 @@ configure(
             releaseBasePath = g_release_path
             osxIcon = g_osx_icon
             windowsIcon = g_windows_icon
-            nativePlatformDir = new File(project(':libs:sx-rsync').projectDir, 'platform')
+            nativePlatformDir = new File(project(':sx-rsync').projectDir, 'platform')
             supplementalPlatformDirs(
                     (buildPlatformDir): file('platform')
             )

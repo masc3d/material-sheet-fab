@@ -128,9 +128,9 @@ dependencies {
     compile(
             project(':leoz-mobile-data'),
             project(':leoz-common'),
-            project(':libs:sx-common'),
-            project(':libs:sx-android'),
-            project(':libs:sx-serialization'),
+            project(':sx-common'),
+            project(':sx-android'),
+            project(':sx-serialization'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             // Android

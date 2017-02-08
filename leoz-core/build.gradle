@@ -53,14 +53,14 @@ task prototype(type: Test, description: 'Run prototype tests.') {
 
 dependencies {
     compile(
-            project(':libs:sx-common'),
-            project(':libs:sx-jms'),
-            project(':libs:sx-rsync'),
-            project(':libs:sx-serialization'),
-            project(':libs:sx-discovery'),
-            project(':libs:sx-packager'),
+            project(':sx-common'),
+            project(':sx-jms'),
+            project(':sx-rsync'),
+            project(':sx-serialization'),
+            project(':sx-discovery'),
+            project(':sx-packager'),
             // Watchservice replacement for OSX
-            project(':libs:barbarywatchservice'),
+            project(':barbarywatchservice'),
             project(':leoz-common'),
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
@@ -102,6 +102,20 @@ dependencies {
                 exclude group: 'org.springframework'
                 exclude group: 'org.apache.activemq', module: 'activemq-spring'
                 exclude group: 'org.eclipse.jetty.aggregate'
+            },
+            // Artemis
+            dependencies.create("org.apache.activemq:artemis-jms-server:$v_artemis") {
+                // Conflicts with jms 1.1 which is required by activemq 5.x
+                exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            dependencies.create("org.apache.activemq:artemis-jms-client:$v_artemis") {
+                // Conflicts with jms 1.1 which is required by activemq 5.x
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            dependencies.create("org.apache.activemq:artemis-amqp-protocol:$v_artemis") {
+                exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
             },
             // HTTP support
             "org.apache.httpcomponents:httpclient:$v_apache_httpclient",

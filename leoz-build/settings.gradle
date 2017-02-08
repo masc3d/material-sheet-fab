@@ -1,14 +1,14 @@
-include ':libs:sx-common'
-include ':libs:sx-packager'
-include ':libs:sx-packager-gradle'
-include ':libs:sx-rsync'
-include ':libs:sx-ssh'
-include ':libs:sx-serialization'
+include ':sx-common'
+include ':sx-packager'
+include ':sx-packager-gradle'
+include ':sx-rsync'
+include ':sx-ssh'
+include ':sx-serialization'
 
 // Mangle project paths
-project(':libs:sx-common').projectDir = file('../libs/sx-common')
-project(':libs:sx-packager').projectDir = file('../libs/sx-packager')
-project(':libs:sx-packager-gradle').projectDir = file('../libs/sx-packager-gradle')
-project(':libs:sx-rsync').projectDir = file('../libs/sx-rsync')
-project(':libs:sx-ssh').projectDir = file('../libs/sx-ssh')
-project(':libs:sx-serialization').projectDir = file('../libs/sx-serialization')
+project(':sx-common').projectDir = file('../libs/sx-common')
+project(':sx-packager').projectDir = file('../libs/sx-packager')
+project(':sx-packager-gradle').projectDir = file('../libs/sx-packager-gradle')
+project(':sx-rsync').projectDir = file('../libs/sx-rsync')
+project(':sx-ssh').projectDir = file('../libs/sx-ssh')
+project(':sx-serialization').projectDir = file('../libs/sx-serialization')

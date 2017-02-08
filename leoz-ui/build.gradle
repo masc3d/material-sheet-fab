@@ -18,10 +18,10 @@ buildscript {
 
 dependencies {
     compile(
-            project(':libs:sx-common'),
+            project(':sx-common'),
             project(':leoz-core'),
-            project(':libs:sx-fx'),
-            project(':libs:sx-discovery'),
+            project(':sx-fx'),
+            project(':sx-discovery'),
 
             // Common
             "org.apache.commons:commons-lang3:$v_commons_lang",
