@@ -62,8 +62,8 @@ task prototype(type: Test, description: 'Run prototype tests.') {
 
 dependencies {
     compile(
-            project(':libs:sx-common'),
-            project(':libs:sx-serialization'),
+            project(':sx-common'),
+            project(':sx-serialization'),
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
