@@ -211,7 +211,7 @@ fun <T> Observable<T>.retryWith(count: Int, action: (retry: Int, error: Throwabl
         attempts.zipWith(Observable.range(1, count + 1), { n, i ->
             Pair(n, i)
         }).flatMap { p ->
-            val error = p.first as Throwable
+            val error = p.first
             val retryCount = p.second
 
             if (retryCount <= count) {
