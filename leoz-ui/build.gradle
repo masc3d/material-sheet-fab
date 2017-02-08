@@ -30,7 +30,7 @@ dependencies {
 
             // Logging
             "org.slf4j:slf4j-api:$v_slf4j",
-            "ch.qos.logback:logback-core:$v_logback",
+            "ch.qos.logback:logback-classic:$v_logback",
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
