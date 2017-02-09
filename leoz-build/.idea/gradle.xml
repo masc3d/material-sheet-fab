@@ -11,7 +11,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/libs" />
             <option value="$PROJECT_DIR$/../libs/sx-common" />
             <option value="$PROJECT_DIR$/../libs/sx-packager" />
             <option value="$PROJECT_DIR$/../libs/sx-packager-gradle" />
