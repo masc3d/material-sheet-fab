@@ -49,7 +49,7 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close)
 
-        this.drawer_layout.setDrawerListener(toggle)
+        this.drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
         this.nav_view.setNavigationItemSelectedListener(this)

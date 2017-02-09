@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.data
 
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.singleton
 import io.requery.Persistable

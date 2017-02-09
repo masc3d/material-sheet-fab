@@ -7,7 +7,7 @@ import com.github.salomonbrys.kodein.instance
 import feign.Feign
 import feign.Response
 import feign.codec.Decoder
-import org.deku.leoz.config.RestFeignClientConfiguration
+import org.deku.leoz.config.FeignRestClientConfiguration.Companion.target
 import org.deku.leoz.mobile.WebserviceTest
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.junit.Test
@@ -40,13 +40,13 @@ class BundleServiceTest : WebserviceTest() {
         // For binary response stream, need to build target manually, so we can inject a decoder implementation
         val feignBuilder: Feign.Builder = Kodein.global.instance()
 
-        val target: BundleService = feignBuilder.target(
+        val bundleService: BundleService = feignBuilder.target(
                 apiType = BundleService::class.java,
                 output = ByteArrayOutputStream(),
                 progressCallback = { p: Float, bytesCopied: Long ->
                     log.debug("Progress ${"%.2f".format(p)}% ${bytesCopied}")
                 })
 
-        target.download("leoz-mobile", "0.1-SNAPSHOT")
+        bundleService.download("leoz-mobile", "0.1-SNAPSHOT")
     }
 }

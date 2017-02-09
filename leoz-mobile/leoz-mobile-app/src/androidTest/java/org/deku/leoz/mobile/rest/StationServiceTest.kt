@@ -12,7 +12,6 @@ import android.support.test.InstrumentationRegistry
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import org.deku.leoz.config.RestFeignClientConfiguration
 import org.deku.leoz.mobile.WebserviceTest
 import org.deku.leoz.rest.entity.internal.v1.Station
 import rx.Observable
