@@ -4,7 +4,8 @@ import com.github.salomonbrys.kodein.*
 import org.deku.leoz.mobile.update.UpdateService
 
 /**
- * Created by n3 on 10/02/2017.
+ * Update service configuration
+ * Created by masc on 10/02/2017.
  */
 class UpdateConfiguration {
     companion object {

@@ -19,7 +19,7 @@ import java.io.File
 
 /**
  * Log configuration
- * Created by n3 on 12/12/2016.
+ * Created by masc on 12/12/2016.
  */
 class LogConfiguration(
         val path: File,

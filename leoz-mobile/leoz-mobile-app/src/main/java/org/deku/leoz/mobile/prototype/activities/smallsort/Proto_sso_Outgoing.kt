@@ -15,7 +15,7 @@ import com.honeywell.aidc.BarcodeReader
 import com.honeywell.aidc.UnsupportedPropertyException
 import kotlinx.android.synthetic.main.activity_proto_sso__outgoing.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.prototype.Properties.Bag
+import org.deku.leoz.mobile.prototype.properties.Bag
 import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
 import org.slf4j.LoggerFactory
 import java.net.InetSocketAddress

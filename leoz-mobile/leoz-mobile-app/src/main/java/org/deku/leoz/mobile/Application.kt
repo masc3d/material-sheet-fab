@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 
 /**
  * Application
- * Created by n3 on 10/12/2016.
+ * Created by masc on 10/12/2016.
  */
 open class Application : MultiDexApplication() {
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }

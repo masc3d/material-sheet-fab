@@ -10,7 +10,8 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.ScheduledExecutorService
 
 /**
- * Created by n3 on 10/02/2017.
+ * Application/APK update service
+ * Created by masc on 10/02/2017.
  */
 class UpdateService(executorService: ScheduledExecutorService) : Service(
         executorService = executorService,

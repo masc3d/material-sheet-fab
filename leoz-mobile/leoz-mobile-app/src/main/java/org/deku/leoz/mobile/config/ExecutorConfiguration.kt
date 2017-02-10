@@ -9,7 +9,7 @@ import java.util.concurrent.*
 
 /**
  * Executor configuration
- * Created by n3 on 10/02/2017.
+ * Created by masc on 10/02/2017.
  */
 class ExecutorConfiguration {
     companion object {

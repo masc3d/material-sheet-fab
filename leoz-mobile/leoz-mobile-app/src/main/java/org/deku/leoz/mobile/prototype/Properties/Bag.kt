@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.prototype.Properties
+package org.deku.leoz.mobile.prototype.properties
 
 /**
  * Created by 27694066 on 10.02.2017.

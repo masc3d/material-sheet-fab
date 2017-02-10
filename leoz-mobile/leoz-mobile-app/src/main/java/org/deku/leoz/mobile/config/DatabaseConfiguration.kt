@@ -9,7 +9,8 @@ import org.flywaydb.core.api.android.ContextHolder
 import org.slf4j.LoggerFactory
 
 /**
- * Created by n3 on 12/12/2016.
+ * Database configuration
+ * Created by masc on 12/12/2016.
  */
 class DatabaseConfiguration(val context: Context) {
     companion object {
