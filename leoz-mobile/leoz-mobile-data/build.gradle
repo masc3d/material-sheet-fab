@@ -177,34 +177,20 @@ clean {
     }
 }
 
+//region Flyway
 flyway {
     driver = JDBC_DRIVER
     url = JDBC_URL
     locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
 }
 
-// TODO: masc20161210. workaround for flyway bug https://github.com/flyway/flyway/issues/1180
-// Replacing affected flyway tasks with alternative implementation that circumvents locking issue
-
-tasks.remove(tasks.flywayMigrate)
-task flywayMigrate(group: FLYWAY_TASK_GROUP) {
-    inputs.dir FLYWAY_MIGRATION_DIR
-    outputs.files DB_FILE
-    doLast {
+tasks.findAll() { it.group != null && it.group.equalsIgnoreCase('flyway') }.each {
+    // Make sure base dir of SQLite database exists prior to execution of any flyway task
+    it.doFirst {
         DB_DIR.mkdirs()
-        Flyway flyway = new Flyway();
-        flyway.setLocations("filesystem:${FLYWAY_MIGRATION_DIR}");
-        flyway.setDataSource("jdbc:sqlite:${DB_FILE}", "", "");
-        flyway.migrate()
     }
 }
-
-tasks.remove(tasks.flywayClean)
-task flywayClean(group: FLYWAY_TASK_GROUP) {
-    doLast {
-        DB_FILE.delete()
-    }
-}
+//endregion
 
 tasks.clean.dependsOn(flywayClean)
 
