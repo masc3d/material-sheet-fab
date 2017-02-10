@@ -17,11 +17,15 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
+import org.slf4j.LoggerFactory
 
 class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        log.trace("ONCREATE")
 
         this.setContentView(R.layout.activity_main)
         setSupportActionBar(this.toolbar)

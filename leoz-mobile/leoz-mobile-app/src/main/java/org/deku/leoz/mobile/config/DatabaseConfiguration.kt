@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 class DatabaseConfiguration(val context: Context) {
     companion object {
         val module = Kodein.Module {
-            bind<DatabaseConfiguration>() with eagerSingleton {
+            bind<DatabaseConfiguration>() with singleton {
                 DatabaseConfiguration(context = instance())
             }
         }
