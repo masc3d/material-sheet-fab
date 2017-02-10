@@ -3,6 +3,10 @@
     package="org.deku.leoz.mobile">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="com.honeywell.decode.permission.DECODE" />
 
     <application
         android:name=".Application"
@@ -22,7 +26,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".prototype.activities.Proto_MainActivity" />
-        <activity android:name=".prototype.activities.smallsort.Proto_sso_Menue"></activity>
+        <activity android:name=".prototype.activities.smallsort.Proto_sso_Menue" />
+        <activity android:name=".prototype.activities.smallsort.Proto_sso_Outgoing"></activity>
     </application>
 
 </manifest>

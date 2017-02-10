@@ -6,6 +6,7 @@ import android.net.wifi.SupplicantState
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import kotlinx.android.synthetic.main.fragment_proto_status.*
 
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
+import java.util.*
 
 /**
  * A simple [Fragment] subclass.
@@ -29,33 +31,29 @@ class Proto_StatusFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
     private var mParam2: String? = null
-    private val mWiFiManager: WifiManager = activity.getSystemService(Context.WIFI_SERVICE) as WifiManager
+    private var mWiFiManager: WifiManager? = null
+    private var mHandler: Handler? = Handler()
+    var mRunnable: Runnable? = null
 
     private var mListener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //mWiFiManager = activity.getSystemService(Context.WIFI_SERVICE) as WifiManager
-
-        if(mWiFiManager.isWifiEnabled){
-            var mWiFiInfo : WifiInfo = mWiFiManager.connectionInfo
-            if(mWiFiInfo.supplicantState == SupplicantState.COMPLETED){
-                lblWifiStatus.text = "WiFi: ${WifiManager.calculateSignalLevel(mWiFiInfo.rssi, 5)}/5"
-            }else{
-                log.debug("WiFi not connected")
-                lblWifiStatus.text = "Wifi: not connected"
-            }
-        }else{
-            log.debug("WiFi not enabled")
-            lblWifiStatus.text = "WiFi: N/A"
+        mRunnable = Runnable {
+            updateStatusBox()
+            mHandler!!.postDelayed(mRunnable, 500)
         }
+
+        mWiFiManager = activity.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
         if (arguments != null) {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
         }
     }
+
+
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -74,6 +72,7 @@ class Proto_StatusFragment : Fragment() {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
             mListener = context as OnFragmentInteractionListener?
+            mHandler!!.postDelayed(mRunnable, 2000)
         } else {
             throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
         }
@@ -82,6 +81,7 @@ class Proto_StatusFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         mListener = null
+        mHandler!!.removeCallbacks(mRunnable)
     }
 
     /**
@@ -96,6 +96,21 @@ class Proto_StatusFragment : Fragment() {
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri?)
+    }
+
+    private fun updateStatusBox(){
+        if(mWiFiManager!!.isWifiEnabled){
+            var mWiFiInfo : WifiInfo = mWiFiManager!!.connectionInfo
+            if(mWiFiInfo.supplicantState == SupplicantState.COMPLETED){
+                lblWifiStatus.text = "WiFi: ${WifiManager.calculateSignalLevel(mWiFiInfo.rssi, 5)}/5"
+            }else{
+                log.debug("WiFi not connected")
+                lblWifiStatus.text = "Wifi: not connected"
+            }
+        }else{
+            log.debug("WiFi not enabled")
+            lblWifiStatus.text = "WiFi: N/A"
+        }
     }
 
     companion object {
