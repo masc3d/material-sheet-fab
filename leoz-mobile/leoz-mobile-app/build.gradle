@@ -156,7 +156,9 @@ dependencies {
             // Logging
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jul-to-slf4j:$v_slf4j",
-            "com.github.tony19:logback-android-classic:1.1.1-6",
+            dependencies.create("com.github.tony19:logback-android-classic:1.1.1-6") {
+                exclude group: 'com.google.android', module: 'android'
+            },
 
             // Reactive
             "io.reactivex:rxjava:$v_rxjava",
