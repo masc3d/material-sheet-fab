@@ -15,13 +15,14 @@ import android.view.View
 import android.widget.Button
 import com.honeywell.aidc.AidcManager
 import com.honeywell.aidc.BarcodeReader
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_proto__main.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Menue
 import org.slf4j.LoggerFactory
 
-class Proto_MainActivity : AppCompatActivity(), View.OnClickListener, Proto_StatusFragment.OnFragmentInteractionListener {
+class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener, Proto_StatusFragment.OnFragmentInteractionListener {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     var manager: AidcManager? = null

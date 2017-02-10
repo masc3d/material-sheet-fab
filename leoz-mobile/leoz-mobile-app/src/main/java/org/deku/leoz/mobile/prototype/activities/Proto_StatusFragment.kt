@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
 import kotlinx.android.synthetic.main.fragment_proto_status.*
 
 import org.deku.leoz.mobile.R
@@ -25,7 +26,7 @@ import java.util.*
  * Use the [Proto_StatusFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_StatusFragment : Fragment() {
+class Proto_StatusFragment : RxAppCompatDialogFragment() {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     // TODO: Rename and change types of parameters

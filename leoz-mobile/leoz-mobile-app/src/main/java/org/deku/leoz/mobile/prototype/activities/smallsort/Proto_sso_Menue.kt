@@ -6,13 +6,14 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_proto__main.*
 import kotlinx.android.synthetic.main.activity_proto_sso_menue.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.Proto_StatusFragment
 import org.slf4j.LoggerFactory
 
-class Proto_sso_Menue : AppCompatActivity(), Proto_StatusFragment.OnFragmentInteractionListener, View.OnClickListener {
+class Proto_sso_Menue : RxAppCompatActivity(), Proto_StatusFragment.OnFragmentInteractionListener, View.OnClickListener {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 

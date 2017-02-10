@@ -13,6 +13,7 @@ import com.honeywell.aidc.BarcodeFailureEvent
 import com.honeywell.aidc.BarcodeReadEvent
 import com.honeywell.aidc.BarcodeReader
 import com.honeywell.aidc.UnsupportedPropertyException
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_proto_sso__outgoing.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.properties.Bag
@@ -22,7 +23,7 @@ import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.*
 
-class Proto_sso_Outgoing : AppCompatActivity(), BarcodeReader.BarcodeListener {
+class Proto_sso_Outgoing : RxAppCompatActivity(), BarcodeReader.BarcodeListener {
 
     val barcodeReader: BarcodeReader = Proto_MainActivity().getBarcodeObject()
     val scanMap: HashMap<Int, String> = HashMap()
