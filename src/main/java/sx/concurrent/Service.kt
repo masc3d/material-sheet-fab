@@ -3,7 +3,7 @@ package sx.concurrent
 import org.slf4j.LoggerFactory
 import sx.Lifecycle
 import sx.concurrent.task.DynamicScheduledExecutorService
-import java.time.Duration
+import sx.time.Duration
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -353,9 +353,10 @@ abstract class Service(
         try {
             this.run()
         } finally {
-            this.triggerCount.getAndUpdate {
-                if (it > 0) it - 1 else 0
-            }
+            val triggerCount = triggerCount.get()
+            this.triggerCount.set(
+                    if (triggerCount > 0) triggerCount - 1 else 0
+            )
         }
     }
 
