@@ -11,7 +11,7 @@ import java.io.File
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchKey
 import java.nio.file.WatchService
-import java.time.Duration
+import sx.time.Duration
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.locks.ReentrantLock

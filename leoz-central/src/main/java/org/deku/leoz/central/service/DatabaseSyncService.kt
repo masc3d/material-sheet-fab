@@ -38,7 +38,7 @@ import sx.concurrent.Service
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import java.sql.Timestamp
-import java.time.Duration
+import sx.time.Duration
 import java.util.concurrent.ScheduledExecutorService
 import javax.inject.Inject
 import javax.inject.Named

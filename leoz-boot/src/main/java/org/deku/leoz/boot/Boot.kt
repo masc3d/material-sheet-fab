@@ -25,7 +25,7 @@ import sx.rsync.RsyncClient
 import sx.rx.task
 import sx.ssh.SshTunnelProvider
 import java.io.File
-import java.time.Duration
+import sx.time.Duration
 import java.util.*
 
 /**

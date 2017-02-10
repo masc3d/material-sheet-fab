@@ -9,7 +9,7 @@ import sx.Disposable
 import sx.Lifecycle
 import sx.jms.Channel
 import sx.jms.Broker
-import java.time.Duration
+import sx.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService

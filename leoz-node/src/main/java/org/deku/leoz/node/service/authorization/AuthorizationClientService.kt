@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 import sx.concurrent.Service
 import sx.jms.Channel
 import sx.jms.Handler
-import java.time.Duration
+import sx.time.Duration
 import java.util.concurrent.ScheduledExecutorService
 
 /**
