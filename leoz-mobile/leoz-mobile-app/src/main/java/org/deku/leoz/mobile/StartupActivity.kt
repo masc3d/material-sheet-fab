@@ -31,7 +31,9 @@ class StartupActivity : RxAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        this.unfreezeInstanceState(this.app.bundle)
+
+        // Restore state
+        this.app.unfreezeInstanceState(this)
 
         // Load some more heavy-weight instances on startup/splash
         val app: Application = Kodein.global.instance()
@@ -56,9 +58,9 @@ class StartupActivity : RxAppCompatActivity() {
             this.finish()
         }
 
-        if (!started) {
+        if (!this.started) {
             Handler().postDelayed( { start(withAnimation = true) }, 1000)
-            started = true
+            this.started = true
         } else {
             start(withAnimation = false)
         }
@@ -66,7 +68,9 @@ class StartupActivity : RxAppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        this.freezeInstanceState(this.app.bundle)
+
+        // Save state
+        this.app.freezeInstanceState(this)
     }
 
     override fun onDestroy() {

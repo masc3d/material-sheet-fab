@@ -9,6 +9,9 @@ import android.util.Log
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
+import com.tinsuke.icekick.freezeInstanceState
+import com.tinsuke.icekick.unfreezeInstanceState
+import org.deku.leoz.config.FeignRestClientConfiguration
 import org.deku.leoz.mobile.config.*
 import org.slf4j.LoggerFactory
 
@@ -35,6 +38,7 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(StorageConfiguration.module)
         Kodein.global.addImport(LogConfiguration.module)
         Kodein.global.addImport(DatabaseConfiguration.module)
+        Kodein.global.addImport(FeignRestClientConfiguration.module)
         Kodein.global.addImport(UpdateConfiguration.module)
     }
 
@@ -64,3 +68,24 @@ open class Application : MultiDexApplication() {
 }
 
 val Activity.app: Application get() = this.application as Application
+
+/**
+ * Freezes instance state within application bundle
+ */
+fun Application.freezeInstanceState(activity: Activity) {
+    // Save state
+    val bundle = Bundle()
+    activity.freezeInstanceState(bundle)
+    this.bundle.putBundle(activity.localClassName, bundle)
+}
+
+/**
+ * Unfreeze instance state from application bundle
+ */
+fun Application.unfreezeInstanceState(activity: Activity) {
+    // Restore state
+    val bundle = this.bundle.getBundle(activity.localClassName)
+    if (bundle != null) {
+        activity.unfreezeInstanceState(bundle)
+    }
+}
