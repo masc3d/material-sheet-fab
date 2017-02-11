@@ -68,6 +68,6 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.1.10"
+            "ch.qos.logback:logback-classic:1.2.1"
     )
 }
