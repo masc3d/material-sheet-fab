@@ -8,6 +8,7 @@ import org.deku.leoz.service.update.UpdateInfo
 import org.deku.leoz.service.update.UpdateInfoRequest
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
+import org.deku.leoz.node.rest.ServiceException
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import sx.platform.OperatingSystem
@@ -82,7 +83,9 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
                         .and(qTable.alias.eq(versionAlias)))
 
         if (rVersion == null)
-            throw IllegalArgumentException("No version record for bundle [${bundleName}] version alias [${versionAlias}]")
+            throw WebApplicationException(
+                    "No version record for bundle [${bundleName}] version alias [${versionAlias}]",
+                    Response.Status.NOT_FOUND)
 
         // Try to determine latest matching bundle version and platforms
         val latestDesignatedVersion = try {
