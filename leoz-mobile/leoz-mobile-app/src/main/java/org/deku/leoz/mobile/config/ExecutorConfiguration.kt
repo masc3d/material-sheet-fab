@@ -15,16 +15,8 @@ class ExecutorConfiguration {
     companion object {
         val module = Kodein.Module {
             bind<ScheduledExecutorService>() with singleton {
-                val scheduledExecutorService = ScheduledThreadPoolExecutor(2);
-
-                val cachedExecutorService = ThreadPoolExecutor(
-                        0,
-                        Integer.MAX_VALUE,
-                        60L,
-                        TimeUnit.SECONDS,
-                        SynchronousQueue<Runnable>())
-
-                CompositeExecutorService(scheduledExecutorService, cachedExecutorService)
+                CompositeExecutorService.create(
+                        scheduledCorePoolSize = 2)
             }
         }
     }

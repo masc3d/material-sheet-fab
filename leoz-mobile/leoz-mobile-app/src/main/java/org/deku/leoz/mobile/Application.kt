@@ -28,15 +28,19 @@ open class Application : MultiDexApplication() {
         super.onCreate()
         Log.v("", "ONCREATE")
 
-        // Add core injections (usually light-weight, shared with instrumentation tests)
+        // Base modules
+        Kodein.global.addImport(StorageConfiguration.module)
+        Kodein.global.addImport(LogConfiguration.module)
+
+        // Android specific modules
         Kodein.global.addImport(androidModule)
         Kodein.global.addImport(Kodein.Module {
             bind<Context>() with singleton { this@Application.applicationContext }
             bind<Application>() with singleton { this@Application }
         })
+
+        // Higher level modules
         Kodein.global.addImport(ExecutorConfiguration.module)
-        Kodein.global.addImport(StorageConfiguration.module)
-        Kodein.global.addImport(LogConfiguration.module)
         Kodein.global.addImport(DatabaseConfiguration.module)
         Kodein.global.addImport(FeignRestClientConfiguration.module)
         Kodein.global.addImport(UpdateConfiguration.module)
