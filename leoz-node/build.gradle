@@ -208,7 +208,7 @@ dependencies {
             "com.querydsl:querydsl-collections:$v_querydsl",
             "com.querydsl:querydsl-sql-codegen:$v_querydsl",
 
-            "org.flywaydb:flyway-core:4.0.3",
+            "org.flywaydb:flyway-core:$v_flyway",
 
             // JSR-330
             "javax.inject:javax.inject:1",
