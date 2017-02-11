@@ -8,6 +8,8 @@ import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.bind
 import feign.Client
 import feign.Feign
+import feign.Request
+import feign.Retryer
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
 import feign.jaxrs.JAXRSContract
@@ -86,6 +88,8 @@ class FeignRestClientConfiguration {
                         .client(if (config.sslValidation) config.client else config.clientWithoutSslValidation)
                         .encoder(JacksonEncoder())
                         .decoder(JacksonDecoder())
+                        .retryer(Retryer.NEVER_RETRY)
+                        .options(Request.Options(5000, 10000))
                         .contract(JAXRSContract())
             }
 
