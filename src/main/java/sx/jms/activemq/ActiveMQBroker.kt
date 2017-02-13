@@ -16,6 +16,7 @@ import org.apache.activemq.network.DiscoveryNetworkConnector
 import org.apache.activemq.security.*
 import org.apache.activemq.store.PersistenceAdapter
 import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter
+import org.apache.activemq.store.kahadb.disk.journal.Journal
 import org.apache.activemq.transport.TransportServer
 import sx.jms.Broker
 import java.io.File
@@ -118,6 +119,8 @@ class ActiveMQBroker private constructor()
         val pa: PersistenceAdapter
         pa = brokerService.persistenceAdapter as KahaDBPersistenceAdapter
         pa.isCheckForCorruptJournalFiles = true
+        pa.preallocationScope = Journal.PreallocationScope.ENTIRE_JOURNAL_ASYNC.name
+        pa.preallocationStrategy = Journal.PreallocationStrategy.ZEROS.name
 
         // Enforce our own persistence store directory for both regular store and scheduler, overriding the default which has broker name in its path
         pa.directory = persistenceStoreDirectory
