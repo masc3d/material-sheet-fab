@@ -17,11 +17,9 @@ class HoneywellConfiguration {
             bind<Observable<AidcManager>>() with eagerSingleton {
                 // RX subject which will emit AdicManager once it's been created by underlying service
                 val subject = BehaviorSubject<AidcManager>().synchronized()
-                AidcManager.create(instance(), object: AidcManager.CreatedCallback {
-                    override fun onCreated(aidcManager: AidcManager) {
-                        // Emit event
-                        subject.onNext(aidcManager)
-                    }
+                AidcManager.create(instance(), {
+                    // Emit AidcManager instance
+                    subject.onNext(it)
                 })
                 subject
             }
