@@ -6,9 +6,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="lbl_StationID_suff">Station-ID:</string>
-    <string name="AppVersion_suff">App-Version:</string>
-    <string name="lblUser_suff">User:</string>
+    <string name="station_id">Station ID</string>
+    <string name="version">Version</string>
+    <string name="user">User</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email" translatable="false">Email</string>
