@@ -7,6 +7,10 @@ import org.deku.leoz.log.LogAppender
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
+import org.slf4j.bridge.SLF4JBridgeHandler
+import java.util.logging.Level
+import java.util.logging.LogManager
+import java.util.logging.Logger
 
 /**
  * Log configuration.
@@ -62,6 +66,15 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     override fun initialize() {
         super.initialize()
 
+        // Setup jul to slf4j bridge
+        LogManager.getLogManager().reset();
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+        Logger.getLogger("global").setLevel(Level.FINEST);
+
+        Logger.getLogger("org.eclipselink").info("MEH")
+
+        // Setup log file and jms appender
         val storageConfiguration: Storage = Kodein.global.instance()
         if (this.logFile == null) {
             this.logFile = storageConfiguration.logFile
