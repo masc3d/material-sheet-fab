@@ -44,6 +44,7 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(DatabaseConfiguration.module)
         Kodein.global.addImport(FeignRestClientConfiguration.module)
         Kodein.global.addImport(UpdateConfiguration.module)
+        Kodein.global.addImport(HoneywellConfiguration.module)
     }
 
     override fun onTerminate() {
