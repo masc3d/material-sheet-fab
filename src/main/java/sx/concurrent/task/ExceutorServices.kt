@@ -1,5 +1,6 @@
 package sx.concurrent.task
 
+import org.slf4j.LoggerFactory
 import java.util.concurrent.*
 
 /**
@@ -66,6 +67,8 @@ class CompositeExecutorService(
         DynamicScheduledExecutorService {
 
     companion object {
+        private val log by lazy { LoggerFactory.getLogger(CompositeExecutorService::class.java) }
+
         //region Convenience methods for creating instances
 
         /**
@@ -75,7 +78,12 @@ class CompositeExecutorService(
                               cachedCorePoolSize: Int = 0,
                               cachedKeepAliveTimeSeconds: Int = 60): CompositeExecutorService {
             val scheduledExecutorService = ScheduledThreadPoolExecutor(scheduledCorePoolSize);
-            scheduledExecutorService.removeOnCancelPolicy = true
+
+            try {
+                scheduledExecutorService.removeOnCancelPolicy = true
+            } catch(e: IllegalAccessError) {
+                log.warn("Remove on cancel policy not supported")
+            }
 
             val cachedExecutorService = ThreadPoolExecutor(
                     cachedCorePoolSize,
