@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.prototype.activities.smallsort
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.StrictMode
 import android.support.design.widget.Snackbar
@@ -16,71 +15,69 @@ import com.honeywell.aidc.UnsupportedPropertyException
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_proto_sso__outgoing.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.prototype.properties.Bag
 import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
+import org.deku.leoz.mobile.prototype.properties.Bag
 import org.slf4j.LoggerFactory
-import java.net.InetSocketAddress
-import java.net.Proxy
 import java.util.*
 
 class Proto_sso_Outgoing : RxAppCompatActivity(), BarcodeReader.BarcodeListener {
 
-    val barcodeReader: BarcodeReader = Proto_MainActivity().getBarcodeObject()
+    val barcodeReader: BarcodeReader = Proto_MainActivity.barcodeReader!!
     val scanMap: HashMap<Int, String> = HashMap()
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        aquireBarcodeReader()
+        acquireBarcodeReader()
         setContentView(R.layout.activity_proto_sso__outgoing)
     }
 
     override fun onFailureEvent(p0: BarcodeFailureEvent?) {
-        //throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
         Snackbar.make(activity_proto_sso__outgoing, getString(R.string.error_imager_scan_failed), Snackbar.LENGTH_SHORT).show()
     }
 
     override fun onBarcodeEvent(p0: BarcodeReadEvent) {
-        //throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-
-        runOnUiThread {
-            // update UI to reflect the data
-            val barcodeText = p0.barcodeData
-            val barcodeResult = java.lang.Long.parseLong(barcodeText)
-            (findViewById(R.id.lblStatus) as TextView).text = ""
-            clearStatusImage()
-            //((TextView) findViewById(R.id.txtBagPkst)).setText(barcodeText);
-            if (barcodeText.startsWith("10071")) {
-                //Order-no
-                (findViewById(R.id.txtBagPkst) as TextView).setText(barcodeText)
-                scanMap.put(Bag.BAG_ORDERNO_HUB2STATION, barcodeText)
+        runOnUiThread(object: Runnable {
+            override fun run() {
+                // update UI to reflect the data
+                val barcodeText = p0.barcodeData
+                val barcodeResult = java.lang.Long.parseLong(barcodeText)
+                (findViewById(R.id.lblStatus) as TextView).text = ""
+                clearStatusImage()
+                //((TextView) findViewById(R.id.txtBagPkst)).setText(barcodeText);
+                if (barcodeText.startsWith("10071")) {
+                    //Order-no
+                    (findViewById(R.id.txtBagPkst) as TextView).setText(barcodeText)
+                    scanMap.put(Bag.BAG_ORDERNO_HUB2STATION, barcodeText)
+                }
+                if (barcodeText.startsWith("10072")) {
+                    //Order-no
+                    setNOk()
+                    (findViewById(R.id.lblStatus) as TextView).text = "Unterer Barcode falsch! Oben scannen!"
+                    (findViewById(R.id.txtBagPkst) as TextView).text = ""
+                    scanMap.remove(Bag.BAG_ORDERNO_HUB2STATION)
+                }
+                if (barcodeText.startsWith("9001")) {
+                    //White lead seal
+                    scanMap.put(Bag.LEADSEAL_WHITE, barcodeText)
+                    (findViewById(R.id.txtBagSeal) as TextView).setText(barcodeText)
+                }
+                if (barcodeText.startsWith("9002")) {
+                    //Yellow lead seal
+                    scanMap.put(Bag.LEADSEAL_YELLOW, barcodeText)
+                    setNOk()
+                    (findViewById(R.id.lblStatus) as TextView).text = "Gelbe Plombe falsch! Weiss scannen!"
+                }
+                if (scanMap.containsKey(Bag.LEADSEAL_WHITE) && scanMap.containsKey(Bag.BAG_ORDERNO_HUB2STATION))
+                    closeBag(java.lang.Long.parseLong(scanMap[Bag.BAG_ORDERNO_HUB2STATION]), java.lang.Long.parseLong(scanMap[Bag.LEADSEAL_WHITE]))
             }
-            if (barcodeText.startsWith("10072")) {
-                //Order-no
-                setNOk()
-                (findViewById(R.id.lblStatus) as TextView).text = "Unterer Barcode falsch! Oben scannen!"
-                (findViewById(R.id.txtBagPkst) as TextView).text = ""
-                scanMap.remove(Bag.BAG_ORDERNO_HUB2STATION)
-            }
-            if (barcodeText.startsWith("9001")) {
-                //White lead seal
-                scanMap.put(Bag.LEADSEAL_WHITE, barcodeText)
-                (findViewById(R.id.txtBagSeal) as TextView).setText(barcodeText)
-            }
-            if (barcodeText.startsWith("9002")) {
-                //Yellow lead seal
-                scanMap.put(Bag.LEADSEAL_YELLOW, barcodeText)
-                setNOk()
-                (findViewById(R.id.lblStatus) as TextView).text = "Gelbe Plombe falsch! Weiss scannen!"
-            }
-            if (scanMap.containsKey(Bag.LEADSEAL_WHITE) && scanMap.containsKey(Bag.BAG_ORDERNO_HUB2STATION))
-                closeBag(java.lang.Long.parseLong(scanMap[Bag.BAG_ORDERNO_HUB2STATION]), java.lang.Long.parseLong(scanMap[Bag.LEADSEAL_WHITE]))
-        }
+        })
     }
 
-    private fun aquireBarcodeReader() {
+    private fun acquireBarcodeReader() {
 
         // register bar code event listener
-        barcodeReader!!.addBarcodeListener(this);
+        barcodeReader.addBarcodeListener(this)
 
         // set the trigger mode to client control
         try {

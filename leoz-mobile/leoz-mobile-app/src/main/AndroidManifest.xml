@@ -26,9 +26,15 @@
         </activity>
 
         <activity android:name=".MainActivity" />
-        <activity android:name=".prototype.activities.Proto_MainActivity" />
-        <activity android:name=".prototype.activities.smallsort.Proto_sso_Menue" />
-        <activity android:name=".prototype.activities.smallsort.Proto_sso_Outgoing" />
+        <activity
+            android:name=".prototype.activities.Proto_MainActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".prototype.activities.smallsort.Proto_sso_Menue"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".prototype.activities.smallsort.Proto_sso_Outgoing"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
