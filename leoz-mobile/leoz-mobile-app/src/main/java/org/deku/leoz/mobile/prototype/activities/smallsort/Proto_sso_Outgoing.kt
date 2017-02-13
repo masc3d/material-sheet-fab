@@ -8,10 +8,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import com.honeywell.aidc.BarcodeFailureEvent
-import com.honeywell.aidc.BarcodeReadEvent
-import com.honeywell.aidc.BarcodeReader
-import com.honeywell.aidc.UnsupportedPropertyException
+import com.honeywell.aidc.*
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_proto_sso__outgoing.*
 import org.deku.leoz.mobile.R
@@ -20,7 +17,7 @@ import org.deku.leoz.mobile.prototype.properties.Bag
 import org.slf4j.LoggerFactory
 import java.util.*
 
-class Proto_sso_Outgoing : RxAppCompatActivity(), BarcodeReader.BarcodeListener {
+class Proto_sso_Outgoing : RxAppCompatActivity(), BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
 
     val barcodeReader: BarcodeReader = Proto_MainActivity.barcodeReader!!
     val scanMap: HashMap<Int, String> = HashMap()
@@ -34,6 +31,10 @@ class Proto_sso_Outgoing : RxAppCompatActivity(), BarcodeReader.BarcodeListener 
 
     override fun onFailureEvent(p0: BarcodeFailureEvent?) {
         Snackbar.make(activity_proto_sso__outgoing, getString(R.string.error_imager_scan_failed), Snackbar.LENGTH_SHORT).show()
+    }
+
+    override fun onTriggerEvent(p0: TriggerStateChangeEvent?) {
+        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onBarcodeEvent(p0: BarcodeReadEvent) {
@@ -72,6 +73,33 @@ class Proto_sso_Outgoing : RxAppCompatActivity(), BarcodeReader.BarcodeListener 
                     closeBag(java.lang.Long.parseLong(scanMap[Bag.BAG_ORDERNO_HUB2STATION]), java.lang.Long.parseLong(scanMap[Bag.LEADSEAL_WHITE]))
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (barcodeReader != null) {
+            try {
+                barcodeReader!!.claim()
+            } catch (e: ScannerUnavailableException) {
+                e.printStackTrace()
+                log.error("Scanner unavailable")
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (barcodeReader != null) {
+            barcodeReader!!.release()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (barcodeReader != null) {
+            barcodeReader!!.removeBarcodeListener(this);
+            barcodeReader!!.removeTriggerListener(this);
+        }
     }
 
     private fun acquireBarcodeReader() {
