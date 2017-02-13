@@ -7,12 +7,12 @@
     <string name="action_sign_in_short">Anmelden</string>
     <string name="action_sign_in">Anmelden / Registrieren</string>
     <string name="action_settings">Einstellungen</string>
-    <string name="AppVersion_suff">App-Version:</string>
+    <string name="version">App-Version:</string>
     <string name="error_field_required">Das Feld ist erforderlich</string>
     <string name="error_incorrect_password">Das Passwort ist falsch</string>
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
-    <string name="lblUser_suff">Benutzer:</string>
-    <string name="lbl_StationID_suff">Station:</string>
+    <string name="user">Benutzer:</string>
+    <string name="station_id">Station:</string>
     <string name="navigation_drawer_close">Navigation schließen</string>
     <string name="navigation_drawer_open">Navigation öffnen</string>
     <string name="prompt_email"></string>

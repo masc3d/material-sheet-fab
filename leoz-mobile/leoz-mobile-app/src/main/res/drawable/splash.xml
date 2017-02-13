@@ -20,7 +20,7 @@
     <!-- masc20170211. as bitmaps cannot be scaled or properly sized in layer lists, static image is the way to go -->
     <item android:top="0dp">
         <bitmap
-            android:gravity="fill"
+            android:gravity="center"
             android:src="@mipmap/img_splash" />
     </item>
 </layer-list>

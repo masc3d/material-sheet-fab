@@ -9,13 +9,16 @@ import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
+import android.util.AttributeSet
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
+import kotlinx.android.synthetic.main.nav_header_main.view.*
 import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
 import org.slf4j.LoggerFactory
 
@@ -54,6 +57,10 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
                 R.string.navigation_drawer_close)
 
         this.drawer_layout.addDrawerListener(toggle)
+
+        val navHeaderView = this.drawer_layout.nav_view.getHeaderView(0)
+        navHeaderView.uxTitle.text = "${this.getText(R.string.app_name)} v${BuildConfig.VERSION_NAME}"
+
         toggle.syncState()
 
         this.nav_view.setNavigationItemSelectedListener(this)
@@ -70,7 +77,6 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menuInflater.inflate(R.menu.main, menu)
-        this.lblNavAppVersion.setText("${applicationContext.getString(R.string.AppVersion_suff)} ${BuildConfig.VERSION_CODE}")
         return true
     }
 
