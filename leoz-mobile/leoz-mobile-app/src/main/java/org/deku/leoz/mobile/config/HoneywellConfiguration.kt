@@ -27,11 +27,13 @@ class HoneywellConfiguration {
 
             bind<AidcManager>() with singleton {
                 val observable: Observable<AidcManager> = instance()
-                // Block and retrieve first item
-                observable.observeOn(
-                        // Observe on worker thread to avoid potential deadlock as AidcManager create callback returns on main/UI thread
-                        Schedulers.from(instance())
-                ).toBlocking().first()
+
+                observable
+                        // Observe on worker thread to avoid potential deadlock as AidcManager.create callback executes on main/UI thread
+                        .observeOn(Schedulers.from(instance()))
+                        // Block and retrieve first item
+                        .toBlocking()
+                        .first()
             }
 
             bind<BarcodeReader>() with singleton {
