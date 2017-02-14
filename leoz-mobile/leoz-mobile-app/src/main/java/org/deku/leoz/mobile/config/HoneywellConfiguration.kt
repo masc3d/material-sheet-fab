@@ -6,6 +6,7 @@ import com.honeywell.aidc.BarcodeReader
 import rx.Observable
 import rx.lang.kotlin.BehaviorSubject
 import rx.lang.kotlin.synchronized
+import rx.schedulers.Schedulers
 
 /**
  * Honeywell configuration
@@ -27,7 +28,10 @@ class HoneywellConfiguration {
             bind<AidcManager>() with singleton {
                 val observable: Observable<AidcManager> = instance()
                 // Block and retrieve first item
-                observable.toBlocking().first()
+                observable.observeOn(
+                        // Observe on worker thread to avoid potential deadlock as AidcManager create callback returns on main/UI thread
+                        Schedulers.from(instance())
+                ).toBlocking().first()
             }
 
             bind<BarcodeReader>() with singleton {
