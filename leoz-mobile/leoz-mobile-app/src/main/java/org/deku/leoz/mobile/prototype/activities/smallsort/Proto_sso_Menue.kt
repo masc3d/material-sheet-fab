@@ -13,7 +13,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.Proto_StatusFragment
 import org.slf4j.LoggerFactory
 
-class Proto_sso_Menue : RxAppCompatActivity(), Proto_StatusFragment.OnFragmentInteractionListener, View.OnClickListener {
+class Proto_sso_Menue : RxAppCompatActivity(), View.OnClickListener {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
@@ -25,10 +25,6 @@ class Proto_sso_Menue : RxAppCompatActivity(), Proto_StatusFragment.OnFragmentIn
         btnBagInitialize.setOnClickListener(this)
         btnBagOutgoing.setOnClickListener(this)
         btnBagSort.setOnClickListener(this)
-    }
-
-    override fun onFragmentInteraction(uri: Uri?) {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onClick(v: View) {

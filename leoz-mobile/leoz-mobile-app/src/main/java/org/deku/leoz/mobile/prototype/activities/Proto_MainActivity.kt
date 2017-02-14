@@ -11,9 +11,10 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_proto__main.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Menue
+import org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Menue_f
 import org.slf4j.LoggerFactory
 
-class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener, Proto_StatusFragment.OnFragmentInteractionListener {
+class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     //var barcodeReader: BarcodeReader? = null
@@ -45,7 +46,7 @@ class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener, Proto_St
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
             btnProtoSSO -> {
-                mIntent = Intent(applicationContext, Proto_sso_Menue::class.java)
+                mIntent = Intent(applicationContext, Proto_sso_Menue_f::class.java)
                 startActivity(mIntent)
             }
             else -> {
@@ -53,9 +54,5 @@ class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener, Proto_St
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
         }
-    }
-
-    override fun onFragmentInteraction(uri: Uri?) {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
