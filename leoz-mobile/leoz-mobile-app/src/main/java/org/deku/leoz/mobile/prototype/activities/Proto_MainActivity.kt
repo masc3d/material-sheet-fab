@@ -15,26 +15,12 @@ import org.slf4j.LoggerFactory
 class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
-    //var barcodeReader: BarcodeReader? = null
-
-    companion object {
-        var manager: AidcManager? = null
-        var barcodeReader: BarcodeReader? = null
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_proto__main)
         btnProtoHUB.setOnClickListener(this)
         btnProtoSSO.setOnClickListener(this)
-
-        AidcManager.create(applicationContext, object: AidcManager.CreatedCallback {
-            override fun onCreated(p0: AidcManager) {
-                Proto_MainActivity.manager = p0
-                Proto_MainActivity.barcodeReader = manager!!.createBarcodeReader()
-            }
-
-        })
     }
 
     override fun onClick(v: View) {
