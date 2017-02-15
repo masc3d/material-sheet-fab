@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.prototype.activities
 
 import android.content.Context
-import android.net.Uri
 import android.net.wifi.SupplicantState
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
@@ -13,10 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
 import kotlinx.android.synthetic.main.fragment_proto_status.*
-
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
-import java.util.*
 
 /**
  * A simple [Fragment] subclass.
@@ -30,13 +27,9 @@ class Proto_StatusFragment : RxAppCompatDialogFragment() {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     // TODO: Rename and change types of parameters
-    private var mParam1: String? = null
-    private var mParam2: String? = null
     private var mWiFiManager: WifiManager? = null
     private var mHandler: Handler? = Handler()
     var mRunnable: Runnable? = null
-
-    private var mListener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +41,6 @@ class Proto_StatusFragment : RxAppCompatDialogFragment() {
 
         mWiFiManager = activity.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
-        if (arguments != null) {
-            mParam1 = arguments.getString(ARG_PARAM1)
-            mParam2 = arguments.getString(ARG_PARAM2)
-        }
     }
 
 
@@ -62,41 +51,13 @@ class Proto_StatusFragment : RxAppCompatDialogFragment() {
         return inflater!!.inflate(R.layout.fragment_proto_status, container, false)
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
-        }
-    }
-
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context as OnFragmentInteractionListener?
-            mHandler!!.postDelayed(mRunnable, 2000)
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
-        }
     }
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
         mHandler!!.removeCallbacks(mRunnable)
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri?)
     }
 
     private fun updateStatusBox(){
@@ -115,28 +76,17 @@ class Proto_StatusFragment : RxAppCompatDialogFragment() {
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val ARG_PARAM1 = "param1"
-        private val ARG_PARAM2 = "param2"
 
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
 
-         * @param param1 Parameter 1.
-         * *
-         * @param param2 Parameter 2.
-         * *
+
          * @return A new instance of fragment Proto_StatusFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): Proto_StatusFragment {
+        fun newInstance(): Proto_StatusFragment {
             val fragment = Proto_StatusFragment()
-            val args = Bundle()
-            args.putString(ARG_PARAM1, param1)
-            args.putString(ARG_PARAM2, param2)
-            fragment.arguments = args
             return fragment
         }
     }

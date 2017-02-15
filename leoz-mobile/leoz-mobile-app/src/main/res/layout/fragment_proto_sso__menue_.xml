@@ -1,16 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_sso_menue"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Menue"
-    android:background="@drawable/deku_background_selector">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_MenueFragment">
 
     <LinearLayout
         android:orientation="vertical"
@@ -29,14 +22,18 @@
                 app:srcCompat="@android:drawable/stat_sys_download"
                 android:id="@+id/btnBagIncoming"
                 android:layout_weight="1"
-                android:layout_height="150dp" />
+                android:layout_height="150dp"
+                android:background="@color/colorPrimary"
+                android:layout_margin="1dp" />
 
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
                 app:srcCompat="@android:drawable/stat_sys_upload"
                 android:id="@+id/btnBagOutgoing"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:layout_margin="1dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -49,14 +46,18 @@
                 android:layout_height="150dp"
                 app:srcCompat="@android:drawable/ic_menu_share"
                 android:id="@+id/btnBagSort"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:layout_margin="1dp" />
 
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
                 app:srcCompat="@android:drawable/ic_menu_sort_by_size"
                 android:id="@+id/btnBagDifference"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:layout_margin="1dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -69,22 +70,11 @@
                 android:layout_height="150dp"
                 app:srcCompat="@android:drawable/ic_menu_add"
                 android:id="@+id/btnBagInitialize"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:layout_margin="1dp" />
 
         </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <fragment
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:name="org.deku.leoz.mobile.prototype.activities.Proto_StatusFragment"
-                android:id="@+id/fragment"
-                tools:layout="@layout/fragment_proto_status"
-                android:layout_alignParentBottom="true" />
-
-        </RelativeLayout>
     </LinearLayout>
-</RelativeLayout>
+
+</FrameLayout>

@@ -1,15 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_proto_sso__outgoing"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Outgoing"
-    android:background="@drawable/deku_background_selector">
+    tools:context="org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_OutgoingFragment">
 
     <TextView
         android:text="Bag Packstuecknummer"
@@ -18,43 +11,44 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="22dp"
-        android:id="@+id/lblBagSortID" />
+        android:id="@+id/uxSSOOutBagIDLabel" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="numberSigned"
         android:ems="10"
-        android:layout_below="@+id/lblBagSortID"
+        android:layout_below="@+id/uxSSOOutBagIDLabel"
         android:layout_centerHorizontal="true"
-        android:id="@+id/txtBagPkst"
+        android:id="@+id/uxSSOOutOrderIDText"
         android:hint="000000000000"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:textAlignment="center" />
 
     <TextView
         android:text="Bag Plombennummer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txtBagPkst"
+        android:layout_below="@+id/uxSSOOutOrderIDText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="26dp"
-        android:id="@+id/textView2" />
+        android:id="@+id/uxSSOOutBagSealLabel" />
 
     <TextView
         android:text="Status: Bitte scannen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/lblStatus"
-        android:layout_below="@+id/txtBagSeal"
+        android:id="@+id/uxSSOOutStatus"
+        android:layout_below="@+id/uxSSOOutSealText"
         android:layout_centerHorizontal="true"
         android:textSize="30sp" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView"
+        android:id="@+id/uxSSOOutStatusImage"
         android:adjustViewBounds="false"
-        android:layout_below="@+id/lblStatus"
+        android:layout_below="@+id/uxSSOOutStatus"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true" />
@@ -73,8 +67,11 @@
         android:layout_height="wrap_content"
         android:inputType="numberSigned"
         android:ems="10"
-        android:id="@+id/txtBagSeal"
+        android:id="@+id/uxSSOOutSealText"
         android:hint="900100000000"
-        android:layout_below="@+id/textView2"
-        android:layout_alignStart="@+id/txtBagPkst" />
+        android:layout_below="@+id/uxSSOOutBagSealLabel"
+        android:layout_alignStart="@+id/uxSSOOutOrderIDText"
+        android:textAlignment="center"
+        android:singleLine="true" />
+
 </RelativeLayout>
