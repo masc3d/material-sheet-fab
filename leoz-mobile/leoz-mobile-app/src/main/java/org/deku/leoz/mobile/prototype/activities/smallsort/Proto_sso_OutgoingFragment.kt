@@ -252,14 +252,12 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
     }
 
     private fun clearVariables() {
-        (activity.findViewById(R.id.lblDepotNr) as TextView).text = ""
         (activity.findViewById(R.id.uxSSOOutOrderIDText) as TextView).text = ""
         (activity.findViewById(R.id.uxSSOOutSealText) as TextView).text = ""
         scanMap.clear()
     }
 
     private fun clearAll() {
-        (activity.findViewById(R.id.lblDepotNr) as TextView).text = ""
         (activity.findViewById(R.id.uxSSOOutOrderIDText) as TextView).text = ""
         (activity.findViewById(R.id.uxSSOOutSealText) as TextView).text = ""
         (activity.findViewById(R.id.uxSSOOutStatusImage) as ImageView).visibility = View.INVISIBLE

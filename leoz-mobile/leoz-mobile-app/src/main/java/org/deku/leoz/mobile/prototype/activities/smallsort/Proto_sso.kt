@@ -16,8 +16,25 @@ class Proto_sso : AppCompatActivity(), Proto_sso_MenueFragment.OnFragmentInterac
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+//        val mBundle: Bundle? = savedInstanceState
+//        try{
+//            mBundle!!.remove("android:support:fragments")
+//        }catch(e: Exception){
+//
+//        }
         super.onCreate(savedInstanceState)
+        log.debug("onCreate")
         setContentView(R.layout.activity_proto_sso)
+        if(savedInstanceState == null) {
+            createMenueFragment()
+        }
+    }
+
+    override fun onFragmentInteraction(uri: Uri) {
+        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun createMenueFragment(){
         val mFragmentMenue: Proto_sso_MenueFragment = Proto_sso_MenueFragment.newInstance()
         val mFragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
         mFragmentTransaction!!.add(uxSSOFragmentContainer.id, mFragmentMenue)
@@ -25,11 +42,8 @@ class Proto_sso : AppCompatActivity(), Proto_sso_MenueFragment.OnFragmentInterac
         mFragmentTransaction.commit()
     }
 
-    override fun onFragmentInteraction(uri: Uri) {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun onButtonClicked(buttonID: Int) {
+        log.debug("onButtonClicked")
         if(findViewById(buttonID) != null){
             if(findViewById(buttonID) is Button || findViewById(buttonID) is ImageButton){
                 when(buttonID){
