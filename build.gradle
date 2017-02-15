@@ -56,7 +56,7 @@ def createFlywayExtension() {
 // LEO integration database tasks
 
 def DB_DEV_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
-def DB_LEOX_JDBC_URL = 'jdbc:mysql://leox.derkurier.de:3306?useSSL=false'
+def DB_LEOX_JDBC_URL = 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false'
 
 task flywayDevMigrate(type: FlywayMigrateTask) {
     extension = createFlywayExtension()
