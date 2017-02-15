@@ -2,6 +2,8 @@ import org.flywaydb.gradle.FlywayExtension
 import org.flywaydb.gradle.task.FlywayMigrateTask
 import org.flywaydb.gradle.task.FlywayCleanTask
 import org.flywaydb.gradle.task.FlywayInfoTask
+import org.flywaydb.gradle.task.FlywayBaselineTask
+import org.flywaydb.gradle.task.FlywayRepairTask
 
 group 'org.deku.leoz'
 version '1.0-SNAPSHOT'
@@ -95,3 +97,22 @@ task flywayLeoxInfo(type: FlywayInfoTask) {
     extension.user = DB_LEOX_USER
     extension.password = DB_LEOX_PASSWORD
 }
+
+task flywayLeoxBaseline(type: FlywayBaselineTask) {
+    extension = createFlywayExtension()
+
+    extension.url = DB_LEOX_JDBC_URL
+    extension.user = DB_LEOX_USER
+    extension.password = DB_LEOX_PASSWORD
+
+    extension.baselineVersion = 1
+}
+
+task flywayLeoxRepair(type: FlywayRepairTask) {
+    extension = createFlywayExtension()
+
+    extension.url = DB_LEOX_JDBC_URL
+    extension.user = DB_LEOX_USER
+    extension.password = DB_LEOX_PASSWORD
+}
+
