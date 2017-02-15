@@ -103,7 +103,7 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
             btnBagOutgoing -> {
-                //mIntent = Intent(activity.applicationContext, Proto_sso_Outgoing::class.java)
+                //mIntent = Intent(activity.applicationContext, Proto_sso_OutgoingFragment::class.java)
                 //startActivity(mIntent)
 
             }

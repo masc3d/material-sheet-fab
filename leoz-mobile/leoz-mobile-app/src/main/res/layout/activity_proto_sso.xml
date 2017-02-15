@@ -19,7 +19,7 @@
         <fragment
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:name="org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Menue"
+            android:name="org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_MenueFragment"
             android:id="@+id/fragment6"
             tools:layout="@layout/fragment_proto_sso__menue_" />
 

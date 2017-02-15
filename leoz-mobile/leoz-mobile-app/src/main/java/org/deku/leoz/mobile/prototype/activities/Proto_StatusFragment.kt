@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.prototype.activities
 
 import android.content.Context
-import android.net.Uri
 import android.net.wifi.SupplicantState
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
@@ -13,10 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
 import kotlinx.android.synthetic.main.fragment_proto_status.*
-
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
-import java.util.*
 
 /**
  * A simple [Fragment] subclass.

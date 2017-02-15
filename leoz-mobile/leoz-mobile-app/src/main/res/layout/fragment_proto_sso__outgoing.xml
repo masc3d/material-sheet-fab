@@ -2,12 +2,73 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Outgoing">
+    tools:context="org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_OutgoingFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:text="Bag Packstuecknummer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="22dp"
+        android:id="@+id/lblBagSortID" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberSigned"
+        android:ems="10"
+        android:layout_below="@+id/lblBagSortID"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/txtBagPkst"
+        android:hint="000000000000"
+        android:singleLine="true" />
+
+    <TextView
+        android:text="Bag Plombennummer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtBagPkst"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp"
+        android:id="@+id/textView2" />
+
+    <TextView
+        android:text="Status: Bitte scannen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lblStatus"
+        android:layout_below="@+id/txtBagSeal"
+        android:layout_centerHorizontal="true"
+        android:textSize="30sp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:adjustViewBounds="false"
+        android:layout_below="@+id/lblStatus"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/lblDepotNr"
+        android:textSize="30sp"
+        android:textAlignment="viewEnd" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberSigned"
+        android:ems="10"
+        android:id="@+id/txtBagSeal"
+        android:hint="900100000000"
+        android:layout_below="@+id/textView2"
+        android:layout_alignStart="@+id/txtBagPkst" />
 
 </FrameLayout>

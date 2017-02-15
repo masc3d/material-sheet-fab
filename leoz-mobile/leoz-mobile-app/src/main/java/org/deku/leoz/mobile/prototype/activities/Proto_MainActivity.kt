@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.prototype.activities
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.View
@@ -10,8 +9,7 @@ import com.honeywell.aidc.BarcodeReader
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_proto__main.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Menue
-import org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_Menue_f
+import org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso
 import org.slf4j.LoggerFactory
 
 class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener {
@@ -46,7 +44,7 @@ class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener {
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
             btnProtoSSO -> {
-                mIntent = Intent(applicationContext, Proto_sso_Menue_f::class.java)
+                mIntent = Intent(applicationContext, Proto_sso::class.java)
                 startActivity(mIntent)
             }
             else -> {
