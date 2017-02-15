@@ -30,7 +30,7 @@ class HoneywellConfiguration {
 
                 observable
                         // Observe on worker thread to avoid potential deadlock as AidcManager.create callback executes on main/UI thread
-                        .observeOn(Schedulers.from(instance()))
+                        //.observeOn(Schedulers.from(instance()))
                         // Block and retrieve first item
                         .toBlocking()
                         .first()
