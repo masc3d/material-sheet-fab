@@ -62,7 +62,7 @@ task flywayDevMigrate(type: FlywayMigrateTask) {
     extension = createFlywayExtension()
 
     extension.url = DB_DEV_JDBC_URL
-    extension.target = 4
+    extension.target = 5
 }
 
 task flywayDevInfo(type: FlywayInfoTask) {
@@ -81,7 +81,7 @@ task flywayLeoxMigrate(type: FlywayMigrateTask) {
     extension = createFlywayExtension()
 
     extension.url = DB_LEOX_JDBC_URL
-    extension.target = 4
+    extension.target = 5
 }
 
 task flywayLeoxInfo(type: FlywayInfoTask) {
