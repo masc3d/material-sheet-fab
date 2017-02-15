@@ -57,6 +57,8 @@ def createFlywayExtension() {
 
 def DB_DEV_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
 def DB_LEOX_JDBC_URL = 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false'
+def DB_LEOX_USER = 'dekurw'
+def DB_LEOX_PASSWORD = 'dekucli'
 
 task flywayDevMigrate(type: FlywayMigrateTask) {
     extension = createFlywayExtension()
@@ -81,6 +83,8 @@ task flywayLeoxMigrate(type: FlywayMigrateTask) {
     extension = createFlywayExtension()
 
     extension.url = DB_LEOX_JDBC_URL
+    extension.user = DB_LEOX_USER
+    extension.password = DB_LEOX_PASSWORD
     extension.target = 5
 }
 
@@ -88,4 +92,6 @@ task flywayLeoxInfo(type: FlywayInfoTask) {
     extension = createFlywayExtension()
 
     extension.url = DB_LEOX_JDBC_URL
+    extension.user = DB_LEOX_USER
+    extension.password = DB_LEOX_PASSWORD
 }
