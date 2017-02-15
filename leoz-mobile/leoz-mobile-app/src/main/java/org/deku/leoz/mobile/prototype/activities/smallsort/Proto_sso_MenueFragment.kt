@@ -9,22 +9,19 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import kotlinx.android.synthetic.main.activity_proto_sso_menue.*
-import org.deku.leoz.mobile.Application
-
+import kotlinx.android.synthetic.main.fragment_proto_sso__menue_.*
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [Proto_sso_Menue_Fragment.OnFragmentInteractionListener] interface
+ * [Proto_sso_MenueFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [Proto_sso_Menue_Fragment.newInstance] factory method to
+ * Use the [Proto_sso_MenueFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_sso_Menue_Fragment : Fragment(), View.OnClickListener {
+class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     private var mListener: OnFragmentInteractionListener? = null
@@ -32,6 +29,7 @@ class Proto_sso_Menue_Fragment : Fragment(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
+
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -51,6 +49,15 @@ class Proto_sso_Menue_Fragment : Fragment(), View.OnClickListener {
     override fun onDetach() {
         super.onDetach()
         mListener = null
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        btnBagDifference.setOnClickListener(this)
+        btnBagIncoming.setOnClickListener(this)
+        btnBagInitialize.setOnClickListener(this)
+        btnBagOutgoing.setOnClickListener(this)
+        btnBagSort.setOnClickListener(this)
     }
 
     /**
@@ -73,11 +80,11 @@ class Proto_sso_Menue_Fragment : Fragment(), View.OnClickListener {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
 
-         * @return A new instance of fragment Proto_sso_Menue_Fragment.
+         * @return A new instance of fragment Proto_sso_MenueFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(mContext: Context): Proto_sso_Menue_Fragment {
-            val fragment = Proto_sso_Menue_Fragment()
+        fun newInstance(): Proto_sso_MenueFragment {
+            val fragment = Proto_sso_MenueFragment()
             return fragment
         }
     }
