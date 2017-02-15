@@ -1,6 +1,8 @@
 package org.deku.leoz.central.config
 
 import com.mysql.jdbc.AbandonedConnectionCleanupThread
+import org.apache.commons.dbcp2.BasicDataSource
+import org.apache.commons.dbcp2.BasicDataSourceFactory
 import org.jooq.SQLDialect
 import org.jooq.impl.DataSourceConnectionProvider
 import org.jooq.impl.DefaultDSLContext
@@ -22,6 +24,7 @@ import java.util.*
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
+import javax.sql.DataSource
 
 /**
  * Persistence configuration for leoz-central
@@ -44,19 +47,19 @@ open class PersistenceConfiguration {
     @Bean
     @Qualifier(QUALIFIER)
     @ConfigurationProperties(prefix = "persistence.central.datasource")
-    open fun dataSourceCentral(): AbstractDataSource {
-        val dataSource = DataSourceBuilder.create()
-                .driverClassName(com.mysql.jdbc.Driver::class.java.canonicalName)
-                .type(DriverManagerDataSource::class.java)
-                .build() as DriverManagerDataSource
+    open fun dataSourceCentral(): DataSource {
+        val basicDataSource = BasicDataSource()
+        basicDataSource.driverClassName = com.mysql.jdbc.Driver::class.java.canonicalName
 
         val dataSourceProperties = Properties()
         dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull")
         dataSourceProperties.setProperty("connectTimeout", "1000")
 
-        dataSource.setConnectionProperties(dataSourceProperties)
+        basicDataSource.setConnectionProperties(
+                dataSourceProperties.map { e -> "${e.key}=${e.value}" }.joinToString(";")
+        )
 
-        return dataSource
+        return basicDataSource
     }
 
     @Bean

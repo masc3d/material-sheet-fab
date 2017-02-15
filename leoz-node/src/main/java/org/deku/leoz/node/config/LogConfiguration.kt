@@ -72,8 +72,6 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
         SLF4JBridgeHandler.install();
         Logger.getLogger("global").setLevel(Level.FINEST);
 
-        Logger.getLogger("org.eclipselink").info("MEH")
-
         // Setup log file and jms appender
         val storageConfiguration: Storage = Kodein.global.instance()
         if (this.logFile == null) {
