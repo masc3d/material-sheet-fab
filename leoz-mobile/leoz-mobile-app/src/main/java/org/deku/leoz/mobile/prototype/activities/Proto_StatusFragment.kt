@@ -25,11 +25,11 @@ import org.slf4j.LoggerFactory
  */
 class Proto_StatusFragment : RxAppCompatDialogFragment() {
 
-    val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     // TODO: Rename and change types of parameters
     private var wifiManager: WifiManager? = null
     private var handler = Handler()
-    var runnable: Runnable? = null
+    private var runnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

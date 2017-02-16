@@ -17,13 +17,9 @@ import android.widget.Toast
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.lazy
 import com.honeywell.aidc.*
-import kotlinx.android.synthetic.main.fragment_proto_sso__outgoing.*
-
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.Proto_CameraScannerFragment
-import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
 import org.deku.leoz.mobile.prototype.properties.Bag
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -40,8 +36,8 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
 
     private var listener: OnFragmentInteractionListener? = null
     private var barcodeReader: BarcodeReader? = null
-    val scanMap: HashMap<Int, String> = HashMap()
-    val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+    private val scanMap: HashMap<Int, String> = HashMap()
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,9 +1,9 @@
 package org.deku.leoz.mobile.prototype.activities.smallsort
 
-import android.support.v4.app.FragmentTransaction
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.ImageButton
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 
 class Proto_sso : AppCompatActivity(), Proto_sso_MenueFragment.OnFragmentInteractionListener, Proto_sso_OutgoingFragment.OnFragmentInteractionListener, Proto_CameraScannerFragment.OnBarcodeResultListener {
 
-    val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 //        val mBundle: Bundle? = savedInstanceState

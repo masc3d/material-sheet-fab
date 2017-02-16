@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.prototype
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -13,13 +12,12 @@ import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.CompoundBarcodeView
 import kotlinx.android.synthetic.main.fragment_proto__camera_scanner.*
-
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 
 class Proto_CameraScannerFragment : Fragment(), BarcodeCallback {
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
-    val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     private var listener: OnBarcodeResultListener? = null
     private val barcodeView: CompoundBarcodeView by lazy { uxBarcodeCamera }
 

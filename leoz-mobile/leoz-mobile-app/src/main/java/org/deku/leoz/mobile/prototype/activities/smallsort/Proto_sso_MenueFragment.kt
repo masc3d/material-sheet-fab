@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory
  */
 class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
 
-    val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     private var listener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

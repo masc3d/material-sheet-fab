@@ -4,8 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.View
-import com.honeywell.aidc.AidcManager
-import com.honeywell.aidc.BarcodeReader
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_proto__main.*
 import org.deku.leoz.mobile.R
@@ -14,7 +12,7 @@ import org.slf4j.LoggerFactory
 
 class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener {
 
-    val log by lazy { LoggerFactory.getLogger(this.javaClass) }
+    private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
