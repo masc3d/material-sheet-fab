@@ -59,9 +59,9 @@ class Proto_StatusFragment : RxAppCompatDialogFragment() {
 
     private fun updateStatusBox() {
         if (wifiManager!!.isWifiEnabled) {
-            val mWiFiInfo: WifiInfo = wifiManager!!.connectionInfo
-            if (mWiFiInfo.supplicantState == SupplicantState.COMPLETED) {
-                uxWifiStatus.text = "WiFi: ${WifiManager.calculateSignalLevel(mWiFiInfo.rssi, 5)}/5"
+            val wiFiInfo: WifiInfo = wifiManager!!.connectionInfo
+            if (wiFiInfo.supplicantState == SupplicantState.COMPLETED) {
+                uxWifiStatus.text = "WiFi: ${WifiManager.calculateSignalLevel(wiFiInfo.rssi, 5)}/5"
             } else {
                 log.debug("WiFi not connected")
                 uxWifiStatus.text = "Wifi: not connected"
