@@ -84,7 +84,7 @@ class BundleUpdateService(
                 log.error(e.message, e)
             }
 
-            presets.forEach { p ->
+            presets.sortedBy { it.requiresBoot }.forEach { p ->
                 try {
                     this@BundleUpdateService.update(p)
                 } catch(e: Exception) {
