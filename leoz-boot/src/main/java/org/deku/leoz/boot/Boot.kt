@@ -161,23 +161,25 @@ class Boot {
             if (Strings.isNullOrEmpty(bundleName))
                 throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting")
 
-            if (versionAlias == null && versionPattern == null)
+            val requiresDownload = !this.installer.hasBundle(bundleName) || forceDownload
+
+            if (requiresDownload && versionAlias == null && versionPattern == null)
                 throw IllegalArgumentException("Either version alias or pattern must be provided")
 
-            val finalVersionPattern: String
-            if (versionPattern != null) {
-                finalVersionPattern = versionPattern
-            } else {
-                val restClient: RestClient = Kodein.global.instance()
-                val bundleService = restClient.proxy(BundleService::class.java)
+            if (requiresDownload) {
+                val finalVersionPattern: String
+                if (versionPattern != null) {
+                    finalVersionPattern = versionPattern
+                } else {
+                    val restClient: RestClient = Kodein.global.instance()
+                    val bundleService = restClient.proxy(BundleService::class.java)
 
-                val updateInfo = bundleService.info(bundleName = bundleName, versionAlias = versionAlias)
-                log.info("${updateInfo}")
+                    val updateInfo = bundleService.info(bundleName = bundleName, versionAlias = versionAlias)
+                    log.info("${updateInfo}")
 
-                finalVersionPattern = updateInfo.bundleVersionPattern
-            }
+                    finalVersionPattern = updateInfo.bundleVersionPattern
+                }
 
-            if (!this.installer.hasBundle(bundleName) || forceDownload) {
                 val repository: BundleRepository = Kodein.global.instance()
 
                 // Query for version matching pattern
