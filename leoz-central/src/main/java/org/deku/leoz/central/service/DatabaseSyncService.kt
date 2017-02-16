@@ -75,7 +75,7 @@ constructor(
         private fun convert(ds: MstBundleVersionRecord): MstBundleVersion {
             val s = MstBundleVersion()
 
-            s.id = ds.id
+            s.id = ds.id.toLong()
             s.bundle = ds.bundle
             s.alias = ds.alias
             s.version = ds.version
