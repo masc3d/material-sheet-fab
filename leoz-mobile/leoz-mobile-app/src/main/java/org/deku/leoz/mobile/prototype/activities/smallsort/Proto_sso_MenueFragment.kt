@@ -24,12 +24,11 @@ import org.slf4j.LoggerFactory
 class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
-    private var mListener: OnFragmentInteractionListener? = null
+    private var listener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
-
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -40,7 +39,7 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
-            mListener = context as OnFragmentInteractionListener?
+            listener = context as OnFragmentInteractionListener?
         } else {
             throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
         }
@@ -48,16 +47,16 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
+        listener = null
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        btnBagDifference.setOnClickListener(this)
-        btnBagIncoming.setOnClickListener(this)
-        btnBagInitialize.setOnClickListener(this)
-        btnBagOutgoing.setOnClickListener(this)
-        btnBagSort.setOnClickListener(this)
+        uxBagDifference.setOnClickListener(this)
+        uxBagIncoming.setOnClickListener(this)
+        uxBagInitialize.setOnClickListener(this)
+        uxBagOutgoing.setOnClickListener(this)
+        uxBagSort.setOnClickListener(this)
     }
 
     /**
@@ -72,6 +71,7 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
+
         fun onButtonClicked(buttonID: Int)
     }
 
@@ -90,24 +90,24 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        val mIntent : Intent
-        mListener!!.onButtonClicked(v.id)
-        when (v){
-            btnBagDifference -> {
+        val mIntent: Intent
+        listener!!.onButtonClicked(v.id)
+        when (v) {
+            uxBagDifference -> {
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
-            btnBagIncoming -> {
+            uxBagIncoming -> {
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
-            btnBagInitialize -> {
+            uxBagInitialize -> {
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
-            btnBagOutgoing -> {
+            uxBagOutgoing -> {
                 //mIntent = Intent(activity.applicationContext, Proto_sso_OutgoingFragment::class.java)
                 //startActivity(mIntent)
 
             }
-            btnBagSort -> {
+            uxBagSort -> {
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
             else -> {

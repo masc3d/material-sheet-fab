@@ -19,17 +19,17 @@ class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_proto__main)
-        btnProtoHUB.setOnClickListener(this)
-        btnProtoSSO.setOnClickListener(this)
+        uxHubButton.setOnClickListener(this)
+        uxSsoButton.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
-        val mIntent : Intent
-        when (v){
-            btnProtoHUB -> {
+        val mIntent: Intent
+        when (v) {
+            uxHubButton -> {
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
-            btnProtoSSO -> {
+            uxSsoButton -> {
                 mIntent = Intent(applicationContext, Proto_sso::class.java)
                 startActivity(mIntent)
             }

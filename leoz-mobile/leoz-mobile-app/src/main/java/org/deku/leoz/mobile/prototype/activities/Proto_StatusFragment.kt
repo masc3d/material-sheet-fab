@@ -27,23 +27,20 @@ class Proto_StatusFragment : RxAppCompatDialogFragment() {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     // TODO: Rename and change types of parameters
-    private var mWiFiManager: WifiManager? = null
-    private var mHandler: Handler? = Handler()
-    var mRunnable: Runnable? = null
+    private var wifiManager: WifiManager? = null
+    private var handler = Handler()
+    var runnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mRunnable = Runnable {
+        runnable = Runnable {
             updateStatusBox()
-            mHandler!!.postDelayed(mRunnable, 500)
+            handler.postDelayed(runnable, 500)
         }
 
-        mWiFiManager = activity.getSystemService(Context.WIFI_SERVICE) as WifiManager
-
+        wifiManager = activity.getSystemService(Context.WIFI_SERVICE) as WifiManager
     }
-
-
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -57,21 +54,21 @@ class Proto_StatusFragment : RxAppCompatDialogFragment() {
 
     override fun onDetach() {
         super.onDetach()
-        mHandler!!.removeCallbacks(mRunnable)
+        handler.removeCallbacks(runnable)
     }
 
-    private fun updateStatusBox(){
-        if(mWiFiManager!!.isWifiEnabled){
-            var mWiFiInfo : WifiInfo = mWiFiManager!!.connectionInfo
-            if(mWiFiInfo.supplicantState == SupplicantState.COMPLETED){
-                lblWifiStatus.text = "WiFi: ${WifiManager.calculateSignalLevel(mWiFiInfo.rssi, 5)}/5"
-            }else{
+    private fun updateStatusBox() {
+        if (wifiManager!!.isWifiEnabled) {
+            val mWiFiInfo: WifiInfo = wifiManager!!.connectionInfo
+            if (mWiFiInfo.supplicantState == SupplicantState.COMPLETED) {
+                uxWifiStatus.text = "WiFi: ${WifiManager.calculateSignalLevel(mWiFiInfo.rssi, 5)}/5"
+            } else {
                 log.debug("WiFi not connected")
-                lblWifiStatus.text = "Wifi: not connected"
+                uxWifiStatus.text = "Wifi: not connected"
             }
-        }else{
+        } else {
             log.debug("WiFi not enabled")
-            lblWifiStatus.text = "WiFi: N/A"
+            uxWifiStatus.text = "WiFi: N/A"
         }
     }
 

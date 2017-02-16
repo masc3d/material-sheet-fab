@@ -20,28 +20,28 @@ import org.slf4j.LoggerFactory
 class Proto_CameraScannerFragment : Fragment(), BarcodeCallback {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
-    private var mListener: OnBarcodeResultListener? = null
-    private val mBarcodeView: CompoundBarcodeView by lazy { uxBarcodeCamera }
+    private var listener: OnBarcodeResultListener? = null
+    private val barcodeView: CompoundBarcodeView by lazy { uxBarcodeCamera }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_proto__camera_scanner, container, false)
+        return inflater.inflate(R.layout.fragment_proto__camera_scanner, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mBarcodeView.isSoundEffectsEnabled = true
-        mBarcodeView.playSoundEffect(SoundEffectConstants.CLICK)
-        mBarcodeView.decodeContinuous(this)
+        barcodeView.isSoundEffectsEnabled = true
+        barcodeView.playSoundEffect(SoundEffectConstants.CLICK)
+        barcodeView.decodeContinuous(this)
     }
 
     override fun barcodeResult(result: BarcodeResult?) {
-        if(result != null)
+        if (result != null)
             onBarcodeScanned(result)
     }
 
@@ -51,16 +51,16 @@ class Proto_CameraScannerFragment : Fragment(), BarcodeCallback {
     }
 
     fun onBarcodeScanned(result: BarcodeResult) {
-        var content: String = result.text
-        if (mListener != null) {
-            mListener!!.onBarcodeResult(content)
+        val content: String = result.text
+        if (listener != null) {
+            listener!!.onBarcodeResult(content)
         }
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnBarcodeResultListener) {
-            mListener = context as OnBarcodeResultListener?
+            listener = context as OnBarcodeResultListener?
         } else {
             throw RuntimeException(context!!.toString() + " must implement OnBarcodeResultListener")
         }
@@ -68,18 +68,18 @@ class Proto_CameraScannerFragment : Fragment(), BarcodeCallback {
 
     override fun onDetach() {
         super.onDetach()
-        mBarcodeView.pause()
-        mListener = null
+        barcodeView.pause()
+        listener = null
     }
 
     override fun onPause() {
         super.onPause()
-        mBarcodeView.pause()
+        barcodeView.pause()
     }
 
     override fun onResume() {
         super.onResume()
-        mBarcodeView.resume()
+        barcodeView.resume()
     }
 
     /**

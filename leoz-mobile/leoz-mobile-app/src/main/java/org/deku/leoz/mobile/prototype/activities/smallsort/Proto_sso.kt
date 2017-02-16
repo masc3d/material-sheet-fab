@@ -26,7 +26,7 @@ class Proto_sso : AppCompatActivity(), Proto_sso_MenueFragment.OnFragmentInterac
         super.onCreate(savedInstanceState)
         log.debug("onCreate")
         setContentView(R.layout.activity_proto_sso)
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             createMenueFragment()
         }
     }
@@ -40,37 +40,37 @@ class Proto_sso : AppCompatActivity(), Proto_sso_MenueFragment.OnFragmentInterac
         log.debug("onBarcodeResult")
     }
 
-    private fun createMenueFragment(){
-        val mFragmentMenue: Proto_sso_MenueFragment = Proto_sso_MenueFragment.newInstance()
-        val mFragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
-        mFragmentTransaction!!.add(uxSSOFragmentContainer.id, mFragmentMenue)
-        mFragmentTransaction.addToBackStack(null)
-        mFragmentTransaction.commit()
+    private fun createMenueFragment() {
+        val fragmentMenu: Proto_sso_MenueFragment = Proto_sso_MenueFragment.newInstance()
+        val fragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
+        fragmentTransaction!!.add(uxSsoFragmentContainer.id, fragmentMenu)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     override fun onButtonClicked(buttonID: Int) {
         log.debug("onButtonClicked")
-        if(findViewById(buttonID) != null){
-            if(findViewById(buttonID) is Button || findViewById(buttonID) is ImageButton){
-                when(buttonID){
-                    R.id.btnBagDifference -> {
+        if (findViewById(buttonID) != null) {
+            if (findViewById(buttonID) is Button || findViewById(buttonID) is ImageButton) {
+                when (buttonID) {
+                    R.id.uxBagDifference -> {
 
                     }
-                    R.id.btnBagIncoming -> {
+                    R.id.uxBagIncoming -> {
 
                     }
-                    R.id.btnBagInitialize -> {
+                    R.id.uxBagInitialize -> {
 
                     }
-                    R.id.btnBagOutgoing -> {
+                    R.id.uxBagOutgoing -> {
                         //TODO Switch Fragment to Bag-Outgoing Process
-                        val mFragmentSSOOutgoing: Proto_sso_OutgoingFragment = Proto_sso_OutgoingFragment()
-                        val mFragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
-                        mFragmentTransaction!!.replace(uxSSOFragmentContainer.id, mFragmentSSOOutgoing)
-                        mFragmentTransaction.addToBackStack(null)
-                        mFragmentTransaction.commit()
+                        val fragmentSSOOutgoing: Proto_sso_OutgoingFragment = Proto_sso_OutgoingFragment()
+                        val fragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
+                        fragmentTransaction!!.replace(uxSsoFragmentContainer.id, fragmentSSOOutgoing)
+                        fragmentTransaction.addToBackStack(null)
+                        fragmentTransaction.commit()
                     }
-                    R.id.btnBagSort -> {
+                    R.id.uxBagSort -> {
 
                     }
                     else -> {
@@ -79,7 +79,7 @@ class Proto_sso : AppCompatActivity(), Proto_sso_MenueFragment.OnFragmentInterac
                     }
                 }
             }
-        }else{
+        } else {
             log.debug("Fragment onButtonClicked event for non-button control [${buttonID}]")
         }
     }

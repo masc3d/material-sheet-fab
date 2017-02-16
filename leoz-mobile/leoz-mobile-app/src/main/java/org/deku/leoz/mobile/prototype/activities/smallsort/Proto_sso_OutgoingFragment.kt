@@ -38,7 +38,7 @@ import java.util.*
  */
 class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener, Proto_CameraScannerFragment.OnBarcodeResultListener {
 
-    private var mListener: OnFragmentInteractionListener? = null
+    private var listener: OnFragmentInteractionListener? = null
     private var barcodeReader: BarcodeReader? = null
     val scanMap: HashMap<Int, String> = HashMap()
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
@@ -50,10 +50,9 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        if(barcodeReader != null) {
+        if (barcodeReader != null) {
             acquireBarcodeReader()
-        }
-        else {
+        } else {
             initCameraScanner()
         }
         return inflater!!.inflate(R.layout.fragment_proto_sso__outgoing, container, false)
@@ -62,17 +61,17 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
-            mListener = context as OnFragmentInteractionListener?
+            listener = context as OnFragmentInteractionListener?
         } else {
             throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
         }
 
-        try{
+        try {
             barcodeReader = Kodein.global.instance()
-        }catch (e: Kodein.NotFoundException){
+        } catch (e: Kodein.NotFoundException) {
         }
 
-        if (barcodeReader != null){
+        if (barcodeReader != null) {
             try {
                 barcodeReader!!.claim()
             } catch (e: ScannerUnavailableException) {
@@ -80,14 +79,12 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
                 log.error("Scanner unavailable")
             }
         }
-
-
     }
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
-        if(barcodeReader != null){
+        listener = null
+        if (barcodeReader != null) {
             barcodeReader!!.release()
             barcodeReader!!.removeBarcodeListener(this)
             barcodeReader!!.removeTriggerListener(this)
@@ -96,14 +93,14 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
 
     override fun onPause() {
         super.onPause()
-        if(barcodeReader != null)
+        if (barcodeReader != null)
             barcodeReader!!.release()
 
     }
 
     override fun onResume() {
         super.onResume()
-        if(barcodeReader != null)
+        if (barcodeReader != null)
             barcodeReader!!.claim()
 
     }
@@ -146,14 +143,14 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
     }
 
     override fun onBarcodeEvent(p0: BarcodeReadEvent) {
-        activity.runOnUiThread(object: Runnable {
+        activity.runOnUiThread(object : Runnable {
             override fun run() {
                 processBarcodeData(p0.barcodeData)
             }
         })
     }
 
-    private fun processBarcodeData(content: String){
+    private fun processBarcodeData(content: String) {
         // update UI to reflect the data
         val barcodeText = content
         (activity.findViewById(R.id.uxSSOOutStatus) as TextView).text = ""
@@ -187,7 +184,7 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
     }
 
     override fun onBarcodeResult(content: String) {
-        activity.runOnUiThread(object: Runnable {
+        activity.runOnUiThread(object : Runnable {
             override fun run() {
                 processBarcodeData(content)
             }
@@ -236,7 +233,7 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
         StrictMode.setThreadPolicy(policy)
     }
 
-    private fun initCameraScanner(){
+    private fun initCameraScanner() {
         val mCameraScannerFragment: Proto_CameraScannerFragment = Proto_CameraScannerFragment.newInstance()
         val mTransaction: FragmentTransaction = childFragmentManager.beginTransaction()
         mTransaction.add(R.id.uxSSOOutCamFragment, mCameraScannerFragment)

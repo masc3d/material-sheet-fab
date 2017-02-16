@@ -20,7 +20,7 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 app:srcCompat="@android:drawable/stat_sys_download"
-                android:id="@+id/btnBagIncoming"
+                android:id="@+id/uxBagIncoming"
                 android:layout_weight="1"
                 android:layout_height="150dp"
                 android:background="@color/colorPrimary"
@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
                 app:srcCompat="@android:drawable/stat_sys_upload"
-                android:id="@+id/btnBagOutgoing"
+                android:id="@+id/uxBagOutgoing"
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 android:layout_margin="1dp" />
@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
                 app:srcCompat="@android:drawable/ic_menu_share"
-                android:id="@+id/btnBagSort"
+                android:id="@+id/uxBagSort"
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 android:layout_margin="1dp" />
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
                 app:srcCompat="@android:drawable/ic_menu_sort_by_size"
-                android:id="@+id/btnBagDifference"
+                android:id="@+id/uxBagDifference"
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 android:layout_margin="1dp" />
@@ -69,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="150dp"
                 app:srcCompat="@android:drawable/ic_menu_add"
-                android:id="@+id/btnBagInitialize"
+                android:id="@+id/uxBagInitialize"
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 android:layout_margin="1dp" />
