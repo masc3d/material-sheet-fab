@@ -182,6 +182,7 @@ configure(
                     println("Moving [${src}] to [${dst}]")
 
                     if (Files.exists(dst)) dst.deleteDir()
+                    g_vm_dist_path.mkdirs()
                     Files.move(src, dst)
                 }
             }
