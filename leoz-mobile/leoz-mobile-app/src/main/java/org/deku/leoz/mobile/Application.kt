@@ -3,6 +3,7 @@ package org.deku.leoz.mobile
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.support.multidex.MultiDexApplication
 import android.util.Log
@@ -44,7 +45,8 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(DatabaseConfiguration.module)
         Kodein.global.addImport(FeignRestClientConfiguration.module)
         Kodein.global.addImport(UpdateConfiguration.module)
-        Kodein.global.addImport(HoneywellConfiguration.module)
+        if(Build.MODEL == "CT50")
+            Kodein.global.addImport(HoneywellConfiguration.module)
     }
 
     override fun onTerminate() {

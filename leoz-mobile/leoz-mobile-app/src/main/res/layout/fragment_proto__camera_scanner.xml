@@ -1,0 +1,13 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.deku.leoz.mobile.prototype.Proto_CameraScannerFragment">
+
+    <com.journeyapps.barcodescanner.CompoundBarcodeView
+        android:id="@+id/uxBarcodeCamera"
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+    </com.journeyapps.barcodescanner.CompoundBarcodeView>
+
+</FrameLayout>

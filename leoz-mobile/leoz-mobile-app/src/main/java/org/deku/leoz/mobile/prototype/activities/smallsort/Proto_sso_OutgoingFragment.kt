@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
@@ -18,8 +19,10 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.honeywell.aidc.*
+import kotlinx.android.synthetic.main.fragment_proto_sso__outgoing.*
 
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.prototype.Proto_CameraScannerFragment
 import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
 import org.deku.leoz.mobile.prototype.properties.Bag
 import org.slf4j.LoggerFactory
@@ -33,10 +36,10 @@ import java.util.*
  * Use the [Proto_sso_OutgoingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
+class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener, Proto_CameraScannerFragment.OnBarcodeResultListener {
 
     private var mListener: OnFragmentInteractionListener? = null
-    private val barcodeReader: BarcodeReader by Kodein.global.lazy.instance()
+    private var barcodeReader: BarcodeReader? = null
     val scanMap: HashMap<Int, String> = HashMap()
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
@@ -47,7 +50,12 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        acquireBarcodeReader()
+        if(barcodeReader != null) {
+            acquireBarcodeReader()
+        }
+        else {
+            initCameraScanner()
+        }
         return inflater!!.inflate(R.layout.fragment_proto_sso__outgoing, container, false)
     }
 
@@ -59,12 +67,19 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
             throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
         }
 
+        try{
+            barcodeReader = Kodein.global.instance()
+        }catch (e: Kodein.NotFoundException){
+        }
+
+        if (barcodeReader != null){
             try {
                 barcodeReader!!.claim()
             } catch (e: ScannerUnavailableException) {
                 e.printStackTrace()
                 log.error("Scanner unavailable")
             }
+        }
 
 
     }
@@ -72,21 +87,24 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
     override fun onDetach() {
         super.onDetach()
         mListener = null
-            barcodeReader.release()
-            barcodeReader.removeBarcodeListener(this)
-            barcodeReader.removeTriggerListener(this)
-
+        if(barcodeReader != null){
+            barcodeReader!!.release()
+            barcodeReader!!.removeBarcodeListener(this)
+            barcodeReader!!.removeTriggerListener(this)
+        }
     }
 
     override fun onPause() {
         super.onPause()
-            barcodeReader.release()
+        if(barcodeReader != null)
+            barcodeReader!!.release()
 
     }
 
     override fun onResume() {
         super.onResume()
-            barcodeReader.claim()
+        if(barcodeReader != null)
+            barcodeReader!!.claim()
 
     }
 
@@ -130,49 +148,61 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
     override fun onBarcodeEvent(p0: BarcodeReadEvent) {
         activity.runOnUiThread(object: Runnable {
             override fun run() {
-                // update UI to reflect the data
-                val barcodeText = p0.barcodeData
-                val barcodeResult = java.lang.Long.parseLong(barcodeText)
-                (activity.findViewById(R.id.uxSSOOutStatus) as TextView).text = ""
-                clearStatusImage()
-                //((TextView) findViewById(R.id.txtBagPkst)).setText(barcodeText);
-                if (barcodeText.startsWith("10071")) {
-                    //Order-no
-                    (activity.findViewById(R.id.uxSSOOutOrderIDText) as TextView).setText(barcodeText)
-                    scanMap.put(Bag.BAG_ORDERNO_HUB2STATION, barcodeText)
-                }
-                if (barcodeText.startsWith("10072")) {
-                    //Order-no
-                    setNOk()
-                    (activity.findViewById(R.id.uxSSOOutStatus) as TextView).text = getString(R.string.hint_scan_label_upper_bc)
-                    (activity.findViewById(R.id.uxSSOOutOrderIDText) as TextView).text = ""
-                    scanMap.remove(Bag.BAG_ORDERNO_HUB2STATION)
-                }
-                if (barcodeText.startsWith("9001")) {
-                    //White lead seal
-                    scanMap.put(Bag.LEADSEAL_WHITE, barcodeText)
-                    (activity.findViewById(R.id.uxSSOOutSealText) as TextView).setText(barcodeText)
-                }
-                if (barcodeText.startsWith("9002")) {
-                    //Yellow lead seal
-                    scanMap.put(Bag.LEADSEAL_YELLOW, barcodeText)
-                    setNOk()
-                    (activity.findViewById(R.id.uxSSOOutStatus) as TextView).text = getString(R.string.hint_leadseal_white_not_yellow)
-                }
-                if (scanMap.containsKey(Bag.LEADSEAL_WHITE) && scanMap.containsKey(Bag.BAG_ORDERNO_HUB2STATION))
-                    closeBag(java.lang.Long.parseLong(scanMap[Bag.BAG_ORDERNO_HUB2STATION]), java.lang.Long.parseLong(scanMap[Bag.LEADSEAL_WHITE]))
+                processBarcodeData(p0.barcodeData)
             }
         })
+    }
+
+    private fun processBarcodeData(content: String){
+        // update UI to reflect the data
+        val barcodeText = content
+        (activity.findViewById(R.id.uxSSOOutStatus) as TextView).text = ""
+        clearStatusImage()
+        //((TextView) findViewById(R.id.txtBagPkst)).setText(barcodeText);
+        if (barcodeText.startsWith("10071")) {
+            //Order-no
+            (activity.findViewById(R.id.uxSSOOutOrderIDText) as TextView).setText(barcodeText)
+            scanMap.put(Bag.BAG_ORDERNO_HUB2STATION, barcodeText)
+        }
+        if (barcodeText.startsWith("10072")) {
+            //Order-no
+            setNOk()
+            (activity.findViewById(R.id.uxSSOOutStatus) as TextView).text = getString(R.string.hint_scan_label_upper_bc)
+            (activity.findViewById(R.id.uxSSOOutOrderIDText) as TextView).text = ""
+            scanMap.remove(Bag.BAG_ORDERNO_HUB2STATION)
+        }
+        if (barcodeText.startsWith("9001")) {
+            //White lead seal
+            scanMap.put(Bag.LEADSEAL_WHITE, barcodeText)
+            (activity.findViewById(R.id.uxSSOOutSealText) as TextView).setText(barcodeText)
+        }
+        if (barcodeText.startsWith("9002")) {
+            //Yellow lead seal
+            scanMap.put(Bag.LEADSEAL_YELLOW, barcodeText)
+            setNOk()
+            (activity.findViewById(R.id.uxSSOOutStatus) as TextView).text = getString(R.string.hint_leadseal_white_not_yellow)
+        }
+        if (scanMap.containsKey(Bag.LEADSEAL_WHITE) && scanMap.containsKey(Bag.BAG_ORDERNO_HUB2STATION))
+            closeBag(java.lang.Long.parseLong(scanMap[Bag.BAG_ORDERNO_HUB2STATION]), java.lang.Long.parseLong(scanMap[Bag.LEADSEAL_WHITE]))
+    }
+
+    override fun onBarcodeResult(content: String) {
+        activity.runOnUiThread(object: Runnable {
+            override fun run() {
+                processBarcodeData(content)
+            }
+        })
+        //throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun acquireBarcodeReader() {
 
         // register bar code event listener
-        barcodeReader.addBarcodeListener(this)
+        barcodeReader!!.addBarcodeListener(this)
 
         // set the trigger mode to client control
         try {
-            barcodeReader.setProperty(BarcodeReader.PROPERTY_TRIGGER_CONTROL_MODE,
+            barcodeReader!!.setProperty(BarcodeReader.PROPERTY_TRIGGER_CONTROL_MODE,
                     BarcodeReader.TRIGGER_CONTROL_MODE_AUTO_CONTROL)
         } catch (e: UnsupportedPropertyException) {
             Toast.makeText(activity.applicationContext, "Failed to apply properties", Toast.LENGTH_SHORT).show()
@@ -198,12 +228,19 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
         // Disable bad read response, handle in onFailureEvent
         properties.put(BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED, true)
         // Apply the settings
-        barcodeReader.setProperties(properties)
+        barcodeReader!!.setProperties(properties)
 
 
         val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
 
         StrictMode.setThreadPolicy(policy)
+    }
+
+    private fun initCameraScanner(){
+        val mCameraScannerFragment: Proto_CameraScannerFragment = Proto_CameraScannerFragment.newInstance()
+        val mTransaction: FragmentTransaction = childFragmentManager.beginTransaction()
+        mTransaction.add(R.id.uxSSOOutCamFragment, mCameraScannerFragment)
+        mTransaction.commit()
     }
 
     private fun closeBag(bag_orderno: Long, bag_leadseal: Long): Boolean {

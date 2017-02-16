@@ -43,14 +43,21 @@
         android:layout_centerHorizontal="true"
         android:textSize="30sp" />
 
-    <ImageView
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/uxSSOOutStatusImage"
-        android:adjustViewBounds="false"
         android:layout_below="@+id/uxSSOOutStatus"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true" />
+        android:id="@+id/uxSSOOutCamFragment">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/uxSSOOutStatusImage"
+            android:adjustViewBounds="false"
+            android:layout_below="@+id/uxSSOOutStatus"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true" />
+    </FrameLayout>
 
     <EditText
         android:layout_width="wrap_content"

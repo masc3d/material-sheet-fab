@@ -189,6 +189,7 @@ dependencies {
 
             "com.github.tinsukE:icekick:0.1",
             "org.parceler:parceler-api:1.1.6",
+            'com.journeyapps:zxing-android-embedded:3.4.0',
 
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:4.0.0") {

@@ -9,9 +9,10 @@ import android.widget.Button
 import android.widget.ImageButton
 import kotlinx.android.synthetic.main.activity_proto_sso.*
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.prototype.Proto_CameraScannerFragment
 import org.slf4j.LoggerFactory
 
-class Proto_sso : AppCompatActivity(), Proto_sso_MenueFragment.OnFragmentInteractionListener, Proto_sso_OutgoingFragment.OnFragmentInteractionListener {
+class Proto_sso : AppCompatActivity(), Proto_sso_MenueFragment.OnFragmentInteractionListener, Proto_sso_OutgoingFragment.OnFragmentInteractionListener, Proto_CameraScannerFragment.OnBarcodeResultListener {
 
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
@@ -32,6 +33,11 @@ class Proto_sso : AppCompatActivity(), Proto_sso_MenueFragment.OnFragmentInterac
 
     override fun onFragmentInteraction(uri: Uri) {
         throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onBarcodeResult(content: String) {
+        //throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+        log.debug("onBarcodeResult")
     }
 
     private fun createMenueFragment(){
