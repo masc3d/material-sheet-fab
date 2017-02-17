@@ -37,8 +37,10 @@ class StartupActivity : RxAppCompatActivity() {
 
         // Load some more heavy-weight instances on startup/splash
         val app: Application = Kodein.global.instance()
-        val db: DatabaseConfiguration = Kodein.global.instance()
+        val db: Database = Kodein.global.instance()
         val update: UpdateService = Kodein.global.instance()
+
+        db.migrate()
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")
@@ -59,7 +61,7 @@ class StartupActivity : RxAppCompatActivity() {
         }
 
         if (!this.started) {
-            Handler().postDelayed( { start(withAnimation = true) }, 1000)
+            Handler().post { start(withAnimation = true) }
             this.started = true
         } else {
             start(withAnimation = false)

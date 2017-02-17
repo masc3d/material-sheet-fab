@@ -15,6 +15,11 @@
     <string name="station_id">Station:</string>
     <string name="navigation_drawer_close">Navigation schließen</string>
     <string name="navigation_drawer_open">Navigation öffnen</string>
-    <string name="prompt_email"></string>
     <string name="error_imager_scan_failed">Unvollständiger oder fehlerhafter Scan</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hint_scan_label_upper_bc">Scan upper barcode on label!</string>
+    <string name="hint_leadseal_white_not_yellow">Scan white lead-seal! Not yellow!</string>
+
 </resources>

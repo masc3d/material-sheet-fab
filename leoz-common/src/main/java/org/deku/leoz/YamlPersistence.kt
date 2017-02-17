@@ -27,7 +27,7 @@ object YamlPersistence {
                                                customTag: Tag?): NodeTuple? {
 
             if (skipTags && !classTags.containsKey(javaBean.javaClass))
-                this.addClassTag(javaBean.javaClass, Tag.MAP)
+                this.addClassTag(javaBean.javaClass, org.yaml.snakeyaml.nodes.Tag.MAP)
 
             if (skipNulls && propertyValue == null)
                 return null
@@ -38,7 +38,7 @@ object YamlPersistence {
 
         override fun representJavaBean(properties: MutableSet<Property>?, javaBean: Any): MappingNode {
             if (skipTags && !classTags.containsKey(javaBean.javaClass))
-                this.addClassTag(javaBean.javaClass, Tag.MAP)
+                this.addClassTag(javaBean.javaClass, org.yaml.snakeyaml.nodes.Tag.MAP)
 
             val mappingNode = super.representJavaBean(properties, javaBean)
             return mappingNode
@@ -85,7 +85,7 @@ object YamlPersistence {
      */
     fun save(obj: Any, skipNulls: Boolean = false, skipTags: Boolean = false, toFile: File) {
         OutputStreamWriter(FileOutputStream(toFile)).use {
-            val y = this.createYaml(Representer(skipNulls = skipNulls, skipTags = skipTags))
+            val y = this.createYaml(org.deku.leoz.YamlPersistence.Representer(skipNulls = skipNulls, skipTags = skipTags))
             it.write(y.dumpAs(obj, Tag.MAP, DumperOptions.FlowStyle.FLOW))
         }
     }
@@ -98,6 +98,16 @@ object YamlPersistence {
     fun <T> load(type: Class<T>, reader: Reader): T {
         val y = this.createYaml()
         return y.loadAs(reader, type)
+    }
+
+    /**
+     * Load object from inputstream
+     * @param type Class
+     * @param reader Reader
+     */
+    fun <T> load(type: Class<T>, inputStream: InputStream): T {
+        val y = this.createYaml()
+        return y.loadAs(inputStream, type)
     }
 
     /**

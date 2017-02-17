@@ -1,0 +1,10 @@
+# REST settings
+rest:
+  url: 'https://leoz.derkurier.de:13000/rs/api'
+  # Ignores SSL certificate
+  ssl-validation: true
+
+# Database settings
+database:
+  # Automatically removes SQLite database on startup
+  clean-startup: false

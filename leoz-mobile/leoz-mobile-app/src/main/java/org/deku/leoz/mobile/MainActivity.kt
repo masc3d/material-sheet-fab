@@ -38,9 +38,9 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
             alertDialog.setPositiveButton(
                 "Yes",
                 DialogInterface.OnClickListener { dialogInterface, i ->
-                    var mIntent : Intent
-                    mIntent = Intent(this, Proto_MainActivity::class.java)
-                    startActivity(mIntent)
+                    val intent : Intent
+                    intent = Intent(this, Proto_MainActivity::class.java)
+                    startActivity(intent)
                 }
             )
             alertDialog.setNegativeButton("No", null)
@@ -59,7 +59,8 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
         this.drawer_layout.addDrawerListener(toggle)
 
         val navHeaderView = this.drawer_layout.nav_view.getHeaderView(0)
-        navHeaderView.uxTitle.text = "${this.getText(R.string.app_name)} v${BuildConfig.VERSION_NAME}"
+        val navHeaderText = "${this.getText(R.string.app_name)} v${BuildConfig.VERSION_NAME}"
+        navHeaderView.uxTitle.text = navHeaderText
 
         toggle.syncState()
 

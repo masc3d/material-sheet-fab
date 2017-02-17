@@ -20,7 +20,7 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
 
-    <string name="hint_not_available">Not available</string>
+        <string name="hint_not_available">Not available</string>
     <string name="error_imager_scan_failed">Incomplete or failed scan</string>
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -2,51 +2,31 @@ package org.deku.leoz.mobile.config
 
 import android.content.Context
 import com.github.salomonbrys.kodein.*
-import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.*
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.android.ContextHolder
 import org.slf4j.LoggerFactory
+import rx.Observable
+import rx.lang.kotlin.subscribeWith
+import rx.schedulers.Schedulers
 
 /**
  * Database configuration
  * Created by masc on 12/12/2016.
  */
-class DatabaseConfiguration(val context: Context) {
-    companion object {
-        val module = Kodein.Module {
-            bind<DatabaseConfiguration>() with singleton {
-                DatabaseConfiguration(context = instance())
-            }
-        }
-    }
-
+class DatabaseConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    val dbFile by lazy {
-        context.getDatabasePath("${context.getString(R.string.app_project_name)}.db")
-    }
+    companion object {
+        val module = Kodein.Module {
+            bind<Database>() with singleton {
+                val rootSettings: Settings = instance()
 
-    val dbPath by lazy {
-        this.dbFile.parentFile
-    }
-
-    init {
-        // Remove database file in debug builds
-        if (BuildConfig.DEBUG && this.dbFile.exists()) {
-            this.dbFile.delete()
+                Database(
+                        context = instance(),
+                        settings = Database.Settings(
+                                map = rootSettings.resolve("database")))
+            }
         }
-
-        this.dbPath.mkdirs()
-
-        // Initialize context holder for flyway
-        ContextHolder.setContext(this.context)
-
-        // Initialize/migrate database schema
-        val jdbcUrl = String.format("jdbc:sqldroid:%s", this.dbFile)
-        val flyway = Flyway()
-        flyway.setDataSource(jdbcUrl, "", "")
-        flyway.clean()
-        flyway.migrate()
     }
 }

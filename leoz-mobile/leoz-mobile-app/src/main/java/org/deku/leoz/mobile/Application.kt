@@ -12,9 +12,9 @@ import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
 import com.tinsuke.icekick.freezeInstanceState
 import com.tinsuke.icekick.unfreezeInstanceState
-import org.deku.leoz.config.FeignRestClientConfiguration
 import org.deku.leoz.mobile.config.*
 import org.slf4j.LoggerFactory
+import sx.Stopwatch
 
 /**
  * Application
@@ -32,6 +32,7 @@ open class Application : MultiDexApplication() {
         // Base modules
         Kodein.global.addImport(StorageConfiguration.module)
         Kodein.global.addImport(LogConfiguration.module)
+        Kodein.global.addImport(SettingsConfiguration.module)
 
         // Android specific modules
         Kodein.global.addImport(androidModule)

@@ -187,9 +187,14 @@ dependencies {
             // Miscellaneous
             "io.swagger:swagger-annotations:$v_swagger",
 
+            // Kotlin extensions for activity/fragment state persistence
             "com.github.tinsukE:icekick:0.1",
+
             "org.parceler:parceler-api:1.1.6",
             'com.journeyapps:zxing-android-embedded:3.4.0',
+
+            // YAML
+            "pl.droidsonroids.yaml:snakeyaml:1.18-android",
 
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:4.0.0") {

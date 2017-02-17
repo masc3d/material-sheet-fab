@@ -77,6 +77,8 @@ dependencies {
             "com.netflix.feign:feign-core:$v_feign",
             "com.netflix.feign:feign-jackson:$v_feign",
             "com.netflix.feign:feign-jaxrs:$v_feign",
+            // YAML
+            "org.yaml:snakeyaml:$v_snakeyaml"
     )
 
     testCompile(
