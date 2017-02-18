@@ -40,13 +40,12 @@ class StartupActivity : RxAppCompatActivity() {
         val db: Database = Kodein.global.instance()
         val update: UpdateService = Kodein.global.instance()
 
-        db.migrate()
-
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")
 
         val activityClass: Class<*> = MainActivity::class.java
 
+        val handler = Handler()
         fun start(withAnimation: Boolean) {
             val i = Intent(this@StartupActivity, activityClass)
             i.addFlags(
@@ -54,14 +53,20 @@ class StartupActivity : RxAppCompatActivity() {
                     Intent.FLAG_ACTIVITY_CLEAR_TASK or
                     Intent.FLAG_ACTIVITY_NEW_TASK)
             this.startActivity(i)
+
             if (withAnimation)
                 this.overridePendingTransition(R.anim.main_fadein, R.anim.splash_fadeout)
-            this.setResult(0)
+
             this.finish()
         }
 
         if (!this.started) {
-            Handler().post { start(withAnimation = true) }
+            val migrateAwaitable = db.migrate()
+            handler.post {
+                start(withAnimation = true)
+                migrateAwaitable.await()
+                log.info("Completed")
+            }
             this.started = true
         } else {
             start(withAnimation = false)
