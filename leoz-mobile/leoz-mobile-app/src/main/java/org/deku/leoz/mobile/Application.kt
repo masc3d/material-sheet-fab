@@ -73,6 +73,13 @@ open class Application : MultiDexApplication() {
     val name: String by lazy {
         applicationInfo.loadLabel(this.packageManager).toString();
     }
+
+    /**
+     * Terminate/kill application immediately
+     */
+    fun terminate() {
+        android.os.Process.killProcess(android.os.Process.myPid())
+    }
 }
 
 val Activity.app: Application get() = this.application as Application

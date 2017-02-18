@@ -54,6 +54,12 @@ class Database(
     }
 
     /**
+     * Most recent asynchronous migration result. Null is ok.
+     */
+    var migrationResult: Throwable? = null
+        private set
+
+    /**
      * Migrate database (asynchronously)
      * @return Awaitable
      */
@@ -68,7 +74,12 @@ class Database(
                 .subscribeOn(Schedulers.computation())
                 .subscribeAwaitableWith {
                     onCompleted {
+                        migrationResult = null
                         log.info("Completed")
+                    }
+                    onError {
+                        migrationResult = it
+                        log.error(it.message)
                     }
                 }
     }

@@ -1,22 +1,13 @@
 package org.deku.leoz.mobile
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.os.PersistableBundle
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.android.androidModule
-import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.singleton
-import com.tinsuke.icekick.freezeInstanceState
 import com.tinsuke.icekick.state
-import com.tinsuke.icekick.unfreezeInstanceState
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
-import org.deku.leoz.mobile.MainActivity
-import org.deku.leoz.mobile.config.*
 import org.deku.leoz.mobile.update.UpdateService
 import org.slf4j.LoggerFactory
 
@@ -48,10 +39,7 @@ class StartupActivity : RxAppCompatActivity() {
         val handler = Handler()
         fun start(withAnimation: Boolean) {
             val i = Intent(this@StartupActivity, activityClass)
-            i.addFlags(
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
-                    Intent.FLAG_ACTIVITY_NEW_TASK)
+
             this.startActivity(i)
 
             if (withAnimation)
@@ -61,11 +49,18 @@ class StartupActivity : RxAppCompatActivity() {
         }
 
         if (!this.started) {
+            // Start database migration
             val migrateAwaitable = db.migrate()
             handler.post {
                 start(withAnimation = true)
-                migrateAwaitable.await()
-                log.info("Completed")
+
+                try {
+                    // Wait for migration to finish
+                    migrateAwaitable.await()
+                } catch(e: Throwable) {
+                    // Ignore this exception here, as StartupActivity is about to finish.
+                    // Migration result will be evaluated in MainActivity
+                }
             }
             this.started = true
         } else {

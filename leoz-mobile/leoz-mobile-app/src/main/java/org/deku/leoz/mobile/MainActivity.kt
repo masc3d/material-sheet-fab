@@ -13,6 +13,9 @@ import android.util.AttributeSet
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
@@ -65,6 +68,26 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
         toggle.syncState()
 
         this.nav_view.setNavigationItemSelectedListener(this)
+
+        // Check (asynchronous) database migration result
+        val database: Database = Kodein.global.instance()
+
+        val migrationResult = database.migrationResult
+        if (migrationResult != null) {
+            // Build error message
+            var text = "${this.getText(R.string.error_database_inconsistent)}"
+            text += if (migrationResult.message != null) " (${migrationResult.message})" else ""
+            text += ". ${this.getText(R.string.prompt_reinstall)}"
+
+            AlertDialog.Builder(this)
+                    .setTitle(R.string.app_name)
+                    .setMessage(text)
+                    .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialogInterface, i ->
+                        this.app.terminate()
+                    })
+                    .setIcon(R.mipmap.ic_launcher)
+                    .show()
+        }
     }
 
     override fun onBackPressed() {

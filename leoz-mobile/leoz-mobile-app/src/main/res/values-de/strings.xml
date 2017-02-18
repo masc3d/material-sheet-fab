@@ -1,25 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="app_name">Leoz</string>
-    <string name="hint_not_available">Nicht verfügbar</string>
-    <string name="error_invalid_password">Das Passwort ist zu kurz</string>
-    <string name="prompt_password">Passwort (optional)</string>
-    <string name="action_sign_in_short">Anmelden</string>
-    <string name="action_sign_in">Anmelden / Registrieren</string>
     <string name="action_settings">Einstellungen</string>
-    <string name="version">App-Version:</string>
+    <string name="action_sign_in">Anmelden / Registrieren</string>
+    <string name="action_sign_in_short">Anmelden</string>
+
+    <string name="app_name">Leoz</string>
+
+    <string name="error_database_inconsistent">Inkonsistente Datenbank</string>
     <string name="error_field_required">Das Feld ist erforderlich</string>
+    <string name="error_imager_scan_failed">Unvollständiger oder fehlerhafter Scan</string>
     <string name="error_incorrect_password">Das Passwort ist falsch</string>
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
-    <string name="user">Benutzer:</string>
-    <string name="station_id">Station:</string>
-    <string name="navigation_drawer_close">Navigation schließen</string>
-    <string name="navigation_drawer_open">Navigation öffnen</string>
-    <string name="error_imager_scan_failed">Unvollständiger oder fehlerhafter Scan</string>
+    <string name="error_invalid_password">Das Passwort ist zu kurz</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="hint_scan_label_upper_bc">Scan upper barcode on label!</string>
-    <string name="hint_leadseal_white_not_yellow">Scan white lead-seal! Not yellow!</string>
 
+    <string name="hint_leadseal_white_not_yellow">Scan white lead-seal! Not yellow!</string>
+    <string name="hint_not_available">Nicht verfügbar</string>
+    <string name="hint_scan_label_upper_bc">Scan upper barcode on label!</string>
+
+    <string name="navigation_drawer_close">Navigation schließen</string>
+    <string name="navigation_drawer_open">Navigation öffnen</string>
+
+    <string name="prompt_password">Passwort (optional)</string>
+    <string name="prompt_reinstall">Bitte installieren Sie die Anwendung neu</string>
+
+    <string name="station_id">Station:</string>
+
+    <string name="user">Benutzer:</string>
+
+    <string name="version">App-Version:</string>
 </resources>
