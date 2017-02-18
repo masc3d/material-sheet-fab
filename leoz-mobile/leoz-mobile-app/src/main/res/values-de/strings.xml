@@ -7,6 +7,7 @@
     <string name="app_name">Leoz</string>
 
     <string name="error_database_inconsistent">Inkonsistente Datenbank</string>
+    <string name="error_fatal">Kritischer Fehler</string>
     <string name="error_field_required">Das Feld ist erforderlich</string>
     <string name="error_imager_scan_failed">Unvollständiger oder fehlerhafter Scan</string>
     <string name="error_incorrect_password">Das Passwort ist falsch</string>

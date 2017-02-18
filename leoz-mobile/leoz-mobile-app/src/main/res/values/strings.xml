@@ -8,6 +8,7 @@
     <string name="app_project_name" translatable="false">leoz-mobile</string>
 
     <string name="error_database_inconsistent">Inconsistent database state</string>
+    <string name="error_fatal">Fatal error</string>
     <string name="error_field_required">This field is required</string>
     <string name="error_imager_scan_failed">Incomplete or failed scan</string>
     <string name="error_incorrect_password">This password is incorrect</string>

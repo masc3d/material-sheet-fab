@@ -79,14 +79,9 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
             text += if (migrationResult.message != null) " (${migrationResult.message})" else ""
             text += ". ${this.getText(R.string.prompt_reinstall)}"
 
-            AlertDialog.Builder(this)
-                    .setTitle(R.string.app_name)
-                    .setMessage(text)
-                    .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialogInterface, i ->
-                        this.app.terminate()
-                    })
-                    .setIcon(R.mipmap.ic_launcher)
-                    .show()
+            this.showErrorAlert(text = text, onPositiveButton = {
+                this.app.terminate()
+            })
         }
     }
 
