@@ -51,7 +51,7 @@ class StartupActivity : RxAppCompatActivity() {
         if (!this.started) {
             // Start database migration
             val migrateAwaitable = db.migrate()
-            handler.post {
+            handler.postDelayed( {
                 start(withAnimation = true)
 
                 try {
@@ -61,7 +61,7 @@ class StartupActivity : RxAppCompatActivity() {
                     // Ignore this exception here, as StartupActivity is about to finish.
                     // Migration result will be evaluated in MainActivity
                 }
-            }
+            }, 300)
             this.started = true
         } else {
             start(withAnimation = false)
