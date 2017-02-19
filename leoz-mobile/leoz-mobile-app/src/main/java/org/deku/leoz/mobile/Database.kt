@@ -6,22 +6,18 @@ import org.flywaydb.core.api.android.ContextHolder
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.schedulers.Schedulers
-import sx.maps.mapValue
 import sx.rx.Awaitable
 import sx.rx.subscribeAwaitableWith
 
 /**
+ * Database
  * Created by n3 on 17/02/2017.
  */
 class Database(
         val context: Context,
-        val settings: Settings = Settings()) {
+        val cleanStartup: Boolean = false) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-
-    class Settings(map: Map<String, Any> = mapOf()) {
-        val cleanStartup: Boolean by mapValue(map, false)
-    }
 
     /**
      * Database file
@@ -38,7 +34,7 @@ class Database(
     }
 
     init {
-        if (this.settings.cleanStartup) {
+        if (this.cleanStartup) {
 
             // Remove database file in debug builds
             if (this.file.exists()) {

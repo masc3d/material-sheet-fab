@@ -5,7 +5,8 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.singleton
 import org.slf4j.LoggerFactory
-import sx.maps.mapValue
+import sx.ConfigurationMap
+import sx.ConfigurationMapPath
 
 /**
  * Created by n3 on 15/02/2017.
@@ -14,9 +15,10 @@ class FeignRestClientConfiguration {
     /**
      * REST settings
      */
-    class Settings(map: Map<String, Any> = mapOf()) {
-        val url: String by mapValue(map, "https://leoz.derkurier.de:13000/rs/api")
-        val sslValidation: Boolean by mapValue(map, true)
+    @ConfigurationMapPath("rest")
+    class Settings(map: ConfigurationMap) {
+        val url: String by map.value("https://leoz.derkurier.de:13000/rs/api")
+        val sslValidation: Boolean by map.value(true)
     }
 
     companion object {
@@ -26,8 +28,7 @@ class FeignRestClientConfiguration {
             import(org.deku.leoz.config.FeignRestClientConfiguration.module)
 
             bind<Settings>() with singleton {
-                val rootSettings: org.deku.leoz.mobile.Settings = instance()
-                Settings(rootSettings.resolve("rest"))
+                Settings(instance())
             }
 
             onReady {

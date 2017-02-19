@@ -1,14 +1,13 @@
 package org.deku.leoz.mobile.config
 
-import android.content.Context
-import com.github.salomonbrys.kodein.*
-import org.deku.leoz.mobile.*
-import org.flywaydb.core.Flyway
-import org.flywaydb.core.api.android.ContextHolder
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.singleton
+import org.deku.leoz.mobile.Database
 import org.slf4j.LoggerFactory
-import rx.Observable
-import rx.lang.kotlin.subscribeWith
-import rx.schedulers.Schedulers
+import sx.ConfigurationMap
+import sx.ConfigurationMapPath
 
 /**
  * Database configuration
@@ -17,15 +16,19 @@ import rx.schedulers.Schedulers
 class DatabaseConfiguration {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    @ConfigurationMapPath("database")
+    class Settings(map: ConfigurationMap) {
+        val cleanStartup: Boolean by map.value(false)
+    }
+
     companion object {
         val module = Kodein.Module {
             bind<Database>() with singleton {
-                val rootSettings: Settings = instance()
+                val settings = Settings(instance())
 
                 Database(
                         context = instance(),
-                        settings = Database.Settings(
-                                map = rootSettings.resolve("database")))
+                        cleanStartup = settings.cleanStartup)
             }
         }
     }

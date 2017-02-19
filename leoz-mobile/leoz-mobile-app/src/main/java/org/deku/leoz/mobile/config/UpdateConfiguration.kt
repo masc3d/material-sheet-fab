@@ -1,27 +1,27 @@
 package org.deku.leoz.mobile.config
 
 import com.github.salomonbrys.kodein.*
-import org.deku.leoz.mobile.Settings
+import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.update.UpdateService
-import sx.maps.mapValue
-import sx.maps.resolve
+import sx.ConfigurationMap
+import sx.ConfigurationMapPath
 
 /**
  * Update service configuration
  * Created by masc on 10/02/2017.
  */
 class UpdateConfiguration {
-    class Settings(val map: Map<String, Any>) {
-        val bundleName: String by mapValue(map, "")
-        val versionAlias: String by mapValue(map, "")
-        val force: Boolean by mapValue(map, false)
+    @ConfigurationMapPath("update")
+    class Settings(map: ConfigurationMap) {
+        val bundleName: String by map.value("")
+        val versionAlias: String by map.value("")
+        val force: Boolean by map.value(false)
     }
 
     companion object {
         val module = Kodein.Module {
             bind<UpdateService>() with singleton {
-                val rootSettings: org.deku.leoz.mobile.Settings = instance()
-                val settings = Settings(rootSettings.map.resolve("update"))
+                val settings = Settings(instance())
 
                 val service = UpdateService(
                         executorService = instance(),
