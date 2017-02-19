@@ -62,6 +62,8 @@ dependencies {
             "net.java.dev.jna:jna-platform:4.3.0",
             // Feign REST
             "com.netflix.feign:feign-core:8.18.0",
+            // YAML
+            "org.yaml:snakeyaml:1.17",
             // JUnit
             "junit:junit:4.12"
     )
