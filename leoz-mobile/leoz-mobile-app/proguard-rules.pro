@@ -24,6 +24,12 @@
 -keepattributes EnclosingMethod
 -keepattributes InnerClasses
 
+# Required for JAX/RS, Feign
+-keep class javax.ws.rs.** { *; }
+-keep class com.fasterxml.** { *; }
+-keep class org.deku.leoz.rest.** { *; }
+-keep class org.deku.leoz.service.** { *; }
+
 # Logback classes must be kept for correct function (especially when using xml configuration)
 # -keep class ch.qos.logback.classic.** { *; }
 
@@ -33,6 +39,7 @@
 -keep interface org.parceler.Parcel
 -keep @org.parceler.Parcel class * { *; }
 -keep class **$$Parcelable { *; }
+
 
 # Warnings
 -dontwarn au.com.bytecode.opencsv.bean.**

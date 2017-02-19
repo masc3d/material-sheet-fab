@@ -1,6 +1,6 @@
 # REST settings
 rest:
-  url: 'https://leoz.derkurier.de:13000/rs/api'
+  url: 'http://192.168.0.28:13000/rs/api'
   # Ignores SSL certificate
   ssl-validation: true
 
@@ -8,3 +8,9 @@ rest:
 database:
   # Automatically removes SQLite database on startup
   clean-startup: false
+
+# Update service settings
+update:
+  bundle-name: 'leoz-mobile'
+  version-alias: 'snapshot'
+  force: false

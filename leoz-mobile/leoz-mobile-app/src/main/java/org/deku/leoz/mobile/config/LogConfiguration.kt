@@ -30,7 +30,7 @@ class LogConfiguration(
                 val context: Context = instance()
 
                 LogConfiguration(
-                        path = storage.logPath,
+                        path = storage.logDir,
                         name = context.getString(R.string.app_project_name))
             }
         }
