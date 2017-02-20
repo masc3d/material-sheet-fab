@@ -11,7 +11,7 @@ import sx.YamlConfigurationMap
 /**
  * Created by n3 on 15/02/2017.
  */
-class ConfigurationMapConfiguration {
+class SettingsConfiguration {
     companion object {
         val ASSET_SETTINGS = "application.yml"
         val ASSET_SETTINGS_DEBUG = "application-debug.yml"

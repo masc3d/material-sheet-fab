@@ -32,7 +32,7 @@ open class Application : MultiDexApplication() {
         // Base modules
         Kodein.global.addImport(StorageConfiguration.module)
         Kodein.global.addImport(LogConfiguration.module)
-        Kodein.global.addImport(ConfigurationMapConfiguration.module)
+        Kodein.global.addImport(SettingsConfiguration.module)
 
         // Android specific modules
         Kodein.global.addImport(androidModule)
