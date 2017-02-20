@@ -17,12 +17,12 @@ annotation class ConfigurationMapPath(val path: String)
  * can be created from eg. YAML.
  * Created by masc on 15/02/2017.
  */
-abstract class ConfigurationMap(primarySource: InputStream, vararg overrides: InputStream) {
+abstract class ConfigurationMap(vararg sources: InputStream) {
     val map: Map<String, Any>
 
     init {
         this.map = this.normalize(
-                this.loadMap(primarySource, overrides.toList()))
+                this.loadMap(sources.toList()))
     }
 
     /**
@@ -48,7 +48,7 @@ abstract class ConfigurationMap(primarySource: InputStream, vararg overrides: In
         }.toTypedArray())
     }
 
-    abstract fun loadMap(primarySource: InputStream, overrides: List<InputStream>): Map<String, Any>
+    abstract fun loadMap(sources: List<InputStream>): Map<String, Any>
 
     /**
      * Property delegate which extracts string value from a map and converts it to the property's type
@@ -87,24 +87,15 @@ abstract class ConfigurationMap(primarySource: InputStream, vararg overrides: In
  * Created by masc on 15/02/2017.
  */
 @Suppress("UNCHECKED_CAST")
-class YamlConfigurationMap(
-        primarySource: InputStream,
-        vararg overrides: InputStream) : ConfigurationMap(primarySource, *overrides) {
+class YamlConfigurationMap(vararg sources: InputStream) : ConfigurationMap(*sources) {
 
-    override fun loadMap(primarySource: InputStream, overrides: List<InputStream>): Map<String, Any> {
+    override fun loadMap(sources: List<InputStream>): Map<String, Any> {
         val yaml = Yaml()
         val treeMap = mutableMapOf<String, Any>()
 
-        // Load primary source
-        treeMap.putAll(yaml.load(primarySource) as Map<String, Any>)
-
         // Load overrides
-        overrides.forEach {
-            try {
-                treeMap.putAll(yaml.load(it) as Map<String, Any>)
-            } catch(e: FileNotFoundException) {
-                // Overrides are optional, that's ok.
-            }
+        sources.forEach {
+            treeMap.putAll(yaml.load(it) as Map<String, Any>)
         }
 
         return treeMap
