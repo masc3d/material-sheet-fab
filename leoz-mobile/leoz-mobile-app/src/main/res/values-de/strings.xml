@@ -29,7 +29,9 @@
 
     <string name="station_id">Station:</string>
 
+    <string name="update">Aktualisieren</string>
     <string name="user">Benutzer:</string>
 
     <string name="version">App-Version:</string>
+    <string name="version_available">v%s ist verfügbar</string>
 </resources>

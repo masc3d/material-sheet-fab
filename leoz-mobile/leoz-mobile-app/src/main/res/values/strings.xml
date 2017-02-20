@@ -32,7 +32,9 @@
 
     <string name="station_id">Station ID</string>
 
+    <string name="update">Update</string>
     <string name="user">User</string>
 
     <string name="version">Version</string>
+    <string name="version_available">v%s is available</string>
 </resources>

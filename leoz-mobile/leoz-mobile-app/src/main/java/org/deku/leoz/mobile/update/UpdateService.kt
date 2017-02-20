@@ -91,11 +91,14 @@ class UpdateService(
     var availableUpdate: ApplicationPackage? = null
         private set
 
+
+    data class AvailableUpdateEvent(val apk: ApplicationPackage, val version: String)
+
     /**
      * Available update event (behaviour subject, most recent event will be fire on registration)
      */
     val availableUpdateEvent by lazy { this.availableUpdateEventSubject.asObservable() }
-    private val availableUpdateEventSubject by lazy { BehaviorSubject<ApplicationPackage>().synchronized() }
+    private val availableUpdateEventSubject by lazy { BehaviorSubject<AvailableUpdateEvent>().synchronized() }
 
     override fun run() {
         log.info("Update cycle")
@@ -164,7 +167,7 @@ class UpdateService(
             log.info("Update available [${apk.file}]")
 
             this.availableUpdate = apk
-            this.availableUpdateEventSubject.onNext(apk)
+            this.availableUpdateEventSubject.onNext(AvailableUpdateEvent(apk, apkName.version))
         } catch(e: Exception) {
             when (e) {
                 is FeignException -> log.error(e.message)
