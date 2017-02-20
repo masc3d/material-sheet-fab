@@ -127,7 +127,7 @@ class UpdateService(
                     false
                 }
             }).forEach {
-                log.info("Removing ]${it}]")
+                log.info("Removing [${it}]")
                 it.delete()
             }
 
@@ -179,7 +179,7 @@ class UpdateService(
             this.workingDir.listFiles(FileFilter {
                 it.name.endsWith(DOWNLOAD_SUFFIX)
             }).forEach {
-                log.info("Removing ]${it}]")
+                log.info("Removing [${it}]")
                 it.delete()
             }
 
