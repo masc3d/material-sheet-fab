@@ -10,6 +10,7 @@
 .idea/misc.xml
 .idea/libraries
 .idea/dataSources
+.idea/inspectionProfile
 build
 buildSrc/build
 buildSrc/src/import
