@@ -1,8 +1,8 @@
 # REST settings
 rest:
-  url: 'http://192.168.0.28:13000/rs/api'
+  url: 'https://leox.derkurier.de:13000/rs/api'
   # Ignores SSL certificate
-  ssl-validation: true
+  ssl-validation: false
 
 # Database settings
 database:
