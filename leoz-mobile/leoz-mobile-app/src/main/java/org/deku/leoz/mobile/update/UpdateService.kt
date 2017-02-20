@@ -18,6 +18,7 @@ import rx.lang.kotlin.synchronized
 import sx.android.ApplicationPackage
 import sx.util.zip.verify
 import sx.concurrent.Service
+import sx.time.Duration
 import sx.time.seconds
 import java.io.File
 import java.io.FileFilter
@@ -33,11 +34,12 @@ import java.util.zip.ZipFile
 class UpdateService(
         executorService: ScheduledExecutorService,
         val bundleName: String,
-        val versionAlias: String
+        val versionAlias: String,
+        period: Duration
 ) : Service(
         executorService = executorService,
         initialDelay = 1.seconds,
-        period = 10.seconds
+        period = period
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 

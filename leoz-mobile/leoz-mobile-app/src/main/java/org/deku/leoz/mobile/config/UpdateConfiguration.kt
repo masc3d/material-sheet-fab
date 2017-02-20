@@ -5,6 +5,7 @@ import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.update.UpdateService
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath
+import sx.time.seconds
 
 /**
  * Update service configuration
@@ -16,6 +17,7 @@ class UpdateConfiguration {
         val bundleName: String by map.value("")
         val versionAlias: String by map.value("")
         val force: Boolean by map.value(false)
+        val period: Int by map.value(3600)
     }
 
     companion object {
@@ -26,7 +28,8 @@ class UpdateConfiguration {
                 val service = UpdateService(
                         executorService = instance(),
                         bundleName = settings.bundleName,
-                        versionAlias = settings.versionAlias)
+                        versionAlias = settings.versionAlias,
+                        period = settings.period.seconds)
                 service.force = settings.force
                 service.start()
                 service
