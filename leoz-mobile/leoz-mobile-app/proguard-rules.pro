@@ -40,6 +40,8 @@
 -keep @org.parceler.Parcel class * { *; }
 -keep class **$$Parcelable { *; }
 
+# Some parts of rx have issues with obfuscation (NoSuchFieldException eg.)
+-keep class rx.** { *; }
 
 # Warnings
 -dontwarn au.com.bytecode.opencsv.bean.**
