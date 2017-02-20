@@ -71,6 +71,11 @@ class UpdateService(
     private val bundleService: BundleService by Kodein.global.lazy.instance()
 
     /**
+     * Temporary suffix of files currently being downloaded
+     */
+    private val DOWNLOAD_SUFFIX = ".download"
+
+    /**
      * Forces (re-)download and update, even if applcation is up-to-date
      */
     var force = false
@@ -102,6 +107,10 @@ class UpdateService(
     val availableUpdateEvent by lazy { this.availableUpdateEventSubject.asObservable() }
     private val availableUpdateEventSubject by lazy { BehaviorSubject<AvailableUpdateEvent>().synchronized() }
 
+    override fun onStart() {
+        super.onStart()
+    }
+
     override fun run() {
         log.info("Update cycle")
 
@@ -127,18 +136,18 @@ class UpdateService(
                 return
             }
 
-            // For binary response stream, need to build target manually, so we can inject a decoder implementation
-            val feignBuilder: Feign.Builder = Kodein.global.instance()
-
             val apkName = ApplicationPackageName(
                     bundleName = updateInfo.bundleName,
                     version = updateInfo.latestDesignatedVersion!!)
 
             val apkFile = File(this.workingDir, apkName.toString())
-            val downloadFile = File(apkFile.parent, "${apkFile.name}.download")
+            val downloadFile = File(apkFile.parent, "${apkFile.name}${DOWNLOAD_SUFFIX}")
 
             if (force || !apkFile.exists()) {
                 log.info("Downloading bundle [${downloadFile}]")
+
+                // For binary response stream, need to build target manually, so we can inject a decoder implementation
+                val feignBuilder: Feign.Builder = Kodein.global.instance()
 
                 val bundleService: BundleService = feignBuilder.target(
                         apiType = BundleService::class.java,
@@ -152,7 +161,7 @@ class UpdateService(
                         version = updateInfo.latestDesignatedVersion!!)
 
                 // Verify downloaded apk
-                log.info("Verifyinfg [${downloadFile}]")
+                log.info("Verifying [${downloadFile}]")
                 val zipFile = ZipFile(downloadFile)
                 try {
                     zipFile.verify()
@@ -163,6 +172,15 @@ class UpdateService(
                 }
 
                 downloadFile.renameTo(apkFile)
+            }
+
+
+            // Clean up incomplete downloads from previous runs
+            this.workingDir.listFiles(FileFilter {
+                it.name.endsWith(DOWNLOAD_SUFFIX)
+            }).forEach {
+                log.info("Removing ]${it}]")
+                it.delete()
             }
 
             val apk = ApplicationPackage(file = apkFile)
