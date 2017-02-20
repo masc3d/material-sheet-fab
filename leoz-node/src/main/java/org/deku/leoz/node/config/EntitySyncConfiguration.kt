@@ -71,16 +71,25 @@ open class EntitySyncConfiguration {
     }
 
     /**
+     * List of masterdata entities to synchronize
+     */
+    private val masterdataEntities = listOf(
+            MstStation::class.java,
+            MstCountry::class.java,
+            MstHolidayCtrl::class.java,
+            MstRoute::class.java,
+            MstRoutingLayer::class.java,
+            MstSector::class.java,
+            MstBundleVersion::class.java
+    )
+
+    /**
      * Starts entity requests for all entity types
      */
-    fun requestEntities() {
-        entityConsumer.request(MstStation::class.java)
-        entityConsumer.request(MstCountry::class.java)
-        entityConsumer.request(MstHolidayCtrl::class.java)
-        entityConsumer.request(MstRoute::class.java)
-        entityConsumer.request(MstRoutingLayer::class.java)
-        entityConsumer.request(MstSector::class.java)
-        entityConsumer.request(MstBundleVersion::class.java)
+    fun requestEntities(clean: Boolean = false) {
+        masterdataEntities.forEach {
+            entityConsumer.request(it, clean)
+        }
     }
 
     @PostConstruct

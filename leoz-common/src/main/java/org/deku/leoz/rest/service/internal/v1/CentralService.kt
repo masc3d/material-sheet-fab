@@ -2,10 +2,8 @@ package org.deku.leoz.rest.service.internal.v1
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import javax.ws.rs.Consumes
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
+import io.swagger.annotations.ApiParam
+import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
 /**
@@ -18,7 +16,7 @@ import javax.ws.rs.core.MediaType
 interface CentralService {
 
     @GET
-    @Path("/database-sync")
+    @Path("/sync")
     @ApiOperation(value = "Trigger central database sync")
-    fun databaseSync()
+    fun sync(@QueryParam("clean") @ApiParam(defaultValue = "false", value = "Perform clean sync (drop existing data)") clean: Boolean)
 }

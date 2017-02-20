@@ -64,6 +64,10 @@ constructor(
         override fun run() {
             this@DatabaseSyncService.sync(false)
         }
+
+        fun submitTask(command: () -> Unit) {
+            super.submitSupplementalTask(command)
+        }
     }
 
     companion object {
@@ -305,10 +309,8 @@ constructor(
     }
 
     @Transactional(value = org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER)
-    open fun sync(reload: Boolean) {
+    @Synchronized open fun sync(clean: Boolean) {
         val sw = Stopwatch.createStarted()
-
-        val alwaysDelete = reload
 
         this.updateEntities<MstBundleVersionRecord, MstBundleVersion>(
                 Tables.MST_BUNDLE_VERSION,
@@ -317,7 +319,7 @@ constructor(
                 QMstBundleVersion.mstBundleVersion,
                 QMstBundleVersion.mstBundleVersion.syncId,
                 { s -> convert(s) },
-                alwaysDelete)
+                clean)
 
         this.updateEntities<MstStationRecord, MstStation>(
                 Tables.MST_STATION,
@@ -326,7 +328,7 @@ constructor(
                 QMstStation.mstStation,
                 QMstStation.mstStation.syncId,
                 { s -> convert(s) },
-                alwaysDelete)
+                clean)
 
         this.updateEntities(
                 Tables.MST_COUNTRY,
@@ -335,7 +337,7 @@ constructor(
                 QMstCountry.mstCountry,
                 QMstCountry.mstCountry.syncId,
                 { s -> convert(s) },
-                alwaysDelete)
+                clean)
 
         this.updateEntities(
                 Tables.MST_HOLIDAYCTRL,
@@ -344,7 +346,7 @@ constructor(
                 QMstHolidayCtrl.mstHolidayCtrl,
                 QMstHolidayCtrl.mstHolidayCtrl.syncId,
                 { s -> convert(s) },
-                alwaysDelete)
+                clean)
 
         this.updateEntities(
                 Tables.MST_ROUTE,
@@ -353,7 +355,7 @@ constructor(
                 QMstRoute.mstRoute,
                 QMstRoute.mstRoute.syncId,
                 { s -> convert(s) },
-                alwaysDelete)
+                clean)
 
         this.updateEntities(
                 Tables.MST_SECTOR,
@@ -362,7 +364,7 @@ constructor(
                 QMstSector.mstSector,
                 QMstSector.mstSector.syncId,
                 { s -> convert(s) },
-                alwaysDelete)
+                clean)
 
         this.updateEntities(
                 Tables.MST_ROUTINGLAYER,
@@ -371,7 +373,7 @@ constructor(
                 QMstRoutingLayer.mstRoutingLayer,
                 QMstRoutingLayer.mstRoutingLayer.syncId,
                 { s -> convert(s) },
-                alwaysDelete)
+                clean)
 
         this.updateEntities(
                 Tables.MST_STATION_SECTOR,
@@ -380,7 +382,7 @@ constructor(
                 QMstStationSector.mstStationSector,
                 QMstStationSector.mstStationSector.syncId,
                 { s -> convert(s) },
-                alwaysDelete)
+                clean)
 
         log.info("Database sync took " + sw.toString())
     }
@@ -505,5 +507,11 @@ constructor(
 
     open fun trigger() {
         this.service.trigger()
+    }
+
+    open fun startSync(clean: Boolean) {
+        this.service.submitTask {
+            this@DatabaseSyncService.sync(clean)
+        }
     }
 }

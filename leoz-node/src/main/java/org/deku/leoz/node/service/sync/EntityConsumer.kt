@@ -3,8 +3,6 @@ package org.deku.leoz.node.service.sync
 import com.google.common.base.Stopwatch
 import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repository.EntityRepository
-import org.deku.leoz.node.service.sync.EntityStateMessage
-import org.deku.leoz.node.service.sync.EntityUpdateMessage
 import sx.jms.Channel
 import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener
@@ -27,7 +25,7 @@ class EntityConsumer
         private val entityManagerFactory: EntityManagerFactory,
         /** Executor used for listening/processing incoming messages */
         listenerExecutor: Executor)
-:
+    :
         SpringJmsListener({ Channel(notificationChannelConfiguration) }, listenerExecutor),
         Handler<EntityStateMessage> {
 
@@ -60,10 +58,16 @@ class EntityConsumer
     /**
      * Request entity update
      * @param entityType Entity type
-     * @param remoteSyncId Optional remote timestamp, usually provided via notification
+     * @param remoteSyncId Optional remote sync-id, usually provided via notification
      * @param requestAll Ignores sync id, requests all entities (mainly for testing)
+     * @param clean Clears all data before requesting
      */
-    @Synchronized fun request(entityType: Class<*>, remoteSyncId: Long?, requestAll: Boolean = false) {
+    @Synchronized fun request(
+            entityType: Class<*>,
+            remoteSyncId: Long? = null,
+            requestAll: Boolean = false,
+            clean: Boolean = false) {
+
         executorService.submit<Unit> {
             // Log formatting with entity type
             val lfmt = { s: String -> "[" + entityType.canonicalName + "]" + " " + s }
@@ -72,6 +76,12 @@ class EntityConsumer
             try {
                 em = entityManagerFactory.createEntityManager()
                 val er = EntityRepository(em, entityType)
+
+                if (clean) {
+                    PersistenceUtil.transaction(em, {
+                        er.removeAll()
+                    })
+                }
 
                 var syncId: Long? = null
 
@@ -177,8 +187,11 @@ class EntityConsumer
      * Request entity update
      * @param entityType Entity type
      */
-    fun request(entityType: Class<*>) {
-        this.request(entityType, null)
+    fun request(entityType: Class<*>, clean: Boolean = false) {
+        this.request(
+                entityType = entityType,
+                remoteSyncId = null,
+                clean = clean)
     }
 
     override fun close() {

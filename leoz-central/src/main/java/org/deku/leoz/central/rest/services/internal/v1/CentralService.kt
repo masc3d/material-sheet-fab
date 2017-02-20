@@ -22,7 +22,7 @@ class CentralService : org.deku.leoz.rest.service.internal.v1.CentralService {
     @Inject
     lateinit var databaseSyncService: DatabaseSyncService
 
-    override fun databaseSync() {
-        this.databaseSyncService.trigger()
+    override fun sync(clean: Boolean) {
+        this.databaseSyncService.startSync(clean = clean)
     }
 }

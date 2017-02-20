@@ -2,10 +2,8 @@ package org.deku.leoz.rest.service.internal.v1
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
-import javax.ws.rs.Consumes
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
+import io.swagger.annotations.ApiParam
+import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
 /**
@@ -20,5 +18,8 @@ interface NodeService {
     @GET
     @Path("/entity-sync")
     @ApiOperation(value = "Trigger entity sync")
-    fun entitySync()
+    fun sync(
+            @QueryParam("clean")
+            @ApiParam(defaultValue = "false", value = "Perform clean sync (drop data prior to entity requst)")
+            clean: Boolean)
 }
