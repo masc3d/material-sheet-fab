@@ -23,6 +23,9 @@ class ApplicationPackage(
     fun install(context: Context) {
         log.info("Installing apk [${this.file}]")
 
+        // Make sure file is accessible for the system
+        this.file.setReadable(true, false)
+
         val i = Intent()
         i.action = Intent.ACTION_VIEW
         i.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive")
