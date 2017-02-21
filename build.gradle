@@ -45,74 +45,69 @@ tasks.remove(tasks.flywayValidate)
  * Common flyway extension/parameters
  * @return
  */
-def createFlywayExtension() {
+ def createFlywayExtension() {
     def extension = new FlywayExtension()
     extension.driver = ext.DB_MYSQL_JDBC_DRIVER
     extension.user = 'root'
-    extension.password = 'root'
+    extension.password = 'dekudb'
     extension.schemas = ['dekuclient']
     extension.locations = ["filesystem:${ext.FLYWAY_MIGRATION_DIR}"]
     return extension
 }
 
-// LEO integration database tasks
+//
+// Leoz dev database tasks
+//
 
-def DB_DEV_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
-def DB_LEOX_JDBC_URL = 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false'
-def DB_LEOX_USER = 'dekurw'
-def DB_LEOX_PASSWORD = 'dekucli'
-
-task flywayDevMigrate(type: FlywayMigrateTask) {
-    extension = createFlywayExtension()
-
-    extension.url = DB_DEV_JDBC_URL
-    extension.target = 5
+def createFlywayDevExtension() {
+    def extension = this.createFlywayExtension()
+    extension.url = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
+    return extension
 }
 
 task flywayDevInfo(type: FlywayInfoTask) {
-    extension = createFlywayExtension()
-
-    extension.url = DB_DEV_JDBC_URL
+    extension = createFlywayDevExtension()
 }
 
 task flywayDevClean(type: FlywayCleanTask) {
-    extension = createFlywayExtension()
-
-    extension.url = DB_DEV_JDBC_URL
+    extension = createFlywayDevExtension()
 }
 
-task flywayLeoxMigrate(type: FlywayMigrateTask) {
-    extension = createFlywayExtension()
+task flywayDevRepair(type: FlywayRepairTask) {
+    extension = createFlywayDevExtension()
+}
 
-    extension.url = DB_LEOX_JDBC_URL
-    extension.user = DB_LEOX_USER
-    extension.password = DB_LEOX_PASSWORD
+task flywayDevMigrate(type: FlywayMigrateTask) {
+    extension = createFlywayDevExtension()
     extension.target = 5
 }
 
-task flywayLeoxInfo(type: FlywayInfoTask) {
-    extension = createFlywayExtension()
+//
+// Leoz integration (leox) database tasks
+//
 
-    extension.url = DB_LEOX_JDBC_URL
-    extension.user = DB_LEOX_USER
-    extension.password = DB_LEOX_PASSWORD
+def createFlywayLeoxExtension() {
+	def extension = this.createFlywayExtension()
+	extension.url = 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false'
+    extension.user = 'root'
+    extension.password = 'dekudb'
+    return extension
 }
 
-task flywayLeoxBaseline(type: FlywayBaselineTask) {
-    extension = createFlywayExtension()
-
-    extension.url = DB_LEOX_JDBC_URL
-    extension.user = DB_LEOX_USER
-    extension.password = DB_LEOX_PASSWORD
-
-    extension.baselineVersion = 1
+task flywayLeoxInfo(type: FlywayInfoTask) {
+    extension = createFlywayLeoxExtension()
 }
 
 task flywayLeoxRepair(type: FlywayRepairTask) {
-    extension = createFlywayExtension()
-
-    extension.url = DB_LEOX_JDBC_URL
-    extension.user = DB_LEOX_USER
-    extension.password = DB_LEOX_PASSWORD
+    extension = createFlywayLeoxExtension()
 }
 
+task flywayLeoxMigrate(type: FlywayMigrateTask) {
+    extension = createFlywayLeoxExtension()
+    extension.target = 5
+}
+
+task flywayLeoxBaseline(type: FlywayBaselineTask) {
+    extension = createFlywayLeoxExtension()
+    extension.baselineVersion = 1
+}
