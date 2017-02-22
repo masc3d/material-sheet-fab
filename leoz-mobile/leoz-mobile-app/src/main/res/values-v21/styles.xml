@@ -1,6 +1,10 @@
 <resources>
+    <!-- Application theme for API level >= 21 (native material design support) -->
+    <style name="AppTheme" parent="@style/AppThemeBase">
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+    </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>

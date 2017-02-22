@@ -48,7 +48,7 @@ android {
     defaultConfig {
         applicationId "org.deku.leoz.mobile"
         minSdkVersion 16
-        targetSdkVersion 16
+        targetSdkVersion 25
         versionCode 1
         versionName "0.4-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
