@@ -412,7 +412,7 @@ constructor(
         // Stopwatch
         val sw = Stopwatch.createStarted()
         // Log formatter
-        val lfmt = { s: String -> "[${destQdslEntityPath.type.name}] ${s} ${sw.toString()}" }
+        val lfmt = { s: String -> "[${destQdslEntityPath.type.name}] ${s} $sw" }
 
         entityManager.flushMode = FlushModeType.COMMIT
 
@@ -426,6 +426,7 @@ constructor(
             }
         }
 
+        // TODO. optimize by preparing query or at least caching the querydsl instance
         // Get latest timestamp
         var destMaxSyncId: Long? = null
         if (destQdslSyncIdPath != null) {
@@ -436,6 +437,7 @@ constructor(
                     .fetchFirst()
         }
 
+        // TODO. optimize by using jooq prepared statements
         if (destMaxSyncId != null) {
             val maxSyncId = syncJooqRepository.findSyncIdByTableName(sourceTable.name)
             if (maxSyncId == destMaxSyncId) {
@@ -488,7 +490,7 @@ constructor(
                 // Emit update event
                 eventDispatcher.emit { e ->
                     // Emit event
-                    e.onUpdate(destQdslEntityPath.getType(), destMaxSyncId)
+                    e.onUpdate(destQdslEntityPath.type, destMaxSyncId)
                 }
             } else {
                 log.info(lfmt("Uptodate [${destMaxSyncId}]"))
