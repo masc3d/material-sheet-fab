@@ -1,7 +1,7 @@
 <resources>
     <!-- Application theme for API level >= 21 (native material design support) -->
     <style name="AppTheme" parent="@style/AppThemeBase">
-        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:statusBarColor">@color/colorDarkGrey</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
