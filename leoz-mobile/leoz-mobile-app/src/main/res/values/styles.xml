@@ -5,7 +5,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:buttonStyle">@style/AppTheme.Button.Colored</item>
+        <item name="buttonStyle">@style/AppTheme.Button.Colored</item>
     </style>
 
     <!-- Application theme for API Levels below 21 (no native material design support) -->
