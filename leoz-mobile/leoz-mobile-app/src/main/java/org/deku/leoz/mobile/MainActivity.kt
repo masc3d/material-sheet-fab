@@ -3,6 +3,7 @@ package org.deku.leoz.mobile
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
@@ -40,8 +41,21 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
         log.trace("ONCREATE")
 
         this.setContentView(R.layout.activity_main)
+
+        // Setup actionbar
         setSupportActionBar(this.toolbar)
 
+        val toggle = ActionBarDrawerToggle(
+                this,
+                this.drawer_layout,
+                this.toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close)
+
+        this.drawer_layout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // Setup fab button
         this.fab.setOnClickListener { view ->
             Snackbar.make(view, "Call Supervisor for assistance?", Snackbar.LENGTH_LONG).setAction("Action", {
                 this@MainActivity.showAlert(
@@ -55,20 +69,11 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
             }).show()
         }
 
-        val toggle = ActionBarDrawerToggle(
-                this,
-                this.drawer_layout,
-                this.toolbar,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close)
-
-        this.drawer_layout.addDrawerListener(toggle)
-
+        // Setup navigation drawer
         val navHeaderView = this.drawer_layout.nav_view.getHeaderView(0)
         val navHeaderText = "${this.getText(R.string.app_name)} v${BuildConfig.VERSION_NAME}"
         navHeaderView.uxTitle.text = navHeaderText
-
-        toggle.syncState()
+        this.uxTitle.text = navHeaderText
 
         this.nav_view.setNavigationItemSelectedListener(this)
 

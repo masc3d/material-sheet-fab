@@ -26,11 +26,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".prototype.activities.Proto_MainActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".prototype.activities.smallsort.Proto_sso"
+        <activity
+            android:name=".prototype.activities.smallsort.Proto_sso"
             android:screenOrientation="portrait" />
     </application>
 
