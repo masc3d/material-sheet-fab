@@ -15,7 +15,7 @@ import javax.ws.rs.*
 @Api(value = "Smallsort operations")
 interface SmallsortService {
 
-    enum class ErrorCode private constructor(private val mValue: Int) {
+    enum class ErrorCode constructor(private val mValue: Int) {
         BAG_REFERENCE_MISSING(1000),
         BAG_REFERENCE_NOT_VALID(1050),
         BAG_REFERENCE_MISSING_CHECK_DIGIT(1100),
@@ -26,7 +26,7 @@ interface SmallsortService {
         LEAD_SEAL_WRONG_CHECK_DIGIT(1650)
     }
 
-    @GET
+    @POST
     @Path("/close-bag")
     @ApiOperation("Close Bag")
     @ApiResponses(*arrayOf(
