@@ -4,8 +4,6 @@
     <string name="action_sign_in">Anmelden / Registrieren</string>
     <string name="action_sign_in_short">Anmelden</string>
 
-    <string name="app_name">Leoz</string>
-
     <string name="error_database_inconsistent">Inkonsistente Datenbank</string>
     <string name="error_fatal">Kritischer Fehler</string>
     <string name="error_field_required">Das Feld ist erforderlich</string>

@@ -24,36 +24,18 @@ import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.nav_header_main.*
-import kotlinx.android.synthetic.main.nav_header_main.view.*
+import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
 import org.deku.leoz.mobile.update.UpdateService
 import org.slf4j.LoggerFactory
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.subscribeWith
 
-class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    val log = LoggerFactory.getLogger(this.javaClass)
+class MainActivity : Activity() {
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        log.trace("ONCREATE")
-
-        this.setContentView(R.layout.activity_main)
-
-        // Setup actionbar
-        setSupportActionBar(this.toolbar)
-
-        val toggle = ActionBarDrawerToggle(
-                this,
-                this.drawer_layout,
-                this.toolbar,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close)
-
-        this.drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
 
         // Setup fab button
         this.fab.setOnClickListener { view ->
@@ -68,14 +50,6 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
                         negativeButton = AlertButton(text = android.R.string.cancel))
             }).show()
         }
-
-        // Setup navigation drawer
-        val navHeaderView = this.drawer_layout.nav_view.getHeaderView(0)
-        val navHeaderText = "${this.getText(R.string.app_name)} v${BuildConfig.VERSION_NAME}"
-        navHeaderView.uxTitle.text = navHeaderText
-        this.uxTitle.text = navHeaderText
-
-        this.nav_view.setNavigationItemSelectedListener(this)
 
         // Check (asynchronous) database migration result
         val database: Database = Kodein.global.instance()
@@ -111,56 +85,8 @@ class MainActivity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelec
                         sb.show()
                     }
                 }
-    }
 
-    override fun onBackPressed() {
-        if (this.drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            this.drawer_layout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        this.menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        val id = item.itemId
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        this.drawer_layout.closeDrawer(GravityCompat.START)
-        return true
+        // UI
+        this.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
     }
 }
