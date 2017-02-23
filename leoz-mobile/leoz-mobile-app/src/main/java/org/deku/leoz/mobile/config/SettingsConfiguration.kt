@@ -28,7 +28,7 @@ class SettingsConfiguration {
                 sources.add(context.assets.open(ASSET_SETTINGS))
                 if (BuildConfig.DEBUG) {
                     try {
-                        sources.add(context.assets.open(ASSET_SETTINGS_DEBUG + ".test"))
+                        sources.add(context.assets.open(ASSET_SETTINGS_DEBUG))
                     } catch(e: IOException) {
                         // Optional asset, that's ok
                     }

@@ -1,5 +1,6 @@
-package org.deku.leoz.mobile
+package org.deku.leoz.mobile.ui
 
+import android.R
 import android.content.Context
 import android.content.DialogInterface
 import android.support.v7.app.AlertDialog
@@ -11,14 +12,14 @@ data class AlertButton(val text: Int, val handler: ((DialogInterface) -> Unit) =
  * Created by n3 on 18/02/2017.
  */
 fun Context.showErrorAlert(text: CharSequence,
-                           title: CharSequence = this.getText(R.string.error_fatal),
-                           positiveButtonText: Int = android.R.string.ok,
+                           title: CharSequence = this.getText(org.deku.leoz.mobile.R.string.error_fatal),
+                           positiveButtonText: Int = R.string.ok,
                            onPositiveButton: ((dialogInterface: DialogInterface) -> Unit)? = null,
-                           negativeButtonText: Int = android.R.string.cancel,
+                           negativeButtonText: Int = R.string.cancel,
                            onNegativeButton: ((dialogInterface: DialogInterface) -> Unit)? = null) {
     var builder = AlertDialog.Builder(this)
             .setTitle(title)
-            .setIcon(R.mipmap.ic_launcher)
+            .setIcon(org.deku.leoz.mobile.R.mipmap.ic_launcher)
     if (onPositiveButton != null) {
         builder = builder.setPositiveButton(positiveButtonText, { dialogInterface, i ->
             onPositiveButton(dialogInterface)
@@ -34,12 +35,12 @@ fun Context.showErrorAlert(text: CharSequence,
 }
 
 fun Context.showAlert(text: CharSequence,
-                      title: CharSequence = this.getText(R.string.app_name),
+                      title: CharSequence = this.getText(org.deku.leoz.mobile.R.string.app_name),
                       positiveButton: AlertButton? = null,
                       negativeButton: AlertButton? = null) {
     var builder = AlertDialog.Builder(this)
             .setTitle(title)
-            .setIcon(R.mipmap.ic_launcher)
+            .setIcon(org.deku.leoz.mobile.R.mipmap.ic_launcher)
 
     if (positiveButton != null) {
         builder = builder

@@ -78,6 +78,13 @@ class FeignRestClientConfiguration {
          * Injection module
          */
         val module = Kodein.Module {
+            /**
+             * Helper for creating service proxy
+             */
+            fun <T> createServiceProxy(config: FeignRestClientConfiguration, builder: Feign.Builder, serviceType: Class<T>): T {
+                return builder.target(serviceType, config.url)
+            }
+
             bind<FeignRestClientConfiguration>() with singleton {
                 FeignRestClientConfiguration()
             }
@@ -94,15 +101,11 @@ class FeignRestClientConfiguration {
             }
 
             bind<StationService>() with provider {
-                val config: FeignRestClientConfiguration = instance()
-                val builder: Feign.Builder = instance()
-                builder.target(StationService::class.java, config.url)
+                createServiceProxy(config = instance(), builder = instance(), serviceType = StationService::class.java)
             }
 
             bind<BundleService>() with provider {
-                val config: FeignRestClientConfiguration = instance()
-                val builder: Feign.Builder = instance()
-                builder.target(BundleService::class.java, config.url)
+                createServiceProxy(config = instance(), builder = instance(), serviceType = BundleService::class.java)
             }
         }
     }

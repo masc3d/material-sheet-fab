@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile
+package org.deku.leoz.mobile.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +8,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.tinsuke.icekick.state
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
+import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.update.UpdateService
 import org.slf4j.LoggerFactory
 
@@ -43,7 +44,7 @@ class StartupActivity : RxAppCompatActivity() {
             this.startActivity(i)
 
             if (withAnimation)
-                this.overridePendingTransition(R.anim.main_fadein, R.anim.splash_fadeout)
+                this.overridePendingTransition(org.deku.leoz.mobile.R.anim.main_fadein, org.deku.leoz.mobile.R.anim.splash_fadeout)
 
             this.finish()
         }

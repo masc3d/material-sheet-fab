@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile
+package org.deku.leoz.mobile.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,6 +16,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
+import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
 import org.slf4j.LoggerFactory
 
@@ -31,7 +33,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
 
         log.trace("ONCREATE")
 
-        this.setContentView(R.layout.activity_main)
+        this.setContentView(org.deku.leoz.mobile.R.layout.activity_main)
 
         // Setup actionbar
         setSupportActionBar(this.toolbar)
