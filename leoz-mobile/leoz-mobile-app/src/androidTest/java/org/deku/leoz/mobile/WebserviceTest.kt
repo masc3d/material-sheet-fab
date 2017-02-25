@@ -11,8 +11,6 @@ import org.deku.leoz.config.FeignRestClientConfiguration
 abstract class WebserviceTest {
     companion object {
         init {
-            Kodein.global.addImport(FeignRestClientConfiguration.module)
-
             val config: FeignRestClientConfiguration = Kodein.global.instance()
             config.sslValidation = false
             config.url = "http://192.168.0.140:13000/rs/api"
