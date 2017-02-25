@@ -19,16 +19,17 @@
         <activity
             android:name=".activity.StartupActivity"
             android:label="@string/app_name"
-            android:theme="@style/StartupTheme">
+            android:theme="@style/StartupTheme"
+            android:alwaysRetainTaskState="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+        />
         <activity
             android:name=".prototype.activities.Proto_MainActivity"
             android:screenOrientation="portrait" />
