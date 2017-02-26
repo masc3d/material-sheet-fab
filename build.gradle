@@ -55,7 +55,6 @@ dependencies {
     // Kotlin
     compile(
             project(":sx-common"),
-//            project(':kotlin-extensions'),
 
             fileTree(dir: 'libs', include: ['*.jar']),
 
