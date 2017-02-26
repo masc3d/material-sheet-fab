@@ -1,7 +1,9 @@
-package sx.android.app
+package sx.android.fragment
 
+import android.R
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CoordinatorLayout
+import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.util.TypedValue
 
@@ -11,7 +13,7 @@ import android.util.TypedValue
  * views/fragments this is not intended. This helper method removes the scrolling "oveerhead"
  * Created by n3 on 18/07/16.
  */
-fun android.support.v4.app.Fragment.removeScrollingExcessHeightWithinViewPager() {
+fun Fragment.removeScrollingExcessHeightWithinViewPager() {
     val view = this.view
     val parent = view?.parent
     if (parent is ViewPager) {
@@ -19,7 +21,7 @@ fun android.support.v4.app.Fragment.removeScrollingExcessHeightWithinViewPager()
         if (layoutParams is CoordinatorLayout.LayoutParams) {
             if (layoutParams.behavior is AppBarLayout.ScrollingViewBehavior) {
                 val tv = TypedValue()
-                this.activity.theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)
+                this.activity.theme.resolveAttribute(R.attr.actionBarSize, tv, true)
                 val actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
 
                 view?.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, actionBarHeight)
