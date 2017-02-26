@@ -12,7 +12,7 @@ import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import com.github.salomonbrys.kodein.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.Storage
+import org.deku.leoz.mobile.model.Storage
 import org.slf4j.LoggerFactory
 import java.io.File
 

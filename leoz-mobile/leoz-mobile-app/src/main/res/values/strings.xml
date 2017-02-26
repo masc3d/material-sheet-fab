@@ -23,6 +23,8 @@
     <string name="hint_not_available">Not available</string>
     <string name="hint_scan_label_upper_bc">Scan upper barcode on label!</string>
 
+    <string name="login" translatable="false">Login</string>
+
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
 

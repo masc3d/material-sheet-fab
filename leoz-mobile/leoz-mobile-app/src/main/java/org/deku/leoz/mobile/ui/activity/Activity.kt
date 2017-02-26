@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.activity
+package org.deku.leoz.mobile.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,10 +12,10 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
-import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.nav_header_main.view.*
+import kotlinx.android.synthetic.main.main.*
+import kotlinx.android.synthetic.main.main.view.*
+import kotlinx.android.synthetic.main.main_app_bar.*
+import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
@@ -33,7 +33,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
 
         log.trace("ONCREATE")
 
-        this.setContentView(org.deku.leoz.mobile.R.layout.activity_main)
+        this.setContentView(org.deku.leoz.mobile.R.layout.main)
 
         // Setup actionbar
         setSupportActionBar(this.toolbar)

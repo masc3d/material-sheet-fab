@@ -9,7 +9,7 @@ import feign.Feign
 import feign.FeignException
 import org.deku.leoz.config.FeignRestClientConfiguration.Companion.target
 import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.Storage
+import org.deku.leoz.mobile.model.Storage
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.slf4j.LoggerFactory
 import rx.lang.kotlin.BehaviorSubject

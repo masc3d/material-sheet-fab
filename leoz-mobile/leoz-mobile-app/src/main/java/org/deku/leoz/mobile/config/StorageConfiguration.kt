@@ -1,7 +1,7 @@
 package org.deku.leoz.mobile.config
 
 import com.github.salomonbrys.kodein.*
-import org.deku.leoz.mobile.Storage
+import org.deku.leoz.mobile.model.Storage
 
 /**
  * Storage configuration

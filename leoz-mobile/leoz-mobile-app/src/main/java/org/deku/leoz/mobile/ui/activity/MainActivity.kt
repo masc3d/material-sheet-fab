@@ -1,6 +1,5 @@
-package org.deku.leoz.mobile.activity
+package org.deku.leoz.mobile.ui.activity
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -8,17 +7,22 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
-import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.main.*
+import kotlinx.android.synthetic.main.main_app_bar.*
+import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.*
+import org.deku.leoz.mobile.model.Database
 import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
 import org.deku.leoz.mobile.ui.AlertButton
+import org.deku.leoz.mobile.ui.fragment.MainFragment
 import org.deku.leoz.mobile.ui.showAlert
 import org.deku.leoz.mobile.ui.showErrorAlert
 import org.deku.leoz.mobile.update.UpdateService
 import org.slf4j.LoggerFactory
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.subscribeWith
+import sx.android.fragment.util.withTransaction
 
 class MainActivity : Activity() {
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -32,11 +36,11 @@ class MainActivity : Activity() {
                 this@MainActivity.showAlert(
                         title = "Call assistance?",
                         text = "Are you sure you want to call a supervisor?",
-                        positiveButton = AlertButton(text = R.string.yes, handler = {
+                        positiveButton = AlertButton(text = android.R.string.yes, handler = {
                             val intent = Intent(this, Proto_MainActivity::class.java)
                             startActivity(intent)
                         }),
-                        negativeButton = AlertButton(text = R.string.cancel))
+                        negativeButton = AlertButton(text = android.R.string.cancel))
             }).show()
         }
 
@@ -75,7 +79,10 @@ class MainActivity : Activity() {
                     }
                 }
 
-        // UI
-        this.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
+        this.supportActionBar?.title = getText(R.string.login)
+
+        this.supportFragmentManager.withTransaction {
+            it.replace(R.id.container, MainFragment())
+        }
     }
 }

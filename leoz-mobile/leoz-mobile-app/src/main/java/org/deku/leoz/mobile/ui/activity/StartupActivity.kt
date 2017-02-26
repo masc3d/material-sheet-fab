@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.activity
+package org.deku.leoz.mobile.ui.activity
 
 import android.Manifest
 import android.content.Intent
@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory
 import sx.android.Device
 import android.support.v4.app.ActivityCompat.requestPermissions
 import com.tbruyelle.rxpermissions.RxPermissions
+import org.deku.leoz.mobile.model.Database
 import rx.lang.kotlin.subscribeWith
 
 
