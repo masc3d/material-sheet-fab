@@ -6,6 +6,7 @@ buildscript {
         v_kotlin = '1.0.6'
         v_android_buildtools = '25.0.2'
         v_android_support = '25.1.1'
+        v_rxlifecycle = '1.0'
     }
 
     dependencies {
@@ -21,6 +22,7 @@ targetCompatibility = 1.7
 
 repositories {
     mavenCentral()
+    maven { url "https://jitpack.io" }
 }
 
 android {
@@ -28,9 +30,10 @@ android {
     buildToolsVersion v_android_buildtools
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 16
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     lintOptions {
@@ -50,25 +53,35 @@ android {
 
 dependencies {
     // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin"
+    compile(
+            project(":sx-common"),
+//            project(':kotlin-extensions'),
 
-    compile project(":sx-common")
+            fileTree(dir: 'libs', include: ['*.jar']),
 
-    // Android support libs
-    compile "com.android.support:support-annotations:$v_android_support"
-    compile "com.android.support:appcompat-v7:$v_android_support"
-    compile "com.android.support:support-v4:$v_android_support"
-    compile "com.android.support:design:$v_android_support"
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-    // RX
-    compile "io.reactivex:rxjava:1.2.6"
-    compile "io.reactivex:rxandroid:1.2.1"
+            // Android support libs
+            "com.android.support:support-annotations:$v_android_support",
+            "com.android.support:appcompat-v7:$v_android_support",
+            "com.android.support:support-v4:$v_android_support",
+            "com.android.support:design:$v_android_support",
 
-    def v_rxlifecycle = '1.0'
-    compile "com.trello:rxlifecycle:$v_rxlifecycle"
-    compile "com.trello:rxlifecycle-kotlin:$v_rxlifecycle"
-    compile "com.trello:rxlifecycle-components:$v_rxlifecycle"
+            // rx
+            "io.reactivex:rxjava:1.2.6",
+            "io.reactivex:rxandroid:1.2.1",
 
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+            // rxlifecycle
+            "com.trello:rxlifecycle:$v_rxlifecycle",
+            "com.trello:rxlifecycle-kotlin:$v_rxlifecycle",
+            "com.trello:rxlifecycle-components:$v_rxlifecycle"
+    )
+
+    androidTestCompile(
+            "junit:junit:4.12",
+            "com.android.support:support-annotations:$v_android_support",
+            "com.android.support.test:runner:0.5",
+            "com.android.support.test:rules:0.5"
+    )
 }
