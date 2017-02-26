@@ -1,4 +1,4 @@
-package sx.android.app
+package sx.android.fragment.util
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager

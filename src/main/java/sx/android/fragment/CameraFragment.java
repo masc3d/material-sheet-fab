@@ -18,17 +18,15 @@ import kotlin.jvm.functions.Function1;
 import sx.android.Camera;
 import sx.android.Function;
 import sx.android.R;
-import sx.android.app.FragmentEventDispatcher;
+import sx.android.event.FragmentEventDispatcher;
 import sx.android.widget.AsyncImageView;
 import sx.android.widget.CameraView;
 import sx.android.widget.CircleButton;
-import sx.event.EventDispatcher;
 import sx.event.EventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * Created by masc on 26.11.14.
