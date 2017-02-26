@@ -15,6 +15,7 @@ import com.tinsuke.icekick.unfreezeInstanceState
 import org.deku.leoz.mobile.config.*
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
+import sx.android.Device
 
 /**
  * Application
@@ -27,7 +28,6 @@ open class Application : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.v("", "ONCREATE")
 
         // Base modules
         Kodein.global.addImport(StorageConfiguration.module)
@@ -46,8 +46,15 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(DatabaseConfiguration.module)
         Kodein.global.addImport(FeignRestClientConfiguration.module)
         Kodein.global.addImport(UpdateConfiguration.module)
-        if(Build.MODEL == "CT50")
-            Kodein.global.addImport(HoneywellConfiguration.module)
+        Kodein.global.addImport(DeviceConfiguration.module)
+
+        val device = Device(this)
+        when (device.manufacturer.type) {
+            Device.Manufacturer.Type.Honeywell -> {
+                Kodein.global.addImport(HoneywellConfiguration.module)
+            }
+            else -> {}
+        }
     }
 
     override fun onTerminate() {

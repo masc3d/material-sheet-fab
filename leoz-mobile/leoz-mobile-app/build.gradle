@@ -170,6 +170,7 @@ dependencies {
             "com.trello:rxlifecycle:$v_rxlifecycle",
             "com.trello:rxlifecycle-kotlin:$v_rxlifecycle",
             "com.trello:rxlifecycle-components:$v_rxlifecycle",
+            "com.tbruyelle.rxpermissions:rxpermissions:0.9.2@aar",
 
             // REST
             "com.netflix.feign:feign-core:$v_feign",
