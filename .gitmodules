@@ -1,3 +1,0 @@
-[submodule "vm/puppet/modules/java"]
-	path = vm/puppet/modules/java
-	url = https://github.com/Proteon/puppet-java.git
