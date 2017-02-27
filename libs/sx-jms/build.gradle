@@ -1,0 +1,114 @@
+group 'sx'
+version '1.0'
+
+buildscript {
+    ext {
+        v_activemq = '5.14.3'
+        v_artemis = '1.5.2'
+        v_kotlin = '1.0.6'
+        v_protostuff = '1.5.0'
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'project-report'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    // TODO: custom `provided` configuration, as `compileOnly` doesn't work well with IntelliJ
+    provided {
+        dependencies.all { dep ->
+            configurations.default.exclude group: dep.group, module: dep.name
+        }
+    }
+    compile.extendsFrom provided
+}
+
+//region Prototype test setup
+configurations {
+    prototypeCompile.extendsFrom testCompile
+    prototypeRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+    prototype {
+        java.srcDirs = ['src/prototype/java']
+        resources.srcDirs = ['src/prototype/resources']
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+task prototype(type: Test, description: 'Run prototype tests.') {
+    testClassesDir sourceSets.prototype.output.classesDir
+    classpath = sourceSets.prototype.runtimeClasspath
+}
+//endregion
+
+dependencies {
+    compile(
+            project(':sx-common'),
+            project(':sx-serialization'),
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // Guava
+            "com.google.guava:guava:21.0",
+            // JMS
+            "javax.jms:jms-api:1.1-rev-1",
+    )
+
+    provided(
+            // Spring
+            "org.springframework:spring-jms:4.3.6.RELEASE",
+            // ActiveMQ
+            "org.apache.activemq:activemq-broker:$v_activemq",
+            "org.apache.activemq:activemq-kahadb-store:$v_activemq",
+            "org.apache.activemq:activemq-jms-pool:$v_activemq",
+            "org.apache.activemq:activemq-jaas:$v_activemq",
+            "org.apache.activemq:activemq-mqtt:$v_activemq",
+            dependencies.create("org.apache.activemq:activemq-http:$v_activemq") {
+                exclude group: 'org.springframework'
+                exclude group: 'org.apache.activemq', module: 'activemq-spring'
+                exclude group: 'org.eclipse.jetty.aggregate'
+            },
+            // For ActiveMQ tunnel servlet
+            "javax.servlet:javax.servlet-api:3.1.0",
+
+            // Artemis
+            dependencies.create("org.apache.activemq:artemis-jms-server:$v_artemis") {
+                // Conflicts with jms 1.1 which is required by activemq 5.x
+                exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            dependencies.create("org.apache.activemq:artemis-jms-client:$v_artemis") {
+                // Conflicts with jms 1.1 which is required by activemq 5.x
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            dependencies.create("org.apache.activemq:artemis-amqp-protocol:$v_artemis") {
+                exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            "org.apache.activemq:artemis-openwire-protocol:$v_artemis"
+    )
+
+    testCompile(
+            "junit:junit:4.12",
+            "ch.qos.logback:logback-classic:1.2.1"
+    )
+}
