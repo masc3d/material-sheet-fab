@@ -4,7 +4,7 @@ version = '0.1'
 buildscript {
     ext {
         v_kotlin = '1.0.6'
-        v_slf4j = '1.7.22'
+        v_slf4j = '1.7.23'
     }
 
     dependencies {
@@ -62,6 +62,8 @@ dependencies {
             "net.java.dev.jna:jna-platform:4.3.0",
             // Feign REST
             "com.netflix.feign:feign-core:8.18.0",
+            // YAML
+            "org.yaml:snakeyaml:1.17",
             // JUnit
             "junit:junit:4.12"
     )
