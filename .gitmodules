@@ -1,6 +1,3 @@
-[submodule "vm/puppet/modules/timezone"]
-	path = vm/puppet/modules/timezone
-	url = https://github.com/saz/puppet-timezone.git
 [submodule "vm/puppet/modules/java"]
 	path = vm/puppet/modules/java
 	url = https://github.com/Proteon/puppet-java.git
