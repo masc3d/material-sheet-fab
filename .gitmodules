@@ -1,9 +1,6 @@
 [submodule "vm/puppet/modules/java"]
 	path = vm/puppet/modules/java
 	url = https://github.com/Proteon/puppet-java.git
-[submodule "libs/sx-common"]
-	path = libs/sx-common
-url=ssh://git@git.derkurier.de:13020/leoz/sx-common.git
 [submodule "libs/sx-jms"]
 	path = libs/sx-jms
 	url = ssh://git@git.derkurier.de:13020/leoz/sx-jms.git
