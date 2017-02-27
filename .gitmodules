@@ -19,6 +19,3 @@
 [submodule "libs/sx-ssh"]
 	path = libs/sx-ssh
 	url = ssh://git@git.derkurier.de:13020/leoz/sx-ssh.git
-[submodule "libs/sx-android"]
-	path = libs/sx-android
-	url = ssh://git@git.derkurier.de:13020/leoz/sx-android.git
