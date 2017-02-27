@@ -25,9 +25,6 @@ url=ssh://git@git.derkurier.de:13020/leoz/sx-common.git
 [submodule "leoz-bridge-com/Libraries/CLAP"]
 	path = leoz-bridge-com/Libraries/CLAP
 	url = https://github.com/masc3d/CLAP.git
-[submodule "libs/barbarywatchservice"]
-	path = libs/barbarywatchservice
-url=https://github.com/masc3d/BarbaryWatchService.git
 [submodule "libs/sx-jms"]
 	path = libs/sx-jms
 	url = ssh://git@git.derkurier.de:13020/leoz/sx-jms.git
