@@ -4,9 +4,6 @@
 [submodule "vm/puppet/modules/stdlib"]
 	path = vm/puppet/modules/stdlib
 	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
-[submodule "vm/puppet/modules/apt"]
-	path = vm/puppet/modules/apt
-	url = https://github.com/puppetlabs/puppetlabs-apt.git
 [submodule "vm/puppet/modules/timezone"]
 	path = vm/puppet/modules/timezone
 	url = https://github.com/saz/puppet-timezone.git
