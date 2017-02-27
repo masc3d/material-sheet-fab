@@ -1,12 +1,3 @@
 [submodule "vm/puppet/modules/java"]
 	path = vm/puppet/modules/java
 	url = https://github.com/Proteon/puppet-java.git
-[submodule "libs/sx-rsync"]
-	path = libs/sx-rsync
-	url = ssh://git@git.derkurier.de:13020/leoz/sx-rsync.git
-[submodule "libs/sx-serialization"]
-	path = libs/sx-serialization
-	url = ssh://git@git.derkurier.de:13020/leoz/sx-serialization.git
-[submodule "libs/sx-ssh"]
-	path = libs/sx-ssh
-	url = ssh://git@git.derkurier.de:13020/leoz/sx-ssh.git
