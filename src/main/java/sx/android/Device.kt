@@ -6,16 +6,22 @@ import android.provider.Settings
 import android.telephony.TelephonyManager
 
 /**
- * Created by n3 on 26/02/2017.
+ * Generic android device class, exposing device specific information like ids and serials
+ * Created by masc on 26/02/2017.
  */
 open class Device(private val context: Context) {
+    /**
+     * Device manfucaturer
+     */
     class Manufacturer(val name: String = Build.MANUFACTURER) {
         enum class Type {
             Generic,
             Honeywell,
             Motorola,
         }
-
+        /**
+         * Manufacturer type
+         */
         val type: Type by lazy {
             if (this.name.contains("honeywell",ignoreCase = true))
                 Type.Honeywell
@@ -30,8 +36,10 @@ open class Device(private val context: Context) {
         }
     }
 
-    data class Model(val name: String = Build.MODEL) {
-    }
+    /**
+     * Device model
+     */
+    data class Model(val name: String = Build.MODEL) { }
 
     val imei: String by lazy {
         val telephonyManager = this.context.getTelephonyManager()
