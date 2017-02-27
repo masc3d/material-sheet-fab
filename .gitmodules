@@ -4,9 +4,6 @@
 [submodule "libs/sx-jms"]
 	path = libs/sx-jms
 	url = ssh://git@git.derkurier.de:13020/leoz/sx-jms.git
-[submodule "libs/sx-fx"]
-	path = libs/sx-fx
-	url = ssh://git@git.derkurier.de:13020/leoz/sx-fx.git
 [submodule "libs/sx-rsync"]
 	path = libs/sx-rsync
 	url = ssh://git@git.derkurier.de:13020/leoz/sx-rsync.git
