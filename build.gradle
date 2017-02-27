@@ -1,0 +1,39 @@
+group 'sx'
+version '0.1'
+
+buildscript {
+    ext {
+        v_kotlin = '1.0.6'
+        v_slf4j = '1.7.23'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+}
+
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile(
+            project(':sx-common'),
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            // Logging
+            "org.slf4j:slf4j-api:$v_slf4j",
+            "org.slf4j:jcl-over-slf4j:$v_slf4j",
+            "ch.qos.logback:logback-classic:1.2.1"
+    )
+
+    testCompile(
+            "junit:junit:4.12"
+    )
+}
