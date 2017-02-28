@@ -82,6 +82,7 @@ class Proto_sso_OutgoingFragment : RxAppCompatDialogFragment(), Proto_CameraScan
 
         this.barcodeReader
                 ?.readEvent
+                ?.bindToLifecycle(this)
                 ?.observeOn(AndroidSchedulers.mainThread())
                 ?.subscribe {
                     this.processBarcodeData(it.data)
