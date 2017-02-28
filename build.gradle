@@ -52,7 +52,6 @@ android {
 }
 
 dependencies {
-    // Kotlin
     compile(
             project(":sx-android"),
 
