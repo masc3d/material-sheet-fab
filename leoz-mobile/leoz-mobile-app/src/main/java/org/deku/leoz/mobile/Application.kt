@@ -1,8 +1,10 @@
 package org.deku.leoz.mobile
 
 import android.app.Activity
+import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.support.multidex.MultiDexApplication
@@ -16,6 +18,8 @@ import org.deku.leoz.mobile.config.*
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.android.Device
+import sx.android.aidc.BarcodeReader
+import sx.android.honeywell.aidc.HoneywellBarcodeReader
 
 /**
  * Application
@@ -39,6 +43,7 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(Kodein.Module {
             bind<Context>() with singleton { this@Application.applicationContext }
             bind<Application>() with singleton { this@Application }
+            bind<android.app.Application>() with singleton { this@Application }
         })
 
         // Higher level modules
@@ -109,5 +114,49 @@ fun Application.unfreezeInstanceState(activity: Activity) {
     val bundle = this.bundle.getBundle(activity.localClassName)
     if (bundle != null) {
         activity.unfreezeInstanceState(bundle)
+    }
+}
+
+class LifecycleListener : android.app.Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    override fun onConfigurationChanged(p0: Configuration?) {
+        log.info("CONFIGCHANGE")
+    }
+
+    override fun onLowMemory() {
+        log.info("LOWMEM")
+    }
+
+    override fun onTrimMemory(p0: Int) {
+        log.info("TRIMMEM")
+    }
+
+    override fun onActivityCreated(p0: Activity?, p1: Bundle?) {
+        log.info("ACT_CREATED")
+    }
+
+    override fun onActivityDestroyed(p0: Activity?) {
+        log.info("ACT_DESTROYED")
+    }
+
+    override fun onActivityPaused(p0: Activity?) {
+        log.info("ACT_PAUSED")
+    }
+
+    override fun onActivityResumed(p0: Activity?) {
+        log.info("ACT_RESUMED")
+    }
+
+    override fun onActivitySaveInstanceState(p0: Activity?, p1: Bundle?) {
+        log.info("ACT_SAVEINSTANCESTATE")
+    }
+
+    override fun onActivityStarted(p0: Activity?) {
+        log.info("ACT_STARTED")
+    }
+
+    override fun onActivityStopped(p0: Activity?) {
+        log.info("ACT_STOPPED")
     }
 }

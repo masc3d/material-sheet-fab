@@ -22,7 +22,11 @@ import org.deku.leoz.mobile.update.UpdateService
 import org.slf4j.LoggerFactory
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.subscribeWith
+import sx.android.aidc.BarcodeReader
+import sx.android.aidc.Ean13Decoder
+import sx.android.aidc.Ean8Decoder
 import sx.android.fragment.util.withTransaction
+import sx.android.rx.bindToLifecycle
 
 class MainActivity : Activity() {
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -84,5 +88,24 @@ class MainActivity : Activity() {
         this.supportFragmentManager.withTransaction {
             it.replace(R.id.container, MainFragment())
         }
+
+        val bc: BarcodeReader = Kodein.global.instance()
+
+        bc.lifecycle
+                .bindToLifecycle(this)
+                .subscribe()
+
+        bc.decoders.set(
+                Ean8Decoder(true),
+                Ean13Decoder(true)
+        )
+
+        bc.readEvent
+                .bindToLifecycle(this)
+                .subscribe {
+            log.info("Barcode scanned ${it.data}")
+        }
+
+        bc.enabled = true
     }
 }

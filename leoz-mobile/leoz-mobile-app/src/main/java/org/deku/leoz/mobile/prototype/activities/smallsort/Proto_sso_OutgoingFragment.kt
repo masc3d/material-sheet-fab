@@ -17,11 +17,19 @@ import android.widget.Toast
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import com.honeywell.aidc.*
+import com.github.salomonbrys.kodein.instanceOrNull
+import com.github.salomonbrys.kodein.lazy
+import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
+import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.Proto_CameraScannerFragment
 import org.deku.leoz.mobile.prototype.properties.Bag
 import org.slf4j.LoggerFactory
+import rx.android.schedulers.AndroidSchedulers
+import sx.android.aidc.BarcodeReader
+import sx.android.aidc.DatamatrixDecoder
+import sx.android.aidc.Ean8Decoder
+import sx.android.aidc.Interleaved25Decoder
 import java.util.*
 
 /**
@@ -32,10 +40,11 @@ import java.util.*
  * Use the [Proto_sso_OutgoingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener, Proto_CameraScannerFragment.OnBarcodeResultListener {
+class Proto_sso_OutgoingFragment : RxAppCompatDialogFragment(), Proto_CameraScannerFragment.OnBarcodeResultListener {
 
     private var listener: OnFragmentInteractionListener? = null
-    private var barcodeReader: BarcodeReader? = null
+    private val barcodeReader: BarcodeReader? by Kodein.global.lazy.instanceOrNull()
+
     private val scanMap: HashMap<Int, String> = HashMap()
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
@@ -46,9 +55,7 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        if (barcodeReader != null) {
-            acquireBarcodeReader()
-        } else {
+        if (barcodeReader == null) {
             initCameraScanner()
         }
         return inflater!!.inflate(R.layout.fragment_proto_sso__outgoing, container, false)
@@ -62,43 +69,36 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
             throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
         }
 
-        try {
-            barcodeReader = Kodein.global.instance()
-        } catch (e: Kodein.NotFoundException) {
-        }
+        this.barcodeReader
+                ?.lifecycle
+                ?.bindToLifecycle(this)
 
-        if (barcodeReader != null) {
-            try {
-                barcodeReader!!.claim()
-            } catch (e: ScannerUnavailableException) {
-                e.printStackTrace()
-                log.error("Scanner unavailable")
-            }
-        }
+        this.barcodeReader?.decoders?.set(
+                // TODO. min/max not supported just yet
+                Interleaved25Decoder(true, 11, 12),
+                DatamatrixDecoder(true),
+                Ean8Decoder(true)
+        )
+
+        this.barcodeReader
+                ?.readEvent
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe {
+                    this.processBarcodeData(it.data)
+                }
     }
 
     override fun onDetach() {
         super.onDetach()
         listener = null
-        if (barcodeReader != null) {
-            barcodeReader!!.release()
-            barcodeReader!!.removeBarcodeListener(this)
-            barcodeReader!!.removeTriggerListener(this)
-        }
     }
 
     override fun onPause() {
         super.onPause()
-        if (barcodeReader != null)
-            barcodeReader!!.release()
-
     }
 
     override fun onResume() {
         super.onResume()
-        if (barcodeReader != null)
-            barcodeReader!!.claim()
-
     }
 
     /**
@@ -128,22 +128,6 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
             val fragment = Proto_sso_OutgoingFragment()
             return fragment
         }
-    }
-
-    override fun onFailureEvent(p0: BarcodeFailureEvent?) {
-        Snackbar.make(view!!, getString(R.string.error_imager_scan_failed), Snackbar.LENGTH_SHORT).show()
-    }
-
-    override fun onTriggerEvent(p0: TriggerStateChangeEvent?) {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onBarcodeEvent(p0: BarcodeReadEvent) {
-        activity.runOnUiThread(object : Runnable {
-            override fun run() {
-                processBarcodeData(p0.barcodeData)
-            }
-        })
     }
 
     private fun processBarcodeData(content: String) {
@@ -186,47 +170,6 @@ class Proto_sso_OutgoingFragment : Fragment(), BarcodeReader.BarcodeListener, Ba
             }
         })
         //throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private fun acquireBarcodeReader() {
-
-        // register bar code event listener
-        barcodeReader!!.addBarcodeListener(this)
-
-        // set the trigger mode to client control
-        try {
-            barcodeReader!!.setProperty(BarcodeReader.PROPERTY_TRIGGER_CONTROL_MODE,
-                    BarcodeReader.TRIGGER_CONTROL_MODE_AUTO_CONTROL)
-        } catch (e: UnsupportedPropertyException) {
-            Toast.makeText(activity.applicationContext, "Failed to apply properties", Toast.LENGTH_SHORT).show()
-        }
-
-        val properties: HashMap<String, Any> = HashMap<String, Any>();
-        // Set Symbologies On/Off
-        properties.put(BarcodeReader.PROPERTY_INTERLEAVED_25_ENABLED, true)
-        properties.put(BarcodeReader.PROPERTY_GS1_128_ENABLED, false)
-        properties.put(BarcodeReader.PROPERTY_QR_CODE_ENABLED, false)
-        properties.put(BarcodeReader.PROPERTY_CODE_39_ENABLED, false)
-        properties.put(BarcodeReader.PROPERTY_DATAMATRIX_ENABLED, true)
-        properties.put(BarcodeReader.PROPERTY_UPC_A_ENABLE, false)
-        properties.put(BarcodeReader.PROPERTY_EAN_13_ENABLED, false)
-        properties.put(BarcodeReader.PROPERTY_AZTEC_ENABLED, false)
-        properties.put(BarcodeReader.PROPERTY_CODABAR_ENABLED, false)
-        properties.put(BarcodeReader.PROPERTY_PDF_417_ENABLED, false)
-        // Set Max Code 39 barcode length
-        properties.put(BarcodeReader.PROPERTY_INTERLEAVED_25_MINIMUM_LENGTH, 11)
-        properties.put(BarcodeReader.PROPERTY_INTERLEAVED_25_MAXIMUM_LENGTH, 12)
-        // Turn on center decoding
-        properties.put(BarcodeReader.PROPERTY_CENTER_DECODE, false)
-        // Disable bad read response, handle in onFailureEvent
-        properties.put(BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED, true)
-        // Apply the settings
-        barcodeReader!!.setProperties(properties)
-
-
-        val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-
-        StrictMode.setThreadPolicy(policy)
     }
 
     private fun initCameraScanner() {

@@ -134,6 +134,7 @@ dependencies {
             project(':leoz-common'),
             project(':sx-common'),
             project(':sx-android'),
+            project(':sx-android-honeywell'),
             project(':sx-serialization'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
