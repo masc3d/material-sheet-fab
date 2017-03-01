@@ -72,6 +72,8 @@ class Proto_sso_OutgoingFragment : Fragment(), Proto_CameraScannerFragment.OnBar
     override fun onResume() {
         super.onResume()
 
+        this.barcodeReader?.bindFragment(this)
+
         this.barcodeReader?.decoders?.set(
                 // TODO. min/max not supported just yet
                 Interleaved25Decoder(true, 11, 12),
