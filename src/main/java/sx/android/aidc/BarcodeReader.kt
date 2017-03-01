@@ -1,9 +1,14 @@
 package sx.android.aidc
 
+import com.trello.rxlifecycle.LifecycleProvider
+import com.trello.rxlifecycle.android.ActivityEvent
+import com.trello.rxlifecycle.android.FragmentEvent
+import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.synchronized
+import sx.Lifecycle
 
 /**
  * Abstract barcode reader
@@ -48,24 +53,51 @@ abstract class BarcodeReader {
     /**
      * On subscription of reader events
      */
-    open protected fun onSubscription() { }
+    open protected fun onBind() {
+    }
 
     /**
      * On unsubscription of reader eventrs
      */
-    open protected fun onUnsubscription() { }
+    open protected fun onUnbind() {
+    }
 
     /**
      * On decoder set
      */
     abstract protected fun onDecoderSet(decoder: Decoder)
 
-    val lifecycle by lazy {
-        PublishSubject<Unit>().asObservable().doOnSubscribe {
-            this.onSubscription()
-        }.doOnUnsubscribe {
-            this.onUnsubscription()
-        }
+    private var bindRefCount = 0
+
+    /**
+     * Observable for binding to rxlifecycle
+     */
+    private val lifecycle by lazy {
+        PublishSubject<Unit>().asObservable()
+                .doOnSubscribe {
+                    if (bindRefCount == 0)
+                        this.onBind()
+                    bindRefCount++
+                }
+                .doOnUnsubscribe {
+                    bindRefCount--
+                    if (bindRefCount == 0)
+                        this.onUnbind()
+                }
+    }
+
+    /**
+     * Bind lifecycle to fragment
+     */
+    fun bindFragment(fragment: LifecycleProvider<FragmentEvent>) {
+        this.lifecycle.bindUntilEvent(fragment, FragmentEvent.PAUSE).subscribe()
+    }
+
+    /**
+     * Bind lifecycle to activity
+     */
+    fun bindActivity(activity: LifecycleProvider<ActivityEvent>) {
+        this.lifecycle.bindUntilEvent(activity, ActivityEvent.PAUSE).subscribe()
     }
 
     /**
