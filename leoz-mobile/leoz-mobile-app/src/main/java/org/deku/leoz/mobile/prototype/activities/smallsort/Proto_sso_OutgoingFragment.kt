@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.instanceOrNull
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle.android.FragmentEvent
@@ -37,7 +38,7 @@ import java.util.*
 class Proto_sso_OutgoingFragment : Fragment(), Proto_CameraScannerFragment.OnBarcodeResultListener {
 
     private var listener: OnFragmentInteractionListener? = null
-    private val barcodeReader: BarcodeReader? by Kodein.global.lazy.instanceOrNull()
+    private val barcodeReader: BarcodeReader by Kodein.global.lazy.instance()
 
     private val scanMap: HashMap<Int, String> = HashMap()
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
@@ -49,7 +50,8 @@ class Proto_sso_OutgoingFragment : Fragment(), Proto_CameraScannerFragment.OnBar
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        if (barcodeReader == null) {
+        if (barcodeReader is CameraBarcodeReader) {
+            // TODO. CameraBarcodeReader is not implemented yet
             initCameraScanner()
         }
         return inflater!!.inflate(R.layout.fragment_proto_sso__outgoing, container, false)
@@ -72,10 +74,9 @@ class Proto_sso_OutgoingFragment : Fragment(), Proto_CameraScannerFragment.OnBar
     override fun onResume() {
         super.onResume()
 
-        this.barcodeReader?.bindFragment(this)
+        this.barcodeReader.bindFragment(this)
 
-        this.barcodeReader?.decoders?.set(
-                // TODO. min/max not supported just yet
+        this.barcodeReader.decoders.set(
                 Interleaved25Decoder(true, 11, 12),
                 DatamatrixDecoder(true),
                 Ean8Decoder(true),
@@ -83,14 +84,12 @@ class Proto_sso_OutgoingFragment : Fragment(), Proto_CameraScannerFragment.OnBar
         )
 
         this.barcodeReader
-                ?.readEvent
-                ?.bindUntilEvent(this, FragmentEvent.PAUSE)
-                ?.observeOn(AndroidSchedulers.mainThread())
-                ?.subscribe {
+                .readEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
                     this.processBarcodeData(it.data)
                 }
-
-        this.barcodeReader?.enabled = true
     }
 
     /**

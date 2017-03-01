@@ -55,7 +55,5 @@ class LoginFragment : Fragment() {
                 .subscribe {
                     log.info("Barcode scanned ${it.data}")
                 }
-
-        bc.enabled = true
     }
 }
