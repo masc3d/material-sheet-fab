@@ -84,7 +84,7 @@ class MaterialProgressIndicator : Region() {
         }
         isRunning = false
         timeline = Timeline()
-        listener = InvalidationListener { observable ->
+        listener = InvalidationListener { _ ->
             circle!!.strokeDashOffset = dashOffset.get()
             circle!!.strokeDashArray.setAll(dashArray_0.value, 200.0)
         }
@@ -170,9 +170,9 @@ class MaterialProgressIndicator : Region() {
     }
 
     private fun registerListeners() {
-        widthProperty().addListener { o -> resize() }
-        heightProperty().addListener { o -> resize() }
-        progress.addListener { o -> redraw() }
+        widthProperty().addListener { _ -> resize() }
+        heightProperty().addListener { _ -> resize() }
+        progress.addListener { _ -> redraw() }
         dashOffset.addListener(listener)
     }
 
