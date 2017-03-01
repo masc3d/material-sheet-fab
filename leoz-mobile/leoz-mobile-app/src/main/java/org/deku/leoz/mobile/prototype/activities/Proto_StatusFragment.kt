@@ -6,13 +6,13 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
 import kotlinx.android.synthetic.main.fragment_proto_status.*
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.ui.fragment.Fragment
 import org.slf4j.LoggerFactory
 
 /**
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory
  * Use the [Proto_StatusFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_StatusFragment : RxAppCompatDialogFragment() {
+class Proto_StatusFragment : Fragment() {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     // TODO: Rename and change types of parameters

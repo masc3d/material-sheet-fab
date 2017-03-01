@@ -12,7 +12,7 @@ import org.deku.leoz.mobile.R
 /**
  * Created by n3 on 26/02/2017.
  */
-class MainFragment : RxAppCompatDialogFragment() {
+class MainFragment : Fragment() {
 
     /**
      * Create view

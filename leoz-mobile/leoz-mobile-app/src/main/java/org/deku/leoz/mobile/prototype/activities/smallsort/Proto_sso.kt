@@ -10,9 +10,10 @@ import android.widget.ImageButton
 import kotlinx.android.synthetic.main.activity_proto_sso.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.Proto_CameraScannerFragment
+import org.deku.leoz.mobile.ui.activity.Activity
 import org.slf4j.LoggerFactory
 
-class Proto_sso : AppCompatActivity(), Proto_sso_MenueFragment.OnFragmentInteractionListener, Proto_sso_OutgoingFragment.OnFragmentInteractionListener, Proto_CameraScannerFragment.OnBarcodeResultListener {
+class Proto_sso : Activity(), Proto_sso_MenueFragment.OnFragmentInteractionListener, Proto_sso_OutgoingFragment.OnFragmentInteractionListener, Proto_CameraScannerFragment.OnBarcodeResultListener {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 

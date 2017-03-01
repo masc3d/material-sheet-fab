@@ -3,9 +3,6 @@ package org.deku.leoz.mobile.prototype.activities.smallsort
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.os.StrictMode
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
@@ -13,23 +10,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.instanceOrNull
 import com.github.salomonbrys.kodein.lazy
-import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
+import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.Proto_CameraScannerFragment
 import org.deku.leoz.mobile.prototype.properties.Bag
+import org.deku.leoz.mobile.ui.fragment.Fragment
 import org.slf4j.LoggerFactory
 import rx.android.schedulers.AndroidSchedulers
-import sx.android.aidc.BarcodeReader
-import sx.android.aidc.DatamatrixDecoder
-import sx.android.aidc.Ean8Decoder
-import sx.android.aidc.Interleaved25Decoder
+import sx.android.aidc.*
 import java.util.*
 
 /**
@@ -40,7 +34,7 @@ import java.util.*
  * Use the [Proto_sso_OutgoingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_sso_OutgoingFragment : RxAppCompatDialogFragment(), Proto_CameraScannerFragment.OnBarcodeResultListener {
+class Proto_sso_OutgoingFragment : Fragment(), Proto_CameraScannerFragment.OnBarcodeResultListener {
 
     private var listener: OnFragmentInteractionListener? = null
     private val barcodeReader: BarcodeReader? by Kodein.global.lazy.instanceOrNull()
@@ -68,25 +62,6 @@ class Proto_sso_OutgoingFragment : RxAppCompatDialogFragment(), Proto_CameraScan
         } else {
             throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
         }
-
-        this.barcodeReader
-                ?.lifecycle
-                ?.bindToLifecycle(this)
-
-        this.barcodeReader?.decoders?.set(
-                // TODO. min/max not supported just yet
-                Interleaved25Decoder(true, 11, 12),
-                DatamatrixDecoder(true),
-                Ean8Decoder(true)
-        )
-
-        this.barcodeReader
-                ?.readEvent
-                ?.bindToLifecycle(this)
-                ?.observeOn(AndroidSchedulers.mainThread())
-                ?.subscribe {
-                    this.processBarcodeData(it.data)
-                }
     }
 
     override fun onDetach() {
@@ -94,12 +69,26 @@ class Proto_sso_OutgoingFragment : RxAppCompatDialogFragment(), Proto_CameraScan
         listener = null
     }
 
-    override fun onPause() {
-        super.onPause()
-    }
-
     override fun onResume() {
         super.onResume()
+
+        this.barcodeReader?.decoders?.set(
+                // TODO. min/max not supported just yet
+                Interleaved25Decoder(true, 11, 12),
+                DatamatrixDecoder(true),
+                Ean8Decoder(true),
+                Ean13Decoder(true)
+        )
+
+        this.barcodeReader
+                ?.readEvent
+                ?.bindUntilEvent(this, FragmentEvent.PAUSE)
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe {
+                    this.processBarcodeData(it.data)
+                }
+
+        this.barcodeReader?.enabled = true
     }
 
     /**

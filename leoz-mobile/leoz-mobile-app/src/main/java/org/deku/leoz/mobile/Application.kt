@@ -25,10 +25,10 @@ import sx.android.honeywell.aidc.HoneywellBarcodeReader
  * Application
  * Created by masc on 10/12/2016.
  */
-open class Application : MultiDexApplication() {
+open class Application : MultiDexApplication(), android.app.Application.ActivityLifecycleCallbacks {
     val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
-    val bundle = Bundle()
+    internal val bundle = Bundle()
 
     override fun onCreate() {
         super.onCreate()
@@ -52,17 +52,13 @@ open class Application : MultiDexApplication() {
         Kodein.global.addImport(FeignRestClientConfiguration.module)
         Kodein.global.addImport(UpdateConfiguration.module)
         Kodein.global.addImport(DeviceConfiguration.module)
+        Kodein.global.addImport(AidcConfiguration.module)
 
-        val device = Device(this)
-        when (device.manufacturer.type) {
-            Device.Manufacturer.Type.Honeywell -> {
-                Kodein.global.addImport(HoneywellConfiguration.module)
-            }
-            else -> {}
-        }
+        this.registerActivityLifecycleCallbacks(this)
     }
 
     override fun onTerminate() {
+        this.unregisterActivityLifecycleCallbacks(this)
         super.onTerminate()
     }
 
@@ -92,6 +88,46 @@ open class Application : MultiDexApplication() {
     fun terminate() {
         android.os.Process.killProcess(android.os.Process.myPid())
     }
+
+    override fun onConfigurationChanged(p0: Configuration?) {
+        log.info("CONFIGCHANGE")
+    }
+
+    override fun onLowMemory() {
+        log.info("LOWMEM")
+    }
+
+    override fun onTrimMemory(p0: Int) {
+        log.info("TRIMMEM")
+    }
+
+    override fun onActivityCreated(p0: Activity?, p1: Bundle?) {
+        log.info("ACT_CREATED [${p0}]")
+    }
+
+    override fun onActivityDestroyed(p0: Activity?) {
+        log.info("ACT_DESTROYED [${p0}]")
+    }
+
+    override fun onActivityPaused(p0: Activity?) {
+        log.info("ACT_PAUSED [${p0}]")
+    }
+
+    override fun onActivityResumed(p0: Activity?) {
+        log.info("ACT_RESUMED [${p0}]")
+    }
+
+    override fun onActivitySaveInstanceState(p0: Activity?, p1: Bundle?) {
+        log.info("ACT_SAVEINSTANCESTATE [${p0}]")
+    }
+
+    override fun onActivityStarted(p0: Activity?) {
+        log.info("ACT_STARTED [${p0}]")
+    }
+
+    override fun onActivityStopped(p0: Activity?) {
+        log.info("ACT_STOPPED [${p0}]")
+    }
 }
 
 val Activity.app: Application get() = this.application as Application
@@ -114,49 +150,5 @@ fun Application.unfreezeInstanceState(activity: Activity) {
     val bundle = this.bundle.getBundle(activity.localClassName)
     if (bundle != null) {
         activity.unfreezeInstanceState(bundle)
-    }
-}
-
-class LifecycleListener : android.app.Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
-    private val log = LoggerFactory.getLogger(this.javaClass)
-
-    override fun onConfigurationChanged(p0: Configuration?) {
-        log.info("CONFIGCHANGE")
-    }
-
-    override fun onLowMemory() {
-        log.info("LOWMEM")
-    }
-
-    override fun onTrimMemory(p0: Int) {
-        log.info("TRIMMEM")
-    }
-
-    override fun onActivityCreated(p0: Activity?, p1: Bundle?) {
-        log.info("ACT_CREATED")
-    }
-
-    override fun onActivityDestroyed(p0: Activity?) {
-        log.info("ACT_DESTROYED")
-    }
-
-    override fun onActivityPaused(p0: Activity?) {
-        log.info("ACT_PAUSED")
-    }
-
-    override fun onActivityResumed(p0: Activity?) {
-        log.info("ACT_RESUMED")
-    }
-
-    override fun onActivitySaveInstanceState(p0: Activity?, p1: Bundle?) {
-        log.info("ACT_SAVEINSTANCESTATE")
-    }
-
-    override fun onActivityStarted(p0: Activity?) {
-        log.info("ACT_STARTED")
-    }
-
-    override fun onActivityStopped(p0: Activity?) {
-        log.info("ACT_STOPPED")
     }
 }

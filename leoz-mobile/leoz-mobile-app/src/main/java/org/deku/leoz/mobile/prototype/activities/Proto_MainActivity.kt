@@ -4,13 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.View
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_proto__main.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso
+import org.deku.leoz.mobile.ui.activity.Activity
 import org.slf4j.LoggerFactory
 
-class Proto_MainActivity : RxAppCompatActivity(), View.OnClickListener {
+class Proto_MainActivity : Activity(), View.OnClickListener {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 

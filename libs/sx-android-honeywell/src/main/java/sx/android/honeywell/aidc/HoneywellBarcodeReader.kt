@@ -46,11 +46,13 @@ class HoneywellBarcodeReader private constructor(
         }
     }
 
-    override fun onSubscription() {
+    override fun onBind() {
+        log.debug("Claiming reader")
         this.honeywellReader.claim()
     }
 
-    override fun onUnsubscription() {
+    override fun onUnbind() {
+        log.debug("Releasing reader")
         this.honeywellReader.release()
     }
 
@@ -79,12 +81,13 @@ class HoneywellBarcodeReader private constructor(
             this.honeywellReader.decode(field)
         }
 
-
     var centerDecode: Boolean
         get() { return this.honeywellReader.getBooleanProperty(com.honeywell.aidc.BarcodeReader.PROPERTY_CENTER_DECODE) }
         set(value) { this.honeywellReader.setProperty(com.honeywell.aidc.BarcodeReader.PROPERTY_CENTER_DECODE, value) }
 
     override fun onDecoderSet(decoder: Decoder) {
+        log.info("Setting decoder [${decoder}]")
+
         when (decoder) {
             is BarcodeDecoder -> {
                 // TODO. add support for barcode lengths

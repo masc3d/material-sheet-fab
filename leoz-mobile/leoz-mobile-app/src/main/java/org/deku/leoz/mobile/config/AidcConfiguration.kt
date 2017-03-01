@@ -5,8 +5,11 @@ import rx.Observable
 import rx.lang.kotlin.BehaviorSubject
 import rx.lang.kotlin.firstOrNull
 import rx.lang.kotlin.synchronized
+import rx.lang.kotlin.toSingletonObservable
 import rx.schedulers.Schedulers
+import sx.android.Device
 import sx.android.aidc.BarcodeReader
+import sx.android.aidc.CameraBarcodeReader
 import sx.android.honeywell.aidc.HoneywellBarcodeReader
 import java.util.concurrent.TimeUnit
 
@@ -14,15 +17,22 @@ import java.util.concurrent.TimeUnit
  * Honeywell configuration
  * Created by masc on 12/12/2016.
  */
-class HoneywellConfiguration {
+class AidcConfiguration {
     companion object {
         val module = Kodein.Module {
-            bind<Observable<BarcodeReader>>() with eagerSingleton {
-                HoneywellBarcodeReader.create(context = instance())
+            bind<Observable<out BarcodeReader>>() with eagerSingleton {
+                val device: Device = instance()
+                when (device.manufacturer.type) {
+                    Device.Manufacturer.Type.Honeywell ->
+                        HoneywellBarcodeReader.create(context = instance())
+                    else ->
+                        CameraBarcodeReader(context = instance())
+                                .toSingletonObservable()
+                }
             }
 
             bind<BarcodeReader>() with singleton {
-                val ovBarodeReader: Observable<BarcodeReader> = instance()
+                val ovBarodeReader: Observable<out BarcodeReader> = instance()
 
                 ovBarodeReader
                         .take(0, TimeUnit.SECONDS)

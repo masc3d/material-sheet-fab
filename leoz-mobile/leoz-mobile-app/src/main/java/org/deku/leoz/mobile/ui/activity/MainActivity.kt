@@ -6,7 +6,11 @@ import android.support.design.widget.Snackbar
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
+import com.trello.rxlifecycle.android.ActivityEvent
+import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main_app_bar.*
 import kotlinx.android.synthetic.main.main_content.*
@@ -30,6 +34,8 @@ import sx.android.rx.bindToLifecycle
 
 class MainActivity : Activity() {
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    private val bc: BarcodeReader by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,24 +94,9 @@ class MainActivity : Activity() {
         this.supportFragmentManager.withTransaction {
             it.replace(R.id.container, MainFragment())
         }
+    }
 
-        val bc: BarcodeReader = Kodein.global.instance()
-
-        bc.lifecycle
-                .bindToLifecycle(this)
-                .subscribe()
-
-        bc.decoders.set(
-                Ean8Decoder(true),
-                Ean13Decoder(true)
-        )
-
-        bc.readEvent
-                .bindToLifecycle(this)
-                .subscribe {
-            log.info("Barcode scanned ${it.data}")
-        }
-
-        bc.enabled = true
+    override fun onResume() {
+        super.onResume()
     }
 }
