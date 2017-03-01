@@ -26,7 +26,7 @@ import sx.android.aidc.Ean8Decoder
  */
 class LoginFragment : Fragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val bc: BarcodeReader by Kodein.global.lazy.instance()
+    private val barcodeReader: BarcodeReader by Kodein.global.lazy.instance()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
@@ -43,14 +43,14 @@ class LoginFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        bc.bindFragment(this)
+        barcodeReader.bindFragment(this)
 
-        bc.decoders.set(
+        barcodeReader.decoders.set(
                 Ean8Decoder(true),
                 Ean13Decoder(true)
         )
 
-        bc.readEvent
+        barcodeReader.readEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .subscribe {
                     log.info("Barcode scanned ${it.data}")

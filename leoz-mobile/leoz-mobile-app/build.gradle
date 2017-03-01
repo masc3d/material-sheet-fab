@@ -167,7 +167,7 @@ dependencies {
             "io.reactivex:rxkotlin:$v_rxkotlin",
             "io.reactivex:rxjava-async-util:0.21.0",
             "com.github.davidmoten:rxjava-extras:0.8.0.6",
-            "com.jakewharton.rxbinding:rxbinding:1.0.0",
+            "com.jakewharton.rxbinding:rxbinding:1.0.1",
             "com.trello:rxlifecycle:$v_rxlifecycle",
             "com.trello:rxlifecycle-kotlin:$v_rxlifecycle",
             "com.trello:rxlifecycle-components:$v_rxlifecycle",
@@ -190,7 +190,7 @@ dependencies {
             "io.swagger:swagger-annotations:$v_swagger",
 
             // Kotlin extensions for activity/fragment state persistence
-            "com.github.tinsukE:icekick:0.1",
+            "com.github.tinsukE:icekick:0.2",
 
             "org.parceler:parceler-api:1.1.6",
             'com.journeyapps:zxing-android-embedded:3.4.0',

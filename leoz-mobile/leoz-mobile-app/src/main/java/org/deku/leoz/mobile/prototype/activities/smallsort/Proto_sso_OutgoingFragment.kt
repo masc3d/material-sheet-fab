@@ -74,17 +74,16 @@ class Proto_sso_OutgoingFragment : Fragment(), Proto_CameraScannerFragment.OnBar
     override fun onResume() {
         super.onResume()
 
-        this.barcodeReader.bindFragment(this)
+        barcodeReader.bindFragment(this)
 
-        this.barcodeReader.decoders.set(
+        barcodeReader.decoders.set(
                 Interleaved25Decoder(true, 11, 12),
                 DatamatrixDecoder(true),
                 Ean8Decoder(true),
                 Ean13Decoder(true)
         )
 
-        this.barcodeReader
-                .readEvent
+        barcodeReader.readEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
