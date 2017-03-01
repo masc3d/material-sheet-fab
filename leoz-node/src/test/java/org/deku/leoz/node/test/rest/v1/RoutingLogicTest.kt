@@ -337,4 +337,56 @@ class RoutingLogicTest : DataTest() {
         val routing = this.routingService.request(request)
         Assert.assertEquals(routing.deliveryDate!!.toString(), "2016-10-31")
     }
+
+    @Test
+    fun testFebruaryWithoutLeapYear() {
+        val request = RoutingRequest(
+                sendDate = ShortDate("2017-02-28"),
+                consignee = RoutingRequest.RequestParticipant(
+                        country = "DE",
+                        zip = "36286"))
+
+        val routing = this.routingService.request(request)
+        Assert.assertEquals(routing.deliveryDate!!.toString(), "2017-01-01")
+    }
+
+    @Test
+    fun testFebruaryWithoutLeapYear2() {
+        val request = RoutingRequest(
+                sendDate = ShortDate("2017-02-29"),
+                consignee = RoutingRequest.RequestParticipant(
+                        country = "DE",
+                        zip = "36286"))
+
+        try{
+            this.routingService.request(request)
+            Assert.fail()
+        }catch(e: ServiceException){
+
+        }
+    }
+
+    @Test
+    fun testFebruaryWithinLeapYear() {
+        val request = RoutingRequest(
+                sendDate = ShortDate("2016-02-28"),
+                consignee = RoutingRequest.RequestParticipant(
+                        country = "DE",
+                        zip = "36286"))
+
+        val routing = this.routingService.request(request)
+        Assert.assertEquals(routing.deliveryDate!!.toString(), "2016-02-29")
+    }
+
+    @Test
+    fun testFebruaryWithinLeapYear2() {
+        val request = RoutingRequest(
+                sendDate = ShortDate("2016-02-29"),
+                consignee = RoutingRequest.RequestParticipant(
+                        country = "DE",
+                        zip = "36286"))
+
+        val routing = this.routingService.request(request)
+        Assert.assertEquals(routing.deliveryDate!!.toString(), "2016-03-01")
+    }
 }
