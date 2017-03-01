@@ -73,8 +73,8 @@ class MainActivity : Activity() {
         val updateService: UpdateService = Kodein.global.instance()
 
         updateService.availableUpdateEvent
-                .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith {
                     onNext { event ->
                         val sb = Snackbar.make(
