@@ -1,5 +1,3 @@
-import java.nio.file.Files
-
 buildscript {
     ext {
         v_mysql = '5.1.40'
@@ -50,11 +48,14 @@ dependencies {
 
             // jooq
             "org.jooq:jooq:$v_jooq",
+
+            // JDBC connection pooling
             "org.apache.commons:commons-dbcp2:2.1.1"
     )
 
     testCompile(
             project(':sx-common'),
+
             "junit:junit:$v_junit",
             // webservice client libraries for test cases
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
@@ -64,7 +65,7 @@ dependencies {
 
     jooqRuntime(
             "mysql:mysql-connector-java:$v_mysql",
-            "org.slf4j:slf4j-api:$v_slf4j"
+            "org.slf4j:slf4j-api:$v_slf4j",
     )
 }
 
@@ -155,3 +156,16 @@ distributions {
 packager {
     title = "Leoz Central"
 }
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            // JOOQ plugin comes with some rather intrusive configuration (`jooqRuntime`) which enforces downgrade of jooq in distribution packages.
+            // Only way to work around this is to hard override this dependency group (apparently)
+            if (details.requested.group == 'org.jooq') {
+                details.useVersion v_jooq
+            }
+        }
+    }
+}
+
