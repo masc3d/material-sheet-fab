@@ -59,7 +59,7 @@ apply plugin: 'sx-packager'
 
 group = 'org.deku.leoz'
 sourceCompatibility = 1.8
-version = '0.61-SNAPSHOT'
+version = '0.62-SNAPSHOT'
 mainClassName = 'org.deku.leoz.node.Main'
 
 //region Constants
@@ -84,7 +84,7 @@ def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
 def QUERYDSL_GENERATED_DIR = new File(GENERATED_DIR, 'querydsl')
 
 class Constants {
-    static def JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.jpa'
+    static JPA_GENERATED_PACKAGE = 'org.deku.leoz.node.data.jpa'
 }
 
 def JPA_GENERATED_PACKAGE = Constants.JPA_GENERATED_PACKAGE
@@ -402,7 +402,7 @@ tasks.classes {
 /**
  * JOOQ generator strategy
  */
-public class CustomJooqGeneratorStrategy extends DefaultGeneratorStrategy {
+class CustomJooqGeneratorStrategy extends DefaultGeneratorStrategy {
     @Override
     String getJavaPackageName(Definition definition, GeneratorStrategy.Mode mode) {
         def packageName = super.getJavaPackageName(definition, mode)
@@ -500,7 +500,7 @@ tasks.compileJava.dependsOn(tasks.queryDslGenerate)
  * @param classNames Class names to add to persistence unit
  * @return
  */
-static def generatePersistenceXml(File persistenceXml, List<String> classNames) {
+static generatePersistenceXml(File persistenceXml, List<String> classNames) {
     persistenceXml.parentFile.mkdirs()
 
     def fileWriter = new FileWriter(persistenceXml)
@@ -514,7 +514,7 @@ static def generatePersistenceXml(File persistenceXml, List<String> classNames) 
             }
         }
     }
-    fileWriter.close();
+    fileWriter.close()
 }
 
 /**
@@ -523,7 +523,7 @@ static def generatePersistenceXml(File persistenceXml, List<String> classNames) 
  * @param sourceDir Generated sources dir (to process)
  * @return List of entity class names that have been found
  */
-static def List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
+static List<String> jpaPostProcess(File tablesXmlFile, File sourceDir) {
     // Parse `tables.xml` for @Serializable uids and build look up map
     def tables = new XmlSlurper().parse(tablesXmlFile)
     def tableUidMap = new HashMap<String, String>()
