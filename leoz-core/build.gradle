@@ -63,7 +63,6 @@ dependencies {
             project(':barbarywatchservice'),
             project(':leoz-common'),
             // Kotlin
-            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3",
 

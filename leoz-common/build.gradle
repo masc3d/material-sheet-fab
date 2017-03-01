@@ -58,7 +58,6 @@ dependencies {
     compile(
             project(':sx-common'),
             project(':sx-serialization'),
-            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Kodein

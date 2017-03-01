@@ -21,7 +21,6 @@ dependencies {
             project(':leoz-core'),
 
             // Kotlin
-            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Logging

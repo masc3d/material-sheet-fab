@@ -65,7 +65,6 @@ dependencies {
             project(':sx-common'),
             project(':sx-serialization'),
             // Kotlin
-            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             // Guava
             "com.google.guava:guava:21.0",

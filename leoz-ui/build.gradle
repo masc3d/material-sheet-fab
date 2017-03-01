@@ -33,7 +33,6 @@ dependencies {
             "ch.qos.logback:logback-classic:$v_logback",
 
             // Kotlin
-            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Kodein
