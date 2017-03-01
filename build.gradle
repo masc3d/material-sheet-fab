@@ -57,7 +57,6 @@ dependencies {
 
             fileTree(dir: 'libs', include: ['*.jar']),
 
-            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Android support libs
