@@ -15,6 +15,5 @@ class CameraBarcodeReader(val context: Context) : BarcodeReader() {
         set(value) {}
 
     override fun onDecoderSet(decoder: Decoder) {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
