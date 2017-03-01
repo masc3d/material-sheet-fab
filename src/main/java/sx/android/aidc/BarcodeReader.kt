@@ -78,11 +78,13 @@ abstract class BarcodeReader {
                     if (bindRefCount == 0)
                         this.onBind()
                     bindRefCount++
+                    log.trace("Bind ref count [${bindRefCount}]")
                 }
                 .doOnUnsubscribe {
                     bindRefCount--
                     if (bindRefCount == 0)
                         this.onUnbind()
+                    log.trace("Bind ref count [${bindRefCount}]")
                 }
     }
 
