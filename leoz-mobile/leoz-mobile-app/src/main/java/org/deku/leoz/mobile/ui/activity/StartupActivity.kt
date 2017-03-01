@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import com.tinsuke.icekick.state
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import org.deku.leoz.mobile.*
 import org.deku.leoz.mobile.update.UpdateService
@@ -18,6 +17,7 @@ import org.slf4j.LoggerFactory
 import sx.android.Device
 import android.support.v4.app.ActivityCompat.requestPermissions
 import com.tbruyelle.rxpermissions.RxPermissions
+import com.tinsuke.icekick.extension.serialState
 import org.deku.leoz.mobile.model.Database
 import rx.lang.kotlin.subscribeWith
 
@@ -29,7 +29,7 @@ import rx.lang.kotlin.subscribeWith
 class StartupActivity : RxAppCompatActivity() {
     val log = LoggerFactory.getLogger(this.javaClass)
 
-    private var started: Boolean by state(false)
+    private var started: Boolean by serialState(false)
 
     /**
      * Start main activitiy

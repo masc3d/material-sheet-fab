@@ -12,8 +12,8 @@ import android.util.Log
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
-import com.tinsuke.icekick.freezeInstanceState
-import com.tinsuke.icekick.unfreezeInstanceState
+import com.tinsuke.icekick.extension.freezeInstanceState
+import com.tinsuke.icekick.extension.unfreezeInstanceState
 import org.deku.leoz.mobile.config.*
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
