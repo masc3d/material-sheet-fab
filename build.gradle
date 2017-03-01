@@ -162,7 +162,7 @@ configure(
             windowsIcon = g_windows_icon
             nativePlatformDir = new File(project(':sx-rsync').projectDir, 'platform')
             supplementalPlatformDirs(
-                    (buildPlatformDir): file('platform')
+                    (buildPlatformDir): new File('platform')
             )
         }
     }
