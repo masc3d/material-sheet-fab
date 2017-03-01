@@ -417,7 +417,7 @@ constructor(
         entityManager.flushMode = FlushModeType.COMMIT
 
         if (deleteBeforeUpdate || destQdslSyncIdPath == null) {
-            transaction.execute<Any> { ts ->
+            transaction.execute<Any> { _ ->
                 log.info(lfmt("Deleting all entities"))
                 destRepository.deleteAllInBatch()
                 entityManager.flush()
@@ -448,7 +448,7 @@ constructor(
 
         // Get newer records from central
         // masc20150530. JOOQ cursor requires an explicit transaction
-        transactionJooq.execute<Any> { tsJooq ->
+        transactionJooq.execute<Any> { _ ->
             // Read source records newer than destination timestamp
             val source = genericJooqRepository.findNewerThan(
                     destMaxSyncId,
@@ -461,7 +461,7 @@ constructor(
                 // * saving/transaction commit gets very slow when deleting and inserting within the same transaction
                 log.info(lfmt("Outdated [${destMaxSyncId}]"))
                 var count = 0
-                transaction.execute<Any> { ts ->
+                transaction.execute<Any> { _ ->
                     while (source.hasNext()) {
                         // Fetch next record
                         val record = source.fetchOne()

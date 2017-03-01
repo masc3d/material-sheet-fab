@@ -61,7 +61,7 @@ class AuthorizationService
             }
 
             if (record != null) {
-                val isAuthorized = record.authorized != null && record.authorized !== 0
+                val isAuthorized = record.authorized != null && record.authorized != 0
 
                 if (isAuthorized)
                     this.dispatcher.emit { it.onAuthorized(identityKey) }

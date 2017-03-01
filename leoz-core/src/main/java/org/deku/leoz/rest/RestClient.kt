@@ -64,7 +64,7 @@ class RestClient(val baseUri: URI,
             if (ignoreSslCertificate) {
                 clientBuilder =  clientBuilder
                         .sslContext(ignoringCertificateSslContext)
-                        .hostnameVerifier { s, sslSession -> true  }
+                        .hostnameVerifier { _, _ -> true  }
             }
             clientBuilder.build()
         }
@@ -87,7 +87,7 @@ class RestClient(val baseUri: URI,
             if (ignoreSslCertificate) {
                 clientBuilder =  clientBuilder
                         .sslContext(ignoringCertificateSslContext)
-                        .hostnameVerifier { s, sslSession -> true  }
+                        .hostnameVerifier { _, _ -> true  }
             }
             clientBuilder.build()
         }

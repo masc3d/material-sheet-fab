@@ -197,7 +197,7 @@ class Boot {
                         bundleName = bundleName,
                         version = version,
                         forceDownload = forceDownload,
-                        onProgress = { f, p ->
+                        onProgress = { _, p ->
                             onNext(Event(p))
                         }
                 )

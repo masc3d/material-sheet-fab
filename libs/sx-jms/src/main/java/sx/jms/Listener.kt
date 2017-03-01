@@ -78,7 +78,7 @@ abstract class Listener(
         }
 
         if (messageObject != null) {
-            handler = this.handlerDelegates.getOrDefault(messageObject.javaClass, null)
+            handler = this.handlerDelegates.get(messageObject.javaClass)
 
             if (handler == null) {
                 throw HandlingException("No delegate for message object type [%s]".format(messageObject.javaClass, Message::class.java))

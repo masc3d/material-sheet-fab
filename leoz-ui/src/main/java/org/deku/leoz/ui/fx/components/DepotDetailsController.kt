@@ -53,7 +53,7 @@ class DepotDetailsController : Initializable {
     }
 
     override fun initialize(location: URL, resources: ResourceBundle) {
-        fxTabPane.selectionModel.selectedItemProperty().addListener { obj, oldvalue, newValue -> this.updateTab() }
+        fxTabPane.selectionModel.selectedItemProperty().addListener { _, _, _ -> this.updateTab() }
         fxFormMain = FXForm()
 
         fxFormMain.skin = FormSkin(fxFormMain)

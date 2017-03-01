@@ -44,7 +44,7 @@ class DebugController : ModuleController(), Initializable {
 
     override fun initialize(location: URL, resources: ResourceBundle) {
         fxUiAnimationsEnabled.isSelected = this.settings.isAnimationsEnabled
-        fxUiAnimationsEnabled.selectedProperty().addListener { o, ov, nv -> this.settings.isAnimationsEnabled = nv }
+        fxUiAnimationsEnabled.selectedProperty().addListener { _, _, nv -> this.settings.isAnimationsEnabled = nv }
     }
 
     fun onLeoBridgeSend() {

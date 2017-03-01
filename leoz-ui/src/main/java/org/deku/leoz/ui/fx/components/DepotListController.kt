@@ -131,9 +131,9 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
     }
 
     override fun initialize(location: URL, resources: ResourceBundle) {
-        fxSearchText.textProperty().addListener { obj, oldValue, newValue -> onSearchTextChanged(newValue) }
+        fxSearchText.textProperty().addListener { _, _, newValue -> onSearchTextChanged(newValue) }
 
-        fxDepotTableView.selectionModel.selectedItemProperty().addListener { obj, oldValue, newValue ->
+        fxDepotTableView.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             this.ovItemSelected.onNext(newValue)
         }
 
@@ -152,7 +152,7 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
             val tc = TextFieldTableCell<Any, Any>()
             tc.addEventFilter(MouseEvent.MOUSE_CLICKED) { event ->
                 if (event.clickCount > 1) {
-                    val cell = event.source as TableCell<Any, Any>
+                    val cell = event.source as TableCell<*, *>
                     val station = cell.tableRow.item as Station
                     try {
                         this.leoBridge.sendMessage(MessageFactory.createViewDepotMessage(station))

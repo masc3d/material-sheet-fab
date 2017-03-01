@@ -46,7 +46,7 @@ class ConnectionConfiguration {
     /**
      * Active node that services should connect to
      */
-    var node: UdpDiscoveryService.Node<DiscoveryInfo>? by Delegates.observable(null) { p, o: UdpDiscoveryService.Node<DiscoveryInfo>?, n: UdpDiscoveryService.Node<DiscoveryInfo>? ->
+    var node: UdpDiscoveryService.Node<DiscoveryInfo>? by Delegates.observable(null) { _, o: UdpDiscoveryService.Node<DiscoveryInfo>?, n: UdpDiscoveryService.Node<DiscoveryInfo>? ->
         val DEFAULT_HOST = "localhost"
         val oldHost = o?.address?.hostName ?: DEFAULT_HOST
         val newHost = node?.address?.hostName ?: DEFAULT_HOST

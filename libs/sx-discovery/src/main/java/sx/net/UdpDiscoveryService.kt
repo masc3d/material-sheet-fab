@@ -216,7 +216,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 .map {
                     it.node
                 }
-                .mergeWith(Observable.create<Node<TInfo>> { sub ->
+                .mergeWith(Observable.unsafeCreate<Node<TInfo>> { sub ->
                     this.directory.forEach { sub.onNext(it) }
                     sub.onCompleted()
                 })
@@ -239,7 +239,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
      * Updates a directory entry, notifying on change
      */
     private fun updateDirectory(node: Node<TInfo>, log: Logger) {
-        var updated = true
+        var updated: Boolean
         if (node.uid == null) {
             log.warn("UID of node [${node}] is null")
             return

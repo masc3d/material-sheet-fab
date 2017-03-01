@@ -172,8 +172,8 @@ class Application : Application() {
                     updateIcon()
                     // TODO: workaround for OSX issue where window icon is garbled on resize
                     if (SystemUtils.IS_OS_MAC) {
-                        primaryStage.widthProperty().addListener { v, o, n -> updateIcon() }
-                        primaryStage.heightProperty().addListener { v, o, n -> updateIcon() }
+                        primaryStage.widthProperty().addListener { _, _, _ -> updateIcon() }
+                        primaryStage.heightProperty().addListener { _, _, _ -> updateIcon() }
                     }
 
                     Platform.runLater {

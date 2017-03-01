@@ -76,7 +76,6 @@ class Application : javafx.application.Application() {
 
             // Injection setup
             log.info("Setting up injection")
-            val sw = Stopwatch.createStarted()
             Kodein.global.addImport(ApplicationConfiguration.module)
             Kodein.global.addImport(StorageConfiguration.module)
             Kodein.global.addImport(LogConfiguration.module)

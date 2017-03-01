@@ -112,7 +112,7 @@ class MainController : Initializable {
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         uxTitle.text = ""
         uxProgressIndicator.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS)
-        uxProgressBar.progressProperty().addListener { s, o, n ->
+        uxProgressBar.progressProperty().addListener { _, _, n ->
             val progress = n.toDouble()
             val visible = (progress == ProgressBar.INDETERMINATE_PROGRESS || (progress >= 0.0 && progress < 1))
             uxProgressIndicator.isVisible = visible

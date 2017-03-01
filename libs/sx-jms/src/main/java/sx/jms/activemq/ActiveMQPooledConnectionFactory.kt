@@ -37,21 +37,21 @@ class ActiveMQPooledConnectionFactory(
 
     /**
      */
-    var uri: URI by Delegates.observable(uri, { p, o, v ->
+    var uri: URI by Delegates.observable(uri, { _, _, _ ->
         this.connectionFactory.reset()
     })
 
     /**
      * Username
      */
-    var user: String by Delegates.observable(username, { p, o, v ->
+    var user: String by Delegates.observable(username, { _, _, _ ->
         this.connectionFactory.reset()
     })
 
     /**
      * Password
      */
-    var password: String by Delegates.observable(password, { p, o, v ->
+    var password: String by Delegates.observable(password, { _, _, _ ->
         this.connectionFactory.reset()
     })
 

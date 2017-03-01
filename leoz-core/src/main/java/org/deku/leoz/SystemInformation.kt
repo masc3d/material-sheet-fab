@@ -97,7 +97,6 @@ class SystemInformation : Serializable {
             // Some (eg. linux) systems require a more refined lookup
             if (networkInterface == null) {
                 try {
-                    val interfaces = this.interfaces
                     for (nii in Collections.list(NetworkInterface.getNetworkInterfaces())) {
                         if (nii.isUp && !nii.isLoopback && !nii.isPointToPoint) {
                             networkInterface = nii

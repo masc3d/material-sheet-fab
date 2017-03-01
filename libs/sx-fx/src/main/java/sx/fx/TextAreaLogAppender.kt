@@ -29,7 +29,7 @@ class TextAreaLogAppender(
         this.patternLayout.context = LoggerFactory.getILoggerFactory() as LoggerContext
         this.patternLayout.start()
 
-        this.textArea.textProperty().addListener { observableValue, old, new ->
+        this.textArea.textProperty().addListener { _, _, _ ->
             // TODO: the first time this fires, it doesn't work properly, text area won't scroll to end
             this.textArea.scrollTop = Double.MAX_VALUE
         }

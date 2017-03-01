@@ -186,7 +186,7 @@ class RoutingService : org.deku.leoz.rest.service.v1.RoutingService {
         val country: String = requestParticipant?.country?.toUpperCase()
                 ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "${errorPrefix} empty country")
 
-        val zip: String = requestParticipant?.zip?.toUpperCase()
+        val zip: String = requestParticipant.zip?.toUpperCase()
                 ?: throw ServiceException(ServiceErrorCode.MISSING_PARAMETER, "${errorPrefix} empty zipcode")
 
         val rcountry = countryRepository.findOne(country)

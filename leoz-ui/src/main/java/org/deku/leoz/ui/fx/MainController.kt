@@ -157,7 +157,7 @@ class MainController : Controller(), Initializable {
             this.onSidebarItemSelected(it)
         }
 
-        this.fxLogButton.onAction = EventHandler { e -> this.onLogButtonAction() }
+        this.fxLogButton.onAction = EventHandler { _ -> this.onLogButtonAction() }
 
         // Asynchronously preload heavy modules
         this.executorService.submit {
@@ -212,7 +212,7 @@ class MainController : Controller(), Initializable {
                     val ftOut = FadeTransition(Duration.millis(duration), oldNode)
                     ftOut.fromValue = 1.0
                     ftOut.toValue = 0.0
-                    ftOut.setOnFinished { e ->
+                    ftOut.setOnFinished { _ ->
                         if (oldNode !== currentModuleController!!.fxRoot)
                             fxContentPaneContainer.children.remove(oldNode)
                     }
@@ -237,7 +237,7 @@ class MainController : Controller(), Initializable {
                 val ftIn = FadeTransition(Duration.millis(duration), node)
                 ftIn.fromValue = 0.0
                 ftIn.toValue = 1.0
-                ftIn.setOnFinished { e -> contentPaneTransition = null }
+                ftIn.setOnFinished { _ -> contentPaneTransition = null }
                 animations.add(ftIn)
 
                 val evt: EventHandler<ActionEvent> = EventHandler {
@@ -278,12 +278,12 @@ class MainController : Controller(), Initializable {
             ftOut.fromValue = 1.0
             ftOut.toValue = 0.0
 
-            ftOut.setOnFinished { e -> fxTitle.text = title }
+            ftOut.setOnFinished { _ -> fxTitle.text = title }
 
             val ftIn = FadeTransition(Duration.millis(duration), fxTitle)
             ftIn.fromValue = 0.0
             ftIn.toValue = 1.0
-            ftIn.setOnFinished { e -> titleTransition = null }
+            ftIn.setOnFinished { _ -> titleTransition = null }
 
             // Create chained sequential transition
             val evt: EventHandler<ActionEvent> = EventHandler {
