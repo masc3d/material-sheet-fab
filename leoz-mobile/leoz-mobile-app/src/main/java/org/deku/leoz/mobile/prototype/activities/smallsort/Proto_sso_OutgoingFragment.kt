@@ -12,8 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.instanceOrNull
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindToLifecycle

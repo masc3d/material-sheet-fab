@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle.android.ActivityEvent
 import com.trello.rxlifecycle.android.FragmentEvent

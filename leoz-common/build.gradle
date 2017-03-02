@@ -62,6 +62,7 @@ dependencies {
 
             // Kodein
             "com.github.salomonbrys.kodein:kodein:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-erased:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-core:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
     )

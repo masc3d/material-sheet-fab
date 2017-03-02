@@ -3,9 +3,10 @@ package org.deku.leoz.mobile.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.util.Log
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle.android.ActivityEvent
 import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
@@ -22,7 +23,7 @@ import org.deku.leoz.mobile.ui.AlertButton
 import org.deku.leoz.mobile.ui.fragment.MainFragment
 import org.deku.leoz.mobile.ui.showAlert
 import org.deku.leoz.mobile.ui.showErrorAlert
-import org.deku.leoz.mobile.update.UpdateService
+import org.deku.leoz.mobile.service.UpdateService
 import org.slf4j.LoggerFactory
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.subscribeWith

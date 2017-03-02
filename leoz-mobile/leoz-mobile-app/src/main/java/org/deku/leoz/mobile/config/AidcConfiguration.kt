@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.config
 
+import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.*
 import rx.Observable
 import rx.lang.kotlin.BehaviorSubject

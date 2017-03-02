@@ -9,7 +9,8 @@ import android.os.Build
 import android.os.Bundle
 import android.support.multidex.MultiDexApplication
 import android.util.Log
-import com.github.salomonbrys.kodein.*
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
 import com.tinsuke.icekick.extension.freezeInstanceState

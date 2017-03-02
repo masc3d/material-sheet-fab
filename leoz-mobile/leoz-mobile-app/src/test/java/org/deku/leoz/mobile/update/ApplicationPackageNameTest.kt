@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.update
 
+import org.deku.leoz.mobile.service.UpdateService
 import org.junit.Assert
 import org.junit.Test
 

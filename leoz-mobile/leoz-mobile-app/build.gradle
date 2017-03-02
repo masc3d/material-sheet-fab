@@ -151,6 +151,8 @@ dependencies {
 
             // Kodein
             "com.github.salomonbrys.kodein:kodein-android:$v_kodein",
+            // Kodein implementation using erased types (no generics support, but much faster on android)
+            "com.github.salomonbrys.kodein:kodein-erased:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
 
             // Logging

@@ -9,13 +9,14 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import org.deku.leoz.mobile.*
-import org.deku.leoz.mobile.update.UpdateService
+import org.deku.leoz.mobile.service.UpdateService
 import org.slf4j.LoggerFactory
 import sx.android.Device
 import android.support.v4.app.ActivityCompat.requestPermissions
+import android.util.Log
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.tinsuke.icekick.extension.serialState
 import org.deku.leoz.mobile.model.Database
@@ -48,6 +49,9 @@ class StartupActivity : RxAppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        log.info("YO3")
+        Log.i("", "YO4")
 
         // Restore state
         this.app.unfreezeInstanceState(this)
