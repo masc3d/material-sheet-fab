@@ -1,11 +1,11 @@
 USE `dekuclient`;
 CREATE TABLE `sso_s_movepool` (
-  `ID` double NOT NULL AUTO_INCREMENT,
+  `id` double NOT NULL AUTO_INCREMENT,
   `bag_number` double DEFAULT NULL,
-  `seal_number_green` double DEFAULT NULL,
   `status` double DEFAULT NULL,
   `status_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `lastdepot` double DEFAULT NULL,
+  `seal_number_green` double DEFAULT NULL,
   `seal_number_yellow` double DEFAULT NULL,
   `seal_number_red` double DEFAULT NULL,
   `orderhub2depot` double DEFAULT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE `sso_s_movepool` (
   `printed` double DEFAULT NULL,
   `multibag` int(11) NOT NULL DEFAULT '0',
   `movepool` varchar(1) DEFAULT NULL,
-  PRIMARY KEY (`ID`),
+  PRIMARY KEY (`id`),
   KEY `bag_number` (`bag_number`),
   KEY `orderhub2depot` (`orderhub2depot`),
   KEY `orderdepot2hub` (`orderdepot2hub`),
