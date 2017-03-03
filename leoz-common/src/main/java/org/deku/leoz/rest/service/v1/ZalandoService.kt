@@ -5,10 +5,7 @@ import org.deku.leoz.rest.entity.v1.Routing
 import org.deku.leoz.rest.entity.v1.RoutingRequest
 import org.deku.leoz.rest.entity.v1.DeliveryOption
 import org.deku.leoz.rest.entity.v1.Problem
-import javax.ws.rs.Consumes
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
+import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
 /**
@@ -29,13 +26,13 @@ interface ZalandoService {
             ApiResponse(code = 401, message= "Unauthorized", response = Problem::class))
     )
     fun requestDeliveryOption(
-            @ApiParam(value = "source_address.country_code", required = true) source_address_country_code: String,
-            @ApiParam(value = "source_address.city", required = true) source_address_city: String,
-            @ApiParam(value = "source_address.zip_code", required = true) source_address_zip_code: String,
-            @ApiParam(value = "source_address.address_line", required = true) source_address_address_line: String,
-            @ApiParam(value = "target_address.country_code", required = true) target_address_country_code: String,
-            @ApiParam(value = "target_address.city", required = true) target_address_city: String,
-            @ApiParam(value = "target_address.zip_code", required = true) target_address_zip_code: String,
-            @ApiParam(value = "target_address.address_line", required = true) target_address_address_line: String
+            @QueryParam(value = "source_address.country_code") source_address_country_code: String,
+            @QueryParam(value = "source_address.city") source_address_city: String,
+            @QueryParam(value = "source_address.zip_code") source_address_zip_code: String,
+            @QueryParam(value = "source_address.address_line") source_address_address_line: String,
+            @QueryParam(value = "target_address.country_code") target_address_country_code: String,
+            @QueryParam(value = "target_address.city") target_address_city: String,
+            @QueryParam(value = "target_address.zip_code") target_address_zip_code: String,
+            @QueryParam(value = "target_address.address_line") target_address_address_line: String
     )
 }
