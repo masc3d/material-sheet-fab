@@ -79,7 +79,7 @@ task flywayDevRepair(type: FlywayRepairTask) {
 
 task flywayDevMigrate(type: FlywayMigrateTask) {
     extension = createFlywayDevExtension()
-    extension.target = 5
+    extension.target = 6
 }
 
 //
