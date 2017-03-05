@@ -17,25 +17,25 @@ import sx.rx.toHotReplay
  * @property context Android context
  * Created by masc on 28/02/2017.
  */
-class HoneywellBarcodeReader private constructor(
+class HoneywellAidcReader private constructor(
         private val aidcManager: AidcManager
-) : BarcodeReader(), com.honeywell.aidc.BarcodeReader.BarcodeListener, com.honeywell.aidc.BarcodeReader.TriggerListener {
+) : AidcReader(), com.honeywell.aidc.BarcodeReader.BarcodeListener, com.honeywell.aidc.BarcodeReader.TriggerListener {
 
     companion object {
-        private val log = LoggerFactory.getLogger(HoneywellBarcodeReader::class.java)
+        private val log = LoggerFactory.getLogger(HoneywellAidcReader::class.java)
 
         /**
-         * Creates HoneywellBarcodeReader instance. This method is asynchronous.
-         * @return Hot reply observable emitting BarcodeReader when it is (or has become) available
+         * Creates HoneywellAidcReader instance. This method is asynchronous.
+         * @return Hot reply observable emitting AidcReader when it is (or has become) available
          */
-        fun create(context: Context): Observable<BarcodeReader> {
-            return Observable.create<BarcodeReader> { onSubscribe ->
+        fun create(context: Context): Observable<AidcReader> {
+            return Observable.create<AidcReader> { onSubscribe ->
                 try {
                     onSubscribe.onStart()
                     log.debug("Creating AidcManager")
                     AidcManager.create(context) {
                         log.debug("AidcManager created")
-                        onSubscribe.onNext(HoneywellBarcodeReader(it))
+                        onSubscribe.onNext(HoneywellAidcReader(it))
                         onSubscribe.onCompleted()
                     }
                 } catch(e: Throwable) {
