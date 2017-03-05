@@ -19,6 +19,8 @@ abstract class Decoder(
  * Created by masc on 28/02/2017.
  */
 enum class BarcodeType {
+    Unknown,
+
     Code128,
     Code39,
     Datamatrix,
@@ -26,7 +28,7 @@ enum class BarcodeType {
     Ean13,
     Interleaved25,
     Pdf417,
-    QrCode
+    QrCode,
 }
 
 /**

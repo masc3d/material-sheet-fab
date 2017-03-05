@@ -1,14 +1,17 @@
 package sx.android.aidc
 
+import com.google.zxing.BarcodeFormat
 import com.trello.rxlifecycle.LifecycleProvider
 import com.trello.rxlifecycle.android.ActivityEvent
 import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import org.slf4j.LoggerFactory
 import rx.Observable
+import rx.lang.kotlin.BehaviorSubject
 import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.synchronized
 import sx.Lifecycle
+import sx.rx.observableRx
 
 /**
  * Abstract barcode reader
@@ -26,11 +29,11 @@ abstract class BarcodeReader {
         /**
          * Set/apply decoder (configuration)
          */
-        fun set(vararg decoder: Decoder) {
-            decoder.forEach {
-                this@BarcodeReader.onDecoderSet(it)
+        fun set(vararg decoders: Decoder) {
+            decoders.forEach {
                 decoderMap[it.key] = it
             }
+            this@BarcodeReader.decodersUpdatedSubject.onNext(this.decoderMap.values.toTypedArray())
         }
 
         override fun iterator(): Iterator<Decoder> {
@@ -38,17 +41,20 @@ abstract class BarcodeReader {
         }
     }
 
-    data class ReadEvent(val data: String)
+    data class ReadEvent(val data: String, val barcodeType: BarcodeType)
+
+
+    val enabledSubject = BehaviorSubject<Boolean>()
+    /**
+     * Enable or disable barcode reader
+     */
+    var enabled: Boolean by observableRx(true, enabledSubject)
 
     /**
      * Decoders
      */
     val decoders: Decoders = Decoders()
-
-    /**
-     * Enable or disable barcode reader
-     */
-    abstract var enabled: Boolean
+    val decodersUpdatedSubject = BehaviorSubject<Array<out Decoder>>()
 
     /**
      * On subscription of reader events
@@ -62,13 +68,15 @@ abstract class BarcodeReader {
     open protected fun onUnbind() {
     }
 
-    /**
-     * On decoder set
-     */
-    abstract protected fun onDecoderSet(decoder: Decoder)
-
     private var bindRefCount = 0
 
+    /**
+     * Barcode reader event
+     */
+    val readEvent by lazy { this.readEventSubject.asObservable() }
+    protected val readEventSubject by lazy { PublishSubject<ReadEvent>().synchronized() }
+
+    //region Lifecycle support
     /**
      * Observable for binding to rxlifecycle
      */
@@ -101,10 +109,5 @@ abstract class BarcodeReader {
     fun bindActivity(activity: LifecycleProvider<ActivityEvent>) {
         this.lifecycle.bindUntilEvent(activity, ActivityEvent.PAUSE).subscribe()
     }
-
-    /**
-     * Barcode reader event
-     */
-    val readEvent by lazy { this.readEventSubject.asObservable() }
-    protected val readEventSubject by lazy { PublishSubject<ReadEvent>().synchronized() }
+    //endregion
 }

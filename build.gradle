@@ -72,7 +72,13 @@ dependencies {
             // rxlifecycle
             "com.trello:rxlifecycle:$v_rxlifecycle",
             "com.trello:rxlifecycle-kotlin:$v_rxlifecycle",
-            "com.trello:rxlifecycle-components:$v_rxlifecycle"
+            "com.trello:rxlifecycle-components:$v_rxlifecycle",
+            "com.trello:rxlifecycle-android:$v_rxlifecycle",
+            "com.jakewharton.rxbinding:rxbinding:1.0.1",
+    )
+
+    provided(
+        'com.journeyapps:zxing-android-embedded:3.4.0'
     )
 
     androidTestCompile(
