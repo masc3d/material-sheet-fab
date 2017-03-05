@@ -17,7 +17,7 @@ import sx.rx.observableRx
  * Abstract barcode reader
  * Created by masc on 28/02/2017.
  */
-abstract class BarcodeReader {
+abstract class AidcReader {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     inner class Decoders : Iterable<Decoder> {
@@ -33,7 +33,7 @@ abstract class BarcodeReader {
             decoders.forEach {
                 decoderMap[it.key] = it
             }
-            this@BarcodeReader.decodersUpdatedSubject.onNext(this.decoderMap.values.toTypedArray())
+            this@AidcReader.decodersUpdatedSubject.onNext(this.decoderMap.values.toTypedArray())
         }
 
         override fun iterator(): Iterator<Decoder> {

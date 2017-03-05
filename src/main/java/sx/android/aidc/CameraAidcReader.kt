@@ -19,9 +19,9 @@ import sx.rx.observableRx
  * Barcode reader implementation using the internal camera
  * Created by masc on 28/02/2017.
  */
-class CameraBarcodeReader(val context: Context) : BarcodeReader(), BarcodeCallback {
+class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
     /**
-     * Barcode view, tightly coupled to its parent class {@link CameraBarcodeReader}
+     * Barcode view, tightly coupled to its parent class {@link CameraAidcReader}
      */
     inner class View(context: Context) : DecoratedBarcodeView(context) {
         private val log = LoggerFactory.getLogger(this.javaClass)
@@ -31,15 +31,15 @@ class CameraBarcodeReader(val context: Context) : BarcodeReader(), BarcodeCallba
             this.setStatusText("")
 
             // Subscribe to changes in reader and delegate to zxing/decorated barcode view
-            this@CameraBarcodeReader.decodersUpdatedSubject
+            this@CameraAidcReader.decodersUpdatedSubject
                     .compose(RxLifecycleAndroid.bindView(this))
                     .subscribe {
                         this.barcodeView.setDecoderFactory(DefaultDecoderFactory(
-                                this@CameraBarcodeReader.mapBarcodeFormats(), null, null
+                                this@CameraAidcReader.mapBarcodeFormats(), null, null
                         ))
                     }
 
-            this@CameraBarcodeReader.enabledSubject
+            this@CameraAidcReader.enabledSubject
                     .compose(RxLifecycleAndroid.bindView(this))
                     .doOnSubscribe {
                         log.trace("VIEW SUBSCRIBED")
@@ -53,7 +53,7 @@ class CameraBarcodeReader(val context: Context) : BarcodeReader(), BarcodeCallba
                             true -> {
                                 log.trace("ENABLING")
                                 this.resume()
-                                this.decodeContinuous(this@CameraBarcodeReader)
+                                this.decodeContinuous(this@CameraAidcReader)
                             }
                             false -> {
                                 log.trace("DISABLING")
@@ -62,7 +62,7 @@ class CameraBarcodeReader(val context: Context) : BarcodeReader(), BarcodeCallba
                         }
                     }
 
-            this@CameraBarcodeReader.torchSubject
+            this@CameraAidcReader.torchSubject
                     .compose(RxLifecycleAndroid.bindView(this))
                     .subscribe {
                         this.barcodeView.setTorch(it)
