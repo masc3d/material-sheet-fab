@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="org.deku.leoz.mobile.prototype.activities.Proto_MainActivity"
+    tools:context="org.deku.leoz.mobile.prototype.activities.ProtoMainActivity"
     android:background="@drawable/deku_background_selector">
 
     <LinearLayout
@@ -104,7 +104,7 @@
             <fragment
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:name="org.deku.leoz.mobile.prototype.activities.Proto_StatusFragment"
+                android:name="org.deku.leoz.mobile.prototype.activities.ProtoStatusFragment"
                 android:id="@+id/fragment"
                 tools:layout="@layout/proto_fragment_status"
                 android:layout_alignParentBottom="true" />

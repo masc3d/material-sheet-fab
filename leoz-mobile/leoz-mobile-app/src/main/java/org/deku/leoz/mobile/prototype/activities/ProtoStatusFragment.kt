@@ -18,12 +18,12 @@ import org.slf4j.LoggerFactory
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [Proto_StatusFragment.OnFragmentInteractionListener] interface
+ * [ProtoStatusFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [Proto_StatusFragment.newInstance] factory method to
+ * Use the [ProtoStatusFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_StatusFragment : Fragment() {
+class ProtoStatusFragment : Fragment() {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     // TODO: Rename and change types of parameters
@@ -79,11 +79,11 @@ class Proto_StatusFragment : Fragment() {
          * this fragment using the provided parameters.
 
 
-         * @return A new instance of fragment Proto_StatusFragment.
+         * @return A new instance of fragment ProtoStatusFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(): Proto_StatusFragment {
-            val fragment = Proto_StatusFragment()
+        fun newInstance(): ProtoStatusFragment {
+            val fragment = ProtoStatusFragment()
             return fragment
         }
     }

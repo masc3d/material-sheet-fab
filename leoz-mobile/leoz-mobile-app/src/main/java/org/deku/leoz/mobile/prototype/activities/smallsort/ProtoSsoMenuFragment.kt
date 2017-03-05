@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [Proto_sso_MenueFragment.OnFragmentInteractionListener] interface
+ * [ProtoSsoMenuFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [Proto_sso_MenueFragment.newInstance] factory method to
+ * Use the [ProtoSsoMenuFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
+class ProtoSsoMenuFragment : Fragment(), View.OnClickListener {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     private var listener: OnFragmentInteractionListener? = null
@@ -81,11 +81,11 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
 
-         * @return A new instance of fragment Proto_sso_MenueFragment.
+         * @return A new instance of fragment ProtoSsoMenuFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(): Proto_sso_MenueFragment {
-            val fragment = Proto_sso_MenueFragment()
+        fun newInstance(): ProtoSsoMenuFragment {
+            val fragment = ProtoSsoMenuFragment()
             return fragment
         }
     }
@@ -104,7 +104,7 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
             uxBagOutgoing -> {
-                //mIntent = Intent(activity.applicationContext, Proto_sso_OutgoingFragment::class.java)
+                //mIntent = Intent(activity.applicationContext, ProtoSsoOutgoingFragment::class.java)
                 //startActivity(mIntent)
 
             }

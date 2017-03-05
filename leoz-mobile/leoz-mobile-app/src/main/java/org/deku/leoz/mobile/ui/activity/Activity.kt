@@ -11,6 +11,7 @@ import android.view.MenuItem
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.genericInstance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
@@ -20,8 +21,9 @@ import kotlinx.android.synthetic.main.main_app_bar.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
+import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.slf4j.LoggerFactory
+import rx.Observable
 import sx.android.aidc.BarcodeReader
 
 /**

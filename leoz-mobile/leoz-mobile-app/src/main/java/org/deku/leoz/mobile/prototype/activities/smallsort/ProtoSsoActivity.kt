@@ -11,7 +11,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.activity.Activity
 import org.slf4j.LoggerFactory
 
-class Proto_sso : Activity(), Proto_sso_MenueFragment.OnFragmentInteractionListener, Proto_sso_OutgoingFragment.OnFragmentInteractionListener {
+class ProtoSsoActivity : Activity(), ProtoSsoMenuFragment.OnFragmentInteractionListener, ProtoSsoOutgoingFragment.OnFragmentInteractionListener {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
@@ -35,7 +35,7 @@ class Proto_sso : Activity(), Proto_sso_MenueFragment.OnFragmentInteractionListe
     }
 
     private fun createMenueFragment() {
-        val fragmentMenu: Proto_sso_MenueFragment = Proto_sso_MenueFragment.newInstance()
+        val fragmentMenu: ProtoSsoMenuFragment = ProtoSsoMenuFragment.newInstance()
         val fragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
         fragmentTransaction!!.add(uxSsoFragmentContainer.id, fragmentMenu)
         fragmentTransaction.addToBackStack(null)
@@ -58,9 +58,9 @@ class Proto_sso : Activity(), Proto_sso_MenueFragment.OnFragmentInteractionListe
                     }
                     R.id.uxBagOutgoing -> {
                         //TODO Switch Fragment to Bag-Outgoing Process
-                        val fragmentSSOOutgoing: Proto_sso_OutgoingFragment = Proto_sso_OutgoingFragment()
+                        val fragmentSsoOutgoing: ProtoSsoOutgoingFragment = ProtoSsoOutgoingFragment()
                         val fragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
-                        fragmentTransaction!!.replace(uxSsoFragmentContainer.id, fragmentSSOOutgoing)
+                        fragmentTransaction!!.replace(uxSsoFragmentContainer.id, fragmentSsoOutgoing)
                         fragmentTransaction.addToBackStack(null)
                         fragmentTransaction.commit()
                     }

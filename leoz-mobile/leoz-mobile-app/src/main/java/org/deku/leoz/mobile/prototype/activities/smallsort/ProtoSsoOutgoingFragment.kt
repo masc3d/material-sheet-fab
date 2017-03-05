@@ -27,12 +27,12 @@ import java.util.*
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [Proto_sso_OutgoingFragment.OnFragmentInteractionListener] interface
+ * [ProtoSsoOutgoingFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [Proto_sso_OutgoingFragment.newInstance] factory method to
+ * Use the [ProtoSsoOutgoingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_sso_OutgoingFragment : Fragment() {
+class ProtoSsoOutgoingFragment : Fragment() {
 
     private var listener: OnFragmentInteractionListener? = null
     private val barcodeReader: BarcodeReader by Kodein.global.lazy.instance()
@@ -103,11 +103,11 @@ class Proto_sso_OutgoingFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
 
-         * @return A new instance of fragment Proto_sso_OutgoingFragment.
+         * @return A new instance of fragment ProtoSsoOutgoingFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(): Proto_sso_OutgoingFragment {
-            val fragment = Proto_sso_OutgoingFragment()
+        fun newInstance(): ProtoSsoOutgoingFragment {
+            val fragment = ProtoSsoOutgoingFragment()
             return fragment
         }
     }

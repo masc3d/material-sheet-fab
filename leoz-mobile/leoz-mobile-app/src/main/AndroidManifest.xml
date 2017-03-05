@@ -33,10 +33,10 @@
             android:screenOrientation="portrait"
         />
         <activity
-            android:name=".prototype.activities.Proto_MainActivity"
+            android:name=".prototype.activities.ProtoMainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".prototype.activities.smallsort.Proto_sso"
+            android:name=".prototype.activities.smallsort.ProtoSsoActivity"
             android:screenOrientation="portrait" />
     </application>
 
