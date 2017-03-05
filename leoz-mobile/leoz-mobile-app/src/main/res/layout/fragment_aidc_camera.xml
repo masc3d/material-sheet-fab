@@ -1,0 +1,30 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_aidc_camera"
+    android:layout_width="match_parent"
+    android:layout_height="280dp"
+    tools:context="org.deku.leoz.mobile.ui.fragment.AidcCameraFragment">
+
+    <FrameLayout
+        android:id="@+id/uxContainer"
+        android:alpha="1.0"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_aidc_camera_torch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:alpha="0.6"
+        app:useCompatPadding="true"
+        app:layout_anchor="@id/fragment_aidc_camera"
+        app:layout_anchorGravity="start"
+        app:elevation="@dimen/fab_elevate"
+        app:backgroundTint="@color/colorDarkGrey"
+        app:srcCompat="@mipmap/ic_wb_sunny_black_24dp" />
+
+</FrameLayout>

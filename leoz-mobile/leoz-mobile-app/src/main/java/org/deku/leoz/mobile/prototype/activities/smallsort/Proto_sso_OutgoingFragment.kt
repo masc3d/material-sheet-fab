@@ -15,10 +15,8 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle.android.FragmentEvent
-import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.prototype.Proto_CameraScannerFragment
 import org.deku.leoz.mobile.prototype.properties.Bag
 import org.deku.leoz.mobile.ui.fragment.Fragment
 import org.slf4j.LoggerFactory
@@ -34,7 +32,7 @@ import java.util.*
  * Use the [Proto_sso_OutgoingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_sso_OutgoingFragment : Fragment(), Proto_CameraScannerFragment.OnBarcodeResultListener {
+class Proto_sso_OutgoingFragment : Fragment() {
 
     private var listener: OnFragmentInteractionListener? = null
     private val barcodeReader: BarcodeReader by Kodein.global.lazy.instance()
@@ -48,12 +46,7 @@ class Proto_sso_OutgoingFragment : Fragment(), Proto_CameraScannerFragment.OnBar
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        if (barcodeReader is CameraBarcodeReader) {
-            // TODO. CameraBarcodeReader is not implemented yet
-            initCameraScanner()
-        }
-        return inflater!!.inflate(R.layout.fragment_proto_sso__outgoing, container, false)
+        return inflater!!.inflate(R.layout.proto_fragment_sso_outgoing, container, false)
     }
 
     override fun onAttach(context: Context?) {
@@ -150,22 +143,6 @@ class Proto_sso_OutgoingFragment : Fragment(), Proto_CameraScannerFragment.OnBar
         }
         if (scanMap.containsKey(Bag.LEADSEAL_WHITE) && scanMap.containsKey(Bag.BAG_ORDERNO_HUB2STATION))
             closeBag(java.lang.Long.parseLong(scanMap[Bag.BAG_ORDERNO_HUB2STATION]), java.lang.Long.parseLong(scanMap[Bag.LEADSEAL_WHITE]))
-    }
-
-    override fun onBarcodeResult(content: String) {
-        activity.runOnUiThread(object : Runnable {
-            override fun run() {
-                processBarcodeData(content)
-            }
-        })
-        //throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private fun initCameraScanner() {
-        val mCameraScannerFragment: Proto_CameraScannerFragment = Proto_CameraScannerFragment.newInstance()
-        val mTransaction: FragmentTransaction = childFragmentManager.beginTransaction()
-        mTransaction.add(R.id.uxSSOOutCamFragment, mCameraScannerFragment)
-        mTransaction.commit()
     }
 
     private fun closeBag(bag_orderno: Long, bag_leadseal: Long): Boolean {

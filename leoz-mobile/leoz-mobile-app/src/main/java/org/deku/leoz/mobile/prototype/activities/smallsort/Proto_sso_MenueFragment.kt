@@ -8,7 +8,7 @@ import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_proto_sso__menue_.*
+import kotlinx.android.synthetic.main.proto_fragment_sso_menu.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.fragment.Fragment
 import org.slf4j.LoggerFactory
@@ -33,11 +33,12 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_proto_sso__menue_, container, false)
+        return inflater!!.inflate(R.layout.proto_fragment_sso_menu, container, false)
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
+
         if (context is OnFragmentInteractionListener) {
             listener = context as OnFragmentInteractionListener?
         } else {

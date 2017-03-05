@@ -73,7 +73,7 @@ class StartupActivity : RxAppCompatActivity() {
             // Ensure permissions are granted
             val rxPermissions = RxPermissions(this)
             rxPermissions
-                    .request(Manifest.permission.READ_PHONE_STATE)
+                    .request(Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA)
                     .subscribe { granted ->
                         if (granted) {
                             // Log serials

@@ -12,12 +12,11 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/main_app_bar">
 
-    <!-- Fragment container -->
+    <!-- Main content fragment container -->
     <FrameLayout
-        android:id="@+id/container"
+        android:id="@+id/uxContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"/>
+        app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior" />
 
 </RelativeLayout>

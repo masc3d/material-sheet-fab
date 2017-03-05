@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
-import kotlinx.android.synthetic.main.fragment_proto_status.*
+import kotlinx.android.synthetic.main.proto_fragment_status.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.fragment.Fragment
 import org.slf4j.LoggerFactory
@@ -45,7 +45,7 @@ class Proto_StatusFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_proto_status, container, false)
+        return inflater!!.inflate(R.layout.proto_fragment_status, container, false)
     }
 
     override fun onAttach(context: Context?) {

@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.config
 
+import android.hardware.Camera
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.*
 import rx.Observable
@@ -32,7 +33,7 @@ class AidcConfiguration {
                 }
             }
 
-            bind<BarcodeReader>() with singleton {
+            bind<BarcodeReader>() with erasedSingleton {
                 val ovBarodeReader: Observable<out BarcodeReader> = instance()
 
                 ovBarodeReader
@@ -40,6 +41,10 @@ class AidcConfiguration {
                         .toBlocking()
                         .firstOrNull()
                         ?: throw IllegalStateException("BarcodeReader not ready yet. Do not inject this instance without giving main loop opportunity to cycle at least once after importing module.")
+            }
+
+            bind<CameraBarcodeReader>() with erasedSingleton {
+                CameraBarcodeReader(context = erasedInstance())
             }
         }
     }
