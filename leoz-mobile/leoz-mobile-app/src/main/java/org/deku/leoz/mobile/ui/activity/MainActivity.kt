@@ -51,8 +51,6 @@ import sx.android.widget.setIconTint
 class MainActivity : Activity() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val bc: BarcodeReader by Kodein.global.lazy.instance()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

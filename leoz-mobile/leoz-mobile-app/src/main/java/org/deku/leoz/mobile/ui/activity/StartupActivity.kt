@@ -17,10 +17,14 @@ import org.slf4j.LoggerFactory
 import sx.android.Device
 import android.support.v4.app.ActivityCompat.requestPermissions
 import android.util.Log
+import com.github.salomonbrys.kodein.genericInstance
+import com.github.salomonbrys.kodein.lazy
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.tinsuke.icekick.extension.serialState
 import org.deku.leoz.mobile.model.Database
+import rx.Observable
 import rx.lang.kotlin.subscribeWith
+import sx.android.aidc.BarcodeReader
 
 
 /**
@@ -50,9 +54,6 @@ class StartupActivity : RxAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        log.info("YO3")
-        Log.i("", "YO4")
-
         // Restore state
         this.app.unfreezeInstanceState(this)
 
@@ -80,19 +81,23 @@ class StartupActivity : RxAppCompatActivity() {
                             val device: Device = Kodein.global.instance()
                             log.info(device.toString())
 
-                            // Start main activity with delay to ensure visibility of transition
-                            val handler = Handler()
-                            handler.postDelayed({
-                                this.startMainActivity(withAnimation = true)
+                            // Synchronize with asynchronously acquired resources
+                            val ovBarcodeReader: Observable<out BarcodeReader> = Kodein.global.genericInstance()
+                            ovBarcodeReader.subscribe {
+                                // Start main activity with delay to ensure visibility of transition
+                                val handler = Handler()
+                                handler.postDelayed({
+                                    this.startMainActivity(withAnimation = true)
 
-                                // Wait for migration to finish
-                                try {
-                                    migrateAwaitable.await()
-                                } catch(e: Throwable) {
-                                    // Ignore this exception here, as StartupActivity is about to finish.
-                                    // Migration result will be evaluated in MainActivity
-                                }
-                            }, 300)
+                                    // Wait for migration to finish
+                                    try {
+                                        migrateAwaitable.await()
+                                    } catch(e: Throwable) {
+                                        // Ignore this exception here, as StartupActivity is about to finish.
+                                        // Migration result will be evaluated in MainActivity
+                                    }
+                                }, 300)
+                            }
 
                             this.started = true
                         } else {

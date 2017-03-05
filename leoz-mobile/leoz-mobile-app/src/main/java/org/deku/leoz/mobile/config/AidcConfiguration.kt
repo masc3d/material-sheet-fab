@@ -13,6 +13,7 @@ import sx.android.Device
 import sx.android.aidc.BarcodeReader
 import sx.android.aidc.CameraBarcodeReader
 import sx.android.honeywell.aidc.HoneywellBarcodeReader
+import sx.rx.toHotReplay
 import java.util.concurrent.TimeUnit
 
 /**
@@ -30,6 +31,7 @@ class AidcConfiguration {
                     else ->
                         CameraBarcodeReader(context = instance())
                                 .toSingletonObservable()
+                                .toHotReplay()
                 }
             }
 
