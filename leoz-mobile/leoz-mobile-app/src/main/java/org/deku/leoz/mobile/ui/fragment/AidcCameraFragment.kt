@@ -18,12 +18,12 @@ import kotlinx.android.synthetic.main.fragment_aidc_camera.*
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 import rx.android.schedulers.AndroidSchedulers
-import sx.android.aidc.CameraBarcodeReader
+import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.Ean13Decoder
 import sx.android.aidc.Ean8Decoder
 import android.support.v4.graphics.drawable.DrawableCompat
-import sx.android.aidc.BarcodeReader
-import sx.android.honeywell.aidc.HoneywellBarcodeReader
+import sx.android.aidc.AidcReader
+import sx.android.honeywell.aidc.HoneywellAidcReader
 import org.apache.commons.logging.LogFactory.release
 import rx.Observable
 import rx.schedulers.Schedulers
@@ -39,8 +39,8 @@ class AidcCameraFragment : Fragment() {
         val scheduler by lazy { Schedulers.newThread() }
     }
 
-    private val cameraReader: CameraBarcodeReader by Kodein.global.lazy.instance()
-    private val barcodeReader: BarcodeReader by Kodein.global.lazy.instance()
+    private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
+    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,8 +98,8 @@ class AidcCameraFragment : Fragment() {
                 Ean13Decoder(true)
         )
 
-        if (this.barcodeReader is HoneywellBarcodeReader) {
-            this.barcodeReader.enabled = false
+        if (this.aidcReader is HoneywellAidcReader) {
+            this.aidcReader.enabled = false
 
             this.ovWaitCamera
                     .bindUntilEvent(this, FragmentEvent.PAUSE)
@@ -122,7 +122,7 @@ class AidcCameraFragment : Fragment() {
         this.cameraReader.enabled = false
         this.uxContainer.removeAllViews()
 
-        if (this.barcodeReader is HoneywellBarcodeReader) {
+        if (this.aidcReader is HoneywellAidcReader) {
             // zxing-android-embedded doesn't allow explicit synchronization with the camera closing process
             // and honeywell reader requires the camera to be closed when decoding
             this.ovWaitCamera
@@ -132,7 +132,7 @@ class AidcCameraFragment : Fragment() {
                     .subscribe {
                         log.trace("READER ENABLE")
                         // Honeywell scan API interferes with camera sporadically. need to disable decodes before accessing camera
-                        this.barcodeReader.enabled = true
+                        this.aidcReader.enabled = true
                     }
 
         }

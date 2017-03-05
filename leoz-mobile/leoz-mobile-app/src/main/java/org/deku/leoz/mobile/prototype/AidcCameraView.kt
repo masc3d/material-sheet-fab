@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.proto_view_aidc_camera.view.*
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 import rx.android.schedulers.AndroidSchedulers
-import sx.android.aidc.CameraBarcodeReader
+import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.Ean13Decoder
 import sx.android.aidc.Ean8Decoder
 
@@ -26,7 +26,7 @@ import sx.android.aidc.Ean8Decoder
 class AidcCameraView(context: Context, attrs: AttributeSet? = null) : FrameLayout(context, attrs) {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val cameraReader: CameraBarcodeReader by Kodein.global.lazy.instance()
+    private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
 
     override fun onFinishInflate() {
         super.onFinishInflate()

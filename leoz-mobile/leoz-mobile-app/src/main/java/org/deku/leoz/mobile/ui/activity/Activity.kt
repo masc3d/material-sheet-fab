@@ -24,7 +24,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.slf4j.LoggerFactory
 import rx.Observable
-import sx.android.aidc.BarcodeReader
+import sx.android.aidc.AidcReader
 
 /**
  * Leoz activity base class
@@ -33,7 +33,7 @@ import sx.android.aidc.BarcodeReader
 open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val barcodeReader: BarcodeReader by Kodein.global.lazy.instance()
+    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,6 +116,6 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onStart() {
         super.onStart()
 
-        this.barcodeReader.bindActivity(this)
+        this.aidcReader.bindActivity(this)
     }
 }

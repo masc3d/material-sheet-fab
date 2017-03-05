@@ -19,8 +19,8 @@ import org.deku.leoz.mobile.config.*
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
 import sx.android.Device
-import sx.android.aidc.BarcodeReader
-import sx.android.honeywell.aidc.HoneywellBarcodeReader
+import sx.android.aidc.AidcReader
+import sx.android.honeywell.aidc.HoneywellAidcReader
 
 /**
  * Application

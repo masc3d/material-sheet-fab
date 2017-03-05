@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.subscribeWith
-import sx.android.aidc.BarcodeReader
+import sx.android.aidc.AidcReader
 import sx.android.aidc.Ean13Decoder
 import sx.android.aidc.Ean8Decoder
 import sx.android.fragment.util.withTransaction

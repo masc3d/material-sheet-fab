@@ -35,7 +35,7 @@ import java.util.*
 class ProtoSsoOutgoingFragment : Fragment() {
 
     private var listener: OnFragmentInteractionListener? = null
-    private val barcodeReader: BarcodeReader by Kodein.global.lazy.instance()
+    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
     private val scanMap: HashMap<Int, String> = HashMap()
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
@@ -66,16 +66,16 @@ class ProtoSsoOutgoingFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        barcodeReader.bindFragment(this)
+        aidcReader.bindFragment(this)
 
-        barcodeReader.decoders.set(
+        aidcReader.decoders.set(
                 Interleaved25Decoder(true, 11, 12),
                 DatamatrixDecoder(true),
                 Ean8Decoder(true),
                 Ean13Decoder(true)
         )
 
-        barcodeReader.readEvent
+        aidcReader.readEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {

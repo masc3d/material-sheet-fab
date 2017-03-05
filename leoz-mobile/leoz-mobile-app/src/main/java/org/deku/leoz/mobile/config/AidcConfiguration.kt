@@ -10,9 +10,9 @@ import rx.lang.kotlin.synchronized
 import rx.lang.kotlin.toSingletonObservable
 import rx.schedulers.Schedulers
 import sx.android.Device
-import sx.android.aidc.BarcodeReader
-import sx.android.aidc.CameraBarcodeReader
-import sx.android.honeywell.aidc.HoneywellBarcodeReader
+import sx.android.aidc.AidcReader
+import sx.android.aidc.CameraAidcReader
+import sx.android.honeywell.aidc.HoneywellAidcReader
 import sx.rx.toHotReplay
 import java.util.concurrent.TimeUnit
 
@@ -23,30 +23,30 @@ import java.util.concurrent.TimeUnit
 class AidcConfiguration {
     companion object {
         val module = Kodein.Module {
-            bind<Observable<out BarcodeReader>>() with eagerSingleton {
+            bind<Observable<out AidcReader>>() with eagerSingleton {
                 val device: Device = instance()
                 when (device.manufacturer.type) {
                     Device.Manufacturer.Type.Honeywell ->
-                        HoneywellBarcodeReader.create(context = instance())
+                        HoneywellAidcReader.create(context = instance())
                     else ->
-                        CameraBarcodeReader(context = instance())
+                        CameraAidcReader(context = instance())
                                 .toSingletonObservable()
                                 .toHotReplay()
                 }
             }
 
-            bind<BarcodeReader>() with erasedSingleton {
-                val ovBarodeReader: Observable<out BarcodeReader> = instance()
+            bind<AidcReader>() with erasedSingleton {
+                val ovAidcReader: Observable<out AidcReader> = instance()
 
-                ovBarodeReader
+                ovAidcReader
                         .take(0, TimeUnit.SECONDS)
                         .toBlocking()
                         .firstOrNull()
-                        ?: throw IllegalStateException("BarcodeReader not ready yet. Do not inject this instance without giving main loop opportunity to cycle at least once after importing module.")
+                        ?: throw IllegalStateException("AidcReader not ready yet. Do not inject this instance without giving main loop opportunity to cycle at least once after importing module.")
             }
 
-            bind<CameraBarcodeReader>() with erasedSingleton {
-                CameraBarcodeReader(context = erasedInstance())
+            bind<CameraAidcReader>() with erasedSingleton {
+                CameraAidcReader(context = erasedInstance())
             }
         }
     }

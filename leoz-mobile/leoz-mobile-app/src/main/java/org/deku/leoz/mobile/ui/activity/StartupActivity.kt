@@ -24,7 +24,7 @@ import com.tinsuke.icekick.extension.serialState
 import org.deku.leoz.mobile.model.Database
 import rx.Observable
 import rx.lang.kotlin.subscribeWith
-import sx.android.aidc.BarcodeReader
+import sx.android.aidc.AidcReader
 
 
 /**
@@ -82,8 +82,8 @@ class StartupActivity : RxAppCompatActivity() {
                             log.info(device.toString())
 
                             // Synchronize with asynchronously acquired resources
-                            val ovBarcodeReader: Observable<out BarcodeReader> = Kodein.global.genericInstance()
-                            ovBarcodeReader.subscribe {
+                            val ovAidcReader: Observable<out AidcReader> = Kodein.global.genericInstance()
+                            ovAidcReader.subscribe {
                                 // Start main activity with delay to ensure visibility of transition
                                 val handler = Handler()
                                 handler.postDelayed({
