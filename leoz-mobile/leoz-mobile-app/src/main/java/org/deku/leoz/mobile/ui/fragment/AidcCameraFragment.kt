@@ -125,6 +125,7 @@ class AidcCameraFragment : Fragment() {
         if (this.aidcReader is HoneywellAidcReader) {
             // zxing-android-embedded doesn't allow explicit synchronization with the camera closing process
             // and honeywell reader requires the camera to be closed when decoding
+            // TODO: WHY?. should be clarified with Honeywell support. Barcode reader shouldn't lock camera. This just makes things ugly & complicated.
             this.ovWaitCamera
                     // Wait for camera on dedicated thread
                     .subscribeOn(AidcCameraFragment.scheduler)
