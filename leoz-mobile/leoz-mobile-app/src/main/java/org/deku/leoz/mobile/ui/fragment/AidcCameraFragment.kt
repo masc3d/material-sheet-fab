@@ -27,6 +27,7 @@ import sx.android.honeywell.aidc.HoneywellAidcReader
 import org.apache.commons.logging.LogFactory.release
 import rx.Observable
 import rx.schedulers.Schedulers
+import sx.android.widget.setIconTint
 
 /**
  * Aidc camera fragment
@@ -60,20 +61,6 @@ class AidcCameraFragment : Fragment() {
         }
     }
 
-    val ovWaitCamera: Observable<Any>
-        get() = Observable.fromCallable {
-            // Most stupid way to synchronize camera/availability.
-            // As zxing-android-embedded doesn't support sync, this is basically the only way to do it
-            var c: Camera? = null
-            while (c == null) {
-                try {
-                    c = Camera.open() // attempt to get a Camera instance
-                } catch (e: Exception) {
-                }
-            }
-            c.release()
-        }
-
     override fun onResume() {
         log.trace("RESUME")
         super.onResume()
@@ -82,8 +69,7 @@ class AidcCameraFragment : Fragment() {
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    val dfab = DrawableCompat.wrap(this.fab_aidc_camera_torch.drawable)
-                    DrawableCompat.setTint(dfab, if (it) ContextCompat.getColor(this.context, R.color.colorAccent) else Color.BLACK)
+                    this.fab_aidc_camera_torch.setIconTint(if (it) R.color.colorAccent else android.R.color.black)
                 }
 
         this.cameraReader.readEvent
@@ -99,43 +85,26 @@ class AidcCameraFragment : Fragment() {
         )
 
         if (this.aidcReader is HoneywellAidcReader) {
+            // Disable honeywell reader
             this.aidcReader.enabled = false
-
-            this.ovWaitCamera
-                    .bindUntilEvent(this, FragmentEvent.PAUSE)
-                    .subscribeOn(AidcCameraFragment.scheduler)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        this.uxContainer.addView(this.cameraReader.createView(this.context))
-                        // Honeywell scan API interferes with camera sporadically. need to disable decodes before accessing camera
-                        log.trace("CAMERA ENABLE")
-                        this.cameraReader.enabled = true
-                    }
-        } else {
-            this.uxContainer.addView(this.cameraReader.createView(this.context))
-            this.cameraReader.enabled = true
         }
+
+        this.cameraReader.enabled = true
+
+        this.uxContainer.addView(
+                this.cameraReader.createView(this.context))
     }
 
     override fun onPause() {
         log.trace("PAUSE")
+
+        // Release camera and remove view finder
         this.cameraReader.enabled = false
         this.uxContainer.removeAllViews()
 
         if (this.aidcReader is HoneywellAidcReader) {
-            // zxing-android-embedded doesn't allow explicit synchronization with the camera closing process
-            // and honeywell reader requires the camera to be closed when decoding
-            // TODO: WHY?. should be clarified with Honeywell support. Barcode reader shouldn't lock camera. This just makes things ugly & complicated.
-            this.ovWaitCamera
-                    // Wait for camera on dedicated thread
-                    .subscribeOn(AidcCameraFragment.scheduler)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        log.trace("READER ENABLE")
-                        // Honeywell scan API interferes with camera sporadically. need to disable decodes before accessing camera
-                        this.aidcReader.enabled = true
-                    }
-
+            // Re-enable global reader
+            this.aidcReader.enabled = true
         }
 
         super.onPause()
