@@ -91,8 +91,7 @@ class AidcCameraFragment : Fragment() {
 
         this.cameraReader.enabled = true
 
-        this.uxContainer.addView(
-                this.cameraReader.createView(this.context))
+        this.uxContainer.addView(this.cameraReader.view)
     }
 
     override fun onPause() {

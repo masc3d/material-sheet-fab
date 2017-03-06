@@ -32,7 +32,7 @@ class AidcCameraView(context: Context, attrs: AttributeSet? = null) : FrameLayou
         super.onFinishInflate()
 
         if (!this.isInEditMode) {
-            this.addView(this.cameraReader.createView(this.context))
+            this.addView(this.cameraReader.view)
 
             this.fab_aidc_camera_torch.setOnClickListener {
                 this.cameraReader.torch = !this.cameraReader.torch
