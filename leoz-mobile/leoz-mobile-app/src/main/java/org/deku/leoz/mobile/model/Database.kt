@@ -7,8 +7,7 @@ import org.flywaydb.core.api.android.ContextHolder
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.schedulers.Schedulers
-import sx.rx.Awaitable
-import sx.rx.subscribeAwaitableWith
+import sx.rx.toHotReplay
 
 /**
  * Database
@@ -58,9 +57,9 @@ class Database(
 
     /**
      * Migrate database (asynchronously)
-     * @return Awaitable
+     * @return Hot observable emitting the number of successfully applied migrations
      */
-    fun migrate(): Awaitable {
+    fun migrate(): Observable<Int> {
         return Observable.fromCallable {
             // Initialize/migrate database schema
             val jdbcUrl = String.format("jdbc:sqldroid:%s", this.file)
@@ -69,16 +68,15 @@ class Database(
             flyway.migrate()
         }
                 .subscribeOn(Schedulers.computation())
-                .subscribeAwaitableWith {
-                    onCompleted {
-                        migrationResult = null
-                        log.info("Completed")
-                    }
-                    onError {
-                        migrationResult = it
-                        log.error(it.message)
-                    }
+                .doOnCompleted {
+                    migrationResult = null
+                    log.info("Completed")
                 }
+                .doOnError {
+                    migrationResult = it
+                    log.error(it.message)
+                }
+                .toHotReplay()
     }
 
 }

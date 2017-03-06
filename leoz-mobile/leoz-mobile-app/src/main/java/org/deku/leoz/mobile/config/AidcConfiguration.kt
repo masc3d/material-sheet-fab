@@ -24,30 +24,41 @@ import java.util.concurrent.TimeUnit
 class AidcConfiguration {
     companion object {
         val module = Kodein.Module {
+            /**
+             * Camera aidc reader
+             */
             bind<CameraAidcReader>() with erasedSingleton {
                 CameraAidcReader(context = erasedInstance())
             }
 
+            /**
+             * Observable providing all available aidc readers
+             */
             bind<Observable<out AidcReader>>() with eagerSingleton {
                 val device: Device = instance()
 
+                // Observable providing CameraAidcReader
                 val ovCameraReader: Observable<out AidcReader> = instance<CameraAidcReader>()
                         .toSingletonObservable()
                         .toHotReplay()
 
                 when (device.manufacturer.type) {
                     Device.Manufacturer.Type.Honeywell ->
-                        HoneywellAidcReader
-                                .create(context = instance())
-                                .mergeWith(ovCameraReader)
-                    else ->
-                        ovCameraReader
+                        Observable.merge(
+                                HoneywellAidcReader.create(context = instance()),
+                                ovCameraReader
+                        )
+                    else -> ovCameraReader
                 }
             }
 
+            /**
+             * Global aidc reader. This is usually a ${link CompositeAidcReader}
+             */
             bind<AidcReader>() with erasedSingleton {
                 val ovAidcReader: Observable<out AidcReader> = instance()
 
+                // Wait for all aidc readers to become available
                 val aidcReaders = ovAidcReader
                         .toBlocking()
                         .toIterable()
