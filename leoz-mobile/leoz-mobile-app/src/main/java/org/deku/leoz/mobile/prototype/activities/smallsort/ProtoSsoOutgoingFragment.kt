@@ -68,8 +68,6 @@ class ProtoSsoOutgoingFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        aidcReader.bindFragment(this)
-
         aidcReader.decoders.set(
                 Interleaved25Decoder(true, 11, 12),
                 DatamatrixDecoder(true),

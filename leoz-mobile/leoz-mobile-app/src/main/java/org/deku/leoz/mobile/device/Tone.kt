@@ -55,14 +55,16 @@ class Tone {
         audioTrack.play()
     }
 
+    private val toneGenerator by lazy {
+        ToneGenerator(AudioManager.STREAM_ALARM, ToneGenerator.MAX_VOLUME)
+    }
+
     private val regularBeep by lazy {
         this.createSample(250, 1400.0)
     }
 
     fun beep() {
-        val toneG = ToneGenerator(AudioManager.STREAM_ALARM, ToneGenerator.MAX_VOLUME)
-        toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200)
+        this.toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200)
 //        this.playSample(this.regularBeep)
     }
-
 }

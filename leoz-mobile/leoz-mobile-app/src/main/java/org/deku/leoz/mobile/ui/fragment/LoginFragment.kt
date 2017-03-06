@@ -42,8 +42,6 @@ class LoginFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        aidcReader.bindFragment(this)
-
         aidcReader.decoders.set(
                 Ean8Decoder(true),
                 Ean13Decoder(true),
