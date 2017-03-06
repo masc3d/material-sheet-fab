@@ -1,16 +1,13 @@
 package sx.android.aidc
 
-import com.google.zxing.BarcodeFormat
 import com.trello.rxlifecycle.LifecycleProvider
 import com.trello.rxlifecycle.android.ActivityEvent
 import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import org.slf4j.LoggerFactory
-import rx.Observable
 import rx.lang.kotlin.BehaviorSubject
 import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.synchronized
-import sx.Lifecycle
 import sx.rx.observableRx
 
 /**
@@ -43,30 +40,29 @@ abstract class AidcReader {
 
     data class ReadEvent(val data: String, val barcodeType: BarcodeType)
 
-
-    val enabledSubject = BehaviorSubject<Boolean>()
+    protected val enabledSubject = BehaviorSubject<Boolean>()
     /**
      * Enable or disable barcode reader
      */
     var enabled: Boolean by observableRx(true, enabledSubject)
 
+    protected val decodersUpdatedSubject = BehaviorSubject<Array<out Decoder>>()
     /**
      * Decoders
      */
     val decoders: Decoders = Decoders()
-    val decodersUpdatedSubject = BehaviorSubject<Array<out Decoder>>()
 
     /**
      * On subscription of reader events
      */
-    open protected fun onBind() {
-    }
+    protected open fun onBind() { }
+    internal fun onBindInternal() { this.onBind() }
 
     /**
      * On unsubscription of reader eventrs
      */
-    open protected fun onUnbind() {
-    }
+    protected open fun onUnbind() { }
+    internal fun onUnbindInternal() { this.onUnbindInternal() }
 
     private var bindRefCount = 0
 
