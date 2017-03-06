@@ -105,7 +105,6 @@ class StartupActivity : RxAppCompatActivity() {
                     ovPermissions.cast(Any::class.java),
                     ovAidcReader.cast(Any::class.java)
             ))
-                    .onBackpressureBuffer()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith {
                         onCompleted {
