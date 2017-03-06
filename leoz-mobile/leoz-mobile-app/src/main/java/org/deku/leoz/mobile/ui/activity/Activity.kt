@@ -70,7 +70,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
         this.nav_view.setNavigationItemSelectedListener(this)
 
         //region Camera control
-        onCameraEnabled(false)
+        this.cameraAidcFragmentVisible = false
 
         this.uxAidcCameraFab.setOnClickListener { view ->
             this.cameraAidcFragmentVisible = !this.cameraAidcFragmentVisible
@@ -151,40 +151,34 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
         return true
     }
 
-    private fun onCameraEnabled(enabled: Boolean) {
-        when (enabled) {
-            true -> {
-                this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorDarkGrey, iconTint = R.color.colorAccent)
-                this.uxAidcCameraFab.alpha = 0.5F
-                this.uxHelpFab.alpha = 0.5F
-            }
-            false -> {
-                this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorAccent, iconTint = android.R.color.black)
-                this.uxAidcCameraFab.alpha = 1.0F
-                this.uxHelpFab.alpha = 1.0F
-            }
-        }
-    }
-
     private var cameraAidcFragmentVisible: Boolean
         get() {
             val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
             return fragment != null
         }
         set(value) {
+            when (value) {
+                true -> {
+                    this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorDarkGrey, iconTint = R.color.colorAccent)
+                    this.uxAidcCameraFab.alpha = 0.5F
+                    this.uxHelpFab.alpha = 0.5F
+                }
+                false -> {
+                    this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorAccent, iconTint = android.R.color.black)
+                    this.uxAidcCameraFab.alpha = 1.0F
+                    this.uxHelpFab.alpha = 1.0F
+                }
+            }
+
             if (value == this.cameraAidcFragmentVisible)
                 return
 
             val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
             if (!value) {
-                onCameraEnabled(false)
-
                 this.supportFragmentManager.withTransaction {
                     it.remove(fragment)
                 }
             } else {
-                onCameraEnabled(true)
-
                 this.supportFragmentManager.withTransaction {
                     it.replace(R.id.uxScannerContainer, AidcCameraFragment(), AidcCameraFragment::class.java.canonicalName)
                 }
