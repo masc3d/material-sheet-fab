@@ -16,7 +16,7 @@ import sx.rx.toHotReplay
  */
 class HoneywellAidcReader private constructor(
         private val aidcManager: AidcManager
-) : AidcReader(), com.honeywell.aidc.BarcodeReader.BarcodeListener, com.honeywell.aidc.BarcodeReader.TriggerListener {
+) : AidcReader(), BarcodeReader.BarcodeListener, BarcodeReader.TriggerListener {
 
     companion object {
         private val log = LoggerFactory.getLogger(HoneywellAidcReader::class.java)
@@ -71,12 +71,12 @@ class HoneywellAidcReader private constructor(
         this.honeywellReader.release()
     }
 
-    private val honeywellReader: com.honeywell.aidc.BarcodeReader
+    private val honeywellReader: BarcodeReader
             get() { return honeywellReaderInstance.get() }
     /**
      * Honeywell barcode reader
      */
-    private val honeywellReaderInstance = LazyInstance<com.honeywell.aidc.BarcodeReader>({
+    private val honeywellReaderInstance = LazyInstance<BarcodeReader>({
         val bc = this.aidcManager.createBarcodeReader()
         bc.addBarcodeListener(this)
         bc.addTriggerListener(this)
@@ -131,10 +131,10 @@ class HoneywellAidcReader private constructor(
 
     var centerDecode: Boolean
         get() {
-            return this.honeywellReader.getBooleanProperty(com.honeywell.aidc.BarcodeReader.PROPERTY_CENTER_DECODE)
+            return this.honeywellReader.getBooleanProperty(BarcodeReader.PROPERTY_CENTER_DECODE)
         }
         set(value) {
-            this.honeywellReader.setProperty(com.honeywell.aidc.BarcodeReader.PROPERTY_CENTER_DECODE, value)
+            this.honeywellReader.setProperty(BarcodeReader.PROPERTY_CENTER_DECODE, value)
         }
 
     private fun onDecodersUpdated(decoders: Array<out Decoder>) {
@@ -146,66 +146,66 @@ class HoneywellAidcReader private constructor(
                     when (decoder) {
                         is Ean8Decoder -> {
                             val properties = mutableMapOf<String, Any>()
-                            properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_EAN_8_ENABLED, decoder.enabled)
+                            properties.put(BarcodeReader.PROPERTY_EAN_8_ENABLED, decoder.enabled)
                             this.honeywellReader.setProperties(properties)
                         }
                         is Ean13Decoder -> {
                             val properties = mutableMapOf<String, Any>()
-                            properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_EAN_13_ENABLED, decoder.enabled)
+                            properties.put(BarcodeReader.PROPERTY_EAN_13_ENABLED, decoder.enabled)
                             this.honeywellReader.setProperties(properties)
                         }
                         is Code128Decoder -> {
                             val properties = mutableMapOf<String, Any>()
-                            properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_CODE_128_ENABLED, decoder.enabled)
+                            properties.put(BarcodeReader.PROPERTY_CODE_128_ENABLED, decoder.enabled)
                             if (decoder.minimumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_CODE_128_MINIMUM_LENGTH, decoder.minimumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_CODE_128_MINIMUM_LENGTH, decoder.minimumLength as Int)
                             if (decoder.maximumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_CODE_128_MAXIMUM_LENGTH, decoder.maximumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_CODE_128_MAXIMUM_LENGTH, decoder.maximumLength as Int)
                             this.honeywellReader.setProperties(properties)
                         }
                         is Code39Decoder -> {
                             val properties = mutableMapOf<String, Any>()
-                            properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_CODE_39_ENABLED, decoder.enabled)
+                            properties.put(BarcodeReader.PROPERTY_CODE_39_ENABLED, decoder.enabled)
                             if (decoder.minimumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_CODE_39_MINIMUM_LENGTH, decoder.minimumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_CODE_39_MINIMUM_LENGTH, decoder.minimumLength as Int)
                             if (decoder.maximumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_CODE_39_MAXIMUM_LENGTH, decoder.maximumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_CODE_39_MAXIMUM_LENGTH, decoder.maximumLength as Int)
                             this.honeywellReader.setProperties(properties)
                         }
                         is Interleaved25Decoder -> {
                             val properties = mutableMapOf<String, Any>()
-                            properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_INTERLEAVED_25_ENABLED, decoder.enabled)
+                            properties.put(BarcodeReader.PROPERTY_INTERLEAVED_25_ENABLED, decoder.enabled)
                             if (decoder.minimumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_INTERLEAVED_25_MINIMUM_LENGTH, decoder.minimumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_INTERLEAVED_25_MINIMUM_LENGTH, decoder.minimumLength as Int)
                             if (decoder.maximumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_INTERLEAVED_25_MAXIMUM_LENGTH, decoder.maximumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_INTERLEAVED_25_MAXIMUM_LENGTH, decoder.maximumLength as Int)
                             this.honeywellReader.setProperties(properties)
                         }
                         is DatamatrixDecoder -> {
                             val properties = mutableMapOf<String, Any>()
-                            properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_DATAMATRIX_ENABLED, decoder.enabled)
+                            properties.put(BarcodeReader.PROPERTY_DATAMATRIX_ENABLED, decoder.enabled)
                             if (decoder.minimumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_DATAMATRIX_MINIMUM_LENGTH, decoder.minimumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_DATAMATRIX_MINIMUM_LENGTH, decoder.minimumLength as Int)
                             if (decoder.maximumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_DATAMATRIX_MAXIMUM_LENGTH, decoder.maximumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_DATAMATRIX_MAXIMUM_LENGTH, decoder.maximumLength as Int)
                             this.honeywellReader.setProperties(properties)
                         }
                         is Pdf417Decoder -> {
                             val properties = mutableMapOf<String, Any>()
-                            properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_PDF_417_ENABLED, decoder.enabled)
+                            properties.put(BarcodeReader.PROPERTY_PDF_417_ENABLED, decoder.enabled)
                             if (decoder.minimumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_PDF_417_MINIMUM_LENGTH, decoder.minimumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_PDF_417_MINIMUM_LENGTH, decoder.minimumLength as Int)
                             if (decoder.maximumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_PDF_417_MAXIMUM_LENGTH, decoder.maximumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_PDF_417_MAXIMUM_LENGTH, decoder.maximumLength as Int)
                             this.honeywellReader.setProperties(properties)
                         }
                         is QrCodeDecoder -> {
                             val properties = mutableMapOf<String, Any>()
-                            properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_QR_CODE_ENABLED, decoder.enabled)
+                            properties.put(BarcodeReader.PROPERTY_QR_CODE_ENABLED, decoder.enabled)
                             if (decoder.minimumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_QR_CODE_MINIMUM_LENGTH, decoder.minimumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_QR_CODE_MINIMUM_LENGTH, decoder.minimumLength as Int)
                             if (decoder.maximumLength != null)
-                                properties.put(com.honeywell.aidc.BarcodeReader.PROPERTY_QR_CODE_MAXIMUM_LENGTH, decoder.maximumLength as Int)
+                                properties.put(BarcodeReader.PROPERTY_QR_CODE_MAXIMUM_LENGTH, decoder.maximumLength as Int)
                             this.honeywellReader.setProperties(properties)
                         }
                         else -> throw UnsupportedOperationException("Unsupported barcode type [${decoder.barcodeType}]")
