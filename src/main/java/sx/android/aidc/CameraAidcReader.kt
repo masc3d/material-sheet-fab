@@ -41,22 +41,17 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
 
             this@CameraAidcReader.enabledSubject
                     .compose(RxLifecycleAndroid.bindView(this))
-                    .doOnSubscribe {
-                        log.trace("VIEW SUBSCRIBED")
-                    }
                     .doOnUnsubscribe {
-                        log.trace("VIEW UNSUBSCRIBED")
                         this.pause()
                     }
                     .subscribe {
+                        log.trace("Enabled [${it}]")
                         when (it) {
                             true -> {
-                                log.trace("ENABLING")
                                 this.resume()
                                 this.decodeContinuous(this@CameraAidcReader)
                             }
                             false -> {
-                                log.trace("DISABLING")
                                 this.pause()
                             }
                         }
@@ -92,7 +87,6 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
     private val barcodeTypeByFormat by lazy {
         barcodeTypeMapping.map { Pair(it.second, it.first) }.toMap()
     }
-    //endregion
 
     private fun mapBarcodeFormats(): List<BarcodeFormat> {
         return this.decoders.mapNotNull {
@@ -102,12 +96,16 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
             }
         }
     }
+    //endregion
 
     val torchSubject = BehaviorSubject<Boolean>()
     var torch: Boolean by observableRx(false, torchSubject)
 
-    fun createView(context: Context): DecoratedBarcodeView {
-        return View(context)
+    /**
+     * View finder
+     */
+    val view by lazy {
+        View(this.context)
     }
 
     //region Zxing barcode callback
