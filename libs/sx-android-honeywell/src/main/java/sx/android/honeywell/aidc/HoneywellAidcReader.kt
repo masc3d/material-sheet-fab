@@ -1,10 +1,7 @@
 package sx.android.honeywell.aidc
 
 import android.content.Context
-import com.honeywell.aidc.AidcManager
-import com.honeywell.aidc.BarcodeFailureEvent
-import com.honeywell.aidc.BarcodeReadEvent
-import com.honeywell.aidc.TriggerStateChangeEvent
+import com.honeywell.aidc.*
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.Subscription
@@ -85,19 +82,51 @@ class HoneywellAidcReader private constructor(
         bc.addTriggerListener(this)
 
         // Default settings
-        bc.setProperty(
-                com.honeywell.aidc.BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED,
-                false)
-        bc.setProperty(
-                com.honeywell.aidc.BarcodeReader.PROPERTY_TRIGGER_CONTROL_MODE,
-                com.honeywell.aidc.BarcodeReader.TRIGGER_CONTROL_MODE_CLIENT_CONTROL)
-
-        // TODO: disable all symbologies on initialization
+        bc.setProperties(mapOf<String, Any>(
+                Pair(BarcodeReader.PROPERTY_NOTIFICATION_BAD_READ_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_TRIGGER_CONTROL_MODE, BarcodeReader.TRIGGER_CONTROL_MODE_CLIENT_CONTROL),
+                // Disable all symbologies
+                Pair(BarcodeReader.PROPERTY_AZTEC_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_CHINA_POST_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_CODABAR_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_CODABAR_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_CODE_11_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_CODE_128_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_CODE_39_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_CODE_93_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_CODABLOCK_A_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_CODABLOCK_F_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_COMPOSITE_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_EAN_8_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_UPC_A_ENABLE, false),
+                Pair(BarcodeReader.PROPERTY_DATAMATRIX_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_EAN_13_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_GS1_128_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_HAX_XIN_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_IATA_25_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_INTERLEAVED_25_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_ISBT_128_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_KOREAN_POST_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_MATRIX_25_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_MAXICODE_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_MICRO_PDF_417_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_MSI_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_PDF_417_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_QR_CODE_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_RSS_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_STANDARD_25_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_TELEPEN_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_TLC_39_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_TRIOPTIC_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_UPC_E_E1_ENABLED, false),
+                Pair(BarcodeReader.PROPERTY_UPC_E_ENABLED, false)
+        ))
 
         bc
     })
 
     init {
+
     }
 
     var centerDecode: Boolean
