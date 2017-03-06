@@ -17,11 +17,10 @@ import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 import sx.android.Device
-import sx.android.aidc.AidcReader
-import sx.android.aidc.Ean13Decoder
-import sx.android.aidc.Ean8Decoder
+import sx.android.aidc.*
 
 /**
+ * Login fragment
  * Created by n3 on 26/02/2017.
  */
 class LoginFragment : Fragment() {
@@ -47,7 +46,10 @@ class LoginFragment : Fragment() {
 
         aidcReader.decoders.set(
                 Ean8Decoder(true),
-                Ean13Decoder(true)
+                Ean13Decoder(true),
+                Interleaved25Decoder(true, 11, 12),
+                DatamatrixDecoder(true),
+                Code128Decoder(true)
         )
 
         aidcReader.readEvent

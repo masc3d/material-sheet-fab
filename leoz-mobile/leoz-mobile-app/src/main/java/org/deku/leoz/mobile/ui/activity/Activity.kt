@@ -160,8 +160,8 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
             when (value) {
                 true -> {
                     this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorDarkGrey, iconTint = R.color.colorAccent)
-                    this.uxAidcCameraFab.alpha = 0.5F
-                    this.uxHelpFab.alpha = 0.5F
+                    this.uxAidcCameraFab.alpha = 0.6F
+                    this.uxHelpFab.alpha = 0.6F
                 }
                 false -> {
                     this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorAccent, iconTint = android.R.color.black)
