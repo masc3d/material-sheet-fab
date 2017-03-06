@@ -49,7 +49,8 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
                         when (it) {
                             true -> {
                                 this.resume()
-                                this.decodeContinuous(this@CameraAidcReader)
+                                this.isSoundEffectsEnabled = true
+                                this.decodeSingle(this@CameraAidcReader)
                             }
                             false -> {
                                 this.pause()
