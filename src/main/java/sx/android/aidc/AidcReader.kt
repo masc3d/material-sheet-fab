@@ -62,7 +62,7 @@ abstract class AidcReader {
      * On unsubscription of reader eventrs
      */
     protected open fun onUnbind() { }
-    internal fun onUnbindInternal() { this.onUnbindInternal() }
+    internal fun onUnbindInternal() { this.onUnbind() }
 
     private var bindRefCount = 0
 
