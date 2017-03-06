@@ -53,8 +53,12 @@ class HoneywellAidcReader private constructor(
 
         this.subscriptions.add(
                 this.enabledSubject.subscribe {
-                    log.debug("ENABLED ${it}")
-                    this.honeywellReader.decode(it)
+                    when(it) {
+                        false -> {
+                            log.debug("Closing")
+                            this.honeywellReader.decode(false)
+                        }
+                    }
                 })
 
         this.subscriptions.add(
@@ -86,7 +90,7 @@ class HoneywellAidcReader private constructor(
                 false)
         bc.setProperty(
                 com.honeywell.aidc.BarcodeReader.PROPERTY_TRIGGER_CONTROL_MODE,
-                com.honeywell.aidc.BarcodeReader.TRIGGER_CONTROL_MODE_AUTO_CONTROL)
+                com.honeywell.aidc.BarcodeReader.TRIGGER_CONTROL_MODE_CLIENT_CONTROL)
 
         // TODO: disable all symbologies on initialization
 
@@ -207,7 +211,12 @@ class HoneywellAidcReader private constructor(
         log.error(evt.toString())
     }
 
-    override fun onTriggerEvent(p0: TriggerStateChangeEvent?) {
+    override fun onTriggerEvent(evt: TriggerStateChangeEvent) {
         log.trace("Trigger event")
+        if (this.enabled) {
+            this.honeywellReader.aim(evt.state)
+            this.honeywellReader.light(evt.state)
+            this.honeywellReader.decode(evt.state)
+        }
     }
 }
