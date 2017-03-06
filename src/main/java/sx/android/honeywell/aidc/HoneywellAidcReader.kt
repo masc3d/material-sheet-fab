@@ -26,7 +26,7 @@ class HoneywellAidcReader private constructor(
          * @return Hot reply observable emitting AidcReader when it is (or has become) available
          */
         fun create(context: Context): Observable<AidcReader> {
-            return Observable.create<AidcReader> { onSubscribe ->
+            return Observable.unsafeCreate<AidcReader> { onSubscribe ->
                 try {
                     onSubscribe.onStart()
                     log.debug("Creating AidcManager")
