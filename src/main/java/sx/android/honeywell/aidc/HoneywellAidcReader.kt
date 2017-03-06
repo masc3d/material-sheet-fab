@@ -212,7 +212,6 @@ class HoneywellAidcReader private constructor(
     }
 
     override fun onTriggerEvent(evt: TriggerStateChangeEvent) {
-        log.trace("Trigger event")
         if (this.enabled) {
             this.honeywellReader.aim(evt.state)
             this.honeywellReader.light(evt.state)
