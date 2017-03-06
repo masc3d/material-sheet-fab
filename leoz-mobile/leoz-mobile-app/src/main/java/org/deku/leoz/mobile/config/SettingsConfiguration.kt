@@ -2,9 +2,7 @@ package org.deku.leoz.mobile.config
 
 import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.singleton
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.*
 import org.deku.leoz.mobile.BuildConfig
 import sx.ConfigurationMap
 import sx.YamlConfigurationMap

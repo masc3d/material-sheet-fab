@@ -10,7 +10,8 @@ import android.view.Menu
 import android.view.MenuItem
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.genericInstance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
@@ -20,9 +21,10 @@ import kotlinx.android.synthetic.main.main_app_bar.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.prototype.activities.Proto_MainActivity
+import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.slf4j.LoggerFactory
-import sx.android.aidc.BarcodeReader
+import rx.Observable
+import sx.android.aidc.AidcReader
 
 /**
  * Leoz activity base class
@@ -31,7 +33,7 @@ import sx.android.aidc.BarcodeReader
 open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val barcodeReader: BarcodeReader by Kodein.global.lazy.instance()
+    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,6 +116,6 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onStart() {
         super.onStart()
 
-        this.barcodeReader.bindActivity(this)
+        this.aidcReader.bindActivity(this)
     }
 }

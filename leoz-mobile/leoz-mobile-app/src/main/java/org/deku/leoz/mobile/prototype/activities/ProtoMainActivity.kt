@@ -4,19 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.View
-import kotlinx.android.synthetic.main.activity_proto__main.*
+import kotlinx.android.synthetic.main.proto_activity_main.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso
+import org.deku.leoz.mobile.prototype.activities.smallsort.ProtoSsoActivity
 import org.deku.leoz.mobile.ui.activity.Activity
 import org.slf4j.LoggerFactory
 
-class Proto_MainActivity : Activity(), View.OnClickListener {
+class ProtoMainActivity : Activity(), View.OnClickListener {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_proto__main)
+        setContentView(R.layout.proto_activity_main)
         uxHubButton.setOnClickListener(this)
         uxSsoButton.setOnClickListener(this)
     }
@@ -28,7 +28,7 @@ class Proto_MainActivity : Activity(), View.OnClickListener {
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
             uxSsoButton -> {
-                mIntent = Intent(applicationContext, Proto_sso::class.java)
+                mIntent = Intent(applicationContext, ProtoSsoActivity::class.java)
                 startActivity(mIntent)
             }
             else -> {

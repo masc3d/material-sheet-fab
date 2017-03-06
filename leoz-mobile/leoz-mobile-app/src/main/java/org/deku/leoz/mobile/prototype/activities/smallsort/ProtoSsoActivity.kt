@@ -4,16 +4,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.FragmentTransaction
-import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.ImageButton
-import kotlinx.android.synthetic.main.activity_proto_sso.*
+import kotlinx.android.synthetic.main.proto_activity_sso.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.prototype.Proto_CameraScannerFragment
 import org.deku.leoz.mobile.ui.activity.Activity
 import org.slf4j.LoggerFactory
 
-class Proto_sso : Activity(), Proto_sso_MenueFragment.OnFragmentInteractionListener, Proto_sso_OutgoingFragment.OnFragmentInteractionListener, Proto_CameraScannerFragment.OnBarcodeResultListener {
+class ProtoSsoActivity : Activity(), ProtoSsoMenuFragment.OnFragmentInteractionListener, ProtoSsoOutgoingFragment.OnFragmentInteractionListener {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
@@ -26,7 +24,7 @@ class Proto_sso : Activity(), Proto_sso_MenueFragment.OnFragmentInteractionListe
 //        }
         super.onCreate(savedInstanceState)
         log.debug("onCreate")
-        setContentView(R.layout.activity_proto_sso)
+        setContentView(R.layout.proto_activity_sso)
         if (savedInstanceState == null) {
             createMenueFragment()
         }
@@ -36,13 +34,8 @@ class Proto_sso : Activity(), Proto_sso_MenueFragment.OnFragmentInteractionListe
         throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onBarcodeResult(content: String) {
-        //throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-        log.debug("onBarcodeResult")
-    }
-
     private fun createMenueFragment() {
-        val fragmentMenu: Proto_sso_MenueFragment = Proto_sso_MenueFragment.newInstance()
+        val fragmentMenu: ProtoSsoMenuFragment = ProtoSsoMenuFragment.newInstance()
         val fragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
         fragmentTransaction!!.add(uxSsoFragmentContainer.id, fragmentMenu)
         fragmentTransaction.addToBackStack(null)
@@ -65,9 +58,9 @@ class Proto_sso : Activity(), Proto_sso_MenueFragment.OnFragmentInteractionListe
                     }
                     R.id.uxBagOutgoing -> {
                         //TODO Switch Fragment to Bag-Outgoing Process
-                        val fragmentSSOOutgoing: Proto_sso_OutgoingFragment = Proto_sso_OutgoingFragment()
+                        val fragmentSsoOutgoing: ProtoSsoOutgoingFragment = ProtoSsoOutgoingFragment()
                         val fragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
-                        fragmentTransaction!!.replace(uxSsoFragmentContainer.id, fragmentSSOOutgoing)
+                        fragmentTransaction!!.replace(uxSsoFragmentContainer.id, fragmentSsoOutgoing)
                         fragmentTransaction.addToBackStack(null)
                         fragmentTransaction.commit()
                     }

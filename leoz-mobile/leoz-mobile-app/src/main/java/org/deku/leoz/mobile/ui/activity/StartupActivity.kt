@@ -9,17 +9,22 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 import org.deku.leoz.mobile.*
-import org.deku.leoz.mobile.update.UpdateService
+import org.deku.leoz.mobile.service.UpdateService
 import org.slf4j.LoggerFactory
 import sx.android.Device
 import android.support.v4.app.ActivityCompat.requestPermissions
+import android.util.Log
+import com.github.salomonbrys.kodein.genericInstance
+import com.github.salomonbrys.kodein.lazy
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.tinsuke.icekick.extension.serialState
 import org.deku.leoz.mobile.model.Database
+import rx.Observable
 import rx.lang.kotlin.subscribeWith
+import sx.android.aidc.AidcReader
 
 
 /**
@@ -69,26 +74,30 @@ class StartupActivity : RxAppCompatActivity() {
             // Ensure permissions are granted
             val rxPermissions = RxPermissions(this)
             rxPermissions
-                    .request(Manifest.permission.READ_PHONE_STATE)
+                    .request(Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA)
                     .subscribe { granted ->
                         if (granted) {
                             // Log serials
                             val device: Device = Kodein.global.instance()
                             log.info(device.toString())
 
-                            // Start main activity with delay to ensure visibility of transition
-                            val handler = Handler()
-                            handler.postDelayed({
-                                this.startMainActivity(withAnimation = true)
+                            // Synchronize with asynchronously acquired resources
+                            val ovAidcReader: Observable<out AidcReader> = Kodein.global.genericInstance()
+                            ovAidcReader.subscribe {
+                                // Start main activity with delay to ensure visibility of transition
+                                val handler = Handler()
+                                handler.postDelayed({
+                                    this.startMainActivity(withAnimation = true)
 
-                                // Wait for migration to finish
-                                try {
-                                    migrateAwaitable.await()
-                                } catch(e: Throwable) {
-                                    // Ignore this exception here, as StartupActivity is about to finish.
-                                    // Migration result will be evaluated in MainActivity
-                                }
-                            }, 300)
+                                    // Wait for migration to finish
+                                    try {
+                                        migrateAwaitable.await()
+                                    } catch(e: Throwable) {
+                                        // Ignore this exception here, as StartupActivity is about to finish.
+                                        // Migration result will be evaluated in MainActivity
+                                    }
+                                }, 300)
+                            }
 
                             this.started = true
                         } else {

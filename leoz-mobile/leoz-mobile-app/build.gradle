@@ -9,7 +9,7 @@ buildscript {
 
     dependencies {
         classpath(
-                "com.android.tools.build:gradle:2.2.3",
+                'com.android.tools.build:gradle:2.3.0',
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2",
                 "sx:sx-packager-gradle:0.1",
@@ -151,6 +151,8 @@ dependencies {
 
             // Kodein
             "com.github.salomonbrys.kodein:kodein-android:$v_kodein",
+            // Kodein implementation using erased types (no generics support, but much faster on android)
+            "com.github.salomonbrys.kodein:kodein-erased:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
 
             // Logging
@@ -196,6 +198,8 @@ dependencies {
 
             // YAML
             "pl.droidsonroids.yaml:snakeyaml:1.18-android",
+
+            'com.squareup.flow:flow:1.0.0-alpha2',
 
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:4.0.0") {

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="org.deku.leoz.mobile.prototype.activities.smallsort.Proto_sso_MenueFragment">
+    tools:context="org.deku.leoz.mobile.prototype.activities.smallsort.ProtoSsoMenuFragment">
 
     <LinearLayout
         android:orientation="vertical"

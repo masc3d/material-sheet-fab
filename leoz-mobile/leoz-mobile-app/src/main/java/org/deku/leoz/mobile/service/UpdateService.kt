@@ -1,9 +1,9 @@
-package org.deku.leoz.mobile.update
+package org.deku.leoz.mobile.service
 
 import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import feign.Feign
 import feign.FeignException

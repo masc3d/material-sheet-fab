@@ -8,7 +8,7 @@ import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_proto_sso__menue_.*
+import kotlinx.android.synthetic.main.proto_fragment_sso_menu.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.fragment.Fragment
 import org.slf4j.LoggerFactory
@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [Proto_sso_MenueFragment.OnFragmentInteractionListener] interface
+ * [ProtoSsoMenuFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [Proto_sso_MenueFragment.newInstance] factory method to
+ * Use the [ProtoSsoMenuFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
+class ProtoSsoMenuFragment : Fragment(), View.OnClickListener {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
     private var listener: OnFragmentInteractionListener? = null
@@ -33,11 +33,12 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_proto_sso__menue_, container, false)
+        return inflater!!.inflate(R.layout.proto_fragment_sso_menu, container, false)
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
+
         if (context is OnFragmentInteractionListener) {
             listener = context as OnFragmentInteractionListener?
         } else {
@@ -80,11 +81,11 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
 
-         * @return A new instance of fragment Proto_sso_MenueFragment.
+         * @return A new instance of fragment ProtoSsoMenuFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(): Proto_sso_MenueFragment {
-            val fragment = Proto_sso_MenueFragment()
+        fun newInstance(): ProtoSsoMenuFragment {
+            val fragment = ProtoSsoMenuFragment()
             return fragment
         }
     }
@@ -103,7 +104,7 @@ class Proto_sso_MenueFragment : Fragment(), View.OnClickListener {
                 Snackbar.make(v, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
             }
             uxBagOutgoing -> {
-                //mIntent = Intent(activity.applicationContext, Proto_sso_OutgoingFragment::class.java)
+                //mIntent = Intent(activity.applicationContext, ProtoSsoOutgoingFragment::class.java)
                 //startActivity(mIntent)
 
             }

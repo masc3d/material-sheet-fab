@@ -36,6 +36,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'org.flywaydb.flyway'
 apply plugin: 'idea'
 
@@ -78,10 +79,6 @@ def JOOQ_PACKAGE_NAME = Constants.JOOQ_PACKAGE_NAME
 def JPA_PACKAGE_NAME = Constants.JPA_PACKAGE_NAME
 //endregion
 
-kapt {
-    generateStubs = true
-}
-
 idea {
     module {
         // Add KAPT generated sources to intellij
@@ -119,17 +116,8 @@ dependencies {
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
-            // Kodein
-            "com.github.salomonbrys.kodein:kodein:$v_kodein",
-            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
-
             // javax.persistence
             "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
-
-            // rx
-            "io.reactivex:rxjava:$v_rxjava",
-            "io.reactivex:rxkotlin:$v_rxkotlin",
-            "com.github.davidmoten:rxjava-extras:0.8.0.6",
 
             // Requery
             "io.requery:requery:$v_requery",
@@ -154,6 +142,15 @@ dependencies {
     testCompile(
             "junit:junit:$v_junit",
             "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
+
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
+
+            // rx
+            "io.reactivex:rxjava:$v_rxjava",
+            "io.reactivex:rxkotlin:$v_rxkotlin",
+            "com.github.davidmoten:rxjava-extras:0.8.0.6",
     )
 }
 
