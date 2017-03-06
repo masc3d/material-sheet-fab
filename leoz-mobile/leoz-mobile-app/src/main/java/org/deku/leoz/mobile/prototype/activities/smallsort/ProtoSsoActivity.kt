@@ -6,75 +6,23 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.FragmentTransaction
 import android.widget.Button
 import android.widget.ImageButton
-import kotlinx.android.synthetic.main.proto_activity_sso.*
+import kotlinx.android.synthetic.main.proto_fragment_sso.*
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.prototype.activities.ProtoMainFragment
 import org.deku.leoz.mobile.ui.activity.Activity
 import org.slf4j.LoggerFactory
+import sx.android.fragment.util.withTransaction
 
-class ProtoSsoActivity : Activity(), ProtoSsoMenuFragment.OnFragmentInteractionListener, ProtoSsoOutgoingFragment.OnFragmentInteractionListener {
+class ProtoSsoActivity : Activity() {
 
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-//        val mBundle: Bundle? = savedInstanceState
-//        try{
-//            mBundle!!.remove("android:support:fragments")
-//        }catch(e: Exception){
-//
-//        }
+        log.trace("ONCREATE")
         super.onCreate(savedInstanceState)
-        log.debug("onCreate")
-        setContentView(R.layout.proto_activity_sso)
-        if (savedInstanceState == null) {
-            createMenueFragment()
-        }
-    }
 
-    override fun onFragmentInteraction(uri: Uri) {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private fun createMenueFragment() {
-        val fragmentMenu: ProtoSsoMenuFragment = ProtoSsoMenuFragment.newInstance()
-        val fragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
-        fragmentTransaction!!.add(uxSsoFragmentContainer.id, fragmentMenu)
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
-    }
-
-    override fun onButtonClicked(buttonID: Int) {
-        log.debug("onButtonClicked")
-        if (findViewById(buttonID) != null) {
-            if (findViewById(buttonID) is Button || findViewById(buttonID) is ImageButton) {
-                when (buttonID) {
-                    R.id.uxBagDifference -> {
-
-                    }
-                    R.id.uxBagIncoming -> {
-
-                    }
-                    R.id.uxBagInitialize -> {
-
-                    }
-                    R.id.uxBagOutgoing -> {
-                        //TODO Switch Fragment to Bag-Outgoing Process
-                        val fragmentSsoOutgoing: ProtoSsoOutgoingFragment = ProtoSsoOutgoingFragment()
-                        val fragmentTransaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
-                        fragmentTransaction!!.replace(uxSsoFragmentContainer.id, fragmentSsoOutgoing)
-                        fragmentTransaction.addToBackStack(null)
-                        fragmentTransaction.commit()
-                    }
-                    R.id.uxBagSort -> {
-
-                    }
-                    else -> {
-                        log.debug("OnClick Event unhandled [${findViewById(buttonID).rootView}]")
-                        Snackbar.make(findViewById(buttonID).rootView, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        } else {
-            log.debug("Fragment onButtonClicked event for non-button control [${buttonID}]")
+        this.supportFragmentManager.withTransaction {
+            it.replace(R.id.uxContainer, ProtoSsoFragment())
         }
     }
 }

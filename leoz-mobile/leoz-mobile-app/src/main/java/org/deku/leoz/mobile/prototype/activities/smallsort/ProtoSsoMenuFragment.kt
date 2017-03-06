@@ -39,8 +39,9 @@ class ProtoSsoMenuFragment : Fragment(), View.OnClickListener {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
-        if (context is OnFragmentInteractionListener) {
-            listener = context as OnFragmentInteractionListener?
+        val parent = this.parentFragment
+        if (parent is OnFragmentInteractionListener) {
+            listener = parent as OnFragmentInteractionListener?
         } else {
             throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
         }

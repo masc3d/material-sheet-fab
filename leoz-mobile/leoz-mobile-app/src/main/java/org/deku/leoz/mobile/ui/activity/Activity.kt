@@ -165,8 +165,8 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                 }
                 false -> {
                     this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorAccent, iconTint = android.R.color.black)
-                    this.uxAidcCameraFab.alpha = 1.0F
-                    this.uxHelpFab.alpha = 1.0F
+                    this.uxAidcCameraFab.alpha = 0.85F
+                    this.uxHelpFab.alpha = 0.85F
                 }
             }
 
