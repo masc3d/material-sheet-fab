@@ -12,6 +12,7 @@ import rx.schedulers.Schedulers
 import sx.android.Device
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
+import sx.android.aidc.CompositeAidcReader
 import sx.android.honeywell.aidc.HoneywellAidcReader
 import sx.rx.toHotReplay
 import java.util.concurrent.TimeUnit
@@ -23,30 +24,36 @@ import java.util.concurrent.TimeUnit
 class AidcConfiguration {
     companion object {
         val module = Kodein.Module {
+            bind<CameraAidcReader>() with erasedSingleton {
+                CameraAidcReader(context = erasedInstance())
+            }
+
             bind<Observable<out AidcReader>>() with eagerSingleton {
                 val device: Device = instance()
+
+                val ovCameraReader: Observable<out AidcReader> = instance<CameraAidcReader>()
+                        .toSingletonObservable()
+                        .toHotReplay()
+
                 when (device.manufacturer.type) {
                     Device.Manufacturer.Type.Honeywell ->
-                        HoneywellAidcReader.create(context = instance())
+                        HoneywellAidcReader
+                                .create(context = instance())
+                                .mergeWith(ovCameraReader)
                     else ->
-                        CameraAidcReader(context = instance())
-                                .toSingletonObservable()
-                                .toHotReplay()
+                        ovCameraReader
                 }
             }
 
             bind<AidcReader>() with erasedSingleton {
                 val ovAidcReader: Observable<out AidcReader> = instance()
 
-                ovAidcReader
-                        .take(0, TimeUnit.SECONDS)
+                val aidcReaders = ovAidcReader
                         .toBlocking()
-                        .firstOrNull()
-                        ?: throw IllegalStateException("AidcReader not ready yet. Do not inject this instance without giving main loop opportunity to cycle at least once after importing module.")
-            }
+                        .toIterable()
+                        .toList()
 
-            bind<CameraAidcReader>() with erasedSingleton {
-                CameraAidcReader(context = erasedInstance())
+                CompositeAidcReader(readers = *aidcReaders.toTypedArray())
             }
         }
     }

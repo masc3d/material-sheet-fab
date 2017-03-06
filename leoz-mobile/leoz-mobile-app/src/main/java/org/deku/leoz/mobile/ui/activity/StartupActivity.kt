@@ -2,29 +2,30 @@ package org.deku.leoz.mobile.ui.activity
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity
-import org.deku.leoz.mobile.*
-import org.deku.leoz.mobile.service.UpdateService
-import org.slf4j.LoggerFactory
-import sx.android.Device
-import android.support.v4.app.ActivityCompat.requestPermissions
-import android.util.Log
 import com.github.salomonbrys.kodein.genericInstance
-import com.github.salomonbrys.kodein.lazy
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.tinsuke.icekick.extension.serialState
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity
+import org.deku.leoz.mobile.Application
+import org.deku.leoz.mobile.app
+import org.deku.leoz.mobile.freezeInstanceState
 import org.deku.leoz.mobile.model.Database
+import org.deku.leoz.mobile.service.UpdateService
+import org.deku.leoz.mobile.unfreezeInstanceState
+import org.slf4j.LoggerFactory
 import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.lang.kotlin.onErrorReturnNull
 import rx.lang.kotlin.subscribeWith
+import rx.schedulers.Schedulers
+import sx.android.Device
 import sx.android.aidc.AidcReader
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -69,40 +70,58 @@ class StartupActivity : RxAppCompatActivity() {
             // TODO: this implementation could/should be fully reactive
 
             // Start database migration (async)
-            val migrateAwaitable = db.migrate()
+            val ovMigrate = db.migrate()
+                    // Ignore this exception here, as StartupActivity is about to finish.
+                    // Migration result will be evaluated in MainActivity
+                    .onErrorReturnNull()
+                    .ignoreElements()
 
-            // Ensure permissions are granted
-            val rxPermissions = RxPermissions(this)
-            rxPermissions
+            // Acquire permissions
+            val ovPermissions = RxPermissions(this)
                     .request(Manifest.permission.READ_PHONE_STATE, Manifest.permission.CAMERA)
-                    .subscribe { granted ->
-                        if (granted) {
-                            // Log serials
+                    .switchMap<Boolean> {
+                        when (it) {
+                            true -> {
+                                log.info("Required permissions granted")
+                                Observable.empty()
+                            }
+                            false -> {
+                                // As .terminate will kill the process, this exception won't throw
+                                throw IllegalStateException("Permissions not granted")
+                            }
+                        }
+                    }
+
+            // Acquire AidcReader
+            val ovAidcReader = Kodein.global.genericInstance<Observable<out AidcReader>>()
+                    .timeout(5, TimeUnit.SECONDS)
+                    .onErrorReturn {
+                        throw IllegalStateException("AidcReader initialization timed out", it)
+                    }
+
+            // Merge and subscribe
+            Observable.merge(arrayOf(
+                    ovMigrate.cast(Any::class.java),
+                    ovPermissions.cast(Any::class.java),
+                    ovAidcReader.cast(Any::class.java)
+            ))
+                    .onBackpressureBuffer()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith {
+                        onCompleted {
+                            // Log device info/serial
                             val device: Device = Kodein.global.instance()
                             log.info(device.toString())
 
-                            // Synchronize with asynchronously acquired resources
-                            val ovAidcReader: Observable<out AidcReader> = Kodein.global.genericInstance()
-                            ovAidcReader.subscribe {
-                                // Start main activity with delay to ensure visibility of transition
-                                val handler = Handler()
-                                handler.postDelayed({
-                                    this.startMainActivity(withAnimation = true)
-
-                                    // Wait for migration to finish
-                                    try {
-                                        migrateAwaitable.await()
-                                    } catch(e: Throwable) {
-                                        // Ignore this exception here, as StartupActivity is about to finish.
-                                        // Migration result will be evaluated in MainActivity
-                                    }
-                                }, 300)
-                            }
-
-                            this.started = true
-                        } else {
-                            // Permissions not granted, terminating
-                            this@StartupActivity.app.terminate()
+                            val handler = Handler()
+                            handler.postDelayed({
+                                this@StartupActivity.startMainActivity(withAnimation = true)
+                            }, 300)
+                            this@StartupActivity.started = true
+                        }
+                        onError { e ->
+                            log.error(e.message, e)
+                            this@StartupActivity.finishAffinity()
                         }
                     }
         } else {

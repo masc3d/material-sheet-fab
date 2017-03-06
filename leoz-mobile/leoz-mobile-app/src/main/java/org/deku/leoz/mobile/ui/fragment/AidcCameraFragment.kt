@@ -1,10 +1,6 @@
 package org.deku.leoz.mobile.ui.fragment
 
-import android.graphics.Color
-import android.hardware.Camera
 import android.os.Bundle
-import android.os.Looper
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,15 +14,9 @@ import kotlinx.android.synthetic.main.fragment_aidc_camera.*
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 import rx.android.schedulers.AndroidSchedulers
-import sx.android.aidc.CameraAidcReader
-import sx.android.aidc.Ean13Decoder
-import sx.android.aidc.Ean8Decoder
-import android.support.v4.graphics.drawable.DrawableCompat
 import sx.android.aidc.AidcReader
-import sx.android.honeywell.aidc.HoneywellAidcReader
-import org.apache.commons.logging.LogFactory.release
-import rx.Observable
-import rx.schedulers.Schedulers
+import sx.android.aidc.CameraAidcReader
+import sx.android.aidc.CompositeAidcReader
 import sx.android.widget.setIconTint
 
 /**
@@ -36,12 +26,26 @@ import sx.android.widget.setIconTint
 class AidcCameraFragment : Fragment() {
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
-    companion object {
-        val scheduler by lazy { Schedulers.newThread() }
-    }
-
-    private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
+    /**
+     * Global aidc reader
+     */
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+
+    /**
+     * Camera aidc reader
+     */
+    private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
+
+    /**
+     * List of non-camera aidc readers
+     */
+    private val nonCameraReaders: List<AidcReader> by lazy {
+        val aidcReader = this.aidcReader
+        if (aidcReader is CompositeAidcReader) {
+            aidcReader.readers
+                    .filter { !(it is CameraAidcReader) }
+        } else listOf()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,25 +76,11 @@ class AidcCameraFragment : Fragment() {
                     this.fab_aidc_camera_torch.setIconTint(if (it) R.color.colorAccent else android.R.color.black)
                 }
 
-        this.cameraReader.readEvent
-                .bindUntilEvent(this, FragmentEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    log.info("Camera decode ${it.barcodeType} ${it.data}")
-                }
+        // Disable all but the camera reader
+        this.nonCameraReaders.forEach { it.enabled = false }
 
-        this.cameraReader.decoders.set(
-                Ean8Decoder(true),
-                Ean13Decoder(true)
-        )
-
-        if (this.aidcReader is HoneywellAidcReader) {
-            // Disable honeywell reader
-            this.aidcReader.enabled = false
-        }
-
+        // Enable camera reader and add viewfinder
         this.cameraReader.enabled = true
-
         this.uxContainer.addView(this.cameraReader.view)
     }
 
@@ -101,10 +91,8 @@ class AidcCameraFragment : Fragment() {
         this.cameraReader.enabled = false
         this.uxContainer.removeAllViews()
 
-        if (this.aidcReader is HoneywellAidcReader) {
-            // Re-enable global reader
-            this.aidcReader.enabled = true
-        }
+        // Re-enable other readers
+        this.nonCameraReaders.forEach { it.enabled = true }
 
         super.onPause()
     }
