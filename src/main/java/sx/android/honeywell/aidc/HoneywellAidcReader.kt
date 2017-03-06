@@ -125,10 +125,6 @@ class HoneywellAidcReader private constructor(
         bc
     })
 
-    init {
-
-    }
-
     var centerDecode: Boolean
         get() {
             return this.honeywellReader.getBooleanProperty(BarcodeReader.PROPERTY_CENTER_DECODE)
