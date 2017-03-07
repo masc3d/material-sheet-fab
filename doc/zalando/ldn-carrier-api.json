@@ -1,0 +1,770 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Generic Carrier Integration API",
+        "description": "This API defines the general approach how to integrate carriers easily with the Local Delivery Network (LDN) of Zalando SE. The API is splitted by incoming and outgoing tags. Outgoing tagged definitions are defining Endpoints the LDN expects on carriers side. Incoming tagged definitions are describing endpoints the LDN is exposing towards the carrier.",
+        "version": "0.0.1",
+        "contact": {
+            "name": "Team Pizza",
+            "email": "team-pizza@zalando.de"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "host": "fancy-carrier.remote",
+    "basePath": "/api",
+    "schemes": [
+        "https"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "apiKeyOutgoing": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Api-Key"
+        },
+        "apiKeyIncoming": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Api-Key"
+        }
+    },
+    "tags": [
+        {
+            "name": "outgoing",
+            "description": "Outgoing"
+        },
+        {
+            "name": "incoming",
+            "description": "Incoming"
+        }
+    ],
+    "paths": {
+        "/delivery-options": {
+            "get": {
+                "tags": [
+                    "outgoing"
+                ],
+                "security": [
+                    {
+                        "apiKeyOutgoing": []
+                    }
+                ],
+                "summary": "Find available delivery options",
+                "description": "Returns available delivery options from source to target address",
+                "parameters": [
+                    {
+                        "name": "source_address.country_code",
+                        "in": "query",
+                        "description": "The city of the source address",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "source_address.city",
+                        "in": "query",
+                        "description": "The city of the source address",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "source_address.zip_code",
+                        "in": "query",
+                        "description": "The zip code of the source address",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "source_address.address_line",
+                        "in": "query",
+                        "description": "The street name with house number of the source address",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "target_address.country_code",
+                        "in": "query",
+                        "description": "The city of the target address",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "target_address.city",
+                        "in": "query",
+                        "description": "The city of the target address",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "target_address.zip_code",
+                        "in": "query",
+                        "description": "The zip code of the target address",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "target_address.address_line",
+                        "in": "query",
+                        "description": "The street name with house number of the target address",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/DeliveryOption"
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/responses/401"
+                    }
+                }
+            }
+        },
+        "/delivery-orders": {
+            "post": {
+                "tags": [
+                    "outgoing"
+                ],
+                "security": [
+                    {
+                        "apiKeyOutgoing": []
+                    }
+                ],
+                "summary": "Creates delivery order",
+                "description": "Creates delivery order on carrier and returns identifier of object in carrier system",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "DeliveryOrder",
+                        "description": "Delivery order parameters to create",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DeliveryOrder"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/NotifiedDeliveryOrder"
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/responses/401"
+                    },
+                    "422": {
+                        "$ref": "#/responses/422"
+                    }
+                }
+            }
+        },
+        "/delivery-orders/{id}/cancellation": {
+            "post": {
+                "tags": [
+                    "outgoing"
+                ],
+                "security": [
+                    {
+                        "apiKeyOutgoing": []
+                    }
+                ],
+                "summary": "Cancel delivery order",
+                "description": "Cancel delivery order on carrier side",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "type": "string",
+                        "description": "Delivery order identifier",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "$ref": "#/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/responses/401"
+                    }
+                }
+            }
+        },
+        "/tour-events": {
+            "post": {
+                "tags": [
+                    "incoming"
+                ],
+                "security": [
+                    {
+                        "apiKeyIncoming": []
+                    }
+                ],
+                "summary": "Tour Events",
+                "description": "blablah",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "TourEvent",
+                        "description": "Events which are tour related",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/TourEvent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "400": {
+                        "$ref": "#/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/responses/401"
+                    }
+                }
+            }
+        },
+        "/delivery-order-events": {
+            "post": {
+                "tags": [
+                    "incoming"
+                ],
+                "security": [
+                    {
+                        "apiKeyIncoming": []
+                    }
+                ],
+                "summary": "Delivery order event",
+                "description": "Notifies external system about delivery order state changes",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "DeliveryOrderEvent",
+                        "description": "Delivery order event",
+                        "required": true,
+                        "schema": {
+                            "title": "DeliveryOrder:Event",
+                            "description": "Should be oneOf instead(waits for https://github.com/OAI/OpenAPI-Specification/issues/333)",
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/DeliveryOrder:Event:Deliverd"
+                                },
+                                {
+                                    "$ref": "#/definitions/DeliveryOrder:Event:Failed"
+                                },
+                                {
+                                    "$ref": "#/definitions/DeliveryOrder:Event:Canceled"
+                                },
+                                {
+                                    "$ref": "#/definitions/DeliveryOrder:Event:Returned"
+                                },
+                                {
+                                    "$ref": "#/definitions/DeliveryOrder:Event:PickedUp"
+                                },
+                                {
+                                    "$ref": "#/definitions/DeliveryOrder:Event:DeliveryPromiseUpdated"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "400": {
+                        "$ref": "#/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/responses/401"
+                    }
+                }
+            }
+        }
+    },
+    "responses": {
+        "400": {
+            "description": "Bad Request",
+            "schema": {
+                "$ref": "#/definitions/Problem"
+            }
+        },
+        "401": {
+            "description": "Unauthorized",
+            "schema": {
+                "$ref": "#/definitions/Problem"
+            }
+        },
+        "422": {
+            "description": "Unprocessable Entity",
+            "schema": {
+                "$ref": "#/definitions/Problem"
+            }
+        }
+    },
+    "definitions": {
+        "TourEvent": {
+            "description": "Tour Callback which groups orders which are picked up together and delivered together by the same courier.",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier of the tour."
+                },
+                "courier": {
+                    "$ref": "#/definitions/Courier"
+                },
+                "order_ids": {
+                    "description": "Ids of orders, related to notified delivery order",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "order_ids"
+            ]
+        },
+        "Courier": {
+            "description": "Defines the driver who will pick up and deliver a delivery order related to tour",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier which identifies the courier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the courier."
+                }
+            },
+            "required": [
+                "id"
+            ]
+        },
+        "DeliveryOption": {
+            "description": "Delivery option",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Delivery option identifier"
+                },
+                "cut_off": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Cut off time (ISO-8601) for order modification / cancelation"
+                },
+                "pick_up": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Scheduled pick up time (ISO-8601)"
+                },
+                "delivery_from": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Earliest possible delivery time (ISO-8601)"
+                },
+                "delivery_to": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Latest possible delivery time (ISO-8601)"
+                }
+            },
+            "required": [
+                "id",
+                "cut_off",
+                "pick_up",
+                "delivery_from",
+                "delivery_to"
+            ]
+        },
+        "DeliveryAddress": {
+            "description": "Delivery address (source/target)",
+            "properties": {
+                "contact_name": {
+                    "type": "string",
+                    "description": "Contact name"
+                },
+                "address_line": {
+                    "type": "string",
+                    "description": "Street with house number"
+                },
+                "zip_code": {
+                    "type": "string",
+                    "description": "Zip code"
+                },
+                "city": {
+                    "type": "string",
+                    "description": "City"
+                },
+                "country_code": {
+                    "type": "string",
+                    "description": "Country ISO Code"
+                },
+                "comment": {
+                    "type": "string",
+                    "description": "Address comment, e.g. c/o, additional info"
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "Contact phone(s)"
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Contact email"
+                }
+            },
+            "required": [
+                "contact_name",
+                "address_line",
+                "zip_code",
+                "city",
+                "country_code"
+            ]
+        },
+        "DeliveryOrder": {
+            "properties": {
+                "incoming_id": {
+                    "type": "string",
+                    "description": "Delivery order identifier in calling system"
+                },
+                "delivery_option": {
+                    "$ref": "#/definitions/DeliveryOption"
+                },
+                "source_address": {
+                    "$ref": "#/definitions/DeliveryAddress"
+                },
+                "target_address": {
+                    "$ref": "#/definitions/DeliveryAddress"
+                }
+            },
+            "required": [
+                "incoming_id",
+                "delivery_option",
+                "source_address",
+                "target_address"
+            ]
+        },
+        "NotifiedDeliveryOrder": {
+            "description": "Notified delivery order",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Delivery order identifier in called system"
+                },
+                "tracking_url": {
+                    "type": "string",
+                    "format": "url",
+                    "description": "Link to delivery order tracking page"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        },
+        "DeliveryOrder:Event": {
+            "properties": {
+                "event_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Event time"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Event type",
+                    "enum": [
+                        "delivered",
+                        "failed",
+                        "canceled",
+                        "returned",
+                        "picked_up",
+                        "delivery_promise_updated"
+                    ]
+                },
+                "id": {
+                    "type": "string",
+                    "description": "Delivery order identifier"
+                }
+            },
+            "required": [
+                "type",
+                "id",
+                "event_time"
+            ]
+        },
+        "DeliveryOrder:Event:DeliveryPromiseUpdated": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/DeliveryOrder:Event"
+                },
+                {
+                    "type": "object",
+                    "title": "#define(type=delivery_promise_updated)",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Event type",
+                            "enum": [
+                                "delivery_promise_updated"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "title": "#define(time_window)",
+                    "properties": {
+                        "delivery_from": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Earliest expected concrete time of delivery promise"
+                        },
+                        "delivery_until": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Latest expected concrete time of delivery promise"
+                        }
+                    },
+                    "required": [
+                        "delivery_from",
+                        "delivery_until"
+                    ]
+                }
+            ]
+        },
+        "DeliveryOrder:Event:Returned": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/DeliveryOrder:Event"
+                },
+                {
+                    "type": "object",
+                    "title": "#define(type=returned)",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Event type",
+                            "enum": [
+                                "returned"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "DeliveryOrder:Event:PickedUp": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/DeliveryOrder:Event"
+                },
+                {
+                    "type": "object",
+                    "title": "#define(type=picked_up)",
+                    "description": "Event type",
+                    "enum": [
+                        "picked_up"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "title": "#define(courier)",
+                    "properties": {
+                        "courier": {
+                            "$ref": "#/definitions/Courier"
+                        }
+                    }
+                }
+            ]
+        },
+        "DeliveryOrder:Event:Deliverd": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/DeliveryOrder:Event"
+                },
+                {
+                    "type": "object",
+                    "title": "#define(type=delivered)",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Event time",
+                            "enum": [
+                                "delivered"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "title": "#define(contact,outcome)",
+                    "properties": {
+                        "contact": {
+                            "type": "string",
+                            "description": "Actual recipient(contact name / address)"
+                        },
+                        "outcome": {
+                            "type": "string",
+                            "description": "Delivery order outcome",
+                            "enum": [
+                                "normal",
+                                "neighbour",
+                                "packet-shop"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "contact",
+                        "outcome"
+                    ]
+                }
+            ]
+        },
+        "DeliveryOrder:Event:Failed": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/DeliveryOrder:Event"
+                },
+                {
+                    "type": "object",
+                    "title": "#define(type=failed)",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Event time",
+                            "enum": [
+                                "failed"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "title": "#define(resaon)",
+                    "properties": {
+                        "reason": {
+                            "type": "string",
+                            "description": "Delivery order fail reason",
+                            "enum": [
+                                "acceptance_refused",
+                                "address_not_found",
+                                "recipient_not_found_at_address",
+                                "business_closed",
+                                "recipient_not_there",
+                                "allowed_time_exceeded"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "reason"
+                    ]
+                }
+            ]
+        },
+        "DeliveryOrder:Event:Canceled": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/DeliveryOrder:Event"
+                },
+                {
+                    "type": "object",
+                    "title": "#define(type=canceled)",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Event time",
+                            "enum": [
+                                "canceled"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "title": "#define(reason)",
+                    "properties": {
+                        "reason": {
+                            "type": "string",
+                            "description": "Delivery order cancel reason"
+                        }
+                    },
+                    "required": [
+                        "reason"
+                    ]
+                }
+            ]
+        },
+        "Problem": {
+            "description": "Problem details(https://tools.ietf.org/html/rfc7807)",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "format": "url",
+                    "description": "Problem type"
+                },
+                "instance": {
+                    "type": "string",
+                    "format": "url",
+                    "description": "Problem instance"
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Problem title"
+                },
+                "status": {
+                    "type": "number",
+                    "description": "Problem status"
+                },
+                "details": {
+                    "type": "string",
+                    "description": "Problem detail"
+                }
+            },
+            "required": [
+                "type",
+                "title",
+                "status"
+            ]
+        }
+    }
+}
