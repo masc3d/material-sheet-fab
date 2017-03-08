@@ -3,14 +3,14 @@ package sx.net
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import rx.Observable
-import rx.lang.kotlin.PublishSubject
-import rx.lang.kotlin.synchronized
+import rx.subjects.PublishSubject
 import sx.Disposable
 import sx.LazyInstance
 import sx.concurrent.Service
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.Serializable
 import sx.io.serialization.Serializer
+import sx.rx.synchronized
 import java.net.*
 import sx.time.Duration
 import java.util.*
@@ -201,7 +201,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
      * Update event
      */
     val updatedEvent by lazy { updatedEventSubject.asObservable() }
-    private val updatedEventSubject = PublishSubject<UpdateEvent<TInfo>>().synchronized()
+    private val updatedEventSubject = PublishSubject.create<UpdateEvent<TInfo>>().synchronized()
 
     /**
      * Performs discovery for a specific node with timeout support
