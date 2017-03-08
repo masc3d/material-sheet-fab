@@ -12,8 +12,6 @@ import org.jooq.util.GenerationTool
 import org.jooq.util.GeneratorStrategy
 import org.jooq.util.h2.H2Database
 import org.jooq.util.jaxb.*
-import java.io.File
-import java.nio.file.Files
 
 buildscript {
     ext {
@@ -357,8 +355,9 @@ wsdl2java {
     generatedWsdlDir = WS_CXF_GENERATED_DIR
     wsdlDir = new File(project.projectDir, 'wsdl')
     wsdlsToGenerate = [
-            ['-p','org.deku.leoz.cxf.hello', '-autoNameResolution', new File(WS_WSDL_DIR, 'HelloService.wsdl')],
-            ['-p','org.deku.leoz.cxf.weather', '-autoNameResolution', new File(WS_WSDL_DIR, 'GlobalWeather.wsdl')]
+            ['-p', 'org.deku.leoz.cxf.hello', '-autoNameResolution', new File(WS_WSDL_DIR, 'HelloService.wsdl')],
+            ['-p', 'org.deku.leoz.cxf.weather', '-autoNameResolution', new File(WS_WSDL_DIR, 'GlobalWeather.wsdl')],
+            ['-p', 'org.deku.leoz.cxf.tracking', '-autoNameResolution', new File(WS_WSDL_DIR, 'Tracking.wsdl')]
     ]
 }
 
@@ -412,7 +411,7 @@ task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
 }
 // masc20170118. workaround for path limit on windows systems
 if (SystemUtils.IS_OS_WINDOWS) {
-    tasks.jpaWeaving.environment = [ 'CLASSPATH': configurations.compile.join(';') ]
+    tasks.jpaWeaving.environment = ['CLASSPATH': configurations.compile.join(';')]
 } else {
     tasks.jpaWeaving.classpath = configurations.compile
 }

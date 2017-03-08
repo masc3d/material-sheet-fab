@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://gls-group.eu/Tracking/" name="Tracking" targetNamespace="http://gls-group.eu/Tracking/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">GLS web service for online tracking services</wsdl:documentation>
+  <wsdl:types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="http://gls-group.eu/Tracking/">
+      <xsd:complexType name="GLSAddress">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="Name1" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Name2" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Name3" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="ContactName" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Street1" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="BlockNo1" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Street2" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="BlockNo2" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="ZipCode" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="City" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Province" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Country" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="GLSUserCredentials">
+        <xsd:annotation>
+          <xsd:documentation>
+			 			Login information to YourGLS
+			 		</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="UserName" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Password" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="GLSExitCode">
+        <xsd:annotation>
+          <xsd:documentation>
+			 			ExitCode for execution a web service operations, ExitCode = 0 indicates no error
+			 		</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="ErrorCode" type="xsd:int" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="ErrorDscr" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="GLSDateTime">
+        <xsd:annotation>
+          <xsd:documentation>
+			 			A datetime with precisions to the hour, all units is 1 based, and hour is less then 24  &lt;br / &gt;
+			 			Year  &gt; 1900,  Month 1 = January, Day 1 = first day in month, 0 &lt;= hour &gt; 24, 0 &gt;= Minut &gt; 60
+			 		</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="Year" type="xsd:int" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Month" type="xsd:int" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Day" type="xsd:int" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Hour" type="xsd:int" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Minut" type="xsd:int" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="GLSEvent">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="Date" type="tns:GLSDateTime" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="LocationCode" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="LocationName" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="CountryName" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Code" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Desc" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="ReasonName" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="GLSCustomerReference">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="ReferenceType" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="ReferenceValue" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="GLSUnitRow">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="RefNo" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="InitialDateTime" type="tns:GLSDateTime" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="EvtCodeNo" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="EvtReasonNo" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="CountryCode" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="ZipCode" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="City" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="ConsigneeName" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="ReferenceKey" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="CurrentStatus" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TuDetailsResponseType">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="ExitCode" type="tns:GLSExitCode" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="TuNo" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="NationalRef" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="ConsigneeAddress" type="tns:GLSAddress" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="ShipperAddress" type="tns:GLSAddress" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="RequesterAddress" type="tns:GLSAddress" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="DeliveryDateTime" type="tns:GLSDateTime" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="PickupDateTime" type="tns:GLSDateTime" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Product" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="100" name="Services" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="10" name="CustomerReference" type="tns:GLSCustomerReference" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="TuWeight" type="xsd:float" />
+          <xsd:element minOccurs="0" maxOccurs="1000" name="History" type="tns:GLSEvent" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="Signature" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TuDetailsRequestType">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="RefValue" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Credentials" type="tns:GLSUserCredentials" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="Parameters" type="tns:GLSParameters" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TuListResponseType">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="ExitCode" type="tns:GLSExitCode" />
+          <xsd:element minOccurs="0" maxOccurs="10000" name="TUList" type="tns:GLSUnitRow" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TuListRequestType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="RefValue" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="DateFrom" type="tns:GLSDateTime" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="DateTo" type="tns:GLSDateTime" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="CustomRef" type="xsd:string" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="Credentials" type="tns:GLSUserCredentials" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="Parameters" type="tns:GLSParameters" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TuPODRequestType">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="Credentials" type="tns:GLSUserCredentials" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="RefValue" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="Parameters" type="tns:GLSParameters" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TuPODResponseType">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="ExitCode" type="tns:GLSExitCode" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="PODFile" type="xsd:base64Binary" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="PODFileName" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="TuDetailsRequest" type="tns:TuDetailsRequestType" />
+      <xsd:element name="TuDetailsResponse" type="tns:TuDetailsResponseType" />
+      <xsd:element name="TuListRequest" type="tns:TuListRequestType" />
+      <xsd:element name="TuListResponse" type="tns:TuListResponseType" />
+      <xsd:element name="TuPODRequest" type="tns:TuPODRequestType" />
+      <xsd:element name="TuPODResponse" type="tns:TuPODResponseType" />
+      <xsd:complexType name="GLSParameters">
+        <xsd:sequence>
+          <xsd:element name="ParamCode" type="xsd:string" />
+          <xsd:element name="ParamValue" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="GetTuListRequest">
+    <wsdl:part name="GetTuListRequest" element="tns:TuListRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetTuDetailResponse">
+    <wsdl:part name="GetTuDetailResponse" element="tns:TuDetailsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetTuPODRequest">
+    <wsdl:part name="GetTuPODRequest" element="tns:TuPODRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetTuListResponse">
+    <wsdl:part name="GetTuListResponse" element="tns:TuListResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetTuDetailRequest">
+    <wsdl:part name="GetTuDetailRequest" element="tns:TuDetailsRequest" />
+  </wsdl:message>
+  <wsdl:message name="GetTuPODResponse">
+    <wsdl:part name="GetTuPODResponse" element="tns:TuPODResponse" />
+  </wsdl:message>
+  <wsdl:portType name="Tracking">
+    <wsdl:operation name="GetTuDetail">
+      <wsdl:input message="tns:GetTuDetailRequest" />
+      <wsdl:output message="tns:GetTuDetailResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTuList">
+      <wsdl:input message="tns:GetTuListRequest" />
+      <wsdl:output message="tns:GetTuListResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTuPOD">
+      <wsdl:input message="tns:GetTuPODRequest" />
+      <wsdl:output message="tns:GetTuPODResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Tracking" type="tns:Tracking">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetTuDetail">
+      <soap:operation soapAction="http://gls-group.eu/Tracking/TUDetailOperation" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTuList">
+      <soap:operation soapAction="http://gls-group.eu/Tracking/TUListOperation" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTuPOD">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    		Method to extract the signature of a POD.
+    		The result will contain original filename &lt;PODFileName /&gt; and a &lt;PODFile /&gt; that is the binary file encoded in BASE64
+    	</wsdl:documentation>
+      <soap:operation soapAction="http://gls-group.eu/Tracking/TUPODOperation" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Tracking">
+    <wsdl:port name="Tracking" binding="tns:Tracking">
+      <soap:address location="http://www.gls-group.eu:80/276-I-PORTAL-WEBSERVICE/services/Tracking" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
