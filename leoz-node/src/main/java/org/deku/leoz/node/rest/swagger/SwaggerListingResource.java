@@ -29,7 +29,8 @@ import java.util.Set;
  * This is a modified version of io.swagger.jaxrs.listing.ApiListingResource with support
  * for non-static context/configuration, instead of storing swagger context within global servlet context.
  * <p>
- * IMPORTANT: this class may require compatibility maintenance when swagger is updated
+ * IMPORTANT: this class may require compatibility maintenance when swagger is updated.
+ * SO DO NOT CONVERT TO KOTLIN, as this will make merging of updates more difficult.
  */
 @Path("/")
 public abstract class SwaggerListingResource {
