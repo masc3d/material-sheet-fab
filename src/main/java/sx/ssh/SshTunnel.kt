@@ -1,6 +1,8 @@
 package sx.ssh
 
+import org.apache.sshd.client.ClientBuilder
 import org.apache.sshd.client.SshClient
+import org.apache.sshd.client.config.hosts.HostConfigEntryResolver
 import org.apache.sshd.client.session.ClientSession
 import org.apache.sshd.common.session.Session
 import org.apache.sshd.common.session.SessionListener
@@ -34,7 +36,7 @@ class SshTunnel(
     /**
      * SSH tunnel authentication exception
      */
-    class AuthenticationException : Exception() {}
+    class AuthenticationException : Exception()
 
     /** Logger */
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -79,7 +81,12 @@ class SshTunnel(
                 this.close()
 
                 log.info("Establishing tunnel connection [${this}]")
-                val ssh = SshClient.setUpDefaultClient()
+                val ssh = ClientBuilder.builder()
+                        // Don't parse/use host/user .ssh/config and the keys therein by providing empty host config resolver
+                        // Not doing this will eg. make any connection fail if a user has one or more passphrase protected keys
+                        // Apart from that we don't want any user specific keys or configuration
+                        .hostConfigEntryResolver(HostConfigEntryResolver.EMPTY)
+                        .build()
 
                 // Set properties
                 ssh.properties.set(SshClient.IDLE_TIMEOUT, idleTimeout.toMillis())
