@@ -4,7 +4,7 @@ import javafx.scene.image.Image
 import org.deku.leoz.ui.event.BusyNotifier
 import org.deku.leoz.ui.event.ErrorNotifier
 import org.deku.leoz.ui.event.Event
-import rx.lang.kotlin.PublishSubject
+import rx.subjects.PublishSubject
 
 /**
  * Base class for leoz user interface modules
@@ -25,8 +25,8 @@ abstract class ModuleController : Controller(), BusyNotifier, ErrorNotifier {
     abstract val titleImage: Image
 
     // BusyNotifier implementation
-    override val ovBusy by lazy { PublishSubject<Event<Boolean>>() }
+    override val ovBusy by lazy { PublishSubject.create<Event<Boolean>>() }
 
     // ErrorNotifier implementation
-    override val ovError by lazy { PublishSubject<Exception>() }
+    override val ovError by lazy { PublishSubject.create<Exception>() }
 }

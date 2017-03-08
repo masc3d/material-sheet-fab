@@ -25,7 +25,7 @@ import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import rx.android.schedulers.AndroidSchedulers
-import rx.lang.kotlin.subscribeWith
+import rx.lang.kotlin.subscribeBy
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
@@ -83,8 +83,8 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
         updateService.availableUpdateEvent
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith {
-                    onNext { event ->
+                .subscribeBy(
+                    onNext = { event ->
                         val sb = Snackbar.make(
                                 this@Activity.uxContainer,
                                 this@Activity.getString(org.deku.leoz.mobile.R.string.version_available, event.version),
@@ -94,8 +94,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                             event.apk.install(this@Activity)
                         })
                         sb.show()
-                    }
-                }
+                    })
 
         //endregion
     }

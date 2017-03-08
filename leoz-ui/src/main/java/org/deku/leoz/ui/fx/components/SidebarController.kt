@@ -11,7 +11,7 @@ import org.deku.leoz.ui.fx.ModuleController
 import org.deku.leoz.ui.fx.modules.DebugController
 import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
 import org.deku.leoz.ui.fx.modules.HomeController
-import rx.lang.kotlin.PublishSubject
+import rx.subjects.PublishSubject
 import java.net.URL
 import java.util.*
 
@@ -32,7 +32,7 @@ class SidebarController : Initializable {
 
     private val buttons: MutableList<Button> = ArrayList()
 
-    val ovItemSelected by lazy { PublishSubject<ItemType>() }
+    val ovItemSelected by lazy { PublishSubject.create<ItemType>() }
 
     enum class ItemType {
         Home,

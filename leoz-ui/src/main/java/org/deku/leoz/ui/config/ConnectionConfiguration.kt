@@ -7,7 +7,7 @@ import org.deku.leoz.service.discovery.DiscoveryInfo
 import org.deku.leoz.service.discovery.DiscoveryService
 import org.deku.leoz.service.update.BundleUpdateService
 import org.slf4j.LoggerFactory
-import rx.lang.kotlin.PublishSubject
+import rx.subjects.PublishSubject
 import sx.net.UdpDiscoveryService
 import kotlin.properties.Delegates
 
@@ -39,7 +39,7 @@ class ConnectionConfiguration {
     val bundleConfiguration: BundleConfiguration by Kodein.global.lazy.instance()
 
     // Events
-    private val _nodeUpdatedEvent = PublishSubject<UdpDiscoveryService.Node<DiscoveryInfo>?>()
+    private val _nodeUpdatedEvent = PublishSubject.create<UdpDiscoveryService.Node<DiscoveryInfo>?>()
     /** Node update event */
     val nodeUpdatdEvent by lazy { _nodeUpdatedEvent.asObservable() }
 

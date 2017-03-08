@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.onErrorReturnNull
-import rx.lang.kotlin.subscribeWith
+import rx.lang.kotlin.subscribeBy
 import rx.schedulers.Schedulers
 import sx.android.Device
 import sx.android.aidc.AidcReader
@@ -106,8 +106,8 @@ class StartupActivity : RxAppCompatActivity() {
                     ovAidcReader.cast(Any::class.java)
             ))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith {
-                        onCompleted {
+                    .subscribeBy(
+                        onCompleted = {
                             // Log device info/serial
                             val device: Device = Kodein.global.instance()
                             log.info(device.toString())
@@ -117,12 +117,11 @@ class StartupActivity : RxAppCompatActivity() {
                                 this@StartupActivity.startMainActivity(withAnimation = true)
                             }, 300)
                             this@StartupActivity.started = true
-                        }
-                        onError { e ->
+                        },
+                        onError = { e ->
                             log.error(e.message, e)
                             this@StartupActivity.finishAffinity()
-                        }
-                    }
+                        })
         } else {
             this.startMainActivity(withAnimation = false)
         }

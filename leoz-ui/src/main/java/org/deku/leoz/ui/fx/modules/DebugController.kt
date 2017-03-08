@@ -14,7 +14,7 @@ import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.bridge.Message
 import org.deku.leoz.ui.fx.ModuleController
 import org.slf4j.LoggerFactory
-import rx.lang.kotlin.PublishSubject
+import rx.subjects.PublishSubject
 import java.net.URL
 import java.util.*
 
@@ -29,7 +29,7 @@ class DebugController : ModuleController(), Initializable {
     @FXML
     private lateinit var fxUiAnimationsEnabled: CheckBox
 
-    val ovDepotSelect by lazy { PublishSubject<Unit>() }
+    val ovDepotSelect by lazy { PublishSubject.create<Unit>() }
 
     /** Global settings */
     private val settings: Settings by Kodein.global.lazy.instance()

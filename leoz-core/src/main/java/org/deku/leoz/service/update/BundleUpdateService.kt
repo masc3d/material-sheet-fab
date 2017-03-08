@@ -7,7 +7,7 @@ import sx.packager.BundleRepository
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.slf4j.LoggerFactory
-import rx.lang.kotlin.PublishSubject
+import rx.subjects.PublishSubject
 import sx.Lifecycle
 import sx.concurrent.Service
 import sx.jms.Channel
@@ -101,7 +101,7 @@ class BundleUpdateService(
         this.presets = presets.sortedBy { p -> p.requiresBoot }
     }
 
-    private val infoReceivedEventSubject by lazy { PublishSubject<UpdateInfo>() }
+    private val infoReceivedEventSubject by lazy { PublishSubject.create<UpdateInfo>() }
     /**
      * Update info received event
      */

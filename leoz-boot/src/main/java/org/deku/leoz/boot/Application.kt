@@ -20,7 +20,7 @@ import org.deku.leoz.boot.fx.ResizeHelper
 import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.lang.kotlin.cast
-import rx.lang.kotlin.subscribeWith
+import rx.lang.kotlin.subscribeBy
 import sx.Stopwatch
 import sx.ssh.SshTunnel
 import sx.ssh.SshTunnelProvider
@@ -103,15 +103,14 @@ class Application : javafx.application.Application() {
 
             if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
                 // Execute boot task on this thread
-                this.bootTask.subscribeWith {
-                    onCompleted {
+                this.bootTask.subscribeBy(
+                    onCompleted = {
                         this@Application.exit(0)
-                    }
-                    onError {
+                    },
+                    onError = {
                         log.error(it.message, it)
                         this@Application.exit(-1)
-                    }
-                }
+                    })
             } else {
                 // Setup JavaFX stage
                 val loader = FXMLLoader(this.javaClass.getResource("/fx/Main.fxml"))

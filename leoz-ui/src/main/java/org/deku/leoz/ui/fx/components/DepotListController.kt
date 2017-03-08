@@ -28,7 +28,7 @@ import org.deku.leoz.ui.event.Event
 import org.deku.leoz.ui.event.busy
 import org.deku.leoz.ui.fx.Controller
 import org.slf4j.LoggerFactory
-import rx.lang.kotlin.PublishSubject
+import rx.subjects.PublishSubject
 import java.net.URL
 import java.util.*
 import java.util.concurrent.Executors
@@ -70,13 +70,13 @@ class DepotListController : Controller(), Initializable, BusyNotifier, ErrorNoti
     private var requestedDepotId: Int? = null
 
     // BusyNotifier implementation
-    override val ovBusy by lazy { PublishSubject<Event<Boolean>>() }
+    override val ovBusy by lazy { PublishSubject.create<Event<Boolean>>() }
 
     // ErrorNotifier implementation
-    override val ovError by lazy { PublishSubject<Exception>() }
+    override val ovError by lazy { PublishSubject.create<Exception>() }
 
     // On item selected event
-    val ovItemSelected by lazy { PublishSubject<Station>() }
+    val ovItemSelected by lazy { PublishSubject.create<Station>() }
 
     /**
      * Query task

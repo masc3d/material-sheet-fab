@@ -33,7 +33,7 @@ buildscript {
         v_protostuff = '1.5.3'
         v_rxjava = '1.2.7'
         v_rxjavafx = '1.0.0'
-        v_rxkotlin = '0.60.0'
+        v_rxkotlin = '1.0.0-RC2'
         v_rxkotlinfx = '1.0.0'
         v_requery = '1.2.0'
         v_resteasy = '3.1.1.Final'

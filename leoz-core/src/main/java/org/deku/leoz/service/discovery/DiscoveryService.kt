@@ -2,8 +2,6 @@ package org.deku.leoz.service.discovery
 
 import org.deku.leoz.Identity
 import org.deku.leoz.bundle.BundleType
-import rx.lang.kotlin.PublishSubject
-import rx.lang.kotlin.synchronized
 import sx.Lifecycle
 import sx.concurrent.Service
 import sx.net.UdpDiscoveryService

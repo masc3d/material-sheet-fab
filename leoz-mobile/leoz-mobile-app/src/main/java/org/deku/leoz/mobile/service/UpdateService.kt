@@ -12,12 +12,11 @@ import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.model.Storage
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.slf4j.LoggerFactory
-import rx.lang.kotlin.BehaviorSubject
-import rx.lang.kotlin.PublishSubject
-import rx.lang.kotlin.synchronized
+import rx.subjects.BehaviorSubject
 import sx.android.ApplicationPackage
 import sx.util.zip.verify
 import sx.concurrent.Service
+import sx.rx.synchronized
 import sx.time.Duration
 import sx.time.seconds
 import java.io.File
@@ -105,7 +104,7 @@ class UpdateService(
      * Available update event (behaviour subject, most recent event will be fire on registration)
      */
     val availableUpdateEvent by lazy { this.availableUpdateEventSubject.asObservable() }
-    private val availableUpdateEventSubject by lazy { BehaviorSubject<AvailableUpdateEvent>().synchronized() }
+    private val availableUpdateEventSubject by lazy { BehaviorSubject.create<AvailableUpdateEvent>().synchronized() }
 
     override fun onStart() {
         super.onStart()

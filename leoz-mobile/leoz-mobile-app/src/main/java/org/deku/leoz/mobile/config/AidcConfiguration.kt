@@ -4,10 +4,7 @@ import android.hardware.Camera
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.*
 import rx.Observable
-import rx.lang.kotlin.BehaviorSubject
 import rx.lang.kotlin.firstOrNull
-import rx.lang.kotlin.synchronized
-import rx.lang.kotlin.toSingletonObservable
 import rx.schedulers.Schedulers
 import sx.android.Device
 import sx.android.aidc.AidcReader
@@ -15,6 +12,7 @@ import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.CompositeAidcReader
 import sx.android.honeywell.aidc.HoneywellAidcReader
 import sx.rx.toHotReplay
+import sx.rx.toSingletonObservable
 import java.util.concurrent.TimeUnit
 
 /**

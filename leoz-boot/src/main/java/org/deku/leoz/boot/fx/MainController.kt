@@ -14,9 +14,9 @@ import org.deku.leoz.boot.Settings
 import org.deku.leoz.boot.config.LogConfiguration
 import rx.Observable
 import rx.javafx.kt.observeOnFx
-import rx.lang.kotlin.PublishSubject
-import rx.lang.kotlin.subscribeWith
+import rx.lang.kotlin.subscribeBy
 import rx.schedulers.Schedulers
+import rx.subjects.PublishSubject
 import sx.JarManifest
 import sx.fx.TextAreaLogAppender
 import sx.fx.controls.MaterialProgressIndicator
@@ -51,7 +51,7 @@ class MainController : Initializable {
 
     private var logAppender: TextAreaLogAppender? = null
 
-    private val exitEventSubject = PublishSubject<Int>()
+    private val exitEventSubject = PublishSubject.create<Int>()
     /** Exit event */
     val exitEvent by lazy { exitEventSubject.asObservable() }
 
@@ -85,25 +85,24 @@ class MainController : Initializable {
                 .subscribeOn(Schedulers.from(this.executorService))
                 .onBackpressureBuffer()
                 .observeOnFx()
-                .subscribeWith {
-                    onNext {
+                .subscribeBy(
+                    onNext = {
                         uxProgressBar.progress = it.progress
-                    }
-                    onCompleted {
+                    },
+                    onCompleted = {
                         uxTitle.text = "${verbPast} succesfully."
                         uxProgressBar.styleClass.add("leoz-green-bar")
                         uxProgressBar.progress = 1.0
                         uxClose.visibleProperty().value = true
-                    }
-                    onError {
+                    },
+                    onError = {
                         this@MainController.exitCode = -1
                         log.error(it.message, it)
                         uxTitle.text = "${verb} failed."
                         uxProgressBar.styleClass.add("leoz-red-bar")
                         uxProgressBar.progress = 1.0
                         uxClose.visibleProperty().value = true
-                    }
-                }
+                    })
     }
 
     /**
