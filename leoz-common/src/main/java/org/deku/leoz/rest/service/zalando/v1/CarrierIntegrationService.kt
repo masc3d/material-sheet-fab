@@ -1,8 +1,9 @@
-package org.deku.leoz.rest.service.v1
+package org.deku.leoz.rest.service.zalando.v1
 
-import io.swagger.annotations.*
-import org.deku.leoz.rest.entity.v1.Routing
-import org.deku.leoz.rest.entity.v1.RoutingRequest
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiResponse
+import io.swagger.annotations.ApiResponses
 import org.deku.leoz.rest.entity.v1.DeliveryOption
 import org.deku.leoz.rest.entity.v1.Problem
 import javax.ws.rs.*
@@ -14,8 +15,8 @@ import javax.ws.rs.core.MediaType
 @Path("v1/ldn")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@Api(value = "Zalando LDN operations")
-interface ZalandoService {
+@Api(value = "Carrier integration operations")
+interface CarrierIntegrationService {
 
     @GET
     @Path("/delivery-options")
@@ -23,7 +24,7 @@ interface ZalandoService {
     @ApiResponses(*arrayOf(
             ApiResponse(code = 200, message = "OK", response = DeliveryOption::class),
             ApiResponse(code = 400, message = "Bad Request", response = Problem::class),
-            ApiResponse(code = 401, message= "Unauthorized", response = Problem::class))
+            ApiResponse(code = 401, message = "Unauthorized", response = Problem::class))
     )
     fun requestDeliveryOption(
             @QueryParam(value = "source_address.country_code") source_address_country_code: String,
