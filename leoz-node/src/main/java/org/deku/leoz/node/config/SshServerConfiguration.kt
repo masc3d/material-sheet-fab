@@ -2,6 +2,7 @@ package org.deku.leoz.node.config
 
 import org.apache.sshd.common.NamedFactory
 import org.apache.sshd.common.channel.Channel
+import org.apache.sshd.common.keyprovider.KeyPairProvider
 import org.apache.sshd.server.SshServer
 import org.apache.sshd.server.auth.password.PasswordAuthenticator
 import org.apache.sshd.server.forward.AcceptAllForwardingFilter
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import java.io.File
+import java.security.KeyPair
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -45,19 +47,19 @@ open class SshServerConfiguration {
     fun onInitialize() {
         val sshd = this.sshServer
 
-        sshd.setPort(SshServerConfiguration.DEFAULT_PORT)
+        sshd.port = SshServerConfiguration.DEFAULT_PORT
 
-        sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(
-                File(storage.sshDataDirectory, "hostkey.ser")))
+        sshd.keyPairProvider = SimpleGeneratorHostKeyProvider(
+                File(storage.sshDataDirectory, "hostkey.ser"))
 
         sshd.tcpipForwardingFilter = AcceptAllForwardingFilter()
 
-        sshd.setPasswordAuthenticator(object : PasswordAuthenticator {
+        sshd.passwordAuthenticator = object : PasswordAuthenticator {
             override fun authenticate(username: String?, password: String?, session: ServerSession?): Boolean {
                 return SshConfiguration.USERNAME == username &&
                         SshConfiguration.PASSWORD == password
             }
-        });
+        }
 
         // Setup channel factories
         val channelFactories = ArrayList<NamedFactory<Channel>>()
