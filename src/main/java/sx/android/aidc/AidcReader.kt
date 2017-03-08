@@ -5,10 +5,10 @@ import com.trello.rxlifecycle.android.ActivityEvent
 import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import org.slf4j.LoggerFactory
-import rx.lang.kotlin.BehaviorSubject
-import rx.lang.kotlin.PublishSubject
-import rx.lang.kotlin.synchronized
+import rx.subjects.BehaviorSubject
+import rx.subjects.PublishSubject
 import sx.rx.observableRx
+import sx.rx.synchronized
 
 /**
  * Abstract barcode reader
@@ -40,13 +40,13 @@ abstract class AidcReader {
 
     data class ReadEvent(val data: String, val barcodeType: BarcodeType)
 
-    protected val enabledSubject = BehaviorSubject<Boolean>()
+    protected val enabledSubject = BehaviorSubject.create<Boolean>()
     /**
      * Enable or disable barcode reader
      */
     var enabled: Boolean by observableRx(true, enabledSubject)
 
-    protected val decodersUpdatedSubject = BehaviorSubject<Array<out Decoder>>()
+    protected val decodersUpdatedSubject = BehaviorSubject.create<Array<out Decoder>>()
     /**
      * Decoders
      */
@@ -70,14 +70,14 @@ abstract class AidcReader {
      * Barcode reader event
      */
     val readEvent by lazy { this.readEventSubject.asObservable() }
-    protected val readEventSubject by lazy { PublishSubject<ReadEvent>().synchronized() }
+    protected val readEventSubject by lazy { PublishSubject.create<ReadEvent>().synchronized() }
 
     //region Lifecycle support
     /**
      * Observable for binding to rxlifecycle
      */
     private val lifecycle by lazy {
-        PublishSubject<Unit>().asObservable()
+        PublishSubject.create<Unit>().asObservable()
                 .doOnSubscribe {
                     if (bindRefCount == 0)
                         this.onBind()

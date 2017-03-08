@@ -12,7 +12,7 @@ import com.trello.rxlifecycle.RxLifecycle
 import com.trello.rxlifecycle.android.RxLifecycleAndroid
 import org.slf4j.LoggerFactory
 import rx.Subscription
-import rx.lang.kotlin.BehaviorSubject
+import rx.subjects.BehaviorSubject
 import sx.rx.observableRx
 
 /**
@@ -99,7 +99,7 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
     }
     //endregion
 
-    val torchSubject = BehaviorSubject<Boolean>()
+    val torchSubject = BehaviorSubject.create<Boolean>()
     var torch: Boolean by observableRx(false, torchSubject)
 
     /**
