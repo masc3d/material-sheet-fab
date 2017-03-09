@@ -1,4 +1,3 @@
-USE `dekuclient`;
 CREATE TABLE `sso_s_movepool` (
   `id` double NOT NULL AUTO_INCREMENT,
   `bag_number` double DEFAULT NULL,

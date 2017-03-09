@@ -1,5 +1,3 @@
-USE `dekuclient`;
-
 DELIMITER ;
 
 # Sync tracking table
