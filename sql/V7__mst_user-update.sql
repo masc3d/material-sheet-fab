@@ -1,7 +1,7 @@
 ALTER TABLE `mst_user`
 CHANGE COLUMN `user_id` `user_id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '' ,
 CHANGE COLUMN `user_name` `user_name` VARCHAR(30) NOT NULL COMMENT '' ,
-CHANGE COLUMN `station_nr` `expires_on` TIMESTAMP NULL DEFAULT '0' COMMENT '' ,
+CHANGE COLUMN `station_nr` `expires_on` TIMESTAMP NULL DEFAULT NULL COMMENT '' ,
 CHANGE COLUMN `permission_routing` `password` VARCHAR(50) NOT NULL COMMENT '' ,
 CHANGE COLUMN `timestamp` `salt` VARCHAR(45) NOT NULL COMMENT '' ,
 ADD COLUMN `api_key` VARCHAR(45) NULL COMMENT '' AFTER `salt`,
