@@ -119,6 +119,7 @@ sourceSets {
         java {
             srcDirs += JOOQ_GENERATED_DIR
             srcDirs += QUERYDSL_GENERATED_DIR
+            srcDirs += WS_CXF_GENERATED_DIR
         }
         // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
         output.resourcesDir = sourceSets.main.output.classesDir
@@ -143,8 +144,8 @@ sourceSets {
     prototype {
         java.srcDirs = [new File(prototypeBaseDir, 'java')]
         resources.srcDirs = [new File(prototypeBaseDir, 'resources')]
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
+        compileClasspath += (main.output + test.output)
+        runtimeClasspath += (main.output + test.output)
     }
 }
 
@@ -355,11 +356,13 @@ wsdl2java {
     generatedWsdlDir = WS_CXF_GENERATED_DIR
     wsdlDir = new File(project.projectDir, 'wsdl')
     wsdlsToGenerate = [
-            ['-p', 'org.deku.leoz.cxf.hello', '-autoNameResolution', new File(WS_WSDL_DIR, 'HelloService.wsdl')],
-            ['-p', 'org.deku.leoz.cxf.weather', '-autoNameResolution', new File(WS_WSDL_DIR, 'GlobalWeather.wsdl')],
-            ['-p', 'org.deku.leoz.cxf.tracking', '-autoNameResolution', new File(WS_WSDL_DIR, 'Tracking.wsdl')]
+            ['-p', 'org.deku.leoz.ws.hello', '-autoNameResolution', new File(WS_WSDL_DIR, 'HelloService.wsdl')],
+            ['-p', 'org.deku.leoz.ws.weather', '-autoNameResolution', new File(WS_WSDL_DIR, 'GlobalWeather.wsdl')],
+            ['-p', 'org.deku.leoz.ws.gls.tracking', '-autoNameResolution', new File(WS_WSDL_DIR, 'Tracking.wsdl')],
+            ['-p', 'org.deku.leoz.ws.gls.shipment', '-autoNameResolution', new File(WS_WSDL_DIR, 'ShipmentProcessingService.wsdl')]
     ]
 }
+tasks.compileJava.dependsOn(wsdl2java)
 
 packager {
     title = "Leoz Node"
