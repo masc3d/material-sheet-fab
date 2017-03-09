@@ -10482,8 +10482,6 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`%` PROCEDURE `sca_liste`(in version varchar(255), in ad varchar(255))
 BEGIN
 
-SELECT * FROM dekuclient.scnmc where sca_version like version and auftragnehmerID like ad;
-
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
