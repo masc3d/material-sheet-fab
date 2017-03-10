@@ -98,7 +98,7 @@ jooq {
                 name = 'org.jooq.util.mysql.MySQLDatabase'
                 inputSchema = 'dekuclient'
 
-                includes = 'tbldepotliste|mst_.*|sys_.*|sso_.*|ssd_.*'
+                includes = 'tbldepotliste|mst_.*|sys_.*|sso_.*|sdd_.*'
                 //excludes '.*'
 
                 // masc20140916. (almost) all tables
