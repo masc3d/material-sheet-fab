@@ -36,7 +36,8 @@ class CarrierIntegrationService :  org.deku.leoz.rest.service.zalando.v1.Carrier
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
-    override fun postDeliveryOrder(deliveryOrder: DeliveryOrder) {
+    override fun postDeliveryOrder(deliveryOrder: DeliveryOrder): Response {
+        var response: Response? = null
         try{
             val sddRoute: SddContzipRecord = dslContext.fetchOne(
                     Tables.SDD_CONTZIP,
@@ -66,11 +67,13 @@ class CarrierIntegrationService :  org.deku.leoz.rest.service.zalando.v1.Carrier
         }catch(e: Exception){
             throw BadRequestException()
         }
-
+        return response!!
     }
 
-    override fun requestDeliveryOption(source_address_country_code: String, source_address_city: String, source_address_zip_code: String, source_address_address_line: String, target_address_country_code: String, target_address_city: String, target_address_zip_code: String, target_address_address_line: String, authorizationKey: String) {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun requestDeliveryOption(source_address_country_code: String, source_address_city: String, source_address_zip_code: String, source_address_address_line: String, target_address_country_code: String, target_address_city: String, target_address_zip_code: String, target_address_address_line: String, authorizationKey: String): Response {
+
+        var response: Response? = null
+
         if(!authorizationKey.equals("APIKEY")){
             throw NotAuthorizedException(Response.status(401).entity(Problem("", "", "", BigDecimal.ZERO, "")).build())
         }
@@ -83,24 +86,24 @@ class CarrierIntegrationService :  org.deku.leoz.rest.service.zalando.v1.Carrier
                             .and(Tables.SDD_CONTZIP.LAYER.between(5,6)))
 
 
-            val response: DeliveryOption = DeliveryOption(
+            val delOption: DeliveryOption = DeliveryOption(
                     sddRoute!!.id.toString(),
                     sddRoute!!.cutOff,
                     sddRoute!!.ltop,
                     sddRoute!!.etod,
                     sddRoute!!.ltod)
 
-            Response.ok(response).status(200).build()
+            response = Response.ok(delOption).status(200).build()
 
         }catch (e: NullPointerException){
-            Response.status(400).entity(Problem(
+            response = Response.status(400).entity(Problem(
                     "https://problem.io",
                     "/delivery-options",
                     "No Delivery Option found!",
                     BigDecimal.ZERO,
                     "The given zip-code is not part of the defined delivery area")).build()
         }catch (e: Exception){
-            Response.status(400).entity(Problem(
+            response = Response.status(400).entity(Problem(
                     "https://problem.io",
                     "/delivery-options",
                     "Unhandeled Exception!",
@@ -108,9 +111,7 @@ class CarrierIntegrationService :  org.deku.leoz.rest.service.zalando.v1.Carrier
                     "Contact developer!")).build()
         }
 
-
-
-
+        return response!!
     }
 
 }
