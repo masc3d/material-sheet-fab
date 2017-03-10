@@ -10,7 +10,7 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     ext {
-        v_flyway = '4.1.1'
+        v_flyway = '4.1.0'
         v_mysql = '5.1.40'
 
         DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
