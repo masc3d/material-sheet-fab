@@ -1,6 +1,6 @@
 package org.deku.leoz.central.rest.services.v1
 
-import org.deku.leoz.rest.entity.v1.DeliveryOption
+import org.deku.leoz.rest.entity.zalando.v1.DeliveryOption
 import sx.rs.ApiKey
 import javax.inject.Named
 import javax.ws.rs.Path

@@ -1,4 +1,4 @@
-package org.deku.leoz.rest.entity.v1
+package org.deku.leoz.rest.entity.zalando.v1
 
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty

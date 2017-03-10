@@ -1,9 +1,11 @@
-package org.deku.leoz.rest.entity.v1
+package org.deku.leoz.rest.entity.zalando.v1
+
+import io.swagger.annotations.ApiModel
 
 /**
  * Created by 27694066 on 02.03.2017.
  */
-@io.swagger.annotations.ApiModel(value = "Problem", description = "Service error")
+@ApiModel(value = "Problem", description = "Service error")
 class Problem(
         val httpStatus: Int?,
         val code: Int?,

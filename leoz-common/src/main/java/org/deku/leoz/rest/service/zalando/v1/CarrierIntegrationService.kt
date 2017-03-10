@@ -1,11 +1,7 @@
 package org.deku.leoz.rest.service.zalando.v1
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
-import org.deku.leoz.rest.entity.v1.DeliveryOption
-import org.deku.leoz.rest.entity.v1.Problem
+import io.swagger.annotations.*
+import org.deku.leoz.rest.entity.zalando.v1.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -35,5 +31,17 @@ interface CarrierIntegrationService {
             @QueryParam(value = "target_address.city") target_address_city: String,
             @QueryParam(value = "target_address.zip_code") target_address_zip_code: String,
             @QueryParam(value = "target_address.address_line") target_address_address_line: String
+    )
+
+    @POST
+    @Path("delivery-orders")
+    @ApiOperation(value = "Send order information")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 200, message = "OK", response = NotifiedDeliveryOrder::class),
+            ApiResponse(code = 400, message = "Bad Request", response = Problem::class),
+            ApiResponse(code = 401, message = "Unauthorized", response = Problem::class))
+    )
+    fun postDeliveryOrder(
+            @ApiParam(value = "DeliveryOrder") deliveryOrder: DeliveryOrder
     )
 }
