@@ -31,26 +31,19 @@ configurations {
     compile.extendsFrom provided
 }
 
-
 //region Prototype test setup
-configurations {
-    prototypeCompile.extendsFrom testCompile
-    prototypeRuntime.extendsFrom testRuntime
-}
-
-sourceSets {
-    def prototypeBaseDir = file('src/prototype')
-    prototype {
-        java.srcDirs = [new File(prototypeBaseDir, 'java')]
-        resources.srcDirs = [new File(prototypeBaseDir, 'resources')]
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
     }
 }
 
-task prototype(type: Test, description: 'Run prototype tests.') {
-    testClassesDir sourceSets.prototype.output.classesDir
-    classpath = sourceSets.prototype.runtimeClasspath
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
 }
 //endregion
 

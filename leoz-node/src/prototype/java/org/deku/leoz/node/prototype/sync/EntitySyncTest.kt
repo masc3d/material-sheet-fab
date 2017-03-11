@@ -14,6 +14,7 @@ import org.deku.leoz.node.test.config.TestMessageBrokerConfiguration
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Import
@@ -22,6 +23,7 @@ import sx.jms.Broker
 import sx.jms.Channel
 import sx.jms.activemq.ActiveMQBroker
 import sx.jms.artemis.ArtemisBroker
+import sx.junit.PrototypeTest
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.persistence.EntityManagerFactory
@@ -31,6 +33,7 @@ import javax.persistence.PersistenceUnit
  * Created by masc on 18.06.15.
  */
 //@Ignore
+@Category(PrototypeTest::class)
 @RunWith(SpringJUnit4ClassRunner::class)
 @Import(TestMessageBrokerConfiguration::class)
 class EntitySyncTest : DataTest() {

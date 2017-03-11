@@ -4,10 +4,13 @@ import org.apache.sshd.client.SshClient
 import org.apache.sshd.common.util.net.SshdSocketAddress
 import org.junit.Ignore
 import org.junit.Test
+import org.junit.experimental.categories.Category
+import sx.junit.PrototypeTest
 
 /**
  * Created by masc on 13.11.15.
  */
+@Category(PrototypeTest::class)
 class SshClientTest {
     @Test
     fun testRun() {

@@ -4,6 +4,8 @@ import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.data.jpa.QMstCountry
 import org.deku.leoz.node.data.repository.master.CountryRepository
 import org.junit.Test
+import org.junit.experimental.categories.Category
+import sx.junit.PrototypeTest
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -11,6 +13,7 @@ import javax.inject.Inject
 /**
  * Created by masc on 05.10.15.
  */
+@Category(PrototypeTest::class)
 class CountryRepositoryTest : DataTest() {
     @Inject
     private lateinit var countryRepository: CountryRepository

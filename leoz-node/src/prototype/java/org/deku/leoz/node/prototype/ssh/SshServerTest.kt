@@ -9,12 +9,15 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
 import org.apache.sshd.server.session.ServerSession
 import org.junit.Ignore
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
+import sx.junit.PrototypeTest
 import java.nio.file.Files
 
 /**
  * Created by masc on 13.11.15.
  */
+@Category(PrototypeTest::class)
 class SshServerTest {
     @Test
     fun testRun() {

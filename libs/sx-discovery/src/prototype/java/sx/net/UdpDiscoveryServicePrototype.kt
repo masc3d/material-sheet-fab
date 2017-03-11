@@ -1,14 +1,11 @@
 package sx.net
 
-import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import rx.lang.kotlin.subscribeWith
-import rx.schedulers.Schedulers
+import rx.lang.kotlin.subscribeBy
 import sx.Copyable
 import sx.io.serialization.Serializable
-import sx.net.UdpDiscoveryService
-import java.time.Duration
+import sx.time.Duration
 import java.util.concurrent.Executors
 
 /**
@@ -24,8 +21,11 @@ class UdpDiscoveryServicePrototype {
          */
         @Serializable(0x34e2c0f35e25b0)
         data class Info(val type: String) : Copyable<Info> {
-            constructor() : this(type = "type-a") { }
-            override fun copyInstance(): Info { return this.copy() }
+            constructor() : this(type = "type-a") {}
+
+            override fun copyInstance(): Info {
+                return this.copy()
+            }
         }
 
         val e = Executors.newScheduledThreadPool(2)
@@ -42,16 +42,16 @@ class UdpDiscoveryServicePrototype {
 //            }
 //        }
 
-        ds.discoverFirst( { true }, Duration.ofSeconds(3))
+        ds.discoverFirst({ true }, Duration.ofSeconds(3))
                 .first()
-                .subscribeWith {
-                    onNext {
-                        log.info("DISCOVERED ${it}")
-                    }
-                    onError {
-                        log.error(it.message, it)
-                    }
-                }
+                .subscribeBy(
+                        onNext = {
+                            log.info("DISCOVERED ${it}")
+                        },
+                        onError = {
+                            log.error(it.message, it)
+                        })
+
 
         ds.start()
         Thread.sleep(5000)

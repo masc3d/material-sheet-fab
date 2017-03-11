@@ -108,6 +108,10 @@ configure(
     // Remove dependency to check task, as analysis plugin is good for hinting at dependency, but there's also false positives
     check.dependsOn.remove('analyzeDependencies')
 
+    test {
+        ignoreFailures true
+    }
+
     // Global jar configuration
     jar {
         doFirst {

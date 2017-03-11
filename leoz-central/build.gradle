@@ -32,6 +32,22 @@ mainClassName = "org.deku.leoz.central.Main"
 def DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
 def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
 
+//region Prototype test setup
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
+}
+//endregion
+
 dependencies {
     // leoz webservice dependencies
     compile(

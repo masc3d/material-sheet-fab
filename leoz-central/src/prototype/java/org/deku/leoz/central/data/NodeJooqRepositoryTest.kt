@@ -4,14 +4,17 @@ import org.deku.leoz.central.DataTest
 import org.deku.leoz.central.data.jooq.tables.records.MstNodeRecord
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import sx.junit.PrototypeTest
 
 import javax.inject.Inject
 
 /**
  * Created by masc on 02.07.15.
  */
+@Category(PrototypeTest::class)
 class NodeJooqRepositoryTest : DataTest() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 

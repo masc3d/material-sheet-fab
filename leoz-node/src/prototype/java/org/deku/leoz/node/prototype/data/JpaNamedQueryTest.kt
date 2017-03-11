@@ -8,15 +8,18 @@ import org.deku.leoz.node.data.jpa.QMstRoute
 import org.eclipse.persistence.config.HintValues
 import org.eclipse.persistence.config.QueryHints
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
+import sx.junit.PrototypeTest
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 
 /**
  * Created by masc on 18/10/2016.
  */
+@Category(PrototypeTest::class)
 open class JpaNamedQueryTest : DataTest() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 

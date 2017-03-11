@@ -19,9 +19,11 @@ import org.eclipse.persistence.tools.profiler.PerformanceMonitor
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
+import sx.junit.PrototypeTest
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -35,6 +37,7 @@ import javax.sql.DataSource
 /**
  * Created by masc on 18/10/2016.
  */
+@Category(PrototypeTest::class)
 open class QueryPerformanceTest : DataTest() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 

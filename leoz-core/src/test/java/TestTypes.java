@@ -1,5 +1,7 @@
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import sx.junit.StandardTest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,6 +11,7 @@ import java.time.format.FormatStyle;
 /**
  * Created by masc on 30.05.15.
  */
+@Category(StandardTest.class)
 public class TestTypes {
 
     @Test

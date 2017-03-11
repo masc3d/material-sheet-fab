@@ -5,15 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import org.junit.Assert
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
+import sx.junit.StandardTest
 import java.io.StringWriter
 
 /**
  * Common object serialization tests
  * Created by masc on 27/10/2016.
  */
+@Category(StandardTest::class)
 class SerializationTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 

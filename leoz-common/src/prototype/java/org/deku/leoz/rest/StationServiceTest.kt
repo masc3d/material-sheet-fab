@@ -8,7 +8,6 @@ import org.deku.leoz.rest.service.internal.v1.StationService
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import rx.Observable
-import rx.lang.kotlin.subscribeWith
 
 /**
  * Created by n3 on 10/12/2016.

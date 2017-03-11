@@ -67,10 +67,11 @@ version = '0.62-SNAPSHOT'
 mainClassName = 'org.deku.leoz.node.Main'
 
 //region Constants
-def GENERATED_DIR = file("${project.projectDir}/src/generated")
+def GENERATED_DIR = file('src/generated')
+def PROTOTYPE_TEST_DIR = file('src/prototype/java')
 
 // Database constants
-def PROJECT_DB_DIR = new File(project.projectDir, 'src/main/resources/db')
+def PROJECT_DB_DIR = file('src/main/resources/db')
 
 def DB_DIR = new File(project.buildDir, 'db')
 def DB_PERSISTENCE_XML = new File(DB_DIR, 'META-INF/persistence.xml')
@@ -103,10 +104,6 @@ clean {
     }
 }
 
-//kapt {
-//    generateStubs = true
-//}
-
 idea {
     module {
         // Add KAPT generated sources to intellij
@@ -124,36 +121,25 @@ sourceSets {
         // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
         output.resourcesDir = sourceSets.main.output.classesDir
     }
+    
+    test {
+        java {
+            srcDirs += PROTOTYPE_TEST_DIR
+        }
+    }
 }
 
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
 
 compileJava {
     dependsOn processResources
     // Bend compilation destination path, the final classes are produced by `jpaWeaving`
     destinationDir = new File(project.buildDir, "classes-unweaved")
 }
-
-//region Prototype test setup
-configurations {
-    prototypeCompile.extendsFrom testCompile
-    prototypeRuntime.extendsFrom testRuntime
-}
-
-sourceSets {
-    def prototypeBaseDir = file('src/prototype')
-    prototype {
-        java.srcDirs = [new File(prototypeBaseDir, 'java')]
-        resources.srcDirs = [new File(prototypeBaseDir, 'resources')]
-        compileClasspath += (main.output + test.output)
-        runtimeClasspath += (main.output + test.output)
-    }
-}
-
-task prototype(type: Test, description: 'Run prototype tests.') {
-    testClassesDir sourceSets.prototype.output.classesDir
-    classpath = sourceSets.prototype.runtimeClasspath
-}
-//endregion
 
 configurations {
     driver

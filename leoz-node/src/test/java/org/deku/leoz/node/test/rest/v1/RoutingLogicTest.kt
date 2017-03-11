@@ -9,12 +9,15 @@ import org.deku.leoz.rest.entity.v1.RoutingRequest
 import org.deku.leoz.rest.service.ServiceErrorCode
 import org.junit.Assert
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.springframework.test.context.ContextConfiguration
+import sx.junit.StandardTest
 import javax.inject.Inject
 
 /**
  * Created by JT on 15.05.15.
  */
+@Category(StandardTest::class)
 @ContextConfiguration(classes = arrayOf(RoutingService::class))
 class RoutingLogicTest : DataTest() {
     @Inject
