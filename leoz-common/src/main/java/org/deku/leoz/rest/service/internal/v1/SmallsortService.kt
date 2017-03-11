@@ -2,6 +2,7 @@ package org.deku.leoz.rest.service.internal.v1
 
 import io.swagger.annotations.*
 import org.deku.leoz.rest.entity.internal.v1.OutgoingBag
+import org.deku.leoz.rest.entity.v1.ServiceError
 import sx.rs.ApiKey
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.*
@@ -30,7 +31,7 @@ interface SmallsortService {
     @Path("/close-bag")
     @ApiOperation("Close Bag")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun closebag(@ApiParam(value = "Bag") outgoingBag: OutgoingBag): Boolean
 }

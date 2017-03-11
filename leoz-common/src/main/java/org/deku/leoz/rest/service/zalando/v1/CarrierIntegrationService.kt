@@ -39,7 +39,7 @@ interface CarrierIntegrationService {
             @QueryParam(value = "target_address.zip_code") target_address_zip_code: String,
             @QueryParam(value = "target_address.address_line") target_address_address_line: String,
             @HeaderParam(value = "x-api-key") authorizationKey: String
-    ): Response
+    )
 
     @POST
     @Path("delivery-orders")
@@ -55,7 +55,7 @@ interface CarrierIntegrationService {
     fun postDeliveryOrder(
             @ApiParam(value = "DeliveryOrder") deliveryOrder: DeliveryOrder,
             @HeaderParam(value = "x-api-key") authorizationKey: String
-    ): Response
+    )
 
     @POST
     @Path("delivery-orders/{id}/cancellation")
@@ -72,5 +72,5 @@ interface CarrierIntegrationService {
     fun cancelDeliveryOrder(
             @PathParam(value = "id") @ApiParam(example = "1234567890", value = "Order identifier") id: String,
             @HeaderParam(value = "x-api-key") authorizationKey: String
-    ): Response
+    )
 }

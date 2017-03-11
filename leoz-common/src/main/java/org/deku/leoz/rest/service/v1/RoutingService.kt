@@ -3,6 +3,7 @@ package org.deku.leoz.rest.service.v1
 import io.swagger.annotations.*
 import org.deku.leoz.rest.entity.v1.Routing
 import org.deku.leoz.rest.entity.v1.RoutingRequest
+import org.deku.leoz.rest.entity.v1.ServiceError
 
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
@@ -29,7 +30,7 @@ interface RoutingService {
     @Path("/request")
     @ApiOperation(value = "Request routing information")
     @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+            ApiResponse(code = 400, message = "Bad request/parameter", response = ServiceError::class))
     )
     fun request(@ApiParam(value = "Routing request") routingRequest: RoutingRequest): Routing
 }
