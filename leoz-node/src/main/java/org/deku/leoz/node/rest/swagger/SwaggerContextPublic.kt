@@ -1,5 +1,6 @@
 package org.deku.leoz.node.rest.swagger
 
+import io.swagger.annotations.ApiKeyAuthDefinition
 import io.swagger.config.Scanner
 import io.swagger.jaxrs.config.ReflectiveJaxrsScanner
 import io.swagger.models.Contact
@@ -27,7 +28,10 @@ object SwaggerContextPublic : SwaggerContext {
                 .contact(Contact()
                         .email("wolfgang.drewelies@derkurier.de"))
 
-        val swagger = Swagger().info(info)
+        val AUTHNAME_APIKEY = "api-key"
+        val swagger = Swagger()
+                .securityDefinition(AUTHNAME_APIKEY, io.swagger.models.auth.ApiKeyAuthDefinition(AUTHNAME_APIKEY, io.swagger.models.auth.In.HEADER))
+                .info(info)
         swagger.basePath(RestConfiguration.MAPPING_PREFIX)
 
         //    swagger.securityDefinition("api_key", new ApiKeyAuthDefinition("api_key", In.HEADER));

@@ -27,7 +27,10 @@ object SwaggerContextInternal : SwaggerContext {
                 .contact(Contact()
                         .email("wolfgang.drewelies@derkurier.de"))
 
-        val swagger = Swagger().info(info)
+        val AUTHNAME_APIKEY = "api-key"
+        val swagger = Swagger()
+                .securityDefinition(AUTHNAME_APIKEY, io.swagger.models.auth.ApiKeyAuthDefinition(AUTHNAME_APIKEY, io.swagger.models.auth.In.HEADER))
+                .info(info)
         swagger.basePath(RestConfiguration.MAPPING_PREFIX)
 
         //    swagger.securityDefinition("api_key", new ApiKeyAuthDefinition("api_key", In.HEADER));
@@ -36,7 +39,6 @@ object SwaggerContextInternal : SwaggerContext {
         //        .implicit("http://petstore.swagger.io/api/oauth/dialog")
         //        .scope("read:pets", "read your pets")
         //        .scope("write:pets", "modify pets in your account"));
-
 
         // Setting the scanner during bootstrap, no need for configuration servlet
         val scanner = ReflectiveJaxrsScanner()
