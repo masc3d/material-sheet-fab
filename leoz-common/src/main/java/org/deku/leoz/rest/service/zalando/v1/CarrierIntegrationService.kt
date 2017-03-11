@@ -53,6 +53,24 @@ interface CarrierIntegrationService {
             ApiResponse(code = 401, message = "Unauthorized", response = Problem::class))
     )
     fun postDeliveryOrder(
-            @ApiParam(value = "DeliveryOrder") deliveryOrder: DeliveryOrder
+            @ApiParam(value = "DeliveryOrder") deliveryOrder: DeliveryOrder,
+            @HeaderParam(value = "x-api-key") authorizationKey: String
+    ): Response
+
+    @POST
+    @Path("delivery-orders/{id}/cancellation")
+    @ApiOperation(
+            value = "Cancel a delivery order",
+            authorizations = arrayOf(Authorization(value = "apiKeyOutgoing"))
+    )
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 200, message = "OK"),
+            ApiResponse(code = 400, message = "Bad Request", response = Problem::class),
+            ApiResponse(code = 401, message = "Unauthorized", response = Problem::class)
+        )
+    )
+    fun cancelDeliveryOrder(
+            @PathParam(value = "id") @ApiParam(example = "1234567890", value = "Order identifier") id: String,
+            @HeaderParam(value = "x-api-key") authorizationKey: String
     ): Response
 }
