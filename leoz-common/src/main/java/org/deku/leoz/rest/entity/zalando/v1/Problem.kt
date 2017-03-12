@@ -16,6 +16,10 @@ class Problem(
         status: BigDecimal = BigDecimal.ZERO,
         details: String = "") {
 
+    constructor(title: String, details: String) : this(type = "", title = title, details = details) {
+
+    }
+
     /**
      * Problem type
      */
