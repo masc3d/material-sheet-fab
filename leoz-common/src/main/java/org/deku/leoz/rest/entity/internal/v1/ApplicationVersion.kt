@@ -5,6 +5,4 @@ package org.deku.leoz.rest.entity.internal.v1
  */
 class ApplicationVersion(
     val name: String = "",
-    val version: String = "") {
-
-}
+    val version: String = "")

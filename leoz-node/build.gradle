@@ -87,7 +87,8 @@ def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
 def JOOQ_PACKAGE_NAME = "org.deku.leoz.node.data.jooq"
 def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
 def QUERYDSL_GENERATED_DIR = new File(GENERATED_DIR, 'querydsl')
-def WS_WSDL_DIR = new File(project.projectDir, 'wsdl')
+def WS_WSDL_DIR = new File(project.projectDir, 'src/main/resources/wsdl')
+def WS_WSDL_DIR_RELATIVE = new File('src/main/resources/wsdl')
 def WS_CXF_GENERATED_DIR = new File(GENERATED_DIR, 'cxf')
 
 class Constants {
@@ -185,8 +186,7 @@ dependencies {
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
 
             // CXF (client)
-            "org.apache.cxf:cxf-rt-frontend-jaxws:$v_apache_cxf",
-            "org.apache.cxf:cxf-rt-transports-http:$v_apache_cxf",
+            "org.apache.cxf:cxf-spring-boot-starter-jaxws:$v_apache_cxf",
 
             "com.paypal.springboot:resteasy-spring-boot-starter:2.2.1-RELEASE",
 
@@ -340,12 +340,12 @@ wsdl2javaExt {
 
 wsdl2java {
     generatedWsdlDir = WS_CXF_GENERATED_DIR
-    wsdlDir = new File(project.projectDir, 'wsdl')
+    wsdlDir = WS_WSDL_DIR
     wsdlsToGenerate = [
-            ['-p', 'org.deku.leoz.ws.hello', '-autoNameResolution', new File(WS_WSDL_DIR, 'HelloService.wsdl')],
-            ['-p', 'org.deku.leoz.ws.weather', '-autoNameResolution', new File(WS_WSDL_DIR, 'GlobalWeather.wsdl')],
-            ['-p', 'org.deku.leoz.ws.gls.tracking', '-autoNameResolution', new File(WS_WSDL_DIR, 'Tracking.wsdl')],
-            ['-p', 'org.deku.leoz.ws.gls.shipment', '-autoNameResolution', new File(WS_WSDL_DIR, 'ShipmentProcessingService.wsdl')]
+            // TODO: WSDLs should be embedded 
+            ['-p', 'org.deku.leoz.ws.blz', '-autoNameResolution', new File(WS_WSDL_DIR_RELATIVE, 'BLZService.wsdl')],
+            ['-p', 'org.deku.leoz.ws.gls.tracking', '-autoNameResolution', new File(WS_WSDL_DIR_RELATIVE, 'Tracking.wsdl')],
+            ['-p', 'org.deku.leoz.ws.gls.shipment', '-autoNameResolution', new File(WS_WSDL_DIR_RELATIVE, 'ShipmentProcessingService.wsdl')]
     ]
 }
 tasks.compileJava.dependsOn(wsdl2java)
