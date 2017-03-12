@@ -1,6 +1,7 @@
 package org.deku.leoz.rest.service.zalando.v1
 
 import io.swagger.annotations.*
+import org.deku.leoz.config.SwaggerConfiguration
 import org.deku.leoz.rest.entity.zalando.v1.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -23,7 +24,7 @@ interface CarrierIntegrationService {
             notes = "Looks up for available delivery options that apply to the path from source address to target address. Provides a list of options which detail the window of delivery and the cut-off and pick-up points.",
             response = DeliveryOption::class,
             responseContainer = "List",
-            authorizations = arrayOf(Authorization(value = "apiKeyOutgoing")))
+            authorizations = arrayOf(Authorization(SwaggerConfiguration.AUTH_APIKEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 200, message = "OK", response = DeliveryOption::class),
             ApiResponse(code = 400, message = "Bad Request", response = Problem::class),
@@ -46,7 +47,7 @@ interface CarrierIntegrationService {
     @ApiOperation(
             value = "Send order information",
             response = NotifiedDeliveryOrder::class,
-            authorizations = arrayOf(Authorization(value = "apiKeyOutgoing")))
+            authorizations = arrayOf(Authorization(SwaggerConfiguration.AUTH_APIKEY)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 200, message = "OK", response = NotifiedDeliveryOrder::class),
             ApiResponse(code = 400, message = "Bad Request", response = Problem::class),
@@ -61,7 +62,7 @@ interface CarrierIntegrationService {
     @Path("delivery-orders/{id}/cancellation")
     @ApiOperation(
             value = "Cancel a delivery order",
-            authorizations = arrayOf(Authorization(value = "apiKeyOutgoing"))
+            authorizations = arrayOf(Authorization(SwaggerConfiguration.AUTH_APIKEY))
     )
     @ApiResponses(*arrayOf(
             ApiResponse(code = 200, message = "OK"),

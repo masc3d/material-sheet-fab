@@ -1,12 +1,14 @@
 package org.deku.leoz.node.rest.swagger
 
-import io.swagger.annotations.ApiKeyAuthDefinition
 import io.swagger.config.Scanner
 import io.swagger.jaxrs.config.ReflectiveJaxrsScanner
 import io.swagger.models.Contact
 import io.swagger.models.Info
 import io.swagger.models.Swagger
+import io.swagger.models.auth.ApiKeyAuthDefinition
+import io.swagger.models.auth.In
 import org.deku.leoz.config.RestConfiguration
+import org.deku.leoz.config.SwaggerConfiguration
 import sx.LazyInstance
 
 import java.util.concurrent.atomic.AtomicReference
@@ -28,9 +30,9 @@ object SwaggerContextPublic : SwaggerContext {
                 .contact(Contact()
                         .email("wolfgang.drewelies@derkurier.de"))
 
-        val AUTHNAME_APIKEY = "api-key"
+        val AUTH_APIKEY = SwaggerConfiguration.AUTH_APIKEY
         val swagger = Swagger()
-                .securityDefinition(AUTHNAME_APIKEY, io.swagger.models.auth.ApiKeyAuthDefinition(AUTHNAME_APIKEY, io.swagger.models.auth.In.HEADER))
+                .securityDefinition(AUTH_APIKEY, ApiKeyAuthDefinition(AUTH_APIKEY, In.HEADER))
                 .info(info)
         swagger.basePath(RestConfiguration.MAPPING_PREFIX)
 
