@@ -1,7 +1,7 @@
 package org.deku.leoz.rest.service.zalando.v1
 
 import io.swagger.annotations.*
-import org.deku.leoz.config.SwaggerConfiguration
+import org.deku.leoz.config.RestConfiguration
 import org.deku.leoz.rest.entity.zalando.v1.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -24,7 +24,7 @@ interface CarrierIntegrationService {
             notes = "Looks up for available delivery options that apply to the path from source address to target address. Provides a list of options which detail the window of delivery and the cut-off and pick-up points.",
             response = DeliveryOption::class,
             responseContainer = "List",
-            authorizations = arrayOf(Authorization(SwaggerConfiguration.AUTH_APIKEY)))
+            authorizations = arrayOf(Authorization(RestConfiguration.AUTH_APIKEY_NAME)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 200, message = "OK", response = DeliveryOption::class),
             ApiResponse(code = 400, message = "Bad Request", response = Problem::class),
@@ -39,7 +39,7 @@ interface CarrierIntegrationService {
             @QueryParam(value = "target_address.city") target_address_city: String,
             @QueryParam(value = "target_address.zip_code") target_address_zip_code: String,
             @QueryParam(value = "target_address.address_line") target_address_address_line: String,
-            @HeaderParam(value = "x-api-key") authorizationKey: String
+            @HeaderParam(value = RestConfiguration.AUTH_APIKEY_NAME) authorizationKey: String
     )
 
     @POST
@@ -47,7 +47,7 @@ interface CarrierIntegrationService {
     @ApiOperation(
             value = "Send order information",
             response = NotifiedDeliveryOrder::class,
-            authorizations = arrayOf(Authorization(SwaggerConfiguration.AUTH_APIKEY)))
+            authorizations = arrayOf(Authorization(RestConfiguration.AUTH_APIKEY_NAME)))
     @ApiResponses(*arrayOf(
             ApiResponse(code = 200, message = "OK", response = NotifiedDeliveryOrder::class),
             ApiResponse(code = 400, message = "Bad Request", response = Problem::class),
@@ -55,14 +55,14 @@ interface CarrierIntegrationService {
     )
     fun postDeliveryOrder(
             @ApiParam(value = "DeliveryOrder") deliveryOrder: DeliveryOrder,
-            @HeaderParam(value = "x-api-key") authorizationKey: String
+            @HeaderParam(value = RestConfiguration.AUTH_APIKEY_NAME) authorizationKey: String
     )
 
     @POST
     @Path("delivery-orders/{id}/cancellation")
     @ApiOperation(
             value = "Cancel a delivery order",
-            authorizations = arrayOf(Authorization(SwaggerConfiguration.AUTH_APIKEY))
+            authorizations = arrayOf(Authorization(RestConfiguration.AUTH_APIKEY_NAME))
     )
     @ApiResponses(*arrayOf(
             ApiResponse(code = 200, message = "OK"),
@@ -72,6 +72,6 @@ interface CarrierIntegrationService {
     )
     fun cancelDeliveryOrder(
             @PathParam(value = "id") @ApiParam(example = "1234567890", value = "Order identifier") id: String,
-            @HeaderParam(value = "x-api-key") authorizationKey: String
+            @HeaderParam(value = RestConfiguration.AUTH_APIKEY_NAME) authorizationKey: String
     )
 }

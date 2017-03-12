@@ -8,10 +8,6 @@ import io.swagger.models.Swagger
 import io.swagger.models.auth.ApiKeyAuthDefinition
 import io.swagger.models.auth.In
 import org.deku.leoz.config.RestConfiguration
-import org.deku.leoz.config.SwaggerConfiguration
-import sx.LazyInstance
-
-import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Internal API documentation context/configuration
@@ -30,7 +26,7 @@ object SwaggerContextZalando : SwaggerContext {
                 .contact(Contact()
                         .email("wolfgang.drewelies@derkurier.de"))
 
-        val AUTH_APIKEY = SwaggerConfiguration.AUTH_APIKEY
+        val AUTH_APIKEY = RestConfiguration.AUTH_APIKEY_NAME
         val swagger = Swagger()
                 .securityDefinition(AUTH_APIKEY, ApiKeyAuthDefinition(AUTH_APIKEY, In.HEADER))
                 .info(info)
