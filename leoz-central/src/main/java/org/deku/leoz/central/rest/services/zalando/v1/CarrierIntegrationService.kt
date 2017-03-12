@@ -86,7 +86,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             target_address_city: String,
             target_address_zip_code: String,
             target_address_address_line:
-            String, authorizationKey: String) {
+            String, authorizationKey: String): DeliveryOption {
 
         if (authorizationKey != "APIKEY") {
             throw ServiceException(status = Response.Status.UNAUTHORIZED, entity = Problem())
@@ -104,7 +104,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     title = "No Delivery Option found!",
                     details = "The given zip-code is not part of the defined delivery area"))
 
-            val delOption: DeliveryOption = DeliveryOption(
+            return DeliveryOption(
                     sddRoute.id.toString(),
                     sddRoute.cutOff,
                     sddRoute.ltop,
