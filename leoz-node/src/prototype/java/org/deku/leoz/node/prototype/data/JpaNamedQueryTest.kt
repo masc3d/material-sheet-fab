@@ -2,14 +2,17 @@ package org.deku.leoz.node.prototype.data
 
 import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
-import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstRoute
+import org.deku.leoz.node.test.config.DataTestConfiguration
 import org.eclipse.persistence.config.HintValues
 import org.eclipse.persistence.config.QueryHints
 import org.junit.Test
 import org.junit.experimental.categories.Category
+import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
 import sx.junit.PrototypeTest
@@ -19,8 +22,10 @@ import javax.persistence.PersistenceContext
 /**
  * Created by masc on 18/10/2016.
  */
+@RunWith(SpringRunner::class)
+@SpringBootTest(classes = arrayOf(DataTestConfiguration::class))
 @Category(PrototypeTest::class)
-open class JpaNamedQueryTest : DataTest() {
+open class JpaNamedQueryTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @PersistenceContext

@@ -19,8 +19,8 @@ import javax.annotation.PreDestroy
  */
 @Configuration
 @Lazy(false)
-open class TestMessageBrokerConfiguration {
-    private val log = LoggerFactory.getLogger(TestMessageBrokerConfiguration::class.java)
+open class MessageBrokerTestConfiguration {
+    private val log = LoggerFactory.getLogger(MessageBrokerTestConfiguration::class.java)
 
     private val USE_ARTEMIS = false
 

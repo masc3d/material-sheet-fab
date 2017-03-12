@@ -9,16 +9,18 @@ import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.service.sync.EntityConsumer
 import org.deku.leoz.node.service.sync.EntityPublisher
-import org.deku.leoz.node.test.DataTest
-import org.deku.leoz.node.test.config.TestMessageBrokerConfiguration
+import org.deku.leoz.node.test.config.DataTestConfiguration
+import org.deku.leoz.node.test.config.MessageBrokerTestConfiguration
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
+import org.springframework.test.context.junit4.SpringRunner
 import sx.jms.Broker
 import sx.jms.Channel
 import sx.jms.activemq.ActiveMQBroker
@@ -34,9 +36,11 @@ import javax.persistence.PersistenceUnit
  */
 //@Ignore
 @Category(PrototypeTest::class)
-@RunWith(SpringJUnit4ClassRunner::class)
-@Import(TestMessageBrokerConfiguration::class)
-class EntitySyncTest : DataTest() {
+@RunWith(SpringRunner::class)
+@SpringBootTest(classes = arrayOf(
+        DataTestConfiguration::class,
+        MessageBrokerTestConfiguration::class))
+class EntitySyncTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @PersistenceUnit(name = PersistenceConfiguration.QUALIFIER)

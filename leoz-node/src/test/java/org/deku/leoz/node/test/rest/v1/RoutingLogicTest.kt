@@ -2,15 +2,16 @@ package org.deku.leoz.node.test.rest.v1
 
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.node.rest.service.v1.RoutingService
-import org.deku.leoz.node.test.DataTest
+import org.deku.leoz.node.test.config.DataTestConfiguration
 import org.deku.leoz.rest.entity.ShortDate
-import org.deku.leoz.rest.entity.v1.Routing
 import org.deku.leoz.rest.entity.v1.RoutingRequest
 import org.deku.leoz.rest.service.ServiceErrorCode
 import org.junit.Assert
 import org.junit.Test
 import org.junit.experimental.categories.Category
-import org.springframework.test.context.ContextConfiguration
+import org.junit.runner.RunWith
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.StandardTest
 import javax.inject.Inject
 
@@ -18,8 +19,12 @@ import javax.inject.Inject
  * Created by JT on 15.05.15.
  */
 @Category(StandardTest::class)
-@ContextConfiguration(classes = arrayOf(RoutingService::class))
-class RoutingLogicTest : DataTest() {
+@RunWith(SpringRunner::class)
+@SpringBootTest(classes = arrayOf(
+        DataTestConfiguration::class,
+        RoutingService::class
+))
+class RoutingLogicTest {
     @Inject
     private lateinit var routingService: RoutingService
 
@@ -361,10 +366,10 @@ class RoutingLogicTest : DataTest() {
                         country = "DE",
                         zip = "36286"))
 
-        try{
+        try {
             this.routingService.request(request)
             Assert.fail()
-        }catch(e: ServiceException){
+        } catch(e: ServiceException) {
 
         }
     }

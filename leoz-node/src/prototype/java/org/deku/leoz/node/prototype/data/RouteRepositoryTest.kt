@@ -5,13 +5,16 @@ import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.sql.Configuration
 import com.querydsl.sql.H2Templates
 import com.querydsl.sql.SQLQueryFactory
-import org.deku.leoz.node.test.DataTest
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.QMstRoute
 import org.deku.leoz.node.data.repository.master.RouteRepository
+import org.deku.leoz.node.test.config.DataTestConfiguration
 import org.junit.Test
 import org.junit.experimental.categories.Category
+import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.transaction.annotation.Transactional
 import sx.Stopwatch
 import sx.junit.PrototypeTest
@@ -26,8 +29,10 @@ import javax.sql.DataSource
 /**
  * Created by masc on 07/10/2016.
  */
+@RunWith(SpringRunner::class)
+@SpringBootTest(classes = arrayOf(DataTestConfiguration::class))
 @Category(PrototypeTest::class)
-open class RouteRepositoryTest : DataTest() {
+open class RouteRepositoryTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
