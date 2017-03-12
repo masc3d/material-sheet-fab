@@ -49,8 +49,7 @@ class NodeJooqRepository {
      * @return
      */
     fun hasAuthorizedKey(key: String): Boolean {
-        val r = this.findByKey(key)
-        return r != null && r.authorized != 0
+        return this.findByKey(key)?.authorized ?: 0 != 0
     }
 
     /**
@@ -58,7 +57,6 @@ class NodeJooqRepository {
      * @param key
      */
     fun findByKeyOrCreateNew(key: String): MstNodeRecord {
-        val r = this.findByKey(key)
-        return r ?: dslContext.newRecord(Tables.MST_NODE)
+        return this.findByKey(key) ?: dslContext.newRecord(Tables.MST_NODE)
     }
 }
