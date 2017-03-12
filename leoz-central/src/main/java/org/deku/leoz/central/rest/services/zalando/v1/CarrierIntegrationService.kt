@@ -7,8 +7,10 @@ import org.deku.leoz.central.data.jooq.tables.records.SddFpcsOrderRecord
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.rest.entity.zalando.v1.DeliveryOption
 import org.deku.leoz.rest.entity.zalando.v1.DeliveryOrder
+import org.deku.leoz.rest.entity.zalando.v1.NotifiedDeliveryOrder
 import org.deku.leoz.rest.entity.zalando.v1.Problem
 import org.jooq.DSLContext
+import org.jooq.Result
 import org.jooq.exception.TooManyRowsException
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.rs.ApiKey
@@ -35,7 +37,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
     /**
      *
      */
-    override fun postDeliveryOrder(deliveryOrder: DeliveryOrder, authorizationKey: String) {
+    override fun postDeliveryOrder(deliveryOrder: DeliveryOrder, authorizationKey: String): NotifiedDeliveryOrder {
 
         if (authorizationKey != "APIKEY") {
             throw ServiceException(
@@ -44,11 +46,26 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
         }
 
         try {
-            val sddRoute: SddContzipRecord = dslContext.fetchOne(
-                    Tables.SDD_CONTZIP,
-                    Tables.SDD_CONTZIP.ZIP
-                            .eq(deliveryOrder.targetAddress.zipCode)
-                            .and(Tables.SDD_CONTZIP.LAYER.between(5, 6)))
+            val result = dslContext.select()
+                    .from(Tables.SDD_CUSTOMER
+                            .join(Tables.SDD_CONTACT).on(Tables.SDD_CUSTOMER.CUSTOMERID.equal(Tables.SDD_CONTACT.CUSTOMERID))
+                            .join(Tables.SDD_CONTZIP).on(Tables.SDD_CONTACT.ZIPLAYER.equal(Tables.SDD_CONTZIP.LAYER)))
+                    .where(Tables.SDD_CUSTOMER.NAME1.equal("Zalando")
+                            .and(Tables.SDD_CONTZIP.ID.eq(deliveryOrder.deliveryOption.id.toInt())))
+                    .fetch()
+
+            val delOptionZip = result.getValue(0, Tables.SDD_CONTZIP.ZIP)
+            val targetAddrZip = deliveryOrder.targetAddress.zipCode
+
+            // Ensure that there is only one record (may be not necessary due to unique/primary key "ID" in table "SDD_ContZip")
+            if (result.size != 1) {
+                throw ServiceException(Problem("Multiple delivery options", "Multiple delivery options found. Contact GLS SDD-Team!"))
+            }
+
+            // Make sure that the given zipcode of target address is same of the given delivery option.
+            if (!delOptionZip.equals(targetAddrZip, ignoreCase = true)) {
+                throw ServiceException(Problem("Delivery Option not matching given address.", "The given delivery option [ZIP: $delOptionZip] does not match the given target address zipcode [$targetAddrZip]"))
+            }
 
             val fpcsRecord: SddFpcsOrderRecord = dslContext.newRecord(Tables.SDD_FPCS_ORDER)
             fpcsRecord.customersReference = deliveryOrder.incomingId
@@ -68,6 +85,19 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             fpcsRecord.mailAddress = deliveryOrder.targetAddress.email
             fpcsRecord.dtShip = java.sql.Date(Calendar.getInstance().timeInMillis)
             fpcsRecord.store()
+
+            /**
+             * TODO: Call GLS FPCS (SOAP) Service and provide order information. Process returned data
+             * Update local record with GLS parcel number which is returned by the FPCS service.
+             * Return the obtained parcel number to the originally "requester" of this service (Zalando).
+             */
+
+            val glsParcelNum: String = "12345678901" //TODO: To be replaced with "real" GLS parcel number
+
+            fpcsRecord.glsParcelno = glsParcelNum.toDouble()
+            fpcsRecord.store()
+
+            return NotifiedDeliveryOrder(glsParcelNum)
 
         } catch(e: Exception) {
             throw BadRequestException()

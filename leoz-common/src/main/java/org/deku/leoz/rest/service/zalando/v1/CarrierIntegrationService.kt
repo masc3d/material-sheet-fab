@@ -56,7 +56,7 @@ interface CarrierIntegrationService {
     fun postDeliveryOrder(
             @ApiParam(value = "DeliveryOrder") deliveryOrder: DeliveryOrder,
             @HeaderParam(value = RestConfiguration.AUTH_APIKEY_NAME) authorizationKey: String
-    )
+    ): NotifiedDeliveryOrder
 
     @POST
     @Path("delivery-orders/{id}/cancellation")
