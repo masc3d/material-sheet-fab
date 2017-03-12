@@ -56,6 +56,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
 
             val delOptionZip = result.getValue(0, Tables.SDD_CONTZIP.ZIP)
             val targetAddrZip = deliveryOrder.targetAddress.zipCode
+            val glsDepot = result.getValue(0, Tables.SDD_CONTACT.ADMINDEPOTNO)
 
             // Ensure that there is only one record (may be not necessary due to unique/primary key "ID" in table "SDD_ContZip")
             if (result.size != 1) {
