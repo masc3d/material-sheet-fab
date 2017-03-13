@@ -73,5 +73,5 @@ interface CarrierIntegrationService {
     fun cancelDeliveryOrder(
             @PathParam(value = "id") @ApiParam(example = "1234567890", value = "Order identifier") id: String,
             @HeaderParam(value = RestConfiguration.AUTH_APIKEY_NAME) authorizationKey: String
-    )
+    ): Response
 }

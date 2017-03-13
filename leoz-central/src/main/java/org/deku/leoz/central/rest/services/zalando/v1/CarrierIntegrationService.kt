@@ -9,6 +9,7 @@ import org.deku.leoz.rest.entity.zalando.v1.DeliveryOption
 import org.deku.leoz.rest.entity.zalando.v1.DeliveryOrder
 import org.deku.leoz.rest.entity.zalando.v1.NotifiedDeliveryOrder
 import org.deku.leoz.rest.entity.zalando.v1.Problem
+import org.deku.leoz.ws.gls.shipment.*
 import org.jooq.DSLContext
 import org.jooq.Result
 import org.jooq.exception.TooManyRowsException
@@ -33,6 +34,9 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
+
+    @Inject
+    private lateinit var glsShipmentProcessingService: org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
 
     /**
      *
@@ -88,20 +92,78 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             fpcsRecord.store()
 
             /**
-             * TODO: Call GLS FPCS (SOAP) Service and provide order information. Process returned data
+             * Call GLS FPCS (SOAP) Service and provide order information. Process returned data
              * Update local record with GLS parcel number which is returned by the FPCS service.
              * Return the obtained parcel number to the originally "requester" of this service (Zalando).
              */
 
-            val glsParcelNum: String = "12345678901" //TODO: To be replaced with "real" GLS parcel number
+            val consignee = Consignee()
+            val consAddr = Address()
+            consAddr.city = fpcsRecord.cityTo
+            consAddr.name1 = fpcsRecord.nameTo
+            consAddr.contactPerson = fpcsRecord.nameTo
+            consAddr.countryCode = fpcsRecord.countryTo
+            consAddr.zipCode = fpcsRecord.zipTo
+            consAddr.street = fpcsRecord.streetTo
+            consAddr.streetNumber = fpcsRecord.streetnoTo
+            consignee.address = consAddr
 
+            val shipper = Shipper()
+            shipper.id = result.getValue(0, Tables.SDD_CONTACT.CONTACTID)
+
+            val shipmentUnit = ShipmentUnit()
+            shipmentUnit.weight = "1"
+
+            val service = Service()
+            service.serviceName = "service_1200"
+
+            val shipmentService = ShipmentService()
+            shipmentService.service = service
+
+            val shipment = Shipment()
+            shipment.shipper = shipper
+            shipment.referenceNumber.add(fpcsRecord.customersReference)
+            shipment.product = ProductType.EXPRESS
+            shipment.consignee = consignee
+            shipment.shipper = shipper
+            shipment.shipmentUnit.add(shipmentUnit)
+            shipment.service.add(shipmentService)
+
+            val returnLabels = ReturnLabels()
+            returnLabels.templateSet = TemplateSet.NONE
+            returnLabels.labelFormat = LabelFormat.PDF
+
+            val printOptions = PrintingOptions()
+            printOptions.returnLabels = returnLabels
+
+            val shipmentRequestData: ShipmentRequestData = ShipmentRequestData()
+            shipmentRequestData.shipment = shipment
+            shipmentRequestData.printingOptions = printOptions
+
+            val glsResponse: CreateParcelsResponse = glsShipmentProcessingService.createParcels(shipmentRequestData)
+
+            val parcelData = glsResponse.createdShipment.parcelData
+
+            if (parcelData.size != 1){
+                fpcsRecord.cancelRequested = -2
+                fpcsRecord.store()
+                throw ServiceException(Problem(title = "Error serving FPCS", details = "Error processing Parceldata to central GLS System. Contact GLS SDD-Team!"))
+            }
+
+            //TODO: Check if this is the right number.
+            val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[18]
+
+            var glsParcelNum = parcelData[0].expressData.courierParcelNumber
+            glsParcelNum = glsParcelNum.substring(1, 2) + "85" + glsParcelNum.substring(4)
+            fpcsRecord.glsTrackid = parcelData[0].trackID
             fpcsRecord.glsParcelno = glsParcelNum.toDouble()
+
             fpcsRecord.store()
 
             return NotifiedDeliveryOrder(glsParcelNum)
 
         } catch(e: Exception) {
-            throw BadRequestException()
+            throw BadRequestException(e.message)
         }
     }
 
@@ -160,7 +222,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
     /**
      *
      */
-    override fun cancelDeliveryOrder(id: String, authorizationKey: String) {
+    override fun cancelDeliveryOrder(id: String, authorizationKey: String): Response {
 
         if (authorizationKey != "APIKEY") {
             throw ServiceException(status = Response.Status.UNAUTHORIZED, entity = Problem())
@@ -188,7 +250,17 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             order.cancelRequested = -1
             order.store()
 
-            //TODO Cancel GLS Order via FPCS, return OK if successful
+            val cancelResponse: CancelParcelResponse = glsShipmentProcessingService.cancelParcelByID(order.glsParcelno.toString())
+
+            if (cancelResponse.result != null) {
+                if (cancelResponse.result.equals("CANCELLATION_PENDING")) { //TODO Check for other possible results
+
+                }
+                return Response.ok().build()
+            }
+
+            throw BadRequestException()
+
         } catch(e: Exception) {
             throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
                     type = "PROBLEM TYPE",
