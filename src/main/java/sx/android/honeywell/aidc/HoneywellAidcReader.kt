@@ -3,8 +3,9 @@ package sx.android.honeywell.aidc
 import android.content.Context
 import com.honeywell.aidc.*
 import org.slf4j.LoggerFactory
-import rx.Observable
-import rx.Subscription
+import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
+import org.reactivestreams.Subscription
 import sx.LazyInstance
 import sx.android.aidc.*
 import sx.rx.toHotReplay
@@ -26,14 +27,13 @@ class HoneywellAidcReader private constructor(
          * @return Hot reply observable emitting AidcReader when it is (or has become) available
          */
         fun create(context: Context): Observable<AidcReader> {
-            return Observable.unsafeCreate<AidcReader> { onSubscribe ->
+            return Observable.create<AidcReader> { onSubscribe ->
                 try {
-                    onSubscribe.onStart()
                     log.debug("Creating AidcManager")
                     AidcManager.create(context) {
                         log.debug("AidcManager created")
                         onSubscribe.onNext(HoneywellAidcReader(it))
-                        onSubscribe.onCompleted()
+                        onSubscribe.onComplete()
                     }
                 } catch(e: Throwable) {
                     onSubscribe.onError(e)
@@ -42,7 +42,7 @@ class HoneywellAidcReader private constructor(
         }
     }
 
-    private val subscriptions = mutableListOf<Subscription>()
+    private val subscriptions = mutableListOf<Disposable>()
 
     override fun onBind() {
         log.debug("Claiming reader")
@@ -66,7 +66,7 @@ class HoneywellAidcReader private constructor(
 
     override fun onUnbind() {
         log.debug("Releasing reader")
-        this.subscriptions.forEach { it.unsubscribe() }
+        this.subscriptions.forEach { it.dispose() }
         this.subscriptions.clear()
         this.honeywellReader.release()
     }
