@@ -1,3 +1,5 @@
+USE `dekuclient`;
+
 CREATE TABLE `sdd_fpcs_order` (
   `id` INT NOT NULL AUTO_INCREMENT COMMENT '',
   `customers_reference` VARCHAR(100) NOT NULL COMMENT '',

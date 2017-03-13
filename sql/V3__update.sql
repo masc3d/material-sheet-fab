@@ -1,3 +1,5 @@
+USE `dekuclient`;
+
 # Add sync support for mst_station
 
 DELIMITER $$
