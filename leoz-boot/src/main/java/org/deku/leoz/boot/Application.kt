@@ -18,9 +18,9 @@ import org.deku.leoz.boot.config.*
 import org.deku.leoz.boot.fx.MainController
 import org.deku.leoz.boot.fx.ResizeHelper
 import org.slf4j.LoggerFactory
-import rx.Observable
-import rx.lang.kotlin.cast
-import rx.lang.kotlin.subscribeBy
+import io.reactivex.Observable
+import io.reactivex.rxkotlin.cast
+import io.reactivex.rxkotlin.subscribeBy
 import sx.Stopwatch
 import sx.ssh.SshTunnel
 import sx.ssh.SshTunnelProvider
@@ -104,7 +104,7 @@ class Application : javafx.application.Application() {
             if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
                 // Execute boot task on this thread
                 this.bootTask.subscribeBy(
-                    onCompleted = {
+                    onComplete = {
                         this@Application.exit(0)
                     },
                     onError = {

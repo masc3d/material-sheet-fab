@@ -11,7 +11,7 @@ import org.deku.leoz.ui.fx.ModuleController
 import org.deku.leoz.ui.fx.modules.DebugController
 import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
 import org.deku.leoz.ui.fx.modules.HomeController
-import rx.subjects.PublishSubject
+import io.reactivex.subjects.PublishSubject
 import java.net.URL
 import java.util.*
 

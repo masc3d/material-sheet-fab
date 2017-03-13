@@ -14,13 +14,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.trello.rxlifecycle.android.FragmentEvent
-import com.trello.rxlifecycle.kotlin.bindUntilEvent
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.properties.Bag
 import org.deku.leoz.mobile.ui.fragment.Fragment
 import org.slf4j.LoggerFactory
-import rx.android.schedulers.AndroidSchedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
 import sx.android.aidc.*
 import java.util.*
 

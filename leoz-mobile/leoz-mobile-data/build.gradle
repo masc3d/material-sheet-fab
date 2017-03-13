@@ -148,9 +148,8 @@ dependencies {
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
 
             // rx
-            "io.reactivex:rxjava:$v_rxjava",
+            "io.reactivex.rxjava2:rxjava:$v_rxjava",
             "io.reactivex:rxkotlin:$v_rxkotlin",
-            "com.github.davidmoten:rxjava-extras:0.8.0.6",
     )
 }
 

@@ -13,8 +13,9 @@ import org.deku.leoz.rest.RestClient
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.deku.leoz.service.discovery.DiscoveryService
 import org.slf4j.LoggerFactory
-import rx.Observable
-import rx.lang.kotlin.cast
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.rxkotlin.cast
 import sx.packager.Bundle
 import sx.packager.BundleInstaller
 import sx.packager.BundleRepository
@@ -70,13 +71,13 @@ class Boot {
     /**
      * Discovers leoz-node in local network and amends configurations to connect to this host
      */
-    fun discover(): Observable<Any> {
+    fun discover(): Single<Any> {
         return discoveryService.discoverFirst(
                 predicate = {
                     it.bundleType == BundleType.LEOZ_NODE
                 },
                 timeout = Duration.ofSeconds(2))
-                .doOnNext {
+                .doOnSuccess {
                     val host = it.address.hostAddress.toString()
 
                     // Update REST configuration. This will affect all subsequent REST client invocations
@@ -225,7 +226,7 @@ class Boot {
             discoveryTask = Observable.empty()
         } else {
             discoveryTask = (if (settings.discover)
-                this.discover()
+                this.discover().toObservable()
             else
                 Observable.empty())
                     .concatWith(Observable.fromCallable {
@@ -254,7 +255,7 @@ class Boot {
         // Concat tasks and skew progress events
         return Observable.concat(
                 Observable.mergeDelayError(
-                        discoveryTask.ignoreElements().cast(),
+                        discoveryTask.ignoreElements().toObservable(),
                         this.selfInstall()
                                 .map {
                                     Boot.Event(this.skewProgress(0.0, 0.3, it.progress))

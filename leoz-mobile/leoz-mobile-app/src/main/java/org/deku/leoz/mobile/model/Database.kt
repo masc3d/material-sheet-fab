@@ -5,8 +5,8 @@ import org.deku.leoz.mobile.R
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.android.ContextHolder
 import org.slf4j.LoggerFactory
-import rx.Observable
-import rx.schedulers.Schedulers
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import sx.rx.toHotReplay
 
 /**
@@ -68,7 +68,7 @@ class Database(
             flyway.migrate()
         }
                 .subscribeOn(Schedulers.computation())
-                .doOnCompleted {
+                .doOnComplete {
                     migrationResult = null
                     log.info("Completed")
                 }

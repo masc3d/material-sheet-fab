@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
+import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
 import kotlinx.android.synthetic.main.fragment_main.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R

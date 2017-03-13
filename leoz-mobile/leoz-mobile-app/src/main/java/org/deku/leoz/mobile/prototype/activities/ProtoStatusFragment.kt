@@ -9,7 +9,7 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
+import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
 import kotlinx.android.synthetic.main.proto_fragment_status.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.fragment.Fragment

@@ -28,7 +28,7 @@ import org.deku.leoz.ui.event.Event
 import org.deku.leoz.ui.event.busy
 import org.deku.leoz.ui.fx.Controller
 import org.slf4j.LoggerFactory
-import rx.subjects.PublishSubject
+import io.reactivex.subjects.PublishSubject
 import java.net.URL
 import java.util.*
 import java.util.concurrent.Executors

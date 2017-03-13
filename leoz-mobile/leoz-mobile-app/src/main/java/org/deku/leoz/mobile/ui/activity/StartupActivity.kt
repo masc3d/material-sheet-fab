@@ -8,9 +8,9 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.genericInstance
-import com.tbruyelle.rxpermissions.RxPermissions
+import com.tbruyelle.rxpermissions2.RxPermissions
 import com.tinsuke.icekick.extension.serialState
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.freezeInstanceState
@@ -18,11 +18,10 @@ import org.deku.leoz.mobile.model.Database
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.unfreezeInstanceState
 import org.slf4j.LoggerFactory
-import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.lang.kotlin.onErrorReturnNull
-import rx.lang.kotlin.subscribeBy
-import rx.schedulers.Schedulers
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import sx.android.Device
 import sx.android.aidc.AidcReader
 import java.util.concurrent.TimeUnit
@@ -73,7 +72,7 @@ class StartupActivity : RxAppCompatActivity() {
             val ovMigrate = db.migrate()
                     // Ignore this exception here, as StartupActivity is about to finish.
                     // Migration result will be evaluated in MainActivity
-                    .onErrorReturnNull()
+                    .onErrorReturnItem(0)
                     .ignoreElements()
 
             // Acquire permissions
@@ -100,14 +99,14 @@ class StartupActivity : RxAppCompatActivity() {
                     }
 
             // Merge and subscribe
-            Observable.merge(arrayOf(
-                    ovMigrate.cast(Any::class.java),
+            Observable.mergeArray(
+                    ovMigrate.toObservable<Any>(),
                     ovPermissions.cast(Any::class.java),
                     ovAidcReader.cast(Any::class.java)
-            ))
+            )
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
-                        onCompleted = {
+                        onComplete = {
                             // Log device info/serial
                             val device: Device = Kodein.global.instance()
                             log.info(device.toString())

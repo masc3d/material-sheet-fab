@@ -14,8 +14,8 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.mobile.WebserviceTest
 import org.deku.leoz.rest.entity.internal.v1.Station
-import rx.Observable
-import rx.lang.kotlin.subscribeWith
+import io.reactivex.Observable
+import io.reactivex.rxkotlin.kotlin.subscribeWith
 import sx.rx.task
 
 /**

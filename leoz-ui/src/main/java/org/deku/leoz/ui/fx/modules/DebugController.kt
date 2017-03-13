@@ -14,7 +14,7 @@ import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.bridge.Message
 import org.deku.leoz.ui.fx.ModuleController
 import org.slf4j.LoggerFactory
-import rx.subjects.PublishSubject
+import io.reactivex.subjects.PublishSubject
 import java.net.URL
 import java.util.*
 

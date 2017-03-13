@@ -7,7 +7,7 @@ import org.deku.leoz.service.discovery.DiscoveryInfo
 import org.deku.leoz.service.discovery.DiscoveryService
 import org.deku.leoz.service.update.BundleUpdateService
 import org.slf4j.LoggerFactory
-import rx.subjects.PublishSubject
+import io.reactivex.subjects.PublishSubject
 import sx.net.UdpDiscoveryService
 import kotlin.properties.Delegates
 
@@ -41,7 +41,7 @@ class ConnectionConfiguration {
     // Events
     private val _nodeUpdatedEvent = PublishSubject.create<UdpDiscoveryService.Node<DiscoveryInfo>?>()
     /** Node update event */
-    val nodeUpdatdEvent by lazy { _nodeUpdatedEvent.asObservable() }
+    val nodeUpdatdEvent by lazy { _nodeUpdatedEvent.hide() }
 
     /**
      * Active node that services should connect to

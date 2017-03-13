@@ -7,7 +7,7 @@ import sx.packager.BundleRepository
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.slf4j.LoggerFactory
-import rx.subjects.PublishSubject
+import io.reactivex.subjects.PublishSubject
 import sx.Lifecycle
 import sx.concurrent.Service
 import sx.jms.Channel
@@ -105,7 +105,7 @@ class BundleUpdateService(
     /**
      * Update info received event
      */
-    val infoReceived = infoReceivedEventSubject.asObservable()
+    val infoReceived = infoReceivedEventSubject.hide()
 
     /**
      * Update notification message handler

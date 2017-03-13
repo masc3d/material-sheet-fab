@@ -10,11 +10,11 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.trello.rxlifecycle.android.RxLifecycleAndroid
+import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import kotlinx.android.synthetic.main.proto_view_aidc_camera.view.*
 import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
-import rx.android.schedulers.AndroidSchedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.Ean13Decoder
 import sx.android.aidc.Ean8Decoder

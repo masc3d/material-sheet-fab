@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.animation.*
 import javafx.application.Platform
 import javafx.event.ActionEvent
@@ -28,7 +29,6 @@ import org.deku.leoz.ui.fx.modules.DebugController
 import org.deku.leoz.ui.fx.modules.DepotMaintenanceController
 import org.deku.leoz.ui.fx.modules.HomeController
 import org.slf4j.LoggerFactory
-import rx.schedulers.JavaFxScheduler
 import sx.JarManifest
 import sx.LazyInstance
 import sx.fx.controls.MaterialProgressIndicator
@@ -84,12 +84,12 @@ class MainController : Controller(), Initializable {
     private fun <T : ModuleController> loadController(fxml: String): T {
         val mc = Controller.fromFxml<T>(fxml)
         mc.ovError
-                .observeOn(JavaFxScheduler.getInstance())
+                .observeOnFx()
                 .subscribe {
             this.showError(it.message ?: "")
         }
         mc.ovBusy
-                .observeOn(JavaFxScheduler.getInstance())
+                .observeOnFx()
                 .subscribe {
             if (it.value)
                 this.requestProgressIndicator()
@@ -149,7 +149,7 @@ class MainController : Controller(), Initializable {
     override fun initialize(location: URL, resources: ResourceBundle) {
         // Hook up to LeoBridge
         this.leoBridge.ovMessageReceived
-                .observeOn(JavaFxScheduler.getInstance())
+                .observeOnFx()
                 .subscribe { this.onLeoBridgeMessageReceived(it) }
 
         // Sidebar

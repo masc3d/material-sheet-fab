@@ -11,8 +11,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity
-import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
+import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main.view.*
 import kotlinx.android.synthetic.main.main_app_bar.*
@@ -24,8 +24,8 @@ import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
-import rx.android.schedulers.AndroidSchedulers
-import rx.lang.kotlin.subscribeBy
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction

@@ -3,9 +3,8 @@ package org.deku.leoz.mobile.config
 import android.hardware.Camera
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.*
-import rx.Observable
-import rx.lang.kotlin.firstOrNull
-import rx.schedulers.Schedulers
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import sx.android.Device
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
@@ -58,8 +57,7 @@ class AidcConfiguration {
 
                 // Wait for all aidc readers to become available
                 val aidcReaders = ovAidcReader
-                        .toBlocking()
-                        .toIterable()
+                        .blockingIterable()
                         .toList()
 
                 CompositeAidcReader(readers = *aidcReaders.toTypedArray())

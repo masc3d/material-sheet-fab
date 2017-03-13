@@ -20,7 +20,7 @@ buildscript {
         v_android_buildtools = '25.0.2'
         v_android_support = '25.2.0'
         v_roboelectric = '3.2.2'
-        v_rxlifecycle = '1.0'
+        v_rxlifecycle = '2.0.1'
         v_stetho = '1.4.2'
     }
 }
@@ -163,16 +163,14 @@ dependencies {
             },
 
             // Reactive
-            "io.reactivex:rxjava:$v_rxjava",
-            "io.reactivex:rxandroid:1.2.1",
+            "io.reactivex.rxjava2:rxjava:$v_rxjava",
+            "io.reactivex.rxjava2:rxandroid:2.0.1",
             "io.reactivex:rxkotlin:$v_rxkotlin",
-            "io.reactivex:rxjava-async-util:0.21.0",
-            "com.github.davidmoten:rxjava-extras:0.8.0.6",
-            "com.jakewharton.rxbinding:rxbinding:1.0.1",
-            "com.trello:rxlifecycle:$v_rxlifecycle",
-            "com.trello:rxlifecycle-kotlin:$v_rxlifecycle",
-            "com.trello:rxlifecycle-components:$v_rxlifecycle",
-            "com.tbruyelle.rxpermissions:rxpermissions:0.9.2@aar",
+            "com.jakewharton.rxbinding2:rxbinding:1.0.1",
+            "com.trello.rxlifecycle2:rxlifecycle:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-kotlin:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle",
+            "com.tbruyelle.rxpermissions2:rxpermissions:0.9.3@aar",
 
             // REST
             "com.netflix.feign:feign-core:$v_feign",

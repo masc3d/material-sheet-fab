@@ -1,6 +1,6 @@
 package org.deku.leoz.ui.event
 
-import rx.subjects.PublishSubject
+import io.reactivex.subjects.PublishSubject
 
 /**
  * Busy notifier interface.

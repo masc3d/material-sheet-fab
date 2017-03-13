@@ -40,7 +40,7 @@ dependencies {
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
 
             // RX
-            "io.reactivex:rxjava:$v_rxjava",
+            "io.reactivex.rxjava2:rxjava:$v_rxjava",
             "io.reactivex:rxkotlin:$v_rxkotlin",
             "io.reactivex:rxjavafx:$v_rxjavafx",
             "com.github.thomasnield:rxkotlinfx:$v_rxkotlinfx",

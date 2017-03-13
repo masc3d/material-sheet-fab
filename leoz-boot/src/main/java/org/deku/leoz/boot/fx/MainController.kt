@@ -4,6 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
@@ -12,11 +13,10 @@ import javafx.scene.input.MouseEvent
 import org.deku.leoz.boot.Boot
 import org.deku.leoz.boot.Settings
 import org.deku.leoz.boot.config.LogConfiguration
-import rx.Observable
-import rx.javafx.kt.observeOnFx
-import rx.lang.kotlin.subscribeBy
-import rx.schedulers.Schedulers
-import rx.subjects.PublishSubject
+import io.reactivex.Observable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import sx.JarManifest
 import sx.fx.TextAreaLogAppender
 import sx.fx.controls.MaterialProgressIndicator
@@ -53,7 +53,7 @@ class MainController : Initializable {
 
     private val exitEventSubject = PublishSubject.create<Int>()
     /** Exit event */
-    val exitEvent by lazy { exitEventSubject.asObservable() }
+    val exitEvent by lazy { exitEventSubject.hide() }
 
     private var exitCode: Int = 0
 
@@ -83,13 +83,12 @@ class MainController : Initializable {
 
         task
                 .subscribeOn(Schedulers.from(this.executorService))
-                .onBackpressureBuffer()
                 .observeOnFx()
                 .subscribeBy(
                     onNext = {
                         uxProgressBar.progress = it.progress
                     },
-                    onCompleted = {
+                    onComplete = {
                         uxTitle.text = "${verbPast} succesfully."
                         uxProgressBar.styleClass.add("leoz-green-bar")
                         uxProgressBar.progress = 1.0

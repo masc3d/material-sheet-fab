@@ -7,9 +7,8 @@ import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import org.glassfish.jersey.jackson.JacksonFeature
 import org.glassfish.jersey.server.ResourceConfig
-import rx.subjects.PublishSubject
+import io.reactivex.subjects.PublishSubject
 import sx.Disposable
-import sx.rx.synchronized
 import java.io.IOException
 import java.net.URI
 import javax.ws.rs.client.ClientBuilder
@@ -35,7 +34,7 @@ class LeoBridge : Disposable, MessageService.Listener {
         private val CLIENT_URI = URI.create("http://localhost:37421/")
     }
 
-    val ovMessageReceived by lazy { PublishSubject.create<Message>().synchronized() }
+    val ovMessageReceived by lazy { PublishSubject.create<Message>().toSerialized() }
 
     private val httpServer by lazy {
         GrizzlyHttpServerFactory.createHttpServer(HOST_URI, WebserviceResourceConfig())

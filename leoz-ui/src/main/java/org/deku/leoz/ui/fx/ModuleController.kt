@@ -4,7 +4,7 @@ import javafx.scene.image.Image
 import org.deku.leoz.ui.event.BusyNotifier
 import org.deku.leoz.ui.event.ErrorNotifier
 import org.deku.leoz.ui.event.Event
-import rx.subjects.PublishSubject
+import io.reactivex.subjects.PublishSubject
 
 /**
  * Base class for leoz user interface modules

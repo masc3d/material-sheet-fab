@@ -13,7 +13,7 @@ import org.deku.leoz.mobile.data.jpa.MstStation
 import org.junit.Test
 import org.sqlite.SQLiteDataSource
 import org.sqlite.javax.SQLiteConnectionPoolDataSource
-import rx.lang.kotlin.subscribeWith
+import io.reactivex.rxkotlin.kotlin.subscribeWith
 
 /**
  * Created by n3 on 09/12/2016.

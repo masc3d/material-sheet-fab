@@ -12,7 +12,7 @@ import org.deku.leoz.ui.event.Event
 import org.deku.leoz.ui.fx.ModuleController
 import org.deku.leoz.ui.fx.components.DepotDetailsController
 import org.deku.leoz.ui.fx.components.DepotListController
-import rx.subjects.PublishSubject
+import io.reactivex.subjects.PublishSubject
 import java.net.URL
 import java.util.*
 
