@@ -19,35 +19,18 @@ import javax.xml.ws.WebServiceClient
  */
 @Configuration
 open class SoapClientConfiguration {
-    /**
-     * Tries to determine the embedded wsdl resource from a generated type annotated with {@link javax.xml.ws.WebServceClient}
-     */
-    private fun wsdlResourceFromType(type: Class<*>): URL {
-        val wsdlLocation = type.annotationOfType(WebServiceClient::class.java).wsdlLocation
-        val resourcePathStart = wsdlLocation.indexOf("wsdl")
-        if (resourcePathStart < 0)
-            throw IllegalArgumentException("WSDL resource path could not be determined for [${wsdlLocation}]")
-
-        val resourceName = wsdlLocation.substring(resourcePathStart)
-        return Thread.currentThread().contextClassLoader.getResource(resourceName)
-            ?: throw IllegalArgumentException("WSDL resource [${resourceName}] could not be found")
-    }
-
     @Bean
     open fun blzService(): BLZServicePortType {
-        val wsdl = this.wsdlResourceFromType(BLZService::class.java)
-        return BLZService(wsdl).blzServiceSOAP12PortHttp
+        return BLZService().blzServiceSOAP12PortHttp
     }
 
     @Bean
     open fun glsShipmentProcessingService(): ShipmentProcessingPortType {
-        val wsdl = this.wsdlResourceFromType(ShipmentProcessingService::class.java)
-        return ShipmentProcessingService(wsdl).shipmentProcessingPortTypePort
+        return ShipmentProcessingService().shipmentProcessingPortTypePort
     }
 
     @Bean
     open fun glsTrackingService(): Tracking {
-        val wsdl = this.wsdlResourceFromType(Tracking_Service::class.java)
-        return Tracking_Service(wsdl).tracking
+        return Tracking_Service().tracking
     }
 }

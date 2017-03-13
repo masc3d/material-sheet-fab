@@ -87,8 +87,7 @@ def FLYWAY_MIGRATION_DIR = new File(PROJECT_DB_DIR, 'migration')
 def JOOQ_PACKAGE_NAME = "org.deku.leoz.node.data.jooq"
 def JOOQ_GENERATED_DIR = new File(GENERATED_DIR, 'jooq')
 def QUERYDSL_GENERATED_DIR = new File(GENERATED_DIR, 'querydsl')
-def WS_WSDL_DIR = new File(project.projectDir, 'src/main/resources/wsdl')
-def WS_WSDL_DIR_RELATIVE = new File('src/main/resources/wsdl')
+def WS_WSDL_DIR = file('src/main/resources/wsdl')
 def WS_CXF_GENERATED_DIR = new File(GENERATED_DIR, 'cxf')
 
 class Constants {
@@ -122,7 +121,7 @@ sourceSets {
         // Required for eclipse modelgen to find xml resources (eg. persistence.xml)
         output.resourcesDir = sourceSets.main.output.classesDir
     }
-    
+
     test {
         java {
             srcDirs += PROTOTYPE_TEST_DIR
@@ -352,13 +351,24 @@ wsdl2java {
     generatedWsdlDir = WS_CXF_GENERATED_DIR
     wsdlDir = WS_WSDL_DIR
     wsdlsToGenerate = [
-            // TODO: WSDLs should be embedded 
-            ['-p', 'org.deku.leoz.ws.blz', '-autoNameResolution', new File(WS_WSDL_DIR_RELATIVE, 'BLZService.wsdl')],
-            ['-p', 'org.deku.leoz.ws.gls.tracking', '-autoNameResolution', new File(WS_WSDL_DIR_RELATIVE, 'Tracking.wsdl')],
-            ['-p', 'org.deku.leoz.ws.gls.shipment', '-autoNameResolution', new File(WS_WSDL_DIR_RELATIVE, 'ShipmentProcessingService.wsdl')]
+            ['-p', 'org.deku.leoz.ws.blz',
+             '-autoNameResolution',
+             '-wsdlLocation', 'classpath:/wsdl/BLZService.wsdl',
+             new File(WS_WSDL_DIR, 'BLZService.wsdl')],
+
+            ['-p', 'org.deku.leoz.ws.gls.tracking',
+             '-autoNameResolution',
+             '-wsdlLocation', 'classpath:/wsdl/Tracking.wsdl',
+             new File(WS_WSDL_DIR, 'Tracking.wsdl')],
+
+            ['-p', 'org.deku.leoz.ws.gls.shipment',
+             '-autoNameResolution',
+             '-wsdlLocation', 'classpath:/wsdl/ShipmentProcessingService.wsdl',
+             new File(WS_WSDL_DIR, 'ShipmentProcessingService.wsdl')]
     ]
 }
 tasks.compileJava.dependsOn(wsdl2java)
+tasks.compileKotlin.dependsOn(wsdl2java)
 
 packager {
     title = "Leoz Node"
