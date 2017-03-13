@@ -2,15 +2,15 @@ package sx.net
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import rx.Observable
-import rx.subjects.PublishSubject
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.subjects.PublishSubject
 import sx.Disposable
 import sx.LazyInstance
 import sx.concurrent.Service
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.Serializable
 import sx.io.serialization.Serializer
-import sx.rx.synchronized
 import java.net.*
 import sx.time.Duration
 import java.util.*
@@ -200,15 +200,15 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
     /**
      * Update event
      */
-    val updatedEvent by lazy { updatedEventSubject.asObservable() }
-    private val updatedEventSubject = PublishSubject.create<UpdateEvent<TInfo>>().synchronized()
+    val updatedEvent by lazy { updatedEventSubject.hide() }
+    private val updatedEventSubject = PublishSubject.create<UpdateEvent<TInfo>>().toSerialized()
 
     /**
      * Performs discovery for a specific node with timeout support
      * @param predicate Filter predicate
      * @param timeout Timeout
      */
-    fun discoverFirst(predicate: (TInfo) -> Boolean, timeout: Duration): Observable<Node<TInfo>> {
+    fun discoverFirst(predicate: (TInfo) -> Boolean, timeout: Duration): Single<Node<TInfo>> {
         return this.updatedEvent
                 .filter {
                     it.type == UpdateEvent.Type.Changed
@@ -216,9 +216,9 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                 .map {
                     it.node
                 }
-                .mergeWith(Observable.unsafeCreate<Node<TInfo>> { sub ->
+                .mergeWith(Observable.create<Node<TInfo>> { sub ->
                     this.directory.forEach { sub.onNext(it) }
-                    sub.onCompleted()
+                    sub.onComplete()
                 })
                 .filter {
                     if (it.info != null) predicate(it.info) else false
@@ -232,7 +232,7 @@ open class UdpDiscoveryService<TInfo> @JvmOverloads constructor(
                         else -> throw it
                     }
                 }
-                .first()
+                .firstOrError()
     }
 
     /**
