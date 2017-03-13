@@ -10,7 +10,7 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     ext {
-        v_flyway = '4.1.0'
+        v_flyway = '4.1.2'
         v_mysql = '5.1.40'
 
         DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
@@ -50,7 +50,7 @@ tasks.remove(tasks.flywayValidate)
     extension.driver = ext.DB_MYSQL_JDBC_DRIVER
     extension.user = 'root'
     extension.password = 'dekudb'
-    extension.schemas = ['dekuclient']
+    extension.schemas = ['dekuclient', 'dekutmp']
     extension.locations = ["filesystem:${ext.FLYWAY_MIGRATION_DIR}"]
     return extension
 }

@@ -12,9 +12,7 @@ buildscript {
         v_commons_logging = '1.2'
         v_eclipselink = '2.6.4'
         v_feign = '8.18.0'
-        // TODO: `flyway-4.1.1` has issues loading JDBC driver in some setups (eg. `leoz-central-schema`
-        // TODO: `flyway-4.1.2` does not correctly set target schema when running against `mysql`
-        v_flyway = '4.1.0'
+        v_flyway = '4.1.2'
         v_fxform2 = '8.0.18'
         v_guava = '21.0'
         v_h2 = '1.4.193'

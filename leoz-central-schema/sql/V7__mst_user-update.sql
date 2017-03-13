@@ -1,3 +1,5 @@
+USE `dekuclient`;
+
 ALTER TABLE `mst_user`
 CHANGE COLUMN `user_id` `user_id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '' ,
 CHANGE COLUMN `user_name` `user_name` VARCHAR(30) NOT NULL COMMENT '' ,
