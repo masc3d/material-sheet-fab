@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "Generic Carrier Integration API",
-        "description": "This API defines the general approach how to integrate carriers easily with the Local Delivery Network (LDN) of Zalando SE. The API is splitted by incoming and outgoing tags. Outgoing tagged definitions are defining Endpoints the LDN expects on carriers side. Incoming tagged definitions are describing endpoints the LDN is exposing towards the carrier.",
+        "title": "LDN Carrier Integration API",
+        "description": "This API defines the general approach to easily integrate a carrier to the Local Delivery Network (LDN) of Zalando SE. The API definitions are divided into incoming tags and outgoing tags. On one hand, Incoming tag definitions describe endpoints the LDN exposes to the carrier that the carrier should call. On other hand, Outgoing tag definitions describe the Endpoints that the LDN requires to be exposed on the carrier side so that LDN could call them. Noted that all strings that represent dates are formatted accordingly to ISO-8601. Additionally country code strings are formatted accordingly to ISO 3166-1:2.",
         "version": "0.0.1",
         "contact": {
             "name": "Team Pizza",
@@ -28,22 +28,22 @@
         "apiKeyOutgoing": {
             "type": "apiKey",
             "in": "header",
-            "name": "Api-Key"
+            "name": "x-api-key"
         },
         "apiKeyIncoming": {
             "type": "apiKey",
             "in": "header",
-            "name": "Api-Key"
+            "name": "x-api-key"
         }
     },
     "tags": [
         {
             "name": "outgoing",
-            "description": "Outgoing"
+            "description": "Outgoing operation"
         },
         {
             "name": "incoming",
-            "description": "Incoming"
+            "description": "Incoming operation"
         }
     ],
     "paths": {
@@ -57,8 +57,8 @@
                         "apiKeyOutgoing": []
                     }
                 ],
-                "summary": "Find available delivery options",
-                "description": "Returns available delivery options from source to target address",
+                "summary": "Provides available delivery options for a given pair of addresses (source, target).",
+                "description": "Looks up for available delivery options that apply to the path from source address to target address. Provides a list of options which detail the window of delivery and the cut-off and pick-up points.",
                 "parameters": [
                     {
                         "name": "source_address.country_code",
@@ -146,8 +146,8 @@
                         "apiKeyOutgoing": []
                     }
                 ],
-                "summary": "Creates delivery order",
-                "description": "Creates delivery order on carrier and returns identifier of object in carrier system",
+                "summary": "Creates a new delivery order",
+                "description": "Creates a delivery order on the carrier and returns an identifier and tracking url of the new object in carrier system. THe identifier is unique to the carrier.",
                 "parameters": [
                     {
                         "in": "body",
@@ -188,8 +188,8 @@
                         "apiKeyOutgoing": []
                     }
                 ],
-                "summary": "Cancel delivery order",
-                "description": "Cancel delivery order on carrier side",
+                "summary": "Cancel a delivery order",
+                "description": "Cancel an existing delivery order. LDN will use this endpoint to inform the carrier that a delivery has to be canceled on the carrier side.",
                 "parameters": [
                     {
                         "in": "path",
@@ -222,16 +222,26 @@
                         "apiKeyIncoming": []
                     }
                 ],
-                "summary": "Tour Events",
-                "description": "blablah",
+                "summary": "Notify of a new Tour Event",
+                "description": "The carrier notifies LDN of a Tour Event. Creates an incoming tour event with a tour callback.",
                 "parameters": [
                     {
                         "in": "body",
                         "name": "TourEvent",
-                        "description": "Events which are tour related",
+                        "description": "Tour related event",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/TourEvent"
+                            "title": "TourEvent:Event",
+                            "description": "It is one of the following options. (Specifier should be \"oneOf\" instead of \"allOf\" waits for https://github.com/OAI/OpenAPI-Specification/issues/333)",
+                            "type": "object",
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/TourEvent:Event:TourCalculatedEvent"
+                                },
+                                {
+                                    "$ref": "#/definitions/TourEvent:Event:TourDispatchedEvent"
+                                }
+                            ]
                         }
                     }
                 ],
@@ -248,7 +258,7 @@
                 }
             }
         },
-        "/delivery-order-events": {
+        "/order-events": {
             "post": {
                 "tags": [
                     "incoming"
@@ -258,8 +268,8 @@
                         "apiKeyIncoming": []
                     }
                 ],
-                "summary": "Delivery order event",
-                "description": "Notifies external system about delivery order state changes",
+                "summary": "Create a Delivery order event",
+                "description": "Notifies LDN about delivery order state changes in carrier such as failure.",
                 "parameters": [
                     {
                         "in": "body",
@@ -268,11 +278,11 @@
                         "required": true,
                         "schema": {
                             "title": "DeliveryOrder:Event",
-                            "description": "Should be oneOf instead(waits for https://github.com/OAI/OpenAPI-Specification/issues/333)",
+                            "description": "It is one of the following options. (Specifier should be \"oneOf\" instead of \"allOf\" waits for https://github.com/OAI/OpenAPI-Specification/issues/333)",
                             "type": "object",
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/DeliveryOrder:Event:Deliverd"
+                                    "$ref": "#/definitions/DeliveryOrder:Event:Delivered"
                                 },
                                 {
                                     "$ref": "#/definitions/DeliveryOrder:Event:Failed"
@@ -328,35 +338,12 @@
         }
     },
     "definitions": {
-        "TourEvent": {
-            "description": "Tour Callback which groups orders which are picked up together and delivered together by the same courier.",
-            "properties": {
-                "id": {
-                    "type": "string",
-                    "description": "Unique identifier of the tour."
-                },
-                "courier": {
-                    "$ref": "#/definitions/Courier"
-                },
-                "order_ids": {
-                    "description": "Ids of orders, related to notified delivery order",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "id",
-                "order_ids"
-            ]
-        },
         "Courier": {
-            "description": "Defines the driver who will pick up and deliver a delivery order related to tour",
+            "description": "Defines the driver who will pick up a tour and deliver all orders related to the tour.",
             "properties": {
                 "id": {
                     "type": "string",
-                    "description": "Unique identifier which identifies the courier"
+                    "description": "Unique identifier of the courier."
                 },
                 "name": {
                     "type": "string",
@@ -368,7 +355,7 @@
             ]
         },
         "DeliveryOption": {
-            "description": "Delivery option",
+            "description": "Delivery option for a package. Basic information regarding delivery window, cut off and pic up points.",
             "properties": {
                 "id": {
                     "type": "string",
@@ -377,22 +364,22 @@
                 "cut_off": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Cut off time (ISO-8601) for order modification / cancelation"
+                    "description": "Cut off time for order modification / cancelation"
                 },
                 "pick_up": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Scheduled pick up time (ISO-8601)"
+                    "description": "Scheduled pick-up time"
                 },
                 "delivery_from": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Earliest possible delivery time (ISO-8601)"
+                    "description": "Earliest possible delivery time"
                 },
                 "delivery_to": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Latest possible delivery time (ISO-8601)"
+                    "description": "Latest possible delivery time"
                 }
             },
             "required": [
@@ -404,7 +391,7 @@
             ]
         },
         "DeliveryAddress": {
-            "description": "Delivery address (source/target)",
+            "description": "Delivery address, could be either source or target.",
             "properties": {
                 "contact_name": {
                     "type": "string",
@@ -412,7 +399,7 @@
                 },
                 "address_line": {
                     "type": "string",
-                    "description": "Street with house number"
+                    "description": "Street name with house number."
                 },
                 "zip_code": {
                     "type": "string",
@@ -424,11 +411,11 @@
                 },
                 "country_code": {
                     "type": "string",
-                    "description": "Country ISO Code"
+                    "description": "Country Code (e.g. Germany, DE)"
                 },
                 "comment": {
                     "type": "string",
-                    "description": "Address comment, e.g. c/o, additional info"
+                    "description": "Address comment, e.g. c/o, additional info or notes"
                 },
                 "phone": {
                     "type": "string",
@@ -452,7 +439,7 @@
             "properties": {
                 "incoming_id": {
                     "type": "string",
-                    "description": "Delivery order identifier in calling system"
+                    "description": "Delivery order identifier in carrier's system"
                 },
                 "delivery_option": {
                     "$ref": "#/definitions/DeliveryOption"
@@ -476,7 +463,7 @@
             "properties": {
                 "id": {
                     "type": "string",
-                    "description": "Delivery order identifier in called system"
+                    "description": "Delivery order identifier in carrier's system"
                 },
                 "tracking_url": {
                     "type": "string",
@@ -486,6 +473,105 @@
             },
             "required": [
                 "id"
+            ]
+        },
+        "TourEvent:Event": {
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier of the tour."
+                },
+                "event_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Event Time"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Type of the callback",
+                    "enum": [
+                        "calculated",
+                        "dispatched"
+                    ]
+                }
+            },
+            "required": [
+                "event_time",
+                "type",
+                "id"
+            ]
+        },
+        "TourEvent:Event:TourCalculatedEvent": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/TourEvent:Event"
+                },
+                {
+                    "type": "object",
+                    "title": "#define(type=tour_calculated)",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of the callback",
+                            "enum": [
+                                "calculated"
+                            ]
+                        },
+                        "courier": {
+                            "$ref": "#/definitions/Courier"
+                        },
+                        "order_ids": {
+                            "description": "Identifiers of the notified orders",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "pick_up_from": {
+                            "description": "Defines the time from when the related orders will be picked up",
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "pick_up_until": {
+                            "description": "Defines the time until when the related orders will be picked up",
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    },
+                    "required": [
+                        "order_ids",
+                        "pick_up_from",
+                        "pick_up_until"
+                    ]
+                }
+            ]
+        },
+        "TourEvent:Event:TourDispatchedEvent": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/TourEvent:Event"
+                },
+                {
+                    "type": "object",
+                    "title": "#define(type=tour_dispatched)",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of the callback",
+                            "enum": [
+                                "dispatched"
+                            ]
+                        },
+                        "courier": {
+                            "$ref": "#/definitions/Courier"
+                        }
+                    },
+                    "required": [
+                        "courier"
+                    ]
+                }
             ]
         },
         "DeliveryOrder:Event": {
@@ -541,6 +627,16 @@
                     "type": "object",
                     "title": "#define(time_window)",
                     "properties": {
+                        "pick_up_from": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Earliest expected concrete time of pickup promise"
+                        },
+                        "pick_up_until": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Latest expected concrete time of pickup promise"
+                        },
                         "delivery_from": {
                             "type": "string",
                             "format": "date-time",
@@ -605,7 +701,7 @@
                 }
             ]
         },
-        "DeliveryOrder:Event:Deliverd": {
+        "DeliveryOrder:Event:Delivered": {
             "type": "object",
             "allOf": [
                 {
@@ -676,13 +772,13 @@
                 },
                 {
                     "type": "object",
-                    "title": "#define(resaon)",
+                    "title": "#define(reason)",
                     "properties": {
                         "reason": {
                             "type": "string",
                             "description": "Delivery order fail reason",
                             "enum": [
-                                "acceptance_refused",
+                                "refused",
                                 "address_not_found",
                                 "recipient_not_found_at_address",
                                 "business_closed",
@@ -735,7 +831,7 @@
             ]
         },
         "Problem": {
-            "description": "Problem details(https://tools.ietf.org/html/rfc7807)",
+            "description": "Problem details description (see https://tools.ietf.org/html/rfc7807)",
             "properties": {
                 "type": {
                     "type": "string",
