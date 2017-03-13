@@ -20,8 +20,8 @@ import javax.inject.Inject
 @SpringUI(path = "/")
 class MainUI : UI() {
     @Override
-    override protected fun init(request: VaadinRequest) {
-        setContent(Label("DEKU UI."));
+    override fun init(request: VaadinRequest) {
+        content = Label("DEKU UI.")
     }
 }
 
@@ -31,8 +31,7 @@ class MainUI : UI() {
  */
 @Title("Depots")
 @Theme("deku")
-@SpringUI(path = "/depots/")
-public class DepotsUI : UI() {
+@SpringUI(path = "/depots/") class DepotsUI : UI() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -43,8 +42,8 @@ public class DepotsUI : UI() {
     val grid = Grid()
 
     @Override
-    override protected fun init(request: VaadinRequest) {
-        configureComponents();
+    override fun init(request: VaadinRequest) {
+        configureComponents()
 
         // Build layout
         val title = Label("Depots")
@@ -56,19 +55,19 @@ public class DepotsUI : UI() {
         titleBar.defaultComponentAlignment = Alignment.MIDDLE_CENTER
         titleBar.setComponentAlignment(title, Alignment.MIDDLE_CENTER)
 
-        val actionBarLayout = HorizontalLayout(filter);
-        actionBarLayout.setWidth("100%");
-        filter.setWidth("100%");
-        actionBarLayout.setExpandRatio(filter, 1.0F);
+        val actionBarLayout = HorizontalLayout(filter)
+        actionBarLayout.setWidth("100%")
+        filter.setWidth("100%")
+        actionBarLayout.setExpandRatio(filter, 1.0F)
 
-        val main = VerticalLayout(titleBar, actionBarLayout, grid);
-        main.setSizeFull();
-        grid.setSizeFull();
-        main.setExpandRatio(grid, 1.0F);
+        val main = VerticalLayout(titleBar, actionBarLayout, grid)
+        main.setSizeFull()
+        grid.setSizeFull()
+        main.setExpandRatio(grid, 1.0F)
 
         val hLayout = HorizontalLayout(main)
-        hLayout.setSizeFull();
-        hLayout.setExpandRatio(main, 1.0F);
+        hLayout.setSizeFull()
+        hLayout.setExpandRatio(main, 1.0F)
 
         val mainLayout = CustomLayout("main")
         mainLayout.setSizeFull()
@@ -78,23 +77,22 @@ public class DepotsUI : UI() {
         mainLayout.addComponent(hLayout, "main-container")
 
         // Split and allow resizing
-        setContent(hLayout);
+        content = hLayout
     }
 
     private fun configureComponents() {
         filter.textChangeEventMode = AbstractTextField.TextChangeEventMode.EAGER
-        filter.setInputPrompt("Filter depots..");
-        filter.addTextChangeListener({ e -> refresh(e.getText()) })
+        filter.inputPrompt = "Filter depots.."
+        filter.addTextChangeListener({ e -> refresh(e.text) })
 
         val qStation = QMstStation.mstStation
-        grid.setContainerDataSource(BeanItemContainer(MstStation::class.java));
+        grid.containerDataSource = BeanItemContainer(MstStation::class.java)
         grid.setColumnOrder(
                 qStation.stationNr.metadata.name,
                 qStation.address1.metadata.name,
                 qStation.address2.metadata.name,
                 qStation.sector.metadata.name,
                 qStation.street.metadata.name,
-                qStation.houseNr.metadata.name,
                 qStation.houseNr.metadata.name,
                 qStation.city.metadata.name,
                 qStation.country.metadata.name,
@@ -114,16 +112,16 @@ public class DepotsUI : UI() {
         grid.removeColumn(qStation.strang.metadata.name)
         grid.removeColumn(qStation.ustid.metadata.name)
 
-        grid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        refresh();
+        grid.setSelectionMode(Grid.SelectionMode.SINGLE)
+        refresh()
     }
 
     fun refresh() {
-        refresh(filter.getValue());
+        refresh(filter.value)
     }
 
     private fun refresh(stringFilter: String) {
-        grid.setContainerDataSource(BeanItemContainer(
-                MstStation::class.java, stationRepository.findWithQuery(stringFilter)));
+        grid.containerDataSource = BeanItemContainer(
+                MstStation::class.java, stationRepository.findWithQuery(stringFilter))
     }
 }
