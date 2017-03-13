@@ -3,16 +3,15 @@ package sx.android.aidc
 import android.content.Context
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
-import com.jakewharton.rxbinding.view.RxView
+import com.jakewharton.rxbinding2.view.RxView
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
-import com.trello.rxlifecycle.RxLifecycle
-import com.trello.rxlifecycle.android.RxLifecycleAndroid
+import com.trello.rxlifecycle2.RxLifecycle
+import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import org.slf4j.LoggerFactory
-import rx.Subscription
-import rx.subjects.BehaviorSubject
+import io.reactivex.subjects.BehaviorSubject
 import sx.rx.observableRx
 
 /**
@@ -41,7 +40,7 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
 
             this@CameraAidcReader.enabledSubject
                     .compose(RxLifecycleAndroid.bindView(this))
-                    .doOnUnsubscribe {
+                    .doOnDispose {
                         this.pause()
                     }
                     .subscribe {

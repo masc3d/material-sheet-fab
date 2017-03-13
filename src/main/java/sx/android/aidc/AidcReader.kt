@@ -1,14 +1,13 @@
 package sx.android.aidc
 
-import com.trello.rxlifecycle.LifecycleProvider
-import com.trello.rxlifecycle.android.ActivityEvent
-import com.trello.rxlifecycle.android.FragmentEvent
-import com.trello.rxlifecycle.kotlin.bindUntilEvent
+import com.trello.rxlifecycle2.LifecycleProvider
+import com.trello.rxlifecycle2.android.ActivityEvent
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.slf4j.LoggerFactory
-import rx.subjects.BehaviorSubject
-import rx.subjects.PublishSubject
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import sx.rx.observableRx
-import sx.rx.synchronized
 
 /**
  * Abstract barcode reader
@@ -69,22 +68,22 @@ abstract class AidcReader {
     /**
      * Barcode reader event
      */
-    val readEvent by lazy { this.readEventSubject.asObservable() }
-    protected val readEventSubject by lazy { PublishSubject.create<ReadEvent>().synchronized() }
+    val readEvent by lazy { this.readEventSubject.hide() }
+    protected val readEventSubject by lazy { PublishSubject.create<ReadEvent>().toSerialized() }
 
     //region Lifecycle support
     /**
      * Observable for binding to rxlifecycle
      */
     private val lifecycle by lazy {
-        PublishSubject.create<Unit>().asObservable()
+        PublishSubject.create<Unit>().hide()
                 .doOnSubscribe {
                     if (bindRefCount == 0)
                         this.onBind()
                     bindRefCount++
                     log.trace("Bind ref count [${bindRefCount}]")
                 }
-                .doOnUnsubscribe {
+                .doOnDispose {
                     bindRefCount--
                     if (bindRefCount == 0)
                         this.onUnbind()
