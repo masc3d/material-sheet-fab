@@ -82,9 +82,14 @@ dependencies {
     provided(
             // Persistence
             "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
+
             // Swagger for json doc
             "io.swagger:swagger-annotations:$v_swagger",
+
+            // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
+
             // ActiveMQ
             "org.apache.activemq:activemq-broker:$v_activemq",
             "org.apache.activemq:activemq-kahadb-store:$v_activemq",
@@ -113,11 +118,14 @@ dependencies {
             // HTTP support
             "org.apache.httpcomponents:httpclient:$v_apache_httpclient",
             "com.thoughtworks.xstream:xstream:$v_xstream",
+
             // Spring
             "org.springframework:spring-jms:$v_spring",
+
             // RESTeasy client
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
             "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
+
             // Jersey REST client
             "org.glassfish.jersey.core:jersey-client:$v_jersey",
             "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey"
@@ -132,4 +140,14 @@ dependencies {
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
     )
+}
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                details.useVersion v_jackson
+            }
+        }
+    }
 }

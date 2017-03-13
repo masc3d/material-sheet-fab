@@ -63,13 +63,19 @@ dependencies {
     provided(
             // Swagger for json doc
             "io.swagger:swagger-annotations:$v_swagger",
+
+            // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
+
             // JAX-RS
             "javax.ws.rs:javax.ws.rs-api:2.0.1",
+
             // REST
             "com.netflix.feign:feign-core:$v_feign",
             "com.netflix.feign:feign-jackson:$v_feign",
             "com.netflix.feign:feign-jaxrs:$v_feign",
+
             // YAML
             "org.yaml:snakeyaml:$v_snakeyaml"
     )
@@ -84,3 +90,14 @@ dependencies {
             "com.netflix.feign:feign-jaxrs:$v_feign",
     )
 }
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                details.useVersion v_jackson
+            }
+        }
+    }
+}
+

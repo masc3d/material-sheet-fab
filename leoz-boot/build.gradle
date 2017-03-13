@@ -55,6 +55,16 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: v_junit
 }
 
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                details.useVersion v_jackson
+            }
+        }
+    }
+}
+
 sourceSets {
     // Add resources (like .fxml files) from souce path.
     // Non-standard, but nicer to keep .fxml files together with classes

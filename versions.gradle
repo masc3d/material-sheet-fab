@@ -4,7 +4,7 @@ buildscript {
         v_jvm = '25.121'
         // Versions
         v_activemq = '5.14.4'
-        v_artemis = '1.5.3'
+        v_artemis = '1.5.4'
         v_apache_cxf = '3.1.10'
         v_apache_httpclient = '4.5.3'
         v_commons_lang = '3.5'
@@ -19,7 +19,7 @@ buildscript {
         v_guava = '21.0'
         v_h2 = '1.4.193'
         v_ini4j = '0.5.4'
-        v_jackson = '2.8.6'
+        v_jackson = '2.8.7'
         v_javassist = '3.20.0-GA'
         v_javax_servlet = '3.1.0'
         v_javax_persistence = '2.1.1'

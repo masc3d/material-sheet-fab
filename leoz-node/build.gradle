@@ -188,9 +188,9 @@ dependencies {
             // CXF (client)
             "org.apache.cxf:cxf-spring-boot-starter-jaxws:$v_apache_cxf",
 
-            "com.paypal.springboot:resteasy-spring-boot-starter:2.2.1-RELEASE",
-
             // jackson JSON serializer
+            "com.fasterxml.jackson.core:jackson-core:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
             "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
 
@@ -311,6 +311,16 @@ dependencies {
                 exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
             }
     )
+}
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                details.useVersion v_jackson
+            }
+        }
+    }
 }
 
 flyway {

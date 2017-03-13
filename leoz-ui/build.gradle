@@ -88,6 +88,16 @@ dependencies {
     )
 }
 
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                details.useVersion v_jackson
+            }
+        }
+    }
+}
+
 //task proguard(type: proguard.gradle.ProGuardTask) {
 //    dependsOn(shadowJar)
 //    outputs.upToDateWhen { false }

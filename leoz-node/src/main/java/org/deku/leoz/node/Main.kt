@@ -5,7 +5,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
-import com.paypal.springboot.resteasy.ResteasySpringBootConfig
 import com.vaadin.spring.boot.VaadinAutoConfiguration
 import org.deku.leoz.node.config.ApplicationConfiguration
 import org.deku.leoz.node.config.LogConfiguration
@@ -53,7 +52,6 @@ import org.springframework.core.annotation.Order
          * @link WebContextInitializer
          */
         ResteasyAutoConfiguration::class,
-//        ResteasySpringBootConfig::class,
 
         /** Web mvc & dispatcher auto configuration */
         HttpMessageConvertersAutoConfiguration::class,

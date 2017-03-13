@@ -84,6 +84,21 @@ dependencies {
     )
 }
 
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            // JOOQ plugin comes with some rather intrusive configuration (`jooqRuntime`) which enforces downgrade of jooq in distribution packages.
+            // Only way to work around this is to hard override this dependency group (apparently)
+            if (details.requested.group == 'org.jooq') {
+                details.useVersion v_jooq
+            }
+            else if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+                details.useVersion v_jackson
+            }
+        }
+    }
+}
+
 // SQL migrations (used for flyway eg.)
 def FLYWAY_MIGRATION_DIR = new File(project.rootDir, 'leoz-central-schema/sql')
 
@@ -171,16 +186,3 @@ distributions {
 packager {
     title = "Leoz Central"
 }
-
-configurations.all {
-    resolutionStrategy {
-        eachDependency { DependencyResolveDetails details ->
-            // JOOQ plugin comes with some rather intrusive configuration (`jooqRuntime`) which enforces downgrade of jooq in distribution packages.
-            // Only way to work around this is to hard override this dependency group (apparently)
-            if (details.requested.group == 'org.jooq') {
-                details.useVersion v_jooq
-            }
-        }
-    }
-}
-
