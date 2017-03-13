@@ -114,12 +114,6 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             val shipmentUnit = ShipmentUnit()
             shipmentUnit.weight = "1"
 
-            val service = Service()
-            service.serviceName = "service_1200"
-
-            val shipmentService = ShipmentService()
-            shipmentService.service = service
-
             val shipment = Shipment()
             shipment.shipper = shipper
             shipment.referenceNumber.add(fpcsRecord.customersReference)
@@ -127,7 +121,6 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             shipment.consignee = consignee
             shipment.shipper = shipper
             shipment.shipmentUnit.add(shipmentUnit)
-            shipment.service.add(shipmentService)
 
             val returnLabels = ReturnLabels()
             returnLabels.templateSet = TemplateSet.NONE
@@ -250,13 +243,14 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             order.cancelRequested = -1
             order.store()
 
-            val cancelResponse: CancelParcelResponse = glsShipmentProcessingService.cancelParcelByID(order.glsParcelno.toString())
+            val cancelResponse: CancelParcelResponse = glsShipmentProcessingService.cancelParcelByID(order.glsTrackid)
 
             if (cancelResponse.result != null) {
-                if (cancelResponse.result.equals("CANCELLATION_PENDING")) { //TODO Check for other possible results
-
+                if (cancelResponse.result.equals("CANCELLATION_PENDING", ignoreCase = true) || cancelResponse.result.equals("CANCELLED", ignoreCase = true)) { //TODO Check for other possible results
+                    return Response.ok().build()
+                } else {
+                    throw BadRequestException("Cancellation failed. Response: [" + cancelResponse.result + "]")
                 }
-                return Response.ok().build()
             }
 
             throw BadRequestException()
