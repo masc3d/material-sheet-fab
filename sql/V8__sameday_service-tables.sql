@@ -1,3 +1,5 @@
+USE `dekuclient`;
+
 CREATE TABLE `sdd_status` (
   `KZ_Statuserzeuger` char(1) NOT NULL DEFAULT 'E',
   `Packstuecknummer` double unsigned zerofill NOT NULL DEFAULT '0000000000000000000000',
