@@ -2,7 +2,7 @@ package sx.net
 
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import rx.lang.kotlin.subscribeBy
+import io.reactivex.rxkotlin.subscribeBy
 import sx.Copyable
 import sx.io.serialization.Serializable
 import sx.time.Duration
@@ -43,9 +43,8 @@ class UdpDiscoveryServicePrototype {
 //        }
 
         ds.discoverFirst({ true }, Duration.ofSeconds(3))
-                .first()
                 .subscribeBy(
-                        onNext = {
+                        onSuccess = {
                             log.info("DISCOVERED ${it}")
                         },
                         onError = {
