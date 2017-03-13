@@ -88,8 +88,7 @@ open class UpdateConfiguration {
      */
     @PropertyKey(PropertyKeys.BUNDLE_UPDATE_SERVICE)
     class State(
-            var versionAlias: String = "") {
-    }
+            var versionAlias: String = "")
 
     /**
      * State of this configuration
@@ -127,6 +126,7 @@ open class UpdateConfiguration {
     open fun bundleUpdateService(): BundleUpdateService {
         val rsyncHostDiffers =
                 !this.settings.rsyncHost.isNullOrEmpty() &&
+                !this.remotePeerSettings.host.isNullOrEmpty() &&
                 this.settings.rsyncHost != this.remotePeerSettings.host
         // Setup
         val updateService = BundleUpdateService(
@@ -156,7 +156,7 @@ open class UpdateConfiguration {
         updateService.enabled = this.settings.enabled
 
         // Event handlers
-        updateService.infoReceived.subscribe() {
+        updateService.infoReceived.subscribe {
             if (it.bundleName == this.application.name) {
                 // Store the version alias persistently.
                 this.state.versionAlias = it.bundleVersionAlias
