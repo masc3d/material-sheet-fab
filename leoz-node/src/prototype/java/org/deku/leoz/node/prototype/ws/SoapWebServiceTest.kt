@@ -2,11 +2,8 @@ package org.deku.leoz.node.prototype.ws
 
 import org.deku.leoz.node.config.SoapClientConfiguration
 import org.deku.leoz.node.test.config.ApplicationTestConfiguration
-import org.deku.leoz.ws.blz.BLZService
 import org.deku.leoz.ws.blz.BLZServicePortType
 import org.deku.leoz.ws.gls.shipment.CancelParcelResponse
-import org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
-import org.deku.leoz.ws.gls.shipment.ShipmentProcessingService
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,9 +11,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import javax.inject.Inject
-import javax.ws.rs.BadRequestException
-import javax.ws.rs.core.Response
-import javax.xml.namespace.QName
 import javax.xml.ws.BindingProvider
 
 
@@ -46,7 +40,11 @@ class SoapWebServiceTest {
     fun testCancelParcelService() {
 
         val bindingProvider = this.glsShipmentProcessingService as BindingProvider
-        bindingProvider.requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://extest-cs-backend.gls-group.eu:8080/backend/ShipmentProcessingService")
+        bindingProvider.requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                "http://extest-cs-backend.gls-group.eu:8080/backend/ShipmentProcessingService/ShipmentProcessingPortType")
+
+        bindingProvider.requestContext.put(BindingProvider.USERNAME_PROPERTY, "tag")
+        bindingProvider.requestContext.put(BindingProvider.PASSWORD_PROPERTY, "wrapper")
 
         val cancelResponse: CancelParcelResponse = glsShipmentProcessingService.cancelParcelByID("Z8TU3MWG")
 
