@@ -42,12 +42,12 @@ buildscript {
         v_snappy = '1.1.2.4'
         v_snakeyaml = '1.18'
         v_spring = '4.3.7.RELEASE'
-        v_spring_data_jpa = '1.11.0.RELEASE'
-        v_spring_data_commons = '1.13.0.RELEASE'
+        v_spring_data_jpa = '1.11.1.RELEASE'
+        v_spring_data_commons = '1.13.1.RELEASE'
         v_springboot = '1.5.2.RELEASE'
         v_sshd = '1.4.0'
         v_swagger = '1.5.12'
-        v_vaadin = '7.7.6'
+        v_vaadin = '7.7.7'
         v_xstream = '1.4.9'
     }
 }
