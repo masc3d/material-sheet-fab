@@ -234,7 +234,7 @@
                             "title": "TourEvent:Event",
                             "description": "It is one of the following options. (Specifier should be \"oneOf\" instead of \"allOf\" waits for https://github.com/OAI/OpenAPI-Specification/issues/333)",
                             "type": "object",
-                            "allOf": [
+                            "oneOf": [
                                 {
                                     "$ref": "#/definitions/TourEvent:Event:TourCalculatedEvent"
                                 },
@@ -280,7 +280,7 @@
                             "title": "DeliveryOrder:Event",
                             "description": "It is one of the following options. (Specifier should be \"oneOf\" instead of \"allOf\" waits for https://github.com/OAI/OpenAPI-Specification/issues/333)",
                             "type": "object",
-                            "allOf": [
+                            "oneOf": [
                                 {
                                     "$ref": "#/definitions/DeliveryOrder:Event:Delivered"
                                 },
@@ -503,7 +503,7 @@
         },
         "TourEvent:Event:TourCalculatedEvent": {
             "type": "object",
-            "allOf": [
+            "oneOf": [
                 {
                     "$ref": "#/definitions/TourEvent:Event"
                 },
@@ -549,7 +549,7 @@
         },
         "TourEvent:Event:TourDispatchedEvent": {
             "type": "object",
-            "allOf": [
+            "oneOf": [
                 {
                     "$ref": "#/definitions/TourEvent:Event"
                 },
@@ -606,7 +606,7 @@
         },
         "DeliveryOrder:Event:DeliveryPromiseUpdated": {
             "type": "object",
-            "allOf": [
+            "oneOf": [
                 {
                     "$ref": "#/definitions/DeliveryOrder:Event"
                 },
@@ -657,7 +657,7 @@
         },
         "DeliveryOrder:Event:Returned": {
             "type": "object",
-            "allOf": [
+            "oneOf": [
                 {
                     "$ref": "#/definitions/DeliveryOrder:Event"
                 },
@@ -678,7 +678,7 @@
         },
         "DeliveryOrder:Event:PickedUp": {
             "type": "object",
-            "allOf": [
+            "oneOf": [
                 {
                     "$ref": "#/definitions/DeliveryOrder:Event"
                 },
@@ -703,7 +703,7 @@
         },
         "DeliveryOrder:Event:Delivered": {
             "type": "object",
-            "allOf": [
+            "oneOf": [
                 {
                     "$ref": "#/definitions/DeliveryOrder:Event"
                 },
@@ -750,7 +750,7 @@
         },
         "DeliveryOrder:Event:Failed": {
             "type": "object",
-            "allOf": [
+            "oneOf": [
                 {
                     "$ref": "#/definitions/DeliveryOrder:Event"
                 },
@@ -795,7 +795,7 @@
         },
         "DeliveryOrder:Event:Canceled": {
             "type": "object",
-            "allOf": [
+            "oneOf": [
                 {
                     "$ref": "#/definitions/DeliveryOrder:Event"
                 },
