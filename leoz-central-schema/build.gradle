@@ -6,7 +6,8 @@ import org.flywaydb.gradle.task.FlywayRepairTask
 import org.flywaydb.gradle.task.FlywayValidateTask
 
 ext {
-    migrations = [
+    // Flyway instances. A set of flyway tasks will be created for each one.
+    instances = [
             leox: [
                     url     : 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false',
                     user    : 'root',
@@ -72,7 +73,7 @@ def createFlywayExtension(properties) {
     return extension
 }
 
-ext.migrations.each { k, properties ->
+ext.instances.each { k, properties ->
     def name = k.capitalize()
     task "flyway${name}Info"(type: FlywayInfoTask) {
         extension = createFlywayExtension(properties)
