@@ -74,7 +74,9 @@
               docExpansion: "none",
               jsonEditor: false,
               defaultModelRendering: 'schema',
-              showRequestHeaders: false
+              showRequestHeaders: false,
+              // masc20160224. disabled validator, as schema does not contain support for position attribute, resulting in error
+              validatorUrl: false
           });
 
           window.swaggerUi.load();
