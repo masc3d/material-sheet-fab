@@ -23,9 +23,6 @@ class TestService : org.deku.leoz.rest.service.internal.v1.TestService {
     @Inject
     private lateinit var glsShipmentProcessingService: org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
 
-    @Inject
-    private lateinit var glsTrackingService: org.deku.leoz.ws.gls.tracking.Tracking
-
     /**
      *
      */

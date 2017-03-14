@@ -21,7 +21,6 @@ import javax.inject.Named
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
-import javax.xml.ws.BindingProvider
 
 /**
  * Zalanda carrier integration service
@@ -38,10 +37,6 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
 
     @Inject
     private lateinit var glsShipmentProcessingService: org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
-
-    val soapURL: String = "http://extest-cs-backend.gls-group.eu:8080/backend/ShipmentProcessingService/ShipmentProcessingPortType"
-    val soapUser: String = "tag"
-    val soapPasswd: String = "wrapper"
 
     /**
      *
@@ -101,14 +96,6 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
              * Update local record with GLS parcel number which is returned by the FPCS service.
              * Return the obtained parcel number to the originally "requester" of this service (Zalando).
              */
-
-            val bindingProvider = this.glsShipmentProcessingService as BindingProvider
-            bindingProvider.requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-                    soapURL)
-
-            bindingProvider.requestContext.put(BindingProvider.USERNAME_PROPERTY, soapUser)
-            bindingProvider.requestContext.put(BindingProvider.PASSWORD_PROPERTY, soapPasswd)
-
             val consignee = Consignee()
             val consAddr = Address()
             consAddr.city = fpcsRecord.cityTo
@@ -254,13 +241,6 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
 
             order.cancelRequested = -1
             order.store()
-
-            val bindingProvider = this.glsShipmentProcessingService as BindingProvider
-            bindingProvider.requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-                    soapURL)
-
-            bindingProvider.requestContext.put(BindingProvider.USERNAME_PROPERTY, soapUser)
-            bindingProvider.requestContext.put(BindingProvider.PASSWORD_PROPERTY, soapPasswd)
 
             val cancelResponse: CancelParcelResponse = glsShipmentProcessingService.cancelParcelByID(order.glsTrackid)
 

@@ -52,6 +52,13 @@ remote:
        native-port: 13001
     rsync:
        port: 13002
+    # Remote gls endpoints
+    gls:
+       soap:
+          shipment-processing:
+             namespace: 'http://extest-cs-backend.gls-group.eu:8080/backend/ShipmentProcessingService'
+             username: 'tag'
+             password: 'wrapper'
 
 # Rsync server
 rsync:

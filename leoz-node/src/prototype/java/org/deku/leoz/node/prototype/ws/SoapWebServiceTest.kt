@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import javax.inject.Inject
-import javax.xml.ws.BindingProvider
 
 
 /**
@@ -38,14 +37,6 @@ class SoapWebServiceTest {
 
     @Test
     fun testCancelParcelService() {
-
-        val bindingProvider = this.glsShipmentProcessingService as BindingProvider
-        bindingProvider.requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-                "http://extest-cs-backend.gls-group.eu:8080/backend/ShipmentProcessingService/ShipmentProcessingPortType")
-
-        bindingProvider.requestContext.put(BindingProvider.USERNAME_PROPERTY, "tag")
-        bindingProvider.requestContext.put(BindingProvider.PASSWORD_PROPERTY, "wrapper")
-
         val cancelResponse: CancelParcelResponse = glsShipmentProcessingService.cancelParcelByID("Z8TU3MWG")
 
         if (cancelResponse.result != null) {
