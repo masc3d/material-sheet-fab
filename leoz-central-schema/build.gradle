@@ -13,13 +13,13 @@ ext {
                     user    : 'root',
                     password: 'dekudb',
                     baseline: 1,
-                    target  : 5
+                    target  : 11
             ],
             dev : [
                     url     : 'jdbc:mysql://10.0.10.10:3306?useSSL=false',
                     user    : 'root',
                     password: 'root',
-                    target  : 6
+                    target  : 11
             ]
     ]
 }
