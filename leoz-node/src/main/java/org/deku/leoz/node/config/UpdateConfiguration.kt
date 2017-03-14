@@ -126,7 +126,6 @@ open class UpdateConfiguration {
     open fun bundleUpdateService(): BundleUpdateService {
         val rsyncHostDiffers =
                 !this.settings.rsyncHost.isNullOrEmpty() &&
-                !this.remotePeerSettings.host.isNullOrEmpty() &&
                 this.settings.rsyncHost != this.remotePeerSettings.host
         // Setup
         val updateService = BundleUpdateService(
