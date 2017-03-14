@@ -1,12 +1,27 @@
 import org.flywaydb.gradle.FlywayExtension
-import org.flywaydb.gradle.task.FlywayMigrateTask
-import org.flywaydb.gradle.task.FlywayCleanTask
 import org.flywaydb.gradle.task.FlywayInfoTask
 import org.flywaydb.gradle.task.FlywayBaselineTask
+import org.flywaydb.gradle.task.FlywayMigrateTask
 import org.flywaydb.gradle.task.FlywayRepairTask
+import org.flywaydb.gradle.task.FlywayValidateTask
 
-group 'org.deku.leoz'
-version '1.0-SNAPSHOT'
+ext {
+    migrations = [
+            leox: [
+                    url     : 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false',
+                    user    : 'root',
+                    password: 'dekudb',
+                    baseline: 1,
+                    target  : 5
+            ],
+            dev : [
+                    url     : 'jdbc:mysql://10.0.10.10:3306?useSSL=false',
+                    user    : 'root',
+                    password: 'root',
+                    target  : 6
+            ]
+    ]
+}
 
 buildscript {
     ext {
@@ -32,7 +47,6 @@ buildscript {
 
 apply plugin: 'org.flywaydb.flyway'
 
-
 // Remove standard flyway tasks
 tasks.remove(tasks.flywayBaseline)
 tasks.remove(tasks.flywayClean)
@@ -45,71 +59,40 @@ tasks.remove(tasks.flywayValidate)
  * Common flyway extension/parameters
  * @return
  */
- def createFlywayExtension() {
+def createFlywayExtension(properties) {
     def extension = new FlywayExtension()
     extension.driver = ext.DB_MYSQL_JDBC_DRIVER
-    extension.user = 'root'
-    extension.password = 'dekudb'
     extension.schemas = ['dekuclient', 'dekutmp']
     extension.locations = ["filesystem:${ext.FLYWAY_MIGRATION_DIR}"]
+    extension.url = properties['url']
+    extension.user = properties['user']
+    extension.password = properties['password']
+    extension.target = properties['target']
+    extension.baselineVersion = properties['baseline']
     return extension
 }
 
-//
-// Leoz dev database tasks
-//
+ext.migrations.each { k, properties ->
+    def name = k.capitalize()
+    task "flyway${name}Info"(type: FlywayInfoTask) {
+        extension = createFlywayExtension(properties)
+    }
 
-def createFlywayDevExtension() {
-    def extension = this.createFlywayExtension()
-    extension.user = 'root'
-    extension.password = 'root'
-    extension.url = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
-    return extension
-}
+    task "flyway${name}Repair"(type: FlywayRepairTask) {
+        extension = createFlywayExtension(properties)
+    }
 
-task flywayDevInfo(type: FlywayInfoTask) {
-    extension = createFlywayDevExtension()
-}
+    task "flyway${name}Migrate"(type: FlywayMigrateTask) {
+        extension = createFlywayExtension(properties)
+    }
 
-task flywayDevClean(type: FlywayCleanTask) {
-    extension = createFlywayDevExtension()
-}
+    task "flyway${name}Validate"(type: FlywayValidateTask) {
+        extension = createFlywayExtension(properties)
+    }
 
-task flywayDevRepair(type: FlywayRepairTask) {
-    extension = createFlywayDevExtension()
-}
-
-task flywayDevMigrate(type: FlywayMigrateTask) {
-    extension = createFlywayDevExtension()
-    extension.target = 6
-}
-
-//
-// Leoz integration (leox) database tasks
-//
-
-def createFlywayLeoxExtension() {
-	def extension = this.createFlywayExtension()
-	extension.url = 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false'
-    extension.user = 'root'
-    extension.password = 'dekudb'
-    return extension
-}
-
-task flywayLeoxInfo(type: FlywayInfoTask) {
-    extension = createFlywayLeoxExtension()
-}
-
-task flywayLeoxRepair(type: FlywayRepairTask) {
-    extension = createFlywayLeoxExtension()
-}
-
-task flywayLeoxMigrate(type: FlywayMigrateTask) {
-    extension = createFlywayLeoxExtension()
-    extension.target = 5
-}
-
-task flywayLeoxBaseline(type: FlywayBaselineTask) {
-    extension = createFlywayLeoxExtension()
-    extension.baselineVersion = 1
+    if (properties['baseline'] != null) {
+        task "flyway${name}Baseline"(type: FlywayBaselineTask) {
+            extension = createFlywayExtension(properties)
+        }
+    }
 }
