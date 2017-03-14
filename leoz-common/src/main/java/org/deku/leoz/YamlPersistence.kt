@@ -59,31 +59,10 @@ object YamlPersistence {
 
     /**
      * Save object
-     * @param obj Object to save
-     * @param writer Writer to use
-     */
-    fun save(obj: Any, writer: Writer) {
-        val y = this.createYaml()
-        y.dump(obj, writer)
-    }
-
-    /**
-     * Save object
      * @param obj Object to dump
      * @param file File to write to
      */
-    fun save(obj: Any, toFile: File) {
-        OutputStreamWriter(FileOutputStream(toFile)).use {
-            this.save(obj, it)
-        }
-    }
-
-    /**
-     * Save object
-     * @param obj Object to dump
-     * @param file File to write to
-     */
-    fun save(obj: Any, skipNulls: Boolean = false, skipTags: Boolean = false, toFile: File) {
+    fun save(obj: Any, skipNulls: Boolean = false, skipTags: Boolean = true, toFile: File) {
         OutputStreamWriter(FileOutputStream(toFile)).use {
             val y = this.createYaml(org.deku.leoz.YamlPersistence.Representer(skipNulls = skipNulls, skipTags = skipTags))
             it.write(y.dumpAs(obj, Tag.MAP, DumperOptions.FlowStyle.FLOW))

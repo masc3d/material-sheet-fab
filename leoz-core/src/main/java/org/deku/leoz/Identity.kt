@@ -56,7 +56,7 @@ class Identity private constructor(
             var key: String = "",
             var name: String = "") {
 
-        constructor(identity: Identity) : this(identity.key, identity.name) { }
+        constructor(identity: Identity) : this(identity.key, identity.name)
     }
 
     /**
@@ -127,7 +127,7 @@ class Identity private constructor(
      */
     @Synchronized
     fun save(destinationFile: File) {
-        YamlPersistence.save(State(this), destinationFile)
+        YamlPersistence.save(obj = State(this), toFile = destinationFile)
     }
 
     override fun toString(): String {
