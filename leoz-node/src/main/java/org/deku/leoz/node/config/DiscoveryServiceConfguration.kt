@@ -1,9 +1,8 @@
 package org.deku.leoz.node.config
 
-import org.apache.sshd.server.SshServer
+import org.deku.leoz.node.Application
 import org.deku.leoz.service.discovery.DiscoveryInfo
 import org.deku.leoz.service.discovery.DiscoveryService
-import org.deku.leoz.node.Application
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -31,20 +30,17 @@ open class DiscoveryServiceConfguration {
     @Inject
     private lateinit var executorService: ScheduledExecutorService
 
-    @Bean
-    open fun discoveryService(): DiscoveryService {
-        return DiscoveryService(
+    @get:Bean
+    open val discoveryService: DiscoveryService
+        get() = DiscoveryService(
                 executorService = this.executorService,
                 uid = this.application.identity.shortKey,
                 bundleType = this.application.bundleType)
-    }
 
     @PostConstruct
     fun onInitialize() {
-        val discoveryService = this.discoveryService()
-
         // Add service infos
-        discoveryService.addServices(
+        this.discoveryService.addServices(
                 DiscoveryInfo.Service(
                         type = DiscoveryInfo.ServiceType.ACTIVEMQ_NATIVE,
                         port = brokerSettings.nativePort!!),
@@ -59,11 +55,11 @@ open class DiscoveryServiceConfguration {
                         port = SshServerConfiguration.DEFAULT_PORT)
         )
 
-        this.discoveryService().start()
+        this.discoveryService.start()
     }
 
     @PreDestroy
     fun onDestroy() {
-        this.discoveryService().stop()
+        this.discoveryService.stop()
     }
 }

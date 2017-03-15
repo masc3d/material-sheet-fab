@@ -25,10 +25,9 @@ open class RsyncModuleConfiguration {
         const val QUALIFIER = "RsyncModuleConfigurationCentral"
     }
 
-    @Bean
-    open fun transferModule(): Rsync.Module {
-        return Rsync.Module(
+    @get:Bean
+    open val transferModule: Rsync.Module
+        get() = Rsync.Module(
                 RsyncConfiguration.ModuleNames.TRANSFER,
                 storage.transferDirectory)
-    }
 }

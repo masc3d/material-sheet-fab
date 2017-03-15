@@ -10,7 +10,6 @@ import java.time.Duration
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.inject.Inject
-import javax.inject.Named
 import kotlin.properties.Delegates
 
 /**
@@ -52,37 +51,38 @@ open class SshTunnelConfiguration {
     /**
      * SSH tunnel provider
      * */
-    @Bean
-    open fun tunnelProvider(): SshTunnelProvider {
-        val sshHosts = this.settings.hosts.values.map {
-            SshHost(
-                    hostname = it.hostname,
-                    port = it.port,
-                    username = it.username,
-                    password = it.password)
-        }.toMutableList()
+    @get:Bean
+    open val tunnelProvider: SshTunnelProvider
+        get() {
+            val sshHosts = this.settings.hosts.values.map {
+                SshHost(
+                        hostname = it.hostname,
+                        port = it.port,
+                        username = it.username,
+                        password = it.password)
+            }.toMutableList()
 
-        val defaultUsername = this.settings.username
-        val defaultPassword = this.settings.password
-        val defaultPort = this.settings.port
+            val defaultUsername = this.settings.username
+            val defaultPassword = this.settings.password
+            val defaultPort = this.settings.port
 
-        if (defaultUsername != null && defaultPassword != null && defaultPort != null) {
-            sshHosts.add(SshHost(hostname = "",
-                    username = defaultUsername,
-                    password = defaultPassword,
-                    port = defaultPort))
+            if (defaultUsername != null && defaultPassword != null && defaultPort != null) {
+                sshHosts.add(SshHost(hostname = "",
+                        username = defaultUsername,
+                        password = defaultPassword,
+                        port = defaultPort))
+            }
+
+            // Create SSH tunnel provider from settings/application.properties
+            val s = SshTunnelProvider(
+                    localPortRange = IntRange(
+                            this.settings.localPortRangeStart,
+                            this.settings.localPortRangeEnd),
+                    sshHosts = *sshHosts.toTypedArray())
+
+            s.idleTimeout = Duration.ofMinutes(3)
+            return s
         }
-
-        // Create SSH tunnel provider from settings/application.properties
-        val s = SshTunnelProvider(
-                localPortRange = IntRange(
-                        this.settings.localPortRangeStart,
-                        this.settings.localPortRangeEnd),
-                sshHosts = *sshHosts.toTypedArray())
-
-        s.idleTimeout = Duration.ofMinutes(3)
-        return s
-    }
 
     @PostConstruct
     fun onInitialize() {

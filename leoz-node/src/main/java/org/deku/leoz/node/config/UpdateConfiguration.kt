@@ -1,24 +1,20 @@
 package org.deku.leoz.node.config
 
-import sx.packager.BundleInstaller
-import sx.packager.BundleRepository
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.service.update.BundleUpdateService
-import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.repository.system.*
-import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.deku.leoz.rest.RestClient
 import org.deku.leoz.rest.service.internal.v1.BundleService
+import org.deku.leoz.service.update.BundleUpdateService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.jms.Channel
-import sx.rsync.Rsync
+import sx.packager.BundleInstaller
+import sx.packager.BundleRepository
 import sx.ssh.SshTunnelProvider
 import java.util.*
 import java.util.concurrent.ScheduledExecutorService
@@ -122,60 +118,61 @@ open class UpdateConfiguration {
     /**
      * The actual bundle update service
      */
-    @Bean
-    open fun bundleUpdateService(): BundleUpdateService {
-        val rsyncHostDiffers =
-                !this.settings.rsyncHost.isNullOrEmpty() &&
-                this.settings.rsyncHost != this.remotePeerSettings.host
-        // Setup
-        val updateService = BundleUpdateService(
-                executorService = this.executorService,
-                bundleService = { this.bundleServiceProxy },
-                identity = this.application.identity,
-                installer = this.bundleInstaller,
-                remoteRepository = { this.updateRepository },
-                localRepository = this.localBundleRepository,
-                presets = listOf(
-                        BundleUpdateService.Preset(
-                                bundleName = this.application.name,
-                                install = true,
-                                storeInLocalRepository = false,
-                                requiresBoot = true),
-                        BundleUpdateService.Preset(
-                                bundleName = BundleType.LEOZ_UI.value,
-                                install = false,
-                                storeInLocalRepository = true),
-                        BundleUpdateService.Preset(
-                                bundleName = BundleType.LEOZ_BOOT.value,
-                                install = true,
-                                storeInLocalRepository = true)),
-                cleanup = this.settings.cleanup,
-                alwaysQueryRepository = rsyncHostDiffers)
+    @get:Bean
+    open val bundleUpdateService: BundleUpdateService
+        get() {
+            val rsyncHostDiffers =
+                    !this.settings.rsyncHost.isNullOrEmpty() &&
+                            this.settings.rsyncHost != this.remotePeerSettings.host
+            // Setup
+            val updateService = BundleUpdateService(
+                    executorService = this.executorService,
+                    bundleService = { this.bundleServiceProxy },
+                    identity = this.application.identity,
+                    installer = this.bundleInstaller,
+                    remoteRepository = { this.updateRepository },
+                    localRepository = this.localBundleRepository,
+                    presets = listOf(
+                            BundleUpdateService.Preset(
+                                    bundleName = this.application.name,
+                                    install = true,
+                                    storeInLocalRepository = false,
+                                    requiresBoot = true),
+                            BundleUpdateService.Preset(
+                                    bundleName = BundleType.LEOZ_UI.value,
+                                    install = false,
+                                    storeInLocalRepository = true),
+                            BundleUpdateService.Preset(
+                                    bundleName = BundleType.LEOZ_BOOT.value,
+                                    install = true,
+                                    storeInLocalRepository = true)),
+                    cleanup = this.settings.cleanup,
+                    alwaysQueryRepository = rsyncHostDiffers)
 
-        updateService.enabled = this.settings.enabled
+            updateService.enabled = this.settings.enabled
 
-        // Event handlers
-        updateService.infoReceived.subscribe {
-            if (it.bundleName == this.application.name) {
-                // Store the version alias persistently.
-                this.state.versionAlias = it.bundleVersionAlias
-                this.propertyRepository.saveObject(this.state)
+            // Event handlers
+            updateService.infoReceived.subscribe {
+                if (it.bundleName == this.application.name) {
+                    // Store the version alias persistently.
+                    this.state.versionAlias = it.bundleVersionAlias
+                    this.propertyRepository.saveObject(this.state)
+                }
             }
-        }
 
-        return updateService
-    }
+            return updateService
+        }
 
     @PostConstruct
     fun onInitialize() {
         this.state = this.propertyRepository.loadObject(State::class.java)
 
-        this.lifecycleController.registerNetworkDependant(this.bundleUpdateService())
+        this.lifecycleController.registerNetworkDependant(this.bundleUpdateService)
 
         // Register for update notifications (as long as automatic updates are enabled)
         if (this@UpdateConfiguration.settings.automatic) {
             this.messageListenerConfiguration.nodeNotificationListener.addDelegate(
-                    this.bundleUpdateService())
+                    this.bundleUpdateService)
         }
     }
 }

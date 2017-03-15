@@ -22,15 +22,16 @@ open class RsyncModuleConfiguration {
     @Inject
     private lateinit var storage: Storage
 
-    @Bean
-    open fun bundlesModule(): Rsync.Module {
-        // Create bundle entry directories
-        BundleType.values()
-                .map { storage.bundleRepositoryDirectory.resolve(it.value) }
-                .forEach { it.mkdirs() }
+    @get:Bean
+    open val bundlesModule: Rsync.Module
+        get() {
+            // Create bundle entry directories
+            BundleType.values()
+                    .map { storage.bundleRepositoryDirectory.resolve(it.value) }
+                    .forEach { it.mkdirs() }
 
-        return Rsync.Module(
-                org.deku.leoz.config.RsyncConfiguration.ModuleNames.BUNDLES,
-                storage.bundleRepositoryDirectory)
-    }
+            return Rsync.Module(
+                    org.deku.leoz.config.RsyncConfiguration.ModuleNames.BUNDLES,
+                    storage.bundleRepositoryDirectory)
+        }
 }
