@@ -21,6 +21,11 @@ import javax.inject.Named
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
+import java.util.Locale
+import java.text.SimpleDateFormat
+import java.text.DateFormat
+
+
 
 /**
  * Zalanda carrier integration service
@@ -38,12 +43,14 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
     @Inject
     private lateinit var glsShipmentProcessingService: org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
 
+    private val API_KEY: String = "APIKEY"
+
     /**
      *
      */
     override fun postDeliveryOrder(deliveryOrder: DeliveryOrder, authorizationKey: String): NotifiedDeliveryOrder {
 
-        if (authorizationKey != "APIKEY") {
+        if (authorizationKey != API_KEY) {
             throw ServiceException(
                     status = Response.Status.UNAUTHORIZED,
                     entity = Problem())
@@ -154,6 +161,8 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
 
             return NotifiedDeliveryOrder(glsParcelNum)
 
+        } catch (s: ServiceException) {
+            throw s
         } catch(e: Exception) {
             throw BadRequestException(e.message)
         }
@@ -173,7 +182,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             target_address_address_line:
             String, authorizationKey: String): DeliveryOption {
 
-        if (authorizationKey != "APIKEY") {
+        if (authorizationKey != API_KEY) {
             throw ServiceException(status = Response.Status.UNAUTHORIZED, entity = Problem())
         }
 
@@ -196,6 +205,8 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     sddRoute.etod,
                     sddRoute.ltod)
 
+        } catch (s: ServiceException) {
+            throw s
         } catch(e: TooManyRowsException) {
             throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
                     type = "https://problem.io",
@@ -216,7 +227,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
      */
     override fun cancelDeliveryOrder(id: String, authorizationKey: String): Response {
 
-        if (authorizationKey != "APIKEY") {
+        if (authorizationKey != API_KEY) {
             throw ServiceException(status = Response.Status.UNAUTHORIZED, entity = Problem())
         }
 
@@ -254,6 +265,10 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
 
             throw BadRequestException()
 
+        } catch (s: ServiceException) {
+            throw s
+        } catch (b: BadRequestException) {
+            throw b
         } catch(e: Exception) {
             throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
                     type = "PROBLEM TYPE",

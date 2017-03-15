@@ -5,25 +5,28 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 
 @ApiModel(description = "Delivery option for a package. Basic information regarding delivery window, cut off and pic up points.")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-03-10T11:34:55.297Z")
 public class DeliveryOption {
 
     private String id = null;
-    private Date cutOff = null;
-    private Date pickUp = null;
-    private Date deliveryFrom = null;
-    private Date deliveryTo = null;
+    private String cutOff = null;
+    private String pickUp = null;
+    private String deliveryFrom = null;
+    private String deliveryTo = null;
 
     public DeliveryOption(String id, Date cutOff, Date pickUp, Date deliveryFrom, Date deliveryTo) {
         this.id = id;
-        this.cutOff = cutOff;
-        this.pickUp = pickUp;
-        this.deliveryFrom = deliveryFrom;
-        this.deliveryTo = deliveryTo;
+        this.cutOff = getISO8601StringForDate(cutOff);
+        this.pickUp = getISO8601StringForDate(pickUp);
+        this.deliveryFrom = getISO8601StringForDate(deliveryFrom);
+        this.deliveryTo = getISO8601StringForDate(deliveryTo);
     }
 
     public DeliveryOption() {
@@ -51,11 +54,11 @@ public class DeliveryOption {
     @ApiModelProperty(example = "1730", required = true, value = "Cut off time for order modification / cancelation")
     @JsonProperty("cut_off")
     @NotNull
-    public Date getCutOff() {
+    public String getCutOff() {
         return cutOff;
     }
 
-    public void setCutOff(Date cutOff) {
+    public void setCutOff(String cutOff) {
         this.cutOff = cutOff;
     }
 
@@ -66,11 +69,11 @@ public class DeliveryOption {
     @ApiModelProperty(example = "1730", required = true, value = "Scheduled pick-up time")
     @JsonProperty("pick_up")
     @NotNull
-    public Date getPickUp() {
+    public String getPickUp() {
         return pickUp;
     }
 
-    public void setPickUp(Date pickUp) {
+    public void setPickUp(String pickUp) {
         this.pickUp = pickUp;
     }
 
@@ -81,11 +84,11 @@ public class DeliveryOption {
     @ApiModelProperty(example = "1730", required = true, value = "Earliest possible delivery time")
     @JsonProperty("delivery_from")
     @NotNull
-    public Date getDeliveryFrom() {
+    public String getDeliveryFrom() {
         return deliveryFrom;
     }
 
-    public void setDeliveryFrom(Date deliveryFrom) {
+    public void setDeliveryFrom(String deliveryFrom) {
         this.deliveryFrom = deliveryFrom;
     }
 
@@ -96,11 +99,11 @@ public class DeliveryOption {
     @ApiModelProperty(example = "1730", required = true, value = "Latest possible delivery time")
     @JsonProperty("delivery_to")
     @NotNull
-    public Date getDeliveryTo() {
+    public String getDeliveryTo() {
         return deliveryTo;
     }
 
-    public void setDeliveryTo(Date deliveryTo) {
+    public void setDeliveryTo(String deliveryTo) {
         this.deliveryTo = deliveryTo;
     }
 
@@ -149,6 +152,12 @@ public class DeliveryOption {
             return "null";
         }
         return o.toString().replace("\n", "\n    ");
+    }
+
+    private String getISO8601StringForDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return dateFormat.format(date);
     }
 }
 
