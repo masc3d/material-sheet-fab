@@ -1,3 +1,11 @@
+import org.flywaydb.core.Flyway
+import org.flywaydb.gradle.task.FlywayInfoTask
+import org.flywaydb.gradle.task.FlywayValidateTask
+import org.flywaydb.core.api.MigrationVersion
+import org.omg.CORBA.Object
+
+import java.nio.file.Files
+
 buildscript {
     ext {
         v_mysql = '5.1.40'
@@ -31,6 +39,16 @@ mainClassName = "org.deku.leoz.central.Main"
 // Database constants
 def DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
 def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
+
+// Flyway constants
+def FLYWAY_MIGRATION_DIR = new File(project.rootDir, 'leoz-central-schema/sql')
+def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/migration')
+
+// Location for generated sources
+// Directory for apt must be dedicated (no other generators may write here)
+// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
+def JOOQ_GENERATED_DIR = file("$projectDir/src/generated/jooq")
+
 
 //region Prototype test setup
 test {
@@ -99,8 +117,54 @@ configurations.all {
     }
 }
 
-// SQL migrations (used for flyway eg.)
-def FLYWAY_MIGRATION_DIR = new File(project.rootDir, 'leoz-central-schema/sql')
+/**
+ * Copies applied migrations
+ */
+class FlywayCopyTask extends FlywayInfoTask {
+    /**
+     * Source directory
+     */
+    @InputDirectory
+    File source
+
+    /**
+     * Destination directory
+     */
+    @OutputDirectory
+    File destination
+
+    FlywayCopyTask() {
+        super()
+        setDescription("Copies migration files")
+    }
+
+    @Override
+    protected Object run(Flyway flyway) {
+        this.destination.deleteDir()
+        this.destination.mkdirs()
+        flyway.info().all().findAll { it.state.isApplied() }.forEach {
+            Files.copy(
+                    this.source.toPath().resolve(it.script),
+                    this.destination.toPath().resolve(it.script))
+        }
+    }
+}
+
+class FlywayValidateTaskHotfix extends FlywayValidateTask {
+    @Override
+    protected Object run(Flyway flyway) {
+        def result = super.run(flyway)
+
+        // TODO: remove this hotfix/validation when fixed upstream https://github.com/flyway/flyway/issues/1554)
+        flyway.info().all().findAll { it.state.isApplied() } each {
+            def targetVersion = MigrationVersion.fromVersion(extension.target)
+            if (it.version.compareTo(targetVersion) > 0)
+                throw new IllegalStateException("Applied future migrations detected! :flywayClean will resolve this")
+        }
+
+        return result
+    }
+}
 
 flyway {
     driver = DB_MYSQL_JDBC_DRIVER
@@ -108,13 +172,24 @@ flyway {
     user = 'root'
     password = 'root'
     schemas = ['dekuclient']
+    ignoreFutureMigrations = false
+    target = 11
     locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
 }
 
-// Location for generated sources
-// Directory for apt must be dedicated (no other generators may write here)
-// otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
-def JOOQ_GENERATED_DIR = file("$projectDir/src/generated/jooq")
+tasks.remove(tasks.flywayValidate)
+task flywayValidate(type: FlywayValidateTaskHotfix) {
+    mustRunAfter tasks.flywayMigrate
+}
+
+task flywayCopy(type: FlywayCopyTask) {
+    // FlywayCopy task properties
+    source FLYWAY_MIGRATION_DIR
+    destination FLYWAY_PROJECT_MIGRATION_DIR
+
+    // Gradle task properties
+    mustRunAfter tasks.flywayMigrate
+}
 
 jooq {
     main(sourceSets.main) {
@@ -130,11 +205,6 @@ jooq {
                 inputSchema = 'dekuclient'
 
                 includes = 'tbldepotliste|mst_.*|sys_.*|sso_.*|sdd_.*'
-                //excludes '.*'
-
-                // masc20140916. (almost) all tables
-                //includes '.*'
-                //excludes 'tbl_auftrag_info'
             }
 
             target {
@@ -146,15 +216,25 @@ jooq {
 }
 // JOOQ generation depends on schema migration
 tasks.generateMainJooqSchemaSource {
-    inputs.dir FLYWAY_MIGRATION_DIR
+    inputs.dir FLYWAY_PROJECT_MIGRATION_DIR
     outputs.dir JOOQ_GENERATED_DIR
 
     dependsOn tasks.flywayMigrate
+    dependsOn tasks.flywayValidate
+    dependsOn tasks.flywayCopy
 }
 
 clean {
     doFirst {
         JOOQ_GENERATED_DIR.deleteDir()
+        FLYWAY_PROJECT_MIGRATION_DIR.deleteDir()
+    }
+}
+
+flywayClean {
+    doFirst {
+        JOOQ_GENERATED_DIR.deleteDir()
+        FLYWAY_PROJECT_MIGRATION_DIR.deleteDir()
     }
 }
 
@@ -170,7 +250,6 @@ compileJava.dependsOn(processResources)
 
 tasks.classes.dependsOn(copyRsyncPlatformDirToBuild)
 tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
-tasks.classes.dependsOn(tasks.flywayMigrate)
 tasks.compileJava.dependsOn(tasks.generateMainJooqSchemaSource)
 tasks.compileKotlin.dependsOn(tasks.generateMainJooqSchemaSource)
 
