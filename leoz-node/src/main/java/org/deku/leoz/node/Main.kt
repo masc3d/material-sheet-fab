@@ -65,9 +65,6 @@ import org.springframework.core.annotation.Order
         /** Jolokia */
         JolokiaAutoConfiguration::class,
 
-        /** Flyway database migration setup  */
-        FlywayAutoConfiguration::class,
-
         /** Vaadin */
         VaadinAutoConfiguration::class
 )

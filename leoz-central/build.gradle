@@ -42,7 +42,7 @@ def DB_MYSQL_JDBC_URL = 'jdbc:mysql://10.0.10.10:3306?useSSL=false'
 
 // Flyway constants
 def FLYWAY_MIGRATION_DIR = new File(project.rootDir, 'leoz-central-schema/sql')
-def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/migration')
+def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/central/migration')
 
 // Location for generated sources
 // Directory for apt must be dedicated (no other generators may write here)

@@ -4,6 +4,7 @@ import org.deku.leoz.node.Storage
 import org.eclipse.persistence.config.BatchWriting
 import org.eclipse.persistence.config.PersistenceUnitProperties
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor
+import org.flywaydb.core.Flyway
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
 import org.h2.tools.Server
@@ -88,7 +89,6 @@ open class PersistenceConfiguration {
     private var h2Server: Server? = null
 
     @get:Bean
-    @get:FlywayDataSource
     @get:Qualifier(QUALIFIER)
     open val dataSource: DataSource
         get() {
@@ -244,8 +244,16 @@ open class PersistenceConfiguration {
 
     @PostConstruct
     open fun onInitialize() {
-        val server: Server?
+        // Migrate schema
+        log.info("Migrating embedded data source schema")
+        val flyway = Flyway()
+        flyway.dataSource = this.dataSource
+        flyway.setLocations("classpath:/db/node/migration")
+        flyway.isIgnoreFutureMigrations = false
+        flyway.migrate()
 
+        // Start h2 server
+        val server: Server?
         if (this.settings.h2.server.enabled) {
             log.info("Starting H2 server on port [${this.settings.h2.server.port}]")
 
