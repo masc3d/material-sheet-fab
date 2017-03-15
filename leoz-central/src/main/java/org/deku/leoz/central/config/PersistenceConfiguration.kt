@@ -63,13 +63,6 @@ open class PersistenceConfiguration {
 
     @get:Bean
     @get:Qualifier(QUALIFIER)
-    open val flywayMigrationStrategy: FlywayMigrationStrategy
-        get() = FlywayMigrationStrategy { flyway ->
-            log.info("NOOP")
-        }
-
-    @get:Bean
-    @get:Qualifier(QUALIFIER)
     open val jooqCentralTransactionAwareDataSourceProxy: TransactionAwareDataSourceProxy
         get() {
             return TransactionAwareDataSourceProxy(this.dataSourceCentral)
