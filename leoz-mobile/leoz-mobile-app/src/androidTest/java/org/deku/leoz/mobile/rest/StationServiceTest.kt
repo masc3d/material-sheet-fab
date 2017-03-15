@@ -15,7 +15,7 @@ import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.mobile.WebserviceTest
 import org.deku.leoz.rest.entity.internal.v1.Station
 import io.reactivex.Observable
-import io.reactivex.rxkotlin.kotlin.subscribeWith
+import io.reactivex.rxkotlin.subscribeBy
 import sx.rx.task
 
 /**
@@ -29,12 +29,11 @@ class StationServiceTest : WebserviceTest() {
         val stationService: StationService = Kodein.global.instance()
 
         Observable.fromCallable { stationService.get() }
-                .subscribeWith {
-                    onNext {
+                .subscribeBy(
+                        onNext = {
                         it.forEach {
                             println(it)
                         }
-                    }
-                }
+                        })
     }
 }
