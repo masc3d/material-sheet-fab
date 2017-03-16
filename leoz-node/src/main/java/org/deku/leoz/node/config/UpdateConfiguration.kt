@@ -5,7 +5,7 @@ import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.repository.system.*
-import org.deku.leoz.rest.RestClient
+import sx.rs.proxy.RestClientProxy
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.deku.leoz.service.update.BundleUpdateService
 import org.slf4j.LoggerFactory
@@ -51,7 +51,7 @@ open class UpdateConfiguration {
     @Inject
     private lateinit var bundleInstaller: BundleInstaller
     @Inject
-    private lateinit var restClient: Optional<RestClient>
+    private lateinit var restClientProxy: Optional<RestClientProxy>
     @Inject
     private lateinit var bundleService: org.deku.leoz.node.rest.service.internal.v1.BundleService
 
@@ -60,8 +60,8 @@ open class UpdateConfiguration {
      * direct reference to the BundleService of this process (leoz-central)
      */
     private val bundleServiceProxy by lazy {
-        if (this.restClient.isPresent)
-            this.restClient.get().proxy(BundleService::class.java)
+        if (this.restClientProxy.isPresent)
+            this.restClientProxy.get().proxy(BundleService::class.java)
         else
             this.bundleService
     }

@@ -121,14 +121,6 @@ dependencies {
 
             // Spring
             "org.springframework:spring-jms:$v_spring",
-
-            // RESTeasy client
-            "org.jboss.resteasy:resteasy-client:$v_resteasy",
-            "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
-
-            // Jersey REST client
-            "org.glassfish.jersey.core:jersey-client:$v_jersey",
-            "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey"
     )
 
     testCompile(

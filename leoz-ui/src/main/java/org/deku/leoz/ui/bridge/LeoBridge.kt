@@ -1,7 +1,7 @@
 package org.deku.leoz.ui.bridge
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider
-import org.deku.leoz.rest.RestClient
+import sx.rs.proxy.RestClientProxy
 import org.deku.leoz.ui.bridge.services.MessageService
 import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
@@ -9,6 +9,7 @@ import org.glassfish.jersey.jackson.JacksonFeature
 import org.glassfish.jersey.server.ResourceConfig
 import io.reactivex.subjects.PublishSubject
 import sx.Disposable
+import sx.rs.proxy.JerseyClientProxy
 import java.io.IOException
 import java.net.URI
 import javax.ws.rs.client.ClientBuilder
@@ -42,7 +43,7 @@ class LeoBridge : Disposable, MessageService.Listener {
 
     private val httpClient by lazy {
         // Setup mClient
-        RestClient(CLIENT_URI)
+        JerseyClientProxy(CLIENT_URI)
     }
 
     private val messageServiceClient by lazy {
