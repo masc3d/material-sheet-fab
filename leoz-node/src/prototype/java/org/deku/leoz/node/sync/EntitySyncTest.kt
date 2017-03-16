@@ -5,6 +5,8 @@ import ch.qos.logback.classic.Logger
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
+import org.deku.leoz.node.config.DataTestConfiguration
+import org.deku.leoz.node.config.MessageBrokerTestConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.service.sync.EntityConsumer

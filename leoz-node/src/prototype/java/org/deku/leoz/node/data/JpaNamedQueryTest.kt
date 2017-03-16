@@ -2,6 +2,7 @@ package org.deku.leoz.node.data
 
 import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
+import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstRoute
 import org.eclipse.persistence.config.HintValues

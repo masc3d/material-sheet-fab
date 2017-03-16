@@ -1,5 +1,6 @@
 package org.deku.leoz.node.ws
 
+import org.deku.leoz.node.config.ApplicationTestConfiguration
 import org.deku.leoz.node.config.SoapClientConfiguration
 import org.deku.leoz.ws.blz.BLZServicePortType
 import org.deku.leoz.ws.gls.shipment.CancelParcelResponse

@@ -1,5 +1,6 @@
 package org.deku.leoz.node.data
 
+import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.data.jpa.MstBundleVersion
 import org.deku.leoz.node.data.jpa.QMstCountry
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository

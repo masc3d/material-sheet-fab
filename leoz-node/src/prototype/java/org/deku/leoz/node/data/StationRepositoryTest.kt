@@ -1,6 +1,7 @@
 package org.deku.leoz.node.data
 
 import org.deku.leoz.node.Application
+import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.data.repository.master.StationRepository
 import org.junit.Test
 import org.junit.experimental.categories.Category

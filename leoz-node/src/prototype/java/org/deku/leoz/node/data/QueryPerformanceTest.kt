@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.sql.Configuration
 import com.querydsl.sql.H2Templates
 import com.querydsl.sql.SQLQueryFactory
+import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.MstStation
