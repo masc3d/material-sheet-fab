@@ -34,12 +34,11 @@ class RestSerializationTest {
 
     private val objectMapper by lazy {
         val mapper = objectMapperProviewr.getContext(ObjectMapper::class.java)
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT)
     }
 
     @Test
     fun testIso8601DateFormat() {
-
         val o = Date()
         val oJson = this.objectMapper.writeValueAsString(o)
         val i = ISO8601DateFormat().parse(oJson.trim('"'))
