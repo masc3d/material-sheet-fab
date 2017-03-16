@@ -1,8 +1,8 @@
-package org.deku.leoz.node.test.rest.v1
+package org.deku.leoz.node.rest.v1
 
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.node.rest.service.v1.RoutingService
-import org.deku.leoz.node.test.config.DataTestConfiguration
+import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.rest.entity.ShortDate
 import org.deku.leoz.rest.entity.v1.RoutingRequest
 import org.deku.leoz.rest.service.ServiceErrorCode

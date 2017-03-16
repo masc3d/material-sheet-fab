@@ -1,4 +1,4 @@
-package org.deku.leoz.node.prototype.data
+package org.deku.leoz.node.data
 
 import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
@@ -11,7 +11,6 @@ import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.jpa.QMstRoute
 import org.deku.leoz.node.data.repository.master.RouteRepository
 import org.deku.leoz.node.data.jooq.Tables
-import org.deku.leoz.node.test.config.DataTestConfiguration
 import org.eclipse.persistence.config.HintValues
 import org.eclipse.persistence.config.QueryHints
 import org.eclipse.persistence.sessions.factories.SessionManager
@@ -365,7 +364,7 @@ open class QueryPerformanceTest {
         cn.close()
     }
 
-    @org.springframework.transaction.annotation.Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
     @Test
     open fun testSelectMaxJooqPrepared() {
         val field = Tables.MST_ROUTE.SYNC_ID.max()
@@ -388,7 +387,7 @@ open class QueryPerformanceTest {
 
     }
 
-    @org.springframework.transaction.annotation.Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
     @Test
     open fun testSelectMaxJooqInline() {
         val field = Tables.MST_ROUTE.SYNC_ID.max()
@@ -407,7 +406,7 @@ open class QueryPerformanceTest {
 
     }
 
-    @org.springframework.transaction.annotation.Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
     @Test
     open fun testSelectEntityJooqPrepared() {
         val tRoute = Tables.MST_ROUTE
@@ -428,7 +427,7 @@ open class QueryPerformanceTest {
                     block = {
                         val q = p.get()
                                 .bind(pSyncId.name, r.nextInt(100).toLong())
-                                .fetchInto(org.deku.leoz.node.data.jpa.MstRoute::class.java)
+                                .fetchInto(MstRoute::class.java)
 //                        log.info(r)
                     },
                     threads = 1,
@@ -436,7 +435,7 @@ open class QueryPerformanceTest {
 
     }
 
-    @org.springframework.transaction.annotation.Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
+    @Transactional(PersistenceConfiguration.QUALIFIER_JOOQ)
     @Test
     open fun testSelectEntityJooq() {
         val tRoute = Tables.MST_ROUTE
@@ -450,7 +449,7 @@ open class QueryPerformanceTest {
                                 .select()
                                 .from(tRoute)
                                 .where(tRoute.SYNC_ID.eq(r.nextInt(100).toLong()))
-                                .fetchInto(org.deku.leoz.node.data.jpa.MstRoute::class.java)
+                                .fetchInto(MstRoute::class.java)
 //                        log.info(r)
                     },
                     threads = 4,

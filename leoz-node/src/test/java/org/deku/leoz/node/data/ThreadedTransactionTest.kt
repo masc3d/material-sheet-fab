@@ -1,7 +1,7 @@
-package org.deku.leoz.node.test.data
+package org.deku.leoz.node.data
 
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.test.config.DataTestConfiguration
+import org.deku.leoz.node.config.DataTestConfiguration
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest

@@ -1,4 +1,4 @@
-package org.deku.leoz.node.test.config
+package org.deku.leoz.node.config
 
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
 import org.deku.leoz.config.ActiveMQConfiguration

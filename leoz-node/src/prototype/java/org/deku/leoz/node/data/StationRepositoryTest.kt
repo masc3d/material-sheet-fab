@@ -1,9 +1,7 @@
-package org.deku.leoz.node.prototype.data
+package org.deku.leoz.node.data
 
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.data.repository.master.StationRepository
-import org.deku.leoz.node.test.config.ApplicationTestConfiguration
-import org.deku.leoz.node.test.config.DataTestConfiguration
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith

@@ -1,10 +1,9 @@
-package org.deku.leoz.node.prototype.data
+package org.deku.leoz.node.data
 
 import org.deku.leoz.node.data.jpa.MstBundleVersion
 import org.deku.leoz.node.data.jpa.QMstCountry
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
 import org.deku.leoz.node.data.repository.master.CountryRepository
-import org.deku.leoz.node.test.config.DataTestConfiguration
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith

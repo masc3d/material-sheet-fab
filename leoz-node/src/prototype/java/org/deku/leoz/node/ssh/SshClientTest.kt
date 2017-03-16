@@ -1,4 +1,4 @@
-package org.deku.leoz.node.prototype.ssh
+package org.deku.leoz.node.ssh
 
 import org.apache.sshd.client.SshClient
 import org.apache.sshd.common.util.net.SshdSocketAddress

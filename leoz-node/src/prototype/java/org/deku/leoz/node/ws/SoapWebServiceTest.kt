@@ -1,9 +1,9 @@
-package org.deku.leoz.node.prototype.ws
+package org.deku.leoz.node.ws
 
 import org.deku.leoz.node.config.SoapClientConfiguration
-import org.deku.leoz.node.test.config.ApplicationTestConfiguration
 import org.deku.leoz.ws.blz.BLZServicePortType
 import org.deku.leoz.ws.gls.shipment.CancelParcelResponse
+import org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,7 +28,7 @@ class SoapWebServiceTest {
     private lateinit var blzService: BLZServicePortType
 
     @Inject
-    private lateinit var glsShipmentProcessingService: org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
+    private lateinit var glsShipmentProcessingService: ShipmentProcessingPortType
 
     @Test
     fun testBlzService() {

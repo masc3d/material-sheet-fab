@@ -1,11 +1,11 @@
-package org.deku.leoz.node.test.rest
+package org.deku.leoz.node.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import org.deku.leoz.node.rest.ObjectMapperProvider
 import org.deku.leoz.node.rest.service.v1.RoutingService
-import org.deku.leoz.node.test.config.DataTestConfiguration
+import org.deku.leoz.node.config.DataTestConfiguration
 import org.junit.Assert
 import org.junit.Test
 import org.junit.experimental.categories.Category

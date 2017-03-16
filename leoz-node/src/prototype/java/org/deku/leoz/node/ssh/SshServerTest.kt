@@ -1,4 +1,4 @@
-package org.deku.leoz.node.prototype.ssh
+package org.deku.leoz.node.ssh
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
@@ -25,17 +25,17 @@ class SshServerTest {
         lRoot.level = Level.DEBUG
 
         val sshd = SshServer.setUpDefaultServer()
-        sshd.setPort(13005)
+        sshd.port = 13005
 
-        sshd.setKeyPairProvider(SimpleGeneratorHostKeyProvider(Files.createTempFile("hostkey", "ser")));
+        sshd.keyPairProvider = SimpleGeneratorHostKeyProvider(Files.createTempFile("hostkey", "ser"))
 
         sshd.tcpipForwardingFilter = AcceptAllForwardingFilter()
 
-        sshd.setPasswordAuthenticator(object : PasswordAuthenticator {
+        sshd.passwordAuthenticator = object : PasswordAuthenticator {
             override fun authenticate(username: String?, password: String?, session: ServerSession?): Boolean {
-                return "leoz".equals(username) && "leoz".equals(password);
+                return "leoz".equals(username) && "leoz".equals(password)
             }
-        });
+        }
 
         //sshd.setShellFactory(MyCommandFactory());
         sshd.start()

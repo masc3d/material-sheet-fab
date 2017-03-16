@@ -1,4 +1,4 @@
-package org.deku.leoz.node.prototype.sync
+package org.deku.leoz.node.sync
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
@@ -9,8 +9,6 @@ import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.service.sync.EntityConsumer
 import org.deku.leoz.node.service.sync.EntityPublisher
-import org.deku.leoz.node.test.config.DataTestConfiguration
-import org.deku.leoz.node.test.config.MessageBrokerTestConfiguration
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

@@ -1,4 +1,4 @@
-package org.deku.leoz.node.prototype.data
+package org.deku.leoz.node.data
 
 import com.querydsl.core.types.dsl.Param
 import com.querydsl.jpa.impl.JPAQuery
@@ -8,7 +8,6 @@ import com.querydsl.sql.SQLQueryFactory
 import org.deku.leoz.node.data.jpa.MstRoute
 import org.deku.leoz.node.data.jpa.QMstRoute
 import org.deku.leoz.node.data.repository.master.RouteRepository
-import org.deku.leoz.node.test.config.DataTestConfiguration
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith

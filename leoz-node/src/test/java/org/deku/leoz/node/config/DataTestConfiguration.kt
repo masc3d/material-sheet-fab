@@ -1,4 +1,4 @@
-package org.deku.leoz.node.test.config
+package org.deku.leoz.node.config
 
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.ExecutorConfiguration

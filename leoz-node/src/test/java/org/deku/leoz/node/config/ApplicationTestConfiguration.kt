@@ -1,4 +1,4 @@
-package org.deku.leoz.node.test.config
+package org.deku.leoz.node.config
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -24,7 +24,7 @@ open class ApplicationTestConfiguration : ApplicationConfiguration() {
 
     @PostConstruct
     open fun onInitialize() {
-        Kodein.global.addImport(ApplicationConfiguration.module)
+        Kodein.global.addImport(module)
         Kodein.global.addImport(StorageConfiguration.module)
         Kodein.global.addImport(LogConfiguration.module)
     }
