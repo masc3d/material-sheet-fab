@@ -59,7 +59,6 @@ dependencies {
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
             "org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3",
-
             // Kodein
             "com.github.salomonbrys.kodein:kodein:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
@@ -87,7 +86,6 @@ dependencies {
             "io.swagger:swagger-annotations:$v_swagger",
 
             // Jackson
-            "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
             "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
 
             // ActiveMQ

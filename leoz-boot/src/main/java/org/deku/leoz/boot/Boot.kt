@@ -82,7 +82,7 @@ class Boot {
 
                     // Update REST configuration. This will affect all subsequent REST client invocations
                     log.info("Setting REST host based on discovery to ${host}")
-                    restConfiguration.httpHost = host
+                    restConfiguration.host = host
                     restConfiguration.https = false
                     bundleConfiguration.rsyncHost = host
                 }
@@ -173,7 +173,7 @@ class Boot {
                     finalVersionPattern = versionPattern
                 } else {
                     val restClient: RestClientProxy = Kodein.global.instance()
-                    val bundleService = restClient.proxy(BundleService::class.java)
+                    val bundleService = restClient.create(BundleService::class.java)
 
                     val updateInfo = bundleService.info(bundleName = bundleName, versionAlias = versionAlias)
                     log.info("${updateInfo}")
@@ -231,7 +231,7 @@ class Boot {
                 Observable.empty())
                     .concatWith(Observable.fromCallable {
                         if (settings.httpHost != null)
-                            restConfiguration.httpHost = settings.httpHost!!
+                            restConfiguration.host = settings.httpHost!!
 
                         if (settings.https != null)
                             restConfiguration.https = settings.https!!

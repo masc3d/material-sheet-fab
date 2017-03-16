@@ -31,9 +31,9 @@ class StationServiceTest : WebserviceTest() {
         Observable.fromCallable { stationService.get() }
                 .subscribeBy(
                         onNext = {
-                        it.forEach {
-                            println(it)
-                        }
+                            it.forEach {
+                                println(it)
+                            }
                         })
     }
 }

@@ -53,7 +53,7 @@ class ConnectionConfiguration {
 
         if (oldHost != newHost) {
             // Delegate setting to configurations
-            this.restConfiguration.httpHost = newHost
+            this.restConfiguration.host = newHost
             this.bundleConfiguration.rsyncHost = newHost
             log.info("Updated remote host to [${newHost}]")
 
