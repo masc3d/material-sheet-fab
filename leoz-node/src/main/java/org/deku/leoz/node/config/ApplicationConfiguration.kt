@@ -6,6 +6,7 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 
 /**
@@ -23,11 +24,11 @@ open class ApplicationConfiguration {
     }
 
     @get:Bean
-    open val storage: Storage = Kodein.global.instance()
+    open val storage: Storage by lazy { Kodein.global.instance<Storage>() }
 
     @get:Bean
-    open val logConfiguration: LogConfiguration = Kodein.global.instance()
+    open val logConfiguration: LogConfiguration by lazy { Kodein.global.instance<LogConfiguration>() }
 
     @get:Bean
-    open val app: Application = Kodein.global.instance()
+    open val app: Application by lazy { Kodein.global.instance<Application>() }
 }
