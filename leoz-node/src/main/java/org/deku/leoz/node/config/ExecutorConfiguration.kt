@@ -20,13 +20,11 @@ open class ExecutorConfiguration {
     /**
      * Scheduled thread executor
      */
-    @Bean
-    open fun executorService(): ScheduledExecutorService {
-        return CompositeExecutorService(
+    @get:Bean
+    open val executorService: ScheduledExecutorService
+        get() = CompositeExecutorService(
                 this.scheduledExecutorService,
-                this.cachedExecutorService
-        )
-    }
+                this.cachedExecutorService)
 
     /**
      * Scheduled executor service

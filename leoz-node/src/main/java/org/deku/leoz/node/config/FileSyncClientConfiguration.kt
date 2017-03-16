@@ -1,12 +1,10 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.Storage
-import org.deku.leoz.node.service.filesync.FileSyncMessage
-import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.deku.leoz.node.service.filesync.FileSyncClientService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
@@ -45,9 +43,9 @@ open class FileSyncClientConfiguration {
     @Inject
     private lateinit var storage: Storage
 
-    @Bean
-    open fun fileSyncClientService(): FileSyncClientService {
-        return FileSyncClientService(
+    @get:Bean
+    open val fileSyncClientService: FileSyncClientService
+        get() = FileSyncClientService(
                 executorService = this.executorService,
                 baseDirectory = storage.transferDirectory,
                 identity = this.application.identity,
@@ -59,8 +57,6 @@ open class FileSyncClientConfiguration {
                         password = RsyncConfiguration.PASSWORD,
                         sshTunnelProvider = this.sshTunnelProvider),
                 centralChannelSupplier = { Channel(ActiveMQConfiguration.instance.centralQueue) })
-    }
-    private val fileSyncClientService by lazy { this.fileSyncClientService() }
 
     @PostConstruct
     fun onInitialize() {

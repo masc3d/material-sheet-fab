@@ -28,18 +28,12 @@ open class ApplicationConfiguration {
         }
     }
 
-    @Bean
-    open fun storage(): Storage {
-        return Kodein.global.instance()
-    }
+    @get:Bean
+    open val storage: Storage = Kodein.global.instance()
 
-    @Bean
-    open fun logConfiguration(): LogConfiguration {
-        return Kodein.global.instance()
-    }
+    @get:Bean
+    open val logConfiguration: LogConfiguration = Kodein.global.instance()
 
-    @Bean
-    open fun app(): Application {
-        return Kodein.global.instance()
-    }
+    @get:Bean
+    open val app: Application = Kodein.global.instance()
 }

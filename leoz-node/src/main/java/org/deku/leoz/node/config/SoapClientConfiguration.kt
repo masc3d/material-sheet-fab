@@ -10,10 +10,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.annotationOfType
 import java.net.URI
-import java.net.URL
-import javax.inject.Inject
 import javax.jws.WebService
-import javax.xml.namespace.QName
 import javax.xml.ws.BindingProvider
 
 /**
@@ -31,16 +28,12 @@ open class SoapClientConfiguration {
         var password: String? = null
     }
 
-    @Bean
-    @ConfigurationProperties("remote.gls.soap.shipment-processing")
-    open fun shipmentProcessingServiceSettings(): EndpointSettings {
-        return EndpointSettings()
-    }
+    @get:ConfigurationProperties("remote.gls.soap.shipment-processing")
+    @get:Bean
+    open val shipmentProcessingServiceSettings: EndpointSettings = EndpointSettings()
 
-    @Bean
-    open fun blzService(): BLZServicePortType {
-        return BLZService().blzServiceSOAP12PortHttp
-    }
+    @get:Bean
+    open val blzService: BLZServicePortType = BLZService().blzServiceSOAP12PortHttp
 
     /**
      * Updates endpoint settings of XML WS service
@@ -59,15 +52,16 @@ open class SoapClientConfiguration {
         bindingProvider.requestContext.put(BindingProvider.PASSWORD_PROPERTY, settings.password)
     }
 
-    @Bean
-    open fun glsShipmentProcessingService(): ShipmentProcessingPortType {
-        val service = ShipmentProcessingService().shipmentProcessingPortTypePort
+    @get:Bean
+    open val glsShipmentProcessingService: ShipmentProcessingPortType
+        get() {
+            val service = ShipmentProcessingService().shipmentProcessingPortTypePort
 
-        this.updateEndpoint(
-                service = service,
-                serviceType = ShipmentProcessingPortType::class.java,
-                settings = this.shipmentProcessingServiceSettings())
+            this.updateEndpoint(
+                    service = service,
+                    serviceType = ShipmentProcessingPortType::class.java,
+                    settings = this.shipmentProcessingServiceSettings)
 
-        return service
-    }
+            return service
+        }
 }

@@ -33,15 +33,13 @@ open class FileSyncHostConfiguration {
     /**
      * File sync service
      */
-    @Bean
-    open fun fileSyncService(): FileSyncHostService {
-        return FileSyncHostService(
+    @get:Bean
+    open val fileSyncService: FileSyncHostService
+        get() = FileSyncHostService(
                 baseDirectory = storage.transferDirectory,
                 executorService = this.executorService,
                 identity = this.application.identity,
                 nodeChannelSupplier = { it -> Channel(ActiveMQConfiguration.instance.nodeQueue(it)) })
-    }
-    private val fileSyncService by lazy { fileSyncService() }
 
     /**
      * Initialize

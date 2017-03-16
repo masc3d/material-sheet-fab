@@ -4,7 +4,6 @@ import io.undertow.server.handlers.resource.Resource
 import io.undertow.server.handlers.resource.ResourceChangeListener
 import io.undertow.server.handlers.resource.ResourceManager
 import io.undertow.server.handlers.resource.URLResource
-import org.deku.leoz.config.RestClientConfiguration
 import org.deku.leoz.config.RestConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.MessageBrokerConfiguration
@@ -17,9 +16,9 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory
 import org.jboss.resteasy.springmvc.ResteasyHandlerMapping
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
-import org.springframework.boot.web.servlet.ServletContextInitializer
 import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory
+import org.springframework.boot.web.servlet.ServletContextInitializer
 import org.springframework.context.annotation.Bean
 import org.springframework.web.context.support.WebApplicationContextUtils
 import sx.jms.activemq.HttpExternalTunnelServlet
@@ -101,62 +100,63 @@ class WebContextInitializer : ServletContextInitializer {
         //endregion
     }
 
-    @Bean
-    fun servletContainer(): EmbeddedServletContainerFactory {
-        // Creating embedded servlet container factory manually
-        // as it's currently the only way to customize welcome pages
-        // Undertow doesn't have index.html by default.
-        val factory = UndertowEmbeddedServletContainerFactory()
-        factory.deploymentInfoCustomizers.add(
-                UndertowDeploymentInfoCustomizer { deploymentInfo ->
-                    deploymentInfo.resourceManager = object : ResourceManager {
-                        @Throws(IOException::class)
-                        override fun getResource(path: String): Resource? {
-                            var filePath = path
+    @get:Bean
+    val servletContainer: EmbeddedServletContainerFactory
+        get() {
+            // Creating embedded servlet container factory manually
+            // as it's currently the only way to customize welcome pages
+            // Undertow doesn't have index.html by default.
+            val factory = UndertowEmbeddedServletContainerFactory()
+            factory.deploymentInfoCustomizers.add(
+                    UndertowDeploymentInfoCustomizer { deploymentInfo ->
+                        deploymentInfo.resourceManager = object : ResourceManager {
+                            @Throws(IOException::class)
+                            override fun getResource(path: String): Resource? {
+                                var filePath = path
 
-                            // Check root path
-                            var url = WebContextInitializer::class.java.getResource(filePath)
-                            if (url == null) {
-                                // Check static cotent path
-                                filePath = STATIC_CONTENT_CLASSPATH + path
-                                url = WebContextInitializer::class.java.getResource(filePath)
-                            }
-
-                            if (url == null) {
-                                // Resource not found
-                                return null
-                            }
-
-                            val urlResource = object : URLResource(url, url.openConnection(), filePath) {
-                                override fun isDirectory(): Boolean {
-                                    if (this.file != null)
-                                        return super.isDirectory()
-                                    else
-                                        return this.contentLength == 0L
+                                // Check root path
+                                var url = WebContextInitializer::class.java.getResource(filePath)
+                                if (url == null) {
+                                    // Check static cotent path
+                                    filePath = STATIC_CONTENT_CLASSPATH + path
+                                    url = WebContextInitializer::class.java.getResource(filePath)
                                 }
+
+                                if (url == null) {
+                                    // Resource not found
+                                    return null
+                                }
+
+                                val urlResource = object : URLResource(url, url.openConnection(), filePath) {
+                                    override fun isDirectory(): Boolean {
+                                        if (this.file != null)
+                                            return super.isDirectory()
+                                        else
+                                            return this.contentLength == 0L
+                                    }
+                                }
+                                return urlResource
                             }
-                            return urlResource
-                        }
 
-                        override fun isResourceChangeListenerSupported(): Boolean {
-                            return false
-                        }
+                            override fun isResourceChangeListenerSupported(): Boolean {
+                                return false
+                            }
 
-                        override fun registerResourceChangeListener(listener: ResourceChangeListener) {
-                        }
+                            override fun registerResourceChangeListener(listener: ResourceChangeListener) {
+                            }
 
-                        override fun removeResourceChangeListener(listener: ResourceChangeListener) {
-                        }
+                            override fun removeResourceChangeListener(listener: ResourceChangeListener) {
+                            }
 
-                        @Throws(IOException::class)
-                        override fun close() {
+                            @Throws(IOException::class)
+                            override fun close() {
+                            }
                         }
-                    }
-                    for (wp in WELCOME_FILES)
-                        deploymentInfo.addWelcomePage(wp)
-                })
-        return factory
-    }
+                        for (wp in WELCOME_FILES)
+                            deploymentInfo.addWelcomePage(wp)
+                    })
+            return factory
+        }
 
     /**
      * Spring webmvc configurer adapter.

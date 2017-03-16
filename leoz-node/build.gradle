@@ -71,7 +71,7 @@ def GENERATED_DIR = file('src/generated')
 def PROTOTYPE_TEST_DIR = file('src/prototype/java')
 
 // Database constants
-def PROJECT_DB_DIR = file('src/main/resources/db')
+def PROJECT_DB_DIR = file('src/main/resources/db/node')
 
 def DB_DIR = new File(project.buildDir, 'db')
 def DB_PERSISTENCE_XML = new File(DB_DIR, 'META-INF/persistence.xml')

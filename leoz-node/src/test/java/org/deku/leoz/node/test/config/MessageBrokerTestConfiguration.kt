@@ -35,16 +35,14 @@ open class MessageBrokerTestConfiguration {
         ActiveMQConfiguration.instance.connectionFactory.uri = ActiveMQBroker.instance.localUri
     }
 
-    @Bean
-    open fun broker(): Broker {
-        return ActiveMQBroker.instance
-    }
+    @get:Bean
+    open val broker: Broker = ActiveMQBroker.instance
 
     @PreDestroy
     fun onDestroy() {
         if (USE_ARTEMIS) {
             (ArtemisConfiguration.connectionFactory.targetConnectionFactory as ActiveMQConnectionFactory).close()
         }
-        this.broker().close()
+        this.broker.close()
     }
 }

@@ -2,19 +2,18 @@ package org.deku.leoz.central.config
 
 import com.mysql.jdbc.AbandonedConnectionCleanupThread
 import org.apache.commons.dbcp2.BasicDataSource
-import org.apache.commons.dbcp2.BasicDataSourceFactory
+import org.flywaydb.core.Flyway
 import org.jooq.SQLDialect
 import org.jooq.impl.DataSourceConnectionProvider
 import org.jooq.impl.DefaultDSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder
+import org.springframework.boot.autoconfigure.flyway.FlywayDataSource
+import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.*
-import org.springframework.jdbc.datasource.AbstractDataSource
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
-import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.sql.Driver
@@ -23,7 +22,6 @@ import java.sql.SQLException
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
-import javax.inject.Inject
 import javax.sql.DataSource
 
 /**
@@ -44,52 +42,64 @@ open class PersistenceConfiguration {
 
     private val log = LoggerFactory.getLogger(PersistenceConfiguration::class.java)
 
-    @Bean
-    @Qualifier(QUALIFIER)
-    @ConfigurationProperties(prefix = "persistence.central.datasource")
-    open fun dataSourceCentral(): DataSource {
-        val basicDataSource = BasicDataSource()
-        basicDataSource.driverClassName = com.mysql.jdbc.Driver::class.java.canonicalName
+    @get:Bean
+    @get:Qualifier(QUALIFIER)
+    @get:ConfigurationProperties(prefix = "persistence.central.datasource")
+    open val dataSourceCentral: DataSource
+        get() {
+            val basicDataSource = BasicDataSource()
+            basicDataSource.driverClassName = com.mysql.jdbc.Driver::class.java.canonicalName
 
-        val dataSourceProperties = Properties()
-        dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull")
-        dataSourceProperties.setProperty("connectTimeout", "1000")
+            val dataSourceProperties = Properties()
+            dataSourceProperties.setProperty("zeroDateTimeBehavior", "convertToNull")
+            dataSourceProperties.setProperty("connectTimeout", "1000")
 
-        basicDataSource.setConnectionProperties(
-                dataSourceProperties.map { e -> "${e.key}=${e.value}" }.joinToString(";")
-        )
+            basicDataSource.setConnectionProperties(
+                    dataSourceProperties.map { e -> "${e.key}=${e.value}" }.joinToString(";")
+            )
 
-        return basicDataSource
-    }
+            return basicDataSource
+        }
 
-    @Bean
-    @Qualifier(QUALIFIER)
-    open fun jooqCentralTransactionAwareDataSourceProxy(): TransactionAwareDataSourceProxy {
-        return TransactionAwareDataSourceProxy(dataSourceCentral())
-    }
+    @get:Bean
+    @get:Qualifier(QUALIFIER)
+    open val jooqCentralTransactionAwareDataSourceProxy: TransactionAwareDataSourceProxy
+        get() {
+            return TransactionAwareDataSourceProxy(this.dataSourceCentral)
+        }
 
-    @Bean
-    @Qualifier(QUALIFIER)
-    open fun jooqCentralTransactionManager(): DataSourceTransactionManager {
-        return DataSourceTransactionManager(dataSourceCentral())
-    }
+    @get:Bean
+    @get:Qualifier(QUALIFIER)
+    open val jooqCentralTransactionManager: DataSourceTransactionManager
+        get() {
+            return DataSourceTransactionManager(this.dataSourceCentral)
+        }
 
-    @Bean
-    @Qualifier(QUALIFIER)
-    open fun jooqCentralConnectionProvider(): DataSourceConnectionProvider {
-        return DataSourceConnectionProvider(this.jooqCentralTransactionAwareDataSourceProxy())
-    }
+    @get:Bean
+    @get:Qualifier(QUALIFIER)
+    open val jooqCentralConnectionProvider: DataSourceConnectionProvider
+        get() {
+            return DataSourceConnectionProvider(this.jooqCentralTransactionAwareDataSourceProxy)
+        }
 
-    @Bean
-    @Qualifier(QUALIFIER)
-    open fun centralDslContext(): DefaultDSLContext {
-        return DefaultDSLContext(this.jooqCentralConnectionProvider(), SQLDialect.MYSQL)
-    }
+    @get:Bean
+    @get:Qualifier(QUALIFIER)
+    open val centralDslContext: DefaultDSLContext
+        get() {
+            return DefaultDSLContext(this.jooqCentralConnectionProvider, SQLDialect.MYSQL)
+        }
 
     @PostConstruct
     fun onInitialize() {
         // Disable JOOQ logo
         System.setProperty("org.jooq.no-logo", "true")
+
+        log.info("Validating central schema")
+        val flyway = Flyway()
+        flyway.dataSource = this.dataSourceCentral
+        flyway.setLocations("classpath:/db/central/migration")
+        flyway.isIgnoreFutureMigrations = false
+        flyway.validate()
     }
 
     @PreDestroy

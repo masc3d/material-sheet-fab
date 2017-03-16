@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
-import sx.Lifecycle
 import sx.jms.Broker
 import sx.jms.activemq.ActiveMQBroker
 import java.util.concurrent.ScheduledExecutorService
@@ -19,7 +18,6 @@ import javax.annotation.PreDestroy
 import javax.inject.Inject
 import javax.persistence.EntityManagerFactory
 import javax.persistence.PersistenceUnit
-import kotlin.properties.Delegates
 
 /**
  * Entity synchronization configuration.
@@ -42,27 +40,23 @@ open class EntitySyncConfiguration {
     private lateinit var lifecycleController: LifecycleController
 
     /** Entity sync consumer */
-    @Bean
-    open fun entityConsumer(): EntityConsumer {
-        return EntityConsumer(
+    @get:Bean
+    open val entityConsumer: EntityConsumer
+        get () = EntityConsumer(
                 notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
                 requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
                 entityManagerFactory = this.entityManagerFactory,
                 listenerExecutor = this.executorService)
-    }
-
-    @Inject
-    private lateinit var entityConsumer: EntityConsumer
 
     /** Broker listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
             log.info("Detected broker start, initializing entity sync")
-            entityConsumer.start()
+            this@EntitySyncConfiguration.entityConsumer.start()
         }
 
         override fun onStop() {
-            entityConsumer.stop()
+            this@EntitySyncConfiguration.entityConsumer.stop()
         }
 
         override fun onConnectedToBrokerNetwork() {
