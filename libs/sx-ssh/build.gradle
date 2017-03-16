@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.1.0'
+        v_kotlin = '1.1.1'
     }
 
     repositories {
@@ -47,6 +47,6 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.2.1"
+            "ch.qos.logback:logback-classic:1.2.2"
     )
 }

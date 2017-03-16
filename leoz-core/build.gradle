@@ -123,7 +123,7 @@ dependencies {
 
     testCompile(
             "junit:junit:$v_junit",
-            "ch.qos.logback:logback-classic:1.2.1",
+            "ch.qos.logback:logback-classic:1.2.2",
             // webservice client libraries for test cases
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
             // jackson JSON serializer
