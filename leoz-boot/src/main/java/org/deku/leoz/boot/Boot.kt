@@ -9,7 +9,7 @@ import org.deku.leoz.Storage
 import org.deku.leoz.boot.config.BundleConfiguration
 import org.deku.leoz.boot.config.RestClientConfiguration
 import org.deku.leoz.bundle.*
-import org.deku.leoz.rest.RestClient
+import sx.rs.proxy.RestClientProxy
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.deku.leoz.service.discovery.DiscoveryService
 import org.slf4j.LoggerFactory
@@ -51,8 +51,8 @@ class Boot {
             val progress: Double
     )
 
-    class DiscoveryException(e: Throwable) : Exception(e) {}
-    class InstallationException(e: Throwable) : Exception(e) {}
+    class DiscoveryException(e: Throwable) : Exception(e)
+    class InstallationException(e: Throwable) : Exception(e)
 
     /**
      * Calculate progress of intermediate steps
@@ -172,7 +172,7 @@ class Boot {
                 if (versionPattern != null) {
                     finalVersionPattern = versionPattern
                 } else {
-                    val restClient: RestClient = Kodein.global.instance()
+                    val restClient: RestClientProxy = Kodein.global.instance()
                     val bundleService = restClient.proxy(BundleService::class.java)
 
                     val updateInfo = bundleService.info(bundleName = bundleName, versionAlias = versionAlias)

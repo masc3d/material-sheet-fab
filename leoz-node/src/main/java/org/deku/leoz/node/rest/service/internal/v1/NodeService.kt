@@ -21,7 +21,6 @@ class NodeService : org.deku.leoz.rest.service.internal.v1.NodeService {
     @Inject
     lateinit var entitySyncConfiguration: EntitySyncConfiguration
 
-    @Path("/sync")
     override fun sync(clean: Boolean) {
         this.entitySyncConfiguration.requestEntities(clean = clean)
     }

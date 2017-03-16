@@ -1,6 +1,7 @@
 package org.deku.leoz.config
 
-import org.deku.leoz.rest.RestClient
+import sx.rs.proxy.RestClientProxy
+import sx.rs.proxy.RestEasyClientProxy
 import java.net.URI
 
 /**
@@ -9,12 +10,17 @@ import java.net.URI
  */
 abstract class RestClientConfiguration {
     /**
+     * Overridden in derived configurations to provide a specific proxy client
+     */
+    protected abstract fun createClientProxyImpl(baseUri: URI, ignoreSsl: Boolean): RestClientProxy
+
+    /**
      * Factory method for creating a leoz rest client
      * @param host REST server host name
      * @param port REST server port
      * @param https Use https or regular http. Defaults to false (=http)
      */
-    fun createClient(host: String, port: Int, https: Boolean = false): RestClient {
+    fun createClientProxy(host: String, port: Int, https: Boolean = false): RestClientProxy {
         val scheme = when(https) {
             true -> "https"
             false -> "http"
@@ -26,8 +32,6 @@ abstract class RestClientConfiguration {
         // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
         val ignoreSslCertificate = !host.endsWith(HostConfiguration.CENTRAL_DOMAIN)
 
-        return RestClient(
-                baseUri = uri,
-                ignoreSslCertificate = ignoreSslCertificate)
+        return this.createClientProxyImpl(uri, ignoreSslCertificate)
     }
 }
