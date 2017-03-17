@@ -218,10 +218,10 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
 
             return DeliveryOption(
                     sddRoute.id.toString(),
-                    sddRoute.cutOff.toShortTime(),
-                    sddRoute.ltop.toShortTime(),
-                    sddRoute.etod.toShortTime(),
-                    sddRoute.ltod.toShortTime())
+                    sddRoute.cutOff,
+                    sddRoute.ltop,
+                    sddRoute.etod,
+                    sddRoute.ltod)
 
         } catch (s: ServiceException) {
             throw s

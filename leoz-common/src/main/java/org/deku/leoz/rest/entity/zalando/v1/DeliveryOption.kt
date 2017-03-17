@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
-import org.deku.leoz.rest.entity.ShortTime
 
 import java.text.SimpleDateFormat
 import java.util.*
@@ -16,40 +15,39 @@ class DeliveryOption {
     /**
      * Delivery option identifier
      */
-
     @get:ApiModelProperty(example = "228", required = true, value = "Delivery option identifier")
     @get:JsonProperty("id")
     var id: String? = null
+
     /**
      * Cut off time for order modification / cancelation
      */
-
     @get:ApiModelProperty(example = "2017-03-16T16:30:00.000Z", required = true, value = "Cut off time for order modification / cancelation")
     @get:JsonProperty("cut_off")
-    var cutOff: ShortTime? = null
+    var cutOff: Date? = null
+
     /**
      * Scheduled pick-up time
      */
-
     @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = true, value = "Scheduled pick-up time")
     @get:JsonProperty("pick_up")
-    var pickUp: ShortTime? = null
+    var pickUp: Date? = null
+
     /**
      * Earliest possible delivery time
      */
-
     @get:ApiModelProperty(example = "2017-03-16T17:30:00.000Z", required = true, value = "Earliest possible delivery time")
     @get:JsonProperty("delivery_from")
-    var deliveryFrom: ShortTime? = null
+    var deliveryFrom: Date? = null
+
     /**
      * Latest possible delivery time
      */
-
     @get:ApiModelProperty(example = "2017-03-16T21:30:00.000Z", required = true, value = "Latest possible delivery time")
     @get:JsonProperty("delivery_to")
-    var deliveryTo: ShortTime? = null
+    var deliveryTo: Date? = null
 
-    constructor(id: String, cutOff: ShortTime, pickUp: ShortTime, deliveryFrom: ShortTime, deliveryTo: ShortTime) {
+    constructor(id: String, cutOff: Date, pickUp: Date, deliveryFrom: Date, deliveryTo: Date) {
         this.id = id
         this.cutOff = (cutOff)
         this.pickUp = (pickUp)
@@ -57,8 +55,7 @@ class DeliveryOption {
         this.deliveryTo = (deliveryTo)
     }
 
-    constructor() {}
-
+    constructor()
 
     override fun equals(o: Any?): Boolean {
         if (this === o) {

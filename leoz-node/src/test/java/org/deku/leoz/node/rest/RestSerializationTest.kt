@@ -41,8 +41,22 @@ class RestSerializationTest {
     fun testIso8601DateFormat() {
         val o = Date()
         val oJson = this.objectMapper.writeValueAsString(o)
+        log.info(oJson)
         val i = ISO8601DateFormat().parse(oJson.trim('"'))
-
         Assert.assertEquals(o, i)
+    }
+
+    @Test
+    fun testIso8601DateFormatParsing() {
+        val t = "2016-11-28T10:34:25.097Z"
+        val i = ISO8601DateFormat().parse(t)
+        log.info("${i}")
+    }
+
+    @Test
+    fun testIso8601Time() {
+        val t = "17:00"
+        val d = ISO8601DateFormat().parse(t)
+        log.info("${d}")
     }
 }
