@@ -16,6 +16,7 @@ import org.jooq.Result
 import org.jooq.exception.TooManyRowsException
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.rs.ApiKey
+import sx.time.replaceDate
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -216,12 +217,13 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     title = "No Delivery Option found!",
                     details = "The given zip-code is not part of the defined delivery area"))
 
+            val currentDate = Date()
             return DeliveryOption(
                     sddRoute.id.toString(),
-                    sddRoute.cutOff,
-                    sddRoute.ltop,
-                    sddRoute.etod,
-                    sddRoute.ltod)
+                    sddRoute.cutOff.replaceDate(currentDate),
+                    sddRoute.ltop.replaceDate(currentDate),
+                    sddRoute.etod.replaceDate(currentDate),
+                    sddRoute.ltod.replaceDate(currentDate))
 
         } catch (s: ServiceException) {
             throw s
