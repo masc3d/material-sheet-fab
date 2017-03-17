@@ -61,7 +61,7 @@ open class UpdateConfiguration {
      */
     private val bundleServiceProxy by lazy {
         if (this.restClientProxy.isPresent)
-            this.restClientProxy.get().proxy(BundleService::class.java)
+            this.restClientProxy.get().create(BundleService::class.java)
         else
             this.bundleService
     }

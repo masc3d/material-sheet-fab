@@ -20,6 +20,12 @@ class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
         return JerseyClientProxy(baseUri, ignoreSsl)
     }
 
+    init {
+        this.host = "localhost"
+        this.https = false
+        this.port = RestConfiguration.DEFAULT_PORT
+    }
+
     companion object {
         val log = LoggerFactory.getLogger(RestClientConfiguration::class.java)
 
@@ -32,30 +38,20 @@ class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
             /** Rest client */
             bind<RestClientProxy>() with provider {
                 val config: RestClientConfiguration = instance()
-                config.createClientProxy(config.httpHost, RestConfiguration.DEFAULT_PORT, config.https)
+                config.createClientProxy()
             }
 
             /** Bundle service */
             bind<BundleService>() with provider {
                 val restClient: RestClientProxy = instance()
-                restClient.proxy(BundleService::class.java)
+                restClient.create(BundleService::class.java)
             }
 
             /** Station service */
             bind<StationService>() with provider {
                 val restClient: RestClientProxy = instance()
-                restClient.proxy(StationService::class.java)
+                restClient.create(StationService::class.java)
             }
         }
     }
-
-    /**
-     * HTTP host to use for rest clients
-     */
-    var httpHost: String= "localhost"
-
-    /**
-     * Connect via HTTPS
-     */
-    var https: Boolean = false
 }

@@ -7,15 +7,16 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import feign.Feign
 import feign.FeignException
-import org.deku.leoz.config.FeignRestClientConfiguration.Companion.target
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.model.Storage
+import sx.rs.proxy.FeignClientProxy.*
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.BehaviorSubject
 import sx.android.ApplicationPackage
 import sx.util.zip.verify
 import sx.concurrent.Service
+import sx.rs.proxy.FeignClientProxy
 import sx.time.Duration
 import sx.time.seconds
 import java.io.File
@@ -145,9 +146,9 @@ class UpdateService(
                 log.info("Downloading bundle [${downloadFile}]")
 
                 // For binary response stream, need to build target manually, so we can inject a decoder implementation
-                val feignBuilder: Feign.Builder = Kodein.global.instance()
+                val feignClientProxy: FeignClientProxy = Kodein.global.instance()
 
-                val bundleService: BundleService = feignBuilder.target(
+                val bundleService: BundleService = feignClientProxy.target(
                         apiType = BundleService::class.java,
                         output = FileOutputStream(downloadFile),
                         progressCallback = { p: Float, bytesCopied: Long ->
@@ -171,7 +172,6 @@ class UpdateService(
 
                 downloadFile.renameTo(apkFile)
             }
-
 
             // Clean up incomplete downloads from previous runs
             this.workingDir.listFiles(FileFilter {

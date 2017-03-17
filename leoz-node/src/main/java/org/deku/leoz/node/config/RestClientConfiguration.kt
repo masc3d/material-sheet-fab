@@ -1,5 +1,6 @@
 package org.deku.leoz.node.config
 
+import org.deku.leoz.config.RestClientConfiguration
 import org.deku.leoz.node.Application
 import sx.rs.proxy.RestClientProxy
 import org.springframework.context.annotation.Bean
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import sx.rs.proxy.RestEasyClientProxy
 import java.net.URI
+import javax.annotation.PostConstruct
 import javax.inject.Inject
 
 /**
@@ -14,7 +16,7 @@ import javax.inject.Inject
  */
 @Configuration
 @Profile(Application.PROFILE_CLIENT_NODE)
-open class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
+open class RestClientConfiguration : RestClientConfiguration() {
     override fun createClientProxyImpl(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
         return RestEasyClientProxy(baseUri, ignoreSsl)
     }
@@ -22,10 +24,14 @@ open class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguratio
     @Inject
     private lateinit var remotePeerConfiguration: RemotePeerConfiguration
 
+    @PostConstruct
+    open fun onInitialize() {
+        this.host = remotePeerConfiguration.host!!
+        this.port = remotePeerConfiguration.httpPort!!
+        this.https = true
+    }
+
     @get:Bean
     open val restClient: RestClientProxy
-        get() = this.createClientProxy(
-                host = remotePeerConfiguration.host!!,
-                port = remotePeerConfiguration.httpPort!!,
-                https = true)
+        get() = this.createClientProxy()
 }

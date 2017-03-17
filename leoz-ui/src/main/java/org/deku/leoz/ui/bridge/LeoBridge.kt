@@ -47,7 +47,7 @@ class LeoBridge : Disposable, MessageService.Listener {
     }
 
     private val messageServiceClient by lazy {
-        this.httpClient.proxy(IMessageService::class.java)
+        this.httpClient.create(IMessageService::class.java)
     }
 
     /**

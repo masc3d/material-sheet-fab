@@ -50,7 +50,7 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         // Higher level modules
         Kodein.global.addImport(ExecutorConfiguration.module)
         Kodein.global.addImport(DatabaseConfiguration.module)
-        Kodein.global.addImport(FeignRestClientConfiguration.module)
+        Kodein.global.addImport(RestClientConfiguration.module)
         Kodein.global.addImport(UpdateConfiguration.module)
         Kodein.global.addImport(DeviceConfiguration.module)
         Kodein.global.addImport(AidcConfiguration.module)

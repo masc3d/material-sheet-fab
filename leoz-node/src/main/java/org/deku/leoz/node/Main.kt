@@ -9,7 +9,6 @@ import com.vaadin.spring.boot.VaadinAutoConfiguration
 import org.deku.leoz.node.config.ApplicationConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.Storage
 import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanDefinition
@@ -17,7 +16,6 @@ import org.springframework.boot.Banner
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
 import org.springframework.boot.autoconfigure.web.*
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.context.properties.EnableConfigurationProperties

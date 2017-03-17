@@ -1,8 +1,6 @@
 package org.deku.leoz.boot.config
 
 import com.github.salomonbrys.kodein.*
-import org.deku.leoz.config.HostConfiguration
-import org.deku.leoz.config.RestConfiguration
 import sx.rs.proxy.RestClientProxy
 import sx.rs.proxy.RestEasyClientProxy
 import java.net.URI
@@ -26,18 +24,8 @@ class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
             /** Rest client */
             bind<RestClientProxy>() with provider {
                 val config: RestClientConfiguration = instance()
-                config.createClientProxy(config.httpHost, RestConfiguration.DEFAULT_PORT, config.https)
+                config.createClientProxy()
             }
         }
     }
-
-    /**
-     * HTTP host to use for rest clients
-     */
-    var httpHost: String = HostConfiguration.CENTRAL_HOST
-
-    /**
-     * Connect via HTTPS
-     */
-    var https: Boolean = true
 }
