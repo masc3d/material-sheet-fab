@@ -85,6 +85,14 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                 throw ServiceException(Problem("Delivery Option not matching given address.", "The given delivery option [ZIP: $delOptionZip] does not match the given target address zipcode [$targetAddrZip]"))
             }
 
+            val recordCount: Int = dslContext.fetchCount(
+                    Tables.SDD_FPCS_ORDER,
+                    Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE.eq(deliveryOrder.incomingId))
+
+            if (recordCount > 0) {
+                throw ServiceException(Problem(title = "Duplicate entry", details = "There is already an record with the given IncomingID [" + deliveryOrder.incomingId + "]. Multiple IncomingID's are not supported yet."))
+            }
+
             val fpcsRecord: SddFpcsOrderRecord = dslContext.newRecord(Tables.SDD_FPCS_ORDER)
             fpcsRecord.customersReference = deliveryOrder.incomingId
             fpcsRecord.customerNo = result.getValue(0, Tables.SDD_CUSTOMER.CUSTOMERID)
