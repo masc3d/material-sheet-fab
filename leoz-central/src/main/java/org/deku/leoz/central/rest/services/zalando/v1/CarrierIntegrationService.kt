@@ -9,6 +9,7 @@ import org.deku.leoz.rest.entity.zalando.v1.DeliveryOption
 import org.deku.leoz.rest.entity.zalando.v1.DeliveryOrder
 import org.deku.leoz.rest.entity.zalando.v1.NotifiedDeliveryOrder
 import org.deku.leoz.rest.entity.zalando.v1.Problem
+import org.deku.leoz.time.toShortTime
 import org.deku.leoz.ws.gls.shipment.*
 import org.jooq.DSLContext
 import org.jooq.Result
@@ -62,8 +63,12 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                             .join(Tables.SDD_CONTACT).on(Tables.SDD_CUSTOMER.CUSTOMERID.equal(Tables.SDD_CONTACT.CUSTOMERID))
                             .join(Tables.SDD_CONTZIP).on(Tables.SDD_CONTACT.ZIPLAYER.equal(Tables.SDD_CONTZIP.LAYER)))
                     .where(Tables.SDD_CUSTOMER.NAME1.equal("Zalando")
-                            .and(Tables.SDD_CONTZIP.ID.eq(deliveryOrder.deliveryOption.id.toInt())))
+                            .and(Tables.SDD_CONTZIP.ID.eq(deliveryOrder.deliveryOption.id!!.toInt())))
                     .fetch()
+
+            if (result.size == 0) {
+                throw ServiceException(Problem("Delivery option not valid", "No delivery options found with given ID. Contact GLS SDD-Team!"))
+            }
 
             val delOptionZip = result.getValue(0, Tables.SDD_CONTZIP.ZIP)
             val targetAddrZip = deliveryOrder.targetAddress.zipCode
@@ -83,7 +88,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             fpcsRecord.customersReference = deliveryOrder.incomingId
             fpcsRecord.customerNo = result.getValue(0, Tables.SDD_CUSTOMER.CUSTOMERID)
             fpcsRecord.contactNo = result.getValue(0, Tables.SDD_CONTACT.CONTACTID)
-            fpcsRecord.zipcodeRef = deliveryOrder.deliveryOption.id.toInt()
+            fpcsRecord.zipcodeRef = deliveryOrder.deliveryOption.id!!.toInt()
             fpcsRecord.nameFrom = deliveryOrder.sourceAddress.contactName
             fpcsRecord.streetFrom = deliveryOrder.sourceAddress.addressLine
             fpcsRecord.cityFrom = deliveryOrder.sourceAddress.city
@@ -135,36 +140,49 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             val printOptions = PrintingOptions()
             printOptions.returnLabels = returnLabels
 
+            val service = Service()
+            service.serviceName = "service_1000"
+
+            val shippingService = ShipmentService()
+            shippingService.service = service
+
             val shipmentRequestData: ShipmentRequestData = ShipmentRequestData()
             shipmentRequestData.shipment = shipment
             shipmentRequestData.printingOptions = printOptions
+            shipmentRequestData.shipment.service.add(shippingService)
 
-            val glsResponse: CreateParcelsResponse = glsShipmentProcessingService.createParcels(shipmentRequestData)
+            val glsResponse: CreateParcelsResponse
+            try {
+                glsResponse = glsShipmentProcessingService.createParcels(shipmentRequestData)
+                val parcelData = glsResponse.createdShipment.parcelData
 
-            val parcelData = glsResponse.createdShipment.parcelData
+                if (parcelData.size != 1){
+                    fpcsRecord.cancelRequested = -2
+                    fpcsRecord.store()
+                    throw ServiceException(Problem(title = "Error serving FPCS", details = "Error processing Parceldata to central GLS System. Contact GLS SDD-Team!"))
+                }
 
-            if (parcelData.size != 1){
+                //TODO: Check if this is the right number.
+                val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[18]
+
+                var glsParcelNum = parcelData[0].expressData.courierParcelNumber
+                glsParcelNum = glsParcelNum.substring(1, 2) + "85" + glsParcelNum.substring(4)
+                fpcsRecord.glsTrackid = parcelData[0].trackID
+                fpcsRecord.glsParcelno = glsParcelNum.toDouble()
+
+                fpcsRecord.store()
+
+                return NotifiedDeliveryOrder(glsParcelNum)
+
+            } catch (e: Exception) {
                 fpcsRecord.cancelRequested = -2
                 fpcsRecord.store()
-                throw ServiceException(Problem(title = "Error serving FPCS", details = "Error processing Parceldata to central GLS System. Contact GLS SDD-Team!"))
+                throw ServiceException(Problem(title = "Error serving GLS Systems", details = "The order could not be stored in GLS Systems due to an error. Message: " + e.message), Response.Status.BAD_REQUEST)
             }
-
-            //TODO: Check if this is the right number.
-            val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[18]
-
-            var glsParcelNum = parcelData[0].expressData.courierParcelNumber
-            glsParcelNum = glsParcelNum.substring(1, 2) + "85" + glsParcelNum.substring(4)
-            fpcsRecord.glsTrackid = parcelData[0].trackID
-            fpcsRecord.glsParcelno = glsParcelNum.toDouble()
-
-            fpcsRecord.store()
-
-            return NotifiedDeliveryOrder(glsParcelNum)
-
         } catch (s: ServiceException) {
             throw s
         } catch(e: Exception) {
-            throw BadRequestException(e.message)
+            throw ServiceException(Problem(title = "Unhandled Exception", details = "Exception message: " + e.message), Response.Status.BAD_REQUEST)
         }
     }
 
@@ -193,30 +211,30 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                             .eq(target_address_zip_code)
                             .and(Tables.SDD_CONTZIP.LAYER.between(5, 6))
             ) ?: throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    type = "https://problem.io",
-                    instance = "/delivery-options",
+                    type = "",
+                    instance = "",
                     title = "No Delivery Option found!",
                     details = "The given zip-code is not part of the defined delivery area"))
 
             return DeliveryOption(
                     sddRoute.id.toString(),
-                    sddRoute.cutOff,
-                    sddRoute.ltop,
-                    sddRoute.etod,
-                    sddRoute.ltod)
+                    sddRoute.cutOff.toShortTime(),
+                    sddRoute.ltop.toShortTime(),
+                    sddRoute.etod.toShortTime(),
+                    sddRoute.ltod.toShortTime())
 
         } catch (s: ServiceException) {
             throw s
         } catch(e: TooManyRowsException) {
             throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    type = "https://problem.io",
-                    instance = "/delivery-options",
+                    type = "",
+                    instance = "",
                     title = "Too many delivery options found.",
                     details = "The given ZipCode is not unique. Contact GLS SDD Team!"))
         } catch (e: Exception) {
             throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    type = "https://problem.io",
-                    instance = "/delivery-options",
+                    type = "",
+                    instance = "",
                     title = "Unhandeled Exception!",
                     details = "Exception: {$e}"))
         }
