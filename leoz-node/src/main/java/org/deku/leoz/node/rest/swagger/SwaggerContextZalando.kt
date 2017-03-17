@@ -20,11 +20,11 @@ object SwaggerContextZalando : SwaggerContext {
 
     init {
         val info = Info()
-                .title("Leoz zalando webservice")
-                .description("Leoz zalando webservice API")
-                .version("1.0.0")
+                .title("Zalando LDN Webservice")
+                .description("Zalando LDN Webservice API")
+                .version("1.0.1")
                 .contact(Contact()
-                        .email("wolfgang.drewelies@derkurier.de"))
+                        .email("philipp.prangenberg@gls-germany.com"))
 
         val AUTH_APIKEY = RestConfiguration.AUTH_APIKEY_NAME
         val swagger = Swagger()

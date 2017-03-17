@@ -45,7 +45,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
     @Inject
     private lateinit var glsShipmentProcessingService: org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
 
-    private val API_KEY: String = "APIKEY"
+    private val API_KEY: String = "a2ad4a5d-0f7b-4bcb-8d6e-fa18da86fd22"
 
     /**
      *
