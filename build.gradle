@@ -20,13 +20,19 @@ ext {
                     user    : 'root',
                     password: 'dekudb',
                     baseline: 1,
-                    target  : 11
+                    target  : 1
             ],
             dev : [
                     url     : 'jdbc:mysql://10.0.10.10:3306?useSSL=false',
                     user    : 'root',
                     password: 'root',
-                    target  : 11
+                    target  : 1
+            ],
+            schaafheim_dev : [
+                    url     : 'jdbc:mysql://lord65:3306?useSSL=false',
+                    user    : 'root',
+                    password: 'dekudb',
+                    target  : 1
             ]
     ]
 }
