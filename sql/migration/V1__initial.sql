@@ -3618,10 +3618,10 @@ CREATE TABLE `mst_bundle_version` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 `mst_bundle_version_sync_insert` BEFORE INSERT ON `mst_bundle_version` FOR EACH ROW
-BEGIN
-SET NEW.sync_id = f_sync_increment('mst_bundle_version');
-END */;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `mst_bundle_version_sync_insert` BEFORE INSERT ON `mst_bundle_version` FOR EACH ROW
+  BEGIN
+    SET NEW.sync_id = f_sync_increment('mst_bundle_version');
+  END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
