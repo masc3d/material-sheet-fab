@@ -961,7 +961,7 @@ CREATE TABLE `checkg` (
   KEY `run` (`run`),
   KEY `timestamp` (`timestamp`),
   KEY `dispPerm` (`dispPerm`)
-) ENGINE=InnoDB AUTO_INCREMENT=103880718 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=103884968 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4284,7 +4284,7 @@ CREATE TABLE `rkdetails` (
   KEY `aktrk` (`rknr_akt`),
   KEY `sdgstatus` (`sdgstatus`),
   KEY `preisnn` (`preisnn`)
-) ENGINE=InnoDB AUTO_INCREMENT=6031128 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6031194 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4305,7 +4305,7 @@ CREATE TABLE `rkkopf` (
   KEY `lieferdepot` (`lieferdepot`),
   KEY `rollkartendatum` (`rollkartendatum`),
   KEY `druckzeit` (`druckzeit`)
-) ENGINE=InnoDB AUTO_INCREMENT=648353 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=648356 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4327,7 +4327,7 @@ CREATE TABLE `scaerror` (
   KEY `sendstatus` (`sendstatus`),
   KEY `uidLogin` (`uidLogin`),
   KEY `errorts` (`errorTs`)
-) ENGINE=InnoDB AUTO_INCREMENT=394373016 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=394376158 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4352,7 +4352,7 @@ CREATE TABLE `scaimages` (
   `extNr` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `sendstatus` (`sendstatus`)
-) ENGINE=InnoDB AUTO_INCREMENT=2812714 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2812715 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4507,7 +4507,7 @@ CREATE TABLE `scaposdata` (
   KEY `timestamp` (`timestamp`),
   KEY `tsPos` (`posDt`),
   KEY `liniennr` (`liniennr`)
-) ENGINE=InnoDB AUTO_INCREMENT=123984423 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=123988696 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4570,7 +4570,7 @@ CREATE TABLE `scascans` (
   KEY `linieIn` (`linieIn`),
   KEY `linieOut` (`linieOut`),
   KEY `tsscanned` (`tsScanned`)
-) ENGINE=InnoDB AUTO_INCREMENT=20022072 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20022074 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5379,7 +5379,7 @@ CREATE TABLE `sys_checkproc` (
   PRIMARY KEY (`id`),
   KEY `proc_id_index` (`proc_id`),
   KEY `error_code_index` (`errorcode`)
-) ENGINE=InnoDB AUTO_INCREMENT=263887 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=265128 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -8106,7 +8106,7 @@ CREATE TABLE `tblhistorie` (
   KEY `OrderID` (`OrderID`),
   KEY `MsgLocation` (`MsgLocation`),
   KEY `dOI` (`dOI`)
-) ENGINE=InnoDB AUTO_INCREMENT=22700437 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22700545 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -9039,7 +9039,7 @@ CREATE TABLE `tblofflinelog` (
   KEY `changer` (`changer`),
   KEY `filenameOnly` (`filenameOnly`),
   KEY `priority` (`priority`)
-) ENGINE=InnoDB AUTO_INCREMENT=143701962 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=143703579 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -9950,7 +9950,7 @@ CREATE TABLE `tblstatus` (
   KEY `Zeit` (`Zeit`),
   KEY `KZ_Status` (`KZ_Status`),
   KEY `OrderIDSta` (`OrderIDSta`)
-) ENGINE=InnoDB AUTO_INCREMENT=253024389 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=253024464 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -10759,23 +10759,53 @@ SET character_set_client = utf8;
                                            1 AS `BagBelegNrAbC`*/;
 SET character_set_client = @saved_cs_client;
 
-DELIMITER $$
-
-# Function for incrementing sync id for a specific table
-# @param Table name
-# @returns Incremented sync id for this table
-
-CREATE FUNCTION f_sync_increment(p_table_name VARCHAR(50))
-  RETURNS BIGINT
+--
+-- Dumping routines for database 'dekuclient'
+--
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` FUNCTION `f_sync_increment`(p_table_name VARCHAR(50)) RETURNS bigint(20)
   BEGIN
     UPDATE sys_sync
     SET sync_id = (@sync_id := sync_id + 1)
     WHERE table_name = p_table_name;
 
     RETURN @sync_id;
-  END $$
-
+  END ;;
 DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` FUNCTION `f_tan`(typ int) RETURNS bigint(20)
+  SQL SECURITY INVOKER
+  BEGIN
+    UPDATE usystblzaehler
+    SET Tageszaehler = (@Tageszaehler := Tageszaehler + 1)
+    WHERE CounterTyp = typ;
+    RETURN @Tageszaehler;
+  END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Current Database: `dekutmp`
@@ -11447,6 +11477,10 @@ CREATE TABLE `tblauftragtmp` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping routines for database 'dekutmp'
+--
+
+--
 -- Current Database: `dekuclient`
 --
 
@@ -11899,4 +11933,4 @@ USE `dekutmp`;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-03-18 17:33:36
+-- Dump completed on 2017-03-18 21:02:57

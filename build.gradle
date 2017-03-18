@@ -30,8 +30,16 @@ ext {
             ],
             schaafheim_dev : [
                     url     : 'jdbc:mysql://lord65:3306?useSSL=false',
-                    user    : 'root',
+                    user    : 'migration',
                     password: 'dekudb',
+                    baseline: 1,
+                    target  : 1
+            ],
+            _Live_ : [
+                    url     : 'jdbc:mysql://10.3.73.63:3306?useSSL=false',
+                    user    : 'migation',
+                    password: 'dekudb',
+                    baseline: 1,
                     target  : 1
             ]
     ]
