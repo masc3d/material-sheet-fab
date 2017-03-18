@@ -6,20 +6,41 @@ import org.flywaydb.gradle.task.FlywayRepairTask
 import org.flywaydb.gradle.task.FlywayValidateTask
 
 ext {
+    instances = [:]
+}
+
+if (file('local.gradle').exists())
+    apply from: 'local.gradle'
+
+ext {
     // Flyway instances. A set of flyway tasks will be created for each one.
-    instances = [
+    instances += [
             leox: [
                     url     : 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
                     baseline: 1,
-                    target  : 11
+                    target  : 1
             ],
             dev : [
                     url     : 'jdbc:mysql://10.0.10.10:3306?useSSL=false',
                     user    : 'root',
                     password: 'root',
-                    target  : 11
+                    target  : 1
+            ],
+            schaafheim_dev : [
+                    url     : 'jdbc:mysql://lord65:3306?useSSL=false',
+                    user    : 'migration',
+                    password: 'dekudb',
+                    baseline: 1,
+                    target  : 1
+            ],
+            _Live_ : [
+                    url     : 'jdbc:mysql://10.3.73.63:3306?useSSL=false',
+                    user    : 'migation',
+                    password: 'dekudb',
+                    baseline: 1,
+                    target  : 1
             ]
     ]
 }
