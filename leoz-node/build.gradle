@@ -348,6 +348,13 @@ wsdl2javaExt {
 }
 
 wsdl2java {
+    doFirst {
+        WS_CXF_GENERATED_DIR.deleteDir()
+    }
+
+    inputs.dir WS_WSDL_DIR
+    outputs.dir WS_CXF_GENERATED_DIR
+
     generatedWsdlDir = WS_CXF_GENERATED_DIR
     wsdlDir = WS_WSDL_DIR
     wsdlsToGenerate = [
