@@ -37,7 +37,7 @@ ext {
             ],
             _Live_ : [
                     url     : 'jdbc:mysql://10.3.73.63:3306?useSSL=false',
-                    user    : 'migation',
+                    user    : 'migration',
                     password: 'dekudb',
                     baseline: 1,
                     target  : 1
