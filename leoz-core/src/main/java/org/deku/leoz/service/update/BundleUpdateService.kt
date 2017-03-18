@@ -62,7 +62,7 @@ class BundleUpdateService(
             val install: Boolean = false,
             val storeInLocalRepository: Boolean = false,
             val requiresBoot: Boolean = false
-    ) {}
+    )
 
     /**
      * Update presets
@@ -75,6 +75,7 @@ class BundleUpdateService(
     private val service = object : Service(
             executorService = this.executorService,
             initialDelay = Duration.ZERO) {
+
         override fun run() {
             // Clean bundles before update
             try {
@@ -93,6 +94,10 @@ class BundleUpdateService(
             }
 
             log.info("Update sequence complete")
+        }
+
+        fun submit(command: () -> Unit) {
+            this.submitSupplementalTask(command)
         }
     }
 
@@ -132,7 +137,19 @@ class BundleUpdateService(
      */
     private fun clean() {
         if (this.localRepository != null) {
-            this.localRepository.clean(this.presets.map { it.bundleName })
+            this.localRepository.cleanBundles(this.presets.map { it.bundleName })
+        }
+    }
+
+    /**
+     * Schedule cleanup
+     * @param preserve Preserve spec
+     */
+    fun scheduleCleanup(preserve: List<BundleRepository.PreserveSpec>) {
+        if (this.localRepository != null) {
+            this.service.submit {
+                this.localRepository.cleanVersions(preserve)
+            }
         }
     }
 
@@ -218,7 +235,7 @@ class BundleUpdateService(
 
         // Clean older bundles
         if (this.localRepository != null && this.cleanup) {
-            this.localRepository.clean(bundleName, listOf(latestDesignatedVersion))
+            this.localRepository.cleanVersions(bundleName, listOf(latestDesignatedVersion))
         }
 
         if (preset.install) {

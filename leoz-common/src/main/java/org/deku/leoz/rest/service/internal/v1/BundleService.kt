@@ -50,4 +50,9 @@ interface BundleService {
             @PathParam(BUNDLE) @ApiParam(example = "leoz-mobile", value = "Bundle name") bundleName: String,
             @PathParam(VERSION) version: String
     ): Response
+
+    @GET
+    @Path("/clean-repository")
+    @ApiOperation(value = "Clean repository, removes all unused bundles")
+    fun cleanRepository()
 }

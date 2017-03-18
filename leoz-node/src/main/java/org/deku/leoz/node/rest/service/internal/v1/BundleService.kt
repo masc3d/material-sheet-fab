@@ -1,30 +1,27 @@
 package org.deku.leoz.node.rest.service.internal.v1
 
-import org.deku.leoz.bundle.BundleType
-import sx.packager.BundleRepository
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.UpdateConfiguration
-import org.deku.leoz.service.update.UpdateInfo
-import org.deku.leoz.service.update.UpdateInfoRequest
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
-import org.deku.leoz.node.rest.ServiceException
+import org.deku.leoz.service.update.BundleUpdateService
+import org.deku.leoz.service.update.UpdateInfo
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
+import sx.packager.BundleRepository
 import sx.platform.OperatingSystem
 import sx.rs.ApiKey
 import java.io.File
-import java.io.IOException
-import java.nio.file.Files
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.Path
 import javax.ws.rs.WebApplicationException
-import java.nio.file.Files.readAllBytes
-import java.nio.file.Paths
-import javax.ws.rs.core.*
+import javax.ws.rs.core.Context
+import javax.ws.rs.core.HttpHeaders
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 
 /**
@@ -44,6 +41,9 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
     /** Leoz bundle repository */
     @Inject
     private lateinit var bundleRepository: BundleRepository
+
+    @Inject
+    private lateinit var bundleUpdateService: BundleUpdateService
 
     @Inject
     private lateinit var updateConfiguration: UpdateConfiguration
@@ -130,5 +130,13 @@ open class BundleService : org.deku.leoz.rest.service.internal.v1.BundleService 
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${downloadFile.name}\"")
                 .header(HttpHeaders.CONTENT_LENGTH, downloadFile.length().toString())
                 .build()
+    }
+
+    override fun cleanRepository() {
+        this.bundleUpdateService.scheduleCleanup(
+                preserve = this.bundleVersionRepository
+                        .findAll()
+                        .map { BundleRepository.PreserveSpec(name = it.bundle, pattern = it.version) }
+        )
     }
 }
