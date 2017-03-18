@@ -10759,6 +10759,24 @@ SET character_set_client = utf8;
                                            1 AS `BagBelegNrAbC`*/;
 SET character_set_client = @saved_cs_client;
 
+DELIMITER $$
+
+# Function for incrementing sync id for a specific table
+# @param Table name
+# @returns Incremented sync id for this table
+
+CREATE FUNCTION f_sync_increment(p_table_name VARCHAR(50))
+  RETURNS BIGINT
+  BEGIN
+    UPDATE sys_sync
+    SET sync_id = (@sync_id := sync_id + 1)
+    WHERE table_name = p_table_name;
+
+    RETURN @sync_id;
+  END $$
+
+DELIMITER ;
+
 --
 -- Current Database: `dekutmp`
 --
