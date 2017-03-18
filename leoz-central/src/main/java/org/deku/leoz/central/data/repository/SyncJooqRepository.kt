@@ -40,17 +40,16 @@ class SyncJooqRepository {
         return this.qFindSyncIdByTableName.prepared {
             val query = it.bind(Tables.SYS_SYNC.TABLE_NAME.name, tableName)
 
-            val record = query.fetchOne()
-
-            if (record != null)
-                record.value1()
-            else {
+            query.fetchOne()
+                    ?.value1()
+                    ?: {
+                // Create new record
                 val newRecord = dslContext.newRecord(Tables.SYS_SYNC)
                 newRecord.tableName = tableName
                 newRecord.store()
 
                 query.fetchOne().value1()
-            }
+            }()
         }
     }
 }
