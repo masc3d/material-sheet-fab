@@ -37,10 +37,20 @@ class SyncJooqRepository {
      * @param tableName Table name
      */
     fun findSyncIdByTableName(tableName: String): Long {
-            return this.qFindSyncIdByTableName.prepared {
-                it.bind(Tables.SYS_SYNC.TABLE_NAME.name, tableName)
-                    .fetchOne()
-                    .value1()
+        return this.qFindSyncIdByTableName.prepared {
+            val query = it.bind(Tables.SYS_SYNC.TABLE_NAME.name, tableName)
+
+            val record = query.fetchOne()
+
+            if (record != null)
+                record.value1()
+            else {
+                val newRecord = dslContext.newRecord(Tables.SYS_SYNC)
+                newRecord.tableName = tableName
+                newRecord.store()
+
+                query.fetchOne().value1()
             }
+        }
     }
 }
