@@ -4,8 +4,6 @@ USE `dekuclient`;
 
 DELIMITER $$
 
-INSERT INTO `sys_sync` (`table_name`) VALUES ('XXX') $$
-
 ALTER TABLE `XXX`
   ADD COLUMN `sync_id` BIGINT NOT NULL DEFAULT 0,
   ADD INDEX `ix_sync_id` (`sync_id`) $$
