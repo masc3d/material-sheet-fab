@@ -1,3 +1,13 @@
+import com.jcraft.jsch.JSch
+import com.jcraft.jsch.JSchException
+import com.jcraft.jsch.Session
+import com.jcraft.jsch.agentproxy.ConnectorFactory
+import com.jcraft.jsch.agentproxy.RemoteIdentityRepository
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.transport.JschConfigSessionFactory
+import org.eclipse.jgit.transport.OpenSshConfig
+import org.eclipse.jgit.transport.SshSessionFactory
+import org.eclipse.jgit.util.FS
 import sx.packager.BundleRepository
 import sx.platform.PlatformId
 import sx.rsync.Rsync
@@ -20,6 +30,11 @@ def assertJvmVersion(String vmVersion) {
 assertJvmVersion(v_jvm)
 
 buildscript {
+    ext {
+        v_jgit = '4.6.1.201703071140-r'
+        v_jsch = '0.0.9'
+    }
+
     repositories {
         mavenCentral()
         jcenter()
@@ -30,8 +45,17 @@ buildscript {
 
     dependencies {
         classpath "sx:sx-ssh:0.1"
+        classpath "sx:sx-common:0.1"
         classpath "sx:sx-packager-gradle:0.1"
         classpath "sx:sx-serialization:0.1"
+
+        classpath(
+                "org.eclipse.jgit:org.eclipse.jgit:$v_jgit",
+                // For authenticating ssh/jgit against key agent
+                "com.jcraft:jsch.agentproxy.connector-factory:$v_jsch",
+                "com.jcraft:jsch.agentproxy.jsch:$v_jsch",
+                "com.jcraft:jsch.agentproxy.sshagent:$v_jsch",
+                "com.jcraft:jsch.agentproxy.pageant:$v_jsch")
 
         classpath(
                 "ca.cutterslade.gradle:gradle-dependency-analyze:1.1.0",
@@ -228,4 +252,72 @@ subprojects {
         into buildPlatformDir
     }
     tasks.copyGlobalPlatformDirToBuild.dependsOn(tasks.copyGlobalPlatformDirToProject)
+}
+
+// GIT maintenance tasks
+
+//region JSCH setup
+/**
+ * Customized JSCH config session factory
+ */
+class MyJschConfigSessionFactory extends JschConfigSessionFactory {
+    @Override
+    protected void configure(OpenSshConfig.Host hc, Session session) {
+        session.setConfig("StrictHostKeyChecking", "false")
+    }
+
+    @Override
+    protected JSch createDefaultJSch(FS fs) throws JSchException {
+        def con = ConnectorFactory.getDefault().createConnector()
+
+        if (con == null)
+            throw new IllegalStateException("No jsch agent proxy connector available")
+
+        JSch.setConfig("PreferredAuthentications", "publickey")
+        JSch jsch = new JSch()
+        RemoteIdentityRepository irepo = new RemoteIdentityRepository(con)
+        jsch.identityRepository = irepo
+        return jsch
+    }
+}
+
+// Provide session factory to jgit
+SshSessionFactory.setInstance(new MyJschConfigSessionFactory())
+//endregion
+
+/**
+ * Removes GIT tags in root in local and remote repositories
+ */
+task gitRemoveRootTags {
+    group = 'git'
+
+    doLast {
+        def git = Git.open(project.rootDir)
+
+        def lc = git.tagList()
+        def tags = lc.call()
+
+        def toDelete = tags
+                .findAll {
+            def file = new File(it.name)
+            (file.parent == "refs/tags")
+        }
+
+        toDelete.forEach {
+            println("Removing ${it.name} ${it.leaf}")
+        }
+
+        def push = git.push()
+                .setRefSpecs(
+                toDelete.collect {
+                    RefSpec().setSource(null).setDestination(it.name)
+                })
+        push.call()
+
+        def td = git.tagDelete()
+        td.setTags(*toDelete.collect { it.name })
+        td.call()
+
+        git.close()
+    }
 }
