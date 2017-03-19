@@ -8,6 +8,8 @@ import org.eclipse.jgit.transport.JschConfigSessionFactory
 import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshSessionFactory
 import org.eclipse.jgit.util.FS
+import sx.ProcessExecutor
+import sx.ProcessExecutor.ProcessRunException
 import sx.packager.BundleRepository
 import sx.platform.PlatformId
 import sx.rsync.Rsync
@@ -319,5 +321,44 @@ task gitRemoveRootTags {
         td.call()
 
         git.close()
+    }
+}
+
+/**
+ * Pulls and pushes all subtrees
+ */
+task gitSubtreeSync {
+    group = 'git'
+
+    doLast {
+        def subtrees = [
+                [
+                        path: "leoz-central-schema",
+                        repo: "ssh://git@git.derkurier.de:13020/leoz/leoz-central-schema.git",
+                        ref : "master"
+                ]
+        ]
+
+        subtrees.each {
+            println "Pulling subtree ${it}"
+
+            try {
+                def result = ProcessExecutor.run([
+                        'git', 'subtree', 'pull', '--squash', '--prefix=' + it['path'], it['repo'], it['ref']])
+            } catch(ProcessRunException e) {
+                throw new IllegalStateException(e.result.error)
+            }
+        }
+
+        subtrees.each {
+            println "Pushing subtree ${it}"
+
+            try {
+                def result = ProcessExecutor.run([
+                        'git', 'subtree', 'push', '--prefix=' + it['path'], it['repo'], it['ref']])
+            } catch(ProcessRunException e) {
+                throw new IllegalStateException(e.result.error)
+            }
+        }
     }
 }
