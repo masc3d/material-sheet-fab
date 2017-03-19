@@ -329,16 +329,64 @@ task gitRemoveRootTags {
  */
 def subtrees = [
         [
-                name: "CentralSchema",
-                path: "leoz-central-schema",
-                repo: "ssh://git@git.derkurier.de:13020/leoz/leoz-central-schema.git",
-                ref : "master"
+                name: 'CentralSchema',
+                path: 'leoz-central-schema',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/leoz-central-schema.git',
+                ref : 'master'
         ],
         [
-                name: "SxCommon",
-                path: "libs/sx-common",
-                repo: "ssh://git@git.derkurier.de:13020/leoz/sx-common.git",
-                ref : "deku"
+                name: 'SxAndroid',
+                path: 'libs/sx-android',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-android.git',
+                ref : 'deku'
+        ],
+        [
+                name: 'SxAndroidHoneywell',
+                path: 'libs/sx-android-honeywell',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-android-honeywell.git',
+                ref : 'master'
+        ],
+        [
+                name: 'SxCommon',
+                path: 'libs/sx-common',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-common.git',
+                ref : 'deku'
+        ],
+        [
+                name: 'SxDiscovery',
+                path: 'libs/sx-discovery',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-discovery.git',
+                ref : 'master'
+        ],
+        [
+                name: 'SxFx',
+                path: 'libs/sx-fx',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-fx.git',
+                ref : 'deku'
+        ],
+        [
+                name: 'SxJms',
+                path: 'libs/sx-jms',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-jms.git',
+                ref : 'deku'
+        ],
+        [
+                name: 'SxRsync',
+                path: 'libs/sx-rsync',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-rsync.git',
+                ref : 'master'
+        ],
+        [
+                name: 'SxSerialization',
+                path: 'libs/sx-serialization',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-serialization.git',
+                ref : 'master'
+        ],
+        [
+                name: 'SxSsh',
+                path: 'libs/sx-ssh',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-ssh.git',
+                ref : 'master'
         ],
 ]
 
@@ -351,7 +399,7 @@ task gitSubtreePushAll {
 
 // Build tasks dynamically for each subtree
 subtrees.each { subtree ->
-    def taskNamePull = "gitSubtree${subtree['name']}Pull"
+    def taskNamePull = "gitSubtreePull${subtree['name']}"
     task "${taskNamePull}" {
         group = 'git'
 
@@ -367,7 +415,7 @@ subtrees.each { subtree ->
         }
     }
 
-    def taskNamePush = "gitSubtree${subtree['name']}Push"
+    def taskNamePush = "gitSubtreePush${subtree['name']}"
     task "${taskNamePush}" {
         group = 'git'
 
