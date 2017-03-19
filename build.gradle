@@ -42,25 +42,26 @@ buildscript {
 }
 
 ext {
-    // Leoz release path, relative to root project
     g_platform_identifier = PlatformId.current().toString()
 
+    // Leoz release path, relative to root project
     g_release_path = Paths.get(project.rootDir.toURI())
             .resolve("release")
             .toFile()
 
-    g_bin_path = new File(project.rootDir, 'bin')
-
+    // Leoz icon for OSX packages
     g_osx_icon = Paths.get(project.rootDir.toURI())
             .resolve('images')
             .resolve('DEKU.icon.icns')
             .toFile()
 
+    // Leoz icon for windows packages
     g_windows_icon = Paths.get(project.rootDir.toURI())
             .resolve('images')
             .resolve('DEKU.icon.ico')
             .toFile()
 
+    // Distribution path for local dev VM
     g_vm_dist_path = project.rootDir.toPath()
             .resolve('vm')
             .resolve('dist')
@@ -189,7 +190,7 @@ subprojects {
     }
 
     /**
-     * Task copying platform specific files from sx-common to project dir
+     * Task copying platform specific files from sx-rsync to project dir
      */
     task copyRsyncPlatformDirToProject(type: Copy) {
         from rsyncPlatformDir
@@ -200,7 +201,7 @@ subprojects {
     }
 
     /**
-     * Task copying platform specific files from sx-common to project build dir
+     * Task copying platform specific files from sx-rsync to project build dir
      */
     task copyRsyncPlatformDirToBuild(type: Copy) {
         from rsyncPlatformDir
