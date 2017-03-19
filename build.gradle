@@ -325,40 +325,63 @@ task gitRemoveRootTags {
 }
 
 /**
- * Pulls and pushes all subtrees
+ * GIT subtrees
  */
-task gitSubtreeSync {
+def subtrees = [
+        [
+                name: "CentralSchema",
+                path: "leoz-central-schema",
+                repo: "ssh://git@git.derkurier.de:13020/leoz/leoz-central-schema.git",
+                ref : "master"
+        ],
+        [
+                name: "SxCommon",
+                path: "libs/sx-common",
+                repo: "ssh://git@git.derkurier.de:13020/leoz/sx-common.git",
+                ref : "deku"
+        ],
+]
+
+/**
+ * Push all subtrees at once
+ */
+task gitSubtreePushAll {
     group = 'git'
+}
 
-    doLast {
-        def subtrees = [
-                [
-                        path: "leoz-central-schema",
-                        repo: "ssh://git@git.derkurier.de:13020/leoz/leoz-central-schema.git",
-                        ref : "master"
-                ]
-        ]
+// Build tasks dynamically for each subtree
+subtrees.each { subtree ->
+    def taskNamePull = "gitSubtree${subtree['name']}Pull"
+    task "${taskNamePull}" {
+        group = 'git'
 
-        subtrees.each {
-            println "Pulling subtree ${it}"
+        doLast {
+            println "Pulling subtree ${subtree}"
 
             try {
                 def result = ProcessExecutor.run([
-                        'git', 'subtree', 'pull', '--squash', '-P', it['path'], it['repo'], it['ref']])
-            } catch(ProcessRunException e) {
-                throw new IllegalStateException(e.result.error)
-            }
-        }
-
-        subtrees.each {
-            println "Pushing subtree ${it}"
-
-            try {
-                def result = ProcessExecutor.run([
-                        'git', 'subtree', 'push', '-P', it['path'], it['repo'], it['ref']])
-            } catch(ProcessRunException e) {
+                        'git', 'subtree', 'pull', '--squash', '-P', subtree['path'], subtree['repo'], subtree['ref']])
+            } catch (ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
             }
         }
     }
+
+    def taskNamePush = "gitSubtree${subtree['name']}Push"
+    task "${taskNamePush}" {
+        group = 'git'
+
+        doLast {
+            println "Pushing subtree ${subtree}"
+
+            try {
+                def result = ProcessExecutor.run([
+                        'git', 'subtree', 'push', '-P', subtree['path'], subtree['repo'], subtree['ref']])
+            } catch (ProcessRunException e) {
+                throw new IllegalStateException(e.result.error)
+            }
+        }
+    }
+
+    tasks.gitSubtreePushAll.dependsOn "${taskNamePush}"
 }
