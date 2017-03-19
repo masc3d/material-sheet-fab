@@ -1,8 +1,9 @@
 import sx.packager.BundleRepository
 import sx.platform.PlatformId
-import sx.ssh.SshTunnelProvider
-import sx.ssh.SshHost
 import sx.rsync.Rsync
+import sx.ssh.SshHost
+import sx.ssh.SshTunnelProvider
+
 import java.lang.management.ManagementFactory
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -66,8 +67,6 @@ ext {
             .toFile()
 }
 
-apply plugin: 'java'
-
 // Common configuration for all subprojects (including android)
 subprojects {
     // Common subproject buildscript configuration
@@ -95,45 +94,6 @@ subprojects {
     tasks.withType(JavaCompile) {
         options.bootClasspath = ManagementFactory.getRuntimeMXBean().bootClassPath
     }
-}
-
-// Common configuration for all non-android subprojects
-configure(
-        subprojects.findAll { it.path != ':leoz-mobile-app' && it.path != ':libs:sx-android' }
-) {
-    apply plugin: 'java'
-    // Analzye tasks (analyze* for showing unused dependencies eg.)
-    apply plugin: 'ca.cutterslade.analyze'
-
-    // Remove dependency to check task, as analysis plugin is good for hinting at dependency, but there's also false positives
-    check.dependsOn.remove('analyzeDependencies')
-
-    test {
-        ignoreFailures true
-    }
-
-    // Global jar configuration
-    jar {
-        doFirst {
-            jar {
-                manifest {
-                    if (project.hasProperty('mainClassName')) {
-                        attributes(
-                                'Main-Class': project.mainClassName
-                        )
-                    }
-
-                    attributes(
-                            'Implementation-Name': project.name,
-                            'Implementation-Version': project.version,
-                            'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
-                    )
-                }
-
-                entryCompression ZipEntryCompression.STORED
-            }
-        }
-    }
 
     ext {
         globalPlatformDir = new File(project.rootDir, 'platform')
@@ -142,6 +102,41 @@ configure(
         buildSupplementalsDir = new File(project.buildDir, 'supplementals')
         buildPlatformDir = new File(buildSupplementalsDir, 'platform')
         projectPlatformDir = new File(project.projectDir, 'platform')
+    }
+
+    plugins.withType(JavaPlugin).whenPluginAdded {
+        project.test {
+            ignoreFailures true
+        }
+
+        // Global jar configuration
+        project.jar {
+            doFirst {
+                jar {
+                    manifest {
+                        if (project.hasProperty('mainClassName')) {
+                            attributes(
+                                    'Main-Class': project.mainClassName
+                            )
+                        }
+
+                        attributes(
+                                'Implementation-Name': project.name,
+                                'Implementation-Version': project.version,
+                                'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
+                        )
+                    }
+
+                    entryCompression ZipEntryCompression.STORED
+                }
+            }
+        }
+
+        // Analzye tasks (analyze* for showing unused dependencies eg.)
+        project.apply plugin: 'ca.cutterslade.analyze'
+
+        // Remove dependency to check task, as analysis plugin is good for hinting at dependency, but there's also false positives
+        check.dependsOn.remove('analyzeDependencies')
     }
 
     // Setup common sx-packager-gradle plugin properties for all subprojects
@@ -194,8 +189,8 @@ configure(
     }
 
     /**
-    * Task copying platform specific files from sx-common to project dir
-    */
+     * Task copying platform specific files from sx-common to project dir
+     */
     task copyRsyncPlatformDirToProject(type: Copy) {
         from rsyncPlatformDir
         into projectPlatformDir
