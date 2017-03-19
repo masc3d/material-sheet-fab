@@ -344,7 +344,7 @@ task gitSubtreeSync {
 
             try {
                 def result = ProcessExecutor.run([
-                        'git', 'subtree', 'pull', '--squash', '--prefix=' + it['path'], it['repo'], it['ref']])
+                        'git', 'subtree', 'pull', '--squash', '-P', it['path'], it['repo'], it['ref']])
             } catch(ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
             }
@@ -355,7 +355,7 @@ task gitSubtreeSync {
 
             try {
                 def result = ProcessExecutor.run([
-                        'git', 'subtree', 'push', '--prefix=' + it['path'], it['repo'], it['ref']])
+                        'git', 'subtree', 'push', '-P', it['path'], it['repo'], it['ref']])
             } catch(ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
             }
