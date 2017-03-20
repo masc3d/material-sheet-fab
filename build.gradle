@@ -260,6 +260,9 @@ subprojects {
 
 // GIT maintenance tasks
 
+// Provide session factory to jgit
+SshSessionFactory.setInstance(new sx.jsch.ConfigSessionFactory())
+
 /**
  * Removes GIT tags in root in local and remote repositories
  */
