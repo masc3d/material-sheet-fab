@@ -338,7 +338,7 @@ def subtrees = [
                 name: 'SxAndroid',
                 path: 'libs/sx-android',
                 repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-android.git',
-                ref : 'deku'
+                ref : 'master'
         ],
         [
                 name: 'SxAndroidHoneywell',
@@ -350,7 +350,7 @@ def subtrees = [
                 name: 'SxCommon',
                 path: 'libs/sx-common',
                 repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-common.git',
-                ref : 'deku'
+                ref : 'master'
         ],
         [
                 name: 'SxDiscovery',
@@ -362,13 +362,13 @@ def subtrees = [
                 name: 'SxFx',
                 path: 'libs/sx-fx',
                 repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-fx.git',
-                ref : 'deku'
+                ref : 'master'
         ],
         [
                 name: 'SxJms',
                 path: 'libs/sx-jms',
                 repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-jms.git',
-                ref : 'deku'
+                ref : 'master'
         ],
         [
                 name: 'SxRsync',
