@@ -2,6 +2,7 @@ import org.flywaydb.core.Flyway
 import org.flywaydb.gradle.task.FlywayInfoTask
 import org.flywaydb.gradle.task.FlywayValidateTask
 import org.flywaydb.core.api.MigrationVersion
+import org.flywaydb.core.api.MigrationType
 import org.omg.CORBA.Object
 
 import java.nio.file.Files
@@ -142,11 +143,12 @@ class FlywayCopyTask extends FlywayInfoTask {
     protected Object run(Flyway flyway) {
         this.destination.deleteDir()
         this.destination.mkdirs()
-        flyway.info().all().findAll { it.state.isApplied() }.forEach {
+        flyway.info().all().findAll { it.type == MigrationType.SQL && it.state.isApplied() }.forEach {
             Files.copy(
                     this.source.toPath().resolve(it.script),
                     this.destination.toPath().resolve(it.script))
         }
+        return null
     }
 }
 
