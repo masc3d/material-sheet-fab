@@ -158,7 +158,7 @@ class FlywayValidateTaskHotfix extends FlywayValidateTask {
         def result = super.run(flyway)
 
         // TODO: remove this hotfix/validation when fixed upstream https://github.com/flyway/flyway/issues/1554)
-        flyway.info().all().findAll { it.state.isApplied() } each {
+        flyway.info().all().findAll { it.type == MigrationType.SQL && it.state.isApplied() } each {
             def targetVersion = MigrationVersion.fromVersion(extension.target)
             if (it.version.compareTo(targetVersion) > 0)
                 throw new IllegalStateException("Applied future migrations detected! :flywayClean will resolve this")
