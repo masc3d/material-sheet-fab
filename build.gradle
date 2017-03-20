@@ -371,6 +371,18 @@ def subtrees = [
                 ref : 'master'
         ],
         [
+                name: 'SxPackager',
+                path: 'libs/sx-packager',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-packager.git',
+                ref : 'master'
+        ],
+        [
+                name: 'SxPackagerGradle',
+                path: 'libs/sx-packager-gradle',
+                repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-packager-gradle.git',
+                ref : 'master'
+        ],
+        [
                 name: 'SxRsync',
                 path: 'libs/sx-rsync',
                 repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-rsync.git',
