@@ -17,6 +17,7 @@ interface DynamicScheduledExecutorService {
  * TODO: complete implementation, tracking
  * Created by masc on 16/03/16.
  */
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 open class TaskExecutorService(
         protected val executorService: ExecutorService)
 :
@@ -40,6 +41,7 @@ open class TaskExecutorService(
  * @param scheduledExecutorService A scheduled executor service to use (for scheduling only, except executorService is omitted)
  * @param executorService Regular executor service for regular submit
  */
+@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 class ScheduledTaskExecutorService(
         protected val compositeExecutorService: CompositeExecutorService,
         executorService: ExecutorService = compositeExecutorService)

@@ -1,6 +1,6 @@
 package sx.rx
 
-import rx.Observable
+import io.reactivex.Observable
 
 /**
  * RX Task
@@ -12,7 +12,7 @@ fun <T> task(block: (observer: (onNext: T) -> Unit) -> Unit): Observable<T> {
             block {
                 sub.onNext(it)
             }
-            sub.onCompleted()
+            sub.onComplete()
         } catch(e: Throwable) {
             sub.onError(e)
         }

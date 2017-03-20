@@ -73,7 +73,7 @@ class ProcessExecutor @JvmOverloads constructor(
         /**
          * Convenience method for running a command synchronously
          */
-        fun run(command: List<String>, trim: Boolean = false, omitEmptyLines: Boolean = false): Result {
+        @JvmStatic @JvmOverloads fun run(command: List<String>, trim: Boolean = false, omitEmptyLines: Boolean = false): Result {
             val pb: ProcessBuilder = ProcessBuilder(command)
 
             val output = StringBuffer()

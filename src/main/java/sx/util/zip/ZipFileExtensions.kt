@@ -17,7 +17,8 @@ fun ZipFile.verify() {
     val entries = this.entries()
     while (entries.hasMoreElements()) {
         val entry = entries.nextElement()
-        val stream = this.getInputStream(entry)
+        // Retrieving stream input is part of the verification
+        this.getInputStream(entry)
         val crc = entry.crc
         val compressedSize = entry.compressedSize
         val name = entry.name
