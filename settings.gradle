@@ -9,8 +9,6 @@ include ':sx-rsync'
 include ':sx-ssh'
 include ':sx-serialization'
 include ':sx-packager'
-include ':sx-packager-gradle'
-//include ':sx-android'
 include ':barbarywatchservice'
 
 include ':leoz-common'
@@ -29,12 +27,4 @@ project(':sx-rsync').projectDir = file('libs/sx-rsync')
 project(':sx-ssh').projectDir = file('libs/sx-ssh')
 project(':sx-serialization').projectDir = file('libs/sx-serialization')
 project(':sx-packager').projectDir = file('libs/sx-packager')
-project(':sx-packager-gradle').projectDir = file('libs/sx-packager-gradle')
 project(':barbarywatchservice').projectDir = file('libs/barbarywatchservice')
-
-// TODO: IntelliJ reports `Write access is allowed from write-safe contexts only.` on every build as soon as an adnroid project has been added. Not critical but very annoying.
-// TODO: IntelliJ runs wrong gradle task when android subprojects have been added (https://youtrack.jetbrains.com/issue/IDEA-165274). Workaround is to execute gradle tasks via console.
-//include ':leoz-mobile-app'
-//project(':leoz-mobile-app').projectDir = file('leoz-mobile/leoz-mobile-app')
-//include ':leoz-mobile-data'
-//project(':leoz-mobile-data').projectDir = file('leoz-mobile/leoz-mobile-data')
