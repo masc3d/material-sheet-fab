@@ -4,6 +4,8 @@ import com.jcraft.jsch.Session
 import com.jcraft.jsch.agentproxy.ConnectorFactory
 import com.jcraft.jsch.agentproxy.RemoteIdentityRepository
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.transport.RefSpec
 import org.eclipse.jgit.transport.JschConfigSessionFactory
 import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshSessionFactory
@@ -312,7 +314,7 @@ task gitRemoveRootTags {
         def push = git.push()
                 .setRefSpecs(
                 toDelete.collect {
-                    RefSpec().setSource(null).setDestination(it.name)
+                    new RefSpec().setSource(null).setDestination(it.name)
                 })
         push.call()
 
