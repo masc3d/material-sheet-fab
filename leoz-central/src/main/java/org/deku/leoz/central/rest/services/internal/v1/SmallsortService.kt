@@ -6,6 +6,7 @@ import org.deku.leoz.rest.service.internal.v1.SmallsortService
 import sx.rs.ApiKey
 import javax.inject.Named
 import javax.ws.rs.Path
+import org.deku.leoz.util.*
 
 
 /**
@@ -48,7 +49,7 @@ class SmallsortService : SmallsortService {
 
         throw NotImplementedError()
     }
-
+/**
     //TODO: In leoz-common integrieren
     fun checkCheckDigit(fullOrderNo: Double): Boolean{
         val stringOrderNo: String = fullOrderNo.toString()
@@ -96,4 +97,5 @@ class SmallsortService : SmallsortService {
         else
             return result
     }
+ **/
 }

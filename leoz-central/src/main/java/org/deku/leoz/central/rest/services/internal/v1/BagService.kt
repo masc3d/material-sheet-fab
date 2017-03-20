@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Profile
 import sx.rs.ApiKey
 import sx.time.toDate
+import sx.time.toTimestamp
 import java.util.*
 //import java.util.*
 import javax.inject.Inject
@@ -29,6 +30,8 @@ import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.PathParam
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 /**
  * Bundle service (leoz-central)
@@ -87,14 +90,24 @@ class BagService : BagService {
 **/
         //TODO
 
-        throw NotImplementedError()
-/**
-        try {
 
-            val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.eq(-1).and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal((java.time.LocalDate.now().toDate())))
+
+        try {
+            var dtWork:LocalDate=java.time.LocalDateTime.now().minusHours((6)).toLocalDate()
+            //val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(dtWork.toTimestamp())).fetch()
+            val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
+            if (result.getValue(0,0)==0){
+                //dtWork=nextWerktag(dtWork.addDays(-1),"100","DE","36285")
+            }else{
+                //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
+                //dtWork=nextwerktag(dtWork,"100","DE","36285"
+            }
         } catch(e: Exception) {
             throw BadRequestException(e.message)
-        }**/
+        }
+
+
+        throw NotImplementedError()
         }
 
 
