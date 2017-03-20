@@ -260,35 +260,6 @@ subprojects {
 
 // GIT maintenance tasks
 
-//region JSCH setup
-/**
- * Customized JSCH config session factory
- */
-class MyJschConfigSessionFactory extends JschConfigSessionFactory {
-    @Override
-    protected void configure(OpenSshConfig.Host hc, Session session) {
-        session.setConfig("StrictHostKeyChecking", "false")
-    }
-
-    @Override
-    protected JSch createDefaultJSch(FS fs) throws JSchException {
-        def con = ConnectorFactory.getDefault().createConnector()
-
-        if (con == null)
-            throw new IllegalStateException("No jsch agent proxy connector available")
-
-        JSch.setConfig("PreferredAuthentications", "publickey")
-        JSch jsch = new JSch()
-        RemoteIdentityRepository irepo = new RemoteIdentityRepository(con)
-        jsch.identityRepository = irepo
-        return jsch
-    }
-}
-
-// Provide session factory to jgit
-SshSessionFactory.setInstance(new MyJschConfigSessionFactory())
-//endregion
-
 /**
  * Removes GIT tags in root in local and remote repositories
  */
@@ -304,7 +275,8 @@ task gitRemoveRootTags {
         def toDelete = tags
                 .findAll {
             def file = new File(it.name)
-            (file.parent == "refs/tags")
+            def root = new File("refs/tags")
+            (file.parentFile.equals(root))
         }
 
         toDelete.forEach {
