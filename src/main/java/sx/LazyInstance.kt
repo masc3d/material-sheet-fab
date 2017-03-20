@@ -9,9 +9,11 @@ import java.util.concurrent.locks.ReentrantLock
  */
 class LazyInstance<T>
 {
+    private class Instance<T>(val value: T)
+
     private var supplier: (() -> T)?
     @Volatile private var lock: ReentrantLock?
-    @Volatile private var instance: Optional<T>? = null
+    @Volatile private var instance: Instance<T>? = null
 
     companion object {
         private val DEFAULT_THREADSAFETY = ThreadSafetyMode.Synchronized
@@ -56,7 +58,7 @@ class LazyInstance<T>
      * C'tor
      * @param threadSafetyMode Thread safe mode
      */
-    constructor(threadSafetyMode: ThreadSafetyMode) : this(null, threadSafetyMode) { }
+    constructor(threadSafetyMode: ThreadSafetyMode) : this(null, threadSafetyMode)
 
     /**
      * Reset on condition
@@ -127,10 +129,10 @@ class LazyInstance<T>
         if (instance == null) {
             this.withLock {
                 this.supplier = supplier
-                this.instance = Optional.ofNullable(supplier())
+                this.instance = Instance(value = supplier())
             }
         }
-        return this.instance!!.orElse(null)
+        return this.instance!!.value
     }
 
     /**
@@ -147,6 +149,6 @@ class LazyInstance<T>
     fun ifSet(action: (T) -> Unit) {
         val instance = this.instance
         if (instance != null)
-            action(instance.get())
+            action(instance.value)
     }
 }

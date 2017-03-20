@@ -1,19 +1,17 @@
 package sx.rx
 
+import io.reactivex.Observable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import org.junit.Assert
-import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import rx.Observable
-import rx.lang.kotlin.subscribeWith
-import rx.schedulers.Schedulers
-import sx.logging.slf4j.info
 import java.util.concurrent.CancellationException
 import java.util.concurrent.atomic.AtomicInteger
 
 
 fun <T> concat(observables: List<Observable<T>>): Observable<T> {
-    if (observables.size == 0)
+    if (observables.isEmpty())
         return Observable.empty()
 
     val o1 = observables[0]
@@ -49,7 +47,7 @@ class RxTest {
                 onNext(i)
                 it.onNext(i++)
             }
-            it.onCompleted()
+            it.onComplete()
         }
     }
 
@@ -58,12 +56,16 @@ class RxTest {
      */
     fun observableMergedDelayedNumbers(count: Int, delay: Long, onNext: (Int) -> Unit = {}): Observable<Int> {
         return Observable.merge((1..count).map { i ->
-            Observable.create<Int> {
+            Observable.unsafeCreate<Int> {
                 log.info("${Thread.currentThread().id} Emitting ${i}")
                 Thread.sleep(delay)
-                onNext(i)
-                it.onNext(i)
-                it.onCompleted()
+                try {
+                    onNext(i)
+                    it.onNext(i)
+                    it.onComplete()
+                } catch(e: Exception) {
+                    it.onError(e)
+                }
             }
         })
     }
@@ -89,7 +91,7 @@ class RxTest {
             log.info(String.format("Observed [%d]", i))
         })
 
-        cov.toCompletable().await()
+        cov.ignoreElements().blockingAwait()
     }
 
     @Test
@@ -107,13 +109,19 @@ class RxTest {
         // Wait until ~half the items have been emitted
         Thread.sleep(DELAY * COUNT / 2)
 
-        cov.subscribe({ i ->
-            Assert.assertFalse("Blocking until the party is over.",
-                    i < COUNT && emitCount.get() == COUNT)
-            log.info(String.format("Observed [%d]", i))
-        })
+        var error: Throwable? = null
+        cov
+                .doOnNext { i ->
+                    Assert.assertFalse("Blocking until the party is over.",
+                            i < COUNT && emitCount.get() == COUNT)
+                    log.info(String.format("Observed [%d]", i))
+                }
+                .doOnError {
+                    error = it
+                }
+                .blockingSubscribe()
 
-        cov.toCompletable().await()
+        if (error != null) throw error!!
     }
 
     @Test
@@ -134,13 +142,20 @@ class RxTest {
         // Wait until ~half the items have been emitted
         Thread.sleep(DELAY * COUNT / 2)
 
-        cov.subscribe({ i ->
-            Assert.assertFalse("Blocking until the party is over.",
-                    i < COUNT && emitCount.get() == COUNT)
-            log.info(String.format("Observed [%d]", i))
-        })
+        var error: Throwable? = null
+        cov
 
-        cov.toCompletable().await()
+                .doOnNext { i ->
+                    Assert.assertFalse("Blocking until the party is over.",
+                            i < COUNT && emitCount.get() == COUNT)
+                    log.info(String.format("Observed [%d]", i))
+                }
+                .doOnError {
+                    error = it
+                }
+                .blockingSubscribe()
+
+        if (error != null) throw error!!
     }
 
     @Test
@@ -161,13 +176,19 @@ class RxTest {
         // Wait until ~half the items have been emitted
         Thread.sleep(DELAY * COUNT / 2)
 
-        cov.subscribe({ i ->
-            Assert.assertFalse("Blocking until the party is over.",
-                    i < COUNT && emitCount.get() == COUNT)
-            log.info(String.format("Observed [%d]", i))
-        })
+        var error: Throwable? = null
+        cov
+                .doOnNext { i ->
+                    Assert.assertFalse("Blocking until the party is over.",
+                            i < COUNT && emitCount.get() == COUNT)
+                    log.info(String.format("Observed [%d]", i))
+                }
+                .doOnError {
+                    error = it
+                }
+                .blockingSubscribe()
 
-        cov.toCompletable().await()
+        if (error != null) throw error!!
     }
 
     @Test
@@ -176,16 +197,14 @@ class RxTest {
                 .subscribeOn(Schedulers.newThread())
                 .cache()
 
-        o.subscribeWith({
-            onNext { i ->
-                log.info(i)
-            }
-        })
-
+        o.subscribeBy(
+                onNext = { i ->
+                    log.info("${i}")
+                })
 
         Thread.sleep((COUNT + 2) * DELAY)
 
-        o.toCompletable().await()
+        o.blockingSubscribe()
     }
 
     @Test
@@ -193,63 +212,62 @@ class RxTest {
         val emitCount = AtomicInteger(0)
         val a = this.observableDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
                 .subscribeOn(Schedulers.newThread())
-                .subscribeAwaitableWith {
-                    onNext {
-                        log.info("Observed $it")
-                    }
-                    onError {
-                        log.info("$it")
-                    }
-                }.await()
+                .doOnNext {
+                    log.info("Observed $it")
+                }
+                .doOnError {
+                    log.info("$it")
+                }
+                .blockingSubscribe()
 
         Assert.assertTrue(emitCount.get() == COUNT)
     }
 
-    @Test
-    fun testRxSubscribeAwaitableCancellation() {
-        var seenError = false
-        val a = this.observableDelayedNumbers(COUNT, DELAY)
-                .subscribeOn(Schedulers.newThread())
-                .subscribeAwaitableWith {
-                    onNext {
-                        log.info("Observed $it")
-                    }
-                    onError {
-                        seenError = true
-                        log.info("$it")
-                    }
-                }
+    // TODO: migrate test cases to rxjava2
 
-        Thread.sleep(COUNT / 2 * DELAY)
+//    @Test
+//    fun testRxSubscribeAwaitableCancellation() {
+//        var seenError = false
+//        val a = this.observableDelayedNumbers(COUNT, DELAY)
+//                .subscribeOn(Schedulers.newThread())
+//                .doOnNext {
+//                    log.info("Observed $it")
+//                }
+//                .doOnError {
+//                    seenError = true
+//                    log.info("$it")
+//                }
+//
+//        Thread.sleep(COUNT / 2 * DELAY)
+//
+//        a.cancel()
+//
+//        try {
+//            a.await()
+//            Assert.fail("Expected ${CancellationException::class}")
+//        } catch(e: CancellationException) {
+//        }
+//
+//        Assert.assertTrue(seenError)
+//    }
 
-        a.cancel()
-
-        try {
-            a.await()
-            Assert.fail("Expected ${CancellationException::class}")
-        } catch(e: CancellationException) {
-        }
-
-        Assert.assertTrue(seenError)
-    }
-
-    @Test
-    fun testRxSubscribeAwaitableAwaitAfterCompletion() {
-        val emitCount = AtomicInteger(0)
-        val a = this.observableDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
-                .subscribeOn(Schedulers.newThread())
-                .subscribeAwaitableWith {
-                    onNext {
-                        log.info("Observed $it")
-                    }
-                    onError {
-                        log.info("$it")
-                    }
-                }
-
-        Thread.sleep((COUNT + 2) * DELAY)
-        a.await()
-
-        Assert.assertTrue(emitCount.get() == COUNT)
-    }
+//    @Test
+//    fun testRxSubscribeAwaitableAwaitAfterCompletion() {
+//        val emitCount = AtomicInteger(0)
+//        val a = this.observableDelayedNumbers(COUNT, DELAY, { i -> emitCount.incrementAndGet() })
+//                .subscribeOn(Schedulers.newThread())
+//                .subscribeAwaitableWith {
+//                    onNext {
+//                        log.info("Observed $it")
+//                    }
+//                    onError {
+//                        log.info("$it")
+//                    }
+//                }
+//
+//        Thread.sleep((COUNT + 2) * DELAY)
+//        a.await()
+//
+//        Assert.assertTrue(emitCount.get() == COUNT)
+//    }
 }

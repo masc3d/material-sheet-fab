@@ -39,6 +39,8 @@ import java.util.concurrent.TimeUnit
  * @author Kevin Bourrillion
  * @since 10.0
  */
+private typealias LogAction = (message: String) -> Unit
+
 class Stopwatch {
     /**
      * A time source; returns a time value representing the number of nanoseconds elapsed since some
@@ -243,6 +245,21 @@ class Stopwatch {
          */
         fun createStarted(ticker: Ticker): Stopwatch {
             return Stopwatch(ticker).start()
+        }
+
+        /**
+         * Creates (and starts) a new stopwatch and executes a block with automatic logging
+         * @param name Name of operation to measure
+         * @param log Log action to perform
+         * @param block BLock to execute/measure
+         */
+        fun <T> createStarted(name: String, log: LogAction = {}, block:(Stopwatch, LogAction) -> T): T{
+            val sw = Stopwatch.createStarted()
+            try {
+                return block(sw, log)
+            } finally {
+                log.invoke("${name} [${sw}]")
+            }
         }
 
         private fun chooseUnit(nanos: Long): TimeUnit {
