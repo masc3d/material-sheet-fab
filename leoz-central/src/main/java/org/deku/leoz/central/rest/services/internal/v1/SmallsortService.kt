@@ -37,11 +37,11 @@ class SmallsortService : SmallsortService {
             throw ServiceException(SmallsortService.ErrorCode.LEAD_SEAL_MISSING_CHECK_DIGIT)
         }
 
-        if(!checkCheckDigit(outgoingBag.bagReference!!.toDouble())) {
+        if(!checkCheckDigit(outgoingBag.bagReference!!)) {
             throw ServiceException(SmallsortService.ErrorCode.BAG_REFERENCE_WRONG_CHECK_DIGIT)
         }
 
-        if(!checkCheckDigit(outgoingBag.leadSeal!!.toDouble())) {
+        if(!checkCheckDigit(outgoingBag.leadSeal!!)) {
             throw ServiceException(SmallsortService.ErrorCode.LEAD_SEAL_WRONG_CHECK_DIGIT)
         }
 

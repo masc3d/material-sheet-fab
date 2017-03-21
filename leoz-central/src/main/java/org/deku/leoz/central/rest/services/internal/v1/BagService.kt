@@ -32,6 +32,7 @@ import javax.ws.rs.PathParam
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import org.deku.leoz.util.*
 
 /**
  * Bundle service (leoz-central)
@@ -79,15 +80,17 @@ class BagService : BagService {
         if(bagInitRequest.depotNr!! <= 0||bagInitRequest.depotNr!!>999){
             throw ServiceException(BagService.ErrorCode.DEPOT_NR_NOT_VALID)
         }
-/**
-        if(!checkCheckDigit(bagInitRequest.bagId!!.toDouble())) {
+
+        if(!checkCheckDigit(bagInitRequest.bagId!!)) {
             throw ServiceException(BagService.ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
         }
 
-        if(!checkCheckDigit(bagInitRequest.whiteSeal!!.toDouble())) {
+        if(!checkCheckDigit(bagInitRequest.whiteSeal!!)) {
             throw ServiceException(BagService.ErrorCode.WHITE_SEAL_WRONG_CHECK_DIGIT)
         }
-**/
+        if(!checkCheckDigit(bagInitRequest.yellowSeal!!)) {
+            throw ServiceException(BagService.ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
+        }
         //TODO
 
 
