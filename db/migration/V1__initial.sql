@@ -1,6 +1,6 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.13, for Win64 (x86_64)
 --
--- Host: 10.3.73.63    Database: dekuclient
+-- Host: dblive    Database: dekuclient
 -- ------------------------------------------------------
 -- Server version	5.7.17-log
 
@@ -961,7 +961,7 @@ CREATE TABLE `checkg` (
   KEY `run` (`run`),
   KEY `timestamp` (`timestamp`),
   KEY `dispPerm` (`dispPerm`)
-) ENGINE=InnoDB AUTO_INCREMENT=103884968 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=104008077 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1317,7 +1317,7 @@ CREATE TABLE `claprintctrl` (
   PRIMARY KEY (`id`),
   KEY `rptid` (`rptid`),
   KEY `clientid` (`clientid`)
-) ENGINE=InnoDB AUTO_INCREMENT=1225326 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1228982 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1427,7 +1427,7 @@ CREATE TABLE `clareklapositionen` (
   KEY `mwstshl` (`MwStShl`),
   KEY `betrag` (`dBetrag`),
   KEY `belegtext` (`Belegtext`)
-) ENGINE=InnoDB AUTO_INCREMENT=984286 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=984585 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2111,7 +2111,7 @@ CREATE TABLE `hubdepotmengen` (
   `CollieSoll` double DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `Index` (`DepotNr`,`ZuAb`)
-) ENGINE=InnoDB AUTO_INCREMENT=938 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=939 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2306,7 +2306,7 @@ CREATE TABLE `hublinienvertrag` (
   `GueltigBis` datetime DEFAULT NULL,
   `AuftragnehmerIDD` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=1255 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1263 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2346,7 +2346,7 @@ CREATE TABLE `hublinienvertragzusatz` (
   `Abfahrt` datetime DEFAULT NULL,
   `Adresse` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=13042 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13119 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3848,7 +3848,7 @@ CREATE TABLE `mst_route` (
   KEY `zipfrom` (`zipfrom`),
   KEY `country` (`country`),
   KEY `ix_sync_id` (`sync_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=856405 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=946347 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -4284,7 +4284,7 @@ CREATE TABLE `rkdetails` (
   KEY `aktrk` (`rknr_akt`),
   KEY `sdgstatus` (`sdgstatus`),
   KEY `preisnn` (`preisnn`)
-) ENGINE=InnoDB AUTO_INCREMENT=6031194 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6059287 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4305,7 +4305,7 @@ CREATE TABLE `rkkopf` (
   KEY `lieferdepot` (`lieferdepot`),
   KEY `rollkartendatum` (`rollkartendatum`),
   KEY `druckzeit` (`druckzeit`)
-) ENGINE=InnoDB AUTO_INCREMENT=648356 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=651521 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4327,7 +4327,7 @@ CREATE TABLE `scaerror` (
   KEY `sendstatus` (`sendstatus`),
   KEY `uidLogin` (`uidLogin`),
   KEY `errorts` (`errorTs`)
-) ENGINE=InnoDB AUTO_INCREMENT=394376158 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=394804468 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4352,7 +4352,7 @@ CREATE TABLE `scaimages` (
   `extNr` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `sendstatus` (`sendstatus`)
-) ENGINE=InnoDB AUTO_INCREMENT=2812715 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2831946 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4507,7 +4507,7 @@ CREATE TABLE `scaposdata` (
   KEY `timestamp` (`timestamp`),
   KEY `tsPos` (`posDt`),
   KEY `liniennr` (`liniennr`)
-) ENGINE=InnoDB AUTO_INCREMENT=123988696 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=124498977 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4534,7 +4534,7 @@ CREATE TABLE `scaqueue` (
   KEY `tsTransmitted` (`tsTransmitted`),
   KEY `tsExecuted` (`tsExecuted`),
   KEY `LastLoginId` (`uidLogin`)
-) ENGINE=InnoDB AUTO_INCREMENT=13912 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13968 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4570,7 +4570,7 @@ CREATE TABLE `scascans` (
   KEY `linieIn` (`linieIn`),
   KEY `linieOut` (`linieOut`),
   KEY `tsscanned` (`tsScanned`)
-) ENGINE=InnoDB AUTO_INCREMENT=20022074 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20105254 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4612,7 +4612,7 @@ CREATE TABLE `scnclearfinal` (
   KEY `MwstShl` (`MwstShl`),
   KEY `MasterID` (`MasterID`),
   KEY `DepotNr` (`DepotNr`)
-) ENGINE=InnoDB AUTO_INCREMENT=1876013 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1888714 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4648,7 +4648,7 @@ CREATE TABLE `scnhistorie` (
   KEY `setid` (`setid`),
   KEY `timestamp` (`timestamp`),
   KEY `username` (`cruser`)
-) ENGINE=InnoDB AUTO_INCREMENT=22470 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22550 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4697,7 +4697,7 @@ CREATE TABLE `scnmc` (
   KEY `tourinout` (`tourinout`),
   KEY `pwd` (`LastPwd`),
   KEY `stLastHello` (`tsLastHello`)
-) ENGINE=InnoDB AUTO_INCREMENT=2193 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2195 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -4748,7 +4748,7 @@ CREATE TABLE `scnsetcount` (
   KEY `activvon` (`activvon`),
   KEY `acticbis` (`activebis`),
   KEY `depot` (`depot`)
-) ENGINE=InnoDB AUTO_INCREMENT=4900 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4918 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5077,7 +5077,7 @@ CREATE TABLE `sdd_contzip` (
   PRIMARY KEY (`ID`),
   KEY `Zip` (`Zip`),
   KEY `CustZip` (`Layer`,`Zip`)
-) ENGINE=InnoDB AUTO_INCREMENT=230 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=247 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5240,7 +5240,7 @@ CREATE TABLE `sso_check` (
   KEY `run` (`run`),
   KEY `strang` (`Strang`),
   KEY `timestamp` (`timestamp`)
-) ENGINE=InnoDB AUTO_INCREMENT=18415266 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=18531326 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5260,7 +5260,7 @@ CREATE TABLE `sso_p_mov` (
   PRIMARY KEY (`ID`),
   KEY `statuszeit` (`statuszeit`),
   KEY `plombennummer` (`plombennummer`)
-) ENGINE=InnoDB AUTO_INCREMENT=557030 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=558768 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5317,7 +5317,7 @@ CREATE TABLE `sso_s_mov` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sso_s_movepool` (
-  `id` double NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `bag_number` double DEFAULT NULL,
   `seal_number_green` double DEFAULT NULL,
   `status` double DEFAULT NULL,
@@ -5333,7 +5333,7 @@ CREATE TABLE `sso_s_movepool` (
   `multibag` int(11) NOT NULL DEFAULT '0',
   `movepool` varchar(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `bag_number` (`bag_number`),
+  UNIQUE KEY `bag_number` (`bag_number`),
   KEY `orderhub2depot` (`orderhub2depot`),
   KEY `orderdepot2hub` (`orderdepot2hub`),
   KEY `status` (`status`),
@@ -5342,7 +5342,7 @@ CREATE TABLE `sso_s_movepool` (
   KEY `work_date` (`work_date`),
   KEY `init_status` (`init_status`),
   KEY `movepool` (`movepool`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=277278 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5379,7 +5379,7 @@ CREATE TABLE `sys_checkproc` (
   PRIMARY KEY (`id`),
   KEY `proc_id_index` (`proc_id`),
   KEY `error_code_index` (`errorcode`)
-) ENGINE=InnoDB AUTO_INCREMENT=265128 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=293679 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5734,7 +5734,7 @@ CREATE TABLE `tbl_grid_val_all` (
   KEY `gStatuszeit` (`gStatuszeit`),
   KEY `gOrderID` (`gOrderID`),
   KEY `gSKZ` (`gSKZ`)
-) ENGINE=InnoDB AUTO_INCREMENT=11888050 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11915401 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -5752,7 +5752,7 @@ CREATE TABLE `tbl_grid_val_depot` (
   PRIMARY KEY (`ID`),
   KEY `gVerladedatum` (`gVerladedatum`),
   KEY `gScanbeginn` (`gScanbeginn`)
-) ENGINE=InnoDB AUTO_INCREMENT=230596 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=231121 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -6867,7 +6867,7 @@ CREATE TABLE `tblauftragcollieswaage` (
   `lfdNr` int(11) DEFAULT '0',
   `timestampDevice` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3460311 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3469940 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -7110,7 +7110,7 @@ CREATE TABLE `tblauftragtext` (
   KEY `aktionsdatum` (`aktionsdatum`),
   KEY `aktionszeit` (`aktionszeit`),
   KEY `dAktion` (`dAktion`)
-) ENGINE=InnoDB AUTO_INCREMENT=128270 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=129006 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -8106,7 +8106,7 @@ CREATE TABLE `tblhistorie` (
   KEY `OrderID` (`OrderID`),
   KEY `MsgLocation` (`MsgLocation`),
   KEY `dOI` (`dOI`)
-) ENGINE=InnoDB AUTO_INCREMENT=22700545 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22734019 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -8248,7 +8248,7 @@ CREATE TABLE `tblhubliniedepots` (
   KEY `DepotNr` (`DepotNr`),
   KEY `dtParkende` (`dtParkende`),
   KEY `ZeitAbfahrt` (`ZeitAbfahrt`)
-) ENGINE=InnoDB AUTO_INCREMENT=1000487951 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1000487995 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -8404,7 +8404,7 @@ CREATE TABLE `tblhublinien` (
   KEY `checkPackIn` (`checkPackIn`),
   KEY `AuftragnehmerID` (`AuftragnehmerID`),
   KEY `scanId` (`scanId`)
-) ENGINE=InnoDB AUTO_INCREMENT=20038935 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20038951 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -8446,7 +8446,7 @@ CREATE TABLE `tblhublinienfinal` (
   `Stationslauf` varchar(200) DEFAULT NULL,
   `ZHTyp` varchar(5) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1884996 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1891938 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -8462,7 +8462,7 @@ CREATE TABLE `tblhublinienplan` (
   `Bezeichnung` varchar(50) DEFAULT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`PID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2127 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2129 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -9013,7 +9013,7 @@ CREATE TABLE `tblofflineclients` (
   KEY `station` (`Station`),
   KEY `DB` (`DB`),
   KEY `kennung` (`kennung`)
-) ENGINE=InnoDB AUTO_INCREMENT=12045 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12046 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -9039,7 +9039,7 @@ CREATE TABLE `tblofflinelog` (
   KEY `changer` (`changer`),
   KEY `filenameOnly` (`filenameOnly`),
   KEY `priority` (`priority`)
-) ENGINE=InnoDB AUTO_INCREMENT=143703579 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=144028901 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -9166,7 +9166,7 @@ CREATE TABLE `tblpasswort` (
   UNIQUE KEY `auto` (`id2`) USING BTREE,
   KEY `id` (`id`),
   KEY `depot` (`DepotNr`)
-) ENGINE=InnoDB AUTO_INCREMENT=55384568 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=55384569 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -9711,7 +9711,7 @@ CREATE TABLE `tblschadensaktebemerkung` (
   `dAktion` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `orderid` (`orderid`)
-) ENGINE=InnoDB AUTO_INCREMENT=20676 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20678 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -9753,7 +9753,7 @@ CREATE TABLE `tblschadensaktepdf` (
   PRIMARY KEY (`id`),
   KEY `orderid` (`orderid`),
   KEY `datwv` (`datwv`)
-) ENGINE=InnoDB AUTO_INCREMENT=26582 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=26584 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -9853,7 +9853,7 @@ CREATE TABLE `tblsms` (
   PRIMARY KEY (`ID`),
   KEY `sendstatus` (`sendstatus`),
   KEY `colliebelegnr` (`colliebelegnr`)
-) ENGINE=InnoDB AUTO_INCREMENT=235237 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=236223 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -9950,7 +9950,7 @@ CREATE TABLE `tblstatus` (
   KEY `Zeit` (`Zeit`),
   KEY `KZ_Status` (`KZ_Status`),
   KEY `OrderIDSta` (`OrderIDSta`)
-) ENGINE=InnoDB AUTO_INCREMENT=253024464 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=253361748 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -10001,7 +10001,7 @@ CREATE TABLE `tblsyscollections` (
   KEY `txtP2` (`txtP2`),
   KEY `txtP3` (`txtP3`),
   KEY `txtP4` (`txtP4`)
-) ENGINE=InnoDB AUTO_INCREMENT=1908 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1918 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -10437,7 +10437,7 @@ CREATE TABLE `usysprinter` (
   KEY `user` (`User`),
   KEY `printertyp` (`PrinterTyp`),
   KEY `stationsnummer` (`StationNr`)
-) ENGINE=InnoDB AUTO_INCREMENT=578975 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=580719 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -11933,4 +11933,4 @@ USE `dekutmp`;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-03-18 21:02:57
+-- Dump completed on 2017-03-22 21:22:34
