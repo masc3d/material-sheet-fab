@@ -33,6 +33,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import org.deku.leoz.util.*
+import sx.time.toLocalDate
+import java.sql.Date
 
 /**
  * Bundle service (leoz-central)
@@ -97,13 +99,39 @@ class BagService : BagService {
 
         try {
             var dtWork:LocalDate=java.time.LocalDateTime.now().minusHours((6)).toLocalDate()
-            //val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(dtWork.toTimestamp())).fetch()
-            val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
+            var result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(dtWork.toTimestamp())).fetch()
+            //val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
             if (result.getValue(0,0)==0){
                 //dtWork=nextWerktag(dtWork.addDays(-1),"100","DE","36285")
             }else{
                 //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
                 //dtWork=nextwerktag(dtWork,"100","DE","36285"
+                dtWork= getNextDeliveryDate()
+            }
+            val dblStatus:Double=5.0
+            //val dt:java.util.Date=dtWork.toDate()
+            val dt:java.sql.Date=java.sql.Date.valueOf(dtWork);
+
+            /**
+            result=dslContext.selectCount().from(Tables.SSO_S_MOVEPOOL).where(Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(bagInitRequest.depotNr!!.toDouble())).and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus)).and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m")).and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt)).fetch()
+            if(result.getValue(0,0)!=0){
+                throw ServiceException(BagService.ErrorCode.BAG_FOR_DEPOT_ALREADY_EXISTS)
+            }
+            **/
+
+            var iResultCount:Int=dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(bagInitRequest.depotNr!!.toDouble()).and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus)).and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m")).and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt)))
+            if(iResultCount>0){
+                throw ServiceException(BagService.ErrorCode.BAG_FOR_DEPOT_ALREADY_EXISTS)
+            }
+//status_time wieder raus, timestamp on update
+            val dblBagID:Double=bagInitRequest.bagId!!.substring(0,11).toDouble()
+            val dblWhiteSeal:Double=bagInitRequest.whiteSeal!!.substring(0,11).toDouble()
+            val dblYellowSeal:Double=bagInitRequest.yellowSeal!!.substring(0,11).toDouble()
+            val dblNull:Double?=null
+
+            iResultCount=dslContext.update(Tables.SSO_S_MOVEPOOL).set(Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB, dblNull).set(Tables.SSO_S_MOVEPOOL.ORDERHUB2DEPOT, dblNull).set(Tables.SSO_S_MOVEPOOL.SEAL_NUMBER_GREEN,dblWhiteSeal).set(Tables.SSO_S_MOVEPOOL.SEAL_NUMBER_YELLOW,dblYellowSeal).set(Tables.SSO_S_MOVEPOOL.STATUS,dblStatus).set(Tables.SSO_S_MOVEPOOL.INIT_STATUS,1).set(Tables.SSO_S_MOVEPOOL.LASTDEPOT,bagInitRequest.depotNr!!.toDouble()).set(Tables.SSO_S_MOVEPOOL.WORK_DATE,dt).set(Tables.SSO_S_MOVEPOOL.MOVEPOOL,"m").where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)).execute()
+            if (iResultCount==0){
+
             }
         } catch(e: Exception) {
             throw BadRequestException(e.message)
