@@ -20,16 +20,22 @@ ext {
                     url     : 'jdbc:mysql://leox.derkurier.de:3320?useSSL=false',
                     user    : 'root',
                     password: 'dekudb',
-                    baseline: 1,
-                    target  : 1
+                    target  : 2
             ],
             // Production/live
             live: [
                     url     : 'jdbc:mysql://10.3.73.63:3306?useSSL=false',
                     user    : 'migration',
                     password: 'dekudb',
-                    baseline: 1,
-                    target  : 1
+                    baseline: 2,
+                    target  : 2
+            ],
+            // Test 61
+            test61: [
+                    url     : 'jdbc:mysql://10.3.73.61:3306?useSSL=false',
+                    user    : 'migration',
+                    password: 'dekudb',
+                    target  : 2
             ]
     ]
 }
