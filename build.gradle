@@ -46,7 +46,7 @@ buildscript {
         v_mysql = '5.1.40'
 
         DB_MYSQL_JDBC_DRIVER = 'com.mysql.jdbc.Driver'
-        FLYWAY_MIGRATION_DIR = new File(project.projectDir, 'db')
+        FLYWAY_MIGRATION_DIR = new File(project.projectDir, 'db/migration')
     }
 
     repositories {
