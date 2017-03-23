@@ -7,13 +7,13 @@ import io.swagger.annotations.ApiModelProperty
  */
 @ApiModel(value = "BagInit", description = "Bag Init Request")
 class BagInitRequest {
-    @ApiModelProperty(dataType = "string", example = "700100000000", position = 1, required = true, value = "Bag id")
+    @ApiModelProperty(dataType = "string", example = "700100000008", position = 1, required = true, value = "Bag id")
     var bagId: String? = null
 
-    @ApiModelProperty(dataType = "string", example = "900100000000", position = 2, required = true, value = "Bag white seal")
+    @ApiModelProperty(dataType = "string", example = "900100000002", position = 2, required = true, value = "Bag white seal")
     var whiteSeal: String? = null
 
-    @ApiModelProperty(dataType = "string", example = "900200000000", position = 3, required = true, value = "Bag yellow seal")
+    @ApiModelProperty(dataType = "string", example = "900200000001", position = 3, required = true, value = "Bag yellow seal")
     var yellowSeal: String? = null
 
     @ApiModelProperty(dataType = "int", example = "020", position = 4, required = true, value = "Depot")
