@@ -207,7 +207,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             target_address_city: String,
             target_address_zip_code: String,
             target_address_address_line:
-            String, authorizationKey: String): DeliveryOption {
+            String, authorizationKey: String): List<DeliveryOption> {
 
         if (authorizationKey != API_KEY) {
             throw ServiceException(status = Response.Status.UNAUTHORIZED, entity = Problem())
@@ -226,12 +226,12 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     details = "The given zip-code is not part of the defined delivery area"))
 
             val currentDate = Date()
-            return DeliveryOption(
+            return listOf(DeliveryOption(
                     sddRoute.id.toString(),
                     sddRoute.cutOff.replaceDate(currentDate),
                     sddRoute.ltop.replaceDate(currentDate),
                     sddRoute.etod.replaceDate(currentDate),
-                    sddRoute.ltod.replaceDate(currentDate))
+                    sddRoute.ltod.replaceDate(currentDate)))
 
         } catch (s: ServiceException) {
             throw s
