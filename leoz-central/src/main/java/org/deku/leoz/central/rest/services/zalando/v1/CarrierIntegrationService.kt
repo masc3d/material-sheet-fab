@@ -175,7 +175,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                 //val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[18]
 
                 var glsParcelNum = parcelData[0].expressData.courierParcelNumber
-                glsParcelNum = glsParcelNum.substring(1, 3) + "85" + glsParcelNum.substring(4)
+                glsParcelNum = glsParcelNum.substring(1, 3) + "85" + glsParcelNum.substring(4,11)
                 fpcsRecord.glsTrackid = parcelData[0].trackID
                 fpcsRecord.glsParcelno = glsParcelNum.toDouble()
 
