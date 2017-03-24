@@ -172,10 +172,10 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                 }
 
                 //TODO: Check if this is the right number.
-                val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[18]
+                //val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[18]
 
                 var glsParcelNum = parcelData[0].expressData.courierParcelNumber
-                glsParcelNum = glsParcelNum.substring(1, 2) + "85" + glsParcelNum.substring(4)
+                //glsParcelNum = glsParcelNum.substring(1, 2) + "85" + glsParcelNum.substring(4)
                 fpcsRecord.glsTrackid = parcelData[0].trackID
                 fpcsRecord.glsParcelno = glsParcelNum.toDouble()
 
