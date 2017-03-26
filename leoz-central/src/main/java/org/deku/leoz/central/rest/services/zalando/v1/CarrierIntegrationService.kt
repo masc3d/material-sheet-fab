@@ -9,10 +9,8 @@ import org.deku.leoz.rest.entity.zalando.v1.DeliveryOption
 import org.deku.leoz.rest.entity.zalando.v1.DeliveryOrder
 import org.deku.leoz.rest.entity.zalando.v1.NotifiedDeliveryOrder
 import org.deku.leoz.rest.entity.zalando.v1.Problem
-import org.deku.leoz.time.toShortTime
 import org.deku.leoz.ws.gls.shipment.*
 import org.jooq.DSLContext
-import org.jooq.Result
 import org.jooq.exception.TooManyRowsException
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.rs.ApiKey
@@ -23,10 +21,6 @@ import javax.inject.Named
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
-import java.util.Locale
-import java.text.SimpleDateFormat
-import java.text.DateFormat
-
 
 
 /**
@@ -68,7 +62,9 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     .fetch()
 
             if (result.size == 0) {
-                throw ServiceException(Problem("Delivery option not valid", "No delivery options found with given ID. Contact GLS SDD-Team!"))
+                throw ServiceException(Problem(
+                        title = "Delivery option not valid",
+                        details = "No delivery options found with given ID. Contact GLS SDD-Team!"))
             }
 
             val delOptionZip = result.getValue(0, Tables.SDD_CONTZIP.ZIP)
@@ -77,12 +73,16 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
 
             // Ensure that there is only one record (may be not necessary due to unique/primary key "ID" in table "SDD_ContZip")
             if (result.size != 1) {
-                throw ServiceException(Problem("Multiple delivery options", "Multiple delivery options found. Contact GLS SDD-Team!"))
+                throw ServiceException(Problem(
+                        title = "Multiple delivery options",
+                        details = "Multiple delivery options found. Contact GLS SDD-Team!"))
             }
 
             // Make sure that the given zipcode of target address is same of the given delivery option.
             if (!delOptionZip.equals(targetAddrZip, ignoreCase = true)) {
-                throw ServiceException(Problem("Delivery Option not matching given address.", "The given delivery option [ZIP: $delOptionZip] does not match the given target address zipcode [$targetAddrZip]"))
+                throw ServiceException(Problem(
+                        title = "Delivery Option not matching given address.",
+                        details = "The given delivery option [ZIP: $delOptionZip] does not match the given target address zipcode [$targetAddrZip]"))
             }
 
             val recordCount: Int = dslContext.fetchCount(
@@ -90,7 +90,9 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE.eq(deliveryOrder.incomingId))
 
             if (recordCount > 0) {
-                throw ServiceException(Problem(title = "Duplicate entry", details = "There is already an record with the given IncomingID [" + deliveryOrder.incomingId + "]. Multiple IncomingID's are not supported yet."))
+                throw ServiceException(Problem(
+                        title = "Duplicate entry",
+                        details = "There is already an record with the given IncomingID [" + deliveryOrder.incomingId + "]. Multiple IncomingID's are not supported yet."))
             }
 
             val fpcsRecord: SddFpcsOrderRecord = dslContext.newRecord(Tables.SDD_FPCS_ORDER)
@@ -149,6 +151,10 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             val printOptions = PrintingOptions()
             printOptions.returnLabels = returnLabels
 
+            /**
+             * The UniStation needs an Service to skip manually input.
+             * 10:00 worked fine in test scenarios. 12:00 didn't
+             */
             val service = Service()
             service.serviceName = "service_1000"
 
@@ -165,17 +171,23 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                 glsResponse = glsShipmentProcessingService.createParcels(shipmentRequestData)
                 val parcelData = glsResponse.createdShipment.parcelData
 
-                if (parcelData.size != 1){
+                if (parcelData.size != 1) {
                     fpcsRecord.cancelRequested = -2
                     fpcsRecord.store()
-                    throw ServiceException(Problem(title = "Error serving FPCS", details = "Error processing Parceldata to central GLS System. Contact GLS SDD-Team!"))
+                    throw ServiceException(Problem(
+                            title = "Error serving FPCS",
+                            details = "Error processing Parceldata to central GLS System. Contact GLS SDD-Team!"))
                 }
 
-                //TODO: Check if this is the right number.
-                //val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[18]
+                /**
+                 * TODO: Check if this is the right number.
+                 * This could be the preferred way, because this number does not needs to be "converted".
+                 * In addition the returned structure is always the same respectively versioned.
+                 */
+                //val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[17].substring(0, 11)
 
                 var glsParcelNum = parcelData[0].expressData.courierParcelNumber
-                glsParcelNum = glsParcelNum.substring(1, 3) + "85" + glsParcelNum.substring(4,11)
+                glsParcelNum = glsParcelNum.substring(1, 3) + "85" + glsParcelNum.substring(4, 11)
                 fpcsRecord.glsTrackid = parcelData[0].trackID
                 fpcsRecord.glsParcelno = glsParcelNum.toDouble()
 
@@ -186,12 +198,16 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             } catch (e: Exception) {
                 fpcsRecord.cancelRequested = -2
                 fpcsRecord.store()
-                throw ServiceException(Problem(title = "Error serving GLS Systems", details = "The order could not be stored in GLS Systems due to an error. Message: " + e.message), Response.Status.BAD_REQUEST)
+                throw ServiceException(Problem(
+                        title = "Error serving GLS Systems",
+                        details = "The order could not be stored in GLS Systems due to an error. Message: " + e.message), Response.Status.BAD_REQUEST)
             }
         } catch (s: ServiceException) {
             throw s
         } catch(e: Exception) {
-            throw ServiceException(Problem(title = "Unhandled Exception", details = "Exception message: " + e.message), Response.Status.BAD_REQUEST)
+            throw ServiceException(Problem(
+                    title = "Unhandled Exception",
+                    details = "Exception message: " + e.message), Response.Status.BAD_REQUEST)
         }
     }
 
@@ -210,7 +226,9 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             String, authorizationKey: String): List<DeliveryOption> {
 
         if (authorizationKey != API_KEY) {
-            throw ServiceException(status = Response.Status.UNAUTHORIZED, entity = Problem())
+            throw ServiceException(
+                    status = Response.Status.UNAUTHORIZED,
+                    entity = Problem())
         }
 
         try {
@@ -240,13 +258,17 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
              * Make sure that zip-codes do not overlap within Zalando areas.
              * If so, check sdd_contzip Zalando-layers for duplicate entries.
              */
-            throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    title = "Too many delivery options found.",
-                    details = "The given ZipCode is not unique. Contact GLS SDD Team!"))
+            throw ServiceException(
+                    status = Response.Status.BAD_REQUEST,
+                    entity = Problem(
+                            title = "Too many delivery options found.",
+                            details = "The given ZipCode is not unique. Contact GLS SDD Team!"))
         } catch (e: Exception) {
-            throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    title = "Unhandeled Exception!",
-                    details = "Exception: {$e}"))
+            throw ServiceException(
+                    status = Response.Status.BAD_REQUEST,
+                    entity = Problem(
+                            title = "Unhandled Exception!",
+                            details = "Exception: {$e}"))
         }
     }
 
@@ -264,14 +286,18 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     Tables.SDD_FPCS_ORDER,
                     Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE
                             .eq(id)
-            ) ?: throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    title = "",
-                    details = "No Order with ID [$id] found!"))
+            ) ?: throw ServiceException(
+                    status = Response.Status.BAD_REQUEST,
+                    entity = Problem(
+                            title = "",
+                            details = "No Order with ID [$id] found!"))
 
             if (order.cancelRequested == -1) {
-                throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                        title = "",
-                        details = "Cancellation for Order with ID [$id] already requested!"))
+                throw ServiceException(
+                        status = Response.Status.BAD_REQUEST,
+                        entity = Problem(
+                                title = "",
+                                details = "Cancellation for Order with ID [$id] already requested!"))
             }
 
             order.cancelRequested = -1
@@ -283,10 +309,12 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                 if (cancelResponse.result.equals("CANCELLATION_PENDING", ignoreCase = true) || cancelResponse.result.equals("CANCELLED", ignoreCase = true)) { //TODO Check for other possible results
                     return Response.ok().build()
                 } else {
-                    throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                            title = "Failed.",
-                            details = "Cancellation failed. Response: [" + cancelResponse.result + "]"
-                    ))
+                    throw ServiceException(
+                            status = Response.Status.BAD_REQUEST,
+                            entity = Problem(
+                                    title = "Failed.",
+                                    details = "Cancellation failed. Response: [" + cancelResponse.result + "]"
+                            ))
                 }
             }
 
@@ -297,9 +325,11 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
         } catch (b: BadRequestException) {
             throw b
         } catch(e: Exception) {
-            throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    title = "Exception",
-                    details = "Cancellation for Order with ID [$id] failed due to an unhandled exception!"))
+            throw ServiceException(
+                    status = Response.Status.BAD_REQUEST,
+                    entity = Problem(
+                            title = "Exception",
+                            details = "Cancellation for Order with ID [$id] failed due to an unhandled exception!"))
         }
     }
 }
