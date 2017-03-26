@@ -219,11 +219,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     Tables.SDD_CONTZIP.ZIP
                             .eq(target_address_zip_code)
                             .and(Tables.SDD_CONTZIP.LAYER.between(5, 6))
-            ) ?: throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    type = "",
-                    instance = "",
-                    title = "No Delivery Option found!",
-                    details = "The given zip-code is not part of the defined delivery area"))
+            ) ?: return mutableListOf() //Return empty list if given zip-code does not match any Zalando SDD-Area
 
             val currentDate = Date()
             return listOf(DeliveryOption(
@@ -234,17 +230,21 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     sddRoute.ltod.replaceDate(currentDate)))
 
         } catch (s: ServiceException) {
+            /**
+             * ServiceExceptions are wanted to be thrown / issued as output,
+             * so pass them over as they are.
+             */
             throw s
         } catch(e: TooManyRowsException) {
+            /**
+             * Make sure that zip-codes do not overlap within Zalando areas.
+             * If so, check sdd_contzip Zalando-layers for duplicate entries.
+             */
             throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    type = "",
-                    instance = "",
                     title = "Too many delivery options found.",
                     details = "The given ZipCode is not unique. Contact GLS SDD Team!"))
         } catch (e: Exception) {
             throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    type = "",
-                    instance = "",
                     title = "Unhandeled Exception!",
                     details = "Exception: {$e}"))
         }
@@ -265,16 +265,12 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE
                             .eq(id)
             ) ?: throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    type = "PROBLEM TYPE",
-                    instance = "INSTANCE",
-                    title = "No record found",
+                    title = "",
                     details = "No Order with ID [$id] found!"))
 
             if (order.cancelRequested == -1) {
                 throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                        type = "PROBLEM TYPE",
-                        instance = "INSTANCE",
-                        title = "Duplicate request",
+                        title = "",
                         details = "Cancellation for Order with ID [$id] already requested!"))
             }
 
@@ -287,7 +283,10 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                 if (cancelResponse.result.equals("CANCELLATION_PENDING", ignoreCase = true) || cancelResponse.result.equals("CANCELLED", ignoreCase = true)) { //TODO Check for other possible results
                     return Response.ok().build()
                 } else {
-                    throw BadRequestException("Cancellation failed. Response: [" + cancelResponse.result + "]")
+                    throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
+                            title = "Failed.",
+                            details = "Cancellation failed. Response: [" + cancelResponse.result + "]"
+                    ))
                 }
             }
 
@@ -299,9 +298,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             throw b
         } catch(e: Exception) {
             throw ServiceException(status = Response.Status.BAD_REQUEST, entity = Problem(
-                    type = "PROBLEM TYPE",
-                    instance = "INSTANCE",
-                    title = "Unhandled Exception",
+                    title = "Exception",
                     details = "Cancellation for Order with ID [$id] failed due to an unhandled exception!"))
         }
     }
