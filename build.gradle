@@ -28,7 +28,7 @@ ext {
                     user    : 'migration',
                     password: 'dekudb',
                     baseline: 2,
-                    target  : 2
+                    target  : 3
             ],
             // Test 61
             test61: [
