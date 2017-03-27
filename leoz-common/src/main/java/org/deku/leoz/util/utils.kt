@@ -4,6 +4,7 @@ package org.deku.leoz.util
  * Created by helke on 20.03.17.
  */
 
+
 //fun checkCheckDigit(fullOrderNo: Double): Boolean{
 fun checkCheckDigit(fullOrderNo: String): Boolean{
     val stringOrderNo: String = fullOrderNo
@@ -105,3 +106,5 @@ fun getCheckDigitGLS(sOrderNo:String):Int{
 fun getNextDeliveryDate():java.time.LocalDate{
     return java.time.LocalDate.now().plusDays(1)
 }
+
+
