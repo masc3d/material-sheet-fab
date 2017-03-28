@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import java.text.SimpleDateFormat
 
 import javax.inject.Named
 import javax.ws.rs.ext.ContextResolver
@@ -28,7 +32,8 @@ class ObjectMapperProvider : ContextResolver<ObjectMapper> {
         mapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true)
         mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true)
         // Enable support for java.time (java 8)
-        //mMapper.registerModule(new JSR310Module());
+//        mapper.registerModule(JavaTimeModule());
+        mapper.setDateFormat(ISO8601DateFormat())
     }
 
     override fun getContext(type: Class<*>): ObjectMapper {
