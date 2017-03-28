@@ -69,6 +69,12 @@ mainClassName = 'org.deku.leoz.node.Main'
 //region Constants
 def GENERATED_DIR = file('src/generated')
 def PROTOTYPE_TEST_DIR = file('src/prototype/java')
+// For proper integration with gradle task's up-to-date checks, JPA weaving destination directory
+// must be separate from the original compiler class output directory.
+// However the final output folder needs to remain `build/classes` for IJ run configurations to work,
+// so the only way to achieve this without breaking things is to update all tasks writing to `build/classes`
+// to use a new location and leave all writing to `build/classes` to the weaving task.
+def UNWEAVED_CLASSES_DIR = new File(project.buildDir, "classes-unweaved")
 
 // Database constants
 def PROJECT_DB_DIR = file('src/main/resources/db/node')
@@ -133,12 +139,6 @@ test {
     useJUnit {
         includeCategories 'sx.junit.StandardTest'
     }
-}
-
-compileJava {
-    dependsOn processResources
-    // Bend compilation destination path, the final classes are produced by `jpaWeaving`
-    destinationDir = new File(project.buildDir, "classes-unweaved")
 }
 
 configurations {
@@ -393,7 +393,7 @@ tasks.classes.dependsOn(copyGlobalPlatformDirToBuild)
  */
 task copyWebapp(type: Sync) {
     from 'src/main/webapp'
-    into 'build/classes/main/webapp'
+    into new File(UNWEAVED_CLASSES_DIR, 'webapp')
 }
 tasks.compileJava.dependsOn(copyWebapp)
 
@@ -402,12 +402,20 @@ tasks.compileJava.dependsOn(copyWebapp)
  */
 task copyVaadinWebapp(type: Sync) {
     from 'src/main/webapp/VAADIN'
-    into 'build/classes/main/VAADIN'
+    into new File(UNWEAVED_CLASSES_DIR, 'VAADIN')
 }
 tasks.compileJava.dependsOn(copyVaadinWebapp)
 //endregion
 
 //region JPA
+compileJava {
+    destinationDir = UNWEAVED_CLASSES_DIR
+}
+
+processResources {
+    destinationDir = UNWEAVED_CLASSES_DIR
+}
+
 /**
  * Task for statically weaving eclipselink entitiy classes.
  * This must be a `JavaExec` path otherwise there's sporadic issues with StaticWeave not being able to find
@@ -424,6 +432,11 @@ task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
     args '-persistenceinfo', DB_DIR,
             compileJava.destinationDir.getAbsolutePath(),
             sourceSets.main.output.classesDir
+
+    doFirst {
+        // masc20170327. eclipselink weaver does not detect removed classes, thus may produce inconsistent output if output directory is not clean.
+        sourceSets.main.output.classesDir.deleteDir()
+    }
 }
 // masc20170118. workaround for path limit on windows systems
 if (SystemUtils.IS_OS_WINDOWS) {

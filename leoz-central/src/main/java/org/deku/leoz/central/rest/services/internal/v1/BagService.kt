@@ -133,7 +133,11 @@ class BagService : BagService {
             if (iResultCount==0){
 
             }
-        } catch(e: Exception) {
+        }
+        catch(e:ServiceException){
+            throw e
+        }
+        catch(e: Exception) {
             throw BadRequestException(e.message)
         }
 
