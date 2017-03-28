@@ -1,9 +1,15 @@
 package org.deku.leoz.central.rest.services.zalando.v1
 
+import com.fasterxml.jackson.core.JsonFactory
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import org.deku.leoz.node.rest.ObjectMapperProvider
 import org.deku.leoz.rest.entity.zalando.v1.DeliveryOption
+import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
@@ -22,7 +28,7 @@ import javax.inject.Inject
 @SpringBootTest(classes = arrayOf(
         ObjectMapperProvider::class
 ))
-class RestSerializationTest {
+class DeliveryOptionTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -33,10 +39,27 @@ class RestSerializationTest {
         mapper.enable(SerializationFeature.INDENT_OUTPUT)
     }
 
+    @Ignore
     @Test
     fun testDeliveryOption() {
         val o = DeliveryOption("test", Date(), Date(), Date(), Date())
         val oJson = this.objectMapper.writeValueAsString(o)
         log.info(oJson)
+    }
+
+    /**
+     * Ensures that the serialized output date format uses UTC timezone with specialized short notation (Z)
+     * as Zalando currnetly cannot handle zoned timestamps.
+     */
+    @Test
+    fun testSerializedTimestamp() {
+        val d = Date()
+        val deliveryOption = DeliveryOption("test", d, d, d, d)
+
+        val oJson = this.objectMapper.writeValueAsString(deliveryOption)
+        val jnode: JsonNode = this.objectMapper.readTree(oJson)
+        val jDateString = jnode.get("cut_off").textValue()
+
+        Assert.assertEquals(jDateString, ISO8601DateFormat().format(d))
     }
 }

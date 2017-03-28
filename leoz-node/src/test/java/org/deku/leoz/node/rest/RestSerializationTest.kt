@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.StandardTest
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.*
 import javax.inject.Inject
 
@@ -47,8 +49,24 @@ class RestSerializationTest {
     }
 
     @Test
-    fun testIso8601DateFormatParsing() {
+    fun testIso8601ZoneDateFormat() {
+        val o = ZonedDateTime.now()
+        val oJson = this.objectMapper.writeValueAsString(o)
+        log.info(oJson)
+        val i = ISO8601DateFormat().parse(oJson.trim('"'))
+        Assert.assertEquals(o, i)
+    }
+
+    @Test
+    fun testIso8601DateFormatParsing1() {
         val t = "2016-11-28T10:34:25.097Z"
+        val i = ISO8601DateFormat().parse(t)
+        log.info("${i}")
+    }
+
+    @Test
+    fun testIso8601DateFormatParsing2() {
+        val t = "2017-03-28T15:00:00.000+0200"
         val i = ISO8601DateFormat().parse(t)
         log.info("${i}")
     }
