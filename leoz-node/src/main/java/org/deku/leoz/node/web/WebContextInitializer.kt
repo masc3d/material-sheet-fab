@@ -1,5 +1,6 @@
 package org.deku.leoz.node.web
 
+import io.swagger.jaxrs.config.SwaggerContextService
 import io.undertow.server.handlers.resource.Resource
 import io.undertow.server.handlers.resource.ResourceChangeListener
 import io.undertow.server.handlers.resource.ResourceManager
@@ -7,6 +8,7 @@ import io.undertow.server.handlers.resource.URLResource
 import org.deku.leoz.config.RestConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.MessageBrokerConfiguration
+import org.deku.leoz.node.rest.swagger.SwaggerBootstrapServlet
 import org.jboss.resteasy.core.Dispatcher
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
 import org.jboss.resteasy.plugins.spring.SpringBeanProcessor
@@ -81,18 +83,29 @@ class WebContextInitializer : ServletContextInitializer {
         servletContext.setAttribute(Dispatcher::class.java.name, resteasyDeployment.dispatcher)
         servletContext.setAttribute(Registry::class.java.name, resteasyDeployment.registry)
 
-        var sr = servletContext.addServlet(HttpServletDispatcher::class.java.name, HttpServletDispatcher::class.java)
-        sr.setInitParameter("resteasy.servlet.mapping.prefix", RestConfiguration.MAPPING_PREFIX)
-        sr.setInitParameter("javax.ws.rs.Application", "org.deku.leoz.node.rest.WebserviceApplication")
-        sr.setLoadOnStartup(1)
-        sr.addMapping(RestConfiguration.MAPPING_PREFIX + "/*")
+        run {
+            val sr = servletContext.addServlet(HttpServletDispatcher::class.java.name, HttpServletDispatcher::class.java)
+            sr.setInitParameter("resteasy.servlet.mapping.prefix", RestConfiguration.MAPPING_PREFIX)
+            sr.setInitParameter("javax.ws.rs.Application", "org.deku.leoz.node.rest.WebserviceApplication")
+            sr.setInitParameter(SwaggerContextService.USE_PATH_BASED_CONFIG, "true")
+            sr.setLoadOnStartup(1)
+            sr.addMapping(RestConfiguration.MAPPING_PREFIX + "/*")
+        }
+
+        run {
+            val sr = servletContext.addServlet(SwaggerBootstrapServlet::class.java.name, SwaggerBootstrapServlet::class.java)
+            sr.setInitParameter(SwaggerContextService.USE_PATH_BASED_CONFIG, "true")
+            sr.setLoadOnStartup(1)
+        }
 
         try {
-            sr = servletContext.addServlet(HttpExternalTunnelServlet::class.java.name,
-                    HttpExternalTunnelServlet(
-                            URI("http://localhost:8080/leoz/jms")))
-            sr.setLoadOnStartup(1)
-            sr.addMapping(this.brokerSettings.httpContextPath!! + "/*")
+            run {
+                val sr = servletContext.addServlet(HttpExternalTunnelServlet::class.java.name,
+                        HttpExternalTunnelServlet(
+                                URI("http://localhost:8080/leoz/jms")))
+                sr.setLoadOnStartup(1)
+                sr.addMapping(this.brokerSettings.httpContextPath!! + "/*")
+            }
         } catch (e: URISyntaxException) {
             throw ServletException(e)
         }
