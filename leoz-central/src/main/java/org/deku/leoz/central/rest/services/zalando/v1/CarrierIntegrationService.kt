@@ -193,7 +193,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
 
                 fpcsRecord.store()
 
-                return NotifiedDeliveryOrder(glsParcelNum)
+                return NotifiedDeliveryOrder(glsParcelNum, "https://gls-group.eu/DE/de/paketverfolgung?match=$glsParcelNum")
 
             } catch (e: Exception) {
                 fpcsRecord.cancelRequested = -2

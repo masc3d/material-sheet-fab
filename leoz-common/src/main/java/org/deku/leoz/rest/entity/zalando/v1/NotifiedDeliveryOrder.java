@@ -18,6 +18,11 @@ public class NotifiedDeliveryOrder   {
     this.id = id;
   }
 
+  public NotifiedDeliveryOrder(String id, String trackingUrl) {
+    this.id = id;
+    this.trackingUrl = trackingUrl;
+  }
+
   /**
    * Delivery order identifier in carrier's system
    **/
