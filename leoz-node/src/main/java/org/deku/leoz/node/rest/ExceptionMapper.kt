@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonMappingException
 import org.deku.leoz.rest.entity.v1.ServiceError
 import org.slf4j.LoggerFactory
+import org.zalando.problem.ThrowableProblem
 import javax.inject.Named
 import javax.ws.rs.WebApplicationException
 import javax.ws.rs.core.MediaType
@@ -19,7 +20,7 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun toResponse(e: Exception): javax.ws.rs.core.Response {
-        val status: Response.Status
+        val status: Response.StatusType
         val entity: Any?
 
         when(e) {
@@ -35,6 +36,10 @@ class ExceptionMapper : javax.ws.rs.ext.ExceptionMapper<Exception> {
                     entity = null
                 }
                 status = e.status
+            }
+            is ThrowableProblem -> {
+                entity = e
+                status = e.status ?: Response.Status.BAD_REQUEST
             }
             is JsonMappingException -> {
                 //region JsonMappingException

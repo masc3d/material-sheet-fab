@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import org.zalando.problem.ProblemModule
 import java.text.SimpleDateFormat
 
 import javax.inject.Named
@@ -34,6 +35,9 @@ class ObjectMapperProvider : ContextResolver<ObjectMapper> {
         // Enable support for java.time (java 8)
 //        mapper.registerModule(JavaTimeModule());
         mapper.setDateFormat(ISO8601DateFormat())
+        mapper.registerModule(ProblemModule()
+                //.withStackTraces()
+        )
     }
 
     override fun getContext(type: Class<*>): ObjectMapper {
