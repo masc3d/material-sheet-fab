@@ -9,7 +9,6 @@ import io.swagger.models.auth.ApiKeyAuthDefinition
 import io.swagger.models.auth.In
 import org.deku.leoz.config.RestConfiguration
 import org.slf4j.LoggerFactory
-import java.nio.file.Paths
 import javax.inject.Inject
 import javax.inject.Named
 import javax.servlet.ServletConfig
@@ -103,11 +102,8 @@ class SwaggerBootstrapServlet : HttpServlet() {
         SwaggerContextService()
                 .withServletConfig(servletConfig)
                 .withPathBasedConfig(true)
-                .withBasePath(
-                        // Construct aritical base URI, as that's the only way swagger supports multiple instances
-                        Paths.get(mappingPrefix)
-                                .resolve(basePath.trimStart('/'))
-                                .toString())
+                // Construct aritical base URI, as that's the only way swagger supports multiple instances
+                .withBasePath("${mappingPrefix.trimEnd('/')}/${basePath.trimStart('/')}")
                 .withScanner(scanner)
                 .initScanner()
                 .updateSwagger(swagger)
