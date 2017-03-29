@@ -429,8 +429,8 @@ task jpaWeaving(type: JavaExec, group: JPA_TASK_GROUP) {
     inputs.dir compileJava.destinationDir
     outputs.dir sourceSets.main.output.classesDir
 
-    dependsOn tasks.compileJava, tasks.compileKotlin
-    mustRunAfter tasks.compileJava, tasks.compileKotlin
+    dependsOn tasks.compileJava, tasks.compileKotlin, tasks.processResources
+    mustRunAfter tasks.compileJava, tasks.compileKotlin, tasks.processResources
 
     main 'org.eclipse.persistence.tools.weaving.jpa.StaticWeave'
     args '-persistenceinfo', DB_DIR,
