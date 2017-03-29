@@ -39,10 +39,10 @@ abstract class SwaggerListingResourceBase : BaseApiListingResource() {
         // As we're running all swagger instances under a single web application/dispatcher servlet
         // Have to mangle the paths so they reflect distinct base URIs, so base class
         // implementation can locate swagger instances setup by {@link SwaggerBootstrapServlet} by base URI.
-        val path = Paths.get(uriInfo.path)
-        val addBasePath = path.parent.toString().trimStart('/')
-        val filename = path.fileName.toString()
-        val newUriInfo = ResteasyUriInfo(uriInfo.baseUri.resolve(addBasePath), URI.create(filename))
+        val filenameIndex = uriInfo.path.lastIndexOf('/')
+        val path = uriInfo.path.substring(0, filenameIndex).trimStart('/')
+        val filename = uriInfo.path.substring(filenameIndex)
+        val newUriInfo = ResteasyUriInfo(uriInfo.baseUri.resolve(path), URI.create(filename))
 
         if (StringUtils.isNotBlank(type) && type.trim { it <= ' ' }.equals("yaml", ignoreCase = true)) {
             return getListingYamlResponse(app, context, sc, headers, newUriInfo)
