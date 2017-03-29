@@ -161,7 +161,7 @@ dependencies {
             "org.springframework.data:spring-data-jpa:$v_spring_data_jpa",
             "org.springframework.data:spring-data-commons:$v_spring_data_commons",
             "org.springframework:spring-web:$v_spring",
-            //"org.springframework:spring-aspects"
+//            "org.springframework:spring-aspects"
 
             // spring boot
             "org.springframework.boot:spring-boot-starter:$v_springboot",
@@ -170,6 +170,7 @@ dependencies {
             },
             "org.springframework.boot:spring-boot-starter-undertow:$v_springboot",
             "org.springframework.boot:spring-boot-actuator:$v_springboot",
+            "org.springframework.boot:spring-boot-devtools:$v_springboot",
 
             // logging
             "org.slf4j:jul-to-slf4j:$v_slf4j",

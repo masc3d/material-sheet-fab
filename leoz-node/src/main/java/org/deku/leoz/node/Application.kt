@@ -54,6 +54,23 @@ open class Application :
 
         /** Client node profile, activates specific configurations for leoz client nodes  */
         const val PROFILE_CLIENT_NODE = "client-node"
+
+        private val SPRING_DEVTOOLS_RESTART_ENABLED = "spring.devtools.restart.enabled"
+        private val SPRING_DEVTOOLS_LIVERELOAD_ENABLED = "spring.devtools.livereload.enabled"
+
+        /**
+         * Spring boot devtools restart/live reload enabled
+         */
+        var springBootDevToolsEnabled: Boolean?
+            get() {
+                return System.getProperty(SPRING_DEVTOOLS_RESTART_ENABLED)?.toBoolean()
+            }
+            set(value) {
+                if (value != null) {
+                    System.setProperty(SPRING_DEVTOOLS_RESTART_ENABLED, "${value}")
+                    System.setProperty(SPRING_DEVTOOLS_LIVERELOAD_ENABLED, "${value}")
+                }
+            }
     }
 
     /** The spring application context */
@@ -169,18 +186,20 @@ open class Application :
             throw IllegalStateException("Application already initialized")
         isInitialized = true
 
-        // Acquire lock on bundle path
-        log.trace("Acquiring lock on bundle path [${this.storage.bundleLockFile}]")
-        this.processLockFile = ProcessLockFile(
-                lockFile = this.storage.bundleLockFile,
-                pidFile = this.storage.bundlePidFile)
+        // Acquire lock on bundle path (except if spring dev tools restart/live reload is active)
+        if (!(Application.springBootDevToolsEnabled ?: false)) {
+            log.trace("Acquiring lock on bundle path [${this.storage.bundleLockFile}]")
+            this.processLockFile = ProcessLockFile(
+                    lockFile = this.storage.bundleLockFile,
+                    pidFile = this.storage.bundlePidFile)
 
-        if (!this.processLockFile.isOwner) {
-            log.info("Waiting for lock on [${this.processLockFile}]")
-            this.processLockFile.waitForLock()
+            if (!this.processLockFile.isOwner) {
+                log.info("Waiting for lock on [${this.processLockFile}]")
+                this.processLockFile.waitForLock()
+            }
+
+            log.info("Acquired lock [${this.processLockFile}}")
         }
-
-        log.info("Acquired lock [${this.processLockFile}}")
 
         this.profile = profile
 

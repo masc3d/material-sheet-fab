@@ -19,6 +19,7 @@ import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties
 import org.springframework.boot.autoconfigure.web.*
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration
 import org.springframework.boot.resteasy.autoconfigure.ResteasyAutoConfiguration
 import org.springframework.context.annotation.AnnotationBeanNameGenerator
 import org.springframework.context.annotation.ComponentScan
@@ -64,7 +65,10 @@ import org.springframework.core.annotation.Order
         JolokiaAutoConfiguration::class,
 
         /** Vaadin */
-        VaadinAutoConfiguration::class
+        VaadinAutoConfiguration::class,
+
+        // Spring boot devtools
+        LocalDevToolsAutoConfiguration::class
 )
 @EnableConfigurationProperties
 open class Main {
@@ -105,7 +109,18 @@ open class Main {
      * @param args process arguments
      * */
     protected fun run(args: Array<String>?) {
-        log.trace("Main arguments [${args!!.joinToString(", ")}]")
+        log.info("Main arguments [${args!!.joinToString(", ")}]")
+
+        // If springboot devtools property has not been set explicitly, disable it (default is enabled when on classpath)
+        if (Application.springBootDevToolsEnabled == null) {
+            Application.springBootDevToolsEnabled = false
+        }
+
+        // As springboot devtools is re-invoking main on restart, kodein must be cleared and mutable for this to work
+        if (Application.springBootDevToolsEnabled ?: false) {
+            Kodein.global.mutable = true
+            Kodein.global.clear()
+        }
 
         // Kodein injection
         this.modules.forEach {
@@ -140,10 +155,10 @@ open class Main {
             try {
                 val springApplication = SpringApplicationBuilder()
                         .beanNameGenerator(object : AnnotationBeanNameGenerator() {
-                            override fun buildDefaultBeanName(definition: BeanDefinition?): String {
+                            override fun buildDefaultBeanName(definition: BeanDefinition): String {
                                 // Override the bean name to be fully qualified.
                                 // The default behaviour causes issues with classes having the same name in different packages
-                                val beanName = definition!!.beanClassName
+                                val beanName = definition.beanClassName
                                 return beanName
                             }
                         })
