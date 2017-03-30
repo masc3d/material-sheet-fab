@@ -14,13 +14,13 @@ import javax.inject.Named
  * Created by masc on 07.05.15.
  */
 @Named
-class DepotJooqRepository {
+open class DepotJooqRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    fun findAll(): List<TbldepotlisteRecord> {
+    open fun findAll(): List<TbldepotlisteRecord> {
         return dslContext
                 .select()
                 .from(Tables.TBLDEPOTLISTE)
