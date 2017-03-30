@@ -137,6 +137,8 @@ class FlywayCopyTask extends FlywayInfoTask {
 
     FlywayCopyTask() {
         super()
+        // don't show this as a regular task, it's an internal supplemental task.
+        this.group = null
         setDescription("Copies migration files")
     }
 
@@ -192,6 +194,9 @@ task flywayCopy(type: FlywayCopyTask) {
 
     // Gradle task properties
     mustRunAfter tasks.flywayMigrate
+
+    // Task must never be uptodate, so migrations are always copied.
+    outputs.upToDateWhen { false }
 }
 
 jooq {
