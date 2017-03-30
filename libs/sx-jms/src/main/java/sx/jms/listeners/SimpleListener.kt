@@ -1,86 +1,64 @@
 package sx.jms.listeners
 
+import sx.LazyInstance
 import sx.jms.Channel
 import sx.jms.Listener
-import java.util.concurrent.Executor
 import javax.jms.*
 
 /**
- * Simple jms listener
+ * Simple single threaded jms listener
  * Created by masc on 17.04.15.
  * @param connectionFactory Connection factory
  * @param converter Message converter
  */
-abstract class SimpleListener
-:
-        Listener
-{
-    constructor (channel: () -> Channel, executor: Executor) : super(channel, executor)
+open class SimpleListener(channel: () -> Channel)
+    :
+        Listener(channel) {
 
-    protected val connection: Connection by lazy {
+    private val connection = LazyInstance<Connection>({
         this.channel.connectionFactory!!.createConnection()
-    }
+    })
 
-    /**
-     * Override to create customized session
-     * @param connection
-     * @throws JMSException
-     * @return JMS session
-     */
-    @Throws(JMSException::class)
-    protected abstract fun createSession(connection: Connection): Session
+    private val session = LazyInstance<Session>({
+        this.connection.get().createSession(true, Session.AUTO_ACKNOWLEDGE)
+    })
 
-    /**
-     * Override to create destinations to listen on
-     * @param session
-     * *
-     * @return JMS destinations
-     * *
-     * @throws JMSException
-     */
-    @Throws(JMSException::class)
-    protected abstract fun createDestinations(session: Session): List<Destination>
+    private val consumer = LazyInstance<MessageConsumer>({
+        this.session.get().createConsumer(this.channel.destination)
+    })
 
     /**
      * Start listener
      * @throws JMSException
      */
     @Throws(JMSException::class)
-    final override fun start() {
+    @Synchronized final override fun start() {
         this.stop()
 
-        this.connection.start()
-        val session = this.createSession(connection)
+        // Wrap message callback, adding jms transaction support
+        this.consumer.get().messageListener = object : MessageListener {
+            override fun onMessage(message: Message) {
+                val session = this@SimpleListener.session.get()
+                try {
+                    this@SimpleListener.onMessage(message, session)
+                    if (session.transacted)
+                        session.commit()
+                } catch (e: Exception) {
+                    // TODO: verify if exception is routed to onException handler when not caught here
+                    log.error(e.message, e)
 
-        val destinations = this.createDestinations(session)
-        for (d in destinations) {
-            val mc = session.createConsumer(d)
-
-            // Wrap message callback, adding jms transaction support
-            mc.messageListener = object : MessageListener {
-                override fun onMessage(message: Message) {
-                    this@SimpleListener.executor.execute {
-                        var transacted = session.transacted
+                    if (session.transacted) {
                         try {
-                            this@SimpleListener.onMessage(message, session)
-                            if (transacted)
-                                session.commit()
-                        } catch (e: Exception) {
-                            // TODO: verify if exception is routed to onException handler when not caught here
+                            session.rollback()
+                        } catch (e1: JMSException) {
                             log.error(e.message, e)
-
-                            if (transacted) {
-                                try {
-                                    session.rollback()
-                                } catch (e1: JMSException) {
-                                    log.error(e.message, e)
-                                }
-                            }
                         }
                     }
                 }
             }
         }
+
+        this.connection.get().start()
     }
 
     /**
@@ -88,7 +66,17 @@ abstract class SimpleListener
      * @throws JMSException
      */
     @Throws(JMSException::class)
-    final override fun stop() {
-        this.connection.close()
+    @Synchronized final override fun stop() {
+        this.consumer.ifSet {
+            it.close()
+        }
+
+        this.session.ifSet {
+            it.close()
+        }
+
+        this.connection.ifSet {
+            it.close()
+        }
     }
 }
