@@ -23,8 +23,7 @@ import javax.jms.Session
  */
 abstract class Listener(
         /** Connection factory  */
-        channel: () -> Channel,
-        protected val executor: Executor)
+        channel: () -> Channel)
 :
         Disposable,
         ExceptionListener {
@@ -116,7 +115,7 @@ abstract class Listener(
     @Suppress("UNCHECKED_CAST")
     fun <T> addDelegate(delegate: Handler<T>) {
         var messageTypes = delegate.messageTypes
-        if (messageTypes.size == 0) {
+        if (messageTypes.isEmpty()) {
             // No message types specified, extracing generic type from Handler interface
             val handlerInterfaces = TypeToken.of(delegate.javaClass).types.interfaces()
 

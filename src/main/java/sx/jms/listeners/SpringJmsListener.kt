@@ -18,12 +18,12 @@ import javax.jms.Session
  * @property destination
  * @param converter Message converter
  */
-open class SpringJmsListener
-:
-        Listener,
+open class SpringJmsListener(
+        channel: () -> Channel,
+        private val executor: Executor)
+    :
+        Listener(channel),
         ErrorHandler {
-
-    constructor (channel: () -> Channel, executor: Executor) : super(channel, executor)
 
     /** Spring message listener container  */
     private var listenerContainer: DefaultMessageListenerContainer? = null
