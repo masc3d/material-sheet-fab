@@ -40,13 +40,17 @@ open class EntitySyncConfiguration {
     private lateinit var lifecycleController: LifecycleController
 
     /** Entity sync consumer */
-    @get:Bean
-    open val entityConsumer: EntityConsumer
-        get () = EntityConsumer(
+    @Bean
+    open fun createEntityConsumer(): EntityConsumer {
+        return EntityConsumer(
                 notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
                 requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
                 entityManagerFactory = this.entityManagerFactory,
                 listenerExecutor = this.executorService)
+    }
+
+    @Inject
+    private lateinit var entityConsumer: EntityConsumer
 
     /** Broker listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
