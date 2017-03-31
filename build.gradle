@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.0.6'
+        v_kotlin = '1.1.1'
     }
 
     repositories {
@@ -21,23 +21,18 @@ repositories {
 }
 
 //region Prototype test setup
-configurations {
-    prototypeCompile.extendsFrom testCompile
-    prototypeRuntime.extendsFrom testRuntime
-}
-
-sourceSets {
-    prototype {
-        java.srcDirs = ['src/prototype/java']
-        resources.srcDirs = ['src/prototype/resources']
-        compileClasspath += main.output + test.output
-        runtimeClasspath += main.output + test.output
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
     }
 }
 
-task prototype(type: Test, description: 'Run prototype tests.') {
-    testClassesDir sourceSets.prototype.output.classesDir
-    classpath = sourceSets.prototype.runtimeClasspath
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
 }
 //endregion
 
@@ -53,6 +48,6 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.2.1"
+            "ch.qos.logback:logback-classic:1.2.2"
     )
 }
