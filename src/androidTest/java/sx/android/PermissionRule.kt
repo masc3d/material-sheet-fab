@@ -13,54 +13,47 @@ import java.io.InputStreamReader
 /**
  * Generic permission rule for android instrumentation tests
  *
- * This is required as of Android M/6.0 and higher as applying permissions via manifest is not
- * enough to some permissions, they have to explicitly granted by the user or if this is not possible
- * (eg. for instrumentation tests) via `pm grant`.
+ * This is required as of Android M/6.0 and higher as applying permissions via manifest may not suffice.
+ * Some permissions have to be either explicitly granted by user or via `pm grant`.
  *
- * This class conveniently wraps this into a test rule which can be easily applied for any permission required.
+ * This class conveniently wraps this into an (instrumentation) test rule.
  */
 class PermissionRule(vararg permissions: String) : TestRule {
-    val permissions: Array<String>
+    val permissions: Array<String> = permissions.toList().toTypedArray()
 
-    init {
-        this.permissions = permissions.toList().toTypedArray()
-    }
-
-    override fun apply(base: Statement?, description: Description?): Statement {
+    override fun apply(base: Statement, description: Description?): Statement {
         return object : Statement() {
             override fun evaluate() {
-                allowPermissions()
+                allow()
                 try {
-                    base!!.evaluate()
+                    base.evaluate()
                 } finally {
-                    revokePermissions()
+                    revoke()
                 }
             }
         }
-
     }
 
-    private fun allowPermissions() {
-        Log.i("", "ALLOW")
+    private fun allow() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (permission in permissions) {
-                val pf = InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                        "pm grant ${InstrumentationRegistry.getTargetContext().packageName} ${permission}")
+                InstrumentationRegistry.getInstrumentation().uiAutomation
+                        .executeShellCommand(
+                                "pm grant ${InstrumentationRegistry.getTargetContext().packageName} ${permission}").use { pfd ->
 
-                // .executeShellCommand is asynchronous. Need to read the stream
-                InputStreamReader(FileInputStream(pf.fileDescriptor)).readLines()
-                pf.close()
+                    // Synchronize with execution of command by reading the whole stream
+                    InputStreamReader(FileInputStream(pfd.fileDescriptor)).readLines()
+                }
             }
         }
     }
 
-    private fun revokePermissions() {
+    private fun revoke() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (permission in permissions) {
-                val pf = InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                        "pm revoke ${InstrumentationRegistry.getTargetContext().packageName} ${permission}")
-
-                pf.close()
+                InstrumentationRegistry.getInstrumentation().uiAutomation
+                        .executeShellCommand(
+                                "pm revoke ${InstrumentationRegistry.getTargetContext().packageName} ${permission}").use { }
             }
         }
     }

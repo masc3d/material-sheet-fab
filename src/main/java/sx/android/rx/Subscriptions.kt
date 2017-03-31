@@ -1,12 +1,11 @@
 package sx.android.rx
 
-import com.trello.rxlifecycle.android.FragmentEvent
-import com.trello.rxlifecycle.components.RxActivity
-import com.trello.rxlifecycle.components.RxFragment
-import com.trello.rxlifecycle.components.support.RxAppCompatDialogFragment
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.components.RxActivity
+import com.trello.rxlifecycle2.components.RxFragment
+import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
 import org.slf4j.LoggerFactory
-import rx.Observable
-import rx.Subscription
+import org.reactivestreams.Subscription
 
 private val log = LoggerFactory.getLogger("Subscription.Extension")
 
@@ -18,7 +17,7 @@ fun Subscription.bindToLifecycle(fragment: RxFragment): Subscription {
             .filter { it == FragmentEvent.DESTROY_VIEW }
             .subscribe {
                 log.info("unsubscribe ${fragment} ${it}")
-                this.unsubscribe()
+                this.cancel()
             }
     return this
 }
@@ -27,7 +26,7 @@ fun Subscription.bindToLifecycle(fragment: RxAppCompatDialogFragment): Subscript
     fragment.lifecycle()
             .filter { it == FragmentEvent.DESTROY_VIEW }
             .subscribe {
-                this.unsubscribe()
+                this.cancel()
             }
     return this
 }
@@ -36,6 +35,6 @@ fun Subscription.bindToLifecycle(activity: RxActivity) {
     activity.lifecycle()
             .filter { it == FragmentEvent.DESTROY_VIEW }
             .subscribe {
-                this.unsubscribe()
+                this.cancel()
             }
 }

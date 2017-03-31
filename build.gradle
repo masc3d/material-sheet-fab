@@ -3,14 +3,14 @@ buildscript {
         jcenter()
     }
     ext {
-        v_kotlin = '1.0.6'
+        v_kotlin = '1.1.1'
         v_android_buildtools = '25.0.2'
-        v_android_support = '25.1.1'
-        v_rxlifecycle = '1.0'
+        v_android_support = '25.2.0'
+        v_rxlifecycle = '2.0.1'
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
@@ -52,13 +52,11 @@ android {
 }
 
 dependencies {
-    // Kotlin
     compile(
             project(":sx-common"),
 
             fileTree(dir: 'libs', include: ['*.jar']),
 
-            "org.jetbrains.kotlin:kotlin-runtime:$v_kotlin",
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Android support libs
@@ -68,13 +66,19 @@ dependencies {
             "com.android.support:design:$v_android_support",
 
             // rx
-            "io.reactivex:rxjava:1.2.6",
-            "io.reactivex:rxandroid:1.2.1",
+            "io.reactivex.rxjava2:rxjava:2.0.7",
+            "io.reactivex.rxjava2:rxandroid:2.0.1",
 
             // rxlifecycle
-            "com.trello:rxlifecycle:$v_rxlifecycle",
-            "com.trello:rxlifecycle-kotlin:$v_rxlifecycle",
-            "com.trello:rxlifecycle-components:$v_rxlifecycle"
+            "com.trello.rxlifecycle2:rxlifecycle:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-kotlin:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle",
+            "com.trello.rxlifecycle2:rxlifecycle-android:$v_rxlifecycle",
+            "com.jakewharton.rxbinding2:rxbinding:2.0.0",
+    )
+
+    provided(
+        'com.journeyapps:zxing-android-embedded:3.4.0'
     )
 
     androidTestCompile(
