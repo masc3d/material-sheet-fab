@@ -26,4 +26,13 @@ open class DepotJooqRepository {
                 .from(Tables.TBLDEPOTLISTE)
                 .fetchInto(TbldepotlisteRecord::class.java)
     }
+/**
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    open fun findSectionDepots(iSection:Int,iPosition:Int): List<String> {
+        return dslContext
+                .select("lpad(convert(DEPOTNR using utf8),3,'0')").asField<String>("Depot")
+                .from(Tables.TBLDEPOTLISTE)
+                .fetchInto(String::class.java)
+    }
+    **
 }

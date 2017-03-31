@@ -104,7 +104,7 @@ class BagService : BagService {
         }
         //TODO
 
-        var recHistory = TblhistorieRecord()
+        //var recHistory = TblhistorieRecord()
         try {
             var dtWork: LocalDate = getWorkingDate()
             var result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
@@ -161,12 +161,18 @@ class BagService : BagService {
                     .set(Tables.SSO_S_MOVEPOOL.MOVEPOOL, "m")
                     .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)).execute()
             if (iResultCount == 0) {
-
+                /**
                 recHistory.depotid = "initBag"//bagInitRequest.depotNr!!.toString()
                 recHistory.info = "BagID: " + sBagID + "; YellowSeal: " + sYellowSeal + "; WhiteSeal: " + sWhiteSeal
                 recHistory.msglocation = "initBag"
                 recHistory.orderid = bagInitRequest.depotNr!!.toString()
                 logHistoryRepository.add(recHistory)
+                 **/
+                logHistoryRepository.add("initBag"
+                        , "BagID: " + sBagID + "; YellowSeal: " + sYellowSeal + "; WhiteSeal: " + sWhiteSeal
+                        , "initBag"
+                        , bagInitRequest.depotNr!!.toString())
+
                 throw ServiceException(BagService.ErrorCode.UPDATE_MOVEPOOL_FAILED)
             }
 
@@ -184,31 +190,51 @@ class BagService : BagService {
                     Tables.SSO_P_MOV.FARBE)
                     .values(dblWhiteSeal, 2.0, dtNow, bagInitRequest.depotNr!!.toDouble(), "weiss").execute()
             if (iResultCount == 0) {
+                /**
                 recHistory.depotid = "initBag"//bagInitRequest.depotNr!!.toString()
                 recHistory.info = "WhiteSeal: " + sWhiteSeal
                 recHistory.msglocation = "initBag"
                 recHistory.orderid = bagInitRequest.depotNr!!.toString()
                 logHistoryRepository.add(recHistory)
+                **/
+
+                logHistoryRepository.add("initBag"
+                        , "WhiteSeal: " + sWhiteSeal
+                        , "initBag"
+                        , bagInitRequest.depotNr!!.toString())
+
                 throw ServiceException(BagService.ErrorCode.INSERT_SEAL_MOVE_WHITE_FAILED)
             }
             iResultCount = dslContext.insertInto(Tables.SSO_P_MOV, Tables.SSO_P_MOV.PLOMBENNUMMER, Tables.SSO_P_MOV.STATUS, Tables.SSO_P_MOV.STATUSZEIT, Tables.SSO_P_MOV.LASTDEPOT, Tables.SSO_P_MOV.FARBE).values(dblYellowSeal, 2.0, dtNow, bagInitRequest.depotNr!!.toDouble(), "gelb").execute()
             if (iResultCount == 0) {
+                /**
                 recHistory.depotid = "initBag"//bagInitRequest.depotNr!!.toString()
                 recHistory.info = "YellowSeal: " + sYellowSeal
                 recHistory.msglocation = "initBag"
                 recHistory.orderid = bagInitRequest.depotNr!!.toString()
                 logHistoryRepository.add(recHistory)
+                **/
+                logHistoryRepository.add("initBag"
+                        , "YellowSeal: " + sYellowSeal
+                        , "initBag"
+                        , bagInitRequest.depotNr!!.toString())
                 throw ServiceException(BagService.ErrorCode.INSERT_SEAL_MOVE_YELLOW_FAILED)
             }
             return true
         } catch(e: ServiceException) {
             throw e
         } catch(e: Exception) {
+            /**
             recHistory.depotid = "initBag"//bagInitRequest.depotNr!!.toString()
             recHistory.info = e.message ?: e.toString()
             recHistory.msglocation = "initBag"
             recHistory.orderid = bagInitRequest.depotNr!!.toString()
             logHistoryRepository.add(recHistory)
+            **/
+            logHistoryRepository.add("initBag"
+                    , e.message ?: e.toString()
+                    , "initBag"
+                    , bagInitRequest.depotNr!!.toString())
             throw BadRequestException(e.message)
         }
 
@@ -245,7 +271,7 @@ class BagService : BagService {
 
         //TODO
 
-        var recHistory = TblhistorieRecord()
+        //var recHistory = TblhistorieRecord()
         try {
             var dtWork: LocalDate = getWorkingDate()
             var result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
@@ -309,11 +335,17 @@ class BagService : BagService {
                     .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID))
                     .execute()
             if (iResultCount < 1) {
+                /**
                 recHistory.depotid = "isBagFree"
                 recHistory.info = "Problem beim update sso_s_movepool"
                 recHistory.msglocation = "isBagFree"
                 recHistory.orderid = bagFreeRequest.depotNr!!.toString()
                 logHistoryRepository.add(recHistory)
+                **/
+                logHistoryRepository.add("isBagFree"
+                        , "Problem beim update sso_s_movepool"
+                        , "isBagFree"
+                        , bagFreeRequest.depotNr!!.toString())
                 return false
             }
 
@@ -322,11 +354,17 @@ class BagService : BagService {
         } catch(e: ServiceException) {
             throw e
         } catch(e: Exception) {
+            /**
             recHistory.depotid = "isBagFree"//bagInitRequest.depotNr!!.toString()
             recHistory.info = e.message ?: e.toString()
             recHistory.msglocation = "isBagFree"
             recHistory.orderid = bagFreeRequest.depotNr!!.toString()
             logHistoryRepository.add(recHistory)
+            **/
+            logHistoryRepository.add("isBagFree"
+                    , e.message ?: e.toString()
+                    , "isBagFree"
+                    , bagFreeRequest.depotNr!!.toString())
             throw BadRequestException(e.message)
         }
 

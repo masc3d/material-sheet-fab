@@ -19,8 +19,21 @@ open class HistoryJooqRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
+    @Inject
+    private lateinit var historyRepository: HistoryJooqRepository
+
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun add(logEntry:TblhistorieRecord):Int{
         return dslContext.insertInto(Tables.TBLHISTORIE).set(logEntry).execute()
+    }
+
+    @Transactional(PersistenceConfiguration.QUALIFIER)
+    open fun add(depotId:String,info:String,msgLocation:String,orderId:String):Int{
+        val record = dslContext.newRecord(Tables.TBLHISTORIE)
+        record.depotid=depotId
+        record.info=info
+        record.msglocation=msgLocation
+        record.orderid=orderId
+        historyRepository.add(record)
     }
 }
