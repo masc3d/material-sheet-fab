@@ -386,6 +386,10 @@ task gitSubtreePushAll {
     group = 'git'
 }
 
+task gitSubtreeSplitAll {
+    group = 'git'
+}
+
 // Build tasks dynamically for each subtree
 subtrees.each { subtree ->
     def taskNamePull = "gitSubtreePull${subtree['name']}"
@@ -419,6 +423,23 @@ subtrees.each { subtree ->
             }
         }
     }
-
     tasks.gitSubtreePushAll.dependsOn "${taskNamePush}"
+
+    def taskNameSplit = "gitSubtreeSplit${subtree['name']}"
+    task "${taskNameSplit}" {
+        group = 'git'
+
+        doLast {
+            println "Splitting subtree ${subtree}"
+
+            try {
+                def result = ProcessExecutor.run([
+                        'git', 'subtree', 'split', '--rejoin', '-P', subtree['path']
+                ])
+            } catch (ProcessRunException e) {
+                throw new IllegalStateException(e.result.error)
+            }
+        }
+    }
+    tasks.gitSubtreeSplitAll.dependsOn "${taskNameSplit}"
 }
