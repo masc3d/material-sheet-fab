@@ -3,7 +3,7 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.0.6'
+        v_kotlin = '1.1.1'
     }
 
     repositories {
@@ -20,6 +20,22 @@ apply plugin: 'kotlin'
 repositories {
     mavenCentral()
 }
+
+//region Prototype test setup
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
+}
+//endregion
 
 dependencies {
     compile(
