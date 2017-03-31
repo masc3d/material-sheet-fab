@@ -386,6 +386,10 @@ task gitSubtreePushAll {
     group = 'git'
 }
 
+task gitSubtreePullAll {
+    group = 'git'
+}
+
 task gitSubtreeSplitAll {
     group = 'git'
 }
@@ -407,6 +411,7 @@ subtrees.each { subtree ->
             }
         }
     }
+    tasks.gitSubtreePullAll.dependsOn "${taskNamePull}"
 
     def taskNamePush = "gitSubtreePush${subtree['name']}"
     task "${taskNamePush}" {
@@ -434,7 +439,7 @@ subtrees.each { subtree ->
 
             try {
                 def result = ProcessExecutor.run([
-                        'git', 'subtree', 'split', '--rejoin', '-P', subtree['path']
+                        'git', 'subtree', 'split', '--rejoin', '-P', subtree['path'], '-b', 'git/split'
                 ])
             } catch (ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
