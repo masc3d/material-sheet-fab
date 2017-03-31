@@ -10,6 +10,7 @@ import org.glassfish.jersey.client.ClientProperties
 import org.glassfish.jersey.client.JerseyClientBuilder
 import org.glassfish.jersey.client.proxy.WebResourceFactory
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder
+import org.jboss.resteasy.client.jaxrs.internal.ClientWebTarget
 import sx.net.TrustingSSLSocketFactory
 import java.io.OutputStream
 import java.net.URI
@@ -104,8 +105,15 @@ class RestEasyClientProxy(
     }
 
     override fun <T> create(serviceClass: Class<T>): T {
-        val webTarget = this.client.target(baseUri)
-        return webTarget.proxy(serviceClass)
+        val webTarget: ClientWebTarget = this.client.target(baseUri) as ClientWebTarget
+
+        // return webTarget.proxy(serviceClass)
+        // masc20170329. for compatibility with spring-boot-devtools restart, need to use the serviceclass' classloader
+        // to avoid `IllegalArgumentException` `is not visible from class loader`
+        return webTarget
+                .proxyBuilder(serviceClass)
+                .classloader(serviceClass.classLoader)
+                .build()
     }
 }
 
