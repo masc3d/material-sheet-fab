@@ -2,6 +2,7 @@ package org.deku.leoz.rest.service.internal.v1
 
 import io.swagger.annotations.*
 import org.deku.leoz.rest.entity.internal.v1.BagInitRequest
+import org.deku.leoz.rest.entity.internal.v1.BagFreeRequest
 import sx.rs.ApiKey
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.*
@@ -37,7 +38,8 @@ interface BagService {
         BAG_FOR_DEPOT_ALREADY_EXISTS(2000),
         UPDATE_MOVEPOOL_FAILED(2050),
         INSERT_SEAL_MOVE_WHITE_FAILED(2051),
-        INSERT_SEAL_MOVE_YELLOW_FAILED(2052)
+        INSERT_SEAL_MOVE_YELLOW_FAILED(2052),
+        BAG_ALREADY_INITIALZED(2060)
     }
 
     @POST
@@ -47,4 +49,12 @@ interface BagService {
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
     )
     fun initialize(@ApiParam(value = "BagInitRequest") bagInitRequest: BagInitRequest): Boolean
+
+    @POST
+    @Path("/isfree")
+    @ApiOperation("isFree Bag")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+    )
+    fun isFree(@ApiParam(value = "BagFreeRequest") bagFreeRequest: BagFreeRequest): Boolean
 }

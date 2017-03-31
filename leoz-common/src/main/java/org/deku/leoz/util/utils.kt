@@ -107,4 +107,7 @@ fun getNextDeliveryDate():java.time.LocalDate{
     return java.time.LocalDate.now().plusDays(1)
 }
 
+fun getWorkingDate():java.time.LocalDate{
+    return java.time.LocalDateTime.now().minusHours((6)).toLocalDate()
 
+}

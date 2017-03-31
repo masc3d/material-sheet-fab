@@ -4,6 +4,7 @@ import sx.packager.BundleRepository
 import org.deku.leoz.central.Application
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.tables.records.SsoSMovepoolRecord
 import org.deku.leoz.service.update.UpdateInfo
 import org.deku.leoz.service.update.UpdateInfoRequest
 import org.deku.leoz.central.data.repository.NodeJooqRepository
@@ -37,6 +38,9 @@ import sx.time.toLocalDate
 import java.sql.Date
 import org.deku.leoz.central.data.repository.HistoryJooqRepository
 import org.deku.leoz.central.data.jooq.tables.records.TblhistorieRecord
+
+import org.deku.leoz.rest.entity.internal.v1.BagFreeRequest
+import org.jooq.Result
 
 /**
  * Bundle service (leoz-central)
@@ -100,9 +104,9 @@ class BagService : BagService {
         }
         //TODO
 
-
+        var recHistory = TblhistorieRecord()
         try {
-            var dtWork: LocalDate = java.time.LocalDateTime.now().minusHours((6)).toLocalDate()
+            var dtWork: LocalDate = getWorkingDate()
             var result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
                     .where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1))
                     .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(dtWork.toTimestamp())).fetch()
@@ -143,7 +147,7 @@ class BagService : BagService {
             val sYellowSeal: String = bagInitRequest.yellowSeal!!.substring(0, 11)
             val sWhiteSeal: String = bagInitRequest.whiteSeal!!.substring(0, 11)
 
-            var recHistory = TblhistorieRecord()
+
 
             iResultCount = dslContext.update(Tables.SSO_S_MOVEPOOL)
                     .set(Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB, dblNull)
@@ -200,6 +204,11 @@ class BagService : BagService {
         } catch(e: ServiceException) {
             throw e
         } catch(e: Exception) {
+            recHistory.depotid = "initBag"//bagInitRequest.depotNr!!.toString()
+            recHistory.info = e.message ?: e.toString()
+            recHistory.msglocation = "initBag"
+            recHistory.orderid = bagInitRequest.depotNr!!.toString()
+            logHistoryRepository.add(recHistory)
             throw BadRequestException(e.message)
         }
 
@@ -209,6 +218,121 @@ class BagService : BagService {
 
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    override fun isFree(bagFreeRequest: BagFreeRequest): Boolean {
+        if (bagFreeRequest.bagId.isNullOrEmpty()) {
+            throw ServiceException(BagService.ErrorCode.BAG_ID_MISSING)
+        }
+
+
+        if (bagFreeRequest.depotNr == null) {
+            throw ServiceException(BagService.ErrorCode.DEPOT_NR_MISSING)
+        }
+
+        if (bagFreeRequest.bagId!!.length < 12) {
+            throw ServiceException(BagService.ErrorCode.BAG_ID_MISSING_CHECK_DIGIT)
+        }
+
+
+        if (bagFreeRequest.depotNr!! <= 0 || bagFreeRequest.depotNr!! > 999) {
+            throw ServiceException(BagService.ErrorCode.DEPOT_NR_NOT_VALID)
+        }
+
+        if (!checkCheckDigit(bagFreeRequest.bagId!!)) {
+            throw ServiceException(BagService.ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
+        }
+
+
+        //TODO
+
+        var recHistory = TblhistorieRecord()
+        try {
+            var dtWork: LocalDate = getWorkingDate()
+            var result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
+                    .where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1))
+                    .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(dtWork.toTimestamp())).fetch()
+            //val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
+            if (result.getValue(0, 0) == 0) {
+                //dtWork=nextWerktag(dtWork.addDays(-1),"100","DE","36285")
+            } else {
+                //nach Feierabend und Tagesabschluss schon die bags für den nächsten Tag initialisieren oder am Wochenende
+                //dtWork=nextwerktag(dtWork,"100","DE","36285"
+                dtWork = getNextDeliveryDate()
+            }
+            val dblStatus: Double = 1.0
+            //val dt:java.util.Date=dtWork.toDate()
+            val dt: java.sql.Date = java.sql.Date.valueOf(dtWork);
+
+            val dblBagID: Double = bagFreeRequest.bagId!!.substring(0, 11).toDouble()
+            val dblNull: Double? = null
+
+            val sBagID: String = bagFreeRequest.bagId!!.substring(0, 11)
+
+            var iResultCount: Int = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
+                    Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)
+                            .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus))
+                            .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("p"))
+                            .and(Tables.SSO_S_MOVEPOOL.MULTIBAG.equal(0)))
+            if (iResultCount > 0) {
+                return true
+            }
+
+            iResultCount = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
+                    Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)
+                            .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
+                            .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt)))
+            if (iResultCount > 0) {
+                //dieser Bag wurde bereits initialisiert
+                throw ServiceException(BagService.ErrorCode.BAG_ALREADY_INITIALZED)
+            }
+            //:org.jooq.Result<SsoSMovepoolRecord>
+//Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB
+            val dResult = dslContext.select().from(Tables.SSO_S_MOVEPOOL)
+                    .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID))
+                    .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
+                    .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.ne(dt)).fetch()
+            if (dResult.size > 0) {
+                val dblOrderIdDepot2Hub: Double = dResult.getValue(0, Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB) ?: 0.0
+                if (dblOrderIdDepot2Hub > 0) {
+                    iResultCount = dslContext.update(Tables.TBLAUFTRAG)
+                            .set(Tables.TBLAUFTRAG.LOCKFLAG, 4)
+                            .set(Tables.TBLAUFTRAG.SDGSTATUS, "L")
+                            .where(Tables.TBLAUFTRAG.ORDERID.eq(dblOrderIdDepot2Hub))
+                            .execute()
+                }
+            }
+            iResultCount = dslContext.update(Tables.SSO_S_MOVEPOOL)
+                    .set(Tables.SSO_S_MOVEPOOL.MOVEPOOL, "p")
+                    .set(Tables.SSO_S_MOVEPOOL.STATUS, dblStatus)
+                    .set(Tables.SSO_S_MOVEPOOL.PRINTED, -1.0)
+                    .set(Tables.SSO_S_MOVEPOOL.MULTIBAG, 0)
+                    .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID))
+                    .execute()
+            if (iResultCount < 1) {
+                recHistory.depotid = "isBagFree"
+                recHistory.info = "Problem beim update sso_s_movepool"
+                recHistory.msglocation = "isBagFree"
+                recHistory.orderid = bagFreeRequest.depotNr!!.toString()
+                logHistoryRepository.add(recHistory)
+                return false
+            }
+
+
+            return true
+        } catch(e: ServiceException) {
+            throw e
+        } catch(e: Exception) {
+            recHistory.depotid = "isBagFree"//bagInitRequest.depotNr!!.toString()
+            recHistory.info = e.message ?: e.toString()
+            recHistory.msglocation = "isBagFree"
+            recHistory.orderid = bagFreeRequest.depotNr!!.toString()
+            logHistoryRepository.add(recHistory)
+            throw BadRequestException(e.message)
+        }
+
+
+        //throw NotImplementedError()
+    }
 
 
 }
