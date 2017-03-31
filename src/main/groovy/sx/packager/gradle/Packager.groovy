@@ -178,34 +178,8 @@ class ReleasePushTask extends ReleaseTask {
     packagerReleasePushTask() {
         println "Pushing release ${this.extension.bundleName}-${this.extension.version}"
 
-        // Wire jsch agent proxy with session factory
-        def sessionFactory = new JschConfigSessionFactory() {
-            @Override
-            protected void configure(OpenSshConfig.Host host, Session session) {
-                session.setConfig("StrictHostKeyChecking", "false");
-            }
-
-            @Override
-            protected JSch createDefaultJSch(FS fs) throws JSchException {
-                Connector con
-                // Workaround for windows, as pageant connector delivery by factory sporadically fails (?)
-                if (SystemUtils.IS_OS_WINDOWS)
-                    con = new PageantConnector()
-                else
-                    con = ConnectorFactory.getDefault().createConnector()
-
-                if (con == null)
-                    throw new IllegalStateException("No jsch agent proxy connector available")
-
-                final JSch jsch = new JSch();
-                jsch.setConfig("PreferredAuthentications", "publickey");
-                IdentityRepository irepo = new RemoteIdentityRepository(con);
-                jsch.setIdentityRepository(irepo);
-                return jsch
-            }
-        }
         // Provide session factory to jgit
-        SshSessionFactory.setInstance(sessionFactory)
+        SshSessionFactory.setInstance(new sx.jsch.ConfigSessionFactory())
 
         // Git repository
         if (!this.extension.checkRepository)
