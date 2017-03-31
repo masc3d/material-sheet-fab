@@ -309,7 +309,8 @@ def subtrees = [
                 name: 'CentralSchema',
                 path: 'leoz-central-schema',
                 repo: 'ssh://git@git.derkurier.de:13020/leoz/leoz-central-schema.git',
-                ref : 'master'
+                ref : 'master',
+                group: 'git'
         ],
         [
                 name: 'SxAndroid',
@@ -383,22 +384,19 @@ def subtrees = [
  * Push all subtrees at once
  */
 task gitSubtreePushAll {
-    group = 'git'
 }
 
 task gitSubtreePullAll {
-    group = 'git'
 }
 
 task gitSubtreeSplitAll {
-    group = 'git'
 }
 
 // Build tasks dynamically for each subtree
 subtrees.each { subtree ->
     def taskNamePull = "gitSubtreePull${subtree['name']}"
     task "${taskNamePull}" {
-        group = 'git'
+        group = subtree['group']
 
         doLast {
             println "Pulling subtree ${subtree}"
@@ -415,7 +413,7 @@ subtrees.each { subtree ->
 
     def taskNamePush = "gitSubtreePush${subtree['name']}"
     task "${taskNamePush}" {
-        group = 'git'
+        group = subtree['group']
 
         doLast {
             println "Pushing subtree ${subtree}"
@@ -432,8 +430,6 @@ subtrees.each { subtree ->
 
     def taskNameSplit = "gitSubtreeSplit${subtree['name']}"
     task "${taskNameSplit}" {
-        group = 'git'
-
         doLast {
             println "Splitting subtree ${subtree}"
 
