@@ -3,8 +3,8 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.0.6'
-        v_slf4j = '1.7.23'
+        v_kotlin = '1.1.1'
+        v_slf4j = '1.7.25'
     }
 
     repositories {
@@ -30,7 +30,7 @@ dependencies {
             // Logging
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
-            "ch.qos.logback:logback-classic:1.2.1"
+            "ch.qos.logback:logback-classic:1.2.2"
     )
 
     testCompile(
