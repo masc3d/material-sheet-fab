@@ -1,4 +1,4 @@
-package sx.packager.proto.config
+package sx.packager.config
 
 import sx.packager.BundleRepository
 import sx.rsync.Rsync

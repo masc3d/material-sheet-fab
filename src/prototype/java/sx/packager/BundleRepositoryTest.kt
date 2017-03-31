@@ -1,12 +1,12 @@
-package sx.packager.proto.bundle
+package sx.packager
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.packager.proto.config.BundleTestConfiguration
-import sx.packager.proto.config.RsyncTestConfiguration
+import sx.packager.config.BundleTestConfiguration
+import sx.packager.config.RsyncTestConfiguration
 import java.io.File
 
 /**

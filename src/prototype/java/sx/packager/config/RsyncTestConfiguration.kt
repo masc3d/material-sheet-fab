@@ -1,4 +1,4 @@
-package sx.packager.proto.config
+package sx.packager.config
 
 import org.apache.commons.lang3.SystemUtils
 import sx.rsync.Rsync
