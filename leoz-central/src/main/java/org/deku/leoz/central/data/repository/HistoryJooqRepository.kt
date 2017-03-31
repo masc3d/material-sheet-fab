@@ -20,7 +20,7 @@ open class HistoryJooqRepository {
     private lateinit var dslContext: DSLContext
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
-    fun add(logEntry:TblhistorieRecord):Int{
+    open fun add(logEntry:TblhistorieRecord):Int{
         return dslContext.insertInto(Tables.TBLHISTORIE).set(logEntry).execute()
     }
 }
