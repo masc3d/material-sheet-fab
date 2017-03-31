@@ -3,9 +3,9 @@ version '0.1'
 
 buildscript {
     ext {
-        v_kotlin = '1.0.6'
-        v_slf4j = '1.7.23'
-        v_protostuff = '1.5.2'
+        v_kotlin = '1.1.1'
+        v_slf4j = '1.7.25'
+        v_protostuff = '1.5.3'
     }
 
     repositories {
@@ -53,6 +53,6 @@ dependencies {
     testCompile(
             "junit:junit:4.12",
             "com.esotericsoftware:kryo:4.0.0",
-            "ch.qos.logback:logback-classic:1.2.1"
+            "ch.qos.logback:logback-classic:1.2.2"
     )
 }
