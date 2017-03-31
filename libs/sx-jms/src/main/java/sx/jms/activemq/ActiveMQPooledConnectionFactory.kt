@@ -9,7 +9,9 @@ import javax.jms.ConnectionFactory
 import kotlin.properties.Delegates
 
 /**
- * ActiveMQ pooled connection factory with support for updating connection properties (eg. uri/user/pw) during runtime
+ * ActiveMQ pooled connection factory with support for updating connection properties (eg. uri/user/pw) during runtime.
+ * Uses activemq's {@link org.apache.activemq.jms.pool.PooledConnectionFactor} internally,
+ * which also pools sessions and message producers
  * Created by masc on 19/09/16.
  * @param uri Broker URI
  * @param username Username
