@@ -51,47 +51,54 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
      * ${link
      */
     override fun initialize(bagInitRequest: BagInitRequest): Boolean {
-        if (bagInitRequest.bagId.isNullOrEmpty()) {
+        val bagId = bagInitRequest.bagId
+        val depotNr = bagInitRequest.depotNr
+        val yellowSeal = bagInitRequest.yellowSeal
+        val whiteSeal = bagInitRequest.whiteSeal
+
+        if (bagId == null || bagId.isEmpty()) {
             throw ServiceException(ErrorCode.BAG_ID_MISSING)
         }
 
-        if (bagInitRequest.whiteSeal.isNullOrEmpty()) {
+        if (whiteSeal == null || whiteSeal.isEmpty()) {
             throw ServiceException(ErrorCode.WHITE_SEAL_MISSING)
         }
-        if (bagInitRequest.yellowSeal.isNullOrEmpty()) {
+
+        if (yellowSeal == null || yellowSeal.isEmpty()) {
             throw ServiceException(ErrorCode.YELLOW_SEAL_MISSING)
         }
-        if (bagInitRequest.depotNr == null) {
+
+        if (depotNr == null) {
             throw ServiceException(ErrorCode.DEPOT_NR_MISSING)
         }
 
-        if (bagInitRequest.bagId!!.length < 12) {
+        if (bagId.length < 12) {
             throw ServiceException(ErrorCode.BAG_ID_MISSING_CHECK_DIGIT)
         }
 
-        if (bagInitRequest.whiteSeal!!.length < 12) {
+        if (whiteSeal.length < 12) {
             throw ServiceException(ErrorCode.WHITE_SEAL_MISSING_CHECK_DIGIT)
         }
-        if (bagInitRequest.yellowSeal!!.length < 12) {
+        if (yellowSeal.length < 12) {
             throw ServiceException(ErrorCode.YELLOW_SEAL_MISSING_CHECK_DIGIT)
         }
-        if (bagInitRequest.depotNr!! <= 0 || bagInitRequest.depotNr!! > 999) {
+        if (depotNr <= 0 || depotNr > 999) {
             throw ServiceException(ErrorCode.DEPOT_NR_NOT_VALID)
         }
 
-        if (!checkCheckDigit(bagInitRequest.bagId!!)) {
+        if (!checkCheckDigit(bagId)) {
             throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
         }
 
-        if (!checkCheckDigit(bagInitRequest.whiteSeal!!)) {
+        if (!checkCheckDigit(whiteSeal)) {
             throw ServiceException(ErrorCode.WHITE_SEAL_WRONG_CHECK_DIGIT)
         }
-        if (!checkCheckDigit(bagInitRequest.yellowSeal!!)) {
+        if (!checkCheckDigit(yellowSeal)) {
             throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
         }
 
         // TODO
-        // TODO: define constants for repetitive strings (eg. "initBag", "isBagFree"
+        // TODO: define constants for repetitive strings (eg. "initBag", "isBagFree")
 
         //var recHistory = TblhistorieRecord()
         try {
@@ -119,24 +126,25 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
              **/
 
             var iResultCount: Int = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
-                    Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(bagInitRequest.depotNr!!.toDouble())
+                    Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(depotNr.toDouble())
                             .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus))
                             .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
                             .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt)))
             if (iResultCount > 0) {
                 throw ServiceException(ErrorCode.BAG_FOR_DEPOT_ALREADY_EXISTS)
             }
-//status_time wieder raus, timestamp on update
-            val dblBagID: Double = bagInitRequest.bagId!!.substring(0, 11).toDouble()
-            val dblWhiteSeal: Double = bagInitRequest.whiteSeal!!.substring(0, 11).toDouble()
-            val dblYellowSeal: Double = bagInitRequest.yellowSeal!!.substring(0, 11).toDouble()
+
+            // status_time wieder raus, timestamp on update
+            val dblBagID: Double = bagId.substring(0, 11).toDouble()
+            val dblWhiteSeal: Double = whiteSeal.substring(0, 11).toDouble()
+            val dblYellowSeal: Double = yellowSeal.substring(0, 11).toDouble()
             val dblNull: Double? = null
 
-            val sBagID: String = bagInitRequest.bagId!!.substring(0, 11)
-            val sYellowSeal: String = bagInitRequest.yellowSeal!!.substring(0, 11)
-            val sWhiteSeal: String = bagInitRequest.whiteSeal!!.substring(0, 11)
+            val sBagID: String = bagId.substring(0, 11)
+            val sYellowSeal: String = yellowSeal.substring(0, 11)
+            val sWhiteSeal: String = whiteSeal.substring(0, 11)
 
-            // TODO: use `.newRecord`, then `.store` or `.update` respectivelay
+            // TODO: use `.newRecord`, then `.store` or `.update` respectively
             iResultCount = dslContext.update(Tables.SSO_S_MOVEPOOL)
                     .set(Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB, dblNull)
                     .set(Tables.SSO_S_MOVEPOOL.ORDERHUB2DEPOT, dblNull)
@@ -144,7 +152,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     .set(Tables.SSO_S_MOVEPOOL.SEAL_NUMBER_YELLOW, dblYellowSeal)
                     .set(Tables.SSO_S_MOVEPOOL.STATUS, dblStatus)
                     .set(Tables.SSO_S_MOVEPOOL.INIT_STATUS, 1)
-                    .set(Tables.SSO_S_MOVEPOOL.LASTDEPOT, bagInitRequest.depotNr!!.toDouble())
+                    .set(Tables.SSO_S_MOVEPOOL.LASTDEPOT, depotNr.toDouble())
                     .set(Tables.SSO_S_MOVEPOOL.WORK_DATE, dt)
                     .set(Tables.SSO_S_MOVEPOOL.MOVEPOOL, "m")
                     .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)).execute()
@@ -160,7 +168,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                         depotId = "initBag",
                         info = "BagID: ${sBagID}; YellowSeal: ${sYellowSeal}; WhiteSeal: ${sWhiteSeal}",
                         msgLocation = "initBag",
-                        orderId = bagInitRequest.depotNr!!.toString())
+                        orderId = depotNr.toString())
 
                 throw ServiceException(ErrorCode.UPDATE_MOVEPOOL_FAILED)
             }
@@ -169,16 +177,22 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
 
             iResultCount = dslContext.update(Tables.TBLDEPOTLISTE)
                     .set(Tables.TBLDEPOTLISTE.STRANGDATUM, dt.toTimestamp())
-                    .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(bagInitRequest.depotNr!!.toInt())).execute()
+                    .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(depotNr.toInt()))
+                    .execute()
 
-            // TODO: use `.newRecord`, then `.store` or `.insert` respectivelay
+            // TODO: use `.newRecord`, then `.store` or `.insert` respectively
             iResultCount = dslContext.insertInto(Tables.SSO_P_MOV,
                     Tables.SSO_P_MOV.PLOMBENNUMMER,
                     Tables.SSO_P_MOV.STATUS,
                     Tables.SSO_P_MOV.STATUSZEIT,
                     Tables.SSO_P_MOV.LASTDEPOT,
                     Tables.SSO_P_MOV.FARBE)
-                    .values(dblWhiteSeal, 2.0, dtNow, bagInitRequest.depotNr!!.toDouble(), "weiss").execute()
+                    .values(
+                            dblWhiteSeal,
+                            2.0,
+                            dtNow,
+                            depotNr.toDouble(),
+                            "weiss").execute()
             if (iResultCount == 0) {
                 /**
                 recHistory.depotid = "initBag"//bagInitRequest.depotNr!!.toString()
@@ -192,12 +206,12 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                         depotId = "initBag",
                         info = "WhiteSeal: ${sWhiteSeal}",
                         msgLocation = "initBag",
-                        orderId = bagInitRequest.depotNr!!.toString())
+                        orderId = depotNr.toString())
 
                 throw ServiceException(ErrorCode.INSERT_SEAL_MOVE_WHITE_FAILED)
             }
 
-            // TODO: use `.newRecord`, then `.store` or `.insert` respectivelay
+            // TODO: use `.newRecord`, then `.store` or `.insert` respectively
             iResultCount = dslContext.insertInto(
                     Tables.SSO_P_MOV,
                     Tables.SSO_P_MOV.PLOMBENNUMMER,
@@ -209,7 +223,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                             dblYellowSeal,
                             2.0,
                             dtNow,
-                            bagInitRequest.depotNr!!.toDouble(),
+                            depotNr.toDouble(),
                             "gelb")
                     .execute()
 
@@ -225,7 +239,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                         depotId = "initBag",
                         info = "YellowSeal: ${sYellowSeal}",
                         msgLocation = "initBag",
-                        orderId = bagInitRequest.depotNr!!.toString())
+                        orderId = depotNr.toString())
                 throw ServiceException(ErrorCode.INSERT_SEAL_MOVE_YELLOW_FAILED)
             }
             return true
@@ -243,7 +257,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     depotId = "initBag",
                     info = e.message ?: e.toString(),
                     msgLocation = "initBag",
-                    orderId = bagInitRequest.depotNr!!.toString())
+                    orderId = depotNr.toString())
             throw BadRequestException(e.message)
         }
 
@@ -255,23 +269,26 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
      * D
      */
     override fun isFree(bagFreeRequest: BagFreeRequest): Boolean {
-        if (bagFreeRequest.bagId.isNullOrEmpty()) {
+        val bagId = bagFreeRequest.bagId
+        val depotNr = bagFreeRequest.depotNr
+
+        if (bagId == null || bagId.isEmpty()) {
             throw ServiceException(ErrorCode.BAG_ID_MISSING)
         }
 
-        if (bagFreeRequest.depotNr == null) {
+        if (depotNr == null) {
             throw ServiceException(ErrorCode.DEPOT_NR_MISSING)
         }
 
-        if (bagFreeRequest.bagId!!.length < 12) {
+        if (bagId.length < 12) {
             throw ServiceException(ErrorCode.BAG_ID_MISSING_CHECK_DIGIT)
         }
 
-        if (bagFreeRequest.depotNr!! <= 0 || bagFreeRequest.depotNr!! > 999) {
+        if (depotNr <= 0 || depotNr > 999) {
             throw ServiceException(ErrorCode.DEPOT_NR_NOT_VALID)
         }
 
-        if (!checkCheckDigit(bagFreeRequest.bagId!!)) {
+        if (!checkCheckDigit(bagId)) {
             throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
         }
 
@@ -282,7 +299,8 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             var dtWork: LocalDate = getWorkingDate()
             val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
                     .where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1))
-                    .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(dtWork.toTimestamp())).fetch()
+                    .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(dtWork.toTimestamp()))
+                    .fetch()
             //val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
             if (result.getValue(0, 0) == 0) {
                 //dtWork=nextWerktag(dtWork.addDays(-1),"100","DE","36285")
@@ -295,10 +313,10 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             //val dt:java.util.Date=dtWork.toDate()
             val dt: java.sql.Date = java.sql.Date.valueOf(dtWork);
 
-            val dblBagID: Double = bagFreeRequest.bagId!!.substring(0, 11).toDouble()
+            val dblBagID: Double = bagId.substring(0, 11).toDouble()
             val dblNull: Double? = null
 
-            val sBagID: String = bagFreeRequest.bagId!!.substring(0, 11)
+            val sBagID: String = bagId.substring(0, 11)
 
             var iResultCount: Int = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
                     Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)
@@ -319,10 +337,13 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             }
             //:org.jooq.Result<SsoSMovepoolRecord>
 //Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB
-            val dResult = dslContext.select().from(Tables.SSO_S_MOVEPOOL)
+            val dResult = dslContext.select()
+                    .from(Tables.SSO_S_MOVEPOOL)
                     .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID))
                     .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
-                    .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.ne(dt)).fetch()
+                    .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.ne(dt))
+                    .fetch()
+
             if (dResult.size > 0) {
                 val dblOrderIdDepot2Hub: Double = dResult.getValue(0, Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB) ?: 0.0
                 if (dblOrderIdDepot2Hub > 0) {
@@ -334,7 +355,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                 }
             }
 
-            // TODO: use `.newRecord`, then `.store` or `.update` respectivelay
+            // TODO: use `.newRecord`, then `.store` or `.update` respectively
             iResultCount = dslContext.update(Tables.SSO_S_MOVEPOOL)
                     .set(Tables.SSO_S_MOVEPOOL.MOVEPOOL, "p")
                     .set(Tables.SSO_S_MOVEPOOL.STATUS, dblStatus)
@@ -354,7 +375,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                         depotId = "isBagFree",
                         info = "Problem beim update sso_s_movepool",
                         msgLocation = "isBagFree",
-                        orderId = bagFreeRequest.depotNr!!.toString())
+                        orderId = depotNr.toString())
                 return false
             }
 
@@ -374,7 +395,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     depotId = "isBagFree",
                     info = e.message ?: e.toString(),
                     msgLocation = "isBagFree",
-                    orderId = bagFreeRequest.depotNr!!.toString())
+                    orderId = depotNr.toString())
             throw BadRequestException(e.message)
         }
 
