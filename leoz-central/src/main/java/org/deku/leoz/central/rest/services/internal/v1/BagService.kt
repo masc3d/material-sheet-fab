@@ -16,10 +16,12 @@ import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.rs.ApiKey
+import sx.time.toDate
+import sx.time.toSqlDate
 import sx.time.toTimestamp
-import java.sql.Date
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.BadRequestException
@@ -116,7 +118,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             }
             val dblStatus: Double = 5.0
             //val dt:java.util.Date=dtWork.toDate()
-            val dt: java.sql.Date = java.sql.Date.valueOf(dtWork);
+            val dt = java.sql.Date.valueOf(dtWork);
 
             /**
             result=dslContext.selectCount().from(Tables.SSO_S_MOVEPOOL).where(Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(bagInitRequest.depotNr!!.toDouble())).and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus)).and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m")).and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt)).fetch()
@@ -125,7 +127,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             }
              **/
 
-            var iResultCount: Int = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
+            var iResultCount = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
                     Tables.SSO_S_MOVEPOOL.LASTDEPOT.eq(depotNr.toDouble())
                             .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus))
                             .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
@@ -135,14 +137,14 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             }
 
             // status_time wieder raus, timestamp on update
-            val dblBagID: Double = bagId.substring(0, 11).toDouble()
-            val dblWhiteSeal: Double = whiteSeal.substring(0, 11).toDouble()
-            val dblYellowSeal: Double = yellowSeal.substring(0, 11).toDouble()
+            val dblBagID = bagId.substring(0, 11).toDouble()
+            val dblWhiteSeal = whiteSeal.substring(0, 11).toDouble()
+            val dblYellowSeal = yellowSeal.substring(0, 11).toDouble()
             val dblNull: Double? = null
 
-            val sBagID: String = bagId.substring(0, 11)
-            val sYellowSeal: String = yellowSeal.substring(0, 11)
-            val sWhiteSeal: String = whiteSeal.substring(0, 11)
+            val sBagID = bagId.substring(0, 11)
+            val sYellowSeal = yellowSeal.substring(0, 11)
+            val sWhiteSeal = whiteSeal.substring(0, 11)
 
             // TODO: use `.newRecord`, then `.store` or `.update` respectively
             iResultCount = dslContext.update(Tables.SSO_S_MOVEPOOL)
@@ -173,7 +175,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                 throw ServiceException(ErrorCode.UPDATE_MOVEPOOL_FAILED)
             }
 
-            val dtNow: java.sql.Timestamp = java.sql.Timestamp.valueOf(LocalDateTime.now())
+            val dtNow = Date()
 
             iResultCount = dslContext.update(Tables.TBLDEPOTLISTE)
                     .set(Tables.TBLDEPOTLISTE.STRANGDATUM, dt.toTimestamp())
@@ -190,7 +192,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     .values(
                             dblWhiteSeal,
                             2.0,
-                            dtNow,
+                            dtNow.toTimestamp(),
                             depotNr.toDouble(),
                             "weiss").execute()
             if (iResultCount == 0) {
@@ -222,7 +224,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     .values(
                             dblYellowSeal,
                             2.0,
-                            dtNow,
+                            dtNow.toTimestamp(),
                             depotNr.toDouble(),
                             "gelb")
                     .execute()
@@ -311,14 +313,14 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             }
             val dblStatus: Double = 1.0
             //val dt:java.util.Date=dtWork.toDate()
-            val dt: java.sql.Date = java.sql.Date.valueOf(dtWork);
+            val dt: Date = dtWork.toDate()
 
-            val dblBagID: Double = bagId.substring(0, 11).toDouble()
+            val dblBagID = bagId.substring(0, 11).toDouble()
             val dblNull: Double? = null
 
-            val sBagID: String = bagId.substring(0, 11)
+            val sBagID = bagId.substring(0, 11)
 
-            var iResultCount: Int = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
+            var iResultCount = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
                     Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)
                             .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus))
                             .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("p"))
@@ -330,7 +332,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             iResultCount = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
                     Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)
                             .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
-                            .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt)))
+                            .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt.toSqlDate())))
             if (iResultCount > 0) {
                 //dieser Bag wurde bereits initialisiert
                 throw ServiceException(ErrorCode.BAG_ALREADY_INITIALZED)
@@ -341,7 +343,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     .from(Tables.SSO_S_MOVEPOOL)
                     .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID))
                     .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
-                    .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.ne(dt))
+                    .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.ne(dt.toSqlDate()))
                     .fetch()
 
             if (dResult.size > 0) {
