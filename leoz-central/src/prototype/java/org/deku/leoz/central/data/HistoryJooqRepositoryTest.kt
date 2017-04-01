@@ -41,6 +41,6 @@ class HistoryJooqRepositoryTest {
     fun testAdd() {
         val record = dslContext.newRecord(Tables.TBLHISTORIE)
         record.info = "TEST"
-        historyRepository.add(record)
+        historyRepository.save(record)
     }
 }

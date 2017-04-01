@@ -30,9 +30,10 @@ open class DepotJooqRepository {
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun findSectionDepots(iSection:Int,iPosition:Int): List<String> {
         return dslContext
+                // TODO: don't embed SQL. no implicit formatting. repository classes are expected to deliver data as is.
                 .select("lpad(convert(DEPOTNR using utf8),3,'0')").asField<String>("Depot")
                 .from(Tables.TBLDEPOTLISTE)
                 .fetchInto(String::class.java)
     }
-    **
+    **/
 }

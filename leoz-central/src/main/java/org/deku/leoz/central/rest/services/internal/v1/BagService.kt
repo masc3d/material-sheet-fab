@@ -1,46 +1,29 @@
 package org.deku.leoz.central.rest.services.internal.v1
 
-import sx.packager.BundleRepository
-import org.deku.leoz.central.Application
+//import java.util.*
+
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.SsoSMovepoolRecord
-import org.deku.leoz.service.update.UpdateInfo
-import org.deku.leoz.service.update.UpdateInfoRequest
-import org.deku.leoz.central.data.repository.NodeJooqRepository
-import org.deku.leoz.node.data.jpa.QMstBundleVersion
-import org.deku.leoz.node.data.repository.master.BundleVersionRepository
+import org.deku.leoz.central.data.repository.HistoryJooqRepository
 import org.deku.leoz.node.rest.ServiceException
-import org.deku.leoz.node.rest.service.internal.v1.BundleService
+import org.deku.leoz.rest.entity.internal.v1.BagFreeRequest
 import org.deku.leoz.rest.entity.internal.v1.BagInitRequest
-import org.deku.leoz.rest.service.internal.v1.BagService
-import org.joda.time.Hours
+import org.deku.leoz.rest.service.internal.v1.BagService.ErrorCode
+import org.deku.leoz.util.checkCheckDigit
+import org.deku.leoz.util.getNextDeliveryDate
+import org.deku.leoz.util.getWorkingDate
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.context.annotation.Profile
 import sx.rs.ApiKey
-import sx.time.toDate
 import sx.time.toTimestamp
-import java.util.*
-//import java.util.*
+import java.sql.Date
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.BadRequestException
-import javax.ws.rs.GET
 import javax.ws.rs.Path
-import javax.ws.rs.PathParam
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import org.deku.leoz.util.*
-import sx.time.toLocalDate
-import java.sql.Date
-import org.deku.leoz.central.data.repository.HistoryJooqRepository
-import org.deku.leoz.central.data.jooq.tables.records.TblhistorieRecord
-
-import org.deku.leoz.rest.entity.internal.v1.BagFreeRequest
-import org.jooq.Result
 
 /**
  * Bundle service (leoz-central)
@@ -49,7 +32,8 @@ import org.jooq.Result
 @Named
 @ApiKey(false)
 @Path("internal/v1/bag")
-class BagService : BagService {
+class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
@@ -63,51 +47,56 @@ class BagService : BagService {
         return "String Bag:" + id
     }
 
+    /**
+     * ${link
+     */
     override fun initialize(bagInitRequest: BagInitRequest): Boolean {
         if (bagInitRequest.bagId.isNullOrEmpty()) {
-            throw ServiceException(BagService.ErrorCode.BAG_ID_MISSING)
+            throw ServiceException(ErrorCode.BAG_ID_MISSING)
         }
 
         if (bagInitRequest.whiteSeal.isNullOrEmpty()) {
-            throw ServiceException(BagService.ErrorCode.WHITE_SEAL_MISSING)
+            throw ServiceException(ErrorCode.WHITE_SEAL_MISSING)
         }
         if (bagInitRequest.yellowSeal.isNullOrEmpty()) {
-            throw ServiceException(BagService.ErrorCode.YELLOW_SEAL_MISSING)
+            throw ServiceException(ErrorCode.YELLOW_SEAL_MISSING)
         }
         if (bagInitRequest.depotNr == null) {
-            throw ServiceException(BagService.ErrorCode.DEPOT_NR_MISSING)
+            throw ServiceException(ErrorCode.DEPOT_NR_MISSING)
         }
 
         if (bagInitRequest.bagId!!.length < 12) {
-            throw ServiceException(BagService.ErrorCode.BAG_ID_MISSING_CHECK_DIGIT)
+            throw ServiceException(ErrorCode.BAG_ID_MISSING_CHECK_DIGIT)
         }
 
         if (bagInitRequest.whiteSeal!!.length < 12) {
-            throw ServiceException(BagService.ErrorCode.WHITE_SEAL_MISSING_CHECK_DIGIT)
+            throw ServiceException(ErrorCode.WHITE_SEAL_MISSING_CHECK_DIGIT)
         }
         if (bagInitRequest.yellowSeal!!.length < 12) {
-            throw ServiceException(BagService.ErrorCode.YELLOW_SEAL_MISSING_CHECK_DIGIT)
+            throw ServiceException(ErrorCode.YELLOW_SEAL_MISSING_CHECK_DIGIT)
         }
         if (bagInitRequest.depotNr!! <= 0 || bagInitRequest.depotNr!! > 999) {
-            throw ServiceException(BagService.ErrorCode.DEPOT_NR_NOT_VALID)
+            throw ServiceException(ErrorCode.DEPOT_NR_NOT_VALID)
         }
 
         if (!checkCheckDigit(bagInitRequest.bagId!!)) {
-            throw ServiceException(BagService.ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
+            throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
         }
 
         if (!checkCheckDigit(bagInitRequest.whiteSeal!!)) {
-            throw ServiceException(BagService.ErrorCode.WHITE_SEAL_WRONG_CHECK_DIGIT)
+            throw ServiceException(ErrorCode.WHITE_SEAL_WRONG_CHECK_DIGIT)
         }
         if (!checkCheckDigit(bagInitRequest.yellowSeal!!)) {
-            throw ServiceException(BagService.ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
+            throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
         }
-        //TODO
+
+        // TODO
+        // TODO: define constants for repetitive strings (eg. "initBag", "isBagFree"
 
         //var recHistory = TblhistorieRecord()
         try {
             var dtWork: LocalDate = getWorkingDate()
-            var result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
+            val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
                     .where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1))
                     .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(dtWork.toTimestamp())).fetch()
             //val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
@@ -135,7 +124,7 @@ class BagService : BagService {
                             .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
                             .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt)))
             if (iResultCount > 0) {
-                throw ServiceException(BagService.ErrorCode.BAG_FOR_DEPOT_ALREADY_EXISTS)
+                throw ServiceException(ErrorCode.BAG_FOR_DEPOT_ALREADY_EXISTS)
             }
 //status_time wieder raus, timestamp on update
             val dblBagID: Double = bagInitRequest.bagId!!.substring(0, 11).toDouble()
@@ -147,8 +136,7 @@ class BagService : BagService {
             val sYellowSeal: String = bagInitRequest.yellowSeal!!.substring(0, 11)
             val sWhiteSeal: String = bagInitRequest.whiteSeal!!.substring(0, 11)
 
-
-
+            // TODO: use `.newRecord`, then `.store` or `.update` respectivelay
             iResultCount = dslContext.update(Tables.SSO_S_MOVEPOOL)
                     .set(Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB, dblNull)
                     .set(Tables.SSO_S_MOVEPOOL.ORDERHUB2DEPOT, dblNull)
@@ -168,12 +156,13 @@ class BagService : BagService {
                 recHistory.orderid = bagInitRequest.depotNr!!.toString()
                 logHistoryRepository.add(recHistory)
                  **/
-                logHistoryRepository.add("initBag"
-                        , "BagID: " + sBagID + "; YellowSeal: " + sYellowSeal + "; WhiteSeal: " + sWhiteSeal
-                        , "initBag"
-                        , bagInitRequest.depotNr!!.toString())
+                logHistoryRepository.save(
+                        depotId = "initBag",
+                        info = "BagID: ${sBagID}; YellowSeal: ${sYellowSeal}; WhiteSeal: ${sWhiteSeal}",
+                        msgLocation = "initBag",
+                        orderId = bagInitRequest.depotNr!!.toString())
 
-                throw ServiceException(BagService.ErrorCode.UPDATE_MOVEPOOL_FAILED)
+                throw ServiceException(ErrorCode.UPDATE_MOVEPOOL_FAILED)
             }
 
             val dtNow: java.sql.Timestamp = java.sql.Timestamp.valueOf(LocalDateTime.now())
@@ -182,6 +171,7 @@ class BagService : BagService {
                     .set(Tables.TBLDEPOTLISTE.STRANGDATUM, dt.toTimestamp())
                     .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(bagInitRequest.depotNr!!.toInt())).execute()
 
+            // TODO: use `.newRecord`, then `.store` or `.insert` respectivelay
             iResultCount = dslContext.insertInto(Tables.SSO_P_MOV,
                     Tables.SSO_P_MOV.PLOMBENNUMMER,
                     Tables.SSO_P_MOV.STATUS,
@@ -196,16 +186,33 @@ class BagService : BagService {
                 recHistory.msglocation = "initBag"
                 recHistory.orderid = bagInitRequest.depotNr!!.toString()
                 logHistoryRepository.add(recHistory)
-                **/
+                 **/
 
-                logHistoryRepository.add("initBag"
-                        , "WhiteSeal: " + sWhiteSeal
-                        , "initBag"
-                        , bagInitRequest.depotNr!!.toString())
+                logHistoryRepository.save(
+                        depotId = "initBag",
+                        info = "WhiteSeal: ${sWhiteSeal}",
+                        msgLocation = "initBag",
+                        orderId = bagInitRequest.depotNr!!.toString())
 
-                throw ServiceException(BagService.ErrorCode.INSERT_SEAL_MOVE_WHITE_FAILED)
+                throw ServiceException(ErrorCode.INSERT_SEAL_MOVE_WHITE_FAILED)
             }
-            iResultCount = dslContext.insertInto(Tables.SSO_P_MOV, Tables.SSO_P_MOV.PLOMBENNUMMER, Tables.SSO_P_MOV.STATUS, Tables.SSO_P_MOV.STATUSZEIT, Tables.SSO_P_MOV.LASTDEPOT, Tables.SSO_P_MOV.FARBE).values(dblYellowSeal, 2.0, dtNow, bagInitRequest.depotNr!!.toDouble(), "gelb").execute()
+
+            // TODO: use `.newRecord`, then `.store` or `.insert` respectivelay
+            iResultCount = dslContext.insertInto(
+                    Tables.SSO_P_MOV,
+                    Tables.SSO_P_MOV.PLOMBENNUMMER,
+                    Tables.SSO_P_MOV.STATUS,
+                    Tables.SSO_P_MOV.STATUSZEIT,
+                    Tables.SSO_P_MOV.LASTDEPOT,
+                    Tables.SSO_P_MOV.FARBE)
+                    .values(
+                            dblYellowSeal,
+                            2.0,
+                            dtNow,
+                            bagInitRequest.depotNr!!.toDouble(),
+                            "gelb")
+                    .execute()
+
             if (iResultCount == 0) {
                 /**
                 recHistory.depotid = "initBag"//bagInitRequest.depotNr!!.toString()
@@ -213,12 +220,13 @@ class BagService : BagService {
                 recHistory.msglocation = "initBag"
                 recHistory.orderid = bagInitRequest.depotNr!!.toString()
                 logHistoryRepository.add(recHistory)
-                **/
-                logHistoryRepository.add("initBag"
-                        , "YellowSeal: " + sYellowSeal
-                        , "initBag"
-                        , bagInitRequest.depotNr!!.toString())
-                throw ServiceException(BagService.ErrorCode.INSERT_SEAL_MOVE_YELLOW_FAILED)
+                 **/
+                logHistoryRepository.save(
+                        depotId = "initBag",
+                        info = "YellowSeal: ${sYellowSeal}",
+                        msgLocation = "initBag",
+                        orderId = bagInitRequest.depotNr!!.toString())
+                throw ServiceException(ErrorCode.INSERT_SEAL_MOVE_YELLOW_FAILED)
             }
             return true
         } catch(e: ServiceException) {
@@ -230,11 +238,12 @@ class BagService : BagService {
             recHistory.msglocation = "initBag"
             recHistory.orderid = bagInitRequest.depotNr!!.toString()
             logHistoryRepository.add(recHistory)
-            **/
-            logHistoryRepository.add("initBag"
-                    , e.message ?: e.toString()
-                    , "initBag"
-                    , bagInitRequest.depotNr!!.toString())
+             **/
+            logHistoryRepository.save(
+                    depotId = "initBag",
+                    info = e.message ?: e.toString(),
+                    msgLocation = "initBag",
+                    orderId = bagInitRequest.depotNr!!.toString())
             throw BadRequestException(e.message)
         }
 
@@ -242,39 +251,36 @@ class BagService : BagService {
         //throw NotImplementedError()
     }
 
-
-    private val log = LoggerFactory.getLogger(this.javaClass)
-
+    /**
+     * D
+     */
     override fun isFree(bagFreeRequest: BagFreeRequest): Boolean {
         if (bagFreeRequest.bagId.isNullOrEmpty()) {
-            throw ServiceException(BagService.ErrorCode.BAG_ID_MISSING)
+            throw ServiceException(ErrorCode.BAG_ID_MISSING)
         }
 
-
         if (bagFreeRequest.depotNr == null) {
-            throw ServiceException(BagService.ErrorCode.DEPOT_NR_MISSING)
+            throw ServiceException(ErrorCode.DEPOT_NR_MISSING)
         }
 
         if (bagFreeRequest.bagId!!.length < 12) {
-            throw ServiceException(BagService.ErrorCode.BAG_ID_MISSING_CHECK_DIGIT)
+            throw ServiceException(ErrorCode.BAG_ID_MISSING_CHECK_DIGIT)
         }
 
-
         if (bagFreeRequest.depotNr!! <= 0 || bagFreeRequest.depotNr!! > 999) {
-            throw ServiceException(BagService.ErrorCode.DEPOT_NR_NOT_VALID)
+            throw ServiceException(ErrorCode.DEPOT_NR_NOT_VALID)
         }
 
         if (!checkCheckDigit(bagFreeRequest.bagId!!)) {
-            throw ServiceException(BagService.ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
+            throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
         }
-
 
         //TODO
 
         //var recHistory = TblhistorieRecord()
         try {
             var dtWork: LocalDate = getWorkingDate()
-            var result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
+            val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN)
                     .where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1))
                     .and(Tables.TBLHUBLINIENPLAN.ARBEITSDATUM.equal(dtWork.toTimestamp())).fetch()
             //val result = dslContext.selectCount().from(Tables.TBLHUBLINIENPLAN).where(Tables.TBLHUBLINIENPLAN.ISTLIFE.equal(-1)).fetch()
@@ -309,7 +315,7 @@ class BagService : BagService {
                             .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt)))
             if (iResultCount > 0) {
                 //dieser Bag wurde bereits initialisiert
-                throw ServiceException(BagService.ErrorCode.BAG_ALREADY_INITIALZED)
+                throw ServiceException(ErrorCode.BAG_ALREADY_INITIALZED)
             }
             //:org.jooq.Result<SsoSMovepoolRecord>
 //Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB
@@ -327,6 +333,8 @@ class BagService : BagService {
                             .execute()
                 }
             }
+
+            // TODO: use `.newRecord`, then `.store` or `.update` respectivelay
             iResultCount = dslContext.update(Tables.SSO_S_MOVEPOOL)
                     .set(Tables.SSO_S_MOVEPOOL.MOVEPOOL, "p")
                     .set(Tables.SSO_S_MOVEPOOL.STATUS, dblStatus)
@@ -341,11 +349,12 @@ class BagService : BagService {
                 recHistory.msglocation = "isBagFree"
                 recHistory.orderid = bagFreeRequest.depotNr!!.toString()
                 logHistoryRepository.add(recHistory)
-                **/
-                logHistoryRepository.add("isBagFree"
-                        , "Problem beim update sso_s_movepool"
-                        , "isBagFree"
-                        , bagFreeRequest.depotNr!!.toString())
+                 **/
+                logHistoryRepository.save(
+                        depotId = "isBagFree",
+                        info = "Problem beim update sso_s_movepool",
+                        msgLocation = "isBagFree",
+                        orderId = bagFreeRequest.depotNr!!.toString())
                 return false
             }
 
@@ -360,11 +369,12 @@ class BagService : BagService {
             recHistory.msglocation = "isBagFree"
             recHistory.orderid = bagFreeRequest.depotNr!!.toString()
             logHistoryRepository.add(recHistory)
-            **/
-            logHistoryRepository.add("isBagFree"
-                    , e.message ?: e.toString()
-                    , "isBagFree"
-                    , bagFreeRequest.depotNr!!.toString())
+             **/
+            logHistoryRepository.save(
+                    depotId = "isBagFree",
+                    info = e.message ?: e.toString(),
+                    msgLocation = "isBagFree",
+                    orderId = bagFreeRequest.depotNr!!.toString())
             throw BadRequestException(e.message)
         }
 
