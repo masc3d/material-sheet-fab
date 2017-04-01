@@ -4,6 +4,8 @@ version = '0.1'
 buildscript {
     ext {
         v_feign = '8.18.0'
+        v_jgit = '4.6.1.201703071140-r'
+        v_jsch = '0.0.9'
         v_kotlin = '1.1.1'
         v_slf4j = '1.7.25'
     }
@@ -71,8 +73,15 @@ dependencies {
             "com.netflix.feign:feign-jaxrs:$v_feign",
             // YAML
             "org.yaml:snakeyaml:1.18",
+            // JGit
+            "org.eclipse.jgit:org.eclipse.jgit:$v_jgit",
+            // For authenticating ssh/jgit against key agent
+            "com.jcraft:jsch.agentproxy.connector-factory:$v_jsch",
+            "com.jcraft:jsch.agentproxy.jsch:$v_jsch",
+            "com.jcraft:jsch.agentproxy.sshagent:$v_jsch",
+            "com.jcraft:jsch.agentproxy.pageant:$v_jsch",
             // JUnit
-            "junit:junit:4.12"
+            "junit:junit:4.12",
     )
 
     testCompile(

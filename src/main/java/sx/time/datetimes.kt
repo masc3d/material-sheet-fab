@@ -22,6 +22,10 @@ fun Date.toTimestamp(): Timestamp {
     return Timestamp(this.time)
 }
 
+fun Date.toSqlDate(): java.sql.Date {
+    return java.sql.Date(this.time)
+}
+
 fun Date.toLocalDate(): LocalDate {
     return java.sql.Date(this.time).toLocalDate()
 }
