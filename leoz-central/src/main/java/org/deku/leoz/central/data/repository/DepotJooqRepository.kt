@@ -31,8 +31,12 @@ open class DepotJooqRepository {
     open fun findSectionDepots(iSection:Int,iPosition:Int): List<String> {
         return dslContext
                 // TODO: don't embed SQL. no implicit formatting. repository classes are expected to deliver data as is.
-                .select("lpad(convert(DEPOTNR using utf8),3,'0')").asField<String>("Depot")
-                .from(Tables.TBLDEPOTLISTE)
+                //.select("lpad(convert(DEPOTNR using utf8),3,'0')").asField<String>("Depot")
+                //.from(Tables.TBLDEPOTLISTE)
+    .select(DEPOT)
+    .from(Views.sectiondepotlist)
+    .where(section.eq(iSection)
+    .and(position.eq(iPosition)
                 .fetchInto(String::class.java)
     }
     **/

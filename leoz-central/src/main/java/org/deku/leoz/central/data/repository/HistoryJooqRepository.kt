@@ -34,6 +34,7 @@ open class HistoryJooqRepository {
         record.info = info
         record.msglocation = msgLocation
         record.orderid = orderId
-        historyRepository.save(record)
+        record.store()
+        //historyRepository.save(record)
     }
 }

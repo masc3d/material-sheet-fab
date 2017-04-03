@@ -136,7 +136,9 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                 throw ServiceException(ErrorCode.BAG_FOR_DEPOT_ALREADY_EXISTS)
             }
 
-            // status_time wieder raus, timestamp on update
+
+            val dtNow = Date()
+
             val dblBagID = bagId.substring(0, 11).toDouble()
             val dblWhiteSeal = whiteSeal.substring(0, 11).toDouble()
             val dblYellowSeal = yellowSeal.substring(0, 11).toDouble()
@@ -147,17 +149,42 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             val sWhiteSeal = whiteSeal.substring(0, 11)
 
             // TODO: use `.newRecord`, then `.store` or `.update` respectively
+            /**
             iResultCount = dslContext.update(Tables.SSO_S_MOVEPOOL)
-                    .set(Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB, dblNull)
-                    .set(Tables.SSO_S_MOVEPOOL.ORDERHUB2DEPOT, dblNull)
-                    .set(Tables.SSO_S_MOVEPOOL.SEAL_NUMBER_GREEN, dblWhiteSeal)
-                    .set(Tables.SSO_S_MOVEPOOL.SEAL_NUMBER_YELLOW, dblYellowSeal)
-                    .set(Tables.SSO_S_MOVEPOOL.STATUS, dblStatus)
-                    .set(Tables.SSO_S_MOVEPOOL.INIT_STATUS, 1)
-                    .set(Tables.SSO_S_MOVEPOOL.LASTDEPOT, depotNr.toDouble())
-                    .set(Tables.SSO_S_MOVEPOOL.WORK_DATE, dt)
-                    .set(Tables.SSO_S_MOVEPOOL.MOVEPOOL, "m")
-                    .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)).execute()
+            .set(Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB, dblNull)
+            .set(Tables.SSO_S_MOVEPOOL.ORDERHUB2DEPOT, dblNull)
+            .set(Tables.SSO_S_MOVEPOOL.SEAL_NUMBER_GREEN, dblWhiteSeal)
+            .set(Tables.SSO_S_MOVEPOOL.SEAL_NUMBER_YELLOW, dblYellowSeal)
+            .set(Tables.SSO_S_MOVEPOOL.STATUS, dblStatus)
+            .set(Tables.SSO_S_MOVEPOOL.STATUS_TIME, dtNow.toTimestamp())
+            .set(Tables.SSO_S_MOVEPOOL.INIT_STATUS, 1)
+            .set(Tables.SSO_S_MOVEPOOL.LASTDEPOT, depotNr.toDouble())
+            .set(Tables.SSO_S_MOVEPOOL.WORK_DATE, dt)
+            .set(Tables.SSO_S_MOVEPOOL.MOVEPOOL, "m")
+            .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)).execute()
+             **/
+            val recMovePool = dslContext.fetchOne(Tables.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID))
+            if (recMovePool == null) {
+                logHistoryRepository.save(
+                        depotId = "initBag",
+                        info = "BagID: ${sBagID} not found",
+                        msgLocation = "initBag",
+                        orderId = depotNr.toString())
+
+                throw ServiceException(ErrorCode.UPDATE_MOVEPOOL_FAILED)
+            }
+            recMovePool.orderdepot2hub = dblNull
+            recMovePool.orderhub2depot = dblNull
+            recMovePool.sealNumberGreen = dblWhiteSeal
+            recMovePool.sealNumberYellow = dblYellowSeal
+            recMovePool.status = dblStatus
+            recMovePool.statusTime = dtNow.toTimestamp()
+            recMovePool.initStatus = 1
+            recMovePool.lastdepot = depotNr.toDouble()
+            recMovePool.workDate = dt
+            recMovePool.movepool = "m"
+            iResultCount = recMovePool.update()
+
             if (iResultCount == 0) {
                 /**
                 recHistory.depotid = "initBag"//bagInitRequest.depotNr!!.toString()
@@ -175,26 +202,49 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                 throw ServiceException(ErrorCode.UPDATE_MOVEPOOL_FAILED)
             }
 
-            val dtNow = Date()
 
+            /**
             iResultCount = dslContext.update(Tables.TBLDEPOTLISTE)
-                    .set(Tables.TBLDEPOTLISTE.STRANGDATUM, dt.toTimestamp())
-                    .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(depotNr.toInt()))
-                    .execute()
+            .set(Tables.TBLDEPOTLISTE.STRANGDATUM, dt.toTimestamp())
+            .where(Tables.TBLDEPOTLISTE.DEPOTNR.eq(depotNr.toInt()))
+            .execute()
+             **/
+            val recDepotliste = dslContext.fetchOne(Tables.TBLDEPOTLISTE, Tables.TBLDEPOTLISTE.DEPOTNR.eq(depotNr.toInt()))
+            if (recDepotliste == null) {
+                logHistoryRepository.save(
+                        depotId = "initBag",
+                        info = "DepotNr not found",
+                        msgLocation = "initBag",
+                        orderId = depotNr.toString())
+
+                throw ServiceException(ErrorCode.UPDATE_DEPOTLIST_FAILED)
+            }
+            recDepotliste.strangdatum = dt.toTimestamp()
+            iResultCount = recDepotliste.update()
 
             // TODO: use `.newRecord`, then `.store` or `.insert` respectively
+            /**
             iResultCount = dslContext.insertInto(Tables.SSO_P_MOV,
-                    Tables.SSO_P_MOV.PLOMBENNUMMER,
-                    Tables.SSO_P_MOV.STATUS,
-                    Tables.SSO_P_MOV.STATUSZEIT,
-                    Tables.SSO_P_MOV.LASTDEPOT,
-                    Tables.SSO_P_MOV.FARBE)
-                    .values(
-                            dblWhiteSeal,
-                            2.0,
-                            dtNow.toTimestamp(),
-                            depotNr.toDouble(),
-                            "weiss").execute()
+            Tables.SSO_P_MOV.PLOMBENNUMMER,
+            Tables.SSO_P_MOV.STATUS,
+            Tables.SSO_P_MOV.STATUSZEIT,
+            Tables.SSO_P_MOV.LASTDEPOT,
+            Tables.SSO_P_MOV.FARBE)
+            .values(
+            dblWhiteSeal,
+            2.0,
+            dtNow.toTimestamp(),
+            depotNr.toDouble(),
+            "weiss").execute()
+             **/
+            val recWhite = dslContext.newRecord(Tables.SSO_P_MOV)
+            recWhite.plombennummer = dblWhiteSeal
+            recWhite.status = 2.0
+            recWhite.statuszeit = dtNow.toTimestamp()
+            recWhite.lastdepot = depotNr.toDouble()
+            recWhite.farbe = "weiss"
+            iResultCount = recWhite.store()
+
             if (iResultCount == 0) {
                 /**
                 recHistory.depotid = "initBag"//bagInitRequest.depotNr!!.toString()
@@ -214,20 +264,29 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             }
 
             // TODO: use `.newRecord`, then `.store` or `.insert` respectively
+            /**
             iResultCount = dslContext.insertInto(
-                    Tables.SSO_P_MOV,
-                    Tables.SSO_P_MOV.PLOMBENNUMMER,
-                    Tables.SSO_P_MOV.STATUS,
-                    Tables.SSO_P_MOV.STATUSZEIT,
-                    Tables.SSO_P_MOV.LASTDEPOT,
-                    Tables.SSO_P_MOV.FARBE)
-                    .values(
-                            dblYellowSeal,
-                            2.0,
-                            dtNow.toTimestamp(),
-                            depotNr.toDouble(),
-                            "gelb")
-                    .execute()
+            Tables.SSO_P_MOV,
+            Tables.SSO_P_MOV.PLOMBENNUMMER,
+            Tables.SSO_P_MOV.STATUS,
+            Tables.SSO_P_MOV.STATUSZEIT,
+            Tables.SSO_P_MOV.LASTDEPOT,
+            Tables.SSO_P_MOV.FARBE)
+            .values(
+            dblYellowSeal,
+            2.0,
+            dtNow.toTimestamp(),
+            depotNr.toDouble(),
+            "gelb")
+            .execute()
+             **/
+            val recYellow = dslContext.newRecord(Tables.SSO_P_MOV)
+            recYellow.plombennummer = dblYellowSeal
+            recYellow.status = 2.0
+            recYellow.statuszeit = dtNow.toTimestamp()
+            recYellow.lastdepot = depotNr.toDouble()
+            recYellow.farbe = "gelb"
+            iResultCount = recYellow.store()
 
             if (iResultCount == 0) {
                 /**
@@ -349,22 +408,44 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             if (dResult.size > 0) {
                 val dblOrderIdDepot2Hub: Double = dResult.getValue(0, Tables.SSO_S_MOVEPOOL.ORDERDEPOT2HUB) ?: 0.0
                 if (dblOrderIdDepot2Hub > 0) {
+                    /**
                     iResultCount = dslContext.update(Tables.TBLAUFTRAG)
-                            .set(Tables.TBLAUFTRAG.LOCKFLAG, 4)
-                            .set(Tables.TBLAUFTRAG.SDGSTATUS, "L")
-                            .where(Tables.TBLAUFTRAG.ORDERID.eq(dblOrderIdDepot2Hub))
-                            .execute()
+                    .set(Tables.TBLAUFTRAG.LOCKFLAG, 4)
+                    .set(Tables.TBLAUFTRAG.SDGSTATUS, "L")
+                    .where(Tables.TBLAUFTRAG.ORDERID.eq(dblOrderIdDepot2Hub))
+                    .execute()
+                     **/
+                    val recOrder = dslContext.fetchOne(Tables.TBLAUFTRAG, Tables.TBLAUFTRAG.ORDERID.eq(dblOrderIdDepot2Hub))
+                    if (recOrder != null) {
+
+                        recOrder.lockflag = 4
+                        recOrder.sdgstatus = "L"
+                        iResultCount = recOrder.update()
+                    }
                 }
             }
 
             // TODO: use `.newRecord`, then `.store` or `.update` respectively
+            /**
             iResultCount = dslContext.update(Tables.SSO_S_MOVEPOOL)
-                    .set(Tables.SSO_S_MOVEPOOL.MOVEPOOL, "p")
-                    .set(Tables.SSO_S_MOVEPOOL.STATUS, dblStatus)
-                    .set(Tables.SSO_S_MOVEPOOL.PRINTED, -1.0)
-                    .set(Tables.SSO_S_MOVEPOOL.MULTIBAG, 0)
-                    .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID))
-                    .execute()
+            .set(Tables.SSO_S_MOVEPOOL.MOVEPOOL, "p")
+            .set(Tables.SSO_S_MOVEPOOL.STATUS, dblStatus)
+            .set(Tables.SSO_S_MOVEPOOL.PRINTED, -1.0)
+            .set(Tables.SSO_S_MOVEPOOL.MULTIBAG, 0)
+            .where(Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID))
+            .execute()
+             **/
+            val recFree = dslContext.fetchOne(Tables.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID))
+            if (recFree != null) {
+                recFree.movepool = "p"
+                recFree.status = dblStatus
+                recFree.printed = -1.0
+                recFree.multibag = 0
+                iResultCount = recFree.update()
+            } else {
+                iResultCount = 0
+            }
+
             if (iResultCount < 1) {
                 /**
                 recHistory.depotid = "isBagFree"
