@@ -435,7 +435,7 @@ subtrees.each { subtree ->
 
             try {
                 def result = ProcessExecutor.run([
-                        'git', 'subtree', 'split', '--rejoin', '-P', subtree['path'], '-b', 'git/split'
+                        'git', 'subtree', 'split', '--rejoin', '-P', subtree['path'], '-b', "split/${subtree['path']}".toString(), '--annotate', "[${subtree['path'].replace('/', '-')}] ".toString()
                 ])
             } catch (ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
