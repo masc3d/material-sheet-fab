@@ -8,6 +8,8 @@ import org.deku.leoz.central.data.repository.HistoryJooqRepository
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.rest.entity.internal.v1.BagFreeRequest
 import org.deku.leoz.rest.entity.internal.v1.BagInitRequest
+import org.deku.leoz.rest.entity.internal.v1.BagserviceNumberRange
+import org.deku.leoz.rest.entity.internal.v1.SectionDepotsRequest
 import org.deku.leoz.rest.service.internal.v1.BagService.ErrorCode
 import org.deku.leoz.util.checkCheckDigit
 import org.deku.leoz.util.getNextDeliveryDate
@@ -484,6 +486,186 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
 
 
         //throw NotImplementedError()
+    }
+
+    override fun getNumberRange(): BagserviceNumberRange {
+        var dblMinBagId: Double? = null
+        var dblMaxBagId: Double? = null
+        var dblMinWhiteSeal: Double? = null
+        var dblMaxWhiteSeal: Double? = null
+        var dblMinYellowSeal: Double? = null
+        var dblMaxYellowSeal: Double? = null
+        var dblMinCollieNr: Double? = null
+        var dblMaxCollieNr: Double? = null
+        var dblMinCollieNrBack: Double? = null
+        var dblMaxCollieNrBack: Double? = null
+
+        try {
+
+            var iLeft3WhiteSeal = 0
+            var iDigit4WhiteSeal = 0
+            var iLeft3YellowSeal = 0
+            var iDigit4YellowSeal = 0
+            var iLeft4BagCollieNr = 0
+            var iOffsetBagCollieNr = 0
+            var iLeft4BagCollieNrBack = 0
+            var iOffsetCollieNrBack = 0
+            var iLeft3BagId = 0
+            var iDigit4BagId = 0
+
+            var result = dslContext.select()
+                    .from(Tables.TBLSYSCOLLECTIONS)
+                    .where(Tables.TBLSYSCOLLECTIONS.TYP.eq(85))
+                    .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(10))
+                    .fetch()
+            if (result.size > 0) {
+                iLeft3WhiteSeal = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+            }
+            result = dslContext.select()
+                    .from(Tables.TBLSYSCOLLECTIONS)
+                    .where(Tables.TBLSYSCOLLECTIONS.TYP.eq(85))
+                    .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(11))
+                    .fetch()
+            if (result.size > 0) {
+                iDigit4WhiteSeal = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+            }
+            result = dslContext.select()
+                    .from(Tables.TBLSYSCOLLECTIONS)
+                    .where(Tables.TBLSYSCOLLECTIONS.TYP.eq(85))
+                    .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(20))
+                    .fetch()
+            if (result.size > 0) {
+                iLeft3YellowSeal = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+            }
+            result = dslContext.select()
+                    .from(Tables.TBLSYSCOLLECTIONS)
+                    .where(Tables.TBLSYSCOLLECTIONS.TYP.eq(85))
+                    .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(21))
+                    .fetch()
+            if (result.size > 0) {
+                iDigit4YellowSeal = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+            }
+            result = dslContext.select()
+                    .from(Tables.TBLSYSCOLLECTIONS)
+                    .where(Tables.TBLSYSCOLLECTIONS.TYP.eq(85))
+                    .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(30))
+                    .fetch()
+            if (result.size > 0) {
+                iLeft4BagCollieNr = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+            }
+            result = dslContext.select()
+                    .from(Tables.TBLSYSCOLLECTIONS)
+                    .where(Tables.TBLSYSCOLLECTIONS.TYP.eq(85))
+                    .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(31))
+                    .fetch()
+            if (result.size > 0) {
+                iOffsetBagCollieNr = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+            }
+            result = dslContext.select()
+                    .from(Tables.TBLSYSCOLLECTIONS)
+                    .where(Tables.TBLSYSCOLLECTIONS.TYP.eq(85))
+                    .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(40))
+                    .fetch()
+            if (result.size > 0) {
+                iLeft4BagCollieNrBack = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+            }
+            result = dslContext.select()
+                    .from(Tables.TBLSYSCOLLECTIONS)
+                    .where(Tables.TBLSYSCOLLECTIONS.TYP.eq(85))
+                    .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(41))
+                    .fetch()
+            if (result.size > 0) {
+                iOffsetCollieNrBack = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+            }
+            result = dslContext.select()
+                    .from(Tables.TBLSYSCOLLECTIONS)
+                    .where(Tables.TBLSYSCOLLECTIONS.TYP.eq(85))
+                    .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(60))
+                    .fetch()
+            if (result.size > 0) {
+                iLeft3BagId = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+            }
+            result = dslContext.select()
+                    .from(Tables.TBLSYSCOLLECTIONS)
+                    .where(Tables.TBLSYSCOLLECTIONS.TYP.eq(85))
+                    .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(61))
+                    .fetch()
+            if (result.size > 0) {
+                iDigit4BagId = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+            }
+
+            var sTmp = ""
+            if (iDigit4BagId > 0 && iLeft3BagId > 0) {
+                sTmp = iLeft3BagId.toString() + iDigit4BagId.toString() + "0000000"
+                dblMinBagId = sTmp.toDouble()
+                dblMaxBagId = dblMinBagId + 9999999
+            }
+            if (iDigit4WhiteSeal > 0 && iLeft3WhiteSeal > 0) {
+                sTmp = iLeft3WhiteSeal.toString() + iDigit4WhiteSeal.toString() + "0000000"
+                dblMinWhiteSeal = sTmp.toDouble()
+                dblMaxWhiteSeal = dblMinWhiteSeal + 9999999
+            }
+            if (iDigit4YellowSeal > 0 && iLeft3YellowSeal > 0) {
+                sTmp = iLeft3YellowSeal.toString() + iDigit4YellowSeal.toString() + "0000000"
+                dblMinYellowSeal = sTmp.toDouble()
+                dblMaxYellowSeal = dblMinYellowSeal + 9999999
+            }
+            if (iLeft4BagCollieNr > 0 && iOffsetBagCollieNr > 0) {
+                sTmp = iLeft4BagCollieNr.toString() + iOffsetBagCollieNr.toString()//10071000000
+                dblMinCollieNr = sTmp.toDouble()
+                dblMaxCollieNr = dblMinCollieNr + 999999
+            }
+            if (iLeft4BagCollieNrBack > 0 && iOffsetCollieNrBack > 0) {
+                sTmp = iLeft4BagCollieNrBack.toString() + iOffsetCollieNrBack.toString()//10072000000
+                dblMinCollieNrBack = sTmp.toDouble()
+                dblMaxCollieNrBack = dblMinCollieNrBack + 999999
+            }
+
+            var bagserviceNumberRange = BagserviceNumberRange(dblMinBagId,
+                    dblMaxBagId,
+                    dblMinWhiteSeal,
+                    dblMaxWhiteSeal,
+                    dblMinYellowSeal,
+                    dblMaxYellowSeal,
+                    dblMinCollieNr,
+                    dblMaxCollieNr,
+                    dblMinCollieNrBack,
+                    dblMaxCollieNrBack)
+
+
+            return bagserviceNumberRange
+        } catch (e: Exception) {
+            logHistoryRepository.save(
+                    depotId = "getNumberRange",
+                    info = e.message ?: e.toString(),
+                    msgLocation = "getNumberRange",
+                    orderId = "")
+            throw BadRequestException(e.message)
+        }
+    }
+
+    override fun getSectionDepots(sectionDepotsRequest: SectionDepotsRequest): List<String> {
+        val section = sectionDepotsRequest.section
+        val position = sectionDepotsRequest.position
+        if (section == null) {
+            throw ServiceException(ErrorCode.SECTION_MISSING)
+        }
+        if (position == null) {
+            throw ServiceException(ErrorCode.POSITION_MISSING)
+        }
+
+        try {
+            val l: List<String>
+            l = listOf("Hallo", "Test")
+            return l
+        } catch (e: Exception) {
+            logHistoryRepository.save(
+                    depotId = "getSectionDepots",
+                    info = e.message ?: e.toString(),
+                    msgLocation = "getSectionDepots",
+                    orderId = "")
+            throw BadRequestException(e.message)
+        }
     }
 
 

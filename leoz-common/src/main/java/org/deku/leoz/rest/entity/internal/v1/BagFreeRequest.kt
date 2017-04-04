@@ -12,12 +12,12 @@ class BagFreeRequest {
     var bagId: String? = null
 
 
-    @ApiModelProperty(dataType = "int", example = "020", position = 4, required = true, value = "Depot")
+    @ApiModelProperty(dataType = "int", example = "020", position = 2, required = true, value = "Depot")
     var depotNr: Int? = null
 
     constructor() { }
 
-    constructor(bagId: String?, whiteSeal: String?,yellowSeal: String?,depotNr: Int){
+    constructor(bagId: String?, depotNr: Int){
         this.bagId = bagId
         this.depotNr=depotNr
     }
