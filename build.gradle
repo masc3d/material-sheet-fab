@@ -1,0 +1,67 @@
+group 'sx'
+version '0.1'
+
+buildscript {
+    ext {
+        v_kotlin = '1.1.1'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+//region Prototype test setup
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
+}
+//endregion
+
+dependencies {
+    compile(
+            project(':sx-common'),
+            project(':sx-rsync'),
+
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            "org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3",
+
+            // logging
+            "org.apache.commons:commons-lang3:3.5",
+            "ch.qos.logback:logback-classic:1.2.2",
+            "org.slf4j:jcl-over-slf4j:1.7.25",
+
+            // Guava.
+            // IMPORTANT: updating guava may cause classpath issues with gradle android-tools
+            "com.google.guava:guava:19.0",
+    )
+
+    testCompile(
+            "junit:junit:4.12",
+            "ch.qos.logback:logback-classic:1.2.2")
+}
