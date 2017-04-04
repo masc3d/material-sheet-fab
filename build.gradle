@@ -1,0 +1,54 @@
+group 'sx'
+version '0.1'
+
+buildscript {
+    ext {
+        v_kotlin = '1.1.1'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
+    }
+}
+
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+}
+
+//region Prototype test setup
+test {
+    useJUnit {
+        includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
+}
+//endregion
+
+dependencies {
+    compile(
+            project(':sx-common'),
+            project(':sx-ssh'),
+
+            "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            "org.apache.commons:commons-lang3:3.5",
+            // Ini/conf file support
+            'org.ini4j:ini4j:0.5.4'
+    )
+
+    testCompile(
+            "junit:junit:4.12"
+    )
+}
