@@ -186,14 +186,34 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                  */
                 //val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[17].substring(0, 11)
 
-                var glsParcelNum = parcelData[0].expressData.courierParcelNumber
+                val courierNum = parcelData[0].expressData.courierParcelNumber
+
+                var glsParcelNum = courierNum
                 glsParcelNum = glsParcelNum.substring(1, 3) + "85" + glsParcelNum.substring(4, 11)
                 fpcsRecord.glsTrackid = parcelData[0].trackID
                 fpcsRecord.glsParcelno = glsParcelNum.toDouble()
 
                 fpcsRecord.store()
 
-                return NotifiedDeliveryOrder(glsParcelNum, "https://gls-group.eu/DE/de/paketverfolgung?match=$glsParcelNum")
+                //Check if GLS Parcel number is within the assigned range. Otherwise cancel the order and throw a problem.
+                val checkRange = dslContext.fetchCount(
+                        Tables.TBLSYSCOLLECTIONS
+                                .join(Tables.SDD_CUSTOMER)
+                                    .on(Tables.TBLSYSCOLLECTIONS.TXTP2
+                                        .eq(Tables.SDD_CUSTOMER.CUSTOMERID)),
+                        Tables.TBLSYSCOLLECTIONS.TYP.eq(80)
+                                .and(Tables.SDD_CUSTOMER.NAME1.eq("Zalando"))
+                                .and(Tables.TBLSYSCOLLECTIONS.TXTVALUE.lessOrEqual(courierNum))
+                                .and(Tables.TBLSYSCOLLECTIONS.TXTP1.greaterOrEqual(courierNum)))
+
+                if (checkRange > 0) {
+                    return NotifiedDeliveryOrder(glsParcelNum, "https://gls-group.eu/DE/de/paketverfolgung?match=$glsParcelNum")
+                } else {
+                    cancelDeliveryOrder(glsParcelNum, authorizationKey)
+                    throw DefaultProblem(
+                            title = "Customers range exceeded.",
+                            detail = "The order could not be processed due to an leaked customers range. Contact GLS Support ASAP!")
+                }
 
             } catch (e: Exception) {
                 fpcsRecord.cancelRequested = -2

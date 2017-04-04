@@ -39,7 +39,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
                         .description("Leoz public webservice API")
                         .version("1.0.2")
                         .contact(Contact()
-                                .email("wolfgang.drewelies@derkurier.de")),
+                                .email("it-service@derkurier.de")),
                 mappingPrefix = RestConfiguration.MAPPING_PREFIX,
                 packageName = org.deku.leoz.rest.service.v1.Package.name)
 
@@ -50,7 +50,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
                         .description("Leoz internal webservice API")
                         .version("1.0.1")
                         .contact(Contact()
-                                .email("wolfgang.drewelies@derkurier.de")),
+                                .email("it-service@derkurier.de")),
                 mappingPrefix = RestConfiguration.MAPPING_PREFIX,
                 basePath = "/internal",
                 packageName = org.deku.leoz.rest.service.internal.v1.Package.name)
