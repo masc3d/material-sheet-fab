@@ -433,9 +433,18 @@ subtrees.each { subtree ->
         doLast {
             println "Splitting subtree ${subtree}"
 
+            def branchName = "split/${subtree['path']}".toString()
             try {
                 def result = ProcessExecutor.run([
-                        'git', 'subtree', 'split', '--rejoin', '-P', subtree['path'], '-b', "split/${subtree['path']}".toString(), '--annotate', "[${subtree['path'].replace('/', '-')}] ".toString()
+                        'git', 'subtree', 'split', '--rejoin', '-P', subtree['path'], '-b', branchName, '--annotate', "[${subtree['path'].replace('/', '-')}] ".toString()
+                ])
+            } catch (ProcessRunException e) {
+                throw new IllegalStateException(e.result.error)
+            }
+
+            try {
+                def result = ProcessExecutor.run([
+                        'git', 'branch', '-d', branchName
                 ])
             } catch (ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
