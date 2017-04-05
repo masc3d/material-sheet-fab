@@ -167,7 +167,9 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             shipmentRequestData.shipment.service.add(shippingService)
 
             val glsResponse: CreateParcelsResponse
+
             try {
+
                 glsResponse = glsShipmentProcessingService.createParcels(shipmentRequestData)
                 val parcelData = glsResponse.createdShipment.parcelData
 
@@ -215,6 +217,8 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                             detail = "The order could not be processed due to an leaked customers range. Contact GLS Support ASAP!")
                 }
 
+            } catch(d: DefaultProblem) { //Don't catch a thrown DefaultProblem as a general Exception. These are supposed to be thrown.
+                throw d
             } catch (e: Exception) {
                 fpcsRecord.cancelRequested = -2
                 fpcsRecord.store()
@@ -222,6 +226,8 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                         title = "Error serving GLS systems",
                         detail = "The order could not be stored in GLS Systems due to an error: ${e.message}")
             }
+        } catch(d: DefaultProblem) { //Don't catch a thrown DefaultProblem as a general Exception. These are supposed to be thrown.
+            throw d
         } catch(e: Exception) {
             throw DefaultProblem(
                     title = "Unhandled exception",
