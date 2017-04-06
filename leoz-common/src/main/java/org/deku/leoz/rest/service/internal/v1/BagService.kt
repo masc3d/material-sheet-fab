@@ -17,7 +17,7 @@ interface BagService {
     companion object {
         // REST parameter constants
         const val ID = "id"
-        const val COLLI = "colli"
+        const val UNIT = "unit"
         const val DEPOT = "depot"
         const val POSITION = "position"
     }
@@ -49,10 +49,10 @@ interface BagService {
         UPDATE_DEPOTLIST_FAILED(2061),
         SECTION_MISSING(2062),
         POSITION_MISSING(2063),
-        BAG_COLLIENR_MISSING(2065),
-        BAG_COLLIENR_NOT_VALID(2066),
-        BAG_COLLIENR_MISSING_CHECK_DIGIT(2067),
-        BAG_COLLIENR_WRONG_CHECK_DIGIT(2068),
+        BAG_UNITNO_MISSING(2065),
+        BAG_UNITNO_NOT_VALID(2066),
+        BAG_UNITNO_MISSING_CHECK_DIGIT(2067),
+        BAG_UNITNO_WRONG_CHECK_DIGIT(2068),
         NO_DATA(2069)
     }
 
@@ -84,7 +84,7 @@ interface BagService {
     )
     fun isOk(
             @ApiParam(value = "Bag id", example = "700100000008") @PathParam(ID) bagId: String?,
-            @ApiParam(value = "Bag colli nr", example = "100710000002") @QueryParam(COLLI) colliNr: String?): BagResponse
+            @ApiParam(value = "Bag unit number", example = "100710000002") @QueryParam(UNIT) unitNo: String?): BagResponse
 
     @GET
     @Path("/util/number-range")

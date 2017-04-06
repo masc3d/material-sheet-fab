@@ -379,10 +379,10 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
         var maxWhiteSeal: Double? = null
         var minYellowSeal: Double? = null
         var maxYellowSeal: Double? = null
-        var minCollieNr: Double? = null
-        var maxCollieNr: Double? = null
-        var minCollieNrBack: Double? = null
-        var maxCollieNrBack: Double? = null
+        var minUnitNo: Double? = null
+        var maxUnitNo: Double? = null
+        var minUnitNoBack: Double? = null
+        var maxUnitNoBack: Double? = null
 
         val getNumberRange = "getNumberRange"
 
@@ -392,10 +392,10 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             var digit4WhiteSeal = 0
             var left3YellowSeal = 0
             var digit4YellowSeal = 0
-            var left4BagCollieNr = 0
-            var offsetBagCollieNr = 0
-            var left4BagCollieNrBack = 0
-            var offsetCollieNrBack = 0
+            var left4BagUnitNo = 0
+            var offsetBagUnitNo = 0
+            var left4BagUnitNoBack = 0
+            var offsetUnitNoBack = 0
             var left3BagId = 0
             var digit4BagId = 0
 
@@ -438,7 +438,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(30))
                     .fetch()
             if (result.size > 0) {
-                left4BagCollieNr = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+                left4BagUnitNo = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
             }
             result = dslContext.select()
                     .from(Tables.TBLSYSCOLLECTIONS)
@@ -446,7 +446,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(31))
                     .fetch()
             if (result.size > 0) {
-                offsetBagCollieNr = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+                offsetBagUnitNo = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
             }
             result = dslContext.select()
                     .from(Tables.TBLSYSCOLLECTIONS)
@@ -454,7 +454,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(40))
                     .fetch()
             if (result.size > 0) {
-                left4BagCollieNrBack = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+                left4BagUnitNoBack = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
             }
             result = dslContext.select()
                     .from(Tables.TBLSYSCOLLECTIONS)
@@ -462,7 +462,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     .and(Tables.TBLSYSCOLLECTIONS.SORT.eq(41))
                     .fetch()
             if (result.size > 0) {
-                offsetCollieNrBack = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
+                offsetUnitNoBack = result.getValue(0, Tables.TBLSYSCOLLECTIONS.IDVALUE) ?: 0
             }
             result = dslContext.select()
                     .from(Tables.TBLSYSCOLLECTIONS)
@@ -497,15 +497,15 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                 minYellowSeal = tmp.toDouble()
                 maxYellowSeal = minYellowSeal + 9999999
             }
-            if (left4BagCollieNr > 0 && offsetBagCollieNr > 0) {
-                tmp = left4BagCollieNr.toString() + offsetBagCollieNr.toString()//10071000000
-                minCollieNr = tmp.toDouble()
-                maxCollieNr = minCollieNr + 999999
+            if (left4BagUnitNo > 0 && offsetBagUnitNo > 0) {
+                tmp = left4BagUnitNo.toString() + offsetBagUnitNo.toString()//10071000000
+                minUnitNo = tmp.toDouble()
+                maxUnitNo = minUnitNo + 999999
             }
-            if (left4BagCollieNrBack > 0 && offsetCollieNrBack > 0) {
-                tmp = left4BagCollieNrBack.toString() + offsetCollieNrBack.toString()//10072000000
-                minCollieNrBack = tmp.toDouble()
-                maxCollieNrBack = minCollieNrBack + 999999
+            if (left4BagUnitNoBack > 0 && offsetUnitNoBack > 0) {
+                tmp = left4BagUnitNoBack.toString() + offsetUnitNoBack.toString()//10072000000
+                minUnitNoBack = tmp.toDouble()
+                maxUnitNoBack = minUnitNoBack + 999999
             }
 
             val bagserviceNumberRange = BagNumberRange(
@@ -515,10 +515,10 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     maxWhiteSeal = maxWhiteSeal,
                     minYellowSeal = minYellowSeal,
                     maxYellowSeal = maxYellowSeal,
-                    minCollieNr = minCollieNr,
-                    maxCollieNr = maxCollieNr,
-                    minCollieNrBack = minCollieNrBack,
-                    maxCollieNrBack = maxCollieNrBack)
+                    minUnitNo = minUnitNo,
+                    maxUnitNo = maxUnitNo,
+                    minUnitNoBack = minUnitNoBack,
+                    maxUnitNoBack = maxUnitNoBack)
 
 
             return bagserviceNumberRange
@@ -615,28 +615,28 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
         }
     }
 
-    override fun isOk(bagId: String?, colliNr: String?): BagResponse {
+    override fun isOk(bagId: String?, unitNo: String?): BagResponse {
         if (bagId == null || bagId.isEmpty()) {
             throw ServiceException(ErrorCode.BAG_ID_MISSING)
         }
 
-        if (colliNr == null || colliNr.isEmpty()) {
-            throw ServiceException(ErrorCode.BAG_COLLIENR_MISSING)
+        if (unitNo == null || unitNo.isEmpty()) {
+            throw ServiceException(ErrorCode.BAG_UNITNO_MISSING)
         }
 
         if (bagId.length < 12) {
             throw ServiceException(ErrorCode.BAG_ID_MISSING_CHECK_DIGIT)
         }
 
-        if (colliNr.length < 12) {
-            throw ServiceException(ErrorCode.BAG_COLLIENR_MISSING_CHECK_DIGIT)
+        if (unitNo.length < 12) {
+            throw ServiceException(ErrorCode.BAG_UNITNO_MISSING_CHECK_DIGIT)
         }
 
         if (!checkCheckDigit(bagId)) {
             throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
         }
-        if (!checkCheckDigit(colliNr)) {
-            throw ServiceException(ErrorCode.BAG_COLLIENR_WRONG_CHECK_DIGIT)
+        if (!checkCheckDigit(unitNo)) {
+            throw ServiceException(ErrorCode.BAG_UNITNO_WRONG_CHECK_DIGIT)
         }
         var ok = false
         var info: String? = null
@@ -661,8 +661,8 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             val dblNull: Double? = null
 
             val sBagID = bagId.substring(0, 11)
-            val dblCollieNr = colliNr.substring(0, 11).toDouble()
-            val sCollieNr = colliNr.substring(0, 11)
+            val dblUnitNo = unitNo.substring(0, 11).toDouble()
+            val sUnitNo = unitNo.substring(0, 11)
 
             val dblStatus = 5.0
 
@@ -674,7 +674,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                             .and(Tables.SSO_S_MOVEPOOL.ORDERHUB2DEPOT.eq(
                                     dslContext.select(Tables.TBLAUFTRAGCOLLIES.ORDERID)
                                             .from(Tables.TBLAUFTRAGCOLLIES)
-                                            .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(dblCollieNr)))))
+                                            .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(dblUnitNo)))))
             if (resultCount <= 0) {
                 throw ServiceException(ErrorCode.NO_DATA)
             }
@@ -686,7 +686,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     .and(Tables.SSO_S_MOVEPOOL.ORDERHUB2DEPOT.eq(
                             dslContext.select(Tables.TBLAUFTRAGCOLLIES.ORDERID)
                                     .from(Tables.TBLAUFTRAGCOLLIES)
-                                    .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(dblCollieNr)))))
+                                    .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(dblUnitNo)))))
             if (recOk != null) {
                 recOk.initStatus = 4
                 resultCount = recOk.update()
@@ -704,13 +704,13 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                             .and(Tables.SSO_S_MOVEPOOL.ORDERHUB2DEPOT.eq(
                                     dslContext.select(Tables.TBLAUFTRAGCOLLIES.ORDERID)
                                             .from(Tables.TBLAUFTRAGCOLLIES)
-                                            .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(dblCollieNr)))))
+                                            .where(Tables.TBLAUFTRAGCOLLIES.COLLIEBELEGNR.eq(dblUnitNo)))))
             if (resultCount <= 0) {
                 logHistoryRepository.save(
                         depotId = isBagOk,
                         info = "set Init_status=4 BagID: ${sBagID}",
                         msgLocation = isBagOk,
-                        orderId = sCollieNr)
+                        orderId = sUnitNo)
                 return BagResponse(ok, "kein init_status=4")
             }
             ok = true

@@ -13,8 +13,8 @@ class BagNumberRange(
         var maxWhiteSeal: Double? = null,
         var minYellowSeal: Double? = null,
         var maxYellowSeal: Double? = null,
-        var minCollieNr: Double? = null,
-        var maxCollieNr: Double? = null,
-        var minCollieNrBack: Double? = null,
-        var maxCollieNrBack: Double? = null
+        var minUnitNo: Double? = null,
+        var maxUnitNo: Double? = null,
+        var minUnitNoBack: Double? = null,
+        var maxUnitNoBack: Double? = null
 )
