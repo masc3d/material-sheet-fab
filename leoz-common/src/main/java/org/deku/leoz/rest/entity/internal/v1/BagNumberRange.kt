@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty
  * Created by helke on 04.04.17.
  */
 @ApiModel(value = "BagserviceNumberRange", description = "BagserviceNumberRange")
-class BagserviceNumberRange {
+class BagNumberRange {
 
     var dblMinBagId:Double?=null
     var dblMaxBagId:Double?=null

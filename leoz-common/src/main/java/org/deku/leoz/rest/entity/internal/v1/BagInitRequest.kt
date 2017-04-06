@@ -7,9 +7,6 @@ import io.swagger.annotations.ApiModelProperty
  */
 @ApiModel(value = "BagInit", description = "Bag Init Request")
 class BagInitRequest {
-    @ApiModelProperty(dataType = "string", example = "700100000008", position = 1, required = true, value = "Bag id")
-    var bagId: String? = null
-
     @ApiModelProperty(dataType = "string", example = "900100000002", position = 2, required = true, value = "Bag white seal")
     var whiteSeal: String? = null
 
@@ -21,8 +18,7 @@ class BagInitRequest {
 
     constructor() { }
 
-    constructor(bagId: String?, whiteSeal: String?,yellowSeal: String?,depotNr: Int){
-        this.bagId = bagId
+    constructor(whiteSeal: String?,yellowSeal: String?,depotNr: Int){
         this.whiteSeal = whiteSeal
         this.yellowSeal = yellowSeal
         this.depotNr=depotNr

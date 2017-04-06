@@ -51,8 +51,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
     /**
      * ${link
      */
-    override fun initialize(bagInitRequest: BagInitRequest): Boolean {
-        val bagId = bagInitRequest.bagId
+    override fun initialize(bagId: String?, bagInitRequest: BagInitRequest): Boolean {
         val depotNr = bagInitRequest.depotNr
         val yellowSeal = bagInitRequest.yellowSeal
         val whiteSeal = bagInitRequest.whiteSeal
@@ -247,10 +246,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
     /**
      * D
      */
-    override fun isFree(bagFreeRequest: BagFreeRequest): Boolean {
-        val bagId = bagFreeRequest.bagId
-        val depotNr = bagFreeRequest.depotNr
-
+    override fun isFree(bagId: String?, depotNr: Int?): Boolean {
         if (bagId == null || bagId.isEmpty()) {
             throw ServiceException(ErrorCode.BAG_ID_MISSING)
         }
@@ -376,7 +372,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
         //throw NotImplementedError()
     }
 
-    override fun getNumberRange(): BagserviceNumberRange {
+    override fun getNumberRange(): BagNumberRange {
         var dblMinBagId: Double? = null
         var dblMaxBagId: Double? = null
         var dblMinWhiteSeal: Double? = null
@@ -511,7 +507,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                 dblMaxCollieNrBack = dblMinCollieNrBack + 999999
             }
 
-            var bagserviceNumberRange = BagserviceNumberRange(dblMinBagId,
+            val bagserviceNumberRange = BagNumberRange(dblMinBagId,
                     dblMaxBagId,
                     dblMinWhiteSeal,
                     dblMaxWhiteSeal,
@@ -534,9 +530,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
         }
     }
 
-    override fun getSectionDepots(sectionDepotsRequest: SectionDepotsRequest): List<String> {
-        val section = sectionDepotsRequest.section
-        val position = sectionDepotsRequest.position
+    override fun getSectionDepots(section: Int?, position: Int?): List<String> {
         if (section == null) {
             throw ServiceException(ErrorCode.SECTION_MISSING)
         }
@@ -559,9 +553,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
         }
     }
 
-    override fun getSectionDepotsLeft(sectionDepotsRequest: SectionDepotsRequest): SectionDepotsLeft {
-        val section = sectionDepotsRequest.section
-        val position = sectionDepotsRequest.position
+    override fun getSectionDepotsLeft(section: Int?, position: Int?): SectionDepotsLeft {
         if (section == null) {
             throw ServiceException(ErrorCode.SECTION_MISSING)
         }
@@ -621,15 +613,12 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
         }
     }
 
-    override fun isOk(bagOkRequest: BagOkRequest): BagResponse {
-        val bagId = bagOkRequest.bagId
-        val collieNr = bagOkRequest.bagCollieNr
-
+    override fun isOk(bagId: String?, colliNr: String?): BagResponse {
         if (bagId == null || bagId.isEmpty()) {
             throw ServiceException(ErrorCode.BAG_ID_MISSING)
         }
 
-        if (collieNr == null || collieNr.isEmpty()) {
+        if (colliNr == null || colliNr.isEmpty()) {
             throw ServiceException(ErrorCode.BAG_COLLIENR_MISSING)
         }
 
@@ -637,14 +626,14 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             throw ServiceException(ErrorCode.BAG_ID_MISSING_CHECK_DIGIT)
         }
 
-        if (collieNr.length < 12) {
+        if (colliNr.length < 12) {
             throw ServiceException(ErrorCode.BAG_COLLIENR_MISSING_CHECK_DIGIT)
         }
 
         if (!checkCheckDigit(bagId)) {
             throw ServiceException(ErrorCode.BAG_ID_WRONG_CHECK_DIGIT)
         }
-        if (!checkCheckDigit(collieNr)) {
+        if (!checkCheckDigit(colliNr)) {
             throw ServiceException(ErrorCode.BAG_COLLIENR_WRONG_CHECK_DIGIT)
         }
         var bOk = false
@@ -670,8 +659,8 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             val dblNull: Double? = null
 
             val sBagID = bagId.substring(0, 11)
-            val dblCollieNr = collieNr.substring(0, 11).toDouble()
-            val sCollieNr = collieNr.substring(0, 11)
+            val dblCollieNr = colliNr.substring(0, 11).toDouble()
+            val sCollieNr = colliNr.substring(0, 11)
 
             val dblStatus = 5.0
 
@@ -687,7 +676,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             if (iResultCount <= 0) {
                 throw ServiceException(ErrorCode.NO_DATA)
             }
-            var recOk = dslContext.fetchOne(Tables.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)
+            val recOk = dslContext.fetchOne(Tables.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.BAG_NUMBER.eq(dblBagID)
                     .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
                     .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt.toSqlDate()))
                     .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus))
@@ -740,7 +729,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                 lastdepot = 0.0
             }
 
-            val iDepot: Int = lastdepot!!.toInt()
+            val iDepot: Int = lastdepot.toInt()
             val sDepot = iDepot.toString()
             sInfo = "Depot " + sDepot
 /**

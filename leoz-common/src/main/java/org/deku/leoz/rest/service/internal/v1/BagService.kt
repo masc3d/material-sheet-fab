@@ -2,9 +2,8 @@ package org.deku.leoz.rest.service.internal.v1
 
 import io.swagger.annotations.*
 import org.deku.leoz.rest.entity.internal.v1.*
-import sx.rs.ApiKey
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
 
 /**
  * Created by 27694066 on 20.02.2017.
@@ -14,6 +13,14 @@ import javax.ws.rs.*
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Bag operations")
 interface BagService {
+
+    companion object {
+        // REST parameter constants
+        const val ID = "id"
+        const val COLLI = "colli"
+        const val DEPOT = "depot"
+        const val POSITION = "position"
+    }
 
     @GET
     @Path("/{id}")
@@ -50,50 +57,60 @@ interface BagService {
     }
 
     @POST
-    @Path("/initialize")
-    @ApiOperation("Initialize Bag")
+    @Path("/{id}/initialize")
+    @ApiOperation("Initialize bag")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
     )
-    fun initialize(@ApiParam(value = "BagInitRequest") bagInitRequest: BagInitRequest): Boolean
-
-    @POST
-    @Path("/isfree")
-    @ApiOperation("isFree Bag")
-    @ApiResponses(*arrayOf(
-            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
-    )
-    fun isFree(@ApiParam(value = "BagFreeRequest") bagFreeRequest: BagFreeRequest): Boolean
+    fun initialize(
+            @ApiParam(value = "Bag id", example = "700100000008") @PathParam(ID) bagId: String?,
+            @ApiParam(value = "Bag init request") bagInitRequest: BagInitRequest): Boolean
 
     @GET
-    @Path("/getNumberRange")
-    @ApiOperation("getNumberRange")
+    @Path("/{id}/is-free")
+    @ApiOperation("Check if bag is free")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
     )
-    fun getNumberRange():BagserviceNumberRange
+    fun isFree(
+            @ApiParam(value = "Bag id", example = "700100000008") @PathParam(ID) bagId: String?,
+            @ApiParam(value = "Depot", example = "20") @QueryParam(DEPOT) depotNr: Int?): Boolean
 
-    @POST
-    @Path("/getSectionDepots")
-    @ApiOperation("getSectionDepots")
+    @GET
+    @Path("/{id}/is-ok")
+    @ApiOperation("Check if bag is ok")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
     )
-    fun getSectionDepots(@ApiParam(value="SectionDepotsRequest") sectionDepotsRequest:SectionDepotsRequest):List<String>
+    fun isOk(
+            @ApiParam(value = "Bag id", example = "700100000008") @PathParam(ID) bagId: String?,
+            @ApiParam(value = "Bag colli nr", example = "100710000002") @QueryParam(COLLI) colliNr: String?): BagResponse
 
-    @POST
-    @Path("/getSectionDepotsLeft")
-    @ApiOperation("getSectionDepotsLeft")
+    @GET
+    @Path("/util/number-range")
+    @ApiOperation("Get number range")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
     )
-    fun getSectionDepotsLeft(@ApiParam(value="SectionDepotsRequest") sectionDepotsRequest:SectionDepotsRequest):SectionDepotsLeft
+    fun getNumberRange(): BagNumberRange
 
-    @POST
-    @Path("/isok")
-    @ApiOperation("isOk Bag")
+    @GET
+    @Path("/section/{id}")
+    @ApiOperation("Get all section depots")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
     )
-    fun isOk(@ApiParam(value = "BagOkRequest") bagOkRequest: BagOkRequest): BagResponse
+    fun getSectionDepots(
+            @ApiParam(value = "Section", example = "1") @PathParam(ID) section: Int?,
+            @ApiParam(value = "Position", example = "1") @QueryParam(POSITION) position: Int?): List<String>
+
+    @GET
+    @Path("/section/{id}/left")
+    @ApiOperation("Get section depots left")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+    )
+    fun getSectionDepotsLeft(
+            @ApiParam(value = "Section", example = "1") @PathParam(ID) section: Int?,
+            @ApiParam(value = "Position", example = "1") @QueryParam(POSITION) position: Int?): SectionDepotsLeft
 }
