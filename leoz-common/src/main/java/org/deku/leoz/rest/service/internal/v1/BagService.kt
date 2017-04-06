@@ -23,7 +23,7 @@ interface BagService {
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{$ID}")
     fun get(@PathParam("id") id: String): String
 
     enum class ErrorCode constructor(private val mValue: Int) {
@@ -57,7 +57,7 @@ interface BagService {
     }
 
     @POST
-    @Path("/{id}/initialize")
+    @Path("/{$ID}/initialize")
     @ApiOperation("Initialize bag")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
@@ -67,7 +67,7 @@ interface BagService {
             @ApiParam(value = "Bag init request") bagInitRequest: BagInitRequest): Boolean
 
     @GET
-    @Path("/{id}/is-free")
+    @Path("/{$ID}/is-free")
     @ApiOperation("Check if bag is free")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
@@ -77,7 +77,7 @@ interface BagService {
             @ApiParam(value = "Depot", example = "20") @QueryParam(DEPOT) depotNr: Int?): Boolean
 
     @GET
-    @Path("/{id}/is-ok")
+    @Path("/{$ID}/is-ok")
     @ApiOperation("Check if bag is ok")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
@@ -95,7 +95,7 @@ interface BagService {
     fun getNumberRange(): BagNumberRange
 
     @GET
-    @Path("/section/{id}")
+    @Path("/section/{$ID}")
     @ApiOperation("Get all section depots")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
@@ -105,7 +105,7 @@ interface BagService {
             @ApiParam(value = "Position", example = "1") @QueryParam(POSITION) position: Int?): List<String>
 
     @GET
-    @Path("/section/{id}/left")
+    @Path("/section/{$ID}/left")
     @ApiOperation("Get section depots left")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
