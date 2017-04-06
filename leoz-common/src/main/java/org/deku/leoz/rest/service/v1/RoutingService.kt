@@ -8,6 +8,7 @@ import org.deku.leoz.rest.entity.v1.ServiceError
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
 import javax.ws.rs.Path
+import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 
 //import org.deku.leoz.rest.entities.v1.RoutingVia;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.MediaType
  * Created by masc on 17.09.14.
  */
 @Path("v1/routing")
+@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Routing operations")
 interface RoutingService {
