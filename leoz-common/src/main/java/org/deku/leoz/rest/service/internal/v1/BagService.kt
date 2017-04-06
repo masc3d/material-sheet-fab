@@ -1,10 +1,7 @@
 package org.deku.leoz.rest.service.internal.v1
 
 import io.swagger.annotations.*
-import org.deku.leoz.rest.entity.internal.v1.BagInitRequest
-import org.deku.leoz.rest.entity.internal.v1.BagFreeRequest
-import org.deku.leoz.rest.entity.internal.v1.BagserviceNumberRange
-import org.deku.leoz.rest.entity.internal.v1.SectionDepotsRequest
+import org.deku.leoz.rest.entity.internal.v1.*
 import sx.rs.ApiKey
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.*
@@ -44,7 +41,12 @@ interface BagService {
         BAG_ALREADY_INITIALZED(2060),
         UPDATE_DEPOTLIST_FAILED(2061),
         SECTION_MISSING(2062),
-        POSITION_MISSING(2063)
+        POSITION_MISSING(2063),
+        BAG_COLLIENR_MISSING(2065),
+        BAG_COLLIENR_NOT_VALID(2066),
+        BAG_COLLIENR_MISSING_CHECK_DIGIT(2067),
+        BAG_COLLIENR_WRONG_CHECK_DIGIT(2068),
+        NO_DATA(2069)
     }
 
     @POST
@@ -78,4 +80,20 @@ interface BagService {
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
     )
     fun getSectionDepots(@ApiParam(value="SectionDepotsRequest") sectionDepotsRequest:SectionDepotsRequest):List<String>
+
+    @POST
+    @Path("/getSectionDepotsLeft")
+    @ApiOperation("getSectionDepotsLeft")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+    )
+    fun getSectionDepotsLeft(@ApiParam(value="SectionDepotsRequest") sectionDepotsRequest:SectionDepotsRequest):SectionDepotsLeft
+
+    @POST
+    @Path("/isok")
+    @ApiOperation("isOk Bag")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+    )
+    fun isOk(@ApiParam(value = "BagOkRequest") bagOkRequest: BagOkRequest): BagResponse
 }
