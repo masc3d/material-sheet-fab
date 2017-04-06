@@ -24,7 +24,7 @@ interface BagService {
 
     @GET
     @Path("/{$ID}")
-    fun get(@PathParam("id") id: String): String
+    fun get(@PathParam(ID) id: String): String
 
     enum class ErrorCode constructor(private val mValue: Int) {
         BAG_ID_MISSING(1000),
