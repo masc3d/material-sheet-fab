@@ -10,11 +10,11 @@ class SectionDepotsLeft {
 
     var depotsLeft: List<String?> = listOf(null)
 
-    var iCountScanned: Int? = null
+    var scanCount: Int? = null
 
     constructor() {}
     constructor(listDepotsLeft: List<String?>, countScanned: Int?) {
         this.depotsLeft = listDepotsLeft
-        this.iCountScanned = countScanned
+        this.scanCount = countScanned
     }
 }
