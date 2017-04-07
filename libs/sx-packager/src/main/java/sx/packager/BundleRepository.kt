@@ -453,6 +453,8 @@ class BundleRepository(
                     log.info("Deleting [${bundleVersionPath}]")
                     bundleVersionPath.deleteRecursively()
                 }
+
+        log.info("Completed cleanup for bundle [${bundleName}]")
     }
 
     /**

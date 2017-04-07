@@ -41,7 +41,9 @@ class SwaggerBootstrapServlet : HttpServlet() {
                         .contact(Contact()
                                 .email("it-service@derkurier.de")),
                 mappingPrefix = RestConfiguration.MAPPING_PREFIX,
-                packageName = org.deku.leoz.rest.service.v1.Package.name)
+                packageNames = listOf(
+                        org.deku.leoz.rest.service.v1.Package.name
+                ))
 
         this.createSwagger(
                 servletConfig = servletConfig,
@@ -53,7 +55,10 @@ class SwaggerBootstrapServlet : HttpServlet() {
                                 .email("it-service@derkurier.de")),
                 mappingPrefix = RestConfiguration.MAPPING_PREFIX,
                 basePath = "/internal",
-                packageName = org.deku.leoz.rest.service.internal.v1.Package.name)
+                packageNames = listOf(
+                        org.deku.leoz.rest.service.internal.v1.Package.name,
+                        org.deku.leoz.rest.service.internal.v2.Package.name
+                ))
 
         this.createSwagger(
                 servletConfig = servletConfig,
@@ -65,7 +70,9 @@ class SwaggerBootstrapServlet : HttpServlet() {
                                 .email("philipp.prangenberg@gls-germany.com")),
                 mappingPrefix = RestConfiguration.MAPPING_PREFIX,
                 basePath = "/zalando",
-                packageName = org.deku.leoz.rest.service.zalando.v1.Package.name)
+                packageNames = listOf(
+                        org.deku.leoz.rest.service.zalando.v1.Package.name
+                ))
     }
 
 
@@ -78,7 +85,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
             info: Info,
             mappingPrefix: String,
             basePath: String = "",
-            packageName: String) {
+            packageNames: List<String>) {
 
         val AUTH_APIKEY = RestConfiguration.AUTH_APIKEY_NAME
         val swagger = Swagger()
@@ -97,7 +104,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
         // Setting the scanner during bootstrap, no need for configuration servlet
         val scanner = ReflectiveJaxrsScanner()
         // Confusing method name, this can actually be a list of packages (comma separated)
-        scanner.resourcePackage = packageName
+        scanner.resourcePackage = packageNames.joinToString(",")
 
         SwaggerContextService()
                 .withServletConfig(servletConfig)

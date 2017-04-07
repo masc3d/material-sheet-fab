@@ -1,4 +1,4 @@
-package org.deku.leoz.central.rest.services.internal.v1
+package org.deku.leoz.central.rest.service.internal.v1
 
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.rest.entity.internal.v1.OutgoingBag
