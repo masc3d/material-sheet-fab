@@ -2,6 +2,7 @@ package org.deku.leoz.rest.service.internal.v1
 
 import io.swagger.annotations.*
 import org.deku.leoz.rest.entity.internal.v1.*
+import sx.rs.PATCH
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -56,7 +57,7 @@ interface BagService {
         NO_DATA(2069)
     }
 
-    @POST
+    @PATCH
     @Path("/{$ID}/initialize")
     @ApiOperation("Initialize bag")
     @ApiResponses(*arrayOf(
