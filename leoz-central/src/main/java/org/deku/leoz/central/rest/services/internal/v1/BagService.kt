@@ -14,7 +14,7 @@ import org.deku.leoz.util.getWorkingDate
 import org.jooq.DSLContext
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import sx.rs.ApiKey
+import sx.rs.auth.ApiKey
 import sx.time.toDate
 import sx.time.toSqlDate
 import sx.time.toTimestamp
@@ -116,7 +116,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             }
             val dblStatus: Double = 5.0
             //val dt:java.util.Date=dtWork.toDate()
-            val dt = java.sql.Date.valueOf(dtWork);
+            val dt = java.sql.Date.valueOf(dtWork)
 
 
             var iResultCount = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,

@@ -3,7 +3,7 @@ package org.deku.leoz.rest.service.internal.v1
 import io.swagger.annotations.*
 import org.deku.leoz.rest.entity.internal.v1.OutgoingBag
 import org.deku.leoz.rest.entity.v1.ServiceError
-import sx.rs.ApiKey
+import sx.rs.auth.ApiKey
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.*
 

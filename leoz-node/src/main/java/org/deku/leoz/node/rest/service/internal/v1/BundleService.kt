@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import sx.packager.BundleRepository
 import sx.platform.OperatingSystem
-import sx.rs.ApiKey
+import sx.rs.auth.ApiKey
 import java.io.File
 import java.util.*
 import javax.inject.Inject

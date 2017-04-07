@@ -9,7 +9,7 @@ import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
-import sx.rs.ApiKey
+import sx.rs.auth.ApiKey
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named

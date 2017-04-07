@@ -18,7 +18,7 @@ import org.deku.leoz.rest.entity.v1.RoutingRequest
 import org.deku.leoz.rest.service.ServiceErrorCode
 import org.deku.leoz.rest.service.v1.RoutingService
 import org.slf4j.LoggerFactory
-import sx.rs.ApiKey
+import sx.rs.auth.ApiKey
 import sx.time.toDate
 import sx.time.toLocalDate
 import java.sql.Timestamp

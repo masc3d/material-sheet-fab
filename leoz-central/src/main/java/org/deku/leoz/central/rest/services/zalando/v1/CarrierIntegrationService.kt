@@ -12,7 +12,7 @@ import org.deku.leoz.ws.gls.shipment.*
 import org.jooq.DSLContext
 import org.jooq.exception.TooManyRowsException
 import org.springframework.beans.factory.annotation.Qualifier
-import sx.rs.ApiKey
+import sx.rs.auth.ApiKey
 import sx.time.replaceDate
 import java.util.*
 import javax.inject.Inject

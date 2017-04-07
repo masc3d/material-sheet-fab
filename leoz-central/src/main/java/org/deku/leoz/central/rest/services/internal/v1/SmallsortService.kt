@@ -3,7 +3,7 @@ package org.deku.leoz.central.rest.services.internal.v1
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.rest.entity.internal.v1.OutgoingBag
 import org.deku.leoz.rest.service.internal.v1.SmallsortService
-import sx.rs.ApiKey
+import sx.rs.auth.ApiKey
 import javax.inject.Named
 import javax.ws.rs.Path
 import org.deku.leoz.util.*

@@ -10,7 +10,7 @@ import org.deku.leoz.node.Storage
 import org.deku.leoz.rest.entity.internal.v1.ApplicationVersion
 import org.slf4j.LoggerFactory
 import sx.jms.Channel
-import sx.rs.ApiKey
+import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path

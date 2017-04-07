@@ -2,7 +2,7 @@ package org.deku.leoz.central.rest
 
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.config.RestConfiguration
-import sx.rs.ApiKeyRequestFilterBase
+import sx.rs.auth.ApiKeyRequestFilterBase
 
 import javax.inject.Inject
 import javax.inject.Named

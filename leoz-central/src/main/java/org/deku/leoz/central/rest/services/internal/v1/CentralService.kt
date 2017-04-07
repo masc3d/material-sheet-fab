@@ -2,7 +2,7 @@ package org.deku.leoz.central.rest.services.internal.v1
 
 import org.deku.leoz.central.service.DatabaseSyncService
 import org.slf4j.LoggerFactory
-import sx.rs.ApiKey
+import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path

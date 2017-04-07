@@ -3,7 +3,7 @@ package org.deku.leoz.node.rest.service.internal.v1
 import org.deku.leoz.node.data.repository.master.StationRepository
 import org.deku.leoz.rest.entity.internal.v1.Station
 import org.slf4j.LoggerFactory
-import sx.rs.ApiKey
+import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
