@@ -1,4 +1,4 @@
-package sx.rs;
+package sx.rs.auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
