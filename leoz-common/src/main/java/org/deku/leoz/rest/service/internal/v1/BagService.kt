@@ -5,6 +5,7 @@ import org.deku.leoz.rest.entity.internal.v1.*
 import sx.rs.PATCH
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
+//import org.deku.leoz.central.data.jooq.tables.records
 
 /**
  * Created by 27694066 on 20.02.2017.
@@ -54,7 +55,9 @@ interface BagService {
         BAG_UNITNO_NOT_VALID(2066),
         BAG_UNITNO_MISSING_CHECK_DIGIT(2067),
         BAG_UNITNO_WRONG_CHECK_DIGIT(2068),
-        NO_DATA(2069)
+        NO_DATA(2069),
+        NO_RUN_ID(2070),
+        NO_DATA_TO_RUN_ID(2071)
     }
 
     @PATCH
@@ -114,4 +117,13 @@ interface BagService {
     fun getSectionDepotsLeft(
             @ApiParam(value = "Section", example = "1") @PathParam(ID) section: Int?,
             @ApiParam(value = "Position", example = "1") @QueryParam(POSITION) position: Int?): SectionDepotsLeft
+/**
+    @GET
+    @Path("/diff")
+    @ApiOperation("Get diff list")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+    )
+    fun getDiff():List<SsoCheckRecord>
+    **/
 }
