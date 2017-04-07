@@ -734,32 +734,64 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             val iDepot: Int = lastdepot.toInt()
             val sDepot = iDepot.toString()
             info = "Depot " + sDepot
-/**
+            /**
             val presult = dslContext.select()
-                    .from(Views.sectiondepotlist)
-                    .where(sectiondepotlist.depotnr.eq(iDepot))
-                    .fetch()
+            .from(Views.sectiondepotlist)
+            .where(sectiondepotlist.depotnr.eq(iDepot))
+            .fetch()
             val iSection:Int?
             val iPosition:Int?
             if(presult.size>0){
-                iSection=presult.getValue(0,section) ?:0
-                iPosition=presult.getValue(0,position) ?: 0
+            iSection=presult.getValue(0,section) ?:0
+            iPosition=presult.getValue(0,position) ?: 0
             }else{
-                iSection=0
-                iPosition=0
+            iSection=0
+            iPosition=0
             }
             val iCountDepots=dslContext.fetchCount(Views.sectiondepotlist,
-                    section.eq(iSection)
-                            .and(position.eq(iPosition)))
+            section.eq(iSection)
+            .and(position.eq(iPosition)))
             val iCountDepotsChecked=dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m")
-                    .and(Tables.SSO_S_MOVEPOOL.INIT_STATUS.eq(4))
-                    .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt.toSqlDate()))
-                    .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus))
-                    .and(Tables.SSO_S_MOVEPOOL.LASTDEPOT.in(dslContext.select(DepotNr)
-                            .from(Views.sectiondepotlist)
-                            .where(position.eq(iPosition).and(section.eq(iSection))))))
+            .and(Tables.SSO_S_MOVEPOOL.INIT_STATUS.eq(4))
+            .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt.toSqlDate()))
+            .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus))
+            .and(Tables.SSO_S_MOVEPOOL.LASTDEPOT.in(dslContext.select(DepotNr)
+            .from(Views.sectiondepotlist)
+            .where(position.eq(iPosition).and(section.eq(iSection))))))
 
-**/
+            val sSection=iSection.toString()
+            val sPosition=iPosition==1?"a":iPosition==2?"b":""
+            if (iCountDepots==iCountDepotsChecked){
+            val recMP = dslContext.fetch(Tables.SSO_S_MOVEPOOL, Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m")
+            .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt.toSqlDate()))
+            .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus))
+            .and(Tables.SSO_S_MOVEPOOL.LASTDEPOT.in(dslContext.select(DepotNr)
+            .from(Views.sectiondepotlist)
+            .where(position.eq(iPosition).and(section.eq(iSection))))))
+            if (recMP != null) {
+            for(i in 0..(recMP.size-1)){
+            recMP(i).initStatus = 5
+            resultCount = recMP(i).update()
+            }
+            }
+            val iCountWork=dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m")
+            .and(Tables.SSO_S_MOVEPOOL.INIT_STATUS.eq(5))
+            .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt.toSqlDate()))
+            .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(dblStatus))
+            .and(Tables.SSO_S_MOVEPOOL.LASTDEPOT.in(dslContext.select(DepotNr)
+            .from(Views.sectiondepotlist)
+            .where(position.eq(iPosition).and(section.eq(iSection))))))
+            if(iCountWork==iCountDepots){
+            info+="/r/nStrang ${sSection} ${sPosition} zur Beladung frei"
+            }
+            else{
+            info="Problem bei Freigabe von Strang ${sStrang} ${sPosition}"
+            }
+            }
+            else{
+            info+="/r/n/Strang ${sSection} ${sPosition}:${iCountDepotsChecked.toString()}/${iCountDepots.toString()}"
+            }
+             **/
             return BagResponse(ok, info)
         } catch(e: ServiceException) {
             throw e
