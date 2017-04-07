@@ -1,4 +1,4 @@
-package sx.rs
+package sx.rs.auth
 
 import java.io.IOException
 import javax.ws.rs.WebApplicationException
