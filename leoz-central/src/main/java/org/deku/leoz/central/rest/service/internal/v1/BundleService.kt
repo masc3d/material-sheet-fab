@@ -1,4 +1,4 @@
-package org.deku.leoz.central.rest.services.internal.v1
+package org.deku.leoz.central.rest.service.internal.v1
 
 import sx.packager.BundleRepository
 import org.deku.leoz.central.Application
@@ -23,7 +23,7 @@ import javax.ws.rs.Path
 @ApiKey(false)
 @Profile(Application.PROFILE_CENTRAL)
 @Path("internal/v1/bundle")
-class BundleService : org.deku.leoz.node.rest.service.internal.v1.BundleService() {
+open class BundleService : org.deku.leoz.node.rest.service.internal.v1.BundleService() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /** Central db node table repository */

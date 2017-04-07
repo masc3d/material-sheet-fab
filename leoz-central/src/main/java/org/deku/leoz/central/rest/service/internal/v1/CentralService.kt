@@ -1,4 +1,4 @@
-package org.deku.leoz.central.rest.services.internal.v1
+package org.deku.leoz.central.rest.service.internal.v1
 
 import org.deku.leoz.central.service.DatabaseSyncService
 import org.slf4j.LoggerFactory

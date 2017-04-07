@@ -1,4 +1,4 @@
-package org.deku.leoz.central.rest.services.zalando.v1
+package org.deku.leoz.central.rest.service.zalando.v1
 
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonParser
