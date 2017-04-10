@@ -805,5 +805,63 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             throw BadRequestException(e.message)
         }
     }
+        override fun getDiff(): List<BagDiff> {
+            val gDiff="getDiff"
+            var diff:List<BagDiff>
+            try {
+                diff= mutableListOf()
+                //diff=listOf()
+
+                val runresult=dslContext.select()
+                        .from(Tables.USYSTBLZAEHLER)
+                        .where(Tables.USYSTBLZAEHLER.COUNTERTYP.eq(43))
+                        .fetch()
+                if(runresult.size<1){
+                    throw ServiceException(ErrorCode.NO_RUN_ID)
+                }
+                var runid=runresult.getValue(0,Tables.USYSTBLZAEHLER.TAGESZAEHLER) ?:0
+                if (runid==0){
+                    throw ServiceException(ErrorCode.NO_RUN_ID)
+                }
+                runid-=1
+
+                //diff
+                val diffresult =dslContext.select(Tables.SSO_CHECK.COLLIEBELEGNR,//.as("unitno"),
+                                Tables.SSO_CHECK.STRANG,//.as("section"),
+                                Tables.SSO_CHECK.LD,//.as("deliverydate"),
+                                Tables.SSO_CHECK.BEMERKUNG,//.as("notice"),
+                                Tables.SSO_CHECK.ENTLADEDELTAMIN)//.as("delta")
+                        .from(Tables.SSO_CHECK)
+                        .where(Tables.SSO_CHECK.RUN.eq((runid)))
+                        .orderBy(Tables.SSO_CHECK.ENTLADEDELTAMIN.desc())
+                        .fetch()
+                      //  .fetchInto(BagDiff)
+                if(diffresult.size<1){
+                    throw ServiceException(ErrorCode.NO_DATA_TO_RUN_ID)
+                }
+
+                for(i in 0..diffresult.size-1){
+                    val bd=BagDiff(diffresult.getValue(i,Tables.SSO_CHECK.COLLIEBELEGNR),
+                            diffresult.getValue(i,Tables.SSO_CHECK.STRANG),
+                            diffresult.getValue(i,Tables.SSO_CHECK.LD),
+                            diffresult.getValue(i,Tables.SSO_CHECK.BEMERKUNG),
+                            diffresult.getValue(i,Tables.SSO_CHECK.ENTLADEDELTAMIN))
+                    diff.add(bd)
+                }
+
+
+                return diff
+            }catch(e:ServiceException){
+                throw e
+            }catch(e:Exception){
+                logHistoryRepository.save(
+                        depotId = gDiff,
+                        info = e.message ?: e.toString(),
+                        msgLocation = gDiff,
+                        orderId = "")
+                throw BadRequestException(e.message)
+            }
+        }
+
 
 }

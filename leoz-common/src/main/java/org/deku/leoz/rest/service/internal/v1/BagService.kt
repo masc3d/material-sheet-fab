@@ -117,13 +117,13 @@ interface BagService {
     fun getSectionDepotsLeft(
             @ApiParam(value = "Section", example = "1") @PathParam(ID) section: Int?,
             @ApiParam(value = "Position", example = "1") @QueryParam(POSITION) position: Int?): SectionDepotsLeft
-/**
+
     @GET
     @Path("/diff")
     @ApiOperation("Get diff list")
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
     )
-    fun getDiff():List<SsoCheckRecord>
-    **/
+    fun getDiff():List<BagDiff>
+
 }
