@@ -212,6 +212,7 @@ jooq {
 
                 includes = [
                         // Sorted alphanumerically
+                        'hubfahrzeugbeladung',
                         'mst_.*',
                         'scaerror',
                         'sdd_.*',
@@ -221,9 +222,11 @@ jooq {
                         'tblauftragcollies',
                         'tbldepotliste',
                         'tblhistorie',
+                        'tblhublinien',
                         'tblhublinienplan',
                         'tblsyscollections',
                         'usystblzaehler'
+
                 ].join('|')
             }
 

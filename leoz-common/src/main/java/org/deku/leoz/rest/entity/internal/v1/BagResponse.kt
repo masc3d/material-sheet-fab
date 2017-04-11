@@ -7,9 +7,15 @@ import io.swagger.annotations.ApiModelProperty
 class BagResponse {
     var ok=false
     var info:String?=null
+    var color="red"
     constructor() { }
     constructor(ok:Boolean,info:String?) {
         this.ok=ok
         this.info=info
+    }
+    constructor(ok:Boolean,info:String?,color:String) {
+        this.ok=ok
+        this.info=info
+        this.color=color
     }
 }

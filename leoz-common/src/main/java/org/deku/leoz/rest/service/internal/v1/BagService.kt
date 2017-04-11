@@ -57,7 +57,10 @@ interface BagService {
         BAG_UNITNO_WRONG_CHECK_DIGIT(2068),
         NO_DATA(2069),
         NO_RUN_ID(2070),
-        NO_DATA_TO_RUN_ID(2071)
+        NO_DATA_TO_RUN_ID(2071),
+        SCAN_ID_NOT_VALID(2072),
+        SCAN_ID_MISSING(2073),
+        SCAN_ID_WRONG_CHECK_DIGIT(2074)
     }
 
     @PATCH
@@ -88,7 +91,7 @@ interface BagService {
     )
     fun isOk(
             @ApiParam(value = "Bag id", example = "700100000008") @PathParam(ID) bagId: String?,
-            @ApiParam(value = "Bag unit number", example = "100710000002") @QueryParam(UNIT) unitNo: String?): BagResponse
+            @ApiParam(value = "Bag unit number", example = "100710000007") @QueryParam(UNIT) unitNo: String?): BagResponse
 
     @GET
     @Path("/util/number-range")
@@ -125,5 +128,15 @@ interface BagService {
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
     )
     fun getDiff():List<BagDiff>
+
+    @PATCH
+    @Path("/{$ID}/arrival")
+    @ApiOperation("Line Arrival")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+    )
+    fun lineArrival(
+            @ApiParam(value = "Scan id", example = "10055618") @PathParam(ID) scanId: String?): BagResponse
+
 
 }

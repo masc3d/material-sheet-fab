@@ -2,6 +2,7 @@ package org.deku.leoz.central.rest.service.internal.v1
 
 //import java.util.*
 
+import com.sun.jna.platform.win32.WinDef
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.HistoryJooqRepository
@@ -18,6 +19,7 @@ import sx.rs.auth.ApiKey
 import sx.time.toDate
 import sx.time.toSqlDate
 import sx.time.toTimestamp
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -805,63 +807,200 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             throw BadRequestException(e.message)
         }
     }
-        override fun getDiff(): List<BagDiff> {
-            val gDiff="getDiff"
-            var diff:List<BagDiff>
-            try {
-                diff= mutableListOf()
-                //diff=listOf()
 
-                val runresult=dslContext.select()
-                        .from(Tables.USYSTBLZAEHLER)
-                        .where(Tables.USYSTBLZAEHLER.COUNTERTYP.eq(43))
-                        .fetch()
-                if(runresult.size<1){
-                    throw ServiceException(ErrorCode.NO_RUN_ID)
-                }
-                var runid=runresult.getValue(0,Tables.USYSTBLZAEHLER.TAGESZAEHLER) ?:0
-                if (runid==0){
-                    throw ServiceException(ErrorCode.NO_RUN_ID)
-                }
-                runid-=1
+    override fun getDiff(): List<BagDiff> {
+        val gDiff = "getDiff"
+        var diff: List<BagDiff>
+        try {
+            diff = mutableListOf()
+            //diff=listOf()
 
-                //diff
-                val diffresult =dslContext.select(Tables.SSO_CHECK.COLLIEBELEGNR,//.as("unitno"),
-                                Tables.SSO_CHECK.STRANG,//.as("section"),
-                                Tables.SSO_CHECK.LD,//.as("deliverydate"),
-                                Tables.SSO_CHECK.BEMERKUNG,//.as("notice"),
-                                Tables.SSO_CHECK.ENTLADEDELTAMIN)//.as("delta")
-                        .from(Tables.SSO_CHECK)
-                        .where(Tables.SSO_CHECK.RUN.eq((runid)))
-                        .orderBy(Tables.SSO_CHECK.ENTLADEDELTAMIN.desc())
-                        .fetch()
-                      //  .fetchInto(BagDiff)
-                if(diffresult.size<1){
-                    throw ServiceException(ErrorCode.NO_DATA_TO_RUN_ID)
-                }
+            val runresult = dslContext.select()
+                    .from(Tables.USYSTBLZAEHLER)
+                    .where(Tables.USYSTBLZAEHLER.COUNTERTYP.eq(43))
+                    .fetch()
+            if (runresult.size < 1) {
+                throw ServiceException(ErrorCode.NO_RUN_ID)
+            }
+            var runid = runresult.getValue(0, Tables.USYSTBLZAEHLER.TAGESZAEHLER) ?: 0
+            if (runid == 0) {
+                throw ServiceException(ErrorCode.NO_RUN_ID)
+            }
+            runid -= 1
 
-                for(i in 0..diffresult.size-1){
-                    val bd=BagDiff(diffresult.getValue(i,Tables.SSO_CHECK.COLLIEBELEGNR),
-                            diffresult.getValue(i,Tables.SSO_CHECK.STRANG),
-                            diffresult.getValue(i,Tables.SSO_CHECK.LD),
-                            diffresult.getValue(i,Tables.SSO_CHECK.BEMERKUNG),
-                            diffresult.getValue(i,Tables.SSO_CHECK.ENTLADEDELTAMIN))
-                    diff.add(bd)
-                }
+            //diff
+            val diffresult = dslContext.select(Tables.SSO_CHECK.COLLIEBELEGNR, //.as("unitno"),
+                    Tables.SSO_CHECK.STRANG, //.as("section"),
+                    Tables.SSO_CHECK.LD, //.as("deliverydate"),
+                    Tables.SSO_CHECK.BEMERKUNG, //.as("notice"),
+                    Tables.SSO_CHECK.ENTLADEDELTAMIN)//.as("delta")
+                    .from(Tables.SSO_CHECK)
+                    .where(Tables.SSO_CHECK.RUN.eq((runid)))
+                    .orderBy(Tables.SSO_CHECK.ENTLADEDELTAMIN.desc())
+                    .fetch()
+            //  .fetchInto(BagDiff)
+            if (diffresult.size < 1) {
+                throw ServiceException(ErrorCode.NO_DATA_TO_RUN_ID)
+            }
+
+            for (i in 0..diffresult.size - 1) {
+                val bd = BagDiff(diffresult.getValue(i, Tables.SSO_CHECK.COLLIEBELEGNR),
+                        diffresult.getValue(i, Tables.SSO_CHECK.STRANG),
+                        diffresult.getValue(i, Tables.SSO_CHECK.LD),
+                        diffresult.getValue(i, Tables.SSO_CHECK.BEMERKUNG),
+                        diffresult.getValue(i, Tables.SSO_CHECK.ENTLADEDELTAMIN))
+                diff.add(bd)
+            }
 
 
-                return diff
-            }catch(e:ServiceException){
-                throw e
-            }catch(e:Exception){
-                logHistoryRepository.save(
-                        depotId = gDiff,
-                        info = e.message ?: e.toString(),
-                        msgLocation = gDiff,
-                        orderId = "")
-                throw BadRequestException(e.message)
+            return diff
+        } catch(e: ServiceException) {
+            throw e
+        } catch(e: Exception) {
+            logHistoryRepository.save(
+                    depotId = gDiff,
+                    info = e.message ?: e.toString(),
+                    msgLocation = gDiff,
+                    orderId = "")
+            throw BadRequestException(e.message)
+        }
+    }
+
+    override fun lineArrival(scanId: String?): BagResponse {
+        if (scanId == null || scanId.isEmpty()) {
+            throw ServiceException(ErrorCode.SCAN_ID_MISSING)
+        }
+        var lineScanId = scanId
+        if (lineScanId.length > 12) {
+            lineScanId = lineScanId.substring(0, 12)
+        }
+        if (lineScanId.length < 12) {
+            lineScanId = lineScanId.padStart(12, '0')
+        }
+        if (!lineScanId.endsWith(',')) {
+            if (!checkCheckDigit(lineScanId)) {
+                throw ServiceException(ErrorCode.SCAN_ID_WRONG_CHECK_DIGIT)
             }
         }
+        lineScanId = lineScanId.substring(0, 11)
+        var ok = false
+        var info: String? = null
+        val logLineArrival = "LineArriva"//"LineArrival" schneidet nicht ab!! 10 zeichen
+        val lineVersion = -1
+        val logLineArrivalLocation = "KfzMng"
+        var color = "red"
+        try {
+            val line = dslContext.select(Tables.TBLHUBLINIEN.LINIENNR)
+                    .from(Tables.TBLHUBLINIEN)
+                    .where(Tables.TBLHUBLINIEN.VERSION.eq(lineVersion))
+                    .and(Tables.TBLHUBLINIEN.SCANID.eq(lineScanId.toDouble()))
+                    .fetch()?.getValue(0, Tables.TBLHUBLINIEN.LINIENNR)
+            if (line == null) {
+                logHistoryRepository.save(
+                        depotId = logLineArrival,
+                        info = "Problem: Linie=${lineScanId}",
+                        msgLocation = logLineArrival,
+                        orderId = "")
+                throw ServiceException(ErrorCode.SCAN_ID_NOT_VALID)
+            }
+            if (line <= 0) {
+                logHistoryRepository.save(
+                        depotId = logLineArrival,
+                        info = "Problem: Linie=${lineScanId}",
+                        msgLocation = logLineArrivalLocation,
+                        orderId = "")
+                info = "ungültige Liniennr"
+                return BagResponse(ok, info)
+            }
+            /*
+            val lineCount = dslContext.fetchCount(Tables.TBLHUBLINIEN,
+                    Tables.TBLHUBLINIEN.VERSION.eq(lineVersion)
+                            .and(Tables.TBLHUBLINIEN.LINIENNR.eq(line)))
+            if (lineCount == 0) {
+                logHistoryRepository.save(
+                        depotId = logLineArrival,
+                        info = "Problem: Linie=${lineScanId}",
+                        msgLocation = logLineArrivalLocation,
+                        orderId = "")
+                info = "ungültige Liniennr"
+                return BagResponse(ok, info)
+            }
+            */
+            ok = true
+            val recLine = dslContext.fetchOne(Tables.TBLHUBLINIEN, Tables.TBLHUBLINIEN.KFZHUBEINGANG.isNull
+                    .and(Tables.TBLHUBLINIEN.VERSION.eq(lineVersion))
+                    .and(Tables.TBLHUBLINIEN.LINIENNR.eq(line)))
+            if (recLine != null) {
+                val dt = Date()
+                recLine.kfzhubeingang = dt.toTimestamp()
+                recLine.update()
+                val sdf = SimpleDateFormat("yyyMMddHHmmss")
+                val f = sdf.format(dt)
+                //grün
+                color = "green"
+                logHistoryRepository.save(
+                        depotId = logLineArrival,
+                        info = "Linie=${lineScanId} KfzHubEingang=${f}",
+                        msgLocation = logLineArrivalLocation,
+                        orderId = line.toString())
+            } else {
+                //schon gescannt -->gelb
+                color = "yellow"
+            }
+            info = "Ankunft Linie ${line} ok"
+
+            //#240 feld packgew Pkst / Gew in hubkfzankunft: "283/1210" + Entladung=0
+            val s=134217728
+
+            val unitCount=dslContext.fetchCount(Tables.TBLAUFTRAGCOLLIES.innerJoin(Tables.TBLAUFTRAG)
+                    .on(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(Tables.TBLAUFTRAG.ORDERID)),
+                    Tables.TBLAUFTRAGCOLLIES.BELADELINIE.eq(line.toDouble())
+                            .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
+                            //.and(Tables.TBLAUFTRAG.SERVICE.bitAnd(s).eq(0)))
+                            .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGHUP3.isNull))
+
+
+            val unitWeight=dslContext.select(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL.sum().round())
+                    .from(Tables.TBLAUFTRAGCOLLIES.innerJoin(Tables.TBLAUFTRAG).on(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(Tables.TBLAUFTRAG.ORDERID)))
+                    .where(Tables.TBLAUFTRAGCOLLIES.BELADELINIE.eq(line.toDouble()))
+                    .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
+                    //.and(Tables.TBLAUFTRAG.SERVICE.bitAnd(s).eq(0)))
+                    .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGHUP3.isNull).fetch() ?:0
+
+
+            var sWeight="${unitCount.toString()}/${unitWeight.toString()}"
+
+            /**
+            val rec=dslContext.fetchOne(Tables.HUBFAHRZEUGBELADUNG,Tables.HUBFAHRZEUGBELADUNG.LINIE.eq(line))
+            if(rec!=null){
+                rec.angekommen=-1
+                rec.entladung=0.0
+                rec.packgew=sWeight
+                val i=rec.update()
+                if (i>0){
+                    logHistoryRepository.save(
+                            depotId = logLineArrival,
+                            info = "Linie=${lineScanId} angekommen=-1",
+                            msgLocation = logLineArrivalLocation,
+                            orderId = line.toString())
+                }
+            }
+            **/
+
+
+            return BagResponse(ok, info, color)
+        } catch(e: ServiceException) {
+            throw e
+        } catch(e: Exception) {
+
+            logHistoryRepository.save(
+                    depotId = logLineArrival,
+                    info = e.message ?: e.toString(),
+                    msgLocation = logLineArrivalLocation,
+                    orderId = "")
+            throw BadRequestException(e.message)
+        }
+    }
 
 
 }
