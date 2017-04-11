@@ -1,8 +1,8 @@
 import org.flywaydb.core.Flyway
+import org.flywaydb.core.api.MigrationType
+import org.flywaydb.core.api.MigrationVersion
 import org.flywaydb.gradle.task.FlywayInfoTask
 import org.flywaydb.gradle.task.FlywayValidateTask
-import org.flywaydb.core.api.MigrationVersion
-import org.flywaydb.core.api.MigrationType
 import org.omg.CORBA.Object
 
 import java.nio.file.Files
@@ -50,7 +50,6 @@ def FLYWAY_PROJECT_MIGRATION_DIR = file('src/main/resources/db/central/migration
 // Directory for apt must be dedicated (no other generators may write here)
 // otherwise triggering javac bug https://bugs.openjdk.java.net/browse/JDK-8062800
 def JOOQ_GENERATED_DIR = file("$projectDir/src/generated/jooq")
-
 
 //region Prototype test setup
 test {
@@ -111,8 +110,7 @@ configurations.all {
             // Only way to work around this is to hard override this dependency group (apparently)
             if (details.requested.group == 'org.jooq') {
                 details.useVersion v_jooq
-            }
-            else if (details.requested.group.startsWith('com.fasterxml.jackson')) {
+            } else if (details.requested.group.startsWith('com.fasterxml.jackson')) {
                 details.useVersion v_jackson
             }
         }
@@ -212,7 +210,21 @@ jooq {
                 name = 'org.jooq.util.mysql.MySQLDatabase'
                 inputSchema = 'dekuclient'
 
-                includes = 'tbldepotliste|mst_.*|sys_.*|sso_.*|sdd_.*|tblhublinienplan|scaerror|tblhistorie|tblauftrag|tblsyscollections|tblauftragcollies|usystblzaehler'
+                includes = [
+                        // Sorted alphanumerically
+                        'mst_.*',
+                        'scaerror',
+                        'sdd_.*',
+                        'sso_.*',
+                        'sys_.*',
+                        'tblauftrag',
+                        'tblauftragcollies',
+                        'tbldepotliste',
+                        'tblhistorie',
+                        'tblhublinienplan',
+                        'tblsyscollections',
+                        'usystblzaehler'
+                ].join('|')
             }
 
             target {
