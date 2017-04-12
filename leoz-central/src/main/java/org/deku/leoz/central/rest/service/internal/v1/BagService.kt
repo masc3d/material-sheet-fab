@@ -13,6 +13,7 @@ import org.deku.leoz.util.checkCheckDigit
 import org.deku.leoz.util.getNextDeliveryDate
 import org.deku.leoz.util.getWorkingDate
 import org.jooq.DSLContext
+import org.jooq.types.UInteger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.rs.auth.ApiKey
@@ -890,18 +891,30 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
         val logLineArrivalLocation = "KfzMng"
         var color = "red"
         try {
-            val line = dslContext.select(Tables.TBLHUBLINIEN.LINIENNR)
+            val line: Int
+            val lineR = dslContext.select(Tables.TBLHUBLINIEN.LINIENNR)
                     .from(Tables.TBLHUBLINIEN)
                     .where(Tables.TBLHUBLINIEN.VERSION.eq(lineVersion))
                     .and(Tables.TBLHUBLINIEN.SCANID.eq(lineScanId.toDouble()))
-                    .fetch()?.getValue(0, Tables.TBLHUBLINIEN.LINIENNR)
-            if (line == null) {
+                    .fetch()//?.getValue(0, Tables.TBLHUBLINIEN.LINIENNR)
+            if (lineR == null) {
                 logHistoryRepository.save(
                         depotId = logLineArrival,
                         info = "Problem: Linie=${lineScanId}",
                         msgLocation = logLineArrival,
                         orderId = "")
                 throw ServiceException(ErrorCode.SCAN_ID_NOT_VALID)
+            } else {
+                if (lineR.size > 0) {
+                    line = lineR.getValue(0, Tables.TBLHUBLINIEN.LINIENNR)
+                } else {
+                    logHistoryRepository.save(
+                            depotId = logLineArrival,
+                            info = "Problem: Linie=${lineScanId}",
+                            msgLocation = logLineArrival,
+                            orderId = "")
+                    throw ServiceException(ErrorCode.SCAN_ID_NOT_VALID)
+                }
             }
             if (line <= 0) {
                 logHistoryRepository.save(
@@ -950,34 +963,37 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             info = "Ankunft Linie ${line} ok"
 
             //#240 feld packgew Pkst / Gew in hubkfzankunft: "283/1210" + Entladung=0
-            val s=134217728
+            val s = UInteger.valueOf(134217728)
 
-            val unitCount=dslContext.fetchCount(Tables.TBLAUFTRAGCOLLIES.innerJoin(Tables.TBLAUFTRAG)
+
+            val unitCount = dslContext.fetchCount(Tables.TBLAUFTRAGCOLLIES.innerJoin(Tables.TBLAUFTRAG)
                     .on(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(Tables.TBLAUFTRAG.ORDERID)),
                     Tables.TBLAUFTRAGCOLLIES.BELADELINIE.eq(line.toDouble())
                             .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
+                            .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(s).eq(UInteger.valueOf(0)))
+                            //.andNot(Tables.TBLAUFTRAG.SERVICE.bitAnd(s))
                             //.and(Tables.TBLAUFTRAG.SERVICE.bitAnd(s).eq(0)))
                             .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGHUP3.isNull))
 
 
-            val unitWeight=dslContext.select(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL.sum().round())
+            val unitWeight = dslContext.select(Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL?.sum()?.round())
                     .from(Tables.TBLAUFTRAGCOLLIES.innerJoin(Tables.TBLAUFTRAG).on(Tables.TBLAUFTRAGCOLLIES.ORDERID.eq(Tables.TBLAUFTRAG.ORDERID)))
                     .where(Tables.TBLAUFTRAGCOLLIES.BELADELINIE.eq(line.toDouble()))
                     .and(Tables.TBLAUFTRAG.LOCKFLAG.eq(0))
-                    //.and(Tables.TBLAUFTRAG.SERVICE.bitAnd(s).eq(0)))
-                    .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGHUP3.isNull).fetch() ?:0
+                    .and(Tables.TBLAUFTRAG.SERVICE.bitAnd(s).eq(UInteger.valueOf(0)))
+                    .and(Tables.TBLAUFTRAGCOLLIES.DTEINGANGHUP3.isNull).fetch()?.getValue(0, Tables.TBLAUFTRAGCOLLIES.GEWICHTREAL?.sum()?.round(0)) ?: 0
 
 
-            var sWeight="${unitCount.toString()}/${unitWeight.toString()}"
+            var sWeight = "${unitCount.toString()}/${unitWeight.toString()}"
+            val ui = UInteger.valueOf(line)
 
-            /**
-            val rec=dslContext.fetchOne(Tables.HUBFAHRZEUGBELADUNG,Tables.HUBFAHRZEUGBELADUNG.LINIE.eq(line))
-            if(rec!=null){
-                rec.angekommen=-1
-                rec.entladung=0.0
-                rec.packgew=sWeight
-                val i=rec.update()
-                if (i>0){
+            val rec = dslContext.fetchOne(Tables.HUBFAHRZEUGBELADUNG, Tables.HUBFAHRZEUGBELADUNG.LINIE.eq(ui))
+            if (rec != null) {
+                rec.angekommen = -1
+                rec.entladung = 0.0
+                rec.packgew = sWeight
+                val i = rec.update()
+                if (i > 0) {
                     logHistoryRepository.save(
                             depotId = logLineArrival,
                             info = "Linie=${lineScanId} angekommen=-1",
@@ -985,7 +1001,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                             orderId = line.toString())
                 }
             }
-            **/
+
 
 
             return BagResponse(ok, info, color)
@@ -997,6 +1013,65 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
                     depotId = logLineArrival,
                     info = e.message ?: e.toString(),
                     msgLocation = logLineArrivalLocation,
+                    orderId = "")
+            throw BadRequestException(e.message)
+        }
+    }
+
+    override fun bagIn(unitNo: String?, sealNo: String?): BagResponse {
+        if (unitNo == null || unitNo.isEmpty()) {
+            throw ServiceException(ErrorCode.BAG_UNITNO_MISSING)
+        }
+
+        if (sealNo == null || sealNo.isEmpty()) {
+            throw ServiceException(ErrorCode.YELLOW_SEAL_MISSING)
+        }
+        var bagUnitNo = unitNo
+        if (bagUnitNo.length > 12) {
+            bagUnitNo = bagUnitNo.substring(0, 12)
+        }
+        if (bagUnitNo.length < 12) {
+            bagUnitNo = bagUnitNo.padStart(12, '0')
+        }
+        if (!bagUnitNo.endsWith(',')) {
+            if (!checkCheckDigit(bagUnitNo)) {
+                throw ServiceException(ErrorCode.BAG_UNITNO_WRONG_CHECK_DIGIT)
+            }
+        }
+        bagUnitNo = bagUnitNo.substring(0, 11)
+        var bagSealNo = sealNo
+        if (bagSealNo.length > 12) {
+            bagSealNo = bagSealNo.substring(0, 12)
+        }
+        if (bagSealNo.length < 12) {
+            bagSealNo = bagSealNo.padStart(12, '0')
+        }
+        if (!bagSealNo.endsWith(',')) {
+            if (!checkCheckDigit(bagSealNo)) {
+                throw ServiceException(ErrorCode.YELLOW_SEAL_WRONG_CHECK_DIGIT)
+            }
+        }
+        bagSealNo = bagSealNo.substring(0, 11)
+        var ok = false
+        var info: String? = null
+        val logIn = "BagIn"// schneidet nicht ab!! 10 zeichen
+        val logInLocation = "BagIn"
+        var color = "red"
+        try {
+            if (bagUnitNo.toInt() >= 10071000000 && bagUnitNo.toInt() < 10072000000) {
+                info = "Rück-Label scannen"
+                return BagResponse(ok, info, color)
+            }
+
+            return BagResponse(ok, info, color)
+        } catch(e: ServiceException) {
+            throw e
+        } catch(e: Exception) {
+
+            logHistoryRepository.save(
+                    depotId = logIn,
+                    info = e.message ?: e.toString(),
+                    msgLocation = logInLocation,
                     orderId = "")
             throw BadRequestException(e.message)
         }

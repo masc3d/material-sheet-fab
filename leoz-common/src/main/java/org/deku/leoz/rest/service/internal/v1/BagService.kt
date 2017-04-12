@@ -5,6 +5,7 @@ import org.deku.leoz.rest.entity.internal.v1.*
 import sx.rs.PATCH
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
+
 //import org.deku.leoz.central.data.jooq.tables.records
 
 /**
@@ -127,7 +128,7 @@ interface BagService {
     @ApiResponses(*arrayOf(
             ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
     )
-    fun getDiff():List<BagDiff>
+    fun getDiff(): List<BagDiff>
 
     @PATCH
     @Path("/{$ID}/arrival")
@@ -138,5 +139,14 @@ interface BagService {
     fun lineArrival(
             @ApiParam(value = "Scan id", example = "10055618") @PathParam(ID) scanId: String?): BagResponse
 
+    @PATCH
+    @Path("/{$ID}/in")
+    @ApiOperation("incoming bag")
+    @ApiResponses(*arrayOf(
+            ApiResponse(code = 400, message = "Bad request/parameter", response = Error::class))
+    )
+    fun bagIn(
+            @ApiParam(value = "Bag unit number", example = "100720000004") @PathParam(ID) unitNo: String?,
+            @ApiParam(value = "Seal number", example = "900100000002") @QueryParam(UNIT) sealNo: String?): BagResponse
 
 }
