@@ -1,8 +1,9 @@
-package org.deku.leoz.central.data.repository
+package org.deku.leoz.central.data
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
 import org.jooq.Record
 import org.jooq.ResultQuery
+import org.jooq.types.UInteger
 
 /**
  * Helper for executing a prepared statement and making sure the statement is closed when
@@ -17,7 +18,7 @@ fun <R, T> ResultQuery<R>.prepared(block: (q: ResultQuery<R>) -> T): T where R :
         )
     } catch(e: Throwable) {
         val closeOnExceptions = listOf<Class<*>>(
-                com.mysql.jdbc.exceptions.jdbc4.CommunicationsException::class.java,
+                CommunicationsException::class.java,
                 com.mysql.jdbc.CommunicationsException::class.java
         )
 
@@ -31,4 +32,10 @@ fun <R, T> ResultQuery<R>.prepared(block: (q: ResultQuery<R>) -> T): T where R :
 
         throw e
     }
+}
+
+// JOOQ unsigned type extension methods
+
+fun Int.toUInteger(): UInteger {
+    return UInteger.valueOf(this)
 }
