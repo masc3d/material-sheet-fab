@@ -9,7 +9,7 @@ buildscript {
 
     dependencies {
         classpath(
-                'com.android.tools.build:gradle:2.3.0',
+                'com.android.tools.build:gradle:2.3.1',
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2",
                 "sx:sx-packager-gradle:0.1",
@@ -197,8 +197,13 @@ dependencies {
             // YAML
             "pl.droidsonroids.yaml:snakeyaml:1.18-android",
 
-            'com.squareup.flow:flow:1.0.0-alpha2',
+            "com.github.gcacace:signature-pad:1.2.1",
 
+            // FOR TESTING
+            // Volley
+            "com.android.volley:volley:1.0.0",
+            // Flow
+            'com.squareup.flow:flow:1.0.0-alpha2',
             // Kryo
             dependencies.create("com.esotericsoftware:kryo:4.0.0") {
                 exclude group: 'org.ow2.asm', module: 'asm'
