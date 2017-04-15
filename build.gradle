@@ -66,6 +66,9 @@ dependencies {
             "com.netflix.feign:feign-jaxrs:$v_feign",
             // YAML
             "org.yaml:snakeyaml:1.18",
+            // Jackson
+            "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
 
             // JGit
             "org.eclipse.jgit:org.eclipse.jgit:$v_jgit",
