@@ -36,10 +36,12 @@ fun Date.toLocalDate(): LocalDate {
  * @param timezone The timezone of the date. This is important especially when storing dates with zero time component
  */
 fun Date.replaceDate(date: Date, timezone: TimeZone = TimeZone.getDefault()): Date {
-    val calDate = Calendar.Builder().setTimeZone(timezone).build()
+    val calDate = GregorianCalendar(timezone)
+    calDate.clear()
     calDate.time = date
 
-    val cal = Calendar.Builder().setTimeZone(timezone).build()
+    val cal = GregorianCalendar(timezone)
+    cal.clear()
     cal.time = this
 
     cal.set(Calendar.YEAR, calDate.get(Calendar.YEAR))
@@ -55,10 +57,12 @@ fun Date.replaceDate(date: Date, timezone: TimeZone = TimeZone.getDefault()): Da
  * @param timezone The timezone of the time. This is important especially when storing dates with zero time component
  */
 fun Date.replaceTime(time: Date, timezone: TimeZone = TimeZone.getDefault()): Date {
-    val cal = Calendar.Builder().setTimeZone(timezone).build()
+    val cal = GregorianCalendar(timezone)
+    cal.clear()
     cal.time = this
 
-    val calTime = Calendar.Builder().setTimeZone(timezone).build()
+    val calTime = GregorianCalendar(timezone)
+    calTime.clear()
     calTime.time = time
 
     cal.set(Calendar.HOUR_OF_DAY, calTime.get(Calendar.HOUR_OF_DAY))
