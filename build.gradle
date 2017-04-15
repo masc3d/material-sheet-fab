@@ -4,9 +4,12 @@ version = '0.1'
 buildscript {
     ext {
         v_feign = '8.18.0'
+        v_jackson = '2.8.7'
+        v_jersey = '2.25'
         v_jgit = '4.6.1.201703071140-r'
         v_jsch = '0.0.9'
         v_kotlin = '1.1.1'
+        v_resteasy = '3.1.1.Final'
         v_slf4j = '1.7.25'
     }
 
@@ -31,16 +34,6 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    // TODO: compileOnly doesn't work property with AndroidStudio (will compile, but doesn't see classes in editor etc.)
-    provided {
-        dependencies.all { dep ->
-            configurations.default.exclude group: dep.group, module: dep.name
-        }
-    }
-    compile.extendsFrom provided
-}
-
 dependencies {
     compile(
             // Kotlin
@@ -53,7 +46,7 @@ dependencies {
             "io.reactivex:rxkotlin:2.0.0-RC1",
     )
 
-    provided(
+    compileOnly(
             // Misc
             "org.apache.commons:commons-lang3:3.5",
             // JAX-RS
@@ -61,18 +54,19 @@ dependencies {
             // JNA
             "net.java.dev.jna:jna:4.4.0",
             "net.java.dev.jna:jna-platform:4.4.0",
-            // RESTeasy client
-            "org.jboss.resteasy:resteasy-client:$v_resteasy",
-            "org.jboss.resteasy:resteasy-jackson2-provider:$v_resteasy",
+
+            // REST
             // Jersey REST client
             "org.glassfish.jersey.core:jersey-client:$v_jersey",
             "org.glassfish.jersey.ext:jersey-proxy-client:$v_jersey",
+            // RESTeasy client
+            "org.jboss.resteasy:resteasy-client:$v_resteasy",
             // Feign REST
-            "com.netflix.feign:feign-core:$v_feign",
             "com.netflix.feign:feign-jackson:$v_feign",
             "com.netflix.feign:feign-jaxrs:$v_feign",
             // YAML
             "org.yaml:snakeyaml:1.18",
+
             // JGit
             "org.eclipse.jgit:org.eclipse.jgit:$v_jgit",
             // For authenticating ssh/jgit against key agent
@@ -80,6 +74,7 @@ dependencies {
             "com.jcraft:jsch.agentproxy.jsch:$v_jsch",
             "com.jcraft:jsch.agentproxy.sshagent:$v_jsch",
             "com.jcraft:jsch.agentproxy.pageant:$v_jsch",
+
             // JUnit
             "junit:junit:4.12",
     )
