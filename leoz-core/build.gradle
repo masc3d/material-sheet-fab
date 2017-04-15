@@ -14,16 +14,6 @@ group = 'org.deku.leoz'
 sourceCompatibility = 1.8
 version = '1.0'
 
-configurations {
-    // TODO: custom `provided` configuration, as `compileOnly` doesn't work well with IntelliJ
-    provided {
-        dependencies.all { dep ->
-            configurations.default.exclude group: dep.group, module: dep.name
-        }
-    }
-    compile.extendsFrom provided
-}
-
 repositories {
     mavenCentral()
     jcenter()
@@ -78,7 +68,7 @@ dependencies {
             "org.yaml:snakeyaml:$v_snakeyaml",
     )
 
-    provided(
+    compileOnly(
             // Persistence
             "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
 

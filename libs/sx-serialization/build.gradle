@@ -22,16 +22,6 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    // TODO: compileOnly doesn't work property with AndroidStudio (will compile, but doesn't see classes in editor etc.)
-    provided {
-        dependencies.all { dep ->
-            configurations.default.exclude group: dep.group, module: dep.name
-        }
-    }
-    compile.extendsFrom provided
-}
-
 dependencies {
     compile(
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
@@ -40,7 +30,7 @@ dependencies {
             "org.slf4j:jcl-over-slf4j:$v_slf4j"
     )
 
-    provided(
+    compileOnly(
             // Kryo
             "com.esotericsoftware:kryo:4.0.0",
             // Protostuff
@@ -56,3 +46,19 @@ dependencies {
             "ch.qos.logback:logback-classic:1.2.2"
     )
 }
+
+//region Test artifact configuration
+// For sharing test classes (eg. for running as android instrumentation in android projects)
+configurations {
+    testArtifacts
+}
+
+task testJar(type: Jar) {
+    classifier "test"
+    from sourceSets.test.output
+}
+
+artifacts {
+    testArtifacts testJar
+}
+//endregion
