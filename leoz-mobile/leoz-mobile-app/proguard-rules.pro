@@ -44,6 +44,8 @@
 -keep class rx.** { *; }
 
 # Warnings
+-dontwarn android.databinding.**
+
 -dontwarn au.com.bytecode.opencsv.bean.**
 -dontwarn ch.qos.logback.**
 -dontwarn com.google.common.**
@@ -63,8 +65,10 @@
 -dontwarn rx.internal.**
 -dontwarn sx.concurrent.**
 -dontwarn sx.io.**
+-dontwarn sx.jsch.**
 -dontwarn sx.junit.**
 -dontwarn sx.platform.**
+-dontwarn sx.rs.**
 -dontwarn sx.EmbeddedExecutable**
 -dontwarn sx.ProcessExecutor**
 -dontwarn sx.Disposable
