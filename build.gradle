@@ -43,7 +43,7 @@ dependencies {
     testCompile(
             "junit:junit:4.12",
             "com.esotericsoftware:kryo:4.0.0",
-            "ch.qos.logback:logback-classic:1.2.2"
+            "ch.qos.logback:logback-classic:1.2.3"
     )
 }
 
