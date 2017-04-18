@@ -28,6 +28,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
+import org.deku.leoz.central.data.repository.DepotJooqRepository
 
 /**
  * Bundle service (leoz-central)
@@ -45,6 +46,9 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
 
     @Inject
     private lateinit var logHistoryRepository: HistoryJooqRepository
+
+    @Inject
+    private lateinit var depotRepository: DepotJooqRepository
 
     override fun get(id: String): String {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -545,8 +549,9 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
         val getSectionDepots = "getSectionDepots"
         try {
             val l: List<String>
-            l = listOf("Hallo", "Test")
+            //l = listOf("Hallo", "Test")
             //findSectionDepots
+            l=depotRepository.findSectionDepots(section,position)
             return l
         } catch (e: Exception) {
             logHistoryRepository.save(
@@ -583,18 +588,23 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             }
             //val dt:java.util.Date=dtWork.toDate()
             val dt: Date = dtWork.toDate()
+            val movepoolStatus:Double=5.0
 
-            val resultCount = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL,
-                    Tables.SSO_S_MOVEPOOL.STATUS.eq(5.0)
+            val resultCount = dslContext.fetchCount(Tables.SSO_S_MOVEPOOL.innerJoin(Tables.SECTIONDEPOTLIST)
+                    .on(Tables.SSO_S_MOVEPOOL.LASTDEPOT.coerce(Int::class.java).eq(Tables.SECTIONDEPOTLIST.DEPOTNR),
+                    Tables.SSO_S_MOVEPOOL.STATUS.eq(movepoolStatus)
                             .and(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m"))
                             .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.equal(dt.toSqlDate()))
+                            .and(Tables.SECTIONDEPOTLIST.SECTION.eq(section.toLong()))
+                            .and(Tables.SECTIONDEPOTLIST.POSITION.eq(position))
+                            )
             )
             /**.and(Tables.SSO_S_MOVEPOOL.LASTDEPOT.in(select(Depotnr).from(Views.sectiondepotlist)
             .where(section.eq(iSection)
             .and(position.eq(iPosition))))
              **/
             val l: List<String>
-            l = listOf("Hallo", "Test")
+            //l = listOf("Hallo", "Test")
 
 
             /**
@@ -605,6 +615,15 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
             .and(depotnr.ni(select lastdepot from sso_s_movepool where movepool='m' and status=5 and work_date=))
             .fetchInto(String::class.java)
              **/
+            l=dslContext.select(Tables.SECTIONDEPOTLIST.DEPOT)
+                    .from(Tables.SECTIONDEPOTLIST)
+                    .where(Tables.SECTIONDEPOTLIST.SECTION.eq(section.toLong()))
+                    .and(Tables.SECTIONDEPOTLIST.POSITION.eq(position))
+                    .and(Tables.SECTIONDEPOTLIST.DEPOTNR.notIn(dslContext.select(Tables.SSO_S_MOVEPOOL.LASTDEPOT.coerce(Int::class.java)).from(Tables.SSO_S_MOVEPOOL)
+                            .where(Tables.SSO_S_MOVEPOOL.MOVEPOOL.eq("m")
+                                    .and(Tables.SSO_S_MOVEPOOL.STATUS.eq(movepoolStatus))
+                                    .and(Tables.SSO_S_MOVEPOOL.WORK_DATE.eq(dt.toSqlDate())))))
+                    .fetchInto(String::class.java)
 
             val sectionDepotsLeft = SectionDepotsLeft(l, resultCount)
             return sectionDepotsLeft
@@ -1058,7 +1077,7 @@ class BagService : org.deku.leoz.rest.service.internal.v1.BagService {
         val logInLocation = "BagIn"
         var color = "red"
         try {
-            if (bagUnitNo.toInt() >= 10071000000 && bagUnitNo.toInt() < 10072000000) {
+            if (bagUnitNo.toLong() >= 10071000000 && bagUnitNo.toLong() < 10072000000) {
                 info = "Rück-Label scannen"
                 return BagResponse(ok, info, color)
             }
