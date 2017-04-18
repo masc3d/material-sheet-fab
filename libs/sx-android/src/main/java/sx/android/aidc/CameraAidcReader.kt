@@ -34,7 +34,10 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
                     .compose(RxLifecycleAndroid.bindView(this))
                     .subscribe {
                         this.barcodeView.setDecoderFactory(DefaultDecoderFactory(
-                                this@CameraAidcReader.mapBarcodeFormats(), null, null
+                                this@CameraAidcReader.mapBarcodeFormats(),
+                                null,
+                                null,
+                                false
                         ))
                     }
 

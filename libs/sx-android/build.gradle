@@ -78,7 +78,7 @@ dependencies {
     )
 
     provided(
-        'com.journeyapps:zxing-android-embedded:3.4.0'
+        'com.journeyapps:zxing-android-embedded:3.5.0'
     )
 
     androidTestCompile(
