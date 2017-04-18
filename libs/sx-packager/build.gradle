@@ -53,7 +53,7 @@ dependencies {
 
             // logging
             "org.apache.commons:commons-lang3:3.5",
-            "ch.qos.logback:logback-classic:1.2.2",
+            "ch.qos.logback:logback-classic:1.2.3",
             "org.slf4j:jcl-over-slf4j:1.7.25",
 
             // Guava.
@@ -63,5 +63,5 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.2.2")
+            "ch.qos.logback:logback-classic:1.2.3")
 }
