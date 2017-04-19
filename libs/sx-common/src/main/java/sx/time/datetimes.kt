@@ -72,3 +72,15 @@ fun Date.replaceTime(time: Date, timezone: TimeZone = TimeZone.getDefault()): Da
 
     return cal.time
 }
+
+fun Date.addDays(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
+    val cal = Calendar.Builder().setTimeZone(timezone).build()
+    cal.time = this
+    cal.add(Calendar.DATE, amount)
+
+    return cal.time
+}
+
+fun Date.substractDays(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
+    return this.addDays(amount * -1)
+}

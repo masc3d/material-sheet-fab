@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
+import sx.time.addDays
+import sx.time.replaceTime
+import sx.time.substractDays
 
 import java.text.SimpleDateFormat
 import java.util.*
@@ -105,5 +108,38 @@ class DeliveryOption {
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         return dateFormat.format(date)
     }
+
+}
+
+fun DeliveryOption.modifyDates(daysToAdd: Int): DeliveryOption {
+    var deliveryOption = this
+
+    deliveryOption.cutOff!!.addDays(daysToAdd)
+    deliveryOption.deliveryFrom!!.addDays(daysToAdd)
+    deliveryOption.deliveryTo!!.addDays(daysToAdd)
+    deliveryOption.pickUp!!.addDays(daysToAdd)
+
+    return deliveryOption
+}
+
+fun DeliveryOption.generateUniqueIdentifier(sdd: Boolean, daysInAdvance: Int): DeliveryOption {
+    val dateFormat = SimpleDateFormat("ddMMyyyy")
+
+    val id = "${this.id}-${dateFormat.format(this.deliveryFrom)}#${if(sdd) "SDD" else "COB"}+$daysInAdvance"
+    this.id = id
+
+    return this
+}
+
+fun DeliveryOption.convertToCOB(): DeliveryOption {
+    val dateFormat = SimpleDateFormat("HHmm")
+
+    val deliveryOption = this
+    deliveryOption.deliveryFrom!!.replaceTime(dateFormat.parse("0800"))
+    deliveryOption.deliveryTo!!.replaceTime(dateFormat.parse("1700"))
+    deliveryOption.pickUp!!.replaceTime(dateFormat.parse("1630")).substractDays(1)
+    deliveryOption.cutOff!!.replaceTime(dateFormat.parse("1600")).substractDays(1)
+
+    return deliveryOption
 }
 

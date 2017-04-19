@@ -5,14 +5,13 @@ import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.SddContzipRecord
 import org.deku.leoz.central.data.jooq.tables.records.SddFpcsOrderRecord
 import org.deku.leoz.node.rest.DefaultProblem
-import org.deku.leoz.rest.entity.zalando.v1.DeliveryOption
-import org.deku.leoz.rest.entity.zalando.v1.DeliveryOrder
-import org.deku.leoz.rest.entity.zalando.v1.NotifiedDeliveryOrder
+import org.deku.leoz.rest.entity.zalando.v1.*
 import org.deku.leoz.ws.gls.shipment.*
 import org.jooq.DSLContext
 import org.jooq.exception.TooManyRowsException
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.rs.auth.ApiKey
+import sx.time.addDays
 import sx.time.replaceDate
 import java.util.*
 import javax.inject.Inject
@@ -331,5 +330,43 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                     title = "Cancellation failed",
                     detail = "Cancellation for order with id [$id] failed due to an unhandled exception: ${e.message}")
         }
+    }
+
+    private fun generateDeliveryOptions(deliveryOption: DeliveryOption): List<DeliveryOption> {
+
+        var count: Int = 0
+        var delOptions: ArrayList<DeliveryOption> = ArrayList()
+
+        while(true) {
+
+            if (delOptions.size == 9) {
+                break
+            }
+
+            val c: Calendar = Calendar.getInstance()
+            c.time = Date()
+            c.add(Calendar.DATE, count)
+
+            if (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || c.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+
+            } else {
+                deliveryOption.modifyDates(count)
+                var deliveryOptionCOB = deliveryOption.convertToCOB()
+                deliveryOption.generateUniqueIdentifier(sdd = true, daysInAdvance = count)
+                deliveryOptionCOB.generateUniqueIdentifier(sdd = false, daysInAdvance = count)
+
+                delOptions.add(deliveryOption)
+
+                if (count > 0) {
+                    delOptions.add(deliveryOptionCOB)
+                }
+
+                count++
+            }
+
+
+        }
+
+        return delOptions
     }
 }
