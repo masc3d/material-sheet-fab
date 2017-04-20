@@ -31,7 +31,7 @@ data class DeliveryOption(
          */
         @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = true, value = "Scheduled pick-up time")
         @get:JsonProperty("pick_up")
-        var pickUp: Date?,
+        var pickUp: Date? = null,
 
         /**
          * Earliest possible delivery time
