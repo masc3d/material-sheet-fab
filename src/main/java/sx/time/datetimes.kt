@@ -67,10 +67,17 @@ fun Date.replaceTime(time: Date, timezone: TimeZone = TimeZone.getDefault()): Da
 /**
  * Convenience method for perfoming `add` modifications on calendar fields
  */
-fun Date.add(field: Int, amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
-    val cal = this.toCalendar()
+private fun Date.add(field: Int, amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
+    val cal = this.toCalendar(timezone)
     cal.add(field, amount)
     return cal.time
+}
+
+/**
+ * Add days
+ */
+fun Date.plusDays(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
+    return this.add(Calendar.DATE, amount, timezone = timezone)
 }
 
 /**
