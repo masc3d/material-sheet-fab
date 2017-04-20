@@ -333,7 +333,58 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
         }
     }
 
+    /**
+     * Generates delivery options
+     */
     private fun generateDeliveryOptions(deliveryOption: DeliveryOption): List<DeliveryOption> {
+        // Helper functions for generation
+
+        /**
+         * Add days to all date fields
+         * @param days Amount of days to add
+         * @return New instance
+         */
+        fun DeliveryOption.addDays(days: Int): DeliveryOption {
+            return DeliveryOption(
+                    id = this.id,
+                    cutOff = this.cutOff?.add(Calendar.DATE, days),
+                    pickUp = this.pickUp?.add(Calendar.DATE, days),
+                    deliveryFrom = this.deliveryFrom?.add(Calendar.DATE, days),
+                    deliveryTo = this.deliveryTo?.add(Calendar.DATE, days)
+            )
+        }
+
+        /**
+         * Convert to COB
+         * @return Updataes DeliveryOption instance
+         */
+        fun DeliveryOption.convertToCOB(): DeliveryOption {
+            val dateFormat = SimpleDateFormat("HHmm")
+
+            return DeliveryOption(
+                    id = this.id,
+                    cutOff = this.cutOff
+                            ?.replaceTime(dateFormat.parse("1600"))
+                            ?.add(Calendar.DATE, -1),
+                    pickUp = this.pickUp
+                            ?.replaceTime(dateFormat.parse("1630"))
+                            ?.add(Calendar.DATE, -1),
+                    deliveryFrom = this.deliveryFrom
+                            ?.replaceTime(dateFormat.parse("0800"))
+                            ?.add(Calendar.DATE, -1),
+                    deliveryTo = this.deliveryTo
+                            ?.replaceTime(dateFormat.parse("1600"))
+                            ?.add(Calendar.DATE, -1)
+            )
+        }
+
+        /**
+         * Helper extension for generating new unique identifier from delivery option
+         */
+        fun DeliveryOption.generateUniqueIdentifier(sdd: Boolean, daysInAdvance: Int): String {
+            val dateFormat = SimpleDateFormat("ddMMyyyy")
+            return "${this.id}-${dateFormat.format(this.deliveryFrom)}#${if(sdd) "SDD" else "COB"}+$daysInAdvance"
+        }
 
         var count: Int = 0
         val delOptions: ArrayList<DeliveryOption> = ArrayList()
@@ -378,49 +429,5 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
         }
 
         return delOptions
-    }
-
-    /**
-     * Creates a new delivery option instance with days added to all date fields
-     */
-    fun DeliveryOption.addDays(days: Int): DeliveryOption {
-        return DeliveryOption(
-                id = this.id,
-                cutOff = this.cutOff?.add(Calendar.DATE, days),
-                pickUp = this.pickUp?.add(Calendar.DATE, days),
-                deliveryFrom = this.deliveryFrom?.add(Calendar.DATE, days),
-                deliveryTo = this.deliveryTo?.add(Calendar.DATE, days)
-        )
-    }
-
-    /**
-     * Convert to COB
-     */
-    fun DeliveryOption.convertToCOB(): DeliveryOption {
-        val dateFormat = SimpleDateFormat("HHmm")
-
-        return DeliveryOption(
-                id = this.id,
-                cutOff = this.cutOff
-                        ?.replaceTime(dateFormat.parse("1600"))
-                        ?.add(Calendar.DATE, -1),
-                pickUp = this.pickUp
-                        ?.replaceTime(dateFormat.parse("1630"))
-                        ?.add(Calendar.DATE, -1),
-                deliveryFrom = this.deliveryFrom
-                        ?.replaceTime(dateFormat.parse("0800"))
-                        ?.add(Calendar.DATE, -1),
-                deliveryTo = this.deliveryTo
-                        ?.replaceTime(dateFormat.parse("1600"))
-                        ?.add(Calendar.DATE, -1)
-        )
-    }
-
-    /**
-     * Generates new unique identifier from delivery option
-     */
-    fun DeliveryOption.generateUniqueIdentifier(sdd: Boolean, daysInAdvance: Int): String {
-        val dateFormat = SimpleDateFormat("ddMMyyyy")
-        return "${this.id}-${dateFormat.format(this.deliveryFrom)}#${if(sdd) "SDD" else "COB"}+$daysInAdvance"
     }
 }
