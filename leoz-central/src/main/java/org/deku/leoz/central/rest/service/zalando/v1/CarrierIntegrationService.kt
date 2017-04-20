@@ -10,9 +10,10 @@ import org.deku.leoz.ws.gls.shipment.*
 import org.jooq.DSLContext
 import org.jooq.exception.TooManyRowsException
 import org.springframework.beans.factory.annotation.Qualifier
+import sun.util.calendar.Gregorian
 import sx.rs.auth.ApiKey
-import sx.time.addDays
-import sx.time.replaceDate
+import sx.time.*
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -335,7 +336,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
     private fun generateDeliveryOptions(deliveryOption: DeliveryOption): List<DeliveryOption> {
 
         var count: Int = 0
-        var delOptions: ArrayList<DeliveryOption> = ArrayList()
+        val delOptions: ArrayList<DeliveryOption> = ArrayList()
 
         while(true) {
 
@@ -350,15 +351,24 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             if (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || c.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
 
             } else {
-                deliveryOption.modifyDates(count)
-                var deliveryOptionCOB = deliveryOption.convertToCOB()
-                deliveryOption.generateUniqueIdentifier(sdd = true, daysInAdvance = count)
-                deliveryOptionCOB.generateUniqueIdentifier(sdd = false, daysInAdvance = count)
+                val newDeliveryOption = deliveryOption
+                        .addDays(count)
 
-                delOptions.add(deliveryOption)
+                val newDeliveryOptionCDB = deliveryOption
+                        .convertToCOB()
+
+                newDeliveryOption.id = newDeliveryOption.generateUniqueIdentifier(
+                        sdd = true,
+                        daysInAdvance = count)
+
+                newDeliveryOptionCDB.id = newDeliveryOptionCDB.generateUniqueIdentifier(
+                        sdd = false,
+                        daysInAdvance = count)
+
+                delOptions.add(newDeliveryOption)
 
                 if (count > 0) {
-                    delOptions.add(deliveryOptionCOB)
+                    delOptions.add(newDeliveryOptionCDB)
                 }
 
                 count++
@@ -368,5 +378,49 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
         }
 
         return delOptions
+    }
+
+    /**
+     * Creates a new delivery option instance with days added to all date fields
+     */
+    fun DeliveryOption.addDays(days: Int): DeliveryOption {
+        return DeliveryOption(
+                id = this.id,
+                cutOff = this.cutOff?.add(Calendar.DATE, days),
+                pickUp = this.pickUp?.add(Calendar.DATE, days),
+                deliveryFrom = this.deliveryFrom?.add(Calendar.DATE, days),
+                deliveryTo = this.deliveryTo?.add(Calendar.DATE, days)
+        )
+    }
+
+    /**
+     * Convert to COB
+     */
+    fun DeliveryOption.convertToCOB(): DeliveryOption {
+        val dateFormat = SimpleDateFormat("HHmm")
+
+        return DeliveryOption(
+                id = this.id,
+                cutOff = this.cutOff
+                        ?.replaceTime(dateFormat.parse("1600"))
+                        ?.add(Calendar.DATE, -1),
+                pickUp = this.pickUp
+                        ?.replaceTime(dateFormat.parse("1630"))
+                        ?.add(Calendar.DATE, -1),
+                deliveryFrom = this.deliveryFrom
+                        ?.replaceTime(dateFormat.parse("0800"))
+                        ?.add(Calendar.DATE, -1),
+                deliveryTo = this.deliveryTo
+                        ?.replaceTime(dateFormat.parse("1600"))
+                        ?.add(Calendar.DATE, -1)
+        )
+    }
+
+    /**
+     * Generates new unique identifier from delivery option
+     */
+    fun DeliveryOption.generateUniqueIdentifier(sdd: Boolean, daysInAdvance: Int): String {
+        val dateFormat = SimpleDateFormat("ddMMyyyy")
+        return "${this.id}-${dateFormat.format(this.deliveryFrom)}#${if(sdd) "SDD" else "COB"}+$daysInAdvance"
     }
 }
