@@ -1,8 +1,6 @@
 # Leoz #
 
-## Setup ##
-
-### Development environment & repository ###
+## Development Environment ##
 
 #### Required software ####
 * [Java JDK](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)
@@ -17,7 +15,7 @@
   <pre>git clone --recursive ssh://git@git.derkurier.de:13020/leoz/leoz.git leoz</pre>
 * Open project directory with IntelliJ
 
-### VM ###
+## VM ##
 Contains development host resources, eg. MYSQL and application server
 
 #### Required software ####
