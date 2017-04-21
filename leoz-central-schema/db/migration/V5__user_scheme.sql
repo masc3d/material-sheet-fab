@@ -6,14 +6,13 @@ ALTER TABLE mst_user MODIFY expires_on DATE DEFAULT '2099-12-31';
 ALTER TABLE mst_user ADD email VARCHAR(100) NOT NULL;
 CREATE UNIQUE INDEX mst_user_email_uindex ON mst_user (email);
 DROP INDEX user_name_UNIQUE ON dekuclient.mst_user;
-ALTER TABLE mst_user ALTER COLUMN ts_updated;
 ALTER TABLE mst_user ADD debitor_id INT NOT NULL;
 ALTER TABLE mst_user
   MODIFY COLUMN email VARCHAR(100) NOT NULL AFTER user_name,
   MODIFY COLUMN debitor_id INT NOT NULL AFTER email;
   
 CREATE UNIQUE INDEX mst_username_index ON mst_user (user_name, debitor_id);
-ALTER TABLE mst_user ADD role VARCHAR(20) DEFAULT USER NOT NULL;
+ALTER TABLE mst_user ADD role VARCHAR(20) DEFAULT 'USER' NOT NULL;
 ALTER TABLE mst_user
   MODIFY COLUMN debitor_id INT(11) NOT NULL AFTER user_id,
   MODIFY COLUMN email VARCHAR(100) NOT NULL AFTER user_name,
