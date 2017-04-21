@@ -5,8 +5,11 @@
 ### Development environment & repository ###
 
 #### Required software ####
+* [Java JDK](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html)
 * [Idea Intellij Ultimate](https://www.jetbrains.com/idea/)
 * [Sourcetree](https://www.atlassian.com/software/sourcetree)
+
+#### Optional ####
 * [JavaFX Scene Builder](http://gluonhq.com/open-source/scene-builder/)
 
 #### Get up and running ####
