@@ -10,9 +10,10 @@ import org.deku.leoz.ws.gls.shipment.*
 import org.jooq.DSLContext
 import org.jooq.exception.TooManyRowsException
 import org.springframework.beans.factory.annotation.Qualifier
+import sun.util.calendar.Gregorian
 import sx.rs.auth.ApiKey
-import sx.time.addDays
-import sx.time.replaceDate
+import sx.time.*
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -332,10 +333,61 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
         }
     }
 
+    /**
+     * Generates delivery options
+     */
     private fun generateDeliveryOptions(deliveryOption: DeliveryOption): List<DeliveryOption> {
+        // Helper functions for generation
+
+        /**
+         * Add days to all date fields
+         * @param days Amount of days to add
+         * @return New instance
+         */
+        fun DeliveryOption.addDays(days: Int): DeliveryOption {
+            return DeliveryOption(
+                    id = this.id,
+                    cutOff = this.cutOff?.plusDays(days),
+                    pickUp = this.pickUp?.plusDays(days),
+                    deliveryFrom = this.deliveryFrom?.plusDays(days),
+                    deliveryTo = this.deliveryTo?.plusDays(days)
+            )
+        }
+
+        /**
+         * Convert to COB
+         * @return Updataes DeliveryOption instance
+         */
+        fun DeliveryOption.convertToCOB(): DeliveryOption {
+            val dateFormat = SimpleDateFormat("HHmm")
+
+            return DeliveryOption(
+                    id = this.id,
+                    cutOff = this.cutOff
+                            ?.replaceTime(dateFormat.parse("1600"))
+                            ?.plusDays(-1),
+                    pickUp = this.pickUp
+                            ?.replaceTime(dateFormat.parse("1630"))
+                            ?.plusDays(-1),
+                    deliveryFrom = this.deliveryFrom
+                            ?.replaceTime(dateFormat.parse("0800"))
+                            ?.plusDays(-1),
+                    deliveryTo = this.deliveryTo
+                            ?.replaceTime(dateFormat.parse("1600"))
+                            ?.plusDays(-1)
+            )
+        }
+
+        /**
+         * Helper extension for generating new unique identifier from delivery option
+         */
+        fun DeliveryOption.generateUniqueIdentifier(sdd: Boolean, daysInAdvance: Int): String {
+            val dateFormat = SimpleDateFormat("ddMMyyyy")
+            return "${this.id}-${dateFormat.format(this.deliveryFrom)}#${if(sdd) "SDD" else "COB"}+$daysInAdvance"
+        }
 
         var count: Int = 0
-        var delOptions: ArrayList<DeliveryOption> = ArrayList()
+        val delOptions: ArrayList<DeliveryOption> = ArrayList()
 
         while(true) {
 
@@ -350,15 +402,24 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             if (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || c.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
 
             } else {
-                deliveryOption.modifyDates(count)
-                var deliveryOptionCOB = deliveryOption.convertToCOB()
-                deliveryOption.generateUniqueIdentifier(sdd = true, daysInAdvance = count)
-                deliveryOptionCOB.generateUniqueIdentifier(sdd = false, daysInAdvance = count)
+                val newDeliveryOption = deliveryOption
+                        .addDays(count)
 
-                delOptions.add(deliveryOption)
+                val newDeliveryOptionCDB = deliveryOption
+                        .convertToCOB()
+
+                newDeliveryOption.id = newDeliveryOption.generateUniqueIdentifier(
+                        sdd = true,
+                        daysInAdvance = count)
+
+                newDeliveryOptionCDB.id = newDeliveryOptionCDB.generateUniqueIdentifier(
+                        sdd = false,
+                        daysInAdvance = count)
+
+                delOptions.add(newDeliveryOption)
 
                 if (count > 0) {
-                    delOptions.add(deliveryOptionCOB)
+                    delOptions.add(newDeliveryOptionCDB)
                 }
 
                 count++

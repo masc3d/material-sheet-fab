@@ -36,13 +36,9 @@ fun Date.toLocalDate(): LocalDate {
  * @param timezone The timezone of the date. This is important especially when storing dates with zero time component
  */
 fun Date.replaceDate(date: Date, timezone: TimeZone = TimeZone.getDefault()): Date {
-    val calDate = GregorianCalendar(timezone)
-    calDate.clear()
-    calDate.time = date
+    val calDate = date.toCalendar(timezone)
 
-    val cal = GregorianCalendar(timezone)
-    cal.clear()
-    cal.time = this
+    val cal = this.toCalendar(timezone)
 
     cal.set(Calendar.YEAR, calDate.get(Calendar.YEAR))
     cal.set(Calendar.MONTH, calDate.get(Calendar.MONTH))
@@ -57,13 +53,8 @@ fun Date.replaceDate(date: Date, timezone: TimeZone = TimeZone.getDefault()): Da
  * @param timezone The timezone of the time. This is important especially when storing dates with zero time component
  */
 fun Date.replaceTime(time: Date, timezone: TimeZone = TimeZone.getDefault()): Date {
-    val cal = GregorianCalendar(timezone)
-    cal.clear()
-    cal.time = this
-
-    val calTime = GregorianCalendar(timezone)
-    calTime.clear()
-    calTime.time = time
+    val cal = this.toCalendar(timezone)
+    val calTime = time.toCalendar(timezone)
 
     cal.set(Calendar.HOUR_OF_DAY, calTime.get(Calendar.HOUR_OF_DAY))
     cal.set(Calendar.MINUTE, calTime.get(Calendar.MINUTE))
@@ -73,14 +64,28 @@ fun Date.replaceTime(time: Date, timezone: TimeZone = TimeZone.getDefault()): Da
     return cal.time
 }
 
-fun Date.addDays(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
-    val cal = Calendar.Builder().setTimeZone(timezone).build()
-    cal.time = this
-    cal.add(Calendar.DATE, amount)
-
+/**
+ * Convenience method for perfoming `add` modifications on calendar fields
+ */
+private fun Date.add(field: Int, amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
+    val cal = this.toCalendar(timezone)
+    cal.add(field, amount)
     return cal.time
 }
 
-fun Date.substractDays(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
-    return this.addDays(amount * -1)
+/**
+ * Add days
+ */
+fun Date.plusDays(amount: Int, timezone: TimeZone = TimeZone.getDefault()): Date {
+    return this.add(Calendar.DATE, amount, timezone = timezone)
+}
+
+/**
+ * Convenience method for converting date to calendar
+ */
+fun Date.toCalendar(timezone: TimeZone = TimeZone.getDefault()): Calendar {
+    val cal = GregorianCalendar(timezone)
+    cal.clear()
+    cal.time = this
+    return cal
 }
