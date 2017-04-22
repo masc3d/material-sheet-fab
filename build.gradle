@@ -10,6 +10,7 @@ import org.eclipse.jgit.transport.JschConfigSessionFactory
 import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshSessionFactory
 import org.eclipse.jgit.util.FS
+import java.time.Duration
 import sx.ProcessExecutor
 import sx.ProcessExecutor.ProcessRunException
 import sx.packager.BundleRepository
@@ -178,6 +179,7 @@ subprojects {
                         "leoz",
                         "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
 
+        mySshTunnelProvider.idleTimeout = Duration.ofMinutes(10)
         packager {
             sshTunnelProvider = mySshTunnelProvider
             bundleRepository = new BundleRepository(
