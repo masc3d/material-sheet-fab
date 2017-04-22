@@ -98,7 +98,8 @@ open class PersistenceConfiguration {
         val flyway = Flyway()
         flyway.dataSource = this.dataSourceCentral
         flyway.setLocations("classpath:/db/central/migration")
-        flyway.isIgnoreFutureMigrations = false
+        // Relaxed validation, future migrations are ok as central db is assumed to be (usually) backwards compatible
+        flyway.isIgnoreFutureMigrations = true
         flyway.validate()
     }
 
