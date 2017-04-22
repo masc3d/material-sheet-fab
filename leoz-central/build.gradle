@@ -145,9 +145,13 @@ class FlywayCopyTask extends FlywayInfoTask {
         this.destination.deleteDir()
         this.destination.mkdirs()
         flyway.info().all().findAll { it.type == MigrationType.SQL && it.state.isApplied() }.forEach {
-            Files.copy(
-                    this.source.toPath().resolve(it.script),
-                    this.destination.toPath().resolve(it.script))
+            // Copy applied migrations up to target version
+            def targetVersion = MigrationVersion.fromVersion(extension.target)
+            if (it.version.compareTo(targetVersion) <= 0) {
+                Files.copy(
+                        this.source.toPath().resolve(it.script),
+                        this.destination.toPath().resolve(it.script))
+            }
         }
         return null
     }
@@ -159,10 +163,12 @@ class FlywayValidateTaskHotfix extends FlywayValidateTask {
         def result = super.run(flyway)
 
         // TODO: remove this hotfix/validation when fixed upstream https://github.com/flyway/flyway/issues/1554)
-        flyway.info().all().findAll { it.type == MigrationType.SQL && it.state.isApplied() } each {
-            def targetVersion = MigrationVersion.fromVersion(extension.target)
-            if (it.version.compareTo(targetVersion) > 0)
-                throw new IllegalStateException("Applied future migrations detected! :flywayClean will resolve this")
+        if (!this.extension.ignoreFutureMigrations) {
+            flyway.info().all().findAll { it.type == MigrationType.SQL && it.state.isApplied() } each {
+                def targetVersion = MigrationVersion.fromVersion(extension.target)
+                if (it.version.compareTo(targetVersion) > 0)
+                    throw new IllegalStateException("Applied future migrations detected! :flywayClean will resolve this")
+            }
         }
 
         return result
@@ -175,7 +181,7 @@ flyway {
     user = 'root'
     password = 'root'
     schemas = ['dekuclient', 'dekutmp']
-    ignoreFutureMigrations = false
+    ignoreFutureMigrations = true
     target = FLYWAY_TARGET
     locations = ["filesystem:${FLYWAY_MIGRATION_DIR}"]
 }
