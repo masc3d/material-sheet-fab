@@ -10,13 +10,16 @@ import org.eclipse.jgit.api.FetchCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.Status
 import org.eclipse.jgit.api.StatusCommand
+import org.eclipse.jgit.lib.ObjectIdRef
 import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.submodule.SubmoduleWalk
 import org.eclipse.jgit.transport.JschConfigSessionFactory
 import org.eclipse.jgit.transport.OpenSshConfig
 import org.eclipse.jgit.transport.SshSessionFactory
 import org.eclipse.jgit.transport.TagOpt
 import org.eclipse.jgit.util.FS
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -30,7 +33,7 @@ class JgitTest {
 
     val vcsPath by lazy {
         val path = File("").absoluteFile.parentFile.parentFile
-        println("${path}")
+        println("Repository path [${path}]")
         path
     }
 
@@ -86,6 +89,28 @@ class JgitTest {
         if (!status.isClean) {
             throw IllegalStateException("Repository has uncommitted changes. Cannot push release")
         }
+    }
 
+    @Test
+    fun testFindTag() {
+        val ltc = git.tagList()
+        val tagRefs = ltc.call()
+
+        val walk = RevWalk(git.repository)
+
+        // Check if find works for all tag refs
+        tagRefs.forEach {
+            val tagToFind = walk.parseTag(it.objectId)
+            val tagNameToFind = tagToFind.tagName
+
+            println("${tagNameToFind}")
+            // Walk revs and map to RevTag
+            val tag = tagRefs.stream()
+                    .map { tr -> walk.parseTag(tr.objectId ) }
+                    .filter { t -> t.tagName == tagNameToFind }
+                    .findFirst().orElse(null)
+
+            Assert.assertEquals(tagToFind, tag)
+        }
     }
 }
