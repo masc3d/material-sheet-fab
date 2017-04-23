@@ -125,13 +125,23 @@ open class Storage(
         d
     }
 
+    /** Create bundle lock filename */
+    fun bundleLockFileName(appName: String): String {
+        return appName + ".lock"
+    }
+
     /** Lock file for this application */
     val bundleLockFile: File by lazy {
-        File(this.runDirectory, this.appName + ".lock")
+        File(this.runDirectory, this.bundleLockFileName(this.appName))
+    }
+
+    /** Create bundle pid file name */
+    fun bundlePidFileName(appName: String) : String {
+        return appName + ".pid"
     }
 
     val bundlePidFile: File by lazy {
-        File(this.runDirectory, this.appName + ".pid")
+        File(this.runDirectory, this.bundlePidFileName(this.appName))
     }
 
     /** Application log file */

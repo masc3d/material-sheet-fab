@@ -195,7 +195,8 @@ open class Application :
 
             if (!this.processLockFile.isOwner) {
                 log.info("Waiting for lock on [${this.processLockFile}]")
-                this.processLockFile.waitForLock()
+                this.processLockFile.waitForLock(
+                        writeCurrentProcessPid = true)
             }
 
             log.info("Acquired lock [${this.processLockFile}}")
