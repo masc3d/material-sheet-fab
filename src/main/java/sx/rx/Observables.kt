@@ -3,6 +3,7 @@ package sx.rx
 import org.slf4j.LoggerFactory
 import io.reactivex.*
 import io.reactivex.exceptions.OnErrorNotImplementedException
+import io.reactivex.functions.BiFunction
 import io.reactivex.observables.ConnectableObservable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
@@ -204,28 +205,29 @@ fun <T> Observable<T>.toHotReplay(executor: Executor? = null): Observable<T> {
 //    return AwaitableImpl(modifier.observable, modifier.subscriber)
 //}
 
-///**
-// * Retry with specific count, action handler and timer provider
-// * @param count Retry count
-// * @param action Callback invoked for every retry/error, returning a (timer) Observable
-// */
-//fun <T> Observable<T>.retryWith(
-//        count: Int,
-//        action: (retry: Int, error: Throwable) -> Observable<Long> = { _, _ -> Observable.just(0) })
-//        : Observable<T> {
-//
-//    return this.retryWhen { attempts ->
-//        attempts.zipWith(Observable.range(1, count + 1), { n, i ->
-//            Pair(n, i)
-//        }).flatMap { p ->
-//            val error = p.first
-//            val retryCount = p.second
-//
-//            if (retryCount <= count) {
-//                return@flatMap action(retryCount, error)
-//            } else {
-//                return@flatMap Observable.error<Throwable>(error)
-//            }
-//        }
-//    }
-//}
+/**
+ * Retry with specific count, action handler and timer provider
+ * @param count Retry count
+ * @param action Callback invoked for every retry/error, returning a (timer) Observable
+ */
+fun <T> Observable<T>.retryWith(
+        count: Int,
+        action: (retry: Int, error: Throwable) -> Observable<Long> = { _, _ -> Observable.just(0) })
+        : Observable<T> {
+
+    return this.retryWhen { attempts ->
+        attempts.zipWith(Observable.range(1, count + 1), BiFunction { n: Throwable, i: Int ->
+            Pair(n, i)
+        }).flatMap { p ->
+            val error = p.first
+            val retryCount = p.second
+
+            if (retryCount <= count) {
+                return@flatMap action(retryCount, error)
+            } else {
+                return@flatMap Observable.error<Throwable>(error)
+            }
+        }
+    }
+}
+
