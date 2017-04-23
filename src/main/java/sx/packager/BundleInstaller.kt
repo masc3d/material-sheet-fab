@@ -7,6 +7,11 @@ import sx.platform.PlatformId
 import java.io.File
 import java.nio.file.Files
 import java.util.*
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
+import sx.rx.retryWith
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 /**
  * Bundle installer for installing and updating bundles locally
@@ -224,8 +229,25 @@ class BundleInstaller(
                 oldBundlePath.deleteRecursively()
             }
 
-            if (bundlePath.exists())
-                Files.move(bundlePath.toPath(), oldBundlePath.toPath())
+            if (bundlePath.exists()) {
+                // On some (windows) system the bundle path seems to sporadically remain locked temporarily after stopping the service
+                // This could happen due to antivirus programs or the service stop command not acting fully synchronously
+                // Implementing retry scheme
+                val retryCount = 3
+                var error: Throwable? = null
+                Observable.fromCallable {
+                    Files.move(bundlePath.toPath(), oldBundlePath.toPath())
+                }
+                        .subscribeOn(Schedulers.io())
+                        .retryWith(retryCount, { attempt, e ->
+                            log.warn("Failed to move bundle into place [${e.javaClass.canonicalName}], bundle path [${bundlePath}] seems to be locked by another process. Retrying (${attempt}/${retryCount})")
+                            Observable.timer(1, TimeUnit.SECONDS)
+                        })
+                        .blockingSubscribe({}, {
+                            error = it
+                        })
+                if (error != null) throw error!!
+            }
 
             try {
                 Files.move(bundleReadyPath.toPath(), bundlePath.toPath())
