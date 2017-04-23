@@ -1,7 +1,8 @@
 package sx.rx
 
 import io.reactivex.Observable
-import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import org.junit.Assert
 import org.junit.Test
 import java.util.concurrent.TimeUnit
 
@@ -11,22 +12,35 @@ import java.util.concurrent.TimeUnit
 class RetryTest {
     @Test
     fun testRetryWhen() {
-        Observable.create<Int> {
-            it.onNext(1)
-            it.onNext(2)
-            it.onError(IllegalStateException())
+        try {
+            var error: Throwable? = null
+
+            Observable.create<Int> {
+                it.onNext(1)
+                it.onNext(2)
+                it.onError(InterruptedException())
+            }
+                    .doOnNext {
+                        println("Item ${it}")
+                    }
+                    .doOnError {
+                        println("Error ${it}")
+                    }
+                    .retryWith(2,
+                            { retry, error ->
+                                println("Retry attempt ${retry} ${error}")
+                                Observable.timer(1, TimeUnit.SECONDS)
+                            })
+                    .blockingSubscribe({}, {
+                        error = it
+                    })
+
+            if (error != null)
+                throw error!!
+
+            Assert.fail()
+        } catch(e: InterruptedException) {
+            // ok
         }
-                .doOnNext {
-                    println("Item ${it}")
-                }
-                .doOnError {
-                    println("Error ${it}")
-                }
-                .retryWith(2,
-                        { retry, error ->
-                            println("Retry attempt ${retry} ${error}")
-                            Observable.timer(1, TimeUnit.SECONDS)
-                        })
-                .blockingSubscribe()
     }
 }
