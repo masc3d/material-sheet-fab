@@ -13,6 +13,22 @@ buildscript {
     }
 }
 
+//region Prototype test setup
+test {
+    useJUnit {
+        //includeCategories 'sx.junit.StandardTest'
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDirs += file('src/prototype/java')
+        }
+    }
+}
+//endregion
+
 dependencies {
     compile(
             project(':sx-common'),
