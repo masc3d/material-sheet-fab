@@ -9,28 +9,28 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.CancellationException
 import java.util.concurrent.atomic.AtomicInteger
 
-
-fun <T> concat(observables: List<Observable<T>>): Observable<T> {
-    if (observables.isEmpty())
-        return Observable.empty()
-
-    val o1 = observables[0]
-    if (observables.size == 1)
-        return o1
-
-    val o2 = observables[1]
-    val n = o1.concatWith(o2)
-
-    val nl = arrayListOf(n)
-    nl.addAll(observables.takeLast(observables.size - 2))
-
-    return concat(nl)
-}
-
 /**
  * Created by masc on 23/06/16.
  */
-class RxTest {
+class BlockingObservableTest {
+
+    private fun <T> concat(observables: List<Observable<T>>): Observable<T> {
+        if (observables.isEmpty())
+            return Observable.empty()
+
+        val o1 = observables[0]
+        if (observables.size == 1)
+            return o1
+
+        val o2 = observables[1]
+        val n = o1.concatWith(o2)
+
+        val nl = arrayListOf(n)
+        nl.addAll(observables.takeLast(observables.size - 2))
+
+        return concat(nl)
+    }
+
     val log = LoggerFactory.getLogger(this.javaClass)
     final val DELAY = 150L
     final val COUNT = 10
