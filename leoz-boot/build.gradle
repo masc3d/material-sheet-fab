@@ -3,7 +3,7 @@ apply plugin: 'application'
 apply plugin: 'distribution'
 apply plugin: 'sx-packager'
 
-version '0.30-RELEASE'
+version '0.31-RELEASE'
 sourceCompatibility = 1.8
 mainClassName = "org.deku.leoz.boot.Application"
 
@@ -16,7 +16,7 @@ buildscript {
 //region Prototype test setup
 test {
     useJUnit {
-        //includeCategories 'sx.junit.StandardTest'
+        includeCategories 'sx.junit.StandardTest'
     }
 }
 
