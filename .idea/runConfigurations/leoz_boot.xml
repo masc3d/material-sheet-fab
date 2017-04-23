@@ -3,7 +3,7 @@
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <option name="MAIN_CLASS_NAME" value="org.deku.leoz.boot.Application" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="--bundle leoz-ui --force-download --discover --rsync-host leoz.derkurier.de --version-alias rolling-snapshot" />
+    <option name="PROGRAM_PARAMETERS" value="--bundle leoz-ui --force-download --version-pattern +" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/leoz-boot" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
