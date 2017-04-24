@@ -179,7 +179,6 @@ subprojects {
                         "leoz",
                         "MhWLzHv0Z0E9hy8jAiBMRoO65qDBro2JH1csNlwGI3hXPY8P8NOY3NeRDHrApme8"))
 
-        mySshTunnelProvider.idleTimeout = Duration.ofMinutes(10)
         packager {
             sshTunnelProvider = mySshTunnelProvider
             bundleRepository = new BundleRepository(
