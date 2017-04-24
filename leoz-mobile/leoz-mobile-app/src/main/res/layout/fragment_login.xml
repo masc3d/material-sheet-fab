@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:divider="@drawable/divider_vertical"
@@ -19,18 +20,46 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center_horizontal"
-            app:srcCompat="@mipmap/ic_phone_android_black_24dp" />
+            app:srcCompat="@drawable/ic_email_black_24dp" />
 
-        <TextView
-            android:id="@+id/uxSerialnumber"
+        <EditText
+            android:id="@+id/uxMailaddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/small_margin"
             android:layout_marginStart="@dimen/small_margin"
             android:gravity="center_vertical"
-            android:text="Serial"
+            android:hint="@string/hint_field_mail"
+            android:inputType="textEmailAddress"
+            android:singleLine="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@drawable/divider_horizontal"
+        android:orientation="horizontal"
+        android:showDividers="middle">
+
+        <ImageView
+            android:id="@+id/uxPasswordImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            app:srcCompat="@mipmap/ic_lock_black_24dp" />
+
+        <EditText
+            android:id="@+id/uxPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/hint_field_password"
+            android:inputType="textPassword"
+            android:selectAllOnFocus="true"
+            android:singleLine="true" />
 
     </LinearLayout>
 
@@ -39,30 +68,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@drawable/divider_horizontal"
-            android:orientation="horizontal"
-            android:showDividers="middle">
-
-            <ImageView
-                android:id="@+id/uxPasswordImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                app:srcCompat="@mipmap/ic_lock_black_24dp" />
-
-            <EditText
-                android:id="@+id/uxPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Password"
-                android:inputType="textPassword" />
-
-        </LinearLayout>
-
         <!--<Button-->
         <!--android:id="@+id/button"-->
         <!--android:layout_width="wrap_content"-->
@@ -70,6 +75,12 @@
         <!--android:layout_gravity="end"-->
         <!--android:text="Login" />-->
 
+        <Button
+            android:id="@+id/uxLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/login"
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>

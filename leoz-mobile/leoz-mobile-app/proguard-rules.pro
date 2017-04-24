@@ -51,6 +51,7 @@
 -dontwarn com.google.common.**
 
 -dontwarn javax.**
+-dontwarn com.sun.mail**
 
 -dontwarn com.fasterxml.jackson.**
 -dontwarn com.github.davidmoten.rx.**

@@ -7,18 +7,20 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import kotlinx.android.synthetic.main.main_app_bar.*
+import kotlinx.android.synthetic.main.main_nav_header.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.model.Database
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.ui.AlertButton
+import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.fragment.MainFragment
 import org.deku.leoz.mobile.ui.showAlert
 import org.deku.leoz.mobile.ui.showErrorAlert
 import org.slf4j.LoggerFactory
 import sx.android.fragment.util.withTransaction
 
-class MainActivity : Activity() {
+class MainActivity : Activity(), LoginFragment.OnLoginSuccessfulListener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,5 +64,8 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+    }
+
+    override fun onLoginSuccessful(userAlias: String, userStation: String) {
     }
 }

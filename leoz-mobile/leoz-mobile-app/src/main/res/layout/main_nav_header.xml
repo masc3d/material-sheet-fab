@@ -84,7 +84,7 @@
                 app:srcCompat="@mipmap/ic_user_black_24dp" />
 
             <TextView
-                android:id="@+id/lblNavUser"
+                android:id="@+id/uxActiveUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/margin"
@@ -109,7 +109,7 @@
                 app:srcCompat="@mipmap/ic_station_black_24dp" />
 
             <TextView
-                android:id="@+id/lblNavStationID"
+                android:id="@+id/uxStationID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/margin"

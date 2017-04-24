@@ -7,6 +7,7 @@ buildscript {
         v_android_buildtools = '25.0.2'
         v_android_support = '25.2.0'
         v_rxlifecycle = '2.0.1'
+        v_javamail = '1.5.5'
     }
 
     dependencies {
@@ -75,6 +76,10 @@ dependencies {
             "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle",
             "com.trello.rxlifecycle2:rxlifecycle-android:$v_rxlifecycle",
             "com.jakewharton.rxbinding2:rxbinding:2.0.0",
+
+            // JavaMail
+            "com.sun.mail:android-mail:$v_javamail",
+            "com.sun.mail:android-activation:$v_javamail",
     )
 
     provided(
