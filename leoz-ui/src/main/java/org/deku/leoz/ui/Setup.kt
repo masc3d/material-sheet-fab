@@ -76,7 +76,9 @@ class Setup : BundleProcessInterface() {
 
             // Signal kill and wait for lock to become available
             sx.Process.kill(pid)
-            processLockFile.waitForLock()
+            processLockFile.waitForLock(
+                    writeCurrentProcessPid = true
+            )
         }
     }
 }
