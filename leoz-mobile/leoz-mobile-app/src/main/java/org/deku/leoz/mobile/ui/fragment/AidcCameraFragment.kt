@@ -69,7 +69,7 @@ class AidcCameraFragment : Fragment() {
         log.trace("RESUME")
         super.onResume()
 
-        this.cameraReader.torchSubject
+        this.cameraReader.torchProperty
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {

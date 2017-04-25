@@ -44,7 +44,7 @@ class AidcCameraView(context: Context, attrs: AttributeSet? = null) : FrameLayou
         super.onAttachedToWindow()
 
         if (!this.isInEditMode) {
-            this.cameraReader.torchSubject
+            this.cameraReader.torchProperty
                     .compose(RxLifecycleAndroid.bindView(this))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
