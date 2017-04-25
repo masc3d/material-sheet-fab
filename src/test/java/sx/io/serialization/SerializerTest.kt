@@ -37,7 +37,6 @@ abstract class SerializerTest(
             val l: Long = 1,
             val s: String = "Hello",
             val i: Int = 2,
-            val cls: Class<*> = Any::class.java,
             val d: Array<Int> = listOf(1, 2, 3).toTypedArray(),
             val al: List<String> = mutableListOf("Hello1", "Hello2"),
             val dobj: Array<TestObject2> = listOf(TestObject1.TestObject2()).toTypedArray()
@@ -63,7 +62,6 @@ abstract class SerializerTest(
             return (this.l == o.l &&
                     this.s == o.s &&
                     this.i == o.i &&
-                    this.cls == o.cls &&
                     Arrays.equals(this.d, o.d) &&
                     Arrays.equals(this.dobj, o.dobj))
         }
@@ -72,7 +70,6 @@ abstract class SerializerTest(
             var result = l.hashCode()
             result = 31 * result + s.hashCode()
             result = 31 * result + i
-            result = 31 * result + cls.hashCode()
             result = 31 * result + Arrays.hashCode(d)
             result = 31 * result + Arrays.hashCode(dobj)
             return result
@@ -84,7 +81,6 @@ abstract class SerializerTest(
             val l: Long = 1,
             val s: String = "Hello",
             val i: Int = 2,
-            val cls: Class<*> = Any::class.java,
             val d: Array<Int> = listOf(1, 2, 3).toTypedArray(),
             val al: List<String> = mutableListOf("Hello1", "Hello2"),
             val dobj: Array<TestObjectRefactored1.TestObjectRefactored2> = listOf(TestObjectRefactored1.TestObjectRefactored2()).toTypedArray()
@@ -110,7 +106,6 @@ abstract class SerializerTest(
             return (this.l == o.l &&
                     this.s == o.s &&
                     this.i == o.i &&
-                    this.cls == o.cls &&
                     Arrays.equals(this.d, o.d) &&
                     Arrays.equals(this.dobj, o.dobj))
         }
@@ -119,7 +114,6 @@ abstract class SerializerTest(
             var result = l.hashCode()
             result = 31 * result + s.hashCode()
             result = 31 * result + i
-            result = 31 * result + cls.hashCode()
             result = 31 * result + Arrays.hashCode(d)
             result = 31 * result + Arrays.hashCode(dobj)
             return result
@@ -201,9 +195,9 @@ abstract class SerializerTest(
         Serializer.types.purge()
 
         val sobj = arrayOf(
-                TestObject1(dobj = arrayOf(TestObject1.TestObject2(200)), cls = TestObject1::class.java),
-                TestObject1(dobj = arrayOf(TestObject1.TestObject2(200)), cls = TestObject1::class.java),
-                TestObject1(dobj = arrayOf(TestObject1.TestObject2(200)), cls = TestObject1::class.java))
+                TestObject1(dobj = arrayOf(TestObject1.TestObject2(200))),
+                TestObject1(dobj = arrayOf(TestObject1.TestObject2(200))),
+                TestObject1(dobj = arrayOf(TestObject1.TestObject2(200))))
 
         val sdata = serializer.serializeToByteArray(sobj)
 
@@ -214,7 +208,6 @@ abstract class SerializerTest(
         val dobj = serializer.deserializeFrom(sdata) as Array<TestObjectRefactored1>
 
         Assert.assertTrue(dobj is Array<TestObjectRefactored1>)
-        Assert.assertTrue(dobj.get(0).cls == TestObjectRefactored1::class.java)
     }
 
     /**
@@ -238,9 +231,6 @@ abstract class SerializerTest(
         Serializer.types.purge()
 
         val obj = TestObject1()
-//        val slist = ArrayList<Any?>(listOf(TestObject1(), TestObject1(), TestObject1()))
-//        val obj = slist.toTypedArray()
-
         val sdata = serializer.serializeToByteArray(obj)
 
         val json = InputStreamReader(ByteArrayInputStream(sdata)).readText()
