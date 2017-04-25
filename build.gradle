@@ -18,6 +18,7 @@ import sx.platform.PlatformId
 import sx.rsync.Rsync
 import sx.ssh.SshHost
 import sx.ssh.SshTunnelProvider
+import sx.Stopwatch
 
 import java.lang.management.ManagementFactory
 import java.nio.file.Files
@@ -402,12 +403,15 @@ subtrees.each { subtree ->
         doLast {
             println "Pulling subtree ${subtree}"
 
+            def sw = new Stopwatch().start()
             try {
                 def result = ProcessExecutor.run([
                         'git', 'subtree', 'pull', '--squash', '-P', subtree['path'], subtree['repo'], subtree['ref']])
+
             } catch (ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
             }
+            println "Completed in {$sw}"
         }
     }
     tasks.gitSubtreePullAll.dependsOn "${taskNamePull}"
@@ -419,12 +423,15 @@ subtrees.each { subtree ->
         doLast {
             println "Pushing subtree ${subtree}"
 
+            def sw = new Stopwatch().start()
             try {
                 def result = ProcessExecutor.run([
                         'git', 'subtree', 'push', '-P', subtree['path'], subtree['repo'], subtree['ref']])
+
             } catch (ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
             }
+            println "Completed in {$sw}"
         }
     }
     tasks.gitSubtreePushAll.dependsOn "${taskNamePush}"
@@ -435,6 +442,8 @@ subtrees.each { subtree ->
             println "Splitting subtree ${subtree}"
 
             def branchName = "split/${subtree['path']}".toString()
+
+            def sw = new Stopwatch().start()
             try {
                 def result = ProcessExecutor.run([
                         'git', 'subtree', 'split', '--rejoin', '-P', subtree['path'], '-b', branchName, '--annotate', "[${subtree['path'].replace('/', '-')}] ".toString()
@@ -450,6 +459,7 @@ subtrees.each { subtree ->
             } catch (ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
             }
+            println "Completed in {$sw}"
         }
     }
     tasks.gitSubtreeSplitAll.dependsOn "${taskNameSplit}"
