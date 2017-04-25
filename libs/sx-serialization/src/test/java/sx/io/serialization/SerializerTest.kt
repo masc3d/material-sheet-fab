@@ -1,12 +1,14 @@
 package sx.io.serialization
 
 import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
 import java.io.StringReader
 import java.util.*
+import sx.Stopwatch
 
 /**
  * Created by masc on 06/09/16.
@@ -177,13 +179,21 @@ abstract class SerializerTest(
     fun testCollectionDeserialization() {
         Serializer.types.purge()
 
-        val sobj = listOf(TestObject1(), TestObject1(), TestObject1())
+        val sobj = java.util.ArrayList(listOf(TestObject1(), TestObject1(), TestObject1()))
 
         val sdata = serializer.serializeToByteArray(sobj)
         @Suppress("UNCHECKED_CAST")
-        val dobj = serializer.deserializeFrom(sdata) as Array<*>
+        val dobj = serializer.deserializeFrom(sdata)
 
-        Assert.assertTrue(Arrays.equals(sobj.toTypedArray(), dobj))
+        // Some serializers currently deserialize collections as arrays
+        // This inconsistency is okay, as replicating collection type is an extended feature
+        // that may not be supported by all serializers
+        val cdobj = when (dobj) {
+            is ArrayList<*> -> dobj.toTypedArray()
+            else -> dobj as Array<*>
+        }
+
+        Assert.assertTrue(Arrays.equals(sobj.toTypedArray(), cdobj))
     }
 
 
@@ -232,8 +242,21 @@ abstract class SerializerTest(
 
         val obj = TestObject1()
         val sdata = serializer.serializeToByteArray(obj)
-
         val json = InputStreamReader(ByteArrayInputStream(sdata)).readText()
-        println(json)
+    }
+
+    @Ignore
+    @Test
+    fun testSerializationPerformance() {
+        Serializer.types.purge()
+
+        for (i in 0..1000) {
+            val sw = Stopwatch.createStarted()
+
+            val obj = TestObject1()
+            val sdata = serializer.serializeToByteArray(obj)
+            val json = InputStreamReader(ByteArrayInputStream(sdata)).readText()
+            println("${sw}")
+        }
     }
 }
