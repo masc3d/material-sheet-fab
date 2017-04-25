@@ -6,8 +6,25 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /**
- * Generic serialization interface
- * Using short UIDs, eg. http://www.shortguid.com/#/guid/uid-64
+ * Lightweight serialization abstraction which makes guarantees about the type safety of the outer serialized type.
+ * This is particularly useful for protocols where receivers expect multiple types of objects/messages on the same channel.
+ * eg. message buses.
+ *
+ * The serializer embeds a type id for (at least) the outer object of the object it serializes.
+ * This allows the deserializer to identify and deserialize the type properly without having precise knowledge which
+ * type to expect.
+ *
+ * The serialization supports {@link java.io.Serializable} interface as well as the {link sx.io.Serializable} annotation.
+ * Types must be registered using `Serializable.types` in order for the deserializer to recognize them.
+ *
+ * Type support for the following *outer* types is guaranteed:
+ * <ul>
+ * <li> Non-generic serializable POJOs
+ * <li> Arrays of non-generic serializable POJOs
+ * </ul>
+ *
+ * Any other types may or may not be supported by the underlying implementation.
+ *
  * Created by masc on 30/08/16.
  */
 abstract class Serializer {
@@ -85,12 +102,13 @@ abstract class Serializer {
             return uid
         }
 
+        // TODO: refactor `register` methods to `lookup` overloads
         /**
          * Register class with uid. If the class is already registered merely returns its UID (fast lookup)
          * @param cls Class to register
          * @param uid UID
          */
-        fun register(cls: Class<*>, uid: Long) {
+        private fun register(cls: Class<*>, uid: Long) {
             val registeredUid = this.uidByClassReadonly[cls]
 
             if (registeredUid != null) {

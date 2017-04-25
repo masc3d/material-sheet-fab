@@ -1,18 +1,32 @@
 package sx.io.serialization
 
 import org.junit.Assert
+import org.junit.Test
 import org.slf4j.LoggerFactory
+import java.io.ByteArrayInputStream
+import java.io.InputStreamReader
+import java.io.StringReader
 import java.util.*
 
 /**
  * Created by masc on 06/09/16.
  */
-open class SerializerTest {
+abstract class SerializerTest(
+        private val serializer: Serializer
+) {
     val log = LoggerFactory.getLogger(this.javaClass)
 
     @Serializable(0x716a49585525f0)
-    data class TestContainer<T>(
-            val obj: T? = null) : java.io.Serializable {
+    data class TestContainer1(
+            val obj: TestObject1? = null) : java.io.Serializable {
+        companion object {
+            val serialVersionUID = 0x716a49585525f0
+        }
+    }
+
+    @Serializable(0x716a49585525f0)
+    data class TestContainerRefactored1(
+            val obj: TestObjectRefactored1? = null) : java.io.Serializable {
         companion object {
             val serialVersionUID = 0x716a49585525f0
         }
@@ -115,33 +129,36 @@ open class SerializerTest {
     /**
      * Test simple (de-)serialization
      */
-    fun testSerialization(serializer: Serializer) {
+    @Test
+    fun testDeserialization() {
         Serializer.types.purge()
 
         val sobj = TestObject1(dobj = arrayOf(TestObject1.TestObject2(200)))
-        val scontainer = TestContainer(sobj)
+        val scontainer = TestContainer1(sobj)
 
         val sdata = serializer.serializeToByteArray(scontainer)
         val dcontainer = serializer.deserializeFrom(sdata)
 
-        Assert.assertTrue(dcontainer.equals(scontainer))
+        Assert.assertTrue(dcontainer == scontainer)
     }
 
     /**
      * Test (de-)serialization with class refactoring/rename
      */
-    fun testRefactoring(serializer: Serializer) {
+    @Test
+    fun testRefactoring() {
         Serializer.types.purge()
 
         val sobj = TestObject1(dobj = arrayOf(TestObject1.TestObject2(200)))
-        val scontainer = TestContainer(sobj)
+        val scontainer = TestContainer1(sobj)
 
         val sdata = serializer.serializeToByteArray(scontainer)
 
         Serializer.types.purge()
+        serializer.register(TestContainerRefactored1::class.java)
         serializer.register(TestObjectRefactored1::class.java)
 
-        val dcontainer = serializer.deserializeFrom(sdata) as TestContainer<*>
+        val dcontainer = serializer.deserializeFrom(sdata) as TestContainerRefactored1
 
         Assert.assertTrue(dcontainer.obj is TestObjectRefactored1)
     }
@@ -149,7 +166,8 @@ open class SerializerTest {
     /**
      * Test serialization with array as root object
      */
-    fun testArraySerialization(serializer: Serializer) {
+    @Test
+    fun testArrayDeserialization() {
         Serializer.types.purge()
 
         val sobj = arrayOf(TestObject1(), TestObject1(), TestObject1())
@@ -161,10 +179,25 @@ open class SerializerTest {
         Assert.assertTrue(Arrays.equals(sobj, dobj))
     }
 
+    @Test
+    fun testCollectionDeserialization() {
+        Serializer.types.purge()
+
+        val sobj = listOf(TestObject1(), TestObject1(), TestObject1())
+
+        val sdata = serializer.serializeToByteArray(sobj)
+        @Suppress("UNCHECKED_CAST")
+        val dobj = serializer.deserializeFrom(sdata) as Array<*>
+
+        Assert.assertTrue(Arrays.equals(sobj.toTypedArray(), dobj))
+    }
+
+
     /**
      * Test serialization with array as root object and refactoring the root type
      */
-    fun testArrayRefactoring(serializer: Serializer) {
+    @Test
+    fun testArrayRefactoring() {
         Serializer.types.purge()
 
         val sobj = arrayOf(
@@ -181,13 +214,14 @@ open class SerializerTest {
         val dobj = serializer.deserializeFrom(sdata) as Array<TestObjectRefactored1>
 
         Assert.assertTrue(dobj is Array<TestObjectRefactored1>)
-        Assert.assertTrue(dobj.get(0).cls.equals(TestObjectRefactored1::class.java))
+        Assert.assertTrue(dobj.get(0).cls == TestObjectRefactored1::class.java)
     }
 
     /**
      * Test serialization with plain object array
      */
-    fun testObjectArraySerialization(serializer: Serializer) {
+    @Test
+    fun testObjectArrayDeserialization() {
         Serializer.types.purge()
 
         val slist = ArrayList<Any?>(listOf(TestObject1(), TestObject1(), TestObject1()))
@@ -197,5 +231,19 @@ open class SerializerTest {
         val dobj = serializer.deserializeFrom(sdata) as Array<*>
 
         Assert.assertTrue(Arrays.equals(sobj, dobj))
+    }
+
+    @Test
+    fun testSerialization() {
+        Serializer.types.purge()
+
+        val obj = TestObject1()
+//        val slist = ArrayList<Any?>(listOf(TestObject1(), TestObject1(), TestObject1()))
+//        val obj = slist.toTypedArray()
+
+        val sdata = serializer.serializeToByteArray(obj)
+
+        val json = InputStreamReader(ByteArrayInputStream(sdata)).readText()
+        println(json)
     }
 }
