@@ -59,9 +59,6 @@ class JacksonSerializer @JvmOverloads constructor(
         node.putPOJO(JSON_PROPERTY_DATA, obj)
 
         this.objectMapper.writeValue(output, node)
-
-        // TODO: remove
-        println(this.objectMapper.writeValueAsString(node))
     }
 
     /**
