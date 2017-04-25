@@ -12,6 +12,7 @@ import com.trello.rxlifecycle2.RxLifecycle
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.BehaviorSubject
+import sx.rx.ObservableRxProperty
 import sx.rx.observableRx
 
 /**
@@ -41,7 +42,7 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
                         ))
                     }
 
-            this@CameraAidcReader.enabledSubject
+            this@CameraAidcReader.enabledProperty
                     .compose(RxLifecycleAndroid.bindView(this))
                     .doOnDispose {
                         this.pause()
@@ -60,7 +61,7 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
                         }
                     }
 
-            this@CameraAidcReader.torchSubject
+            this@CameraAidcReader.torchProperty
                     .compose(RxLifecycleAndroid.bindView(this))
                     .subscribe {
                         this.barcodeView.setTorch(it)
@@ -101,8 +102,8 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
     }
     //endregion
 
-    val torchSubject = BehaviorSubject.create<Boolean>()
-    var torch: Boolean by observableRx(false, torchSubject)
+    val torchProperty = ObservableRxProperty(false)
+    var torch: Boolean by torchProperty
 
     /**
      * View finder

@@ -7,6 +7,7 @@ import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
+import sx.rx.ObservableRxProperty
 import sx.rx.observableRx
 
 /**
@@ -39,11 +40,11 @@ abstract class AidcReader {
 
     data class ReadEvent(val data: String, val barcodeType: BarcodeType)
 
-    protected val enabledSubject = BehaviorSubject.create<Boolean>()
+    protected val enabledProperty = ObservableRxProperty(true)
     /**
      * Enable or disable barcode reader
      */
-    var enabled: Boolean by observableRx(true, enabledSubject)
+    var enabled: Boolean by enabledProperty
 
     protected val decodersUpdatedSubject = BehaviorSubject.create<Array<out Decoder>>()
     /**
