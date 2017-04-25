@@ -3,6 +3,7 @@ package sx.io.serialization
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.io.InputStream
 import java.io.OutputStream
+import java.math.BigInteger
 
 /**
  * Jackson serializer
@@ -72,7 +73,7 @@ class JacksonSerializer @JvmOverloads constructor(
                 ?.textValue()
 
         val dataType: Class<*>? = if (sidHex != null) {
-            val sid = java.lang.Long.parseUnsignedLong(sidHex.substring(2), 16)
+            val sid = BigInteger(sidHex.substring(2), 16).toLong()
             val dataType = Serializer.types.lookup(sid)
 
             dataType

@@ -18,6 +18,10 @@ buildscript {
 
 apply plugin: 'kotlin'
 
+// masc20150818., Keep source compatibility 1.7 for android support
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 repositories {
     mavenCentral()
 }
