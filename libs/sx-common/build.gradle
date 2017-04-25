@@ -87,3 +87,19 @@ dependencies {
             "ch.qos.logback:logback-classic:1.2.3"
     )
 }
+
+//region Test artifact configuration
+// For sharing test classes (eg. for running as android instrumentation in android projects)
+configurations {
+    testArtifacts
+}
+
+task testJar(type: Jar) {
+    classifier "test"
+    from sourceSets.test.output
+}
+
+artifacts {
+    testArtifacts testJar
+}
+//endregion
