@@ -263,7 +263,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             ) ?: return mutableListOf() //Return empty list if given zip-code does not match any Zalando SDD-Area
 
             val currentDate = Date()
-            return listOf(DeliveryOption(
+            return generateDeliveryOptions(DeliveryOption(
                     sddRoute.id.toString(),
                     sddRoute.cutOff.replaceDate(currentDate),
                     sddRoute.ltop.replaceDate(currentDate),
@@ -370,11 +370,9 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                             ?.replaceTime(dateFormat.parse("1630"))
                             ?.plusDays(-1),
                     deliveryFrom = this.deliveryFrom
-                            ?.replaceTime(dateFormat.parse("0800"))
-                            ?.plusDays(-1),
+                            ?.replaceTime(dateFormat.parse("0800")),
                     deliveryTo = this.deliveryTo
                             ?.replaceTime(dateFormat.parse("1600"))
-                            ?.plusDays(-1)
             )
         }
 
@@ -400,12 +398,13 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             c.add(Calendar.DATE, count)
 
             if (c.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || c.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-
+                count++
             } else {
                 val newDeliveryOption = deliveryOption
                         .addDays(count)
 
                 val newDeliveryOptionCDB = deliveryOption
+                        .addDays(count)
                         .convertToCOB()
 
                 newDeliveryOption.id = newDeliveryOption.generateUniqueIdentifier(

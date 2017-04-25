@@ -17,6 +17,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.StandardTest
+import sx.time.plusDays
+import sx.time.replaceTime
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -61,5 +64,13 @@ class DeliveryOptionTest {
         val jDateString = jnode.get("cut_off").textValue()
 
         Assert.assertEquals(jDateString, ISO8601DateFormat().format(d))
+    }
+
+    @Test
+    fun testGenerateDeliveryOptions() {
+        val d = Date()
+        val deliveryOption = DeliveryOption("228", d, d, d, d)
+        val delOptions: List<DeliveryOption> = org.deku.leoz.central.rest.service.zalando.v1.CarrierIntegrationService().generateDeliveryOptions(deliveryOption)
+        assert(delOptions.size == 9)
     }
 }
