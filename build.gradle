@@ -411,7 +411,7 @@ subtrees.each { subtree ->
             } catch (ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
             }
-            println "Completed in {$sw}"
+            println "Completed in ${sw}"
         }
     }
     tasks.gitSubtreePullAll.dependsOn "${taskNamePull}"
@@ -431,7 +431,7 @@ subtrees.each { subtree ->
             } catch (ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
             }
-            println "Completed in {$sw}"
+            println "Completed in ${sw}"
         }
     }
     tasks.gitSubtreePushAll.dependsOn "${taskNamePush}"
@@ -459,7 +459,7 @@ subtrees.each { subtree ->
             } catch (ProcessRunException e) {
                 throw new IllegalStateException(e.result.error)
             }
-            println "Completed in {$sw}"
+            println "Completed in ${sw}"
         }
     }
     tasks.gitSubtreeSplitAll.dependsOn "${taskNameSplit}"
