@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response
  * Created by 27694066 on 02.03.2017.
  */
 @Named
-@ApiKey(false)
+@ApiKey(true)
 @Path("zalando/v1/ldn")
 class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierIntegrationService {
 
@@ -38,17 +38,12 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
     @Inject
     private lateinit var glsShipmentProcessingService: org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
 
-    private val API_KEY: String = "a2ad4a5d-0f7b-4bcb-8d6e-fa18da86fd22"
+    //private val API_KEY: String = "a2ad4a5d-0f7b-4bcb-8d6e-fa18da86fd22"
 
     /**
      *
      */
-    override fun postDeliveryOrder(deliveryOrder: DeliveryOrder, authorizationKey: String): NotifiedDeliveryOrder {
-
-        if (authorizationKey != API_KEY) {
-            throw DefaultProblem(
-                    status = Response.Status.UNAUTHORIZED)
-        }
+    override fun postDeliveryOrder(deliveryOrder: DeliveryOrder): NotifiedDeliveryOrder {
 
         try {
             val result = dslContext.select()
@@ -211,7 +206,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                 if (checkRange > 0) {
                     return NotifiedDeliveryOrder(glsParcelNum, "https://gls-group.eu/DE/de/paketverfolgung?match=$glsParcelNum")
                 } else {
-                    cancelDeliveryOrder(glsParcelNum, authorizationKey)
+                    cancelDeliveryOrder(glsParcelNum)
                     throw DefaultProblem(
                             title = "Customers range exceeded.",
                             detail = "The order could not be processed due to an leaked customers range. Contact GLS Support ASAP!")
@@ -246,13 +241,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             target_address_country_code: String,
             target_address_city: String,
             target_address_zip_code: String,
-            target_address_address_line:
-            String, authorizationKey: String): List<DeliveryOption> {
-
-        if (authorizationKey != API_KEY) {
-            throw DefaultProblem(
-                    status = Response.Status.UNAUTHORIZED)
-        }
+            target_address_address_line: String): List<DeliveryOption> {
 
         try {
             val sddRoute: SddContzipRecord = dslContext.fetchOne(
@@ -288,12 +277,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
     /**
      *
      */
-    override fun cancelDeliveryOrder(id: String, authorizationKey: String): Response {
-
-        if (authorizationKey != API_KEY) {
-            throw DefaultProblem(
-                    status = Response.Status.UNAUTHORIZED)
-        }
+    override fun cancelDeliveryOrder(id: String): Response {
 
         try {
             val order: SddFpcsOrderRecord = dslContext.fetchOne(
@@ -336,7 +320,7 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
     /**
      * Generates delivery options
      */
-    private fun generateDeliveryOptions(deliveryOption: DeliveryOption): List<DeliveryOption> {
+    fun generateDeliveryOptions(deliveryOption: DeliveryOption): List<DeliveryOption> {
         // Helper functions for generation
 
         /**

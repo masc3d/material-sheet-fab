@@ -1,6 +1,7 @@
 package org.deku.leoz.central.rest
 
 import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.config.RestConfiguration
 import sx.rs.auth.ApiKeyRequestFilterBase
 
@@ -20,7 +21,10 @@ class ApiKeyRequestFilter : ApiKeyRequestFilterBase(
     @Inject
     private lateinit var nodeJooqRepository: NodeJooqRepository
 
+    @Inject
+    private lateinit var userJooqRepository: UserJooqRepository
+
     override fun verify(apiKey: String): Boolean {
-        return nodeJooqRepository.hasAuthorizedKey(apiKey)
+        return nodeJooqRepository.hasAuthorizedKey(apiKey) || userJooqRepository.hasAuthorizedKey(apiKey)
     }
 }

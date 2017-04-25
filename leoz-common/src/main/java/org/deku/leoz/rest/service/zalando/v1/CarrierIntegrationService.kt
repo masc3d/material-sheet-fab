@@ -23,8 +23,8 @@ interface CarrierIntegrationService {
             value = "Provides available delivery options for a given pair of addresses (source, target).",
             notes = "Looks up for available delivery options that apply to the path from source address to target address. Provides a list of options which detail the window of delivery and the cut-off and pick-up points.",
             response = DeliveryOption::class,
-            responseContainer = "List",
-            authorizations = arrayOf(Authorization(RestConfiguration.AUTH_APIKEY_NAME)))
+            responseContainer = "List"
+    )
     @ApiResponses(*arrayOf(
             ApiResponse(code = 200, message = "OK", response = DeliveryOption::class),
             ApiResponse(code = 400, message = "Bad Request", response = Problem::class),
@@ -38,31 +38,28 @@ interface CarrierIntegrationService {
             @QueryParam(value = "target_address.country_code") target_address_country_code: String,
             @QueryParam(value = "target_address.city") target_address_city: String,
             @QueryParam(value = "target_address.zip_code") target_address_zip_code: String,
-            @QueryParam(value = "target_address.address_line") target_address_address_line: String,
-            @HeaderParam(value = RestConfiguration.AUTH_APIKEY_NAME) authorizationKey: String
+            @QueryParam(value = "target_address.address_line") target_address_address_line: String
     ): List<DeliveryOption>
 
     @POST
     @Path("delivery-orders")
     @ApiOperation(
             value = "Send order information",
-            response = NotifiedDeliveryOrder::class,
-            authorizations = arrayOf(Authorization(RestConfiguration.AUTH_APIKEY_NAME)))
+            response = NotifiedDeliveryOrder::class
+    )
     @ApiResponses(*arrayOf(
             ApiResponse(code = 200, message = "OK", response = NotifiedDeliveryOrder::class),
             ApiResponse(code = 400, message = "Bad Request", response = Problem::class),
             ApiResponse(code = 401, message = "Unauthorized", response = Problem::class))
     )
     fun postDeliveryOrder(
-            @ApiParam(value = "DeliveryOrder") deliveryOrder: DeliveryOrder,
-            @HeaderParam(value = RestConfiguration.AUTH_APIKEY_NAME) authorizationKey: String
+            @ApiParam(value = "DeliveryOrder") deliveryOrder: DeliveryOrder
     ): NotifiedDeliveryOrder
 
     @POST
     @Path("delivery-orders/{id}/cancellation")
     @ApiOperation(
-            value = "Cancel a delivery order",
-            authorizations = arrayOf(Authorization(RestConfiguration.AUTH_APIKEY_NAME))
+            value = "Cancel a delivery order"
     )
     @ApiResponses(*arrayOf(
             ApiResponse(code = 200, message = "OK"),
@@ -71,7 +68,6 @@ interface CarrierIntegrationService {
         )
     )
     fun cancelDeliveryOrder(
-            @PathParam(value = "id") @ApiParam(example = "1234567890", value = "Order identifier") id: String,
-            @HeaderParam(value = RestConfiguration.AUTH_APIKEY_NAME) authorizationKey: String
+            @PathParam(value = "id") @ApiParam(example = "1234567890", value = "Order identifier") id: String
     ): Response
 }

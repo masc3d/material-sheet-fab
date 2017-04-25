@@ -66,6 +66,9 @@ dependencies {
             "net.java.dev.jna:jna-platform:$v_jna",
             // YAML
             "org.yaml:snakeyaml:$v_snakeyaml",
+
+            //Kalium
+            "org.abstractj.kalium:kalium:$v_kalium"
     )
 
     compileOnly(
