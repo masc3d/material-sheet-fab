@@ -17,7 +17,9 @@ import java.util.concurrent.ExecutorService
  * Created by n3 on 27.04.17.
  */
 class Login {
+    // Consumers can observe this property for changes
     val authenticatedUserProperty = ObservableRxProperty<User?>(null)
+    // Delegated property for convenient access
     var authenticatedUser: User? by authenticatedUserProperty
 
     private val userService: UserService by Kodein.global.lazy.instance()
@@ -45,10 +47,13 @@ class Login {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
+        // Subscribing to task will actually start it
         task.subscribe {
+            // Store authenticated user in property
             this.authenticatedUser = it
         }
 
+        // Return task to consumer to optionally subscribe to running authentication task as well
         return task
     }
 }
