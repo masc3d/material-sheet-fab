@@ -1,12 +1,13 @@
 package org.deku.leoz.config
 
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.instance
-import com.github.salomonbrys.kodein.provider
+import com.github.salomonbrys.kodein.erased.bind
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.erased.provider
 import feign.Feign
 import org.deku.leoz.rest.service.internal.v1.BundleService
 import org.deku.leoz.rest.service.internal.v1.StationService
+import org.deku.leoz.rest.service.internal.v1.UserService
 import sx.rs.proxy.RestClientProxy
 import java.net.URI
 
@@ -71,6 +72,10 @@ abstract class RestClientConfiguration {
 
             bind<BundleService>() with provider {
                 createServiceProxy(config = instance(), serviceType = BundleService::class.java)
+            }
+
+            bind<UserService>() with provider {
+                createServiceProxy(config = instance(), serviceType = UserService::class.java)
             }
         }
     }

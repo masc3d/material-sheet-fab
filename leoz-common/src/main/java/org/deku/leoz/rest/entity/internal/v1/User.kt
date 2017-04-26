@@ -31,6 +31,7 @@ data class User (
     @get:JsonProperty("role")
     var role: String? = null,
 
+    // TODO: should be hash instead of pw
     @get:ApiModelProperty(example = "MyS3cr3t", required = true, value = "Password")
     @get:JsonProperty("password")
     var password: String? = null,
