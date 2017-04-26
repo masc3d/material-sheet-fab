@@ -56,14 +56,6 @@ buildscript {
         classpath "sx:sx-serialization:0.1"
 
         classpath(
-                "org.eclipse.jgit:org.eclipse.jgit:$v_jgit",
-                // For authenticating ssh/jgit against key agent
-                "com.jcraft:jsch.agentproxy.connector-factory:$v_jsch",
-                "com.jcraft:jsch.agentproxy.jsch:$v_jsch",
-                "com.jcraft:jsch.agentproxy.sshagent:$v_jsch",
-                "com.jcraft:jsch.agentproxy.pageant:$v_jsch")
-
-        classpath(
                 "ca.cutterslade.gradle:gradle-dependency-analyze:1.1.0",
                 'com.github.ben-manes:gradle-versions-plugin:0.14.0',
                 'org.kordamp.gradle:stats-gradle-plugin:0.2.0'

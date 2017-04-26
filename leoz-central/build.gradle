@@ -84,7 +84,12 @@ dependencies {
             "org.jooq:jooq:$v_jooq",
 
             // JDBC connection pooling
-            "org.apache.commons:commons-dbcp2:2.1.1"
+            "org.apache.commons:commons-dbcp2:2.1.1",
+
+            // FOR TESTING
+
+            // Kalium
+            "org.abstractj.kalium:kalium:0.5.0"
     )
 
     testCompile(
