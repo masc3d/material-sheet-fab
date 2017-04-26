@@ -111,7 +111,7 @@ class KryoSerializer(
                 type
 
             val uid = if (typeToRegister != Any::class.java)
-                Serializer.types.register(typeToRegister)
+                Serializer.types.register(typeToRegister).uid
             else
                 0L
 
@@ -132,7 +132,7 @@ class KryoSerializer(
                 //region ** Kryo protocol addition, read @Serializable metainfo **
                 val serializableType = SerializableType.read(input)
                 if (serializableType.uid != 0L) {
-                    type = Serializer.types.lookup(serializableType.uid)
+                    type = Serializer.types.lookup(serializableType.uid)?.javaClass
                     if (type != null && serializableType.isArray) {
                         type = Array.newInstance(type, 0).javaClass
                     }

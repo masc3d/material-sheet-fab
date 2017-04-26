@@ -29,13 +29,13 @@ object DefaultSerializer : Serializer() {
             // Lookup registered class
             val finalClass = if (resultClass.isArray) {
                 val lc = DefaultSerializer.lookup(lookupUid)
-                if (lc != null) Array.newInstance(lc, 0).javaClass else null
+                if (lc != null) Array.newInstance(lc.javaClass, 0).javaClass else null
             } else {
-                DefaultSerializer.lookup(lookupUid)
+                DefaultSerializer.lookup(lookupUid)?.javaClass
             }
 
             // If there's a mapping to a different class, modify resulting class descriptor
-            if (finalClass != null && !finalClass.equals(resultClass)) {
+            if (finalClass != null && finalClass != resultClass) {
                 resultClassDescriptor = ObjectStreamClass.lookup(finalClass)
             }
 
