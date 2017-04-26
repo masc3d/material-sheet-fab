@@ -16,3 +16,9 @@ update:
   force: false
   # Cycle period in seconds
   period: 3600
+location:
+  enabled: true
+  minDistance: 500
+  force: true
+  period: 600
+  allowMockLocation: false
