@@ -53,7 +53,7 @@ interface BundleService {
     ): Response
 
     @PATCH
-    @Path("/clean-repository")
+    @Path("/clean")
     @ApiOperation(value = "Clean repository, removes all unused bundles")
-    fun cleanRepository()
+    fun clean()
 }

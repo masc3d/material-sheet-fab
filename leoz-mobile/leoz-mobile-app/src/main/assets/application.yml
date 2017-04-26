@@ -16,9 +16,13 @@ update:
   force: false
   # Cycle period in seconds
   period: 3600
+
+# Location service settings
 location:
   enabled: true
+  # Minimum distance in meters
   minDistance: 500
   force: true
+  # Period in seconds
   period: 600
   allowMockLocation: false

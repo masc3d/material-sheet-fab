@@ -35,7 +35,7 @@ open class BundleService : org.deku.leoz.rest.service.internal.v2.BundleService 
         )
     }
 
-    override fun cleanRepository() {
+    override fun clean() {
         bundleService1.cleanRepository()
     }
 }
