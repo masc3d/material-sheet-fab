@@ -1,5 +1,7 @@
 package org.deku.leoz.mobile.ui.activity
 
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -7,7 +9,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import kotlinx.android.synthetic.main.main_app_bar.*
-import kotlinx.android.synthetic.main.main_nav_header.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.model.Database
@@ -19,9 +20,16 @@ import org.deku.leoz.mobile.ui.showAlert
 import org.deku.leoz.mobile.ui.showErrorAlert
 import org.slf4j.LoggerFactory
 import sx.android.fragment.util.withTransaction
+import android.content.DialogInterface
+import android.view.LayoutInflater
+
+
+
 
 class MainActivity : Activity(), LoginFragment.OnLoginSuccessfulListener {
     private val log = LoggerFactory.getLogger(this.javaClass)
+    private val PRIVATE_PREF = "leoz.app"
+    private val VERSION_KEY = "version_number"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +68,27 @@ class MainActivity : Activity(), LoginFragment.OnLoginSuccessfulListener {
                         negativeButton = AlertButton(text = android.R.string.cancel))
             }).show()
         }
+
+        //Initiate ChangelogDialog  (Whats New)
+        val sharedPref = getSharedPreferences(PRIVATE_PREF, Context.MODE_PRIVATE)
+        var currentVersionNumber = 0
+        val savedVersionNumber = sharedPref.getInt(VERSION_KEY, 0)
+
+        try {
+            val pi = packageManager.getPackageInfo(packageName, 0)
+            currentVersionNumber = pi.versionCode
+        } catch (e: Exception) {
+
+        }
+
+        if (currentVersionNumber > savedVersionNumber) {
+            showWhatsNewDialog()
+
+            val editor = sharedPref.edit()
+
+            editor.putInt(VERSION_KEY, currentVersionNumber)
+            editor.apply()
+        }
     }
 
     override fun onResume() {
@@ -67,5 +96,18 @@ class MainActivity : Activity(), LoginFragment.OnLoginSuccessfulListener {
     }
 
     override fun onLoginSuccessful(userAlias: String, userStation: String) {
+    }
+
+    private fun showWhatsNewDialog() {
+        val inflater = LayoutInflater.from(this)
+
+        val view = inflater.inflate(R.layout.dialog_whatsnew, null)
+
+        val builder = AlertDialog.Builder(this)
+
+        builder.setView(view)
+                .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+
+        builder.create().show()
     }
 }
