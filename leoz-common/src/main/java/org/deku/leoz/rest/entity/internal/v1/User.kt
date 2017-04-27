@@ -36,6 +36,10 @@ data class User (
     @get:JsonProperty("password")
     var password: String? = null,
 
+    @get:ApiModelProperty(example = "a1b2c3d4e5f6", required = true, value = "Salt")
+    @get:JsonProperty("salt")
+    var salt: String? = null,
+
     @get:ApiModelProperty(example = "Foo", required = true, value = "First name")
     @get:JsonProperty("firstName")
     var firstName: String? = null,
