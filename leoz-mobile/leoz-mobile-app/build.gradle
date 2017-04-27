@@ -197,6 +197,7 @@ dependencies {
             // YAML
             "pl.droidsonroids.yaml:snakeyaml:1.18-android",
 
+            // Signature pad
             "com.github.gcacace:signature-pad:1.2.1",
 
             // FOR TESTING

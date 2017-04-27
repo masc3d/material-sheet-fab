@@ -8,6 +8,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.rest.service.internal.v1.UserService
+import org.apache.commons.codec.digest.DigestUtils
 import sx.rx.ObservableRxProperty
 import sx.rx.task
 import java.util.concurrent.ExecutorService
@@ -38,6 +39,7 @@ class Login {
             // TODO: store user info in db
 
             // TODO: hash password, verify
+            DigestUtils.sha256(password)
 
             User(
                     name = user.alias ?: "",
@@ -53,7 +55,7 @@ class Login {
             this.authenticatedUser = it
         }
 
-        // Return task to consumer to optionally subscribe to running authentication task as well
+        // Return task to consumer for optionally subscribing to running authentication task as well
         return task
     }
 }
