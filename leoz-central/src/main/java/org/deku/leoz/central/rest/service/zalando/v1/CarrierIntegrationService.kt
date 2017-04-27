@@ -78,15 +78,9 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                         detail = "The given delivery option with zip code [$delOptionZip] does not match the target address zipcode [$targetAddrZip]")
             }
 
-            val recordCount: Int = dslContext.fetchCount(
+            val knownOrder = dslContext.fetchCount(
                     Tables.SDD_FPCS_ORDER,
-                    Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE.eq(deliveryOrder.incomingId))
-
-            if (recordCount > 0) {
-                throw DefaultProblem(
-                        title = "Duplicate entry",
-                        detail = "There is already an record with the given IncomingID [${deliveryOrder.incomingId}]. Multiple IncomingID's are not supported yet.")
-            }
+                    Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE.eq(deliveryOrder.incomingId)) > 0
 
             val fpcsRecord: SddFpcsOrderRecord = dslContext.newRecord(Tables.SDD_FPCS_ORDER)
             fpcsRecord.customersReference = deliveryOrder.incomingId
@@ -105,126 +99,140 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
             fpcsRecord.zipTo = deliveryOrder.targetAddress.zipCode
             fpcsRecord.mailAddress = deliveryOrder.targetAddress.email
             fpcsRecord.dtShip = java.sql.Date(Calendar.getInstance().timeInMillis)
+
+            if (knownOrder) {
+                val existingRecord = dslContext.fetchOne(Tables.SDD_FPCS_ORDER, Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE.eq(fpcsRecord.customersReference).and(Tables.SDD_FPCS_ORDER.GLS_PARCELNO.isNotNull))
+                fpcsRecord.glsParcelno = existingRecord.glsParcelno
+                fpcsRecord.glsTrackid = existingRecord.glsTrackid
+            }
+
             fpcsRecord.store()
 
-            /**
-             * Call GLS FPCS (SOAP) Service and provide order information. Process returned data
-             * Update local record with GLS parcel number which is returned by the FPCS service.
-             * Return the obtained parcel number to the originally "requester" of this service (Zalando).
-             */
-            val consignee = Consignee()
-            val consAddr = Address()
-            consAddr.city = fpcsRecord.cityTo
-            consAddr.name1 = fpcsRecord.nameTo
-            consAddr.contactPerson = fpcsRecord.nameTo
-            consAddr.countryCode = fpcsRecord.countryTo
-            consAddr.zipCode = fpcsRecord.zipTo
-            consAddr.street = fpcsRecord.streetTo
-            consAddr.streetNumber = fpcsRecord.streetnoTo
-            consignee.address = consAddr
+            if (!knownOrder) {
+                /**
+                 * Call GLS FPCS (SOAP) Service and provide order information. Process returned data
+                 * Update local record with GLS parcel number which is returned by the FPCS service.
+                 * Return the obtained parcel number to the originally "requester" of this service (Zalando).
+                 */
+                val consignee = Consignee()
+                val consAddr = Address()
+                consAddr.city = fpcsRecord.cityTo
+                consAddr.name1 = fpcsRecord.nameTo
+                consAddr.contactPerson = fpcsRecord.nameTo
+                consAddr.countryCode = fpcsRecord.countryTo
+                consAddr.zipCode = fpcsRecord.zipTo
+                consAddr.street = fpcsRecord.streetTo
+                consAddr.streetNumber = fpcsRecord.streetnoTo
+                consignee.address = consAddr
 
-            val shipper = Shipper()
-            shipper.id = result.getValue(0, Tables.SDD_CONTACT.CONTACTID)
+                val shipper = Shipper()
+                shipper.id = result.getValue(0, Tables.SDD_CONTACT.CONTACTID)
 
-            val shipmentUnit = ShipmentUnit()
-            shipmentUnit.weight = "1"
+                val shipmentUnit = ShipmentUnit()
+                shipmentUnit.weight = "1"
 
-            val shipment = Shipment()
-            shipment.shipper = shipper
-            shipment.referenceNumber.add(fpcsRecord.customersReference)
-            shipment.product = ProductType.EXPRESS
-            shipment.consignee = consignee
-            shipment.shipper = shipper
-            shipment.shipmentUnit.add(shipmentUnit)
+                val shipment = Shipment()
+                shipment.shipper = shipper
+                shipment.referenceNumber.add(fpcsRecord.customersReference)
+                shipment.product = ProductType.EXPRESS
+                shipment.consignee = consignee
+                shipment.shipper = shipper
+                shipment.shipmentUnit.add(shipmentUnit)
 
-            val returnLabels = ReturnLabels()
-            returnLabels.templateSet = TemplateSet.NONE
-            returnLabels.labelFormat = LabelFormat.PDF
+                val returnLabels = ReturnLabels()
+                returnLabels.templateSet = TemplateSet.NONE
+                returnLabels.labelFormat = LabelFormat.PDF
 
-            val printOptions = PrintingOptions()
-            printOptions.returnLabels = returnLabels
+                val printOptions = PrintingOptions()
+                printOptions.returnLabels = returnLabels
 
-            /**
-             * The UniStation needs an Service to skip manually input.
-             * 10:00 worked fine in test scenarios. 12:00 didn't
-             */
-            val service = Service()
-            service.serviceName = "service_1000"
+                /**
+                 * The UniStation needs an Service to skip manually input.
+                 * 10:00 worked fine in test scenarios. 12:00 didn't
+                 */
+                val service = Service()
+                service.serviceName = "service_1000"
 
-            val shippingService = ShipmentService()
-            shippingService.service = service
+                val shippingService = ShipmentService()
+                shippingService.service = service
 
-            val shipmentRequestData: ShipmentRequestData = ShipmentRequestData()
-            shipmentRequestData.shipment = shipment
-            shipmentRequestData.printingOptions = printOptions
-            shipmentRequestData.shipment.service.add(shippingService)
+                val shipmentRequestData: ShipmentRequestData = ShipmentRequestData()
+                shipmentRequestData.shipment = shipment
+                shipmentRequestData.printingOptions = printOptions
+                shipmentRequestData.shipment.service.add(shippingService)
 
-            val glsResponse: CreateParcelsResponse
+                val glsResponse: CreateParcelsResponse
 
-            try {
+                try {
 
-                glsResponse = glsShipmentProcessingService.createParcels(shipmentRequestData)
-                val parcelData = glsResponse.createdShipment.parcelData
+                    glsResponse = glsShipmentProcessingService.createParcels(shipmentRequestData)
+                    val parcelData = glsResponse.createdShipment.parcelData
 
-                if (parcelData.size != 1) {
+                    if (parcelData.size != 1) {
+                        fpcsRecord.cancelRequested = -2
+                        fpcsRecord.store()
+                        throw DefaultProblem(
+                                title = "Error serving fpcs",
+                                detail = "Central GLS system reported an error")
+                    }
+
+                    /**
+                     * TODO: Check if this is the right number.
+                     * This could be the preferred way, because this number does not needs to be "converted".
+                     * In addition the returned structure is always the same respectively versioned.
+                     */
+                    //val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[17].substring(0, 11)
+
+                    val courierNum = parcelData[0].expressData.courierParcelNumber
+
+                    var glsParcelNum = courierNum
+                    glsParcelNum = glsParcelNum.substring(1, 3) + "85" + glsParcelNum.substring(4, 11)
+                    fpcsRecord.glsTrackid = parcelData[0].trackID
+                    fpcsRecord.glsParcelno = glsParcelNum.toDouble()
+
+                    fpcsRecord.store()
+
+                    //Check if GLS Parcel number is within the assigned range. Otherwise cancel the order and throw a problem.
+                    val checkRange = dslContext.fetchCount(
+                            Tables.TBLSYSCOLLECTIONS
+                                    .join(Tables.SDD_CUSTOMER)
+                                    .on(Tables.TBLSYSCOLLECTIONS.TXTP2
+                                            .eq(Tables.SDD_CUSTOMER.CUSTOMERID)),
+                            Tables.TBLSYSCOLLECTIONS.TYP.eq(80)
+                                    .and(Tables.SDD_CUSTOMER.NAME1.eq("Zalando"))
+                                    .and(Tables.TBLSYSCOLLECTIONS.TXTVALUE.lessOrEqual(courierNum))
+                                    .and(Tables.TBLSYSCOLLECTIONS.TXTP1.greaterOrEqual(courierNum)))
+
+                    if (checkRange > 0) {
+                        return NotifiedDeliveryOrder(fpcsRecord.id.toString(), "https://gls-group.eu/DE/de/paketverfolgung?match=$glsParcelNum")
+                    } else {
+                        cancelDeliveryOrder(glsParcelNum)
+                        throw DefaultProblem(
+                                title = "Customers range exceeded.",
+                                detail = "The order could not be processed due to an leaked customers range. Contact GLS Support ASAP!")
+                    }
+
+                } catch(d: DefaultProblem) { //Don't catch a thrown DefaultProblem as a general Exception. These are supposed to be thrown.
+                    throw d
+                } catch (e: Exception) {
                     fpcsRecord.cancelRequested = -2
                     fpcsRecord.store()
                     throw DefaultProblem(
-                            title = "Error serving fpcs",
-                            detail = "Central GLS system reported an error")
+                            title = "Error serving GLS systems",
+                            detail = "The order could not be stored in GLS Systems due to an error: ${e.message}")
                 }
-
-                /**
-                 * TODO: Check if this is the right number.
-                 * This could be the preferred way, because this number does not needs to be "converted".
-                 * In addition the returned structure is always the same respectively versioned.
-                 */
-                //val glsParcelNumAlt = parcelData[0].barcodes.uniShip.split("|")[17].substring(0, 11)
-
-                val courierNum = parcelData[0].expressData.courierParcelNumber
-
-                var glsParcelNum = courierNum
-                glsParcelNum = glsParcelNum.substring(1, 3) + "85" + glsParcelNum.substring(4, 11)
-                fpcsRecord.glsTrackid = parcelData[0].trackID
-                fpcsRecord.glsParcelno = glsParcelNum.toDouble()
-
-                fpcsRecord.store()
-
-                //Check if GLS Parcel number is within the assigned range. Otherwise cancel the order and throw a problem.
-                val checkRange = dslContext.fetchCount(
-                        Tables.TBLSYSCOLLECTIONS
-                                .join(Tables.SDD_CUSTOMER)
-                                    .on(Tables.TBLSYSCOLLECTIONS.TXTP2
-                                        .eq(Tables.SDD_CUSTOMER.CUSTOMERID)),
-                        Tables.TBLSYSCOLLECTIONS.TYP.eq(80)
-                                .and(Tables.SDD_CUSTOMER.NAME1.eq("Zalando"))
-                                .and(Tables.TBLSYSCOLLECTIONS.TXTVALUE.lessOrEqual(courierNum))
-                                .and(Tables.TBLSYSCOLLECTIONS.TXTP1.greaterOrEqual(courierNum)))
-
-                if (checkRange > 0) {
-                    return NotifiedDeliveryOrder(glsParcelNum, "https://gls-group.eu/DE/de/paketverfolgung?match=$glsParcelNum")
-                } else {
-                    cancelDeliveryOrder(glsParcelNum)
-                    throw DefaultProblem(
-                            title = "Customers range exceeded.",
-                            detail = "The order could not be processed due to an leaked customers range. Contact GLS Support ASAP!")
-                }
-
-            } catch(d: DefaultProblem) { //Don't catch a thrown DefaultProblem as a general Exception. These are supposed to be thrown.
-                throw d
-            } catch (e: Exception) {
-                fpcsRecord.cancelRequested = -2
-                fpcsRecord.store()
-                throw DefaultProblem(
-                        title = "Error serving GLS systems",
-                        detail = "The order could not be stored in GLS Systems due to an error: ${e.message}")
+            } else {
+                //The provided order is already known. Return the original Tracking-URL and the new identifier.
+                return NotifiedDeliveryOrder(fpcsRecord.id.toString(), "https://gls-group.eu/DE/de/paketverfolgung?match=${fpcsRecord.glsParcelno}")
             }
-        } catch(d: DefaultProblem) { //Don't catch a thrown DefaultProblem as a general Exception. These are supposed to be thrown.
-            throw d
         } catch(e: Exception) {
-            throw DefaultProblem(
-                    title = "Unhandled exception",
-                    detail = e.message)
+            if (e is DefaultProblem) {
+                throw e
+            } else {
+                throw DefaultProblem(
+                        title = "Unhandled exception",
+                        detail = e.message)
+            }
         }
     }
 
