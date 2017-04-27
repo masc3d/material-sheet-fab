@@ -8,9 +8,11 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.rest.service.internal.v1.UserService
-import org.apache.commons.codec.digest.DigestUtils
 import sx.rx.ObservableRxProperty
 import sx.rx.task
+import sx.security.Algorithms
+import sx.text.toHexString
+import java.security.MessageDigest
 import java.util.concurrent.ExecutorService
 
 /**
@@ -39,7 +41,10 @@ class Login {
             // TODO: store user info in db
 
             // TODO: hash password, verify
-            DigestUtils.sha256(password)
+            val md = MessageDigest.getInstance(Algorithms.SHA256)
+            md.update(password.toByteArray())
+            // TODO: update digest with username derived salt etc.
+            val hash = md.digest().toHexString()
 
             User(
                     name = user.alias ?: "",
