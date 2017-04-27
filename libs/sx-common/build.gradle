@@ -42,7 +42,7 @@ dependencies {
             "org.slf4j:slf4j-api:$v_slf4j",
             "org.slf4j:jcl-over-slf4j:$v_slf4j",
             // RX
-            "io.reactivex.rxjava2:rxjava:2.0.8",
+            "io.reactivex.rxjava2:rxjava:2.0.9",
             "io.reactivex:rxkotlin:2.0.0-RC1",
     )
 
