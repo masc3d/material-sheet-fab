@@ -38,8 +38,6 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
     @Inject
     private lateinit var glsShipmentProcessingService: org.deku.leoz.ws.gls.shipment.ShipmentProcessingPortType
 
-    //private val API_KEY: String = "a2ad4a5d-0f7b-4bcb-8d6e-fa18da86fd22"
-
     /**
      *
      */
@@ -363,9 +361,9 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
         /**
          * Helper extension for generating new unique identifier from delivery option
          */
-        fun DeliveryOption.generateUniqueIdentifier(sdd: Boolean, daysInAdvance: Int): String {
+        fun DeliveryOption.generateUniqueIdentifier(sdd: Boolean): String {
             val dateFormat = SimpleDateFormat("ddMMyyyy")
-            return "${this.id}-${dateFormat.format(this.deliveryFrom)}#${if(sdd) "SDD" else "COB"}+$daysInAdvance"
+            return "${this.id}-${dateFormat.format(this.deliveryFrom)}#${if(sdd) "SDD" else "COB"}"
         }
 
         var count: Int = 0
@@ -392,12 +390,10 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
                         .convertToCOB()
 
                 newDeliveryOption.id = newDeliveryOption.generateUniqueIdentifier(
-                        sdd = true,
-                        daysInAdvance = count)
+                        sdd = true)
 
                 newDeliveryOptionCDB.id = newDeliveryOptionCDB.generateUniqueIdentifier(
-                        sdd = false,
-                        daysInAdvance = count)
+                        sdd = false)
 
                 delOptions.add(newDeliveryOption)
 
