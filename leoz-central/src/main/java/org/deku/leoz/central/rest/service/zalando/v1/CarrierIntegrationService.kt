@@ -288,8 +288,8 @@ class CarrierIntegrationService : org.deku.leoz.rest.service.zalando.v1.CarrierI
         try {
             val order: SddFpcsOrderRecord = dslContext.fetchOne(
                     Tables.SDD_FPCS_ORDER,
-                    Tables.SDD_FPCS_ORDER.GLS_PARCELNO
-                            .eq(id.toDouble())
+                    Tables.SDD_FPCS_ORDER.ID
+                            .eq(id.toInt())
             ) ?: throw DefaultProblem(
                     status = Response.Status.NOT_FOUND,
                     detail = "No order with id [$id] found")
