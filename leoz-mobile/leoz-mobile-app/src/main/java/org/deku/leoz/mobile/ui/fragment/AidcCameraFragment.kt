@@ -73,7 +73,11 @@ class AidcCameraFragment : Fragment() {
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    this.fab_aidc_camera_torch.setIconTint(if (it) R.color.colorAccent else android.R.color.black)
+                    this.fab_aidc_camera_torch.setIconTint(
+                            if (it.value)
+                                R.color.colorAccent
+                            else
+                                android.R.color.black)
                 }
 
         // Disable all but the camera reader

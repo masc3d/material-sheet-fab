@@ -12,8 +12,8 @@ class CompositeAidcReader(vararg readers: AidcReader) : AidcReader() {
     init {
         this.readers = readers.toList()
 
-        this.enabledProperty.subscribe { enabled ->
-            readers.forEach { it.enabled = enabled }
+        this.enabledProperty.subscribe { update ->
+            readers.forEach { it.enabled = update.value }
         }
 
         this.decodersUpdatedSubject.subscribe { decoders ->

@@ -49,7 +49,11 @@ class AidcCameraView(context: Context, attrs: AttributeSet? = null) : FrameLayou
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
                         val fab = this.fab_aidc_camera_torch.getDrawable()
-                        DrawableCompat.setTint(fab, if (it) ContextCompat.getColor(this.context, R.color.colorAccent) else Color.BLACK)
+                        DrawableCompat.setTint(fab,
+                                if (it.value)
+                                    ContextCompat.getColor(this.context, R.color.colorAccent)
+                                else
+                                    Color.BLACK)
                     }
 
             this.cameraReader.readEvent
