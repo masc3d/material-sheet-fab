@@ -50,7 +50,7 @@ class HoneywellAidcReader private constructor(
 
         this.subscriptions.add(
                 this.enabledProperty.subscribe {
-                    when(it) {
+                    when(it.value) {
                         false -> {
                             log.debug("Closing")
                             this.honeywellReader.decode(false)
