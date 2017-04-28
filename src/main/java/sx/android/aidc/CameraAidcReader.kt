@@ -49,7 +49,7 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
                     }
                     .subscribe {
                         log.trace("Enabled [${it}]")
-                        when (it) {
+                        when (it.value) {
                             true -> {
                                 this.resume()
                                 this.isSoundEffectsEnabled = true
@@ -64,7 +64,7 @@ class CameraAidcReader(val context: Context) : AidcReader(), BarcodeCallback {
             this@CameraAidcReader.torchProperty
                     .compose(RxLifecycleAndroid.bindView(this))
                     .subscribe {
-                        this.barcodeView.setTorch(it)
+                        this.barcodeView.setTorch(it.value)
                     }
         }
     }
