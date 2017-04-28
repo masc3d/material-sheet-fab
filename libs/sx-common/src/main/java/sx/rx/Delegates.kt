@@ -13,22 +13,24 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-
 /**
  * RX property delegate implementation
  * Created by masc on 04/03/2017.
  */
 class ObservableRxProperty<T>(
         default: T,
-        private val subject: BehaviorSubject<T> = BehaviorSubject.create(),
-        val observable: Observable<T> = subject.hide())
+        private val subject: BehaviorSubject<ObservableRxProperty.Update<T>> = BehaviorSubject.create(),
+        val observable: Observable<Update<T>> = subject.hide())
     :
-        Observable<T>(),
+        Observable<ObservableRxProperty.Update<T>>(),
         ReadWriteProperty<Any?, T> {
+
+    /** Property update container */
+    class Update<T>(val old: T?, val value: T)
 
     private var value = default
 
-    override fun subscribeActual(observer: Observer<in T>?) {
+    override fun subscribeActual(observer: Observer<in Update<T>>?) {
         this.observable.subscribe(observer)
     }
 
@@ -37,17 +39,17 @@ class ObservableRxProperty<T>(
     }
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        val oldValue = this.value
+        val old = this.value
 
         this.value = value
 
-        if (oldValue != value)
-            subject.onNext(value)
+        if (old != value)
+            subject.onNext(Update(old, value))
     }
 
     init {
         // Delegate initial/default value
-        subject.onNext(default)
+        subject.onNext(Update(null, default))
     }
 }
 
