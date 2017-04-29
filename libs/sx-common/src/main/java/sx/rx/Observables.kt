@@ -55,6 +55,19 @@ fun <T> Observable<T>.toHotReplay(executor: Executor? = null): Observable<T> {
     return this.subscribeOn(executor).replay().connected()
 }
 
+/**
+ * Transform Observable into a hot one with replay applied
+ */
+fun <T> Observable<T>.toHotReplay(scheduler: Scheduler? = null): Observable<T> {
+    return this.compose {
+        if (scheduler != null) this.subscribeOn(scheduler) else this
+    }
+}
+
+fun <T> Observable<T>.toHotReplay(): Observable<T> {
+    return this.toHotReplay(scheduler = null)
+}
+
 // TODO: the following additions would require migration to rxjava2 (if they are still useful)
 ///**
 // * Transforming function subscribe modifier
