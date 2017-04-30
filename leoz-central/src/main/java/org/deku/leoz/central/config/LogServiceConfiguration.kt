@@ -1,7 +1,6 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.central.service.LogService
-import org.deku.leoz.log.LogMessage
+import org.deku.leoz.central.service.internal.v1.LogService
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import javax.annotation.PostConstruct

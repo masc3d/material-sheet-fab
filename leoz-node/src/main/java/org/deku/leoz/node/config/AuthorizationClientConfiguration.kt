@@ -4,7 +4,7 @@ import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
-import org.deku.leoz.node.service.authorization.AuthorizationClientService
+import org.deku.leoz.node.service.internal.v1.authorization.AuthorizationClientService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

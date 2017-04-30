@@ -18,9 +18,7 @@ import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.apache.commons.lang3.SystemUtils
-import org.deku.leoz.Storage
-import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.service.discovery.DiscoveryService
+import org.deku.leoz.service.internal.v1.DiscoveryService
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.config.*
 import org.deku.leoz.ui.fx.Controller

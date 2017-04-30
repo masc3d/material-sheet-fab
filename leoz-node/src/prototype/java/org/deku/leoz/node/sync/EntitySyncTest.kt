@@ -1,16 +1,13 @@
 package org.deku.leoz.node.sync
 
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
-import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.config.MessageBrokerTestConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
-import org.deku.leoz.node.service.sync.EntityConsumer
-import org.deku.leoz.node.service.sync.EntityPublisher
+import org.deku.leoz.node.service.internal.v1.sync.EntityConsumer
+import org.deku.leoz.node.service.internal.v1.sync.EntityPublisher
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -18,8 +15,6 @@ import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.test.context.junit4.SpringRunner
 import sx.jms.Broker
 import sx.jms.Channel

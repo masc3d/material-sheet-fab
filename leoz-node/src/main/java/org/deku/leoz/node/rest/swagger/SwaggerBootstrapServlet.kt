@@ -8,6 +8,7 @@ import io.swagger.models.Swagger
 import io.swagger.models.auth.ApiKeyAuthDefinition
 import io.swagger.models.auth.In
 import org.deku.leoz.config.RestConfiguration
+import org.deku.leoz.service.zalando.v1.Package
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Named
@@ -42,7 +43,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
                                 .email("it-service@derkurier.de")),
                 mappingPrefix = RestConfiguration.MAPPING_PREFIX,
                 packageNames = listOf(
-                        org.deku.leoz.rest.service.v1.Package.name
+                        org.deku.leoz.service.v1.Package.name
                 ))
 
         this.createSwagger(
@@ -56,8 +57,8 @@ class SwaggerBootstrapServlet : HttpServlet() {
                 mappingPrefix = RestConfiguration.MAPPING_PREFIX,
                 basePath = "/internal",
                 packageNames = listOf(
-                        org.deku.leoz.rest.service.internal.v1.Package.name,
-                        org.deku.leoz.rest.service.internal.v2.Package.name
+                        org.deku.leoz.service.internal.v1.Package.name,
+                        org.deku.leoz.service.internal.v2.Package.name
                 ))
 
         this.createSwagger(
@@ -71,7 +72,7 @@ class SwaggerBootstrapServlet : HttpServlet() {
                 mappingPrefix = RestConfiguration.MAPPING_PREFIX,
                 basePath = "/zalando",
                 packageNames = listOf(
-                        org.deku.leoz.rest.service.zalando.v1.Package.name
+                        Package.name
                 ))
     }
 

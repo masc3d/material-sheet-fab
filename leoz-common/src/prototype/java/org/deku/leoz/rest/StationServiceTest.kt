@@ -1,13 +1,10 @@
 package org.deku.leoz.rest
 
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import org.deku.leoz.rest.service.internal.v1.StationService
+import org.deku.leoz.service.internal.v1.StationService
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import io.reactivex.Observable
-import org.deku.leoz.config.RestClientConfiguration
 import org.deku.leoz.config.RestClientTestConfiguration
 
 /**

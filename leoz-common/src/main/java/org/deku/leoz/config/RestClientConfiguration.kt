@@ -4,10 +4,9 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.provider
-import feign.Feign
-import org.deku.leoz.rest.service.internal.v1.BundleService
-import org.deku.leoz.rest.service.internal.v1.StationService
-import org.deku.leoz.rest.service.internal.v1.UserService
+import org.deku.leoz.service.internal.v1.BundleService
+import org.deku.leoz.service.internal.v1.StationService
+import org.deku.leoz.service.internal.v1.UserService
 import sx.rs.proxy.RestClientProxy
 import java.net.URI
 

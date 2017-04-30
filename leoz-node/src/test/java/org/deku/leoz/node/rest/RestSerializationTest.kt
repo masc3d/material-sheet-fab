@@ -3,9 +3,6 @@ package org.deku.leoz.node.rest
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
-import org.deku.leoz.node.rest.ObjectMapperProvider
-import org.deku.leoz.node.rest.service.v1.RoutingService
-import org.deku.leoz.node.config.DataTestConfiguration
 import org.junit.Assert
 import org.junit.Test
 import org.junit.experimental.categories.Category
@@ -14,8 +11,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.StandardTest
-import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.*
 import javax.inject.Inject

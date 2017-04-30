@@ -1,12 +1,9 @@
 package org.deku.leoz.rest
 
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
-import feign.Feign
-import org.deku.leoz.config.RestClientConfiguration
 import org.deku.leoz.config.RestClientTestConfiguration
-import org.deku.leoz.rest.service.internal.v1.BundleService
+import org.deku.leoz.service.internal.v1.BundleService
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.rs.proxy.FeignClientProxy

@@ -1,16 +1,15 @@
 package org.deku.leoz.central.config
 
 import org.deku.leoz.central.Application
-import org.deku.leoz.central.service.DatabaseSyncService
+import org.deku.leoz.central.service.internal.v1.sync.DatabaseSyncService
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.service.sync.EntityPublisher
+import org.deku.leoz.node.service.internal.v1.sync.EntityPublisher
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import sx.jms.Broker
 import sx.jms.activemq.ActiveMQBroker
-import java.sql.Timestamp
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy

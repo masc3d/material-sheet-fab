@@ -3,10 +3,8 @@ package org.deku.leoz.ui.config
 import com.github.salomonbrys.kodein.*
 import org.deku.leoz.config.RestConfiguration
 import sx.rs.proxy.RestClientProxy
-import org.deku.leoz.rest.service.internal.v1.BundleService
-import org.deku.leoz.rest.service.internal.v1.StationService
-import org.deku.leoz.service.discovery.DiscoveryInfo
-import org.deku.leoz.service.discovery.DiscoveryService
+import org.deku.leoz.service.internal.v1.BundleService
+import org.deku.leoz.service.internal.v1.StationService
 import org.slf4j.LoggerFactory
 import sx.rs.proxy.JerseyClientProxy
 import java.net.URI

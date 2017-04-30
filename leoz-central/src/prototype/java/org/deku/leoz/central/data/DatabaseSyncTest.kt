@@ -2,7 +2,7 @@ package org.deku.leoz.central.data
 
 import com.google.common.base.Stopwatch
 import org.deku.leoz.central.config.DataTestConfiguration
-import org.deku.leoz.central.service.DatabaseSyncService
+import org.deku.leoz.central.service.internal.v1.sync.DatabaseSyncService
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,
         org.deku.leoz.central.config.DatabaseSyncConfiguration::class,
-        org.deku.leoz.central.service.DatabaseSyncService::class
+        DatabaseSyncService::class
 ))
 class DatabaseSyncTest {
     private val log = LoggerFactory.getLogger(DatabaseSyncTest::class.java)

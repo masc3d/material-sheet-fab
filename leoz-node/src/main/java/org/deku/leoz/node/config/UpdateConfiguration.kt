@@ -6,8 +6,8 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.repository.system.*
 import sx.rs.proxy.RestClientProxy
-import org.deku.leoz.rest.service.internal.v1.BundleService
-import org.deku.leoz.service.update.BundleUpdateService
+import org.deku.leoz.service.internal.v1.BundleService
+import org.deku.leoz.service.entity.internal.v1.update.BundleUpdateService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -53,7 +53,7 @@ open class UpdateConfiguration {
     @Inject
     private lateinit var restClientProxy: Optional<RestClientProxy>
     @Inject
-    private lateinit var bundleService: org.deku.leoz.node.rest.service.internal.v1.BundleService
+    private lateinit var bundleService: org.deku.leoz.node.service.internal.v1.BundleService
 
     /**
      * Bundle service proxy, either returns proxy via RestClient if available (leoz-node) or a

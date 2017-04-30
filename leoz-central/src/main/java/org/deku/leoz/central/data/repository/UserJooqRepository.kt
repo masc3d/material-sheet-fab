@@ -7,10 +7,7 @@ import org.deku.leoz.central.data.jooq.tables.records.MstUserRecord
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import javax.inject.Inject
-import org.abstractj.kalium.encoders.Encoder
-import org.deku.leoz.rest.entity.internal.v1.User
 import sx.time.toLocalDate
-import java.security.SecureRandom
 import java.util.*
 import javax.inject.Named
 

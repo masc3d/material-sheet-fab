@@ -1,6 +1,6 @@
 package org.deku.leoz.time
 
-import org.deku.leoz.rest.entity.ShortTime
+import org.deku.leoz.service.entity.ShortTime
 import java.util.*
 
 /**

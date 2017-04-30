@@ -1,8 +1,8 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.node.Application
-import org.deku.leoz.service.discovery.DiscoveryInfo
-import org.deku.leoz.service.discovery.DiscoveryService
+import org.deku.leoz.service.entity.internal.v1.discovery.DiscoveryInfo
+import org.deku.leoz.service.internal.v1.DiscoveryService
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

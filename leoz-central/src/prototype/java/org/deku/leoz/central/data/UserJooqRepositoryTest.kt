@@ -2,8 +2,6 @@ package org.deku.leoz.central.data
 
 import org.deku.leoz.central.config.DataTestConfiguration
 import org.deku.leoz.central.data.repository.UserJooqRepository
-import org.deku.leoz.rest.entity.internal.v1.User
-import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest

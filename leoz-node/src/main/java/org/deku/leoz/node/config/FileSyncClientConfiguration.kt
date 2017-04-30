@@ -5,7 +5,7 @@ import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.Storage
-import org.deku.leoz.node.service.filesync.FileSyncClientService
+import org.deku.leoz.node.service.internal.v1.filesync.FileSyncClientService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
