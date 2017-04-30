@@ -10,8 +10,8 @@ import org.deku.leoz.boot.config.BundleConfiguration
 import org.deku.leoz.boot.config.RestClientConfiguration
 import org.deku.leoz.bundle.*
 import sx.rs.proxy.RestClientProxy
-import org.deku.leoz.service.internal.v1.BundleService
-import org.deku.leoz.service.internal.v1.DiscoveryService
+import org.deku.leoz.service.internal.BundleService
+import org.deku.leoz.service.internal.DiscoveryService
 import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.Single

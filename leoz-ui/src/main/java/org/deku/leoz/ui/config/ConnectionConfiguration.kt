@@ -3,8 +3,8 @@ package org.deku.leoz.ui.config
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.service.entity.internal.v1.discovery.DiscoveryInfo
-import org.deku.leoz.service.internal.v1.DiscoveryService
+import org.deku.leoz.service.entity.internal.discovery.DiscoveryInfo
+import org.deku.leoz.service.internal.DiscoveryService
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.PublishSubject
 import sx.net.UdpDiscoveryService

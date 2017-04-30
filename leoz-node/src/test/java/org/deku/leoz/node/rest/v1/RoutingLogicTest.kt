@@ -1,10 +1,10 @@
 package org.deku.leoz.node.rest.v1
 
 import org.deku.leoz.node.rest.ServiceException
-import org.deku.leoz.node.service.v1.RoutingService
+import org.deku.leoz.node.service.pub.RoutingService
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.entity.v1.RoutingRequest
+import org.deku.leoz.service.entity.pub.RoutingRequest
 import org.deku.leoz.service.ServiceErrorCode
 import org.junit.Assert
 import org.junit.Test
@@ -222,7 +222,7 @@ class RoutingLogicTest {
             Assert.assertEquals(r.deliveryDate!!.toString(), "2015-08-04")
             Assert.assertEquals(r.labelContent, "363")
         } catch (e: ServiceException) {
-            Assert.assertEquals(org.deku.leoz.service.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
+            Assert.assertEquals(org.deku.leoz.service.pub.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
         }
     }
 
@@ -247,7 +247,7 @@ class RoutingLogicTest {
             Assert.assertEquals(r.deliveryDate!!.toString(), "2015-08-04")
             Assert.assertEquals(r.labelContent, "412")
         } catch (e: ServiceException) {
-            Assert.assertEquals(org.deku.leoz.service.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
+            Assert.assertEquals(org.deku.leoz.service.pub.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
         }
     }
 
@@ -272,7 +272,7 @@ class RoutingLogicTest {
             Assert.assertEquals(r.deliveryDate!!.toString(), "2015-08-04")
             Assert.assertEquals(r.labelContent, "020")
         } catch (e: ServiceException) {
-            Assert.assertEquals(org.deku.leoz.service.v1.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
+            Assert.assertEquals(org.deku.leoz.service.pub.RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, e.errorCode)
         }
     }
 

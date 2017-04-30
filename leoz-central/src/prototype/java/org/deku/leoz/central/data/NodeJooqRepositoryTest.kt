@@ -1,8 +1,9 @@
 package org.deku.leoz.central.data
 
 import org.deku.leoz.central.config.DataTestConfiguration
+import org.deku.leoz.central.config.DatabaseSyncConfiguration
 import org.deku.leoz.central.data.repository.NodeJooqRepository
-import org.deku.leoz.central.service.internal.v1.sync.DatabaseSyncService
+import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith
@@ -20,7 +21,7 @@ import javax.inject.Inject
 @RunWith(SpringRunner::class)
 @SpringBootTest(classes = arrayOf(
         DataTestConfiguration::class,
-        org.deku.leoz.central.config.DatabaseSyncConfiguration::class,
+        DatabaseSyncConfiguration::class,
         DatabaseSyncService::class
 ))
 class NodeJooqRepositoryTest {

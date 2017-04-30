@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
+import org.deku.leoz.central.service.zalando.CarrierIntegrationService
 import org.deku.leoz.node.rest.ObjectMapperProvider
-import org.deku.leoz.service.entity.zalando.v1.DeliveryOption
+import org.deku.leoz.service.entity.zalando.DeliveryOption
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
@@ -65,7 +66,7 @@ class DeliveryOptionTest {
     fun testGenerateDeliveryOptions() {
         val d = Date()
         val deliveryOption = DeliveryOption("228", d, d, d, d)
-        val delOptions: List<DeliveryOption> = org.deku.leoz.central.service.zalando.v1.CarrierIntegrationService().generateDeliveryOptions(deliveryOption)
+        val delOptions: List<DeliveryOption> = CarrierIntegrationService().generateDeliveryOptions(deliveryOption)
         assert(delOptions.size == 9)
     }
 }

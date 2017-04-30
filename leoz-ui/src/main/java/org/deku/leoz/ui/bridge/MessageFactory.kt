@@ -1,6 +1,6 @@
 package org.deku.leoz.ui.bridge
 
-import org.deku.leoz.service.entity.internal.v1.Station
+import org.deku.leoz.service.entity.internal.Station
 
 /**
  * Factory for leobridge messages

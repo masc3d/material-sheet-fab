@@ -2,7 +2,7 @@ package org.deku.leoz.boot.config
 
 import com.github.salomonbrys.kodein.*
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.service.internal.v1.DiscoveryService
+import org.deku.leoz.service.internal.DiscoveryService
 
 /**
  * Discovery configuration

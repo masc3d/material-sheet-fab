@@ -4,7 +4,7 @@ import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.jpa.*
-import org.deku.leoz.node.service.internal.v1.sync.EntityConsumer
+import org.deku.leoz.node.service.internal.sync.EntityConsumer
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

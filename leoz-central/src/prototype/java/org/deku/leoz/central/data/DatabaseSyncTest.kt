@@ -2,7 +2,7 @@ package org.deku.leoz.central.data
 
 import com.google.common.base.Stopwatch
 import org.deku.leoz.central.config.DataTestConfiguration
-import org.deku.leoz.central.service.internal.v1.sync.DatabaseSyncService
+import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.junit.runner.RunWith

@@ -1,0 +1,52 @@
+package org.deku.leoz.node.service.internal
+
+import org.deku.leoz.node.*
+import org.deku.leoz.bundle.boot
+import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.service.entity.internal.ApplicationVersion
+import org.deku.leoz.service.entity.internal.update.BundleUpdateService
+import org.deku.leoz.service.entity.internal.update.UpdateInfo
+
+/**
+ * Created by masc on 09.10.15.
+ */
+@javax.inject.Named
+@sx.rs.auth.ApiKey(false)
+@javax.ws.rs.Path("internal/v1/application")
+class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
+    private val log = org.slf4j.LoggerFactory.getLogger(this.javaClass)
+
+    @javax.inject.Inject
+    private lateinit var application: Application
+    @javax.inject.Inject
+    private lateinit var storage: Storage
+    @javax.inject.Inject
+    private lateinit var bundleUpdateService: BundleUpdateService
+
+    override fun restart() {
+        val bundleInstaller = sx.packager.BundleInstaller(
+                storage.bundleInstallationDirectory)
+
+        bundleInstaller.boot(this.application.name)
+    }
+
+    override fun getVersion(): ApplicationVersion {
+        return ApplicationVersion(
+                this.application.name,
+                this.application.version)
+    }
+
+    override fun bundleUpdate() {
+        this.bundleUpdateService.trigger()
+    }
+
+    override fun notifyBundleUpdate(bundleName: String) {
+        val message = UpdateInfo(bundleName)
+
+        sx.jms.Channel(ActiveMQConfiguration.instance.nodeNotificationTopic).use {
+            it.send(UpdateInfo(bundleName))
+        }
+
+        log.info("Sent [${message}]")
+    }
+}

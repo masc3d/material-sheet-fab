@@ -6,8 +6,8 @@ import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.config.MessageBrokerTestConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.data.jpa.MstRoute
-import org.deku.leoz.node.service.internal.v1.sync.EntityConsumer
-import org.deku.leoz.node.service.internal.v1.sync.EntityPublisher
+import org.deku.leoz.node.service.internal.sync.EntityConsumer
+import org.deku.leoz.node.service.internal.sync.EntityPublisher
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

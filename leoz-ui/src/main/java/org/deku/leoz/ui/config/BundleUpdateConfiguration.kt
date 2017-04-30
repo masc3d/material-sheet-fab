@@ -2,7 +2,7 @@ package org.deku.leoz.ui.config
 
 import com.github.salomonbrys.kodein.*
 import org.deku.leoz.bundle.BundleType
-import org.deku.leoz.service.entity.internal.v1.update.BundleUpdateService
+import org.deku.leoz.service.entity.internal.update.BundleUpdateService
 
 /**
  * Created by n3 on 11/24/16.
