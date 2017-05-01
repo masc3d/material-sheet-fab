@@ -7,7 +7,7 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.deku.leoz.rest.service.internal.v1.UserService
+import org.deku.leoz.service.internal.UserService
 import sx.rx.ObservableRxProperty
 import sx.rx.task
 import sx.security.Algorithms
