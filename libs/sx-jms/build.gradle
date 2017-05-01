@@ -59,8 +59,6 @@ dependencies {
     )
 
     compileOnly(
-            // Spring
-            "org.springframework:spring-jms:$v_spring",
             // ActiveMQ
             "org.apache.activemq:activemq-broker:$v_activemq",
             "org.apache.activemq:activemq-kahadb-store:$v_activemq",
@@ -89,11 +87,33 @@ dependencies {
                 exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
                 exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
             },
-            "org.apache.activemq:artemis-openwire-protocol:$v_artemis"
+            "org.apache.activemq:artemis-openwire-protocol:$v_artemis",
+
+            // Spring
+            "org.springframework:spring-jms:$v_spring"
     )
 
     testCompile(
             "junit:junit:4.12",
-            "ch.qos.logback:logback-classic:1.2.3"
+            "ch.qos.logback:logback-classic:1.2.3",
+
+            // Artemis
+            dependencies.create("org.apache.activemq:artemis-jms-server:$v_artemis") {
+                // Conflicts with jms 1.1 which is required by activemq 5.x
+                exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            dependencies.create("org.apache.activemq:artemis-jms-client:$v_artemis") {
+                // Conflicts with jms 1.1 which is required by activemq 5.x
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            dependencies.create("org.apache.activemq:artemis-amqp-protocol:$v_artemis") {
+                exclude group: 'org.apache.activemq', module: 'artemis-jms-client'
+                exclude group: 'org.apache.geronimo.specs', module: 'geronimo-jms_2.0_spec'
+            },
+            "org.apache.activemq:artemis-openwire-protocol:$v_artemis",
+
+            // Spring
+            "org.springframework:spring-jms:$v_spring"
     )
 }

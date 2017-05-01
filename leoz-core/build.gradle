@@ -118,7 +118,22 @@ dependencies {
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
             // jackson JSON serializer
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$v_jackson",
-            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson"
+            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$v_jackson",
+
+            // ActiveMQ
+            "org.apache.activemq:activemq-broker:$v_activemq",
+            "org.apache.activemq:activemq-kahadb-store:$v_activemq",
+            "org.apache.activemq:activemq-jms-pool:$v_activemq",
+            "org.apache.activemq:activemq-jaas:$v_activemq",
+            "org.apache.activemq:activemq-mqtt:$v_activemq",
+            dependencies.create("org.apache.activemq:activemq-http:$v_activemq") {
+                exclude group: 'org.springframework'
+                exclude group: 'org.apache.activemq', module: 'activemq-spring'
+                exclude group: 'org.eclipse.jetty.aggregate'
+            },
+
+            // Spring
+            "org.springframework:spring-jms:$v_spring"
     )
 }
 

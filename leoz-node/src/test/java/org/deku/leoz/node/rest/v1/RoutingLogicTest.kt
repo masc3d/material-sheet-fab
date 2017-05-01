@@ -1,10 +1,9 @@
 package org.deku.leoz.node.rest.v1
 
 import org.deku.leoz.node.rest.ServiceException
-import org.deku.leoz.node.service.pub.RoutingService
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.entity.pub.RoutingRequest
+import org.deku.leoz.service.pub.RoutingService
 import org.deku.leoz.service.entity.ServiceErrorCode
 import org.junit.Assert
 import org.junit.Test
@@ -31,7 +30,7 @@ class RoutingLogicTest {
     @Test
     fun testRouting01() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             val r = this.routingService.request(request)
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.errorCode)
@@ -42,7 +41,7 @@ class RoutingLogicTest {
     @Test
     fun testRouting02() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
             val r = this.routingService.request(request)
         } catch (e: ServiceException) {
@@ -54,9 +53,9 @@ class RoutingLogicTest {
     @Test
     fun testRouting03() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingRequest.RequestParticipant()
+            val rp = RoutingService.Request.Participant()
             rp.zip = "64850"
             request.sender = rp
             val r = this.routingService.request(request)
@@ -68,9 +67,9 @@ class RoutingLogicTest {
     @Test
     fun testRouting04() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingRequest.RequestParticipant()
+            val rp = RoutingService.Request.Participant()
             rp.country = "DE"
             request.sender = rp
             val r = this.routingService.request(request)
@@ -82,9 +81,9 @@ class RoutingLogicTest {
     @Test
     fun testRouting05() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingRequest.RequestParticipant()
+            val rp = RoutingService.Request.Participant()
             rp.country = "D"
             rp.zip = "64850"
             request.sender = rp
@@ -98,9 +97,9 @@ class RoutingLogicTest {
             //ohne unvollständiger participant
     fun testRouting06() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingRequest.RequestParticipant()
+            val rp = RoutingService.Request.Participant()
             rp.country = "DE"
             rp.zip = "6485"
             request.sender = rp
@@ -113,9 +112,9 @@ class RoutingLogicTest {
     @Test
     fun testRouting07() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingRequest.RequestParticipant()
+            val rp = RoutingService.Request.Participant()
             rp.country = "DE"
             rp.zip = "A4850"
             request.sender = rp
@@ -128,9 +127,9 @@ class RoutingLogicTest {
     @Test
     fun testRouting08() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingRequest.RequestParticipant()
+            val rp = RoutingService.Request.Participant()
             rp.country = "AT"
             request.consignee = rp
             val r = this.routingService.request(request)
@@ -142,9 +141,9 @@ class RoutingLogicTest {
     @Test
     fun testRouting09() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingRequest.RequestParticipant()
+            val rp = RoutingService.Request.Participant()
             rp.country = "PL"
             rp.zip = "10010"
             request.sender = rp
@@ -161,9 +160,9 @@ class RoutingLogicTest {
     //    @Test
     //    public void testRouting10() {
     //        try {
-    //            RoutingRequest request = new RoutingRequest();
+    //            RoutingService.Request request = new RoutingService.Request();
     //            request.setSendDate(new ShortDate("2015-08-01"));
-    //            RoutingRequest.RequestParticipant rp = new RoutingRequest.RequestParticipant();
+    //            RoutingService.Request.Participant rp = new RoutingService.Request.Participant();
     //            rp.setCountry("GB");
     //            rp.setZip("ab10 6");
     //            request.setSender(rp);
@@ -179,13 +178,13 @@ class RoutingLogicTest {
     @Test
     fun testRouting11() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rps = RoutingRequest.RequestParticipant()
+            val rps = RoutingService.Request.Participant()
             rps.country = "DE"
             rps.zip = "80331"
             request.sender = rps
-            val rpc = RoutingRequest.RequestParticipant()
+            val rpc = RoutingService.Request.Participant()
             rpc.country = "DE"
             rpc.zip = "64850"
             request.consignee = rpc
@@ -204,13 +203,13 @@ class RoutingLogicTest {
     @Test
     fun testRouting12() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rps = RoutingRequest.RequestParticipant()
+            val rps = RoutingService.Request.Participant()
             rps.country = "DE"
             rps.zip = "80331"
             request.sender = rps
-            val rpc = RoutingRequest.RequestParticipant()
+            val rpc = RoutingService.Request.Participant()
             rpc.country = "DE"
             rpc.zip = "65850"
             request.consignee = rpc
@@ -229,13 +228,13 @@ class RoutingLogicTest {
     @Test
     fun testRouting13() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rps = RoutingRequest.RequestParticipant()
+            val rps = RoutingService.Request.Participant()
             rps.country = "DE"
             rps.zip = "01067"
             request.sender = rps
-            val rpc = RoutingRequest.RequestParticipant()
+            val rpc = RoutingService.Request.Participant()
             rpc.country = "DE"
             rpc.zip = "01108"
             request.consignee = rpc
@@ -254,13 +253,13 @@ class RoutingLogicTest {
     @Test
     fun testRouting14() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rps = RoutingRequest.RequestParticipant()
+            val rps = RoutingService.Request.Participant()
             rps.country = "DE"
             rps.zip = "20095"
             request.sender = rps
-            val rpc = RoutingRequest.RequestParticipant()
+            val rpc = RoutingService.Request.Participant()
             rpc.country = "DE"
             rpc.zip = "20148"
             request.consignee = rpc
@@ -279,13 +278,13 @@ class RoutingLogicTest {
     @Test
     fun testRouting15() {
         try {
-            val request = RoutingRequest()
+            val request = RoutingService.Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rps = RoutingRequest.RequestParticipant()
+            val rps = RoutingService.Request.Participant()
             rps.country = "DE"
             rps.zip = "20095"
             request.sender = rps
-            val rpc = RoutingRequest.RequestParticipant()
+            val rpc = RoutingService.Request.Participant()
             rpc.country = "DE"
             rpc.zip = "44623"
             request.consignee = rpc
@@ -306,9 +305,9 @@ class RoutingLogicTest {
      */
     @Test
     fun testRegionalHoliday01() {
-        val request = RoutingRequest(
+        val request = RoutingService.Request(
                 sendDate = ShortDate("2016-10-28"),
-                consignee = RoutingRequest.RequestParticipant(
+                consignee = RoutingService.Request.Participant(
                         country = "DE",
                         zip = "99084"))
 
@@ -321,9 +320,9 @@ class RoutingLogicTest {
      */
     @Test
     fun testRegionalHoliday02() {
-        val request = RoutingRequest(
+        val request = RoutingService.Request(
                 sendDate = ShortDate("2016-10-31"),
-                consignee = RoutingRequest.RequestParticipant(
+                consignee = RoutingService.Request.Participant(
                         country = "DE",
                         zip = "40822"))
 
@@ -336,9 +335,9 @@ class RoutingLogicTest {
      */
     @Test
     fun testRegionalHoliday03() {
-        val request = RoutingRequest(
+        val request = RoutingService.Request(
                 sendDate = ShortDate("2016-10-28"),
-                consignee = RoutingRequest.RequestParticipant(
+                consignee = RoutingService.Request.Participant(
                         country = "DE",
                         zip = "36286"))
 
@@ -348,9 +347,9 @@ class RoutingLogicTest {
 
     @Test
     fun testFebruaryWithoutLeapYear() {
-        val request = RoutingRequest(
+        val request = RoutingService.Request(
                 sendDate = ShortDate("2017-02-28"),
-                consignee = RoutingRequest.RequestParticipant(
+                consignee = RoutingService.Request.Participant(
                         country = "DE",
                         zip = "36286"))
 
@@ -360,9 +359,9 @@ class RoutingLogicTest {
 
     @Test
     fun testFebruaryWithoutLeapYear2() {
-        val request = RoutingRequest(
+        val request = RoutingService.Request(
                 sendDate = ShortDate("2017-02-29"),
-                consignee = RoutingRequest.RequestParticipant(
+                consignee = RoutingService.Request.Participant(
                         country = "DE",
                         zip = "36286"))
 
@@ -376,9 +375,9 @@ class RoutingLogicTest {
 
     @Test
     fun testFebruaryWithinLeapYear() {
-        val request = RoutingRequest(
+        val request = RoutingService.Request(
                 sendDate = ShortDate("2016-02-28"),
-                consignee = RoutingRequest.RequestParticipant(
+                consignee = RoutingService.Request.Participant(
                         country = "DE",
                         zip = "36286"))
 
@@ -388,9 +387,9 @@ class RoutingLogicTest {
 
     @Test
     fun testFebruaryWithinLeapYear2() {
-        val request = RoutingRequest(
+        val request = RoutingService.Request(
                 sendDate = ShortDate("2016-02-29"),
-                consignee = RoutingRequest.RequestParticipant(
+                consignee = RoutingService.Request.Participant(
                         country = "DE",
                         zip = "36286"))
 
