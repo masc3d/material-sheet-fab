@@ -13,7 +13,7 @@ class BundleUpdateConfiguration {
             bind<BundleUpdateService>() with eagerSingleton {
                 val service = BundleUpdateService(
                         executorService = instance(),
-                        bundleServiceV1 = { instance() },
+                        bundleService = { instance() },
                         installer = instance(),
                         remoteRepository = { instance() },
                         presets = listOf(

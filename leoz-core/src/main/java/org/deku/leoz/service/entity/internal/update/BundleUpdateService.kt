@@ -5,7 +5,7 @@ import sx.packager.Bundle
 import sx.packager.BundleInstaller
 import sx.packager.BundleRepository
 import org.deku.leoz.bundle.boot
-import org.deku.leoz.service.internal.BundleServiceV1
+import org.deku.leoz.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.PublishSubject
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
@@ -35,7 +35,7 @@ import java.util.concurrent.ScheduledExecutorService
  */
 class BundleUpdateService(
         private val executorService: ScheduledExecutorService,
-        private val bundleServiceV1: () -> BundleServiceV1,
+        private val bundleService: () -> BundleServiceV2,
         val identity: Identity? = null,
         val installer: BundleInstaller,
         val remoteRepository: () -> BundleRepository,
@@ -170,7 +170,7 @@ class BundleUpdateService(
         log.info("Requesting version info for [${bundleName}] alias [${preset.versionAlias}] node key [${this.identity?.key}]")
 
         // Request currently assigned version for this bundle and node
-        val updateInfo: UpdateInfo = this.bundleServiceV1().info(
+        val updateInfo: UpdateInfo = this.bundleService().info(
                 bundleName = bundleName,
                 versionAlias = preset.versionAlias,
                 nodeKey = this.identity?.key)

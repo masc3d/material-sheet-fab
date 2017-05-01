@@ -10,7 +10,7 @@ import org.deku.leoz.boot.config.BundleConfiguration
 import org.deku.leoz.boot.config.RestClientConfiguration
 import org.deku.leoz.bundle.*
 import sx.rs.proxy.RestClientProxy
-import org.deku.leoz.service.internal.BundleServiceV1
+import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.DiscoveryService
 import org.slf4j.LoggerFactory
 import io.reactivex.Observable
@@ -173,7 +173,7 @@ class Boot {
                     finalVersionPattern = versionPattern
                 } else {
                     val restClient: RestClientProxy = Kodein.global.instance()
-                    val bundleService = restClient.create(BundleServiceV1::class.java)
+                    val bundleService = restClient.create(BundleServiceV2::class.java)
 
                     val updateInfo = bundleService.info(bundleName = bundleName, versionAlias = versionAlias)
                     log.info("${updateInfo}")

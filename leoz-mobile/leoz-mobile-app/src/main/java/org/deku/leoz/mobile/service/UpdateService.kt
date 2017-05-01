@@ -10,7 +10,7 @@ import feign.FeignException
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.model.Storage
 import sx.rs.proxy.FeignClientProxy.*
-import org.deku.leoz.rest.service.internal.v1.BundleService
+import org.deku.leoz.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.BehaviorSubject
 import sx.android.ApplicationPackage
@@ -67,7 +67,7 @@ class UpdateService(
     }
 
     private val storage: Storage by Kodein.global.lazy.instance()
-    private val bundleService: BundleService by Kodein.global.lazy.instance()
+    private val bundleService: BundleServiceV2 by Kodein.global.lazy.instance()
 
     /**
      * Temporary suffix of files currently being downloaded
@@ -148,8 +148,8 @@ class UpdateService(
                 // For binary response stream, need to build target manually, so we can inject a decoder implementation
                 val feignClientProxy: FeignClientProxy = Kodein.global.instance()
 
-                val bundleService: BundleService = feignClientProxy.target(
-                        apiType = BundleService::class.java,
+                val bundleService: BundleServiceV2 = feignClientProxy.target(
+                        apiType = BundleServiceV2::class.java,
                         output = FileOutputStream(downloadFile),
                         progressCallback = { p: Float, bytesCopied: Long ->
                             log.debug("Progress ${"%.2f".format(p)}% ${bytesCopied}")

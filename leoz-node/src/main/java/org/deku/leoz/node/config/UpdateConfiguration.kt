@@ -6,7 +6,7 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.repository.system.*
 import sx.rs.proxy.RestClientProxy
-import org.deku.leoz.service.internal.BundleServiceV1
+import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.entity.internal.update.BundleUpdateService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -53,7 +53,7 @@ open class UpdateConfiguration {
     @Inject
     private lateinit var restClientProxy: Optional<RestClientProxy>
     @Inject
-    private lateinit var bundleService: org.deku.leoz.node.service.internal.BundleServiceV1
+    private lateinit var bundleService: org.deku.leoz.node.service.internal.BundleServiceV2
 
     /**
      * Bundle service proxy, either returns proxy via RestClient if available (leoz-node) or a
@@ -61,7 +61,7 @@ open class UpdateConfiguration {
      */
     private val bundleServiceProxy by lazy {
         if (this.restClientProxy.isPresent)
-            this.restClientProxy.get().create(BundleServiceV1::class.java)
+            this.restClientProxy.get().create(BundleServiceV2::class.java)
         else
             this.bundleService
     }
@@ -127,7 +127,7 @@ open class UpdateConfiguration {
             // Setup
             val updateService = BundleUpdateService(
                     executorService = this.executorService,
-                    bundleServiceV1 = { this.bundleServiceProxy },
+                    bundleService = { this.bundleServiceProxy },
                     identity = this.application.identity,
                     installer = this.bundleInstaller,
                     remoteRepository = { this.updateRepository },
