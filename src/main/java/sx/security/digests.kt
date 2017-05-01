@@ -5,5 +5,6 @@ package sx.security
  * Created by n3 on 27.04.17.
  */
 object Algorithms {
+    val SHA1 = "SHA-1"
     val SHA256 = "SHA256"
 }
