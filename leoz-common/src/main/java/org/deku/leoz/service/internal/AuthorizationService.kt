@@ -1,12 +1,24 @@
 package org.deku.leoz.service.internal
 
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
+import io.swagger.annotations.ApiOperation
 import sx.io.serialization.Serializable
 import sx.rs.PATCH
+import javax.ws.rs.Consumes
 import javax.ws.rs.Path
+import javax.ws.rs.Produces
+import javax.ws.rs.core.MediaType
 
 /**
+ * Authorization service
  * Created by masc on 01.05.17.
  */
+@Path("internal/v1/authorization")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@Api(value = "Authorization operations")
 interface AuthorizationService {
     /**
      * Authorization request, sent from nodes to central
@@ -14,10 +26,23 @@ interface AuthorizationService {
      */
     @Serializable(0xfac82346eb333e)
     data class Request(
+            @ApiModelProperty(required = true)
             var key: String = "",
+            @ApiModelProperty(required = true)
             var name: String = "",
-            var systemInfo: String = ""
-    )
+            @ApiModelProperty(required = false)
+            var systemInfo: String = "",
+            @ApiModelProperty(required = true, value = "Mobile device info. Required when invoked via REST.")
+            var mobile: Mobile? = null
+    ) {
+        /**
+         * Mobile device information block
+         */
+        data class Mobile(
+                @ApiModelProperty(required = true)
+                var imei: String = ""
+        )
+    }
 
     /**
      * Authorization message, sent to and consumed by nodes
@@ -30,7 +55,12 @@ interface AuthorizationService {
             /** If the key was rejected for any reason, eg. the short representation of key was a duplicate */
             var rejected: Boolean = false)
 
+    /**
+     * Request authorization
+     * @param request Authorization request
+     */
     @PATCH
-    @Path("/authorize")
-    fun authorize(request: Request): Response
+    @Path("/request")
+    @ApiOperation(value = "Request device/instance authorization")
+    fun request(request: Request): Response
 }

@@ -10,14 +10,17 @@ import sx.event.EventListener
 import sx.jms.Handler
 import sx.logging.slf4j.info
 import javax.inject.Named
+import javax.ws.rs.Path
 
 /**
  * Authorization service
  * Created by masc on 01.07.15.
  */
 @Named
+@Path("internal/v1/authorization")
 class AuthorizationService
 :
+        org.deku.leoz.service.internal.AuthorizationService,
         Handler<AuthorizationService.Request> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -31,6 +34,10 @@ class AuthorizationService
 
     private val dispatcher = EventDispatcher.createThreadSafe<Listener>()
     public val delegate: EventDelegate<Listener> = dispatcher
+
+    override fun request(request: AuthorizationService.Request): AuthorizationService.Response {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun onMessage(message: AuthorizationService.Request, replyChannel: sx.jms.Channel?) {
         try {
