@@ -1,10 +1,9 @@
 package org.deku.leoz
 
-import com.google.common.base.Charsets
-import com.google.common.io.BaseEncoding
 import sx.io.serialization.Serializable
+import sx.security.Algorithms
+import sx.text.toHexString
 import java.io.File
-import java.lang.reflect.Constructor
 import java.security.MessageDigest
 import java.security.SecureRandom
 
@@ -15,12 +14,9 @@ import java.security.SecureRandom
  * @property systemInformation System information
  * Created by masc on 26.06.15.
  */
-@Serializable
-class Identity private constructor(
+class Identity constructor(
         val key: String,
-        val name: String,
-        @Transient
-        val systemInformation: SystemInformation) {
+        val name: String) {
 
     /**
      * Identity key
@@ -50,13 +46,25 @@ class Identity private constructor(
     }
 
     /**
-     * State which may be persisted
+     * Persistent stat
      */
+    @Serializable
     class State(
+            // TODO: encrypt/decrypt key
             var key: String = "",
             var name: String = "") {
 
         constructor(identity: Identity) : this(identity.key, identity.name)
+    }
+
+    companion object {
+        fun load(file: File): Identity {
+            val state = YamlPersistence.load(Identity.State::class.java, file)
+
+            return Identity(
+                    key = state.key,
+                    name = state.name)
+        }
     }
 
     /**
@@ -73,51 +81,6 @@ class Identity private constructor(
 
     init {
         this.keyInstance = Key(key)
-    }
-
-    companion object {
-        /**
-         * Creates an identity with a random key and current system information
-         * @return
-         */
-        fun create(name: String, systemInformation: SystemInformation): Identity {
-            try {
-                // Generate key
-                val sr = SecureRandom()
-                val m = MessageDigest.getInstance("SHA-1")
-
-                val hashBase = arrayOf(
-                        systemInformation.hostname,
-                        systemInformation.hardwareAddress,
-                        systemInformation.networkAddresses.joinToString(", ")).joinToString(";")
-
-                m.update(hashBase.toByteArray(Charsets.US_ASCII))
-                val salt = ByteArray(16)
-                sr.nextBytes(salt)
-                m.update(salt)
-
-                // Calculate digest and format to hex
-                val key = BaseEncoding.base16().encode(m.digest()).toLowerCase()
-
-                return Identity(key, name, systemInformation)
-            } catch (e: Exception) {
-                throw RuntimeException(e)
-            }
-        }
-
-        /**
-         * Read identity file
-         * @param source
-         * @return Identity instance
-         */
-        fun load(sourceFile: File, systemInfo: SystemInformation): Identity {
-            val state = YamlPersistence.load(State::class.java, sourceFile)
-
-            return Identity(
-                    key = state.key,
-                    name = state.name,
-                    systemInformation = systemInfo)
-        }
     }
 
     /**

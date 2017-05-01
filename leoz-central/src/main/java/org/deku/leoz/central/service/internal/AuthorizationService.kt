@@ -1,22 +1,24 @@
-package org.deku.leoz.central.service.internal.authorization
+package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.Identity
 import org.deku.leoz.central.data.repository.NodeJooqRepository
-import org.deku.leoz.node.service.internal.authorization.AuthorizationMessage
-import org.deku.leoz.node.service.internal.authorization.AuthorizationRequestMessage
+import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
+import sx.jms.Handler
 import sx.logging.slf4j.info
+import javax.inject.Named
 
 /**
+ * Authorization service
  * Created by masc on 01.07.15.
  */
-@javax.inject.Named
+@Named
 class AuthorizationService
 :
-        sx.jms.Handler<AuthorizationRequestMessage> {
+        Handler<AuthorizationService.Request> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -30,12 +32,12 @@ class AuthorizationService
     private val dispatcher = EventDispatcher.createThreadSafe<Listener>()
     public val delegate: EventDelegate<Listener> = dispatcher
 
-    override fun onMessage(message: AuthorizationRequestMessage, replyChannel: sx.jms.Channel?) {
+    override fun onMessage(message: AuthorizationService.Request, replyChannel: sx.jms.Channel?) {
         try {
             log.info(message)
 
             // Response message
-            val am = AuthorizationMessage()
+            val am = AuthorizationService.Response()
             am.key = message.key
 
             val identityKey = Identity.Key(message.key)

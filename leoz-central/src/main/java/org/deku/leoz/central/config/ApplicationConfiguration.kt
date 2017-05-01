@@ -2,6 +2,7 @@ package org.deku.leoz.central.config
 
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
+import org.deku.leoz.SystemInformation
 import org.deku.leoz.central.Application
 import org.deku.leoz.node.Storage
 import org.deku.leoz.node.config.LogConfiguration
@@ -25,6 +26,16 @@ open class ApplicationConfiguration {
                 val application: Application = instance()
                 application
             }
+
+            bind<SystemInformation>() with singleton {
+                SystemInformation.create()
+            }
+
+            bind<Storage>() with eagerSingleton {
+                val application: Application = instance()
+                Storage(application.name)
+            }
+
         }
     }
 

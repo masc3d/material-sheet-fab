@@ -9,7 +9,6 @@ import com.vaadin.spring.boot.VaadinAutoConfiguration
 import org.deku.leoz.node.config.ApplicationConfiguration
 import org.deku.leoz.node.config.LogConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
-import org.deku.leoz.node.config.StorageConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.Banner
@@ -99,9 +98,8 @@ open class Main {
     /** Kodein modules */
     protected open val modules: List<Kodein.Module> by lazy {
         listOf(
-                StorageConfiguration.module,
-                LogConfiguration.module,
-                ApplicationConfiguration.module)
+                ApplicationConfiguration.module,
+                LogConfiguration.module)
     }
 
     /**

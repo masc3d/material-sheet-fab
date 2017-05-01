@@ -5,11 +5,11 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.google.common.collect.Lists
+import org.deku.leoz.DesktopIdentityFactory
 import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.node.config.LogConfiguration
-import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.springframework.beans.BeansException
 import org.springframework.boot.ExitCodeGenerator
@@ -28,12 +28,7 @@ import sx.JarManifest
 import sx.io.ProcessLockFile
 import sx.logging.slf4j.info
 import sx.platform.JvmUtil
-import java.io.IOException
-import java.net.MalformedURLException
 import java.net.URL
-import java.nio.channels.FileChannel
-import java.nio.channels.FileLock
-import java.nio.file.StandardOpenOption
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -151,7 +146,7 @@ open class Application :
             val identityFile = this.storage.identityConfigurationFile
             if (identityFile.exists()) {
                 try {
-                    identity = Identity.load(identityFile, this.systemInformation)
+                    identity = Identity.load(identityFile)
                 } catch (e: Exception) {
                     log.error(e.message, e)
                 }
@@ -160,9 +155,11 @@ open class Application :
 
         // Create identity if it doesn't exist or could not be read/parsed
         if (identity == null) {
-            identity = Identity.create(
-                    this.name,
-                    this.systemInformation)
+            identity = DesktopIdentityFactory(
+                    name = this.name,
+                    systemInformation = this.systemInformation
+            )
+                    .create()
 
             // Store updates/created identity
             try {

@@ -5,7 +5,6 @@ import com.github.salomonbrys.kodein.conf.global
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.config.ApplicationConfiguration
 import org.deku.leoz.node.config.LogConfiguration
-import org.deku.leoz.node.config.StorageConfiguration
 import org.springframework.context.annotation.Lazy
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
@@ -25,7 +24,6 @@ open class ApplicationTestConfiguration : ApplicationConfiguration() {
     @PostConstruct
     open fun onInitialize() {
         Kodein.global.addImport(ApplicationConfiguration.module)
-        Kodein.global.addImport(StorageConfiguration.module)
         Kodein.global.addImport(LogConfiguration.module)
     }
 }

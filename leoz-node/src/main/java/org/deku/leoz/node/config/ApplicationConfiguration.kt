@@ -2,6 +2,7 @@ package org.deku.leoz.node.config
 
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
+import org.deku.leoz.SystemInformation
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 import org.springframework.context.annotation.Bean
@@ -20,6 +21,15 @@ open class ApplicationConfiguration {
             bind<Application>() with eagerSingleton {
                 Application()
             }
+
+            bind<SystemInformation>() with singleton {
+                SystemInformation.create()
+            }
+
+            bind<Storage>() with eagerSingleton {
+                val application: Application = instance()
+                Storage(application.name)
+            }
         }
     }
 
@@ -31,4 +41,7 @@ open class ApplicationConfiguration {
 
     @get:Bean
     open val app: Application by lazy { Kodein.global.instance<Application>() }
+
+    @get:Bean
+    open val systemInformation: SystemInformation by lazy { Kodein.global.instance<SystemInformation>() }
 }
