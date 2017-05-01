@@ -10,7 +10,6 @@ import sx.jms.converters.DefaultConverter
 import sx.jms.Broker
 import sx.jms.activemq.ActiveMQBroker
 import sx.jms.activemq.ActiveMQPooledConnectionFactory
-import javax.jms.ConnectionFactory
 
 /**
  * ActiveMQ specific messaging configuration

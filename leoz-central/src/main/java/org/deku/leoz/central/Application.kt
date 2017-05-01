@@ -2,7 +2,6 @@ package org.deku.leoz.central
 
 import org.deku.leoz.bundle.BundleType
 import org.slf4j.LoggerFactory
-import sx.LazyInstance
 
 /**
  * Application instance.

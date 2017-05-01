@@ -3,19 +3,8 @@ package org.deku.leoz
 import org.deku.leoz.bundle.BundleType
 import sx.security.Algorithms
 import sx.text.toHexString
-import java.io.File
 import java.security.MessageDigest
 import java.security.SecureRandom
-
-/**
- * Identity factory interface
- * Created by masc
- */
-abstract class IdentityFactory(
-        val name: String
-) {
-    abstract fun create(): Identity
-}
 
 /**
  * Identity factory for desktop devices
@@ -49,19 +38,6 @@ class DesktopIdentityFactory(
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
-    }
-}
-
-/**
- * Identity factory for mobile devices
- * Created by masc
- */
-class MobileIdentityFactory(
-        val imei: String)
-    : IdentityFactory(name = BundleType.LEOZ_MOBILE.value) {
-
-    override fun create(): Identity {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
 

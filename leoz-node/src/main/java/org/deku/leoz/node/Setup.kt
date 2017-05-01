@@ -9,7 +9,6 @@ import org.deku.leoz.YamlPersistence
 import sx.packager.BundleProcessInterface
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.node.config.RemotePeerConfiguration
-import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import sx.EmbeddedExecutable

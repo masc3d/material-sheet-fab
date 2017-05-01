@@ -2,19 +2,14 @@ package org.deku.leoz.log
 
 import ch.qos.logback.classic.Logger
 import org.deku.leoz.Identity
-import org.deku.leoz.MessagingTest
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.log.LogAppender
-import org.deku.leoz.log.LogMessage
-import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.jms.Channel
 import sx.jms.Handler
 import sx.jms.listeners.SpringJmsListener
-import sx.logging.slf4j.*
 
 import javax.jms.JMSException
 import java.util.concurrent.Executors

@@ -166,7 +166,7 @@ class FileSyncHostService(
      * Notify node about available files
      * @param identityKey Node identity key
      */
-    private fun notifyNode(identityKey: org.deku.leoz.Identity.Key) {
+    private fun notifyNode(identityKey: Identity.Key) {
         val out = this.nodeOutDirectory(identityKey)
         if (out.exists() && out.listFiles().count() > 0) {
             log.trace("Sending file sync notification to [${identityKey}]")

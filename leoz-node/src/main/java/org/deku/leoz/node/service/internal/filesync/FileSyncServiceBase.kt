@@ -1,7 +1,6 @@
 package org.deku.leoz.node.service.internal.filesync
 
 import org.deku.leoz.Identity
-import org.deku.leoz.node.service.internal.filesync.FileSyncMessage
 import java.io.File
 import java.util.concurrent.ScheduledExecutorService
 

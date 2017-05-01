@@ -12,7 +12,6 @@ import org.junit.Before
 import org.junit.Test
 import sx.packager.Bundle
 import sx.packager.BundleInstaller
-import sx.packager.start
 import sx.packager.stop
 import java.io.File
 import java.nio.file.Files

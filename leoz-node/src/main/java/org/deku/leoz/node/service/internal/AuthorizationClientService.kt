@@ -6,6 +6,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import org.deku.leoz.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.node.Storage
 import org.deku.leoz.service.internal.AuthorizationService
@@ -20,8 +21,8 @@ import sx.time.Duration
 class AuthorizationClientService(
         executorService: java.util.concurrent.ScheduledExecutorService,
         private val channelConfiguration: Channel.Configuration,
-        private val identitySupplier: () -> org.deku.leoz.Identity,
-        private val onRejected: (identity: org.deku.leoz.Identity) -> Unit)
+        private val identitySupplier: () -> Identity,
+        private val onRejected: (identity: Identity) -> Unit)
 :
         sx.concurrent.Service(executorService,
                 period = Duration.ofSeconds(60)),
@@ -31,7 +32,7 @@ class AuthorizationClientService(
 {
     private val log = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 
-    private val identity: org.deku.leoz.Identity
+    private val identity: Identity
         get() = identitySupplier()
 
     private val systemInformation: SystemInformation by Kodein.global.lazy.instance()

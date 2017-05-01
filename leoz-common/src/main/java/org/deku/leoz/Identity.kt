@@ -1,11 +1,7 @@
 package org.deku.leoz
 
 import sx.io.serialization.Serializable
-import sx.security.Algorithms
-import sx.text.toHexString
 import java.io.File
-import java.security.MessageDigest
-import java.security.SecureRandom
 
 /**
  * Holds all identity information for a leoz node including system information
@@ -38,7 +34,7 @@ class Identity constructor(
         }
 
         override fun equals(other: Any?): Boolean {
-            if (other is Identity.Key)
+            if (other is Key)
                 return this.value == other.value
             else
                 return super.equals(other)
@@ -59,7 +55,7 @@ class Identity constructor(
 
     companion object {
         fun load(file: File): Identity {
-            val state = YamlPersistence.load(Identity.State::class.java, file)
+            val state = YamlPersistence.load(State::class.java, file)
 
             return Identity(
                     key = state.key,
