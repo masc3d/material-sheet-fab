@@ -6,6 +6,7 @@ import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EO
 import sx.jms.*
 import sx.jms.listeners.SpringJmsListener
 import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicLong
@@ -32,7 +33,7 @@ class EntityConsumer
     /**
      * Executor for internal tasks, eg issuing requests
      */
-    private var executorService: java.util.concurrent.ExecutorService
+    private var executorService: ExecutorService
 
     init {
 

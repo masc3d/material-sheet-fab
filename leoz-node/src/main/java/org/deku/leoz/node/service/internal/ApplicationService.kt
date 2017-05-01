@@ -3,9 +3,9 @@ package org.deku.leoz.node.service.internal
 import org.deku.leoz.node.*
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.service.entity.internal.ApplicationVersion
 import org.deku.leoz.service.entity.internal.update.BundleUpdateService
-import org.deku.leoz.service.entity.internal.update.UpdateInfo
+import org.deku.leoz.service.internal.entity.update.UpdateInfo
+import org.deku.leoz.service.internal.ApplicationService.Version
 
 /**
  * Created by masc on 09.10.15.
@@ -14,6 +14,7 @@ import org.deku.leoz.service.entity.internal.update.UpdateInfo
 @sx.rs.auth.ApiKey(false)
 @javax.ws.rs.Path("internal/v1/application")
 class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
+
     private val log = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 
     @javax.inject.Inject
@@ -30,8 +31,8 @@ class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
         bundleInstaller.boot(this.application.name)
     }
 
-    override fun getVersion(): ApplicationVersion {
-        return ApplicationVersion(
+    override fun getVersion(): Version {
+        return Version(
                 this.application.name,
                 this.application.version)
     }

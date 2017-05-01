@@ -8,7 +8,7 @@ import sx.io.serialization.Serializable
  * @param amount Amount of entities/records to follow
  * Created by masc on 18.06.15.
  */
-@sx.io.serialization.Serializable(0x4823fac50e4fdf)
+@Serializable(0x4823fac50e4fdf)
 data class EntityUpdateMessage(
         val amount: Long = 0) {
     companion object {

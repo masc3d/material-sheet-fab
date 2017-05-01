@@ -1,8 +1,7 @@
-package org.deku.leoz.service.entity.zalando
+package org.deku.leoz.service.zalando.entity
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.annotations.*
+import com.fasterxml.jackson.annotation.*
 import javax.annotation.Generated
 
 @ApiModel(description = "Problem details description (see https://tools.ietf.org/html/rfc7807)")
@@ -68,7 +67,7 @@ class Problem(
         if (o == null || javaClass != o.javaClass) {
             return false
         }
-        val problem = o as org.deku.leoz.service.entity.zalando.Problem?
+        val problem = o as org.deku.leoz.service.zalando.entity.Problem?
         return type == problem!!.type &&
                 instance == problem.instance &&
                 title == problem.title &&

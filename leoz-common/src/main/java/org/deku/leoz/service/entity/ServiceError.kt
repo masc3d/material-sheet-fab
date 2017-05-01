@@ -1,4 +1,4 @@
-package org.deku.leoz.service.entity.pub
+package org.deku.leoz.service.entity
 
 import io.swagger.annotations.ApiModel
 

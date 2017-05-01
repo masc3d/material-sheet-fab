@@ -3,7 +3,6 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.*
 import javax.ws.rs.core.*
 import io.swagger.annotations.*
-import org.deku.leoz.service.entity.internal.ApplicationVersion
 
 /**
  * Application service
@@ -15,13 +14,20 @@ import org.deku.leoz.service.entity.internal.ApplicationVersion
 @Api(value = "Application operations")
 interface ApplicationService {
     /**
+     * Created by masc on 09.10.15.
+     */
+    data class Version(
+            val name: String = "",
+            val version: String = "")
+
+    /**
      * Get entry by name
      * @param name name
      */
     @GET
     @Path("/version")
-    @ApiOperation(value = "Get application version", response = String::class)
-    fun getVersion(): ApplicationVersion
+    @ApiOperation(value = "Get application version")
+    fun getVersion(): Version
 
     @GET
     @Path("/restart")

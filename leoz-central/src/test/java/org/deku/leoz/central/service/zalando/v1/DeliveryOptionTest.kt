@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
 import org.deku.leoz.central.service.zalando.CarrierIntegrationService
 import org.deku.leoz.node.rest.ObjectMapperProvider
-import org.deku.leoz.service.entity.zalando.DeliveryOption
+import org.deku.leoz.service.zalando.entity.DeliveryOption
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test

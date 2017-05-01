@@ -11,7 +11,7 @@ import sx.io.serialization.Serializable
  * @param entityType Entity type this state message refers to
  * @param timestamp Latest entity timestamp
  */
-@sx.io.serialization.Serializable(0xd7247f46c96acc)
+@Serializable(0xd7247f46c96acc)
 data class EntityStateMessage(
         val entityType: Class<*>? = null,
         val syncId: Long? = null

@@ -3,11 +3,11 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
-import org.deku.leoz.service.entity.internal.BagDiff
-import org.deku.leoz.service.entity.internal.BagInitRequest
-import org.deku.leoz.service.entity.internal.BagNumberRange
-import org.deku.leoz.service.entity.internal.BagResponse
-import org.deku.leoz.service.entity.internal.SectionDepotsLeft
+import org.deku.leoz.service.internal.entity.BagDiff
+import org.deku.leoz.service.internal.entity.BagInitRequest
+import org.deku.leoz.service.internal.entity.BagNumberRange
+import org.deku.leoz.service.internal.entity.BagResponse
+import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 
 /**
  * Created by 27694066 on 20.02.2017.

@@ -1,4 +1,4 @@
-package org.deku.leoz.service.entity.internal
+package org.deku.leoz.service.internal.entity
 
 /**
  * Created by helke on 10.04.17.

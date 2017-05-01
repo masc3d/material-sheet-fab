@@ -1,4 +1,4 @@
-package org.deku.leoz.service.entity.zalando
+package org.deku.leoz.service.zalando.entity
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel

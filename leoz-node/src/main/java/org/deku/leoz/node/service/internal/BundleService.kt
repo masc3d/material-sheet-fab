@@ -5,8 +5,9 @@ import org.deku.leoz.node.config.UpdateConfiguration
 import org.deku.leoz.node.data.jpa.QMstBundleVersion
 import org.deku.leoz.node.data.repository.master.BundleVersionRepository
 import org.deku.leoz.service.entity.internal.update.BundleUpdateService
-import org.deku.leoz.service.entity.internal.update.UpdateInfo
-import org.deku.leoz.service.internal.BundleService
+import org.deku.leoz.service.internal.entity.update.UpdateInfo
+import org.deku.leoz.service.internal.BundleServiceV1
+import org.deku.leoz.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import sx.packager.BundleRepository
@@ -33,7 +34,7 @@ import javax.ws.rs.core.Response
 @ApiKey(false)
 @Profile(Application.PROFILE_CLIENT_NODE)
 @Path("internal/v1/bundle")
-open class BundleService : BundleService {
+open class BundleServiceV1 : BundleServiceV1 {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -61,7 +62,7 @@ open class BundleService : BundleService {
     }
 
     /**
-     * @see org.deku.leoz.rest.service.internal.v1.BundleService
+     * @see {@link org.deku.leoz.rest.service.internal.v1.BundleService}
      */
     override fun info(bundleName: String, versionAlias: String?, nodeKey: String?): UpdateInfo {
         @Suppress("NAME_SHADOWING")
@@ -111,7 +112,7 @@ open class BundleService : BundleService {
     }
 
     /**
-     * @see org.deku.leoz.rest.service.internal.v1.BundleService
+     * @see {@link org.deku.leoz.rest.service.internal.v1.BundleService}
      */
     override fun download(bundleName: String, version: String): Response {
         if (!this.bundleRepository.rsyncModuleUri.isFile())
@@ -139,5 +140,36 @@ open class BundleService : BundleService {
                         .findAll()
                         .map { BundleRepository.PreserveSpec(name = it.bundle, pattern = it.version) }
         )
+    }
+}
+
+/**
+ * BundleService implementation
+ * Created by masc on 01/11/2016.
+ */
+@Named
+@ApiKey(false)
+@Profile(Application.PROFILE_CLIENT_NODE)
+@Path("internal/v2/bundle")
+open class BundleServiceV2 : BundleServiceV2 {
+    @Inject
+    protected lateinit var bundleServiceV1: BundleServiceV1
+
+    override fun info(bundleName: String, versionAlias: String?, nodeKey: String?): UpdateInfo {
+        return bundleServiceV1.info(
+                bundleName = bundleName,
+                versionAlias = versionAlias,
+                nodeKey = nodeKey)
+    }
+
+    override fun download(bundleName: String, version: String): Response {
+        return bundleServiceV1.download(
+                bundleName = bundleName,
+                version = version
+        )
+    }
+
+    override fun clean() {
+        bundleServiceV1.cleanRepository()
     }
 }

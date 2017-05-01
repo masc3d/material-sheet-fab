@@ -2,7 +2,7 @@ package org.deku.leoz.node.rest
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonMappingException
-import org.deku.leoz.service.entity.pub.ServiceError
+import org.deku.leoz.service.entity.ServiceError
 import org.slf4j.LoggerFactory
 import org.zalando.problem.ThrowableProblem
 import javax.inject.Named

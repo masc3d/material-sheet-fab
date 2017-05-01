@@ -4,7 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.provider
-import org.deku.leoz.service.internal.BundleService
+import org.deku.leoz.service.internal.BundleServiceV1
 import org.deku.leoz.service.internal.StationService
 import org.deku.leoz.service.internal.UserService
 import sx.rs.proxy.RestClientProxy
@@ -69,8 +69,8 @@ abstract class RestClientConfiguration {
                 createServiceProxy(config = instance(), serviceType = StationService::class.java)
             }
 
-            bind<BundleService>() with provider {
-                createServiceProxy(config = instance(), serviceType = BundleService::class.java)
+            bind<BundleServiceV1>() with provider {
+                createServiceProxy(config = instance(), serviceType = BundleServiceV1::class.java)
             }
 
             bind<UserService>() with provider {

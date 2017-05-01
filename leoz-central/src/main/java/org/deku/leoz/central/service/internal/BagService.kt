@@ -24,8 +24,12 @@ import javax.inject.Named
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.Path
 import org.deku.leoz.central.data.repository.DepotJooqRepository
-import org.deku.leoz.service.entity.internal.*
 import org.deku.leoz.service.internal.BagService
+import org.deku.leoz.service.internal.entity.BagDiff
+import org.deku.leoz.service.internal.entity.BagInitRequest
+import org.deku.leoz.service.internal.entity.BagNumberRange
+import org.deku.leoz.service.internal.entity.BagResponse
+import org.deku.leoz.service.internal.entity.SectionDepotsLeft
 
 /**
  * Bundle service (leoz-central)

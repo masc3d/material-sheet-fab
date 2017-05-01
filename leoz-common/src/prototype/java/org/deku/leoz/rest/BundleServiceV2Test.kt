@@ -3,7 +3,7 @@ package org.deku.leoz.rest
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.config.RestClientTestConfiguration
-import org.deku.leoz.service.internal.BundleService
+import org.deku.leoz.service.internal.BundleServiceV1
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.rs.proxy.FeignClientProxy
@@ -25,21 +25,21 @@ class BundleServiceV2Test {
         // For binary response stream, need to build target manually, so we can inject a decoder implementation
         val feignClientProxy = kodein.instance<FeignClientProxy>()
 
-        val bundleService: BundleService = feignClientProxy.target(
-                apiType = BundleService::class.java,
+        val bundleServiceV1: BundleServiceV1 = feignClientProxy.target(
+                apiType = BundleServiceV1::class.java,
                 output = ByteArrayOutputStream(),
                 progressCallback = { p: Float, bytesCopied: Long ->
                     log.debug("Progress ${"%.2f".format(p)}% ${bytesCopied}")
                 })
 
-        bundleService.download("leoz-mobile", "0.1-SNAPSHOT")
+        bundleServiceV1.download("leoz-mobile", "0.1-SNAPSHOT")
     }
 
     @Test
     fun testInfo() {
-        val bundleService: BundleService = kodein.instance()
+        val bundleServiceV1: BundleServiceV1 = kodein.instance()
 
-        log.info(bundleService.info(
+        log.info(bundleServiceV1.info(
                 "leoz-boot",
                 "release").toString())
     }

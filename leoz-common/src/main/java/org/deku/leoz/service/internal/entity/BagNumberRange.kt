@@ -1,11 +1,11 @@
-package org.deku.leoz.service.entity.internal
+package org.deku.leoz.service.internal.entity
 
 import io.swagger.annotations.ApiModel
 
 /**
  * Created by helke on 04.04.17.
  */
-@io.swagger.annotations.ApiModel(value = "BagserviceNumberRange", description = "BagserviceNumberRange")
+@ApiModel(value = "BagserviceNumberRange", description = "BagserviceNumberRange")
 class BagNumberRange(
         var minBagId: Double? = null,
         var maxBagId: Double? = null,

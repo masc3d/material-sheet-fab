@@ -3,7 +3,7 @@ package org.deku.leoz.ui.config
 import com.github.salomonbrys.kodein.*
 import org.deku.leoz.config.RestConfiguration
 import sx.rs.proxy.RestClientProxy
-import org.deku.leoz.service.internal.BundleService
+import org.deku.leoz.service.internal.BundleServiceV1
 import org.deku.leoz.service.internal.StationService
 import org.slf4j.LoggerFactory
 import sx.rs.proxy.JerseyClientProxy
@@ -40,9 +40,9 @@ class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
             }
 
             /** Bundle service */
-            bind<BundleService>() with provider {
+            bind<BundleServiceV1>() with provider {
                 val restClient: RestClientProxy = instance()
-                restClient.create(BundleService::class.java)
+                restClient.create(BundleServiceV1::class.java)
             }
 
             /** Station service */

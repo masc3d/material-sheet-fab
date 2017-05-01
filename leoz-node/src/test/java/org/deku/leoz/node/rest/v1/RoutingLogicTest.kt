@@ -5,7 +5,7 @@ import org.deku.leoz.node.service.pub.RoutingService
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.entity.pub.RoutingRequest
-import org.deku.leoz.service.ServiceErrorCode
+import org.deku.leoz.service.entity.ServiceErrorCode
 import org.junit.Assert
 import org.junit.Test
 import org.junit.experimental.categories.Category

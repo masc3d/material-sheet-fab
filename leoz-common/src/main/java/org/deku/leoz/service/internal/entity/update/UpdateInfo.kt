@@ -1,4 +1,4 @@
-package org.deku.leoz.service.entity.internal.update
+package org.deku.leoz.service.internal.entity.update
 
 import sx.io.serialization.Serializable
 import java.util.*
@@ -8,7 +8,7 @@ import java.util.*
  * Sent by update providers when new (software) updates become available or as a response to {@link UpdateInfoRequest}
  * @author masc
  */
-@sx.io.serialization.Serializable(0x16577d9fec6724)
+@Serializable(0x16577d9fec6724)
 data class UpdateInfo(
         /** Bundle name */
         val bundleName: String = "",

@@ -1,4 +1,4 @@
-package org.deku.leoz.service.entity.pub
+package org.deku.leoz.service.entity
 
 /**
  * Created by JT on 02.06.15.

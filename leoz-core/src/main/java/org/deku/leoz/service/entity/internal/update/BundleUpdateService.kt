@@ -5,9 +5,10 @@ import sx.packager.Bundle
 import sx.packager.BundleInstaller
 import sx.packager.BundleRepository
 import org.deku.leoz.bundle.boot
-import org.deku.leoz.service.internal.BundleService
+import org.deku.leoz.service.internal.BundleServiceV1
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.Lifecycle
 import sx.concurrent.Service
 import sx.jms.Channel
@@ -21,7 +22,7 @@ import java.util.concurrent.ScheduledExecutorService
  * Updater suoporting async/background updates of bundles.
  * Can be added as a message handler to a notification topic message listener for push update notifications.
  * @property executorService Executor service
- * @property bundleService Bundle service for requesting bundle/version information
+ * @property bundleServiceV1 Bundle service for requesting bundle/version information
  * @property identity Id of this leoz node. If this parameter is ommitted, the version alias must be provided per update  preset.
  * @property installer Bundle installer for installing bundles locally
  * @property remoteRepository Remote bundle repository. The bundle name of this repository has to match the installer name
@@ -34,7 +35,7 @@ import java.util.concurrent.ScheduledExecutorService
  */
 class BundleUpdateService(
         private val executorService: ScheduledExecutorService,
-        private val bundleService: () -> BundleService,
+        private val bundleServiceV1: () -> BundleServiceV1,
         val identity: Identity? = null,
         val installer: BundleInstaller,
         val remoteRepository: () -> BundleRepository,
@@ -169,7 +170,7 @@ class BundleUpdateService(
         log.info("Requesting version info for [${bundleName}] alias [${preset.versionAlias}] node key [${this.identity?.key}]")
 
         // Request currently assigned version for this bundle and node
-        val updateInfo: UpdateInfo = this.bundleService().info(
+        val updateInfo: UpdateInfo = this.bundleServiceV1().info(
                 bundleName = bundleName,
                 versionAlias = preset.versionAlias,
                 nodeKey = this.identity?.key)

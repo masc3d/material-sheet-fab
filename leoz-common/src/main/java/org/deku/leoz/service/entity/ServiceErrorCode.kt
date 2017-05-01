@@ -1,4 +1,4 @@
-package org.deku.leoz.service
+package org.deku.leoz.service.entity
 
 /**
  * Common service error codes

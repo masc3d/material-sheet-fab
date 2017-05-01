@@ -18,7 +18,7 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.input.MouseEvent
 import javafx.util.Callback
-import org.deku.leoz.service.entity.internal.Station
+import org.deku.leoz.service.internal.entity.Station
 import org.deku.leoz.service.internal.StationService
 import org.deku.leoz.ui.bridge.LeoBridge
 import org.deku.leoz.ui.bridge.MessageFactory

@@ -12,11 +12,9 @@ import org.deku.leoz.node.data.repository.master.*
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.entity.ShortDate
 import org.deku.leoz.service.entity.ShortTime
-import org.deku.leoz.service.entity.pub.DayType
-import org.deku.leoz.service.ServiceErrorCode
-import org.deku.leoz.service.entity.pub.Routing
-import org.deku.leoz.service.entity.pub.RoutingRequest
-import org.deku.leoz.service.pub.RoutingService
+import org.deku.leoz.service.entity.DayType
+import org.deku.leoz.service.entity.ServiceErrorCode
+import org.deku.leoz.service.pub.RoutingService.*
 import org.slf4j.LoggerFactory
 import sx.rs.auth.ApiKey
 import sx.time.toDate
@@ -38,7 +36,7 @@ import javax.ws.rs.Path
 @Named
 @ApiKey(false)
 @Path("v1/routing")
-class RoutingService : RoutingService {
+class RoutingService : org.deku.leoz.service.pub.RoutingService {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @Inject
@@ -59,7 +57,7 @@ class RoutingService : RoutingService {
      * Request routing
      * @param routingRequest Routing request
      */
-    override fun request(routingRequest: RoutingRequest): Routing {
+    override fun request(routingRequest: Request): Routing {
 //        log.info(">>> ${Thread.currentThread().id} START")
         val routing = Routing()
 
@@ -175,7 +173,7 @@ class RoutingService : RoutingService {
                            validDate: LocalDate?,
                            sendDate: LocalDate?,
                            desiredDeliveryDate: LocalDate?,
-                           requestParticipant: RoutingRequest.RequestParticipant?,
+                           requestParticipant: Request.Participant?,
                            routingLayers: Iterable<MstRoutingLayer>,
                            ctrl: Int,
                            errorPrefix: String)
@@ -235,7 +233,7 @@ class RoutingService : RoutingService {
      */
     @Suppress("UNUSED_PARAMETER")
     private fun queryRouteLayer(sendDelivery: String,
-                                requestParticipant: RoutingRequest.RequestParticipant?,
+                                requestParticipant: Request.Participant?,
                                 queryZipCode: String,
                                 validDate: LocalDate?,
                                 sendDate: LocalDate?,
@@ -283,7 +281,7 @@ class RoutingService : RoutingService {
                         .and(qRoute.validTo.after(validDate?.toTimestamp())))
 
         if (Iterables.isEmpty(rRoutes))
-            throw ServiceException(RoutingService.ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
+            throw ServiceException(ErrorCode.ROUTE_NOT_AVAILABLE_FOR_GIVEN_PARAMETER, "${errorPrefix} no Route found")
 
         val rRoute = rRoutes.first()
 

@@ -1,6 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.service.internal.SmallsortService
+import org.deku.leoz.service.internal.entity.OutgoingBag
 import sx.rs.auth.ApiKey
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -14,7 +15,7 @@ import javax.ws.rs.Path
 @Path("internal/v1/smallsort")
 class SmallsortService : org.deku.leoz.service.internal.SmallsortService {
 
-    override fun closebag(outgoingBag: org.deku.leoz.service.entity.internal.OutgoingBag): Boolean {
+    override fun closebag(outgoingBag: OutgoingBag): Boolean {
 
         //TODO Check if Client is authorized. (Use API Key?)
 

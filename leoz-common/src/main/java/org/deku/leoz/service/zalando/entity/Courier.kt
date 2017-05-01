@@ -1,7 +1,8 @@
-package org.deku.leoz.service.entity.zalando
+package org.deku.leoz.service.zalando.entity
 
 import io.swagger.annotations.*
 import javax.annotation.Generated
+import com.fasterxml.jackson.annotation.*
 
 @ApiModel(description = "Defines the driver who will pick up a tour and deliver all orders related to the tour.")
 @Generated(value = "io.swagger.codegen.languages.JavaResteasyServerCodegen", date = "2017-03-10T11:34:55.297Z")
@@ -12,14 +13,14 @@ class Courier {
      */
 
     @get:ApiModelProperty(example = "null", required = true, value = "Unique identifier of the courier.")
-    @get:com.fasterxml.jackson.annotation.JsonProperty("id")
+    @get:JsonProperty("id")
     lateinit var id: String
     /**
      * The name of the courier.
      */
 
     @get:ApiModelProperty(example = "null", value = "The name of the courier.")
-    @get:com.fasterxml.jackson.annotation.JsonProperty("name")
+    @get:JsonProperty("name")
     lateinit var name: String
 
 
@@ -30,7 +31,7 @@ class Courier {
         if (o == null || javaClass != o.javaClass) {
             return false
         }
-        val courier = o as org.deku.leoz.service.entity.zalando.Courier?
+        val courier = o as org.deku.leoz.service.zalando.entity.Courier?
         return id == courier!!.id && name == courier.name
     }
 

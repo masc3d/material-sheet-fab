@@ -5,9 +5,9 @@ import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.SddContzipRecord
 import org.deku.leoz.central.data.jooq.tables.records.SddFpcsOrderRecord
 import org.deku.leoz.node.rest.DefaultProblem
-import org.deku.leoz.service.entity.zalando.DeliveryOption
-import org.deku.leoz.service.entity.zalando.DeliveryOrder
-import org.deku.leoz.service.entity.zalando.NotifiedDeliveryOrder
+import org.deku.leoz.service.zalando.entity.DeliveryOption
+import org.deku.leoz.service.zalando.entity.DeliveryOrder
+import org.deku.leoz.service.zalando.entity.NotifiedDeliveryOrder
 import org.deku.leoz.service.zalando.CarrierIntegrationService
 import org.deku.leoz.ws.gls.shipment.*
 import org.jooq.DSLContext

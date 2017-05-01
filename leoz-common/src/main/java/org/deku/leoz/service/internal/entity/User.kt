@@ -1,7 +1,6 @@
-package org.deku.leoz.service.entity.internal
+package org.deku.leoz.service.internal.entity
 
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.annotations.*
 
 /**
  * Created by 27694066 on 25.04.2017.
@@ -20,7 +19,7 @@ data class User(
         @get:ApiModelProperty(example = "foo.bar", required = true, value = "Alias of the user")
         var alias: String? = null,
 
-        @get:ApiModelProperty(example = ROLE_USER, required = true, value = "Role of the user", allowableValues = "${ROLE_ADMINISTRATOR},${ROLE_POWERUSER},${ROLE_USER},${ROLE_DRIVER},${ROLE_CUSTOMER}")
+        @get:ApiModelProperty(example = org.deku.leoz.service.internal.entity.User.Companion.ROLE_USER, required = true, value = "Role of the user", allowableValues = "${org.deku.leoz.service.internal.entity.User.Companion.ROLE_ADMINISTRATOR},${org.deku.leoz.service.internal.entity.User.Companion.ROLE_POWERUSER},${org.deku.leoz.service.internal.entity.User.Companion.ROLE_USER},${org.deku.leoz.service.internal.entity.User.Companion.ROLE_DRIVER},${org.deku.leoz.service.internal.entity.User.Companion.ROLE_CUSTOMER}")
         var role: String? = null,
 
         // TODO: should be hash instead of pw

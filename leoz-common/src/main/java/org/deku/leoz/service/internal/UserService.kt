@@ -1,6 +1,6 @@
 package org.deku.leoz.service.internal
 
-import org.deku.leoz.service.entity.internal.User
+import org.deku.leoz.service.internal.entity.User
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
@@ -24,6 +24,6 @@ interface UserService {
      */
     @GET
     @Path("/")
-    @ApiOperation(value = "Get user", response = String::class)
+    @ApiOperation(value = "Get user")
     fun get(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null): User
 }

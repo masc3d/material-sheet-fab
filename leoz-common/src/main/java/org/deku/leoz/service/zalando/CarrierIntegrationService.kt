@@ -1,10 +1,10 @@
 package org.deku.leoz.service.zalando
 
 import io.swagger.annotations.*
-import org.deku.leoz.service.entity.zalando.DeliveryOption
-import org.deku.leoz.service.entity.zalando.DeliveryOrder
-import org.deku.leoz.service.entity.zalando.NotifiedDeliveryOrder
-import org.deku.leoz.service.entity.zalando.Problem
+import org.deku.leoz.service.zalando.entity.DeliveryOption
+import org.deku.leoz.service.zalando.entity.DeliveryOrder
+import org.deku.leoz.service.zalando.entity.NotifiedDeliveryOrder
+import org.deku.leoz.service.zalando.entity.Problem
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response

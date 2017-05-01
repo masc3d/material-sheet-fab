@@ -1,4 +1,4 @@
-package org.deku.leoz.service.entity.internal.update
+package org.deku.leoz.service.internal.entity.update
 
 import sx.io.serialization.Serializable
 
@@ -6,7 +6,7 @@ import sx.io.serialization.Serializable
  * Update info request message
  * Created by masc on 12.10.15.
  */
-@sx.io.serialization.Serializable(0xba79258f8c02ab)
+@Serializable(0xba79258f8c02ab)
 data class UpdateInfoRequest(
         /** Id of the node requesting the update */
         val nodeKey: String = "",

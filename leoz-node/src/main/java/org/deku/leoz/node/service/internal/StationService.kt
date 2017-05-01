@@ -2,7 +2,7 @@ package org.deku.leoz.node.service.internal
 
 import org.deku.leoz.node.data.jpa.MstStation
 import org.deku.leoz.node.data.repository.master.StationRepository
-import org.deku.leoz.service.entity.internal.Station
+import org.deku.leoz.service.internal.entity.Station
 import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named

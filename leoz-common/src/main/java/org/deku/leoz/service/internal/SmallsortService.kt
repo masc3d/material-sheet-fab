@@ -1,7 +1,7 @@
 package org.deku.leoz.service.internal
 
-import org.deku.leoz.service.entity.internal.OutgoingBag
-import org.deku.leoz.service.entity.pub.ServiceError
+import org.deku.leoz.service.internal.entity.OutgoingBag
+import org.deku.leoz.service.entity.ServiceError
 import javax.ws.rs.core.*
 import javax.ws.rs.*
 import io.swagger.annotations.*
