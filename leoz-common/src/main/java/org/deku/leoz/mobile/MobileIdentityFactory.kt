@@ -5,9 +5,6 @@ import org.deku.leoz.IdentityFactory
 import org.deku.leoz.bundle.BundleType
 
 /**
- * Created by masc on 01.05.17.
- */
-/**
  * Identity factory for mobile devices
  * Created by masc
  */
