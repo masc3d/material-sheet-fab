@@ -10,7 +10,7 @@ import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.service.internal.UserService
 import sx.rx.ObservableRxProperty
 import sx.rx.task
-import sx.security.Algorithms
+import sx.security.DigestType
 import sx.text.toHexString
 import java.security.MessageDigest
 import java.util.concurrent.ExecutorService
@@ -41,7 +41,7 @@ class Login {
             // TODO: store user info in db
 
             // TODO: hash password, verify
-            val md = MessageDigest.getInstance(Algorithms.SHA256)
+            val md = MessageDigest.getInstance(DigestType.SHA256.value)
             md.update(password.toByteArray())
             // TODO: update digest with username derived salt etc.
             val hash = md.digest().toHexString()

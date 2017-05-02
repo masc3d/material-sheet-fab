@@ -224,6 +224,7 @@ dependencies {
     )
 
     androidTestCompile(
+            project(path: ':sx-common', configuration: 'testArtifacts'),
             project(path: ':sx-serialization', configuration: 'testArtifacts'),
             "junit:junit:$v_junit",
             "com.android.support:support-annotations:$v_android_support",
