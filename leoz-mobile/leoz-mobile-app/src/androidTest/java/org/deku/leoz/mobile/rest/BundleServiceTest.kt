@@ -8,7 +8,7 @@ import feign.Feign
 import feign.Response
 import feign.codec.Decoder
 import org.deku.leoz.mobile.WebserviceTest
-import org.deku.leoz.rest.service.internal.v1.BundleService
+import org.deku.leoz.service.internal.BundleServiceV2
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
@@ -26,7 +26,7 @@ class BundleServiceTest : WebserviceTest() {
 
     @Test
     fun testInfo() {
-        val bundleService: BundleService = Kodein.global.instance()
+        val bundleService: BundleServiceV2 = Kodein.global.instance()
 
         val info = bundleService.info(
                 bundleName = "leoz-boot",
@@ -40,8 +40,8 @@ class BundleServiceTest : WebserviceTest() {
         // For binary response stream, need to build target manually, so we can inject a decoder implementation
         val feignClientProxy: FeignClientProxy = Kodein.global.instance()
 
-        val bundleService: BundleService = feignClientProxy.target(
-                apiType = BundleService::class.java,
+        val bundleService: BundleServiceV2 = feignClientProxy.target(
+                apiType = BundleServiceV2::class.java,
                 output = ByteArrayOutputStream(),
                 progressCallback = { p: Float, bytesCopied: Long ->
                     log.debug("Progress ${"%.2f".format(p)}% ${bytesCopied}")

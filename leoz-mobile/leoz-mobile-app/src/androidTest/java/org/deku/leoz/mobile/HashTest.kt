@@ -1,7 +1,7 @@
 package org.deku.leoz.mobile
 
 import org.junit.Test
-import sx.security.Algorithms
+import sx.security.DigestType
 import sx.text.toHexString
 import java.security.MessageDigest
 
@@ -13,7 +13,7 @@ class HashTest {
 
     @Test
     fun testSha256() {
-        val md = MessageDigest.getInstance(Algorithms.SHA256)
+        val md = MessageDigest.getInstance(DigestType.SHA256.value)
         println(md
                 .digest(PASSWORD.toByteArray())
                 .toHexString())

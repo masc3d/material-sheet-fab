@@ -6,16 +6,15 @@ import feign.Feign
 import feign.jackson.JacksonEncoder
 import feign.jackson.JacksonDecoder
 import feign.jaxrs.JAXRSContract
-import org.deku.leoz.rest.service.internal.v1.StationService
 import org.junit.runner.RunWith
 import android.support.test.InstrumentationRegistry
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import org.deku.leoz.mobile.WebserviceTest
-import org.deku.leoz.rest.entity.internal.v1.Station
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
+import org.deku.leoz.service.internal.StationService
 import sx.rx.task
 
 /**
