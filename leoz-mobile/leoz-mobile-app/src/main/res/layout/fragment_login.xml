@@ -9,79 +9,97 @@
     android:showDividers="middle">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="@drawable/divider_horizontal"
-        android:orientation="horizontal"
-        android:showDividers="middle">
-
-        <ImageView
-            android:id="@+id/uxSerialnumberImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            app:srcCompat="@drawable/ic_email_black_24dp" />
-
-        <EditText
-            android:id="@+id/uxMailaddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/small_margin"
-            android:layout_marginStart="@dimen/small_margin"
-            android:gravity="center_vertical"
-            android:hint="@string/hint_field_mail"
-            android:inputType="textEmailAddress"
-            android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-    </LinearLayout>
-
-    <LinearLayout
+        android:id="@+id/formContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@drawable/divider_horizontal"
-        android:orientation="horizontal"
-        android:showDividers="middle">
-
-        <ImageView
-            android:id="@+id/uxPasswordImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            app:srcCompat="@mipmap/ic_lock_black_24dp" />
-
-        <EditText
-            android:id="@+id/uxPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/hint_field_password"
-            android:inputType="textPassword"
-            android:selectAllOnFocus="true"
-            android:singleLine="true" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!--<Button-->
-        <!--android:id="@+id/button"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="end"-->
-        <!--android:text="Login" />-->
 
-        <Button
-            android:id="@+id/uxLogin"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/login"
-            android:visibility="gone" />
+            android:layout_height="match_parent"
+            android:divider="@drawable/divider_horizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle">
+
+            <ImageView
+                android:id="@+id/uxSerialnumberImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                app:srcCompat="@drawable/ic_email_black_24dp" />
+
+            <EditText
+                android:id="@+id/uxMailaddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/small_margin"
+                android:layout_marginStart="@dimen/small_margin"
+                android:gravity="center_vertical"
+                android:hint="@string/hint_field_mail"
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@drawable/divider_horizontal"
+            android:orientation="horizontal"
+            android:showDividers="middle">
+
+            <ImageView
+                android:id="@+id/uxPasswordImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                app:srcCompat="@mipmap/ic_lock_black_24dp" />
+
+            <EditText
+                android:id="@+id/uxPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/hint_field_password"
+                android:inputType="textPassword"
+                android:selectAllOnFocus="true"
+                android:singleLine="true" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!--<Button-->
+            <!--android:id="@+id/button"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="end"-->
+            <!--android:text="Login" />-->
+
+            <Button
+                android:id="@+id/uxLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/login"
+                android:visibility="gone" />
+        </LinearLayout>
+
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
 
 </LinearLayout>
 

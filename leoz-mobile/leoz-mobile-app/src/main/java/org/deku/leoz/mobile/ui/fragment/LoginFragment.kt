@@ -1,28 +1,22 @@
 package org.deku.leoz.mobile.ui.fragment
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Activity
-import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.TextView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.FragmentEvent
-import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.config.RestClientConfiguration
 import org.deku.leoz.mobile.device.Tone
+import org.deku.leoz.mobile.model.Login
 import org.slf4j.LoggerFactory
 import sx.android.Device
 import sx.android.aidc.*
@@ -38,20 +32,37 @@ class LoginFragment : Fragment() {
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val tone: Tone by Kodein.global.lazy.instance()
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")
-    private lateinit var listenerCallback: OnLoginSuccessfulListener
+    private val login: Login by Kodein.global.lazy.instance()
 
     interface OnLoginSuccessfulListener {
         fun onLoginSuccessful(userAlias: String, userStation: String)
     }
 
+    //TODO: To be extracted / needs to be generic
+    private fun showProgress(show: Boolean) {
+        val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime)
+
+        val view = this.formContainer
+
+        view.visibility = if (show) View.GONE else View.VISIBLE
+        view.animate().setDuration(shortAnimTime.toLong()).alpha(
+                (if (show) 0 else 1).toFloat()).setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                view.visibility = if (show) View.GONE else View.VISIBLE
+            }
+        })
+
+        this.progress.visibility = if (show) View.VISIBLE else View.GONE
+        this.progress.animate().setDuration(shortAnimTime.toLong()).alpha(
+                (if (show) 1 else 0).toFloat()).setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                progress.visibility = if (show) View.VISIBLE else View.GONE
+            }
+        })
+    }
+
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)
-
-        try {
-            listenerCallback = activity as OnLoginSuccessfulListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException(activity.toString() + " must implement OnLoginSuccessfulListener")
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -62,10 +73,8 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val device: Device = Kodein.global.instance()
-
         this.uxLogin.setOnClickListener(onClickListener)
-        this.uxPassword.setOnEditorActionListener { v, actionId, event -> login() }
+        this.uxPassword.setOnEditorActionListener { v, actionId, event -> login()}
 
         //Check fot temporary saved credentials
     }
@@ -102,7 +111,6 @@ class LoginFragment : Fragment() {
      *
      */
     fun login(): Boolean {
-        var loginSuccessfull = false
         val mailAddress: String
         val password: String
 
@@ -116,21 +124,28 @@ class LoginFragment : Fragment() {
         } else if (this.uxPassword.text.isEmpty()) {
             this.uxPassword.error = getString(R.string.error_empty_field)
         } else {
+
             mailAddress = this.uxMailaddress.text.toString()
             password = this.uxPassword.text.toString()
+            showProgress(true)
 
-            //Try to login
-            if (loginSuccessfull) {
-                //Login OK, process to next step
-
-            } else {
-                //Login failed.
-                this.uxPassword.error = getString(R.string.error_invalid_credentials)
-                tone.beep()
-            }
+            login.authenticate(
+                    email = mailAddress,
+                    password = password
+            )
+                    .bindUntilEvent(this, FragmentEvent.PAUSE)
+                    .subscribe {
+                        showProgress(false)
+                        if (it != null && it.hash.isNotBlank()) {
+                            //Login succeeded
+                        } else {
+                            //Login failed
+                            tone.beep()
+                        }
+                    }
         }
 
-        return loginSuccessfull
+        return true
     }
 
     fun isValidEmailAddress(email: String): Boolean {
