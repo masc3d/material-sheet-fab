@@ -1,5 +1,7 @@
 package sx.text
 
+import java.math.BigInteger
+
 /**
  *  Extension functions to format bytes as Hex values.
  */
@@ -20,7 +22,7 @@ fun Byte.toHexString(): String {
 }
 
 /**
- *  Returns the HEX representation of ByteArray data.
+ *  Returns the hex representation of ByteArray data.
  */
 fun ByteArray.toHexString(): String {
     val builder = StringBuilder()
@@ -28,4 +30,18 @@ fun ByteArray.toHexString(): String {
         builder.append(b.toHexString())
     }
     return builder.toString()
+}
+
+/**
+ * Parses string representation of hex data into byte array
+ */
+fun String.parseHex(): ByteArray {
+    // Using BigInteger for conversion is not the most elegant way, but it's built-in and compatible with android
+    val signedBytes = BigInteger(this, 16).toByteArray()
+
+    // BigInteger's toByteArray may prepend a zero (sign) byte
+    return if (signedBytes[0].compareTo(0) == 0)
+        signedBytes.copyOfRange(1, signedBytes.count())
+    else
+        signedBytes
 }
