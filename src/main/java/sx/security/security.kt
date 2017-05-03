@@ -2,11 +2,20 @@ package sx.security
 
 import org.junit.Assert
 import java.nio.charset.Charset
+import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 
+/**
+ * Algorithm name constants for use with {@link javax.crypto.Cipher}
+ * Created by n3 on 27.04.17.
+ */
+enum class DigestType(val value: String) {
+    SHA1("SHA1"),
+    SHA256("SHA256")
+}
 
 /**
  * Algorithm name constants for use with {@link java.security.MessageDigest}
@@ -17,12 +26,10 @@ enum class CipherType(val value: String) {
 }
 
 /**
- * Algorithm name constants for use with {@link javax.crypto.Cipher}
- * Created by n3 on 27.04.17.
+ * Get instance of digest
  */
-enum class DigestType(val value: String) {
-    SHA1("SHA1"),
-    SHA256("SHA256")
+fun DigestType.getInstance(): MessageDigest {
+    return MessageDigest.getInstance(this.value)
 }
 
 /**
