@@ -20,8 +20,6 @@ class Connectivity(
      */
     val isEstablished: Boolean
         get() {
-            val connectivityManager = this.context.getConnectivityManager()
-
             val activeNetworkInfo = connectivityManager.activeNetworkInfo
 
             if (activeNetworkInfo?.isConnectedOrConnecting ?: false) {
