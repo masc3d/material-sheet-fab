@@ -3,6 +3,7 @@ package org.deku.leoz.central.service.internal
 import org.deku.leoz.Identity
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.verifyPassword
 import org.deku.leoz.mobile.MobileIdentityFactory
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.AuthorizationService
@@ -47,9 +48,6 @@ class AuthorizationService
     private val dispatcher = EventDispatcher.createThreadSafe<Listener>()
     public val delegate: EventDelegate<Listener> = dispatcher
 
-    // Backend specific salt. This one shouldn't be reused on other devices
-    val salt = "27abf393a822078603768c78de67e4a3".parseHex()
-
     /**
      * Mobile authorization request
      */
@@ -71,9 +69,7 @@ class AuthorizationService
             throw DefaultProblem(title = "User does not exist")
 
         // Verify credentials
-        val hashedPassword = user.hashPassword(salt)
-
-        if (userRecord.password != hashedPassword)
+        if (!userRecord.verifyPassword(user.password))
             throw DefaultProblem(
                     title = "User authentication failed",
                     status = Response.Status.UNAUTHORIZED)
