@@ -2,6 +2,7 @@ package org.deku.leoz
 
 import org.deku.leoz.bundle.BundleType
 import sx.security.DigestType
+import sx.security.getInstance
 import sx.text.toHexString
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -19,7 +20,7 @@ class DesktopIdentityFactory(
         try {
             // Generate key
             val sr = SecureRandom()
-            val m = MessageDigest.getInstance(DigestType.SHA1.value)
+            val m = DigestType.SHA1.getInstance()
 
             val hashBase = arrayOf(
                     systemInformation.hostname,

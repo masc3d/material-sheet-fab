@@ -2,8 +2,12 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.Identity
 import org.deku.leoz.central.data.repository.NodeJooqRepository
+import org.deku.leoz.mobile.MobileIdentityFactory
+import org.deku.leoz.node.rest.DefaultProblem
+import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
+import org.zalando.problem.Problem
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
@@ -21,7 +25,7 @@ import javax.ws.rs.Path
 class AuthorizationService
 :
         org.deku.leoz.service.internal.AuthorizationService,
-        Handler<AuthorizationService.Request> {
+        Handler<AuthorizationService.NodeRequest> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -36,15 +40,30 @@ class AuthorizationService
     public val delegate: EventDelegate<Listener> = dispatcher
 
     override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.MobileResponse {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val serial = request.mobile.serial
+        val imei = request.mobile.imei
+
+        if (serial.isNullOrEmpty() || imei.isNullOrEmpty())
+            throw DefaultProblem(title = "At least one of serial or imei must be provided")
+
+        val identityFactory = MobileIdentityFactory(
+                serial = serial ?: "",
+                imei = imei ?: ""
+        )
+
+        val identity = identityFactory.create()
+
+        return AuthorizationService.MobileResponse(
+                key = identity.keyInstance.value
+        )
     }
 
-    override fun onMessage(message: AuthorizationService.Request, replyChannel: sx.jms.Channel?) {
+    override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.jms.Channel?) {
         try {
             log.info(message)
 
             // Response message
-            val am = AuthorizationService.Response()
+            val am = AuthorizationService.NodeResponse()
             am.key = message.key
 
             val identityKey = Identity.Key(message.key)

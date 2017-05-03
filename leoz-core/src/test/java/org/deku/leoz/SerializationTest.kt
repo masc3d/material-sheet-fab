@@ -27,7 +27,7 @@ class SerializationTest {
             var key: String = "Test123",
             var name: String = "Test123") {
 
-        constructor(identity: Identity) : this(identity.key, identity.name) {
+        constructor(identity: Identity) : this(identity.keyInstance.value, identity.name) {
         }
     }
 

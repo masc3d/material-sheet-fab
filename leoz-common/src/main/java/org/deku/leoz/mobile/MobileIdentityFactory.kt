@@ -3,16 +3,30 @@ package org.deku.leoz.mobile
 import org.deku.leoz.Identity
 import org.deku.leoz.IdentityFactory
 import org.deku.leoz.bundle.BundleType
+import sx.security.DigestType
+import sx.security.getInstance
+import sx.text.toHexString
 
 /**
  * Identity factory for mobile devices
  * Created by masc
  */
 class MobileIdentityFactory(
+        val serial: String,
         val imei: String)
     : IdentityFactory(name = BundleType.LEOZ_MOBILE.value) {
 
     override fun create(): Identity {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val m = DigestType.SHA1.getInstance()
+
+        val hashBase = arrayOf(
+                serial,
+                imei).joinToString(",")
+
+        m.update(hashBase.toByteArray())
+
+        // Calculate digest and format to hex
+        val key = m.digest().toHexString()
+        return Identity(key = key, name = this.name)
     }
 }

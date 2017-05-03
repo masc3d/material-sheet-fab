@@ -28,7 +28,7 @@ class AuthorizationClientService(
                 period = Duration.ofSeconds(60)),
 
         // Message handler for retrieving push authorization updates
-        Handler<AuthorizationService.Response>
+        Handler<AuthorizationService.NodeResponse>
 {
     private val log = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 
@@ -40,9 +40,9 @@ class AuthorizationClientService(
 
     override fun run() {
         // Setup message
-        val authorizationRequest = AuthorizationService.Request()
+        val authorizationRequest = AuthorizationService.NodeRequest()
         authorizationRequest.name = identity.name
-        authorizationRequest.key = identity.key
+        authorizationRequest.key = identity.keyInstance.value
 
         // Serialize system info to json
         val jsonMapper = ObjectMapper()
@@ -60,7 +60,7 @@ class AuthorizationClientService(
         // Connection and session
         val authorizationMessage = Channel(channelConfiguration).use {
             it.sendRequest(authorizationRequest).use {
-                it.receive(AuthorizationService.Response::class.java)
+                it.receive(AuthorizationService.NodeResponse::class.java)
             }
         }
 
@@ -76,7 +76,7 @@ class AuthorizationClientService(
         this.stop(async = true)
     }
 
-    override fun onMessage(message: AuthorizationService.Response, replyChannel: Channel?) {
+    override fun onMessage(message: AuthorizationService.NodeResponse, replyChannel: Channel?) {
         // TODO: Push authorization update handling. May revoke the node's authorization key
     }
 }

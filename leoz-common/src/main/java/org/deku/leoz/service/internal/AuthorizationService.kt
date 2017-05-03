@@ -24,14 +24,26 @@ interface AuthorizationService {
      * Created by masc on 30.06.15.
      */
     @Serializable(0xfac82346eb333e)
-    data class Request(
-            @ApiModelProperty(required = true)
+    data class NodeRequest(
+            /** Pre-generated key */
             var key: String = "",
-            @ApiModelProperty(required = true)
+            /** (Bundle) name of the instance, one of the string values of {@link BundleType} */
             var name: String = "",
-            @ApiModelProperty(required = false)
+            /** Opaque system info (usually json blob) */
             var systemInfo: String = ""
     )
+
+    /**
+     * Authorization message, sent to and consumed by nodes
+     * Created by masc on 30.06.15.
+     */
+    @Serializable(0xde6de342d7a635)
+    data class NodeResponse(
+            var key: String = "",
+            /** Key was authorized or not */
+            var authorized: Boolean = false,
+            /** If the key was rejected for any reason, eg. the short representation of key was a duplicate */
+            var rejected: Boolean = false)
 
     /**
      * User credentials
@@ -45,7 +57,11 @@ interface AuthorizationService {
      * Mobile device info
      */
     data class Mobile(
+            /** Device model */
+            var model: String = "",
+            /** Device serial number */
             var serial: String = "",
+            /** Device IMEI */
             var imei: String = ""
     )
 
@@ -63,17 +79,6 @@ interface AuthorizationService {
     data class MobileResponse(
             var key: String = ""
     )
-
-    /**
-     * Authorization message, sent to and consumed by nodes
-     * Created by masc on 30.06.15.
-     */
-    @Serializable(0xde6de342d7a635)
-    data class Response(
-            var key: String = "",
-            var authorized: Boolean = false,
-            /** If the key was rejected for any reason, eg. the short representation of key was a duplicate */
-            var rejected: Boolean = false)
 
     /**
      * Request authorization
