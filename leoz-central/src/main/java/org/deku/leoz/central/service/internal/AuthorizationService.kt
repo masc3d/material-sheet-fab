@@ -35,7 +35,7 @@ class AuthorizationService
     private val dispatcher = EventDispatcher.createThreadSafe<Listener>()
     public val delegate: EventDelegate<Listener> = dispatcher
 
-    override fun request(request: AuthorizationService.Request): AuthorizationService.Response {
+    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.MobileResponse {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

@@ -1,7 +1,6 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
-import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 import io.swagger.annotations.ApiOperation
 import sx.io.serialization.Serializable
@@ -15,7 +14,7 @@ import javax.ws.rs.core.MediaType
  * Authorization service
  * Created by masc on 01.05.17.
  */
-@Path("internal/v1/authorization")
+@Path("internal/v1/authorize")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Authorization operations")
@@ -31,18 +30,39 @@ interface AuthorizationService {
             @ApiModelProperty(required = true)
             var name: String = "",
             @ApiModelProperty(required = false)
-            var systemInfo: String = "",
-            @ApiModelProperty(required = true, value = "Mobile device info. Required when invoked via REST.")
+            var systemInfo: String = ""
+    )
+
+    /**
+     * User credentials
+     */
+    data class Credentials(
+            var name: String = "",
+            var password: String = ""
+    )
+
+    /**
+     * Mobile device info
+     */
+    data class Mobile(
+            var serial: String = "",
+            var imei: String = ""
+    )
+
+    /**
+     * Mobile authorization request
+     */
+    data class MobileRequest(
+            var user: Credentials? = null,
             var mobile: Mobile? = null
-    ) {
-        /**
-         * Mobile device information block
-         */
-        data class Mobile(
-                @ApiModelProperty(required = true)
-                var imei: String = ""
-        )
-    }
+    )
+
+    /**
+     * Mobile authorization response
+     */
+    data class MobileResponse(
+            var key: String = ""
+    )
 
     /**
      * Authorization message, sent to and consumed by nodes
@@ -60,7 +80,7 @@ interface AuthorizationService {
      * @param request Authorization request
      */
     @PATCH
-    @Path("/request")
-    @ApiOperation(value = "Request device/instance authorization")
-    fun request(request: Request): Response
+    @Path("/mobile")
+    @ApiOperation(value = "Request mobile device authorization")
+    fun authorizeMobile(request: MobileRequest): MobileResponse
 }
