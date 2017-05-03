@@ -23,7 +23,7 @@ class Login {
     private val device: Device = Kodein.global.instance()
     private val authService: AuthorizationService by Kodein.global.lazy.instance()
 
-    private val SALT = "".parseHex()
+    private val SALT = "f169bf5444f57fbc4abdd5d089c8395e".parseHex()
 
     // Consumers can observe this property for changes
     val authenticatedUserProperty = ObservableRxProperty<User?>(null)
