@@ -49,7 +49,9 @@ interface AuthorizationService {
      * User credentials
      */
     data class Credentials(
-            var name: String = "",
+            @ApiModelProperty(value = "User email address", example = "user@deku.org", required = true)
+            var email: String = "",
+            @ApiModelProperty(value = "User password", example = "password", required = true)
             var password: String = ""
     )
 
@@ -58,10 +60,13 @@ interface AuthorizationService {
      */
     data class Mobile(
             /** Device model */
+            @ApiModelProperty(value = "Mobile device model", example = "Honeywell", required = true)
             var model: String = "",
             /** Device serial number */
+            @ApiModelProperty(value = "Mobile device serial", example = "ABCDEFGH", required = true)
             var serial: String = "",
             /** Device IMEI */
+            @ApiModelProperty(value = "Mobile device imei", example = "990000862471854", required = true)
             var imei: String = ""
     )
 
@@ -69,7 +74,9 @@ interface AuthorizationService {
      * Mobile authorization request
      */
     data class MobileRequest(
+            @ApiModelProperty(value = "User credentials", required = true)
             var user: Credentials? = null,
+            @ApiModelProperty(value = "Mobile device info", required = true)
             var mobile: Mobile? = null
     )
 

@@ -26,8 +26,8 @@ open class UserJooqRepository {
         return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.API_KEY.eq(key))
     }
 
-    fun findByMail(mail: String): MstUserRecord? {
-        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.EMAIL.eq(mail))
+    fun findByMail(email: String): MstUserRecord? {
+        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.EMAIL.eq(email))
     }
 
     fun findByAlias(alias: String): MstUserRecord? {
