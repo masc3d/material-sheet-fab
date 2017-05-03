@@ -65,7 +65,6 @@ class Identity constructor(
 
     /**
      * Identity key
-     * TODO: should become .key property/refactor all consumers carefully
      */
     val key: Key
 
