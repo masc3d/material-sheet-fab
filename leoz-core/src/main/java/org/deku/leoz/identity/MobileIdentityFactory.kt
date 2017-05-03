@@ -1,7 +1,5 @@
-package org.deku.leoz.mobile
+package org.deku.leoz.identity
 
-import org.deku.leoz.Identity
-import org.deku.leoz.IdentityFactory
 import org.deku.leoz.bundle.BundleType
 import sx.security.DigestType
 import sx.security.getInstance

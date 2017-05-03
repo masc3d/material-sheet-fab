@@ -1,6 +1,5 @@
 package org.deku.leoz.service.entity.internal.update
 
-import org.deku.leoz.Identity
 import sx.packager.Bundle
 import sx.packager.BundleInstaller
 import sx.packager.BundleRepository
@@ -8,6 +7,7 @@ import org.deku.leoz.bundle.boot
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.PublishSubject
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.Lifecycle
 import sx.concurrent.Service

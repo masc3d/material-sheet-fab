@@ -1,5 +1,6 @@
-package org.deku.leoz
+package org.deku.leoz.identity
 
+import org.deku.leoz.YamlPersistence
 import sx.io.serialization.Serializable
 import java.io.File
 

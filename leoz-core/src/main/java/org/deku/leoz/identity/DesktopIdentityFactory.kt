@@ -1,10 +1,9 @@
-package org.deku.leoz
+package org.deku.leoz.identity
 
-import org.deku.leoz.bundle.BundleType
+import org.deku.leoz.SystemInformation
 import sx.security.DigestType
 import sx.security.getInstance
 import sx.text.toHexString
-import java.security.MessageDigest
 import java.security.SecureRandom
 
 /**

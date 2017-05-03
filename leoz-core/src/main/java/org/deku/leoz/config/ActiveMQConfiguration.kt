@@ -2,7 +2,7 @@ package org.deku.leoz.config
 
 import org.apache.activemq.command.ActiveMQQueue
 import org.apache.activemq.command.ActiveMQTopic
-import org.deku.leoz.Identity
+import org.deku.leoz.identity.Identity
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
 import sx.jms.Channel

@@ -1,10 +1,10 @@
 package org.deku.leoz.central.service.internal
 
-import org.deku.leoz.Identity
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.verifyPassword
-import org.deku.leoz.mobile.MobileIdentityFactory
+import org.deku.leoz.identity.Identity
+import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
@@ -14,7 +14,6 @@ import sx.event.EventListener
 import sx.jms.Handler
 import sx.logging.slf4j.info
 import sx.rs.auth.ApiKey
-import sx.text.parseHex
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path

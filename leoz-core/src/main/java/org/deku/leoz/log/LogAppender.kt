@@ -3,7 +3,7 @@ package org.deku.leoz.log
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.spi.LoggingEvent
 import ch.qos.logback.core.AppenderBase
-import org.deku.leoz.Identity
+import org.deku.leoz.identity.Identity
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.Lifecycle

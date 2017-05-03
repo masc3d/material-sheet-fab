@@ -1,4 +1,4 @@
-package org.deku.leoz
+package org.deku.leoz.identity
 
 /**
  * Identity factory interface
