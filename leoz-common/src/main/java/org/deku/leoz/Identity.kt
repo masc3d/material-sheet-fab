@@ -42,7 +42,7 @@ class Identity constructor(
     }
 
     /**
-     * Persistent stat
+     * Persistent state
      */
     @Serializable
     class State(
@@ -89,6 +89,6 @@ class Identity constructor(
     }
 
     override fun toString(): String {
-        return "Identity name [${this.name}] short key [${this.shortKey}]"
+        return "Identity name [${this.name}] id [${this.shortKey}]"
     }
 }

@@ -3,6 +3,7 @@ package org.deku.leoz.service.internal
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiModelProperty
 import io.swagger.annotations.ApiOperation
+import org.deku.leoz.hashUserPassword
 import sx.io.serialization.Serializable
 import sx.rs.PATCH
 import javax.ws.rs.Consumes
@@ -95,4 +96,9 @@ interface AuthorizationService {
     @Path("/mobile")
     @ApiOperation(value = "Request mobile device authorization")
     fun authorizeMobile(request: MobileRequest): MobileResponse
+
+    // Extensions
+    fun Credentials.hashPassword(salt: ByteArray): String {
+        return hashUserPassword(salt = salt, email = this.email, password = this.password)
+    }
 }

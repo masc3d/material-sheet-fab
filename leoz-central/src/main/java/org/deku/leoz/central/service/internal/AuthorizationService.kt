@@ -13,10 +13,7 @@ import sx.event.EventListener
 import sx.jms.Handler
 import sx.logging.slf4j.info
 import sx.rs.auth.ApiKey
-import sx.security.DigestType
-import sx.security.getInstance
 import sx.text.parseHex
-import sx.text.toHexString
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -30,7 +27,7 @@ import javax.ws.rs.core.Response
 @ApiKey(false)
 @Path("internal/v1/authorize")
 class AuthorizationService
-:
+    :
         org.deku.leoz.service.internal.AuthorizationService,
         Handler<AuthorizationService.NodeRequest> {
 
@@ -50,22 +47,8 @@ class AuthorizationService
     private val dispatcher = EventDispatcher.createThreadSafe<Listener>()
     public val delegate: EventDelegate<Listener> = dispatcher
 
-
-    /**
-     * Calculate password hash
-     * @param email User email
-     * @param password User password
-     */
-    private fun hashPassword(email: String, password: String): String {
-        // Backend specific salt. This one shouldn't be reused on other devices
-        val salt = "27abf393a822078603768c78de67e4a3"
-
-        val m = DigestType.SHA1.getInstance()
-        m.update(salt.parseHex())
-        m.update(email.toByteArray())
-        m.update(password.toByteArray())
-        return m.digest().toHexString()
-    }
+    // Backend specific salt. This one shouldn't be reused on other devices
+    val salt = "27abf393a822078603768c78de67e4a3".parseHex()
 
     /**
      * Mobile authorization request
@@ -88,9 +71,7 @@ class AuthorizationService
             throw DefaultProblem(title = "User does not exist")
 
         // Verify credentials
-        val hashedPassword = this.hashPassword(
-                email = user.email,
-                password = user.password)
+        val hashedPassword = user.hashPassword(salt)
 
         if (userRecord.password != hashedPassword)
             throw DefaultProblem(
