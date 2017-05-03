@@ -8,21 +8,16 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.service.internal.AuthorizationService
-import org.deku.leoz.service.internal.UserService
-import sx.android.Device
+import sx.android.Connectivity
 import sx.rx.ObservableRxProperty
-import sx.rx.task
-import sx.security.DigestType
-import sx.text.toHexString
-import java.security.MessageDigest
-import java.util.concurrent.ExecutorService
 
 /**
  * Login model
  * Created by n3 on 27.04.17.
  */
 class Login {
-    private val device: Device by Kodein.global.lazy.instance()
+    private val connectivity: Connectivity by Kodein.global.lazy.instance()
+
     // Consumers can observe this property for changes
     val authenticationResponseProperty = ObservableRxProperty<AuthorizationService.MobileResponse>(AuthorizationService.MobileResponse(""))
     // Delegated property for convenient access
@@ -39,7 +34,7 @@ class Login {
         val task = Observable.fromCallable {
             val authResponse: AuthorizationService.MobileResponse
 
-            if(device.isConnectedToInternet()) {
+            if(connectivity.isEstablished) {
                 authResponse = authService.authorizeMobile(authRequest)
                 //TODO: Store/Update local credentials in DB
             } else {

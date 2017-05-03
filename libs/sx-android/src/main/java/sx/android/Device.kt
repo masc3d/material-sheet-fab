@@ -7,8 +7,6 @@ import android.net.NetworkInfo
 import android.os.Build
 import android.provider.Settings
 
-
-
 /**
  * Generic android device class, exposing device specific information like ids and serials
  * Created by masc on 26/02/2017.
@@ -65,23 +63,5 @@ open class Device(private val context: Context) {
 
     override fun toString(): String {
         return "Device(imei=${imei}, androidId=${androidId}) serial=${serial} manufacturer=${manufacturer} model=${model}"
-    }
-
-    fun isConnectedToInternet(): Boolean {
-
-        // get Connectivity Manager object to check connection
-        val connectivityManager = this.context.getConnectivityManager()
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo
-
-
-        if(activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting) {
-            return true
-        }
-
-        connectivityManager.allNetworkInfo
-                .filter { it.isConnectedOrConnecting }
-                .forEach { return true }
-
-        return false
     }
 }
