@@ -4,10 +4,8 @@ import org.deku.leoz.Identity
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.mobile.MobileIdentityFactory
 import org.deku.leoz.node.rest.DefaultProblem
-import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
-import org.zalando.problem.Problem
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
@@ -40,8 +38,8 @@ class AuthorizationService
     public val delegate: EventDelegate<Listener> = dispatcher
 
     override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.MobileResponse {
-        val serial = request.mobile.serial
-        val imei = request.mobile.imei
+        val serial = request.mobile?.serial
+        val imei = request.mobile?.imei
 
         if (serial.isNullOrEmpty() || imei.isNullOrEmpty())
             throw DefaultProblem(title = "At least one of serial or imei must be provided")
@@ -54,7 +52,7 @@ class AuthorizationService
         val identity = identityFactory.create()
 
         return AuthorizationService.MobileResponse(
-                key = identity.keyInstance.value
+                key = identity.key.value
         )
     }
 

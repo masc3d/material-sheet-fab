@@ -36,7 +36,7 @@ open class MessageListenerConfiguration {
     // Listeners
     val nodeQueueListener by lazy {
         SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.nodeQueue(this.application.identity.keyInstance)) },
+                { Channel(ActiveMQConfiguration.instance.nodeQueue(this.application.identity.key)) },
                 executorService)
     }
 

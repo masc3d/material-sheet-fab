@@ -42,7 +42,7 @@ class AuthorizationClientService(
         // Setup message
         val authorizationRequest = AuthorizationService.NodeRequest()
         authorizationRequest.name = identity.name
-        authorizationRequest.key = identity.keyInstance.value
+        authorizationRequest.key = identity.key.value
 
         // Serialize system info to json
         val jsonMapper = ObjectMapper()

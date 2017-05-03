@@ -11,7 +11,7 @@ import java.io.File
  * Created by masc on 26.06.15.
  */
 class Identity constructor(
-        val key: String,
+        key: String,
         val name: String) {
 
     /**
@@ -50,7 +50,7 @@ class Identity constructor(
             var key: String = "",
             var name: String = "") {
 
-        constructor(identity: Identity) : this(identity.key, identity.name)
+        constructor(identity: Identity) : this(identity.key.value, identity.name)
     }
 
     companion object {
@@ -64,19 +64,19 @@ class Identity constructor(
     }
 
     /**
-     * Key
+     * Identity key
      * TODO: should become .key property/refactor all consumers carefully
      */
-    val keyInstance: Key
+    val key: Key
 
     /**
      * Id/short key
      */
     val shortKey: String
-        get() = keyInstance.short
+        get() = this.key.short
 
     init {
-        this.keyInstance = Key(key)
+        this.key = Key(key)
     }
 
     /**
@@ -90,6 +90,6 @@ class Identity constructor(
     }
 
     override fun toString(): String {
-        return "Identity name [${name}] key [${key}]"
+        return "Identity name [${this.name}] short key [${this.shortKey}]"
     }
 }

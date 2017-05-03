@@ -61,7 +61,7 @@ class LogAppender(
                 try {
                     Channel(this@LogAppender.logChannelConfiguration).use {
                         it.send(LogMessage(
-                                this@LogAppender.identitySupplier().keyInstance.value,
+                                this@LogAppender.identitySupplier().key.value,
                                 logMessageBuffer.toTypedArray()))
                     }
                 } catch (e: Exception) {

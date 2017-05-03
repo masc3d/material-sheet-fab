@@ -2,10 +2,8 @@ package org.deku.leoz.node.config
 
 import com.google.common.base.Strings
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.config.ArtemisConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
-import org.deku.leoz.node.config.RemotePeerConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
@@ -15,7 +13,6 @@ import sx.jms.activemq.ActiveMQBroker
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * ActiveMQ broker configuration
@@ -50,7 +47,7 @@ open class MessageBrokerConfiguration {
 
         // Broker configuration, must occur before tunnel servlet starts
         log.info("Configuring messaging broker")
-        ActiveMQBroker.instance.brokerName = "leoz-aq-${this.application.identity.keyInstance.short}"
+        ActiveMQBroker.instance.brokerName = "leoz-aq-${this.application.identity.key.short}"
         ActiveMQBroker.instance.dataDirectory = storage.activeMqDataDirectory
         ActiveMQBroker.instance.nativeTcpPort = this.settings.nativePort
 
