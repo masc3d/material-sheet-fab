@@ -61,7 +61,7 @@ interface AuthorizationService {
      */
     data class Mobile(
             /** Device model */
-            @ApiModelProperty(value = "Mobile device model", example = "Honeywell", required = true)
+            @ApiModelProperty(value = "Mobile device model", example = "CT-50", required = true)
             var model: String = "",
             /** Device serial number */
             @ApiModelProperty(value = "Mobile device serial", example = "ABCDEFGH", required = true)

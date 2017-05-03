@@ -4,11 +4,14 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.provider
+import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.deku.leoz.service.internal.StationService
 import org.deku.leoz.service.internal.UserService
+import org.deku.leoz.service.internal.entity.User
 import sx.rs.proxy.RestClientProxy
 import java.net.URI
+import java.sql.Date
 
 /**
  * Base class for JAX/RS REST client configurations
@@ -74,7 +77,37 @@ abstract class RestClientConfiguration {
             }
 
             bind<UserService>() with provider {
-                createServiceProxy(config = instance(), serviceType = UserService::class.java)
+                //createServiceProxy(config = instance(), serviceType = UserService::class.java)
+                object : UserService {
+                    override fun get(email: String?): User {
+                        return User(
+                                email = "foo@bar.com",
+                                debitorId = 0,
+                                stations = listOf("002", "020", "100"),
+                                alias = "testuser",
+                                role = User.ROLE_DRIVER,
+                                password = "password",
+                                salt = "salt",
+                                firstName = "Foo",
+                                lastName = "Bar",
+                                apiKey = "a1b2c3d4e5g6",
+                                active = true,
+                                externalUser = false,
+                                phone = "+491725405765",
+                                expiresOn = Date(Date.parse("31.12.2099"))
+                        )
+                    }
+                }
+            }
+
+            bind<AuthorizationService>() with provider {
+                object : AuthorizationService {
+                    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.MobileResponse {
+                        return AuthorizationService.MobileResponse(
+                                key = "a1b2c3d4"
+                        )
+                    }
+                }
             }
         }
     }

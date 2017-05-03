@@ -37,4 +37,7 @@
     <string name="error_invalid_credentials">Email &amp; Passwort Kombination konnte nicht gefunden werden.</string>
     <string name="hint_field_mail">max@mustermann.de</string>
     <string name="hint_field_password">Passwort</string>
+    <string name="delivery">Zustellung</string>
+    <string name="linehaul">Linie</string>
+    <string name="warehouse">Lager</string>
 </resources>

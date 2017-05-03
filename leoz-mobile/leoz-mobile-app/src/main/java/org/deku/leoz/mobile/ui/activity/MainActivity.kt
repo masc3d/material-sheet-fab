@@ -14,7 +14,6 @@ import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.model.Database
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.ui.AlertButton
-import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.fragment.MainFragment
 import org.deku.leoz.mobile.ui.showAlert
 import org.deku.leoz.mobile.ui.showErrorAlert
@@ -26,7 +25,7 @@ import android.view.LayoutInflater
 
 
 
-class MainActivity : Activity(), LoginFragment.OnLoginSuccessfulListener {
+class MainActivity : Activity() {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val PRIVATE_PREF = "leoz.app"
     private val VERSION_KEY = "version_number"
@@ -95,9 +94,6 @@ class MainActivity : Activity(), LoginFragment.OnLoginSuccessfulListener {
         super.onResume()
     }
 
-    override fun onLoginSuccessful(userAlias: String, userStation: String) {
-    }
-
     private fun showWhatsNewDialog() {
         val inflater = LayoutInflater.from(this)
 
@@ -106,7 +102,7 @@ class MainActivity : Activity(), LoginFragment.OnLoginSuccessfulListener {
         val builder = AlertDialog.Builder(this)
 
         builder.setView(view)
-                .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+                .setPositiveButton(getString(R.string.dismiss), DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
 
         builder.create().show()
     }

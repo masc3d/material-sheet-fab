@@ -1,9 +1,13 @@
 package sx.android
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkInfo
 import android.os.Build
 import android.provider.Settings
-import android.telephony.TelephonyManager
+
+
 
 /**
  * Generic android device class, exposing device specific information like ids and serials
@@ -46,6 +50,11 @@ open class Device(private val context: Context) {
         telephonyManager.deviceId
     }
 
+    val phone: String by lazy {
+        val telephonyManager = this.context.getTelephonyManager()
+        telephonyManager.line1Number
+    }
+
     val androidId: String by lazy {
         Settings.Secure.getString(this.context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
@@ -56,5 +65,23 @@ open class Device(private val context: Context) {
 
     override fun toString(): String {
         return "Device(imei=${imei}, androidId=${androidId}) serial=${serial} manufacturer=${manufacturer} model=${model}"
+    }
+
+    fun isConnectedToInternet(): Boolean {
+
+        // get Connectivity Manager object to check connection
+        val connectivityManager = this.context.getConnectivityManager()
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+
+
+        if(activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting) {
+            return true
+        }
+
+        connectivityManager.allNetworkInfo
+                .filter { it.isConnectedOrConnecting }
+                .forEach { return true }
+
+        return false
     }
 }

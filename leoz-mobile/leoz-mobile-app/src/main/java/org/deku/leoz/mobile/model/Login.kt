@@ -7,7 +7,9 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.service.internal.AuthorizationService
 import org.deku.leoz.service.internal.UserService
+import sx.android.Device
 import sx.rx.ObservableRxProperty
 import sx.rx.task
 import sx.security.DigestType
@@ -20,35 +22,32 @@ import java.util.concurrent.ExecutorService
  * Created by n3 on 27.04.17.
  */
 class Login {
+    private val device: Device by Kodein.global.lazy.instance()
     // Consumers can observe this property for changes
-    val authenticatedUserProperty = ObservableRxProperty<User?>(null)
+    val authenticationResponseProperty = ObservableRxProperty<AuthorizationService.MobileResponse>(AuthorizationService.MobileResponse(""))
     // Delegated property for convenient access
-    var authenticatedUser: User? by authenticatedUserProperty
+    var authenticationResponse: AuthorizationService.MobileResponse by authenticationResponseProperty
 
-    private val userService: UserService by Kodein.global.lazy.instance()
+    private val authService: AuthorizationService by Kodein.global.lazy.instance()
 
     /**
      * Authenticate user (asnychronously)
      * @param email User email
      * @param password User password
      */
-    fun authenticate(email: String, password: String): Observable<User> {
+    fun authenticate(authRequest: AuthorizationService.MobileRequest): Observable<AuthorizationService.MobileResponse> {
         val task = Observable.fromCallable {
-            // TODO: check if we're online, if not try offline auth against db
+            val authResponse: AuthorizationService.MobileResponse
 
-            val user = userService.get(email)
+            if(device.isConnectedToInternet()) {
+                authResponse = authService.authorizeMobile(authRequest)
+                //TODO: Store/Update local credentials in DB
+            } else {
+                //TODO: check request against local stored credentials
+                authResponse = AuthorizationService.MobileResponse("LOCAL_API-KEY_HERE")
+            }
 
-            // TODO: store user info in db
-
-            // TODO: hash password, verify
-            val md = MessageDigest.getInstance(DigestType.SHA256.value)
-            md.update(password.toByteArray())
-            // TODO: update digest with username derived salt etc.
-            val hash = md.digest().toHexString()
-
-            User(
-                    name = user.alias ?: "",
-                    hash = user.password ?: "")
+            authResponse
         }
                 .cache()
                 .subscribeOn(Schedulers.io())
@@ -57,7 +56,7 @@ class Login {
         // Subscribing to task will actually start it
         task.subscribe {
             // Store authenticated user in property
-            this.authenticatedUser = it
+            this.authenticationResponse = it
         }
 
         // Return task to consumer for optionally subscribing to running authentication task as well
