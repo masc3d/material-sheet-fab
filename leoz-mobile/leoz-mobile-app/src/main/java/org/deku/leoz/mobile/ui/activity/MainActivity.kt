@@ -21,14 +21,21 @@ import org.slf4j.LoggerFactory
 import sx.android.fragment.util.withTransaction
 import android.content.DialogInterface
 import android.view.LayoutInflater
-
-
+import com.github.salomonbrys.kodein.lazy
+import com.trello.rxlifecycle2.android.ActivityEvent
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.main_nav_header.*
+import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.model.User
+import org.deku.leoz.mobile.ui.fragment.MenueFragment
 
 
 class MainActivity : Activity() {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val PRIVATE_PREF = "leoz.app"
     private val VERSION_KEY = "version_number"
+    private val login: Login by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +99,20 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+
+        login.authenticatedUserProperty
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    val user: User? = it.value
+                    if (user != null && user.hash.isNotBlank()) {
+                        uxActiveUser.text = user.name
+                        this.supportActionBar?.title = "Menue"
+                        this.supportFragmentManager.withTransaction {
+                            it.replace(R.id.uxContainer, MenueFragment())
+                        }
+                    }
+                }
     }
 
     private fun showWhatsNewDialog() {

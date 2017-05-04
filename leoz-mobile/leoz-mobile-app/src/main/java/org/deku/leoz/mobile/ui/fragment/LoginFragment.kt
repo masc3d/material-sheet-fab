@@ -17,9 +17,11 @@ import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.slf4j.LoggerFactory
 import sx.android.Device
 import sx.android.aidc.*
+import sx.android.fragment.util.withTransaction
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
 
@@ -36,29 +38,6 @@ class LoginFragment : Fragment() {
 
     interface OnLoginSuccessfulListener {
         fun onLoginSuccessful(userAlias: String, userStation: String)
-    }
-
-    //TODO: To be extracted / needs to be generic
-    private fun showProgress(show: Boolean) {
-        val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime)
-
-        val view = this.formContainer
-
-        view.visibility = if (show) View.GONE else View.VISIBLE
-        view.animate().setDuration(shortAnimTime.toLong()).alpha(
-                (if (show) 0 else 1).toFloat()).setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                view.visibility = if (show) View.GONE else View.VISIBLE
-            }
-        })
-
-        this.progress.visibility = if (show) View.VISIBLE else View.GONE
-        this.progress.animate().setDuration(shortAnimTime.toLong()).alpha(
-                (if (show) 1 else 0).toFloat()).setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                progress.visibility = if (show) View.VISIBLE else View.GONE
-            }
-        })
     }
 
     override fun onAttach(activity: Activity?) {
@@ -127,7 +106,6 @@ class LoginFragment : Fragment() {
 
             mailAddress = this.uxMailaddress.text.toString()
             password = this.uxPassword.text.toString()
-            showProgress(true)
 
             login.authenticate(
                     email = mailAddress,
@@ -135,9 +113,9 @@ class LoginFragment : Fragment() {
             )
                     .bindUntilEvent(this, FragmentEvent.PAUSE)
                     .subscribe {
-                        showProgress(false)
                         if (it != null && it.hash.isNotBlank()) {
                             //Login succeeded
+
                         } else {
                             //Login failed
                             tone.beep()
