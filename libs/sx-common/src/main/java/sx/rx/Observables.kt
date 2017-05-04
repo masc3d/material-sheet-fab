@@ -13,8 +13,8 @@ import java.util.concurrent.CancellationException
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
-fun <T> T.toSingletonObservable() : Observable<T> = Observable.just(this)
-fun <T> Throwable.toObservable() : Observable<T> = Observable.error(this)
+fun <T> T.toSingletonObservable(): Observable<T> = Observable.just(this)
+fun <T> Throwable.toObservable(): Observable<T> = Observable.error(this)
 
 /**
  * Subscribe on a specific executor
@@ -59,9 +59,9 @@ fun <T> Observable<T>.toHotReplay(executor: Executor? = null): Observable<T> {
  * Transform Observable into a hot one with replay applied
  */
 fun <T> Observable<T>.toHotReplay(scheduler: Scheduler? = null): Observable<T> {
-    return this.compose {
-        if (scheduler != null) this.subscribeOn(scheduler) else this
-    }
+    return (if (scheduler != null) this.subscribeOn(scheduler) else this)
+            .replay()
+            .connected()
 }
 
 fun <T> Observable<T>.toHotReplay(): Observable<T> {
