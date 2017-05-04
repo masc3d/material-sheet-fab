@@ -80,6 +80,9 @@ class AuthorizationService
 
         val identity = identityFactory.create()
 
+        // TODO: check against/create `mst_node` entry
+        // TODO: add hash for mobile device info to prevent forging
+
         return AuthorizationService.MobileResponse(
                 key = identity.key.value
         )
