@@ -131,8 +131,7 @@ class ActiveMQBroker private constructor()
         brokerService.addConnector("vm://${this.brokerName}")
 
         // Statically defined transport connectors for native clients to connect to
-        brokerService.addConnector(String.format("tcp://0.0.0.0:%d",
-                this.nativeTcpPort))
+        brokerService.addConnector("auto+nio://0.0.0.0:${this.nativeTcpPort}")
 
         // Peer/network connectors for brokers to inter-connect
         for (pb in this.peerBrokers) {
