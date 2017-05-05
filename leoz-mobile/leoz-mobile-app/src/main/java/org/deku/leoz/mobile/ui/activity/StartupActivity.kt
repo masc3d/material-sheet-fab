@@ -22,6 +22,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.mobile.service.LocationService
 import sx.android.Device
 import sx.android.aidc.AidcReader
 import java.util.concurrent.TimeUnit
@@ -126,6 +127,9 @@ class StartupActivity : RxAppCompatActivity() {
                             log.error(e.message, e)
                             this@StartupActivity.finishAffinity()
                         })
+
+            val serviceIntent = Intent(applicationContext, LocationService::class.java)
+            this.startService(serviceIntent)
         } else {
             this.startMainActivity(withAnimation = false)
         }

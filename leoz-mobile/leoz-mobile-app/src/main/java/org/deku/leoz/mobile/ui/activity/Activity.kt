@@ -1,12 +1,16 @@
 package org.deku.leoz.mobile.ui.activity
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
+import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -26,6 +30,7 @@ import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import org.w3c.dom.Text
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
@@ -41,6 +46,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
     private val tone: Tone by Kodein.global.lazy.instance()
+    private val updateService: UpdateService by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +100,12 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                             event.apk.install(this@Activity)
                         })
                         sb.show()
+
+                        val navItem: TextView? = findViewById(R.id.nav_trigger_updateservice) as TextView
+                        navItem?.gravity = Gravity.CENTER_VERTICAL
+                        navItem?.setTypeface(null, Typeface.BOLD)
+                        navItem?.setTextColor(resources.getColor(R.color.colorAccent))
+                        navItem?.text = "1+"
                     })
 
         //endregion
@@ -132,6 +144,8 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
         // Handle navigation view item clicks here.
         val id = item.itemId
 
+        log.debug("ONNAVIGATIONITEMSELECTED [$id]")
+
         if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
@@ -140,8 +154,8 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
 
         } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_share) {
-
+        } else if (id == R.id.nav_trigger_updateservice) {
+            updateService.trigger()
         } else if (id == R.id.nav_send) {
 
         }

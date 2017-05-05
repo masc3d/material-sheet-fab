@@ -1,7 +1,6 @@
 package org.deku.leoz.mobile.ui.activity
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -20,7 +19,9 @@ import org.deku.leoz.mobile.ui.showErrorAlert
 import org.slf4j.LoggerFactory
 import sx.android.fragment.util.withTransaction
 import android.content.DialogInterface
+import android.content.SharedPreferences
 import android.view.LayoutInflater
+import android.view.View
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
@@ -29,13 +30,13 @@ import kotlinx.android.synthetic.main.main_nav_header.*
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.User
 import org.deku.leoz.mobile.ui.fragment.MenueFragment
+import sx.android.SharedPreference
 
 
 class MainActivity : Activity() {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val PRIVATE_PREF = "leoz.app"
-    private val VERSION_KEY = "version_number"
     private val login: Login by Kodein.global.lazy.instance()
+    private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,25 +75,31 @@ class MainActivity : Activity() {
                         negativeButton = AlertButton(text = android.R.string.cancel))
             }).show()
         }
+    }
 
-        //Initiate ChangelogDialog  (Whats New)
-        val sharedPref = getSharedPreferences(PRIVATE_PREF, Context.MODE_PRIVATE)
+    /**
+     * Determine if changelog should be displayed automatically e.g. after an APP update.
+     * Display the dialog only after the user has been logged in
+     */
+    fun queryChangelogDisplay() {
         var currentVersionNumber = 0
-        val savedVersionNumber = sharedPref.getInt(VERSION_KEY, 0)
+        val savedVersionNumber = sharedPreferences.getInt(SharedPreference.CHANGELOG_VERSION.key, 0)
 
         try {
             val pi = packageManager.getPackageInfo(packageName, 0)
             currentVersionNumber = pi.versionCode
         } catch (e: Exception) {
-
+            log.error("${e.message}\r\n${e.stackTrace}")
         }
 
+        log.debug("Checking for changelog dialog. Current version [$currentVersionNumber] Recently saved version [$savedVersionNumber]")
+
         if (currentVersionNumber > savedVersionNumber) {
-            showWhatsNewDialog()
+            showChangelogDialog()
 
-            val editor = sharedPref.edit()
+            val editor = sharedPreferences.edit()
 
-            editor.putInt(VERSION_KEY, currentVersionNumber)
+            editor.putInt(SharedPreference.CHANGELOG_VERSION.key, currentVersionNumber)
             editor.apply()
         }
     }
@@ -106,20 +113,19 @@ class MainActivity : Activity() {
                 .subscribe {
                     val user: User? = it.value
                     if (user != null && user.hash.isNotBlank()) {
-                        uxActiveUser.text = user.name
+                        uxActiveUser?.text = user.name
                         this.supportActionBar?.title = "Menue"
                         this.supportFragmentManager.withTransaction {
                             it.replace(R.id.uxContainer, MenueFragment())
                         }
+                        queryChangelogDisplay()
                     }
                 }
     }
 
-    private fun showWhatsNewDialog() {
+    private fun showChangelogDialog() {
         val inflater = LayoutInflater.from(this)
-
         val view = inflater.inflate(R.layout.dialog_whatsnew, null)
-
         val builder = AlertDialog.Builder(this)
 
         builder.setView(view)

@@ -19,23 +19,27 @@
                 android:id="@+id/uxWarehouseGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="30dp"
                 android:divider="@drawable/divider_horizontal"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/imageButton"
-                    android:layout_width="200dp"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
                     android:padding="10dp"
+                    android:scaleType="fitCenter"
+                    android:tint="@color/colorPrimaryDark"
                     app:srcCompat="@drawable/ic_home" />
 
                 <TextView
                     android:id="@+id/textView4"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="@string/warehouse"
@@ -48,23 +52,27 @@
                 android:id="@+id/uxDeliveryGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="30dp"
                 android:divider="@drawable/divider_horizontal"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/imageView2"
-                    android:layout_width="200dp"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
                     android:padding="10dp"
+                    android:scaleType="fitCenter"
+                    android:tint="@color/colorPrimaryDark"
                     app:srcCompat="@drawable/ic_truck_delivery" />
 
                 <TextView
                     android:id="@+id/textView7"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="@string/delivery"
@@ -76,23 +84,27 @@
                 android:id="@+id/uxLinehaulGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="30dp"
                 android:divider="@drawable/divider_horizontal"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/imageView3"
-                    android:layout_width="200dp"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
                     android:padding="10dp"
+                    android:scaleType="fitCenter"
+                    android:tint="@color/colorPrimaryDark"
                     app:srcCompat="@drawable/ic_highway" />
 
                 <TextView
                     android:id="@+id/textView8"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="@string/linehaul"
@@ -109,17 +121,21 @@
 
                 <ImageButton
                     android:id="@+id/imageView4"
-                    android:layout_width="200dp"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:adjustViewBounds="true"
                     android:background="@android:color/transparent"
                     android:padding="10dp"
-                    android:src="@mipmap/ic_station_black_24dp" />
+                    android:scaleType="fitCenter"
+                    android:src="@mipmap/ic_station_black_24dp"
+                    android:tint="@color/colorPrimaryDark" />
 
                 <TextView
                     android:id="@+id/textView9"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="@string/hub"
