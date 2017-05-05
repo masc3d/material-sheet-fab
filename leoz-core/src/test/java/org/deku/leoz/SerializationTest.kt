@@ -3,6 +3,7 @@ package org.deku.leoz
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import org.deku.leoz.identity.Identity
 import org.junit.Assert
 import org.junit.Test
 import org.junit.experimental.categories.Category

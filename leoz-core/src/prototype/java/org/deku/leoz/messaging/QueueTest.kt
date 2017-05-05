@@ -30,13 +30,15 @@ class QueueTest : org.deku.leoz.MessagingTest() {
         val msg = mc.receive()
         //        msg.acknowledge()
         log.info(msg)
+
         s2.commit()
         mc.close()
 
         s2.close()
         s.close()
         q.delete()
+
         // TODO. verify that temp queue doesn't have pending entries (bug with activemq upto 5.13.1 when using temp queues within transaction)
-        Thread.sleep(Long.MAX_VALUE)
+//        Thread.sleep(Long.MAX_VALUE)
     }
 }
