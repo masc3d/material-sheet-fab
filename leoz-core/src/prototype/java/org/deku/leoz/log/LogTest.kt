@@ -1,10 +1,11 @@
 package org.deku.leoz.log
 
 import ch.qos.logback.classic.Logger
-import org.deku.leoz.Identity
+import org.deku.leoz.identity.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.identity.DesktopIdentityFactory
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.jms.Channel
@@ -27,7 +28,9 @@ class LogTest : org.deku.leoz.MessagingTest() {
         val logAppender = LogAppender(
                 broker = this.broker,
                 logChannelConfiguration= ActiveMQConfiguration.Companion.instance.centralLogQueue,
-                identitySupplier = { Identity.Companion.create(BundleType.LEOZ_NODE.value, SystemInformation.Companion.create()) })
+                identitySupplier = {
+                    DesktopIdentityFactory(BundleType.LEOZ_NODE.value, SystemInformation.Companion.create()).create()
+                })
         logAppender.start()
 
         val logRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
