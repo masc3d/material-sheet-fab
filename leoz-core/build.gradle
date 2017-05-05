@@ -146,3 +146,6 @@ configurations.all {
         }
     }
 }
+
+// Include sx platform/binaries
+tasks.testClasses.dependsOn(copyRsyncPlatformDirToProject)

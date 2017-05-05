@@ -65,3 +65,4 @@ workspace.xml
 local.properties
 libs/sx-packager-gradle/.idea/libraries
 runConfigurations.xml
+leoz-core/platform

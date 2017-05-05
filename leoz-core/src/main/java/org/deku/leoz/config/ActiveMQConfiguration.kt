@@ -18,6 +18,8 @@ import sx.jms.activemq.ActiveMQPooledConnectionFactory
  */
 class ActiveMQConfiguration() {
 
+    // TODO: migrate to Kodein module
+
     companion object {
         // Leoz broker configuration only has a single user which is defined here
         val USERNAME = "leoz"
@@ -44,7 +46,7 @@ class ActiveMQConfiguration() {
                 PASSWORD)
     }
 
-    val broker: Broker
+    val broker: ActiveMQBroker
         get() = ActiveMQBroker.instance
 
     val centralQueue: Channel.Configuration by lazy({

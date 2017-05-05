@@ -1,15 +1,23 @@
 package org.deku.leoz.log
 
 import ch.qos.logback.classic.Logger
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.MessagingTestConfiguration
 import org.deku.leoz.identity.DesktopIdentityFactory
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.jms.Channel
 import sx.jms.Handler
+import sx.jms.activemq.ActiveMQBroker
 import sx.jms.listeners.SpringJmsListener
 
 import javax.jms.JMSException
@@ -18,8 +26,24 @@ import java.util.concurrent.Executors
 /**
  * @author masc
  */
-class LogTest : org.deku.leoz.MessagingTest() {
+class LogTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    init {
+        Kodein.global.addImport(MessagingTestConfiguration.module)
+    }
+
+    val broker: ActiveMQBroker by Kodein.global.lazy.instance()
+
+    @BeforeClass
+    fun setup() {
+        this.broker.start()
+    }
+
+    @AfterClass
+    fun tearDown() {
+        this.broker.stop()
+    }
 
     @Test
     @Throws(JMSException::class)

@@ -1,18 +1,42 @@
 package org.deku.leoz.messaging
 
-import org.deku.leoz.MessagingTest
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.MessagingTestConfiguration
+import org.junit.After
+import org.junit.AfterClass
+import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import sx.jms.activemq.ActiveMQBroker
 import javax.jms.DeliveryMode
 import sx.logging.slf4j.*
 
 /**
  * Created by masc on 20/02/16.
  */
-class QueueTest : org.deku.leoz.MessagingTest() {
+class JmsTest {
     val log = LoggerFactory.getLogger(this.javaClass)
-    val configuration = ActiveMQConfiguration.instance
+
+    init {
+        Kodein.global.addImport(MessagingTestConfiguration.module)
+    }
+
+    val broker: ActiveMQBroker by Kodein.global.lazy.instance()
+
+    @Before
+    fun setup() {
+        this.broker.start()
+    }
+
+    @After
+    fun tearDown() {
+        this.broker.stop()
+    }
 
     @Test
     fun testTemporaryQueueSendReceiveWithTransaction() {
