@@ -66,7 +66,10 @@ dependencies {
             "com.netflix.feign:feign-jaxrs:$v_feign",
 
             // YAML
-            "org.yaml:snakeyaml:$v_snakeyaml"
+            "org.yaml:snakeyaml:$v_snakeyaml",
+
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
     )
 
     testCompile(
@@ -80,7 +83,10 @@ dependencies {
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
-            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson"
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
+
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
     )
 }
 

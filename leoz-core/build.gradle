@@ -133,7 +133,10 @@ dependencies {
             },
 
             // Spring
-            "org.springframework:spring-jms:$v_spring"
+            "org.springframework:spring-jms:$v_spring",
+
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
     )
 }
 

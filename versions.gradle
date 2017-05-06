@@ -30,6 +30,7 @@ buildscript {
         v_kotlin = '1.1.2-2'
         v_kryo = '4.0.0'
         v_logback = '1.2.3'
+        v_paho = '1.1.1'
         v_protostuff = '1.5.3'
         v_rxjava = '2.1.0'
         v_rxjavafx = '2.0.2'
