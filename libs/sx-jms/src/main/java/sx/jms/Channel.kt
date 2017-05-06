@@ -5,7 +5,7 @@ import sx.Disposable
 import sx.LazyInstance
 import sx.io.serialization.Serializer
 import java.io.Closeable
-import java.time.Duration
+import sx.time.Duration
 import java.util.*
 import java.util.concurrent.TimeoutException
 import javax.jms.*
