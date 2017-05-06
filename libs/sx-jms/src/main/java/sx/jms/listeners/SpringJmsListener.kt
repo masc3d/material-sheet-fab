@@ -14,13 +14,14 @@ import javax.jms.Session
 /**
  * Spring listener implementation
  * Created by masc on 07.06.15.
- * @param connectionFactory
- * @property destination
- * @param converter Message converter
+ * @param channel The channel to listen on
+ * @param durationClientId The client id to use for durable topic subscriptions. Setting this identifier enables durable subscription.
+ * @param executor The executor to spawn threads from
  */
 open class SpringJmsListener(
         channel: () -> Channel,
-        private val executor: Executor)
+        private val executor: Executor,
+        private val durableClientId: String? = null)
     :
         Listener(channel),
         ErrorHandler {
@@ -50,6 +51,10 @@ open class SpringJmsListener(
         if (lc == null) {
             lc = DefaultMessageListenerContainer()
 
+            if (this.durableClientId != null) {
+                lc.clientId = this.durableClientId
+                lc.isSubscriptionDurable = true
+            }
             lc.connectionFactory = this.channel.connectionFactory
             lc.messageListener = object : SessionAwareMessageListener<Message> {
                 @Throws(JMSException::class)
