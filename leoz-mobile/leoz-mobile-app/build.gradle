@@ -201,6 +201,8 @@ dependencies {
             // Signature pad
             "com.github.gcacace:signature-pad:1.2.1",
 
+            "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
+
             // FOR TESTING
             //Reactive Location
             "pl.charmas.android:android-reactive-location:0.10@aar",

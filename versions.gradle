@@ -27,7 +27,7 @@ buildscript {
         v_jooq = '3.9.2'
         v_junit = '4.12'
         v_kodein = '3.3.0'
-        v_kotlin = '1.1.2-2'
+        v_kotlin = '1.1.2-3'
         v_kryo = '4.0.0'
         v_logback = '1.2.3'
         v_paho = '1.1.1'
