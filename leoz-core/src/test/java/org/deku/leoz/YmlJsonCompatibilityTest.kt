@@ -18,7 +18,7 @@ import java.io.StringWriter
  * Created by masc on 27/10/2016.
  */
 @Category(StandardTest::class)
-class SerializationTest {
+class YmlJsonCompatibilityTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     /**
