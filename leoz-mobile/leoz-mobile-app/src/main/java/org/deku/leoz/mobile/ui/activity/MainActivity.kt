@@ -21,7 +21,6 @@ import sx.android.fragment.util.withTransaction
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.view.LayoutInflater
-import android.view.View
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
@@ -30,7 +29,7 @@ import kotlinx.android.synthetic.main.main_nav_header.*
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.User
 import org.deku.leoz.mobile.ui.fragment.MenueFragment
-import sx.android.SharedPreference
+import org.deku.leoz.mobile.SharedPreference
 
 
 class MainActivity : Activity() {
