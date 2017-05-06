@@ -11,7 +11,9 @@ import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.MessagingTestConfiguration
 import org.deku.leoz.identity.DesktopIdentityFactory
+import org.junit.After
 import org.junit.AfterClass
+import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -35,12 +37,12 @@ class LogTest {
 
     val broker: ActiveMQBroker by Kodein.global.lazy.instance()
 
-    @BeforeClass
+    @Before
     fun setup() {
         this.broker.start()
     }
 
-    @AfterClass
+    @After
     fun tearDown() {
         this.broker.stop()
     }
@@ -51,7 +53,7 @@ class LogTest {
         // Setup log appender
         val logAppender = LogAppender(
                 broker = this.broker,
-                logChannelConfiguration= ActiveMQConfiguration.Companion.instance.centralLogQueue,
+                logChannelConfiguration= ActiveMQConfiguration.instance.centralLogQueue,
                 identitySupplier = {
                     DesktopIdentityFactory(BundleType.LEOZ_NODE.value, SystemInformation.Companion.create()).create()
                 })
@@ -74,7 +76,7 @@ class LogTest {
     fun testReceive() {
         // Setup log message listener
         val listener = object : SpringJmsListener(
-                { Channel(ActiveMQConfiguration.Companion.instance.centralLogQueue) },
+                { Channel(ActiveMQConfiguration.instance.centralLogQueue) },
                 Executors.newSingleThreadExecutor()) {
 
         }

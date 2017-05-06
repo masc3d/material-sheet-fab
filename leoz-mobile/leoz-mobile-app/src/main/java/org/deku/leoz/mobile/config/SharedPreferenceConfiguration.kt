@@ -6,7 +6,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import sx.android.PREFERENCE_TAG
+import org.deku.leoz.mobile.PREFERENCE_TAG
 
 /**
  * Created by 27694066 on 05.05.2017.

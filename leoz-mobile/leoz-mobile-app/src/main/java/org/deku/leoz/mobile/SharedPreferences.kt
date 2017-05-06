@@ -1,4 +1,4 @@
-package sx.android
+package org.deku.leoz.mobile
 
 /**
  * Created by 27694066 on 05.05.2017.
