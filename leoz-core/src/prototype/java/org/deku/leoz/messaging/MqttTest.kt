@@ -4,6 +4,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import org.apache.activemq.broker.region.virtual.CompositeTopic
+import org.apache.activemq.command.ActiveMQQueue
 import org.apache.activemq.command.ActiveMQTopic
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.MessagingTestConfiguration
@@ -42,6 +44,14 @@ class MqttTest {
 
     @Before
     fun setup() {
+        // Add composite destination, forwarding topic messages to queue
+        val d = CompositeTopic()
+        d.name = this.mqttTopic.topicName
+        d.forwardTo = listOf(this.mqttQueue)
+        d.isForwardOnly = true
+
+        this.broker.addCompositeDestination(d)
+
         this.broker.start()
     }
 
@@ -69,9 +79,22 @@ class MqttTest {
         this.client.disconnect()
     }
 
-    val channelConfig by lazy {
+    val mqttTopic by lazy { ActiveMQTopic("leoz.test.mqtt") }
+    val mqttQueue by lazy { ActiveMQQueue("leoz.test.mqtt.queue") }
+
+    val queueChannelConfig by lazy {
         Channel.Configuration(
-                destination = ActiveMQTopic("leoz.test.mqtt"),
+                destination = this.mqttQueue,
+                connectionFactory = ActiveMQPooledConnectionFactory(URI.create("tcp://localhost:61616"),
+                        username = ActiveMQConfiguration.USERNAME,
+                        password = ActiveMQConfiguration.PASSWORD),
+                converter = DefaultConverter(KryoSerializer().gzip),
+                deliveryMode = Channel.DeliveryMode.Persistent)
+    }
+
+    val topicChannelConfig by lazy {
+        Channel.Configuration(
+                destination = this.mqttTopic,
                 connectionFactory = ActiveMQPooledConnectionFactory(URI.create("tcp://localhost:61616"),
                         username = ActiveMQConfiguration.USERNAME,
                         password = ActiveMQConfiguration.PASSWORD),
@@ -80,15 +103,9 @@ class MqttTest {
     }
 
     @Test
-    fun testStartBroker() {
-        this.broker.start()
-        Thread.sleep(Long.MAX_VALUE)
-    }
-
-    @Test
     fun testListener() {
         val listener = object : SpringJmsListener(
-                { Channel(channelConfig) },
+                { Channel(queueChannelConfig) },
                 Executors.newSingleThreadExecutor(),
                 "mqtt-subscriber-1") {
 
@@ -111,7 +128,7 @@ class MqttTest {
         val logMessage = LogMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
 
         val channel = Channel(
-                configuration = channelConfig)
+                configuration = topicChannelConfig)
 
         // Receive
         channel.use {
@@ -123,11 +140,15 @@ class MqttTest {
 
     }
 
+    fun mqttTopicNameFromJmsDestinationName(name: String): String {
+        return name.replace('.', '/')
+    }
+
     @Test
     fun testPublish() {
         this.client.connect(connectOptions)
 
-        val TOPIC = "leoz/test/mqtt"
+        val mqttTopicName = mqttTopicNameFromJmsDestinationName(this.mqttTopic.topicName)
         val serializer = KryoSerializer().gzip
 
         val logMessage = LogMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
@@ -136,7 +157,7 @@ class MqttTest {
         message.qos = 2
 
         for (i in 0..100) {
-            this.client.publish(TOPIC, message)
+            this.client.publish(mqttTopicName, message)
         }
 
         this.client.disconnect()
