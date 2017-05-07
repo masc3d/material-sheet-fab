@@ -1,11 +1,11 @@
-package sx.jms.listeners
+package sx.mq.jms.listeners
 
 import org.springframework.jms.connection.JmsTransactionManager
 import org.springframework.jms.listener.DefaultMessageListenerContainer
 import org.springframework.jms.listener.SessionAwareMessageListener
 import org.springframework.util.ErrorHandler
-import sx.jms.Channel
-import sx.jms.Listener
+import sx.mq.jms.Channel
+import sx.mq.jms.Listener
 import java.util.concurrent.Executor
 import javax.jms.JMSException
 import javax.jms.Message

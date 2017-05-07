@@ -1,4 +1,4 @@
-package sx.jms.activemq
+package sx.mq.jms.activemq
 
 import org.apache.activemq.ActiveMQConnectionFactory
 import org.apache.activemq.jms.pool.PooledConnectionFactory

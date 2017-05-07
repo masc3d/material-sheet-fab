@@ -1,8 +1,4 @@
-package sx.jms
-
-import com.google.common.reflect.TypeToken
-import java.io.Serializable
-import java.lang.reflect.ParameterizedType
+package sx.mq.jms
 
 /**
  * Message handler

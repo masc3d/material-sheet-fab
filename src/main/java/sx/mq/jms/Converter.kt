@@ -1,4 +1,4 @@
-package sx.jms
+package sx.mq.jms
 
 import javax.jms.JMSException
 import javax.jms.Message

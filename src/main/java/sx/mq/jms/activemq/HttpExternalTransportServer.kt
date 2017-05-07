@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sx.jms.activemq
+package sx.mq.jms.activemq
 
 import org.apache.activemq.command.BrokerInfo
 import org.apache.activemq.transport.TransportServerSupport

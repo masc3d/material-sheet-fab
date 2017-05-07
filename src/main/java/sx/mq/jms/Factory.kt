@@ -1,6 +1,6 @@
-package sx.jms
+package sx.mq.jms
 
-import sx.jms.Broker
+import sx.mq.Broker
 import javax.jms.ConnectionFactory
 import javax.jms.Queue
 import javax.jms.Topic
