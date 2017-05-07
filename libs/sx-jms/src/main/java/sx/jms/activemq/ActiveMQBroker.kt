@@ -1,19 +1,26 @@
 package sx.jms.activemq
 
-import org.apache.activemq.ActiveMQConnectionFactory
 import org.apache.activemq.RedeliveryPolicy
 import org.apache.activemq.broker.BrokerPlugin
 import org.apache.activemq.broker.BrokerPluginSupport
 import org.apache.activemq.broker.BrokerService
+import org.apache.activemq.broker.region.DestinationInterceptor
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap
+import org.apache.activemq.broker.region.virtual.CompositeDestination
+import org.apache.activemq.broker.region.virtual.MirroredQueue
+import org.apache.activemq.broker.region.virtual.VirtualDestination
+import org.apache.activemq.broker.region.virtual.VirtualDestinationInterceptor
+import org.apache.activemq.broker.region.virtual.VirtualTopic
 import org.apache.activemq.broker.util.RedeliveryPlugin
-import org.apache.activemq.command.ActiveMQQueue
-import org.apache.activemq.command.ActiveMQTopic
 import org.apache.activemq.command.BrokerInfo
 import org.apache.activemq.filter.DestinationMapEntry
-import org.apache.activemq.jms.pool.PooledConnectionFactory
 import org.apache.activemq.network.DiscoveryNetworkConnector
-import org.apache.activemq.security.*
+import org.apache.activemq.security.AuthenticationUser
+import org.apache.activemq.security.AuthorizationEntry
+import org.apache.activemq.security.AuthorizationPlugin
+import org.apache.activemq.security.DefaultAuthorizationMap
+import org.apache.activemq.security.SimpleAuthenticationPlugin
+import org.apache.activemq.security.TempDestinationAuthorizationEntry
 import org.apache.activemq.store.PersistenceAdapter
 import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter
 import org.apache.activemq.store.kahadb.disk.journal.Journal
@@ -24,17 +31,14 @@ import java.net.URI
 import java.net.URISyntaxException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import javax.jms.ConnectionFactory
 import javax.jms.IllegalStateException
-import javax.jms.Queue
-import javax.jms.Topic
 
 /**
  * Broker implementation for activemq
  * Created by masc on 16.04.15.
  */
 class ActiveMQBroker private constructor()
-:
+    :
         Broker(NATIVE_TCP_PORT) {
 
     companion object {
@@ -73,6 +77,9 @@ class ActiveMQBroker private constructor()
     /** Native broker service  */
     @Volatile private var brokerService: BrokerService? = null
 
+    /** Composite destinations to statically add on startup */
+    private val compositeDestinations = ArrayList<CompositeDestination>()
+
     /** External transport servers, eg. servlets  */
     internal var externalTransportServers: MutableList<TransportServer> = ArrayList()
 
@@ -85,6 +92,13 @@ class ActiveMQBroker private constructor()
      */
     fun addConnector(transportServer: TransportServer) {
         externalTransportServers.add(transportServer)
+    }
+
+    /**
+     * Add composite destination
+     */
+    fun addCompositeDestination(destination: CompositeDestination) {
+        this.compositeDestinations.add(destination)
     }
 
     /**
@@ -112,7 +126,7 @@ class ActiveMQBroker private constructor()
         // For reference: https://issues.apache.org/jira/browse/AMQ-3253
         brokerService.isAllowTempAutoCreationOnSend = true
 
-        // Persistence setup
+        //region Persistence
         val persistenceStoreDirectory = File(this.dataDirectory, "kahadb")
         brokerService.dataDirectoryFile = persistenceStoreDirectory
 
@@ -125,6 +139,7 @@ class ActiveMQBroker private constructor()
         // Enforce our own persistence store directory for both regular store and scheduler, overriding the default which has broker name in its path
         pa.directory = persistenceStoreDirectory
         brokerService.setSchedulerDirectory(persistenceStoreDirectory.resolve("scheduler").toString())
+        //endregion
 
         // Create VM broker for direct (in memory/vm) connections.
         // The Broker name has to match for clients to connect
@@ -150,136 +165,173 @@ class ActiveMQBroker private constructor()
         // Broker plugins
         val brokerPlugins = ArrayList<BrokerPlugin>()
 
-        //region Authentication
-        val pAuth = SimpleAuthenticationPlugin()
+        fun createAuthenticationPlugin(): BrokerPlugin {
+            val pAuth = SimpleAuthenticationPlugin()
 
-        // Users
-        val users = ArrayList<AuthenticationUser>()
-        users.add(AuthenticationUser(this.user!!.userName, this.user!!.password, this.user!!.groupName))
-        pAuth.setUsers(users)
+            // Users
+            val users = ArrayList<AuthenticationUser>()
+            users.add(AuthenticationUser(this.user!!.userName, this.user!!.password, this.user!!.groupName))
+            pAuth.setUsers(users)
 
-        brokerPlugins.add(pAuth)
-        //endregion
+            return pAuth
+        }
 
-        //region Authorizations
-        val authzEntries = ArrayList<AuthorizationEntry>()
+        fun createAuthorizationPlugin(): BrokerPlugin {
+            val authzEntries = ArrayList<AuthorizationEntry>()
 
-        val group = this.user!!.groupName
+            val group = this.user!!.groupName
 
-        var pAuthzEntry: AuthorizationEntry
-        // Leo group, all access
-        pAuthzEntry = AuthorizationEntry()
-        pAuthzEntry.setTopic(">")
-        pAuthzEntry.setAdmin(group)
-        pAuthzEntry.setRead(group)
-        pAuthzEntry.setWrite(group)
-        authzEntries.add(pAuthzEntry)
+            var pAuthzEntry: AuthorizationEntry
+            // Leo group, all access
+            pAuthzEntry = AuthorizationEntry()
+            pAuthzEntry.setTopic(">")
+            pAuthzEntry.setAdmin(group)
+            pAuthzEntry.setRead(group)
+            pAuthzEntry.setWrite(group)
+            authzEntries.add(pAuthzEntry)
 
-        pAuthzEntry = AuthorizationEntry()
-        pAuthzEntry.setQueue(">")
-        pAuthzEntry.setAdmin(group)
-        pAuthzEntry.setRead(group)
-        pAuthzEntry.setWrite(group)
-        authzEntries.add(pAuthzEntry)
+            pAuthzEntry = AuthorizationEntry()
+            pAuthzEntry.setQueue(">")
+            pAuthzEntry.setAdmin(group)
+            pAuthzEntry.setRead(group)
+            pAuthzEntry.setWrite(group)
+            authzEntries.add(pAuthzEntry)
 
-        // Leo group, all access to temp destinations
-        pAuthzEntry = TempDestinationAuthorizationEntry()
-        pAuthzEntry.setTopic(">")
-        pAuthzEntry.setAdmin(group)
-        pAuthzEntry.setRead(group)
-        pAuthzEntry.setWrite(group)
-        authzEntries.add(pAuthzEntry)
+            // Leo group, all access to temp destinations
+            pAuthzEntry = TempDestinationAuthorizationEntry()
+            pAuthzEntry.setTopic(">")
+            pAuthzEntry.setAdmin(group)
+            pAuthzEntry.setRead(group)
+            pAuthzEntry.setWrite(group)
+            authzEntries.add(pAuthzEntry)
 
-        pAuthzEntry = TempDestinationAuthorizationEntry()
-        pAuthzEntry.setQueue(">")
-        pAuthzEntry.setAdmin(group)
-        pAuthzEntry.setRead(group)
-        pAuthzEntry.setWrite(group)
-        authzEntries.add(pAuthzEntry)
+            pAuthzEntry = TempDestinationAuthorizationEntry()
+            pAuthzEntry.setQueue(">")
+            pAuthzEntry.setAdmin(group)
+            pAuthzEntry.setRead(group)
+            pAuthzEntry.setWrite(group)
+            authzEntries.add(pAuthzEntry)
 
-        // Create authorization map from entries
-        val authzMap = DefaultAuthorizationMap()
-        authzMap.setAuthorizationEntries(authzEntries as List<DestinationMapEntry<Any>>?)
+            // Create authorization map from entries
+            val authzMap = DefaultAuthorizationMap()
+            authzMap.setAuthorizationEntries(authzEntries as List<DestinationMapEntry<Any>>?)
 
-        // Authorization plugin
-        val pAuthz = AuthorizationPlugin()
-        pAuthz.map = authzMap
+            // Authorization plugin
+            val pAuthz = AuthorizationPlugin()
+            pAuthz.map = authzMap
 
-        brokerPlugins.add(pAuthz)
-        //endregion
+            return pAuthz
+        }
 
-        //region Redelivery policy
-        val pRedelivery = RedeliveryPlugin()
-        // TODO: verify if those plugin options are really needed
-        pRedelivery.isFallbackToDeadLetter = true
-        pRedelivery.isSendToDlqIfMaxRetriesExceeded = true
+        fun createRedeliveryPlugin(): BrokerPlugin {
+            val pRedelivery = RedeliveryPlugin()
+            // TODO: verify if those plugin options are really needed
+            pRedelivery.isFallbackToDeadLetter = true
+            pRedelivery.isSendToDlqIfMaxRetriesExceeded = true
 
-        val rpm = RedeliveryPolicyMap()
+            val rpm = RedeliveryPolicyMap()
 
-        // TODO: define sensible values for redelivery of messages
-        val rp = RedeliveryPolicy()
-        rp.maximumRedeliveries = 3
-        rp.initialRedeliveryDelay = 2000
-        rp.backOffMultiplier = 2.0
-        rp.isUseExponentialBackOff = true
+            // TODO: define sensible values for redelivery of messages
+            val rp = RedeliveryPolicy()
+            rp.maximumRedeliveries = 3
+            rp.initialRedeliveryDelay = 2000
+            rp.backOffMultiplier = 2.0
+            rp.isUseExponentialBackOff = true
 
-        rpm.defaultEntry = rp
-        pRedelivery.redeliveryPolicyMap = rpm
-        //endregion
+            rpm.defaultEntry = rp
+            pRedelivery.redeliveryPolicyMap = rpm
+            //endregion
 
-        brokerPlugins.add(pRedelivery)
+            return pRedelivery
+        }
 
-        // Network/bridge connection notification plugin
-        brokerPlugins.add(object : BrokerPluginSupport() {
+        fun createNotificationPlugin(): BrokerPlugin {
+            return object : BrokerPluginSupport() {
 
-            private val peerBrokersByName = ConcurrentHashMap <String, PeerBroker>()
+                private val peerBrokersByName = ConcurrentHashMap <String, PeerBroker>()
 
-            /**
-             * Convert remote ip string from ActiveMQ to valid URI
-             * @param remoteIp ActiveMQ remote ip string
-             * @return URI
-             */
-            private fun uriFromRemoteIp(remoteIp: String): URI {
-                return URI.create(remoteIp.replace("///", "//").substringBeforeLast("@"))
-            }
+                /**
+                 * Convert remote ip string from ActiveMQ to valid URI
+                 * @param remoteIp ActiveMQ remote ip string
+                 * @return URI
+                 */
+                private fun uriFromRemoteIp(remoteIp: String): URI {
+                    return URI.create(remoteIp.replace("///", "//").substringBeforeLast("@"))
+                }
 
-            override fun networkBridgeStarted(brokerInfo: BrokerInfo, createdByDuplex: Boolean, remoteIp: String) {
-                super.networkBridgeStarted(brokerInfo, createdByDuplex, remoteIp)
+                override fun networkBridgeStarted(brokerInfo: BrokerInfo, createdByDuplex: Boolean, remoteIp: String) {
+                    super.networkBridgeStarted(brokerInfo, createdByDuplex, remoteIp)
 
-                try {
-                    val remoteUri = this.uriFromRemoteIp(remoteIp)
-                    // Find peer broker matching hostname
-                    val peerBroker = this@ActiveMQBroker.peerBrokers.firstOrNull {
-                        it.hostname == remoteUri.host
+                    try {
+                        val remoteUri = this.uriFromRemoteIp(remoteIp)
+                        // Find peer broker matching hostname
+                        val peerBroker = this@ActiveMQBroker.peerBrokers.firstOrNull {
+                            it.hostname == remoteUri.host
+                        }
+                        if (peerBroker != null) {
+                            this.peerBrokersByName.put(brokerInfo.brokerName, peerBroker)
+
+                            this.brokerService.taskRunnerFactory.execute {
+                                listenerEventDispatcher.emit { e -> e.onConnectedToBrokerNetwork() }
+                            }
+                        }
+                    } catch(e: Exception) {
+                        log.info(remoteIp)
+                        log.error(e.message, e)
                     }
-                    if (peerBroker != null) {
-                        this.peerBrokersByName.put(brokerInfo.brokerName, peerBroker)
+                }
 
+                override fun networkBridgeStopped(brokerInfo: BrokerInfo) {
+                    super.networkBridgeStopped(brokerInfo)
+
+                    val peerBroker = this.peerBrokersByName.remove(brokerInfo.brokerName)
+
+                    if (peerBroker != null) {
                         this.brokerService.taskRunnerFactory.execute {
-                            listenerEventDispatcher.emit { e -> e.onConnectedToBrokerNetwork() }
+                            listenerEventDispatcher.emit { e -> e.onDisconnectedFromBrokerNetwork() }
                         }
                     }
-                } catch(e: Exception) {
-                    log.info(remoteIp)
-                    log.error(e.message, e)
                 }
             }
+        }
 
-            override fun networkBridgeStopped(brokerInfo: BrokerInfo) {
-                super.networkBridgeStopped(brokerInfo)
-
-                val peerBroker = this.peerBrokersByName.remove(brokerInfo.brokerName)
-
-                if (peerBroker != null) {
-                    this.brokerService.taskRunnerFactory.execute {
-                        listenerEventDispatcher.emit { e -> e.onDisconnectedFromBrokerNetwork() }
-                    }
-                }
-            }
-        })
+        brokerPlugins.addAll(listOf(
+                createAuthenticationPlugin(),
+                createAuthorizationPlugin(),
+                createRedeliveryPlugin(),
+                createNotificationPlugin()))
 
         // Add all plugins to broker service
-        brokerService.plugins = brokerPlugins.toArray(arrayOfNulls<BrokerPlugin>(0))
+        brokerService.plugins = brokerPlugins.toTypedArray()
+
+        fun createDestinationInterceptors(): List<DestinationInterceptor> {
+            /**
+             * This method is a replica of the protected {@link BrokerService.createDefaultDestinationIntercept}
+             * @param compositeDestinations Additional composite destinations
+             */
+            fun createDefaultDestinationInterceptors(compositeDestinations: List<CompositeDestination> = listOf()): List<DestinationInterceptor> {
+                val answer = ArrayList<DestinationInterceptor>()
+                if (brokerService.isUseVirtualTopics) {
+                    val interceptor = VirtualDestinationInterceptor()
+                    val virtualTopic = VirtualTopic()
+                    virtualTopic.name = "VirtualTopic.>"
+                    val virtualDestinations = mutableListOf<VirtualDestination>(virtualTopic)
+                    // Add custom composite destinations
+                    virtualDestinations.addAll(compositeDestinations)
+                    interceptor.virtualDestinations = virtualDestinations.toTypedArray()
+                    answer.add(interceptor)
+                }
+                if (brokerService.isUseMirroredQueues) {
+                    val interceptor = MirroredQueue()
+                    answer.add(interceptor)
+                }
+                return answer
+            }
+
+            return createDefaultDestinationInterceptors(this.compositeDestinations)
+        }
+
+        brokerService.destinationInterceptors = createDestinationInterceptors().toTypedArray()
 
         try {
             brokerService.start()
