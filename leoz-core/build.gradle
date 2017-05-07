@@ -38,7 +38,7 @@ sourceSets {
 dependencies {
     compile(
             project(':sx-common'),
-            project(':sx-jms'),
+            project(':sx-mq'),
             project(':sx-rsync'),
             project(':sx-serialization'),
             project(':sx-discovery'),
