@@ -1,4 +1,4 @@
-package sx.jms.artemis
+package sx.mq.jms.artemis
 
 import org.apache.activemq.artemis.api.core.TransportConfiguration
 import org.apache.activemq.artemis.core.config.ClusterConnectionConfiguration
@@ -12,8 +12,7 @@ import org.apache.activemq.artemis.core.settings.impl.AddressSettings
 import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl
 import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS
 import org.apache.activemq.artemis.spi.core.security.ActiveMQSecurityManagerImpl
-import sx.jms.Broker
-import java.io.File
+import sx.mq.Broker
 
 /**
  * Created by masc on 05/10/2016.

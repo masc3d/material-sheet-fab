@@ -1,8 +1,8 @@
 package org.deku.leoz.node.service.internal.sync
 
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
-import sx.jms.*
-import sx.jms.listeners.SpringJmsListener
+import sx.mq.jms.*
+import sx.mq.jms.listeners.SpringJmsListener
 import javax.jms.JMSException
 
 /**

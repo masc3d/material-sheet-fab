@@ -10,8 +10,8 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.node.Storage
 import org.deku.leoz.service.internal.AuthorizationService
-import sx.jms.Channel
-import sx.jms.Handler
+import sx.mq.jms.Channel
+import sx.mq.jms.Handler
 import sx.time.Duration
 
 /**

@@ -4,10 +4,10 @@ import org.deku.leoz.config.ActiveMQConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.jms.Channel
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
-import sx.jms.listeners.SpringJmsListener
+import sx.mq.jms.Channel
+import sx.mq.Broker
+import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.listeners.SpringJmsListener
 import java.util.concurrent.ExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy

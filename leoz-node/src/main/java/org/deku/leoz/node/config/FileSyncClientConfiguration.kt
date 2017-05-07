@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
-import sx.jms.Channel
+import sx.mq.jms.Channel
 import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
 import java.util.concurrent.ScheduledExecutorService

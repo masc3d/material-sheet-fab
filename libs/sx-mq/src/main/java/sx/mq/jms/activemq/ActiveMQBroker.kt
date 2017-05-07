@@ -1,4 +1,4 @@
-package sx.jms.activemq
+package sx.mq.jms.activemq
 
 import org.apache.activemq.RedeliveryPolicy
 import org.apache.activemq.broker.BrokerPlugin
@@ -25,7 +25,7 @@ import org.apache.activemq.store.PersistenceAdapter
 import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter
 import org.apache.activemq.store.kahadb.disk.journal.Journal
 import org.apache.activemq.transport.TransportServer
-import sx.jms.Broker
+import sx.mq.Broker
 import java.io.File
 import java.net.URI
 import java.net.URISyntaxException

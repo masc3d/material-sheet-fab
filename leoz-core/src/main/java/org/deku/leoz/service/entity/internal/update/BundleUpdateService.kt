@@ -11,8 +11,8 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.Lifecycle
 import sx.concurrent.Service
-import sx.jms.Channel
-import sx.jms.Handler
+import sx.mq.jms.Channel
+import sx.mq.jms.Handler
 import sx.platform.PlatformId
 import sx.time.Duration
 import java.util.*

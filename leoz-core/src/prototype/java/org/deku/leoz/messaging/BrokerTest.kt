@@ -4,12 +4,10 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import org.apache.activemq.broker.region.virtual.CompositeTopic
-import org.apache.activemq.command.ActiveMQQueue
 import org.deku.leoz.config.MessagingTestConfiguration
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.jms.activemq.ActiveMQBroker
+import sx.mq.jms.activemq.ActiveMQBroker
 
 /**
  * Created by masc on 07.05.17.

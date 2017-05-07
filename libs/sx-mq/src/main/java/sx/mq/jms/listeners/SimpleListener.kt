@@ -1,8 +1,8 @@
-package sx.jms.listeners
+package sx.mq.jms.listeners
 
 import sx.LazyInstance
-import sx.jms.Channel
-import sx.jms.Listener
+import sx.mq.jms.Channel
+import sx.mq.jms.Listener
 import javax.jms.*
 
 /**

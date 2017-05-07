@@ -7,8 +7,8 @@ import org.deku.leoz.identity.Identity
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.Lifecycle
-import sx.jms.Channel
-import sx.jms.Broker
+import sx.mq.jms.Channel
+import sx.mq.Broker
 import sx.time.Duration
 import java.util.*
 import java.util.concurrent.Executors

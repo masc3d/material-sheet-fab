@@ -1,14 +1,11 @@
-package sx.jms
+package sx.mq.jms
 
 import com.google.common.reflect.TypeToken
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.io.serialization.Serializer
-import sx.logging.slf4j.*
-import java.io.Serializable
 import java.lang.reflect.ParameterizedType
 import java.util.*
-import java.util.concurrent.Executor
 import javax.jms.ExceptionListener
 import javax.jms.JMSException
 import javax.jms.Message

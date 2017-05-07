@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
-import sx.jms.Handler
+import sx.mq.jms.Handler
 import sx.logging.slf4j.info
 import sx.rs.auth.ApiKey
 import javax.inject.Inject
@@ -91,7 +91,7 @@ class AuthorizationService
     /**
      *
      */
-    override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.jms.Channel?) {
+    override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.mq.jms.Channel?) {
         try {
             log.info(message)
 

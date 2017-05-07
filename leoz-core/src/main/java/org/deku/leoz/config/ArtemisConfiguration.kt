@@ -10,10 +10,10 @@ import org.apache.activemq.artemis.jms.client.ActiveMQTopic
 import org.springframework.jms.connection.CachingConnectionFactory
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
-import sx.jms.Broker
-import sx.jms.Channel
-import sx.jms.artemis.ArtemisBroker
-import sx.jms.converters.DefaultConverter
+import sx.mq.Broker
+import sx.mq.jms.Channel
+import sx.mq.jms.artemis.ArtemisBroker
+import sx.mq.jms.converters.DefaultConverter
 
 /**
  * Created by masc on 05/10/2016.

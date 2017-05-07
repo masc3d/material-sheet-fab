@@ -1,9 +1,9 @@
-package sx.jms.activemq
+package sx.mq.jms.activemq
 
 import org.apache.activemq.transport.http.HttpTransportFactory
 import org.apache.activemq.transport.http.HttpTunnelServlet
 import org.slf4j.LoggerFactory
-import sx.jms.Broker
+import sx.mq.Broker
 import java.net.URI
 import java.util.*
 import java.util.concurrent.Executors

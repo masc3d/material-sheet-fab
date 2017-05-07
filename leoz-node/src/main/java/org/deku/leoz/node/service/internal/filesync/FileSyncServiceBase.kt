@@ -13,7 +13,7 @@ abstract class FileSyncServiceBase(
         val baseDirectory: File,
         val identity: Identity)
 :
-        sx.jms.Handler<FileSyncMessage>,
+        sx.mq.jms.Handler<FileSyncMessage>,
         sx.Disposable {
     val inDirectoryName = "in"
     val outDirectoryName = "out"

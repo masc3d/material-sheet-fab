@@ -7,7 +7,7 @@ import org.deku.leoz.node.Storage
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.jms.Channel
+import sx.mq.jms.Channel
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy

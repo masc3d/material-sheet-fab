@@ -1,7 +1,7 @@
-package sx.jms.converters
+package sx.mq.jms.converters
 
 import sx.io.serialization.Serializer
-import sx.jms.Converter
+import sx.mq.jms.Converter
 import javax.jms.BytesMessage
 import javax.jms.JMSException
 import javax.jms.Message

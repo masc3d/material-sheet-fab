@@ -2,7 +2,7 @@ package org.deku.leoz.node.service.internal.filesync
 
 import org.deku.leoz.identity.Identity
 import sx.concurrent.Service
-import sx.jms.Channel
+import sx.mq.jms.Channel
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import sx.time.Duration

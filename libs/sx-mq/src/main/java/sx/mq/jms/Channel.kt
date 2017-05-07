@@ -1,4 +1,4 @@
-package sx.jms
+package sx.mq.jms
 
 import org.slf4j.LoggerFactory
 import sx.Disposable

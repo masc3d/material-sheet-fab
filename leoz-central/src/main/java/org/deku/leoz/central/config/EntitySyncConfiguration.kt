@@ -8,8 +8,8 @@ import org.deku.leoz.node.service.internal.sync.EntityPublisher
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
+import sx.mq.Broker
+import sx.mq.jms.activemq.ActiveMQBroker
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy

@@ -16,10 +16,10 @@ import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-import sx.jms.Broker
-import sx.jms.Channel
-import sx.jms.activemq.ActiveMQBroker
-import sx.jms.artemis.ArtemisBroker
+import sx.mq.Broker
+import sx.mq.jms.Channel
+import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.artemis.ArtemisBroker
 import sx.junit.PrototypeTest
 import java.util.concurrent.Executors
 import javax.inject.Inject

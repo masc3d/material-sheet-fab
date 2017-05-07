@@ -9,7 +9,7 @@ import org.apache.commons.io.FilenameUtils
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMessage
 import org.slf4j.LoggerFactory
-import sx.jms.*
+import sx.mq.jms.*
 
 /**
  * Log message service

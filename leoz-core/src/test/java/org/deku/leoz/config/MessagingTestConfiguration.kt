@@ -2,10 +2,9 @@ package org.deku.leoz.config
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.singleton
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
+import sx.mq.Broker
+import sx.mq.jms.activemq.ActiveMQBroker
 import java.io.File
 
 /**

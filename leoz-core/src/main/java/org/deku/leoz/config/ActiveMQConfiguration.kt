@@ -5,11 +5,11 @@ import org.apache.activemq.command.ActiveMQTopic
 import org.deku.leoz.identity.Identity
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
-import sx.jms.Channel
-import sx.jms.converters.DefaultConverter
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
-import sx.jms.activemq.ActiveMQPooledConnectionFactory
+import sx.mq.jms.Channel
+import sx.mq.jms.converters.DefaultConverter
+import sx.mq.Broker
+import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.activemq.ActiveMQPooledConnectionFactory
 
 /**
  * ActiveMQ specific messaging configuration

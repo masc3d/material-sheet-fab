@@ -7,12 +7,10 @@ import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.MessagingTestConfiguration
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.jms.activemq.ActiveMQBroker
+import sx.mq.jms.activemq.ActiveMQBroker
 import javax.jms.DeliveryMode
 import sx.logging.slf4j.*
 

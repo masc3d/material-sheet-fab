@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import sx.jms.Channel
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
-import sx.jms.listeners.SpringJmsListener
+import sx.mq.jms.Channel
+import sx.mq.Broker
+import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.listeners.SpringJmsListener
 import java.util.concurrent.ExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
