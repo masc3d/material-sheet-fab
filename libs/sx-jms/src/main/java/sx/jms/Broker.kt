@@ -2,15 +2,10 @@ package sx.jms
 
 import org.slf4j.LoggerFactory
 import sx.Disposable
-import sx.LazyInstance
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
-import sx.event.EventListener
 import java.io.File
 import java.util.*
-import javax.jms.ConnectionFactory
-import javax.jms.Queue
-import javax.jms.Topic
 
 /**
  * Created by masc on 01.06.15.

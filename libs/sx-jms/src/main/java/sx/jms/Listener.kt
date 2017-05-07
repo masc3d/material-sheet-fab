@@ -15,8 +15,8 @@ import javax.jms.Message
 import javax.jms.Session
 
 /**
- * Lightweight jms message listener abstraction.
- * This is the top level abstract class, only binding a connection factory.
+ * Lightweight jms message listener abstraction with object conversion and dispatch support
+ * One or more object message handlers can be registered with the listener, converted messages will be dispatched by type (class)
  * Created by masc on 16.04.15.
  * @property channel Messaging channel
  * @property executor Thread executor
@@ -74,28 +74,27 @@ abstract class Listener(
             messageObject = converter.fromMessage(message)
         } catch(e: Exception) {
             log.error("Error converting message [${message}] ${e.message}")
+            throw e
         }
 
-        if (messageObject != null) {
-            handler = this.handlerDelegates.get(messageObject.javaClass)
+        handler = this.handlerDelegates.get(messageObject.javaClass)
 
-            if (handler == null) {
-                throw HandlingException("No delegate for message object type [%s]".format(messageObject.javaClass, Message::class.java))
-            }
+        if (handler == null) {
+            throw HandlingException("No delegate for message object type [%s]".format(messageObject.javaClass, Message::class.java))
+        }
 
-            // Prepare reply channel if applicable
-            var replyChannel: Channel? = null
-            if (message.jmsReplyTo != null) {
-                replyChannel = this.channel.createReplyChannel(session, message.jmsReplyTo)
-            }
+        // Prepare reply channel if applicable
+        var replyChannel: Channel? = null
+        if (message.jmsReplyTo != null) {
+            replyChannel = this.channel.createReplyChannel(session, message.jmsReplyTo)
+        }
 
-            // Delegate to handler
-            try {
-                handler.onMessage(messageObject, replyChannel)
-            } finally {
-                if (replyChannel != null)
-                    replyChannel.close()
-            }
+        // Delegate to handler
+        try {
+            handler.onMessage(messageObject, replyChannel)
+        } finally {
+            if (replyChannel != null)
+                replyChannel.close()
         }
     }
 
