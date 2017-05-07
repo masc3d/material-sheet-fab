@@ -44,7 +44,7 @@ class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
     override fun notifyBundleUpdate(bundleName: String) {
         val message = UpdateInfo(bundleName)
 
-        sx.jms.Channel(ActiveMQConfiguration.instance.nodeNotificationTopic).use {
+        sx.jms.Channel(ActiveMQConfiguration.instance.nodeTopic).use {
             it.send(UpdateInfo(bundleName))
         }
 

@@ -171,7 +171,7 @@ open class UpdateConfiguration {
 
         // Register for update notifications (as long as automatic updates are enabled)
         if (this@UpdateConfiguration.settings.automatic) {
-            this.messageListenerConfiguration.nodeNotificationListener.addDelegate(
+            this.messageListenerConfiguration.nodeTopicListener.addDelegate(
                     this.bundleUpdateService)
         }
     }

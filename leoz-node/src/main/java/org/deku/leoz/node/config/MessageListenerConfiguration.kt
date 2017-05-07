@@ -30,6 +30,7 @@ open class MessageListenerConfiguration {
 
     @Inject
     private lateinit var application: Application
+
     @Inject
     private lateinit var executorService: ExecutorService
 
@@ -40,9 +41,9 @@ open class MessageListenerConfiguration {
                 executorService)
     }
 
-    val nodeNotificationListener by lazy {
+    val nodeTopicListener by lazy {
         SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.nodeNotificationTopic) },
+                { Channel(ActiveMQConfiguration.instance.nodeTopic) },
                 executorService)
     }
 
@@ -80,7 +81,7 @@ open class MessageListenerConfiguration {
 
         if (ActiveMQConfiguration.instance.broker.isStarted) {
             this.nodeQueueListener.start()
-            this.nodeNotificationListener.start()
+            this.nodeTopicListener.start()
         }
     }
 
@@ -89,7 +90,7 @@ open class MessageListenerConfiguration {
      */
     @Synchronized private fun stop() {
         this.nodeQueueListener.stop()
-        this.nodeNotificationListener.stop()
+        this.nodeTopicListener.stop()
     }
     //endregion
 }

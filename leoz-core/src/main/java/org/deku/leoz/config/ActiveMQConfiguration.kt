@@ -49,12 +49,12 @@ class ActiveMQConfiguration() {
     val broker: ActiveMQBroker
         get() = ActiveMQBroker.instance
 
-    val centralQueue: Channel.Configuration by lazy({
+    val centralQueue: Channel.Configuration by lazy {
         Channel.Configuration(
                 connectionFactory = this.connectionFactory,
                 destination = ActiveMQQueue("leoz.central.queue"),
                 converter = DefaultConverter(KryoSerializer().gzip))
-    })
+    }
 
     val centralLogQueue: Channel.Configuration by lazy {
         val c = Channel.Configuration(
@@ -87,9 +87,9 @@ class ActiveMQConfiguration() {
                 converter = DefaultConverter(KryoSerializer().gzip))
     }
 
-    val nodeNotificationTopic: Channel.Configuration by lazy {
+    val nodeTopic: Channel.Configuration by lazy {
         Channel.Configuration(connectionFactory = this.connectionFactory,
-                destination = ActiveMQTopic("leoz.node.notification.topic"),
+                destination = ActiveMQTopic("leoz.node.topic"),
                 converter = DefaultConverter(KryoSerializer().gzip))
     }
 }
