@@ -46,12 +46,14 @@ class CarrierIntegrationService : CarrierIntegrationService {
     override fun postDeliveryOrder(deliveryOrder: DeliveryOrder): NotifiedDeliveryOrder {
 
         try {
+            val deliveryOptionId: Int = deliveryOrder.deliveryOption.id!!.split(delimiters = "-", ignoreCase = true, limit = 0)[0].toInt()
+
             val result = dslContext.select()
                     .from(Tables.SDD_CUSTOMER
                             .join(Tables.SDD_CONTACT).on(Tables.SDD_CUSTOMER.CUSTOMERID.equal(Tables.SDD_CONTACT.CUSTOMERID))
                             .join(Tables.SDD_CONTZIP).on(Tables.SDD_CONTACT.ZIPLAYER.equal(Tables.SDD_CONTZIP.LAYER)))
                     .where(Tables.SDD_CUSTOMER.NAME1.equal("Zalando")
-                            .and(Tables.SDD_CONTZIP.ID.eq(deliveryOrder.deliveryOption.id!!.toInt())))
+                            .and(Tables.SDD_CONTZIP.ID.eq(deliveryOptionId)))
                     .fetch()
 
             if (result.size == 0) {
@@ -88,7 +90,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
             fpcsRecord.customersReference = deliveryOrder.incomingId
             fpcsRecord.customerNo = result.getValue(0, Tables.SDD_CUSTOMER.CUSTOMERID)
             fpcsRecord.contactNo = result.getValue(0, Tables.SDD_CONTACT.CONTACTID)
-            fpcsRecord.zipcodeRef = deliveryOrder.deliveryOption.id!!.toInt()
+            fpcsRecord.zipcodeRef = deliveryOptionId
             fpcsRecord.nameFrom = deliveryOrder.sourceAddress.contactName
             fpcsRecord.streetFrom = deliveryOrder.sourceAddress.addressLine
             fpcsRecord.cityFrom = deliveryOrder.sourceAddress.city
