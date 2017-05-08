@@ -90,7 +90,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
             fpcsRecord.customersReference = deliveryOrder.incomingId
             fpcsRecord.customerNo = result.getValue(0, Tables.SDD_CUSTOMER.CUSTOMERID)
             fpcsRecord.contactNo = result.getValue(0, Tables.SDD_CONTACT.CONTACTID)
-            fpcsRecord.zipcodeRef = deliveryOrder.deliveryOption.id!!.toInt()
+            fpcsRecord.zipcodeRef = deliveryOptionId
             fpcsRecord.nameFrom = deliveryOrder.sourceAddress.contactName
             fpcsRecord.streetFrom = deliveryOrder.sourceAddress.addressLine
             fpcsRecord.cityFrom = deliveryOrder.sourceAddress.city
