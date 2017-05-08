@@ -105,9 +105,9 @@ class CarrierIntegrationService : CarrierIntegrationService {
             fpcsRecord.dtShip = java.sql.Date(Calendar.getInstance().timeInMillis)
 
             if (knownOrder) {
-                val existingRecord = dslContext.fetchOne(Tables.SDD_FPCS_ORDER, Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE.eq(fpcsRecord.customersReference).and(Tables.SDD_FPCS_ORDER.GLS_PARCELNO.isNotNull))
-                fpcsRecord.glsParcelno = existingRecord.glsParcelno
-                fpcsRecord.glsTrackid = existingRecord.glsTrackid
+                val existingRecord = dslContext.fetch(Tables.SDD_FPCS_ORDER, Tables.SDD_FPCS_ORDER.CUSTOMERS_REFERENCE.eq(fpcsRecord.customersReference).and(Tables.SDD_FPCS_ORDER.GLS_PARCELNO.isNotNull))
+                fpcsRecord.glsParcelno = existingRecord[0].glsParcelno
+                fpcsRecord.glsTrackid = existingRecord[0].glsTrackid
             }
 
             fpcsRecord.store()
@@ -189,8 +189,8 @@ class CarrierIntegrationService : CarrierIntegrationService {
 
                     val courierNum = parcelData[0].expressData.courierParcelNumber
 
-                    var glsParcelNum = courierNum
-                    glsParcelNum = glsParcelNum.substring(1, 3) + "85" + glsParcelNum.substring(4, 11)
+                    var glsParcelNum: String = parcelData[0].barcodes.primary1D.substring(0, 11)
+                    //glsParcelNum = glsParcelNum.substring(1, 3) + "85" + glsParcelNum.substring(4, 11)
                     fpcsRecord.glsTrackid = parcelData[0].trackID
                     fpcsRecord.glsParcelno = glsParcelNum.toDouble()
 
@@ -208,7 +208,8 @@ class CarrierIntegrationService : CarrierIntegrationService {
                                     .and(Tables.TBLSYSCOLLECTIONS.TXTP1.greaterOrEqual(courierNum)))
 
                     if (checkRange > 0) {
-                        return NotifiedDeliveryOrder(fpcsRecord.id.toString(), "https://gls-group.eu/DE/de/paketverfolgung?match=$glsParcelNum")
+                        //TODO: To be reverted to ${glsParcelNum} after schema update V9 is applied
+                        return NotifiedDeliveryOrder(fpcsRecord.id.toString(), "https://gls-group.eu/DE/de/paketverfolgung?match=${fpcsRecord.glsTrackid}")
                     } else {
                         cancelDeliveryOrder(glsParcelNum)
                         throw DefaultProblem(
@@ -227,7 +228,8 @@ class CarrierIntegrationService : CarrierIntegrationService {
                 }
             } else {
                 //The provided order is already known. Return the original Tracking-URL and the new identifier.
-                return NotifiedDeliveryOrder(fpcsRecord.id.toString(), "https://gls-group.eu/DE/de/paketverfolgung?match=${fpcsRecord.glsParcelno}")
+                //TODO: To be changed back to ${fpcsRecord.glsParcelno} after schema update V9 applied
+                return NotifiedDeliveryOrder(fpcsRecord.id.toString(), "https://gls-group.eu/DE/de/paketverfolgung?match=${fpcsRecord.glsTrackid}")
             }
         } catch(e: Exception) {
             if (e is DefaultProblem) {
