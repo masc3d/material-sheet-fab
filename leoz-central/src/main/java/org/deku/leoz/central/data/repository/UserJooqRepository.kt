@@ -65,6 +65,10 @@ open class UserJooqRepository {
         return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ALIAS.eq(alias))
     }
 
+    fun find(name: String): MstUserRecord? {
+        return findByAlias(name) ?: findByMail(name)
+    }
+
     fun aliasExists(alias: String): Boolean {
         return findByAlias(alias) != null
     }
