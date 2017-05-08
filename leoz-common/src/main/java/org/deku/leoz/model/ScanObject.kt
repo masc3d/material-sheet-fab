@@ -38,4 +38,5 @@ fun parse(scanData:String, scanSymbology:ScanSymbology):ScanObject?{
             //return so
         }
     }
+    return null
 }
