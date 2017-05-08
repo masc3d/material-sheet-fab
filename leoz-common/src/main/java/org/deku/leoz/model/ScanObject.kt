@@ -38,4 +38,6 @@ fun parse(scanData:String, scanSymbology:ScanSymbology):ScanObject?{
             //return so
         }
     }
+    //Must return anything, compilation does not work if not
+    return null
 }
