@@ -192,7 +192,7 @@ class CarrierIntegrationService : CarrierIntegrationService {
                     var glsParcelNum: String = parcelData[0].barcodes.primary1D.substring(0, 11)
                     //glsParcelNum = glsParcelNum.substring(1, 3) + "85" + glsParcelNum.substring(4, 11)
                     fpcsRecord.glsTrackid = parcelData[0].trackID
-                    fpcsRecord.glsParcelno = glsParcelNum.toDouble()
+                    fpcsRecord.glsParcelno = glsParcelNum
 
                     fpcsRecord.store()
 
