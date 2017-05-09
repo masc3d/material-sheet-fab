@@ -111,3 +111,15 @@ fun getWorkingDate():java.time.LocalDate{
     return java.time.LocalDateTime.now().minusHours((6)).toLocalDate()
 
 }
+fun getDekuUnitNoFromGlsUnitNo(glsUnitNo:String):String{
+    var sDeku="0"
+    try{
+        if (glsUnitNo.substring(2, 1).equals("8")) {
+            sDeku = "8" + glsUnitNo.substring(0, 2) + glsUnitNo.substring(3)
+        }
+    }catch(e:Exception){
+        sDeku="0"
+    }
+    return sDeku
+
+}
