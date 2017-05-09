@@ -1,7 +1,7 @@
 package sx.mq.jms.converters
 
 import sx.io.serialization.Serializer
-import sx.mq.jms.Converter
+import sx.mq.jms.JmsConverter
 import javax.jms.BytesMessage
 import javax.jms.JMSException
 import javax.jms.Message
@@ -11,10 +11,10 @@ import javax.jms.Session
  * Object message converter
  * Created by masc on 19.06.15.
  */
-class DefaultConverter(
+class DefaultJmsConverter(
         val serializer: Serializer)
 :
-        Converter {
+        JmsConverter {
 
     @Throws(JMSException::class)
     override fun toMessage(obj: Any, session: Session, onSize: ((size: Long) -> Unit)?): Message {

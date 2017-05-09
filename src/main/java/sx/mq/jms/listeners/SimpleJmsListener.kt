@@ -1,9 +1,11 @@
 package sx.mq.jms.listeners
 
 import sx.LazyInstance
-import sx.mq.jms.Channel
-import sx.mq.jms.Listener
+import sx.mq.jms.JmsChannel
+import sx.mq.jms.JmsClient
+import sx.mq.jms.JmsListener
 import javax.jms.*
+import kotlin.IllegalStateException
 
 /**
  * Simple single threaded jms listener
@@ -11,12 +13,12 @@ import javax.jms.*
  * @param connectionFactory Connection factory
  * @param converter Message converter
  */
-open class SimpleListener(channel: () -> Channel)
+open class SimpleJmsListener(channel: JmsChannel)
     :
-        Listener(channel) {
+        JmsListener(channel) {
 
     private val connection = LazyInstance<Connection>({
-        this.channel.connectionFactory!!.createConnection()
+        this.context.connectionFactory.createConnection()
     })
 
     private val session = LazyInstance<Session>({
@@ -38,9 +40,9 @@ open class SimpleListener(channel: () -> Channel)
         // Wrap message callback, adding jms transaction support
         this.consumer.get().messageListener = object : MessageListener {
             override fun onMessage(message: Message) {
-                val session = this@SimpleListener.session.get()
+                val session = this@SimpleJmsListener.session.get()
                 try {
-                    this@SimpleListener.onMessage(message, session)
+                    this@SimpleJmsListener.onMessage(message, session)
                     if (session.transacted)
                         session.commit()
                 } catch (e: Exception) {

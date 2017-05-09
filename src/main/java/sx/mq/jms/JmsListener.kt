@@ -18,15 +18,15 @@ import javax.jms.Session
  * @property channel Messaging channel
  * @property executor Thread executor
  */
-abstract class Listener(
+abstract class JmsListener(
         /** Connection factory  */
-        channel: () -> Channel)
+        val channel: JmsChannel)
 :
         Disposable,
         ExceptionListener {
     protected val log = LoggerFactory.getLogger(this.javaClass)
     /** Object message handler delegates  */
-    private val handlerDelegates = HashMap<Class<*>, Handler<Any?>>()
+    private val handlerDelegates = HashMap<Class<*>, JmsHandler<Any?>>()
 
     /**
      * Message handling exception
@@ -39,17 +39,15 @@ abstract class Listener(
     @Throws(JMSException::class)
     abstract fun stop()
 
-    private val lazyChannel: () -> Channel
-
-    init {
-        this.lazyChannel = channel
+    protected val context by lazy {
+        this.channel.context ?: throw IllegalStateException("Listener channel requires context")
     }
 
     /**
      * Messaging channel
      */
-    val channel: Channel by lazy {
-        this.lazyChannel()
+    private val client by lazy {
+        JmsClient(channel)
     }
 
     /**
@@ -62,7 +60,7 @@ abstract class Listener(
     protected open fun onMessage(message: Message, session: Session) {
         var messageObject: Any? = null
 
-        val handler: Handler<Any?>?
+        val jmsHandler: JmsHandler<Any?>?
 
         // Deserialize if there's a converter and determine handler
         val converter = this.channel.converter
@@ -74,21 +72,21 @@ abstract class Listener(
             throw e
         }
 
-        handler = this.handlerDelegates.get(messageObject.javaClass)
+        jmsHandler = this.handlerDelegates.get(messageObject.javaClass)
 
-        if (handler == null) {
+        if (jmsHandler == null) {
             throw HandlingException("No delegate for message object type [%s]".format(messageObject.javaClass, Message::class.java))
         }
 
         // Prepare reply channel if applicable
-        var replyChannel: Channel? = null
+        var replyChannel: JmsClient? = null
         if (message.jmsReplyTo != null) {
-            replyChannel = this.channel.createReplyChannel(session, message.jmsReplyTo)
+            replyChannel = this.client.createReplyClient(session, message.jmsReplyTo)
         }
 
         // Delegate to handler
         try {
-            handler.onMessage(messageObject, replyChannel)
+            jmsHandler.onMessage(messageObject, replyChannel)
         } finally {
             if (replyChannel != null)
                 replyChannel.close()
@@ -109,7 +107,7 @@ abstract class Listener(
      * @param delegate Handler
      */
     @Suppress("UNCHECKED_CAST")
-    fun <T> addDelegate(delegate: Handler<T>) {
+    fun <T> addDelegate(delegate: JmsHandler<T>) {
         var messageTypes = delegate.messageTypes
         if (messageTypes.isEmpty()) {
             // No message types specified, extracing generic type from Handler interface
@@ -117,7 +115,7 @@ abstract class Listener(
 
             // Find interface type for Handler<T> in hierarchy
             val handlerInterface = handlerInterfaces
-                    .filter { it.isSubtypeOf(Handler::class.java) }
+                    .filter { it.isSubtypeOf(JmsHandler::class.java) }
                     .first()
 
             val handlerInterfaceType = handlerInterface.type
@@ -136,7 +134,7 @@ abstract class Listener(
             // Register with (all) Serializer(s)
             Serializer.types.register(c)
 
-            handlerDelegates.put(c, delegate as Handler<Any?>)
+            handlerDelegates.put(c, delegate as JmsHandler<Any?>)
         }
     }
 

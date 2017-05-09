@@ -52,8 +52,6 @@ dependencies {
             project(':sx-serialization'),
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
-            // Guava
-            "com.google.guava:guava:21.0",
             // JMS
             "javax.jms:jms-api:1.1-rev-1",
     )
