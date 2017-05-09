@@ -41,6 +41,7 @@ dependencies {
     compile(
             project(':sx-common'),
             project(':sx-serialization'),
+            project(':sx-mq'),
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Kodein
@@ -69,7 +70,10 @@ dependencies {
             "org.yaml:snakeyaml:$v_snakeyaml",
 
             // MQTT client
-            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
+
+            // Kryo
+            "com.esotericsoftware:kryo:4.0.0"
     )
 
     testCompile(

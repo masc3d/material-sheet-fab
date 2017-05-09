@@ -2,7 +2,9 @@ package org.deku.leoz.node.service.internal.filesync
 
 import org.deku.leoz.identity.Identity
 import sx.concurrent.Service
-import sx.mq.jms.Channel
+import sx.mq.jms.JmsClient
+import sx.mq.jms.JmsChannel
+import sx.mq.jms.client
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import sx.time.Duration
@@ -22,7 +24,7 @@ class FileSyncClientService constructor(
         baseDirectory: File,
         identity: Identity,
         rsyncEndpoint: Rsync.Endpoint,
-        private val centralChannelSupplier: () -> Channel)
+        private val centralChannelSupplier: () -> JmsChannel)
     :
         FileSyncServiceBase(
                 executorService = executorService,
@@ -159,7 +161,7 @@ class FileSyncClientService constructor(
 
             // Remove empty directories
             this.outDirectory.walkBottomUp().forEach {
-                if (!it.equals(this.outDirectory) &&
+                if (it != this.outDirectory &&
                         it.isDirectory &&
                         it.listFiles().count() == 0) {
                     it.delete()
@@ -189,7 +191,7 @@ class FileSyncClientService constructor(
      * Ping host (with message)
      */
     private fun ping() {
-        this.centralChannelSupplier().use {
+        this.centralChannelSupplier().client().use() {
             it.sendRequest(FileSyncMessage(this.identity.key.value)).use {
                 it.receive()
             }
@@ -223,7 +225,7 @@ class FileSyncClientService constructor(
     /**
      * On file sync message
      */
-    override fun onMessage(message: FileSyncMessage, replyChannel: Channel?) {
+    override fun onMessage(message: FileSyncMessage, replyChannel: JmsClient?) {
         log.info("Received notification, files available for download")
         try {
             this.incomingSyncService.trigger()

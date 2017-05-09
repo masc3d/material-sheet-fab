@@ -38,6 +38,9 @@ open class EntitySyncConfiguration {
     /** Entity publisher */
     private lateinit var entityPublisher: EntityPublisher
 
+    @Inject
+    private lateinit var mqConfigration: ActiveMQConfiguration
+    
     /** Broker event listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
@@ -60,8 +63,8 @@ open class EntitySyncConfiguration {
     fun onInitialize() {
         // Setup entity publisher
         this.entityPublisher = EntityPublisher(
-                requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
-                notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
+                requestChannel = this.mqConfigration.entitySyncQueue,
+                notificationChannel = this.mqConfigration.entitySyncTopic,
                 entityManagerFactory = this.entityManagerFactory,
                 listenerExecutor = this.executorService)
 
@@ -69,9 +72,9 @@ open class EntitySyncConfiguration {
         this.databaseSyncService.eventDelegate.add(databaseSyncEvent)
 
         // Wire broker event
-        ActiveMQBroker.instance.delegate.add(brokerEventListener)
+        this.mqConfigration.broker.delegate.add(brokerEventListener)
 
-        if (ActiveMQBroker.instance.isStarted)
+        if (this.mqConfigration.broker.isStarted)
             brokerEventListener.onStart()
     }
 

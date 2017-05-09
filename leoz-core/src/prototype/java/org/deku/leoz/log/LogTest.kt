@@ -14,9 +14,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.mq.jms.Channel
-import sx.mq.jms.Handler
+import sx.mq.jms.JmsClient
+import sx.mq.jms.JmsHandler
 import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.client
 import sx.mq.jms.listeners.SpringJmsListener
 
 import javax.jms.JMSException
@@ -50,7 +51,7 @@ class LogTest {
         // Setup log appender
         val logAppender = LogAppender(
                 broker = this.broker,
-                logChannelConfiguration= ActiveMQConfiguration.instance.centralLogQueue,
+                logChannelConfiguration= ActiveMQConfiguration.centralLogQueue,
                 identitySupplier = {
                     DesktopIdentityFactory(BundleType.LEOZ_NODE.value, SystemInformation.Companion.create()).create()
                 })
@@ -73,13 +74,13 @@ class LogTest {
     fun testReceive() {
         // Setup log message listener
         val listener = object : SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.centralLogQueue) },
+                ActiveMQConfiguration.centralLogQueue,
                 Executors.newSingleThreadExecutor()) {
 
         }
 
-        listener.addDelegate(object : Handler<LogMessage> {
-            override fun onMessage(message: LogMessage, replyChannel: Channel?) {
+        listener.addDelegate(object : JmsHandler<LogMessage> {
+            override fun onMessage(message: LogMessage, replyChannel: JmsClient?) {
                 log.info("${message}: ${message.logEntries.count()}")
             }
         })

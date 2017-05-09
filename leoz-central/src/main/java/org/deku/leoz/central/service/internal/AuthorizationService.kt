@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
-import sx.mq.jms.Handler
+import sx.mq.jms.JmsHandler
 import sx.logging.slf4j.info
 import sx.rs.auth.ApiKey
 import javax.inject.Inject
@@ -28,8 +28,8 @@ import javax.ws.rs.core.Response
 @Path("internal/v1/authorize")
 class AuthorizationService
     :
-        org.deku.leoz.service.internal.AuthorizationService,
-        Handler<AuthorizationService.NodeRequest> {
+        AuthorizationService,
+        JmsHandler<AuthorizationService.NodeRequest> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -91,7 +91,7 @@ class AuthorizationService
     /**
      *
      */
-    override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.mq.jms.Channel?) {
+    override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.mq.jms.JmsClient?) {
         try {
             log.info(message)
 

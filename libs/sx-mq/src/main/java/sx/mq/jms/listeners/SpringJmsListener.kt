@@ -4,8 +4,9 @@ import org.springframework.jms.connection.JmsTransactionManager
 import org.springframework.jms.listener.DefaultMessageListenerContainer
 import org.springframework.jms.listener.SessionAwareMessageListener
 import org.springframework.util.ErrorHandler
-import sx.mq.jms.Channel
-import sx.mq.jms.Listener
+import sx.mq.jms.JmsClient
+import sx.mq.jms.JmsChannel
+import sx.mq.jms.JmsListener
 import java.util.concurrent.Executor
 import javax.jms.JMSException
 import javax.jms.Message
@@ -19,11 +20,11 @@ import javax.jms.Session
  * @param executor The executor to spawn threads from
  */
 open class SpringJmsListener(
-        channel: () -> Channel,
+        channel: JmsChannel,
         private val executor: Executor,
         private val durableClientId: String? = null)
     :
-        Listener(channel),
+        JmsListener(channel),
         ErrorHandler {
 
     /** Spring message listener container  */
@@ -55,7 +56,7 @@ open class SpringJmsListener(
                 lc.clientId = this.durableClientId
                 lc.isSubscriptionDurable = true
             }
-            lc.connectionFactory = this.channel.connectionFactory
+            lc.connectionFactory = this.context.connectionFactory
             lc.messageListener = object : SessionAwareMessageListener<Message> {
                 @Throws(JMSException::class)
                 override fun onMessage(message: Message, session: Session) {

@@ -18,7 +18,7 @@ import sx.mq.jms.*
 @javax.inject.Named
 class LogService
 :
-        Handler<LogMessage> {
+        JmsHandler<LogMessage> {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @javax.inject.Inject
@@ -138,7 +138,7 @@ class LogService
     /**
      * Message handler
      */
-    override fun onMessage(message: LogMessage, replyChannel: Channel?) {
+    override fun onMessage(message: LogMessage, replyChannel: JmsClient?) {
         try {
             val identityKey = Identity.Key(message.nodeKey)
             log.debug("Received ${message.logEntries.count()} log messages from node [${identityKey}]")

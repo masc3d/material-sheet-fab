@@ -20,15 +20,15 @@ import javax.persistence.EntityManagerFactory
 class EntityConsumer
 (
         /** Messaging context  */
-        private val requestChannelConfiguration: Channel.Configuration,
-        private val notificationChannelConfiguration: Channel.Configuration,
+        private val requestChannel: JmsChannel,
+        private val notificationChannel: JmsChannel,
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory,
         /** Executor used for listening/processing incoming messages */
         listenerExecutor: Executor)
     :
-        SpringJmsListener({ Channel(notificationChannelConfiguration) }, listenerExecutor),
-        Handler<EntityStateMessage> {
+        SpringJmsListener(notificationChannel, listenerExecutor),
+        JmsHandler<EntityStateMessage> {
 
     /**
      * Executor for internal tasks, eg issuing requests
@@ -48,12 +48,12 @@ class EntityConsumer
     /**
      * Entity state message handler
      */
-    override fun onMessage(message: EntityStateMessage, replyChannel: Channel?) {
+    override fun onMessage(message: EntityStateMessage, replyChannel: JmsClient?) {
         this.request(message.entityType!!, message.syncId)
     }
 
-    val requestChannel by lazy {
-        Channel(this.requestChannelConfiguration)
+    val requestClient by lazy {
+        this.requestChannel.client()
     }
 
     /**
@@ -97,8 +97,8 @@ class EntityConsumer
                 val sw = com.google.common.base.Stopwatch.createStarted()
 
                 // Send entity state message
-                this.requestChannel.createReplyChannel().use { replyChannel ->
-                    requestChannel.sendRequest(EntityStateMessage(entityType, syncId), replyChannel = replyChannel)
+                this.requestClient.createReplyClient().use { replyChannel ->
+                    requestClient.sendRequest(EntityStateMessage(entityType, syncId), replyChannel = replyChannel)
 
                     log.info(lfmt("Requesting entities"))
 

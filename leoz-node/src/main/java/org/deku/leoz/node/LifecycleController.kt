@@ -78,6 +78,6 @@ class LifecycleController {
 
     @PostConstruct
     fun onInitialize() {
-        ActiveMQConfiguration.instance.broker.delegate.add(this.brokerListener)
+        ActiveMQConfiguration.broker.delegate.add(this.brokerListener)
     }
 }

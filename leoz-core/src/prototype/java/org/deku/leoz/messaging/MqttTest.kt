@@ -9,6 +9,7 @@ import org.apache.activemq.command.ActiveMQQueue
 import org.apache.activemq.command.ActiveMQTopic
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.MessagingTestConfiguration
+import org.deku.leoz.config.MqConfiguration
 import org.deku.leoz.log.LogMessage
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
@@ -20,11 +21,13 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
-import sx.mq.jms.Channel
-import sx.mq.jms.Handler
+import sx.mq.jms.JmsChannel
+import sx.mq.jms.JmsClient
+import sx.mq.jms.JmsHandler
 import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.activemq.ActiveMQContext
 import sx.mq.jms.activemq.ActiveMQPooledConnectionFactory
-import sx.mq.jms.converters.DefaultConverter
+import sx.mq.jms.converters.DefaultJmsConverter
 import sx.mq.jms.listeners.SpringJmsListener
 import sx.time.Duration
 import java.net.URI
@@ -68,8 +71,8 @@ class MqttTest {
     private val connectOptions: MqttConnectOptions by lazy {
         val mqttConnectOptions = MqttConnectOptions()
         mqttConnectOptions.isCleanSession = true
-        mqttConnectOptions.userName = ActiveMQConfiguration.USERNAME
-        mqttConnectOptions.password = ActiveMQConfiguration.PASSWORD.toCharArray()
+        mqttConnectOptions.userName = MqConfiguration.USERNAME
+        mqttConnectOptions.password = MqConfiguration.PASSWORD.toCharArray()
         mqttConnectOptions
     }
 
@@ -83,37 +86,37 @@ class MqttTest {
     val mqttQueue by lazy { ActiveMQQueue("leoz.test.mqtt.queue") }
 
     val queueChannelConfig by lazy {
-        Channel.Configuration(
+        JmsChannel(
                 destination = this.mqttQueue,
-                connectionFactory = ActiveMQPooledConnectionFactory(URI.create("tcp://localhost:61616"),
-                        username = ActiveMQConfiguration.USERNAME,
-                        password = ActiveMQConfiguration.PASSWORD),
-                converter = DefaultConverter(KryoSerializer().gzip),
-                deliveryMode = Channel.DeliveryMode.Persistent)
+                context = ActiveMQContext(ActiveMQPooledConnectionFactory(URI.create("tcp://localhost:61616"),
+                        username = MqConfiguration.USERNAME,
+                        password = MqConfiguration.PASSWORD)),
+                converter = DefaultJmsConverter(KryoSerializer().gzip),
+                deliveryMode = JmsClient.DeliveryMode.Persistent)
     }
 
     val topicChannelConfig by lazy {
-        Channel.Configuration(
+        JmsChannel(
                 destination = this.mqttTopic,
-                connectionFactory = ActiveMQPooledConnectionFactory(URI.create("tcp://localhost:61616"),
-                        username = ActiveMQConfiguration.USERNAME,
-                        password = ActiveMQConfiguration.PASSWORD),
-                converter = DefaultConverter(KryoSerializer().gzip),
-                deliveryMode = Channel.DeliveryMode.Persistent)
+                context = ActiveMQContext(ActiveMQPooledConnectionFactory(URI.create("tcp://localhost:61616"),
+                        username = MqConfiguration.USERNAME,
+                        password = MqConfiguration.PASSWORD)),
+                converter = DefaultJmsConverter(KryoSerializer().gzip),
+                deliveryMode = JmsClient.DeliveryMode.Persistent)
     }
 
     @Test
     fun testListener() {
         val listener = object : SpringJmsListener(
-                { Channel(queueChannelConfig) },
+                queueChannelConfig,
                 Executors.newSingleThreadExecutor(),
                 "mqtt-subscriber-1") {
 
         }
 
         // Setup log message listener
-        listener.addDelegate(object : Handler<LogMessage> {
-            override fun onMessage(message: LogMessage, replyChannel: Channel?) {
+        listener.addDelegate(object : JmsHandler<LogMessage> {
+            override fun onMessage(message: LogMessage, replyChannel: JmsClient?) {
                 log.info("${message}: ${message.logEntries.count()}")
             }
         })
@@ -127,8 +130,8 @@ class MqttTest {
     fun testPublishViaJms() {
         val logMessage = LogMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
 
-        val channel = Channel(
-                configuration = topicChannelConfig)
+        val channel = JmsClient(
+                channel = topicChannelConfig)
 
         // Receive
         channel.use {

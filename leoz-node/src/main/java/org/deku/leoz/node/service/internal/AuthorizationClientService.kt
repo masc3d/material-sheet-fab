@@ -10,8 +10,10 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.node.Storage
 import org.deku.leoz.service.internal.AuthorizationService
-import sx.mq.jms.Channel
-import sx.mq.jms.Handler
+import sx.mq.jms.JmsChannel
+import sx.mq.jms.JmsClient
+import sx.mq.jms.JmsHandler
+import sx.mq.jms.client
 import sx.time.Duration
 
 /**
@@ -20,7 +22,7 @@ import sx.time.Duration
  */
 class AuthorizationClientService(
         executorService: java.util.concurrent.ScheduledExecutorService,
-        private val channelConfiguration: Channel.Configuration,
+        private val channel: JmsChannel,
         private val identitySupplier: () -> Identity,
         private val onRejected: (identity: Identity) -> Unit)
 :
@@ -28,7 +30,7 @@ class AuthorizationClientService(
                 period = Duration.ofSeconds(60)),
 
         // Message handler for retrieving push authorization updates
-        Handler<AuthorizationService.NodeResponse>
+        JmsHandler<AuthorizationService.NodeResponse>
 {
     private val log = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 
@@ -58,7 +60,7 @@ class AuthorizationClientService(
         log.info("Sending ${authorizationRequest}")
 
         // Connection and session
-        val authorizationMessage = Channel(channelConfiguration).use {
+        val authorizationMessage = channel.client().use {
             it.sendRequest(authorizationRequest).use {
                 it.receive(AuthorizationService.NodeResponse::class.java)
             }
@@ -76,7 +78,7 @@ class AuthorizationClientService(
         this.stop(async = true)
     }
 
-    override fun onMessage(message: AuthorizationService.NodeResponse, replyChannel: Channel?) {
+    override fun onMessage(message: AuthorizationService.NodeResponse, replyChannel: JmsClient?) {
         // TODO: Push authorization update handling. May revoke the node's authorization key
     }
 }
