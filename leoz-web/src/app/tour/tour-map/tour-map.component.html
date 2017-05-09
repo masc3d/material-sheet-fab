@@ -1,0 +1,16 @@
+<yaga-map [lat]="lat" [lng]="lng" [zoom]="11">
+  <yaga-zoom-control></yaga-zoom-control>
+  <yaga-scale-control [metric]="true" [imperial]="false"></yaga-scale-control>
+  <yaga-attribution-control></yaga-attribution-control>
+
+  <yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'" [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>
+  <yaga-marker [lat]="lat" [lng]="lng" [display]="displayMarker">
+    <yaga-popup>
+      <p>
+        <strong>{{ name }}</strong><br/>
+        Latitude: {{lat}}<br/>
+        Longitude: {{lng}}
+      </p>
+    </yaga-popup>
+  </yaga-marker>
+</yaga-map>

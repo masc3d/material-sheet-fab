@@ -1,0 +1,16 @@
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>Driver</th>
+    <th>Tour</th>
+    <th>Position</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let driver of drivers | async" (click)="showPosition(driver)">
+    <td>{{driver.firstname}} {{driver.surname}}</td>
+    <td>{{driver.tournumber}}</td>
+    <td>{{driver.position}}</td>
+  </tr>
+  </tbody>
+</table>

@@ -1,0 +1,20 @@
+<div id="main-menu">
+  <div class="main-menu-container">
+    <div class="menu-content" style="color: #ffffff">
+      <accordion>
+        <accordion-group heading='Home'
+                         [isOpen]='false' [isDisabled]="true" (click)="navigate('home')">
+        </accordion-group>
+        <accordion-group heading='Dispo'
+                         [isOpen]='false'>
+          <a [routerLink]="['driver']" (click)="closeMenu()"><i class="fa fa-wheelchair-alt"></i> Driver</a><br>
+          <hr style="background: #f8ae18; border: none; color: #f8ae18; height: 1px; width: 100%; margin-bottom: 0px;margin-top: 0px;">
+          <a [routerLink]="['tour']" (click)="closeMenu()"><i class="fa fa-bus"></i> Tour</a>
+        </accordion-group>
+        <accordion-group heading='Logout'
+                         [isOpen]='false' [isDisabled]="true" (click)="navigate('logout')">
+        </accordion-group>
+      </accordion>
+    </div>
+  </div>
+</div>
