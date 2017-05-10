@@ -5,6 +5,7 @@ import sx.mq.jms.converters.DefaultJmsConverter
 import sx.time.Duration
 
 /**
+ * Create client for jms channel
  * Created by masc on 09.05.17.
  */
 fun JmsChannel.client(): JmsClient {
