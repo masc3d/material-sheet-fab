@@ -1,19 +1,19 @@
 package sx.mq.mqtt
 
+import org.eclipse.paho.client.mqttv3.MqttClient
+import sx.mq.Channel
+import sx.io.serialization.Serializer
+
 /**
- * Created by masc on 07.05.17.
+ * Mqtt channel
+ * @param contextg Mqtt context
+ * @param topicName Mqtt topic name
+ * @param qos Mqtt QOS
+ * Created by masc on 10.05.17.
  */
-class MqttChannel : sx.mq.Client {
-    override fun close() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun <T> receive(messageType: Class<T>): T {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun send(message: Any) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-}
+class MqttChannel(
+        val context: MqttContext,
+        val topicName: String,
+        val qos: Int,
+        val serializer: Serializer
+)
