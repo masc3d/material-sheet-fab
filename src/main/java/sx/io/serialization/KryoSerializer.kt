@@ -90,7 +90,7 @@ class KryoSerializer(
             if (classToNameId != null) {
                 val nameId = classToNameId.get(type, -1)
                 if (nameId != -1) {
-                    if (Log.TRACE) Log.trace("kryo", "Write class name reference " + nameId + ": " + type!!.name)
+                    if (Log.TRACE) Log.trace("kryo", "Write class name reference " + nameId + ": " + type.name)
                     output.writeVarInt(nameId, true)
                     return
                 }
