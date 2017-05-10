@@ -61,8 +61,8 @@ class EntitySyncTest {
         val requestChannelConfig: JmsChannel
         when (this.broker) {
             is ActiveMQBroker -> {
-                notificationChannelConfig = ActiveMQConfiguration.instance.entitySyncTopic
-                requestChannelConfig = ActiveMQConfiguration.instance.entitySyncQueue
+                notificationChannelConfig = ActiveMQConfiguration.entitySyncTopic
+                requestChannelConfig = ActiveMQConfiguration.entitySyncQueue
             }
             is ArtemisBroker -> {
                 notificationChannelConfig = ArtemisConfiguration.entitySyncTopic

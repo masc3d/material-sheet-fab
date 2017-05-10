@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory
 import sx.mq.jms.JmsClient
 import sx.mq.jms.JmsHandler
 import sx.mq.jms.activemq.ActiveMQBroker
-import sx.mq.jms.client
 import sx.mq.jms.listeners.SpringJmsListener
 
 import javax.jms.JMSException
@@ -53,7 +52,7 @@ class LogTest {
                 broker = this.broker,
                 logChannelConfiguration= ActiveMQConfiguration.centralLogQueue,
                 identitySupplier = {
-                    DesktopIdentityFactory(BundleType.LEOZ_NODE.value, SystemInformation.Companion.create()).create()
+                    DesktopIdentityFactory(BundleType.LeozNode.value, SystemInformation.Companion.create()).create()
                 })
         logAppender.start()
 

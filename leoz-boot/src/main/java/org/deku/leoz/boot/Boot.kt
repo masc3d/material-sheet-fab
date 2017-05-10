@@ -74,7 +74,7 @@ class Boot {
     fun discover(): Single<Any> {
         return discoveryService.discoverFirst(
                 predicate = {
-                    it.bundleType == BundleType.LEOZ_NODE
+                    it.bundleType == BundleType.LeozNode
                 },
                 timeout = Duration.ofSeconds(2))
                 .doOnSuccess {
@@ -118,7 +118,7 @@ class Boot {
             runtimeBundle.verify()
 
             val srcPath = runtimeBundlePath
-            val destPath = File(storage.bundleInstallationDirectory, BundleType.LEOZ_BOOT.value)
+            val destPath = File(storage.bundleInstallationDirectory, BundleType.LeozBoot.value)
 
             val rc = RsyncClient()
             val source = Rsync.URI(srcPath)

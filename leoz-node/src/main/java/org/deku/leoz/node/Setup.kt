@@ -113,7 +113,7 @@ class Setup(
      */
     override fun prepareProduction() {
         when (this.bundleName) {
-            BundleType.LEOZ_NODE.value -> {
+            BundleType.LeozNode.value -> {
                 if (storage.applicationConfigurationFile.exists()) {
                     log.warn("Skipping generation of productive configuration file [${storage.applicationConfigurationFile}]")
                     return

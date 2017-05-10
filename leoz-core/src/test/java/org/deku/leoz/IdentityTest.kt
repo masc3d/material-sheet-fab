@@ -16,7 +16,7 @@ class IdentityTest {
 
     val identity by lazy {
         DesktopIdentityFactory(
-                BundleType.LEOZ_NODE.value,
+                BundleType.LeozNode.value,
                 SystemInformation.create()
         )
                 .create()

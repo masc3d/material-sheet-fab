@@ -14,11 +14,11 @@ class MessagingTestConfiguration {
     companion object {
         val module = Kodein.Module {
             bind<ActiveMQBroker>() with singleton {
-                val broker = ActiveMQConfiguration.instance.broker
+                val broker = ActiveMQConfiguration.broker
                 broker.user = Broker.User(
-                        userName = ActiveMQConfiguration.USERNAME,
-                        password = ActiveMQConfiguration.PASSWORD,
-                        groupName = ActiveMQConfiguration.GROUPNAME)
+                        userName = MqConfiguration.USERNAME,
+                        password = MqConfiguration.PASSWORD,
+                        groupName = MqConfiguration.GROUPNAME)
                 broker.dataDirectory = File("build/activemq")
                 broker
             }

@@ -32,7 +32,7 @@ open class MessageBrokerTestConfiguration {
         ActiveMQBroker.instance.dataDirectory = File("build/activemq")
 
         // Initialize connection factory UDI
-        ActiveMQConfiguration.instance.connectionFactory.uri = ActiveMQBroker.instance.localUri
+        ActiveMQConfiguration.connectionFactory.uri = ActiveMQBroker.instance.localUri
     }
 
     @get:Bean

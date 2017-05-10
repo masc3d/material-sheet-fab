@@ -8,6 +8,6 @@ import java.io.File
  * @param bundleName Bundle name
  **/
 fun BundleInstaller.boot(bundleName: String) {
-    val leozBoot = sx.packager.Bundle.load(File(this.bundleContainerPath, BundleType.LEOZ_BOOT.value))
+    val leozBoot = sx.packager.Bundle.load(File(this.bundleContainerPath, BundleType.LeozBoot.value))
     leozBoot.execute(wait = false, args = *arrayOf("--no-ui", "--bundle", bundleName))
 }

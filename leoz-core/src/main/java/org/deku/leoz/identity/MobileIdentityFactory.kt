@@ -12,7 +12,7 @@ import sx.text.toHexString
 class MobileIdentityFactory(
         val serial: String,
         val imei: String)
-    : IdentityFactory(name = BundleType.LEOZ_MOBILE.value) {
+    : IdentityFactory(name = BundleType.LeozMobile.value) {
 
     override fun create(): Identity {
         val m = DigestType.SHA1.getInstance()

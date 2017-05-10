@@ -15,7 +15,7 @@ class DiscoveryConfiguration {
             bind<DiscoveryService>() with singleton {
                 val service = DiscoveryService(
                         executorService = instance(),
-                        bundleType = BundleType.LEOZ_UI,
+                        bundleType = BundleType.LeozUI,
                         passive = true)
                 service.start()
                 service

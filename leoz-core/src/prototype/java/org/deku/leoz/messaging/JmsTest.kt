@@ -38,7 +38,7 @@ class JmsTest {
 
     @Test
     fun testTemporaryQueueSendReceiveWithTransaction() {
-        val cn = ActiveMQConfiguration.instance.connectionFactory.createConnection()
+        val cn = ActiveMQConfiguration.connectionFactory.createConnection()
         cn.start()
         val s = cn.createSession(true, -1)
         val q = s.createTemporaryQueue()

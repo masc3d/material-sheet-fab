@@ -40,7 +40,7 @@ open class EntitySyncConfiguration {
 
     @Inject
     private lateinit var mqConfigration: ActiveMQConfiguration
-    
+
     /** Broker event listener  */
     private val brokerEventListener = object : Broker.DefaultEventListener() {
         override fun onStart() {
