@@ -1,14 +1,12 @@
 package org.deku.leoz.config
 
+import org.apache.activemq.broker.region.virtual.CompositeTopic
 import org.deku.leoz.identity.Identity
-import sx.io.serialization.KryoSerializer
-import sx.io.serialization.gzip
 import sx.mq.Broker
 import sx.mq.jms.JmsChannel
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.activemq.ActiveMQContext
 import sx.mq.jms.activemq.ActiveMQPooledConnectionFactory
-import sx.mq.jms.converters.DefaultJmsConverter
 import sx.mq.jms.toJms
 
 /**
@@ -17,12 +15,36 @@ import sx.mq.jms.toJms
  */
 object ActiveMQConfiguration {
 
-    init {
+    /** Local JMS broker */
+    val broker: ActiveMQBroker by lazy {
+        val broker = ActiveMQBroker.instance
+
         // Configure broker authentication
-        this.broker.user = Broker.User(
+        broker.user = Broker.User(
                 MqConfiguration.USERNAME,
                 MqConfiguration.PASSWORD,
                 MqConfiguration.GROUPNAME)
+
+        // Setup composite destinations for MQTT
+        // REMARK: MQTT doesn't support queues natively, thus using topics as virtual endpoints
+        // which are forwarded to queues internally.
+        broker.addCompositeDestination({
+            val d = CompositeTopic()
+            d.name = MqConfiguration.centralQueueTopic.destinationName
+            d.forwardTo = listOf(
+                    this.centralQueue.destination)
+            d
+        }())
+
+        broker.addCompositeDestination({
+            val d = CompositeTopic()
+            d.name = MqConfiguration.centralLogQueueTopic.destinationName
+            d.forwardTo = listOf(
+                    this.centralLogQueue.destination)
+            d
+        }())
+
+        broker
     }
 
     /**
@@ -30,16 +52,13 @@ object ActiveMQConfiguration {
      */
     val connectionFactory: ActiveMQPooledConnectionFactory by lazy {
         ActiveMQPooledConnectionFactory(
-                ActiveMQBroker.Companion.instance.localUri,
+                ActiveMQBroker.instance.localUri,
                 MqConfiguration.USERNAME,
                 MqConfiguration.PASSWORD)
     }
 
     /** Local JMS broker context */
     val context = ActiveMQContext(connectionFactory = this.connectionFactory)
-
-    /** Local JMS broker */
-    val broker: ActiveMQBroker get() = ActiveMQBroker.instance
 
     // JMS channels
 

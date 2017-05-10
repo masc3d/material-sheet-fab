@@ -23,7 +23,19 @@ object MqConfiguration {
                 destinationType = DestinationType.Queue,
                 destinationName = "leoz.central.queue",
                 persistent = true,
-                serializer = (KryoSerializer().gzip)
+                serializer = KryoSerializer().gzip
+        )
+    }
+
+    /**
+     * Central queue topic for mqtt
+     */
+    val centralQueueTopic: Channel by lazy {
+        Channel(
+                destinationType = DestinationType.Topic,
+                destinationName = "${this.centralQueue.destinationName}.topic",
+                persistent = false,
+                serializer = this.centralQueue.serializer
         )
     }
 
@@ -36,6 +48,18 @@ object MqConfiguration {
                 destinationName = "leoz.log.queue",
                 persistent = true,
                 serializer = KryoSerializer().gzip
+        )
+    }
+
+    /**
+     * Central log queue topic for mqtt
+     */
+    val centralLogQueueTopic: Channel by lazy {
+        Channel(
+                destinationType = DestinationType.Topic,
+                destinationName = "${this.centralLogQueue.destinationName}.topic",
+                persistent = false,
+                serializer = this.centralLogQueue.serializer
         )
     }
 
