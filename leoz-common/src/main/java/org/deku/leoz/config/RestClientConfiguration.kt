@@ -38,6 +38,16 @@ abstract class RestClientConfiguration {
      */
     var port: Int = RestConfiguration.DEFAULT_PORT
 
+    fun createUri(https: Boolean, host: String, port: Int, basePath: String): URI {
+        val scheme = when(https) {
+            true -> "https"
+            false -> "http"
+        }
+
+        return URI("${scheme}://${host}:${port}")
+                .resolve(basePath)
+    }
+
     /**
      * Factory method for creating a leoz rest client
      * @param host REST server host name
@@ -50,8 +60,7 @@ abstract class RestClientConfiguration {
             false -> "http"
         }
 
-        val uri = URI("${scheme}://${host}:${port}")
-                .resolve(RestConfiguration.MAPPING_PREFIX)
+        val uri = this.createUri(https, host, port, RestConfiguration.MAPPING_PREFIX)
 
         // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
         val ignoreSslCertificate = !host.endsWith(org.deku.leoz.config.HostConfiguration.Companion.CENTRAL_DOMAIN)

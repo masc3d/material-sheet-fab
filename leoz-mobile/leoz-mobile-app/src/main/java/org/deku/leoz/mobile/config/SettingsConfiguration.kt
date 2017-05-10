@@ -4,6 +4,7 @@ import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.*
 import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.model.RemoteSettings
 import sx.ConfigurationMap
 import sx.YamlConfigurationMap
 import java.io.FileNotFoundException
@@ -40,6 +41,10 @@ class SettingsConfiguration {
                         it.close()
                     }
                 }
+            }
+
+            bind<RemoteSettings>() with singleton {
+                RemoteSettings(instance())
             }
         }
     }
