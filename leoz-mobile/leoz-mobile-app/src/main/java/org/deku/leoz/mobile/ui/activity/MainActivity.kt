@@ -76,6 +76,14 @@ class MainActivity : Activity() {
         }
     }
 
+    override fun onBackPressed() {
+        if (login.authenticatedUser?.hash?.isBlank() ?: true) {
+            showExitDialog()
+            return
+        }
+        super.onBackPressed()
+    }
+
     /**
      * Determine if changelog should be displayed automatically e.g. after an APP update.
      * Display the dialog only after the user has been logged in
@@ -129,6 +137,17 @@ class MainActivity : Activity() {
 
         builder.setView(view)
                 .setPositiveButton(getString(R.string.dismiss), DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+
+        builder.create().show()
+    }
+
+    private fun showExitDialog() {
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle("Exit application?")
+                .setMessage("Do you really want to exit the application?")
+                .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which -> System.exit(0) })
+                .setNegativeButton("No", null)
 
         builder.create().show()
     }

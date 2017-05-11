@@ -24,7 +24,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/imageButton"
+                    android:id="@+id/uxWarehouse"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -57,7 +57,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/imageView2"
+                    android:id="@+id/uxDelivery"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -66,7 +66,7 @@
                     android:padding="10dp"
                     android:scaleType="fitCenter"
                     android:tint="@color/colorPrimaryDark"
-                    app:srcCompat="@drawable/ic_truck_delivery" />
+                    app:srcCompat="@drawable/ic_truck_fast" />
 
                 <TextView
                     android:id="@+id/textView7"
@@ -89,7 +89,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/imageView3"
+                    android:id="@+id/uxLinehaul"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -120,7 +120,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/imageView4"
+                    android:id="@+id/uxHUB"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

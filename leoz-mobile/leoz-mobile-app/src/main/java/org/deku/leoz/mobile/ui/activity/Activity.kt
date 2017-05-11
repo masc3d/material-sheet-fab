@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui.activity
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -30,6 +31,7 @@ import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import org.deku.leoz.mobile.model.Login
 import org.w3c.dom.Text
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
@@ -47,6 +49,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
     private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
     private val tone: Tone by Kodein.global.lazy.instance()
     private val updateService: UpdateService by Kodein.global.lazy.instance()
+    private val login: Login by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,9 +134,22 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
         // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true
+        when(id) {
+            R.id.action_settings -> {
+                return false
+            }
+            R.id.action_logout -> {
+                login.logout()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe {
+                            val intent = Intent(applicationContext, MainActivity::class.java)
+                            startActivity(intent)
+                        }
+                return true
+            }
+            else -> {
+                return false
+            }
         }
 
         return super.onOptionsItemSelected(item)
