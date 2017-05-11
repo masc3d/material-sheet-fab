@@ -61,8 +61,12 @@ open class UserJooqRepository {
         return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.EMAIL.eq(email))
     }
 
-    fun findByAlias(alias: String): MstUserRecord? {
-        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ALIAS.eq(alias))
+    fun findByAlias(alias: String, debitor: Double): MstUserRecord? {
+        //return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ALIAS.eq(alias))
+        return dslContext.select()
+                .from(Tables.MST_USER.innerJoin(Tables.MST_DEBITOR)
+                        .on(Tables.MST_USER.DEBITOR_ID.eq(Tables.MST_DEBITOR.DEBITOR_ID)))
+                .where(Tables.MST_USER.ALIAS.eq(alias).and(Tables.MST_DEBITOR.DEBITOR_NR.eq(debitor)))?.fetchOneInto(MstUser.MST_USER)
     }
 
     /*
@@ -70,8 +74,8 @@ open class UserJooqRepository {
             return findByAlias(name) ?: findByMail(name)
         }
     */
-    fun aliasExists(alias: String): Boolean {
-        return findByAlias(alias) != null
+    fun aliasExists(alias: String, debitor: Double): Boolean {
+        return findByAlias(alias, debitor) != null
     }
 
     fun mailExists(mail: String): Boolean {
