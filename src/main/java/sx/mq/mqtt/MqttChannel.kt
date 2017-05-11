@@ -1,7 +1,5 @@
 package sx.mq.mqtt
 
-import org.eclipse.paho.client.mqttv3.MqttClient
-import sx.mq.Channel
 import sx.io.serialization.Serializer
 
 /**

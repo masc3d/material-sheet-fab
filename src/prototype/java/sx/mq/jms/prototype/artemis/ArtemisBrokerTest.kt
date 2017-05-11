@@ -7,7 +7,7 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactor
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants
 import org.junit.Test
 import org.springframework.jms.connection.CachingConnectionFactory
-import sx.mq.Broker
+import sx.mq.MqBroker
 import sx.mq.jms.artemis.ArtemisBroker
 import java.io.File
 
@@ -25,7 +25,7 @@ class ArtemisBrokerTest {
      */
     private val broker by lazy {
         val broker = ArtemisBroker()
-        broker.user = Broker.User(
+        broker.user = MqBroker.User(
                 userName = BROKER_USERNAME,
                 password = BROKER_PASWORD,
                 groupName = "")
@@ -36,7 +36,7 @@ class ArtemisBrokerTest {
     @Test
     fun testBrokerWithPeerIndefinitely() {
         this.broker.addPeerBroker(
-                Broker.PeerBroker(BROKER_PEER, Broker.TransportType.TCP, BROKER_PORT)
+                MqBroker.PeerBroker(BROKER_PEER, MqBroker.TransportType.TCP, BROKER_PORT)
         )
         this.broker.start()
         Thread.sleep(Long.MAX_VALUE)

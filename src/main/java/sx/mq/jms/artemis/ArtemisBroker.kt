@@ -12,12 +12,12 @@ import org.apache.activemq.artemis.core.settings.impl.AddressSettings
 import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl
 import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS
 import org.apache.activemq.artemis.spi.core.security.ActiveMQSecurityManagerImpl
-import sx.mq.Broker
+import sx.mq.MqBroker
 
 /**
  * Created by masc on 05/10/2016.
  */
-class ArtemisBroker : Broker(NATIVE_TCP_PORT) {
+class ArtemisBroker : MqBroker(NATIVE_TCP_PORT) {
     companion object {
         // Defaults
         private val NATIVE_TCP_PORT = 61616

@@ -13,7 +13,7 @@ import sx.io.serialization.Serializer
  *
  * Created by masc on 07.05.17.
  */
-class Channel(
+class MqChannel(
         /** Destination name, following JMS specifications */
         val destinationName: String,
         val destinationType: DestinationType,
