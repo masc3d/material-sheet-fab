@@ -22,7 +22,7 @@ open class DatabaseSyncService
 @javax.inject.Inject
 constructor(
         private val exceutorService: ScheduledExecutorService,
-        @Qualifier(PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
+        @Qualifier(org.deku.leoz.node.config.PersistenceConfiguration.QUALIFIER) tx: PlatformTransactionManager,
         @Qualifier(PersistenceConfiguration.QUALIFIER) txJooq: PlatformTransactionManager) {
     /**
      * Embedded service class

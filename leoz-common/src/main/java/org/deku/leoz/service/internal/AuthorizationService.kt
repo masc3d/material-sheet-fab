@@ -89,6 +89,14 @@ interface AuthorizationService {
     )
 
     /**
+     * Web authorization response
+     */
+    data class WebResponse(
+            var key: String = "",
+            var debitorNo: String = ""
+    )
+
+    /**
      * Request authorization
      * @param request Authorization request
      */
@@ -96,6 +104,15 @@ interface AuthorizationService {
     @Path("/mobile")
     @ApiOperation(value = "Request mobile device authorization")
     fun authorizeMobile(request: MobileRequest): MobileResponse
+
+    /**
+     * Request authorization
+     * @param request Authorization request
+     */
+    @PATCH
+    @Path("/web")
+    @ApiOperation(value = "Request web authorization")
+    fun authorizeWeb(request: Credentials): WebResponse
 
     // Extensions
     fun Credentials.hashPassword(salt: ByteArray): String {

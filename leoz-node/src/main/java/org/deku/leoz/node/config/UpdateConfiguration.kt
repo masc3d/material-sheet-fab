@@ -139,11 +139,11 @@ open class UpdateConfiguration {
                                     storeInLocalRepository = false,
                                     requiresBoot = true),
                             BundleUpdateService.Preset(
-                                    bundleName = BundleType.LEOZ_UI.value,
+                                    bundleName = BundleType.LeozUI.value,
                                     install = false,
                                     storeInLocalRepository = true),
                             BundleUpdateService.Preset(
-                                    bundleName = BundleType.LEOZ_BOOT.value,
+                                    bundleName = BundleType.LeozBoot.value,
                                     install = true,
                                     storeInLocalRepository = true)),
                     cleanup = this.settings.cleanup,
@@ -171,7 +171,7 @@ open class UpdateConfiguration {
 
         // Register for update notifications (as long as automatic updates are enabled)
         if (this@UpdateConfiguration.settings.automatic) {
-            this.messageListenerConfiguration.nodeNotificationListener.addDelegate(
+            this.messageListenerConfiguration.nodeTopicListener.addDelegate(
                     this.bundleUpdateService)
         }
     }

@@ -38,7 +38,7 @@ sourceSets {
 dependencies {
     compile(
             project(':sx-common'),
-            project(':sx-jms'),
+            project(':sx-mq'),
             project(':sx-rsync'),
             project(':sx-serialization'),
             project(':sx-discovery'),
@@ -133,7 +133,10 @@ dependencies {
             },
 
             // Spring
-            "org.springframework:spring-jms:$v_spring"
+            "org.springframework:spring-jms:$v_spring",
+
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
     )
 }
 
@@ -146,3 +149,6 @@ configurations.all {
         }
     }
 }
+
+// Include sx platform/binaries
+tasks.testClasses.dependsOn(copyRsyncPlatformDirToProject)

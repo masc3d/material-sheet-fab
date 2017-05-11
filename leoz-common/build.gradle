@@ -41,6 +41,7 @@ dependencies {
     compile(
             project(':sx-common'),
             project(':sx-serialization'),
+            project(':sx-mq'),
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
 
             // Kodein
@@ -66,7 +67,13 @@ dependencies {
             "com.netflix.feign:feign-jaxrs:$v_feign",
 
             // YAML
-            "org.yaml:snakeyaml:$v_snakeyaml"
+            "org.yaml:snakeyaml:$v_snakeyaml",
+
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
+
+            // Kryo
+            "com.esotericsoftware:kryo:4.0.0"
     )
 
     testCompile(
@@ -80,7 +87,10 @@ dependencies {
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
-            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson"
+            "com.fasterxml.jackson.core:jackson-annotations:$v_jackson",
+
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
     )
 }
 

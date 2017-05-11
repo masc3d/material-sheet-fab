@@ -1,8 +1,8 @@
 package org.deku.leoz.node.service.internal.sync
 
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
-import sx.jms.*
-import sx.jms.listeners.SpringJmsListener
+import sx.mq.jms.*
+import sx.mq.jms.listeners.SpringJmsListener
 import javax.jms.JMSException
 
 /**
@@ -12,15 +12,15 @@ import javax.jms.JMSException
  * @param entityManagerFactory
  */
 class EntityPublisher(
-        private val requestChannelConfiguration: Channel.Configuration,
-        private val notificationChannelConfiguration: Channel.Configuration,
+        private val requestChannel: JmsChannel,
+        private val notificationChannel: JmsChannel,
         /** Entity manager factory  */
         private val entityManagerFactory: javax.persistence.EntityManagerFactory,
         /** Executor used for listening/processing incoming messages */
         listenerExecutor: java.util.concurrent.Executor)
 :
-        SpringJmsListener({ Channel(requestChannelConfiguration) }, listenerExecutor),
-        Handler<EntityStateMessage> {
+        SpringJmsListener(requestChannel, listenerExecutor),
+        JmsHandler<EntityStateMessage> {
     init {
         this.addDelegate(this)
     }
@@ -32,7 +32,7 @@ class EntityPublisher(
      */
     @Throws(javax.jms.JMSException::class)
     fun publish(entityType: Class<*>, syncId: Long?) {
-        Channel(this.notificationChannelConfiguration).use {
+        this.notificationChannel.client().use {
             val msg = EntityStateMessage(entityType, syncId)
             log.info("Publishing [${msg}]")
             it.send(msg)
@@ -40,7 +40,7 @@ class EntityPublisher(
     }
 
     @Throws(JMSException::class)
-    override fun onMessage(message: EntityStateMessage, replyChannel: Channel?) {
+    override fun onMessage(message: EntityStateMessage, replyChannel: JmsClient?) {
         var em: javax.persistence.EntityManager? = null
         try {
             val sw = com.google.common.base.Stopwatch.createStarted()

@@ -1,93 +1,100 @@
 package org.deku.leoz.config
 
-import org.apache.activemq.command.ActiveMQQueue
-import org.apache.activemq.command.ActiveMQTopic
+import org.apache.activemq.broker.region.virtual.CompositeTopic
 import org.deku.leoz.identity.Identity
-import sx.io.serialization.KryoSerializer
-import sx.io.serialization.gzip
-import sx.jms.Channel
-import sx.jms.converters.DefaultConverter
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
-import sx.jms.activemq.ActiveMQPooledConnectionFactory
+import sx.mq.Broker
+import sx.mq.jms.JmsChannel
+import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.activemq.ActiveMQContext
+import sx.mq.jms.activemq.ActiveMQPooledConnectionFactory
+import sx.mq.jms.toJms
 
 /**
  * ActiveMQ specific messaging configuration
- * @param connectionFactory Optional connection factory. If not set reverts to the local broker URI.
  * Created by masc on 16.04.15.
  */
-class ActiveMQConfiguration() {
+object ActiveMQConfiguration {
 
-    companion object {
-        // Leoz broker configuration only has a single user which is defined here
-        val USERNAME = "leoz"
-        val PASSWORD = "iUbmQRejRI1P3SNtzwIM7wAgNazURPcVcBU7SftyZ0oha9FlnAdGAmXdEQwYlKFC"
-        val GROUPNAME = "leoz"
+    /** Local JMS broker */
+    val broker: ActiveMQBroker by lazy {
+        val broker = ActiveMQBroker.instance
 
-        /**
-         * Singleton instance of a messaging configuration accessing a local/embedded broker
-         */
-        @JvmStatic val instance by lazy({
-            ActiveMQConfiguration()
-        })
-    }
-
-    init {
         // Configure broker authentication
-        this.broker.user = Broker.User(USERNAME, PASSWORD, GROUPNAME)
+        broker.user = Broker.User(
+                MqConfiguration.USERNAME,
+                MqConfiguration.PASSWORD,
+                MqConfiguration.GROUPNAME)
+
+        // Setup composite destinations for MQTT
+        // REMARK: MQTT doesn't support queues natively, thus using topics as virtual endpoints
+        // which are forwarded to queues internally.
+        broker.addCompositeDestination({
+            val d = CompositeTopic()
+            d.name = MqConfiguration.centralQueueTopic.destinationName
+            d.forwardTo = listOf(
+                    this.centralQueue.destination)
+            d
+        }())
+
+        broker.addCompositeDestination({
+            val d = CompositeTopic()
+            d.name = MqConfiguration.centralLogQueueTopic.destinationName
+            d.forwardTo = listOf(
+                    this.centralLogQueue.destination)
+            d
+        }())
+
+        broker
     }
 
+    /**
+     * Local JMS broker connection factory
+     */
     val connectionFactory: ActiveMQPooledConnectionFactory by lazy {
         ActiveMQPooledConnectionFactory(
-                ActiveMQBroker.Companion.instance.localUri,
-                USERNAME,
-                PASSWORD)
+                ActiveMQBroker.instance.localUri,
+                MqConfiguration.USERNAME,
+                MqConfiguration.PASSWORD)
     }
 
-    val broker: Broker
-        get() = ActiveMQBroker.instance
+    /** Local JMS broker context */
+    val context = ActiveMQContext(connectionFactory = this.connectionFactory)
 
-    val centralQueue: Channel.Configuration by lazy({
-        Channel.Configuration(
-                connectionFactory = this.connectionFactory,
-                destination = ActiveMQQueue("leoz.central.queue"),
-                converter = DefaultConverter(KryoSerializer().gzip))
-    })
+    // JMS channels
 
-    val centralLogQueue: Channel.Configuration by lazy {
-        val c = Channel.Configuration(
-                connectionFactory = this.connectionFactory,
-                destination = ActiveMQQueue("leoz.log.queue"),
-                deliveryMode = Channel.DeliveryMode.Persistent,
-                converter = DefaultConverter(KryoSerializer().gzip))
-
-        c.priority = 1
-        c
+    val centralQueue: JmsChannel by lazy {
+        MqConfiguration.centralQueue.toJms(
+                context = this.context)
     }
 
-    val entitySyncQueue: Channel.Configuration by lazy {
-        Channel.Configuration(
-                connectionFactory = this.connectionFactory,
-                destination = ActiveMQQueue("leoz.entity-sync.queue"),
-                converter = DefaultConverter(KryoSerializer().gzip))
+    val centralLogQueue: JmsChannel by lazy {
+        MqConfiguration.centralLogQueue.toJms(
+                context = this.context,
+                priority = 1
+        )
     }
 
-    val entitySyncTopic: Channel.Configuration by lazy {
-        Channel.Configuration(
-                connectionFactory = this.connectionFactory,
-                destination = ActiveMQTopic("leoz.entity-sync.topic"),
-                converter = DefaultConverter(KryoSerializer().gzip))
+    val entitySyncQueue: JmsChannel by lazy {
+        MqConfiguration.entitySyncQueue.toJms(
+                context = this.context
+        )
     }
 
-    fun nodeQueue(identityKey: Identity.Key): Channel.Configuration {
-        return Channel.Configuration(connectionFactory = this.connectionFactory,
-                destination = ActiveMQQueue("leoz.node.queue." + identityKey.short),
-                converter = DefaultConverter(KryoSerializer().gzip))
+    val entitySyncTopic: JmsChannel by lazy {
+        MqConfiguration.entitySyncTopic.toJms(
+                context = this.context
+        )
     }
 
-    val nodeNotificationTopic: Channel.Configuration by lazy {
-        Channel.Configuration(connectionFactory = this.connectionFactory,
-                destination = ActiveMQTopic("leoz.node.notification.topic"),
-                converter = DefaultConverter(KryoSerializer().gzip))
+    fun nodeQueue(identityKey: Identity.Key): JmsChannel {
+        return MqConfiguration
+                .nodeQueue(identityKey)
+                .toJms(context = this.context)
+    }
+
+    val nodeTopic: JmsChannel by lazy {
+        MqConfiguration.nodeTopic.toJms(
+                context = this.context
+        )
     }
 }

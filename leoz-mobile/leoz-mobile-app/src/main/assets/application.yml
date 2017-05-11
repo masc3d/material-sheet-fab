@@ -1,8 +1,15 @@
-# REST settings
-rest:
-  url: 'https://leox.derkurier.de:13000/rs/api'
-  # Ignores SSL certificate
-  ssl-validation: false
+# Peer connectivity settings
+remote:
+    host: 'leox.derkurier.de'
+
+    # Http related settings
+    http:
+       port: 13000
+       ssl: true
+
+    # Mq broker related settings
+    broker:
+       native-port: 13001
 
 # Database settings
 database:

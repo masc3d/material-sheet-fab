@@ -7,7 +7,7 @@ import org.deku.leoz.node.Storage
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.jms.Channel
+import sx.mq.jms.JmsClient
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -28,6 +28,8 @@ open class FileSyncHostConfiguration {
     private lateinit var messageListenerConfiguration: MessageListenerConfiguration
     @Inject
     private lateinit var executorService: ScheduledExecutorService
+    @Inject
+    private lateinit var mqConfiguration: ActiveMQConfiguration
 
     /**
      * File sync service
@@ -38,7 +40,8 @@ open class FileSyncHostConfiguration {
                 baseDirectory = storage.transferDirectory,
                 executorService = this.executorService,
                 identity = this.application.identity,
-                nodeChannelSupplier = { it -> Channel(ActiveMQConfiguration.instance.nodeQueue(it)) })
+                nodeChannelSupplier = { mqConfiguration.nodeQueue(it) }
+        )
 
     /**
      * Initialize

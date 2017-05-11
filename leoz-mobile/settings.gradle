@@ -4,11 +4,13 @@ include ':leoz-common'
 include ':sx-common'
 include ':sx-android'
 include ':sx-android-honeywell'
+include ':sx-mq'
 include ':sx-serialization'
 
 // Mangle project paths
 project(':sx-common').projectDir = file('../libs/sx-common')
 project(':sx-android').projectDir = file('../libs/sx-android')
 project(':sx-android-honeywell').projectDir = file('../libs/sx-android-honeywell')
+project(':sx-mq').projectDir = file('../libs/sx-mq')
 project(':sx-serialization').projectDir = file('../libs/sx-serialization')
 project(':leoz-common').projectDir = file('../leoz-common')

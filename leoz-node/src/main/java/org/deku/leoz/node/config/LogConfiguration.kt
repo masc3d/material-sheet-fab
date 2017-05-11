@@ -42,8 +42,8 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
                     val application: Application = Kodein.global.instance()
                     // Setup message log appender
                     this.jmsLogAppender = LogAppender(
-                            broker = ActiveMQConfiguration.instance.broker,
-                            logChannelConfiguration = ActiveMQConfiguration.instance.centralLogQueue,
+                            broker = ActiveMQConfiguration.broker,
+                            logChannelConfiguration = ActiveMQConfiguration.centralLogQueue,
                             identitySupplier = { application.identity })
                     this.jmsLogAppender!!.context = loggerContext
                     this.jmsLogAppender!!.start()

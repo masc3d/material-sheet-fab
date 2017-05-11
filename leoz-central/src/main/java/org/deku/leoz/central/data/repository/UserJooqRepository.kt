@@ -12,7 +12,7 @@ import javax.inject.Inject
 import sx.time.toLocalDate
 import java.util.*
 import javax.inject.Named
-
+import org.deku.leoz.central.data.jooq.tables.MstDebitor
 
 /**
  * User repository
@@ -61,12 +61,21 @@ open class UserJooqRepository {
         return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.EMAIL.eq(email))
     }
 
-    fun findByAlias(alias: String): MstUserRecord? {
-        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ALIAS.eq(alias))
+    fun findByAlias(alias: String, debitor: Double): MstUserRecord? {
+        //return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ALIAS.eq(alias))
+        return dslContext.select()
+                .from(Tables.MST_USER.innerJoin(Tables.MST_DEBITOR)
+                        .on(Tables.MST_USER.DEBITOR_ID.eq(Tables.MST_DEBITOR.DEBITOR_ID)))
+                .where(Tables.MST_USER.ALIAS.eq(alias).and(Tables.MST_DEBITOR.DEBITOR_NR.eq(debitor)))?.fetchOneInto(MstUser.MST_USER)
     }
 
-    fun aliasExists(alias: String): Boolean {
-        return findByAlias(alias) != null
+    /*
+        fun find(name: String): MstUserRecord? {
+            return findByAlias(name) ?: findByMail(name)
+        }
+    */
+    fun aliasExists(alias: String, debitor: Double): Boolean {
+        return findByAlias(alias, debitor) != null
     }
 
     fun mailExists(mail: String): Boolean {
@@ -76,5 +85,12 @@ open class UserJooqRepository {
     fun hasAuthorizedKey(key: String): Boolean {
         val userRecord = this.findByKey(key) ?: return false
         return userRecord.active != 0 && userRecord.expiresOn.toLocalDate().isAfter(Date().toLocalDate())
+    }
+
+    fun findDebitorNoById(id: Int): Double? {
+        return dslContext.select(Tables.MST_DEBITOR.DEBITOR_NR)
+                .from(Tables.MST_DEBITOR)
+                .where(Tables.MST_DEBITOR.DEBITOR_ID.eq(id))
+                .fetchOneInto(Double::class.java)
     }
 }

@@ -6,10 +6,11 @@ import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
+import sx.mq.Broker
+import sx.mq.jms.activemq.ActiveMQBroker
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.inject.Inject
@@ -63,10 +64,18 @@ open class MessageBrokerConfiguration {
         }
 
         // Initialize connection factory UDI
-        ActiveMQConfiguration.instance.connectionFactory.uri = ActiveMQBroker.instance.localUri
+        ActiveMQConfiguration.connectionFactory.uri = ActiveMQBroker.instance.localUri
 
         // The broker is currently started by the http tunnel servlet, initialized via web context
     }
+
+    @get:Bean
+    open val activeMqConfiguration
+        get() = ActiveMQConfiguration
+
+    @get:Bean
+    open val activeMqBroker
+        get() = ActiveMQBroker.instance
 
     @PreDestroy
     fun onDestroy() {

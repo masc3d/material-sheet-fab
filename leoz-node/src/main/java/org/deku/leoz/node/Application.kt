@@ -99,7 +99,7 @@ open class Application :
      * Application bundle type
      */
     open val bundleType: BundleType
-        get() = BundleType.LEOZ_NODE
+        get() = BundleType.LeozNode
 
     /**
      * Application jar manifest

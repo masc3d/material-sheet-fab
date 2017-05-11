@@ -19,16 +19,18 @@ class LocationService(
     private val log = LoggerFactory.getLogger(this.javaClass)
     var locationManager: LocationManager? = null
 
+    constructor() : this(Duration.ofSeconds(30), 250, false, true) {}
+
     override fun onBind(intent: Intent?) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+        log.debug("ONSTARTCOMMAND")
         return START_STICKY
     }
 
-
-
     override fun onCreate() {
+        log.debug("ONCREATE")
         if (locationManager == null)
             locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -73,11 +75,14 @@ class LocationService(
         )
 
         class LTRLocationListener(provider: String) : android.location.LocationListener {
-
+            private val log = LoggerFactory.getLogger(this.javaClass)
             val lastLocation = Location(provider)
 
             override fun onLocationChanged(location: Location?) {
                 lastLocation.set(location)
+                log.debug("ONLOCATIONCHANGED")
+
+                log.debug("Location changed. Provider [${location?.provider}] Time [${location?.time}] Lat [${location?.latitude}] Lng [${location?.longitude}] Accuracy [${location?.accuracy}] Altitude [${location?.altitude}] Bearing [${location?.bearing}] Speed [${location?.speed}]")
                 // TODO: Do something here
             }
 

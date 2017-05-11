@@ -13,7 +13,7 @@ import javax.ws.rs.Path
  */
 @Named
 @ApiKey(false)
-@Path("internal/v1/depot")
+@Path("internal/v1/station")
 class StationService : org.deku.leoz.service.internal.StationService {
     private val log = org.slf4j.LoggerFactory.getLogger(org.deku.leoz.node.service.internal.StationService::class.java)
 

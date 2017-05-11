@@ -4,17 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
 import kotlinx.android.synthetic.main.fragment_main.*
-import kotlinx.android.synthetic.main.main_nav_header.uxActiveUser
-import kotlinx.android.synthetic.main.main_nav_header.uxStationID
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 
 /**
  * Created by n3 on 26/02/2017.
  */
-class MainFragment : Fragment(), LoginFragment.OnLoginSuccessfulListener {
+class MainFragment : Fragment() {
 
     /**
      * Create view
@@ -32,15 +29,6 @@ class MainFragment : Fragment(), LoginFragment.OnLoginSuccessfulListener {
 
         // Setup views
         this.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
-
-        val ft = this.childFragmentManager.beginTransaction()
-        ft.replace(R.id.uxContainer, LoginFragment())
-        ft.commit()
-    }
-
-    override fun onLoginSuccessful(userAlias: String, userStation: String) {
-        this.uxActiveUser.text = "${getString(R.string.user)}: $userAlias"
-        this.uxStationID.text = "${getString(R.string.station_id)}: $userStation"
 
         val ft = this.childFragmentManager.beginTransaction()
         ft.replace(R.id.uxContainer, LoginFragment())

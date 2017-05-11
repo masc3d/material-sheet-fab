@@ -3,7 +3,7 @@ rootProject.name = 'leoz'
 // project dependencies
 include ':sx-common'
 include ':sx-discovery'
-include ':sx-jms'
+include ':sx-mq'
 include ':sx-fx'
 include ':sx-rsync'
 include ':sx-ssh'
@@ -21,7 +21,7 @@ include ':leoz-ui'
 
 project(':sx-common').projectDir = file('libs/sx-common')
 project(':sx-discovery').projectDir = file('libs/sx-discovery')
-project(':sx-jms').projectDir = file('libs/sx-jms')
+project(':sx-mq').projectDir = file('libs/sx-mq')
 project(':sx-fx').projectDir = file('libs/sx-fx')
 project(':sx-rsync').projectDir = file('libs/sx-rsync')
 project(':sx-ssh').projectDir = file('libs/sx-ssh')

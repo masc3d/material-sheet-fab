@@ -3,8 +3,7 @@ package org.deku.leoz.node
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.config.RemotePeerConfiguration
 import sx.Lifecycle
-import sx.jms.Broker
-import java.lang.ref.WeakReference
+import sx.mq.Broker
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.inject.Inject
@@ -79,6 +78,6 @@ class LifecycleController {
 
     @PostConstruct
     fun onInitialize() {
-        ActiveMQConfiguration.instance.broker.delegate.add(this.brokerListener)
+        ActiveMQConfiguration.broker.delegate.add(this.brokerListener)
     }
 }

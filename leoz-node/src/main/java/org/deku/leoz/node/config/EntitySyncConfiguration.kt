@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
+import sx.mq.Broker
+import sx.mq.jms.activemq.ActiveMQBroker
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -39,12 +39,18 @@ open class EntitySyncConfiguration {
     @Inject
     private lateinit var lifecycleController: LifecycleController
 
+    @Inject
+    private lateinit var mqConfiguration: ActiveMQConfiguration
+
+    @Inject
+    private lateinit var broker: ActiveMQBroker
+
     /** Entity sync consumer */
     @Bean
     open fun createEntityConsumer(): EntityConsumer {
         return EntityConsumer(
-                notificationChannelConfiguration = ActiveMQConfiguration.instance.entitySyncTopic,
-                requestChannelConfiguration = ActiveMQConfiguration.instance.entitySyncQueue,
+                notificationChannel = mqConfiguration.entitySyncTopic,
+                requestChannel = mqConfiguration.entitySyncQueue,
                 entityManagerFactory = this.entityManagerFactory,
                 listenerExecutor = this.executorService)
     }
@@ -93,8 +99,8 @@ open class EntitySyncConfiguration {
     @PostConstruct
     fun onInitialize() {
         // Start when broker is started
-        ActiveMQBroker.instance.delegate.add(brokerEventListener)
-        if (ActiveMQBroker.instance.isStarted)
+        this.broker.delegate.add(brokerEventListener)
+        if (this.broker.isStarted)
             brokerEventListener.onStart()
     }
 

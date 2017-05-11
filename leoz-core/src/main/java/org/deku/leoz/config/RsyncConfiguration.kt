@@ -12,9 +12,14 @@ import java.net.URI
  * Created by masc on 15.09.15.
  */
 open class RsyncConfiguration {
-    private val log = LoggerFactory.getLogger(this.javaClass)
-
     companion object {
+        private val log = LoggerFactory.getLogger(RsyncConfiguration::class.java)
+
+        init {
+            Rsync.executable.baseFilename = "leoz-rsync"
+            log.info("Using [${Rsync.executable.file}]")
+        }
+
         /**
          * Rsync default port
          */
@@ -41,10 +46,5 @@ open class RsyncConfiguration {
     object ModuleNames {
         val BUNDLES = "bundles"
         val TRANSFER = "transfer"
-    }
-
-    init {
-        Rsync.executable.baseFilename = "leoz-rsync"
-        log.info("Using [${Rsync.executable.file}]")
     }
 }

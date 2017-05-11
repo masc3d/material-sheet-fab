@@ -1,15 +1,23 @@
 package org.deku.leoz.log
 
 import ch.qos.logback.classic.Logger
-import org.deku.leoz.Identity
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.MessagingTestConfiguration
+import org.deku.leoz.identity.DesktopIdentityFactory
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.jms.Channel
-import sx.jms.Handler
-import sx.jms.listeners.SpringJmsListener
+import sx.mq.jms.JmsClient
+import sx.mq.jms.JmsHandler
+import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.listeners.SpringJmsListener
 
 import javax.jms.JMSException
 import java.util.concurrent.Executors
@@ -17,8 +25,24 @@ import java.util.concurrent.Executors
 /**
  * @author masc
  */
-class LogTest : org.deku.leoz.MessagingTest() {
+class LogTest {
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    init {
+        Kodein.global.addImport(MessagingTestConfiguration.module)
+    }
+
+    val broker: ActiveMQBroker by Kodein.global.lazy.instance()
+
+    @Before
+    fun setup() {
+        this.broker.start()
+    }
+
+    @After
+    fun tearDown() {
+        this.broker.stop()
+    }
 
     @Test
     @Throws(JMSException::class)
@@ -26,8 +50,10 @@ class LogTest : org.deku.leoz.MessagingTest() {
         // Setup log appender
         val logAppender = LogAppender(
                 broker = this.broker,
-                logChannelConfiguration= ActiveMQConfiguration.Companion.instance.centralLogQueue,
-                identitySupplier = { Identity.Companion.create(BundleType.LEOZ_NODE.value, SystemInformation.Companion.create()) })
+                logChannelConfiguration= ActiveMQConfiguration.centralLogQueue,
+                identitySupplier = {
+                    DesktopIdentityFactory(BundleType.LeozNode.value, SystemInformation.Companion.create()).create()
+                })
         logAppender.start()
 
         val logRoot = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
@@ -47,13 +73,13 @@ class LogTest : org.deku.leoz.MessagingTest() {
     fun testReceive() {
         // Setup log message listener
         val listener = object : SpringJmsListener(
-                { Channel(ActiveMQConfiguration.Companion.instance.centralLogQueue) },
+                ActiveMQConfiguration.centralLogQueue,
                 Executors.newSingleThreadExecutor()) {
 
         }
 
-        listener.addDelegate(object : Handler<LogMessage> {
-            override fun onMessage(message: LogMessage, replyChannel: Channel?) {
+        listener.addDelegate(object : JmsHandler<LogMessage> {
+            override fun onMessage(message: LogMessage, replyChannel: JmsClient?) {
                 log.info("${message}: ${message.logEntries.count()}")
             }
         })

@@ -6,6 +6,8 @@ import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.erased.*
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
+import org.deku.leoz.config.RestConfiguration
+import org.deku.leoz.mobile.model.RemoteSettings
 import org.slf4j.LoggerFactory
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath
@@ -14,20 +16,12 @@ import sx.rs.proxy.RestClientProxy
 import java.net.URI
 
 /**
+ * Mobile REST client confuguration
  * Created by n3 on 15/02/2017.
  */
 class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
     override fun createClientProxyImpl(baseUri: URI, ignoreSsl: Boolean): RestClientProxy {
         return FeignClientProxy(baseUri, ignoreSsl, JacksonEncoder(), JacksonDecoder())
-    }
-
-    /**
-     * REST settings
-     */
-    @ConfigurationMapPath("rest")
-    class Settings(map: ConfigurationMap) {
-        val url: String by map.value("https://leoz.derkurier.de:13000/rs/api")
-        val sslValidation: Boolean by map.value(true)
     }
 
     companion object {
@@ -40,23 +34,18 @@ class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
                 RestClientConfiguration()
             }
 
-            bind<Settings>() with singleton {
-                Settings(map = instance())
-            }
-
             bind<FeignClientProxy>() with provider {
-                val config: RestClientConfiguration = instance()
+                val config: org.deku.leoz.config.RestClientConfiguration = instance()
                 config.createClientProxy() as FeignClientProxy
             }
 
             onReady {
-                val settings: Settings = instance()
+                val remoteSettings: RemoteSettings = instance()
                 val restConfiguration: org.deku.leoz.config.RestClientConfiguration = instance()
 
-                val uri = URI.create(settings.url)
-                restConfiguration.host = uri.host
-                restConfiguration.https = uri.scheme.equals("https", true)
-                restConfiguration.port = uri.port
+                restConfiguration.host = remoteSettings.host
+                restConfiguration.https = remoteSettings.http.ssl
+                restConfiguration.port = remoteSettings.http.port
             }
         }
     }

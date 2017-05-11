@@ -39,7 +39,7 @@ open class AuthorizationClientConfiguration {
     open val authorizationClientService: AuthorizationClientService
         get() = AuthorizationClientService(
                 executorService = this.executorService,
-                channelConfiguration = ActiveMQConfiguration.instance.centralQueue,
+                channel = ActiveMQConfiguration.centralQueue,
                 identitySupplier = { this.application.identity },
                 onRejected = { identity ->
                     log.warn("Authorization rejected for identity [${identity}]")

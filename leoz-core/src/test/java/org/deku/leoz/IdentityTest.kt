@@ -1,6 +1,7 @@
 package org.deku.leoz
 
 import org.deku.leoz.bundle.BundleType
+import org.deku.leoz.identity.DesktopIdentityFactory
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
@@ -14,7 +15,11 @@ class IdentityTest {
     private var log = LoggerFactory.getLogger(this.javaClass)
 
     val identity by lazy {
-        Identity.create(BundleType.LEOZ_NODE.value, SystemInformation.create())
+        DesktopIdentityFactory(
+                BundleType.LeozNode.value,
+                SystemInformation.create()
+        )
+                .create()
     }
 
     @Test

@@ -16,11 +16,12 @@ import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-import sx.jms.Broker
-import sx.jms.Channel
-import sx.jms.activemq.ActiveMQBroker
-import sx.jms.artemis.ArtemisBroker
+import sx.mq.Broker
+import sx.mq.jms.JmsClient
+import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.artemis.ArtemisBroker
 import sx.junit.PrototypeTest
+import sx.mq.jms.JmsChannel
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.persistence.EntityManagerFactory
@@ -56,12 +57,12 @@ class EntitySyncTest {
         // Starting broker
         this.broker.start()
 
-        val notificationChannelConfig: Channel.Configuration
-        val requestChannelConfig: Channel.Configuration
+        val notificationChannelConfig: JmsChannel
+        val requestChannelConfig: JmsChannel
         when (this.broker) {
             is ActiveMQBroker -> {
-                notificationChannelConfig = ActiveMQConfiguration.instance.entitySyncTopic
-                requestChannelConfig = ActiveMQConfiguration.instance.entitySyncQueue
+                notificationChannelConfig = ActiveMQConfiguration.entitySyncTopic
+                requestChannelConfig = ActiveMQConfiguration.entitySyncQueue
             }
             is ArtemisBroker -> {
                 notificationChannelConfig = ArtemisConfiguration.entitySyncTopic
@@ -71,14 +72,14 @@ class EntitySyncTest {
         }
 
         listener = EntityPublisher(
-                notificationChannelConfiguration = notificationChannelConfig,
-                requestChannelConfiguration = requestChannelConfig,
+                notificationChannel = notificationChannelConfig,
+                requestChannel = requestChannelConfig,
                 entityManagerFactory = entityManagerFactory,
                 listenerExecutor = Executors.newSingleThreadExecutor())
 
         client = EntityConsumer(
-                notificationChannelConfiguration = notificationChannelConfig,
-                requestChannelConfiguration = requestChannelConfig,
+                notificationChannel = notificationChannelConfig,
+                requestChannel = requestChannelConfig,
                 entityManagerFactory = entityManagerFactory,
                 listenerExecutor = Executors.newSingleThreadExecutor())
     }

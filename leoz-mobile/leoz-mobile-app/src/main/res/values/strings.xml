@@ -4,8 +4,8 @@
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
 
-    <string name="app_name" translatable="false">Leoz</string>
-    <string name="app_name_long" translatable="false">Leoz Mobile</string>
+    <string name="app_name" translatable="false">mobile:Suite</string>
+    <string name="app_name_long" translatable="false">mobile:Suite</string>
     <string name="app_project_name" translatable="false">leoz-mobile</string>
 
     <string name="error_database_inconsistent">Inconsistent database state</string>
@@ -50,4 +50,6 @@
     <string name="linehaul">Linehaul</string>
     <string name="hub" translatable="false">HUB</string>
     <string name="dismiss">Dismiss</string>
+    <string name="logout">Logout</string>
+    <string name="title_activity_delivery">DeliveryActivity</string>
 </resources>

@@ -4,10 +4,10 @@ import org.deku.leoz.config.ActiveMQConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.jms.Channel
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
-import sx.jms.listeners.SpringJmsListener
+import sx.mq.jms.JmsClient
+import sx.mq.Broker
+import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.listeners.SpringJmsListener
 import java.util.concurrent.ExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -25,12 +25,18 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
     @Inject
     private lateinit var executorService: ExecutorService
 
+    @Inject
+    private lateinit var mqConfiguration: ActiveMQConfiguration
+
+    @Inject
+    private lateinit var broker: ActiveMQBroker
+
     /**
      * Central queue listener
      */
     val centralQueueListener by lazy {
         SpringJmsListener(
-                channel = { Channel(ActiveMQConfiguration.instance.centralQueue) },
+                channel = mqConfiguration.centralQueue,
                 executor = this.executorService)
     }
 
@@ -39,7 +45,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
      */
     val centralLogQueueListener by lazy {
         SpringJmsListener(
-                channel = { Channel(ActiveMQConfiguration.instance.centralLogQueue) },
+                channel = mqConfiguration.centralLogQueue,
                 executor = this.executorService)
     }
 
@@ -63,7 +69,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
     private fun startIfReady() {
         this.stop()
 
-        if (ActiveMQConfiguration.instance.broker.isStarted) {
+        if (this.broker.isStarted) {
             this.centralQueueListener.start()
             this.centralLogQueueListener.start()
         }
@@ -80,7 +86,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
     @PostConstruct
     override fun onInitialize() {
         // Hook up with broker events
-        ActiveMQBroker.instance.delegate.add(brokerEventListener)
+        this.broker.delegate.add(brokerEventListener)
         this.startIfReady()
     }
 

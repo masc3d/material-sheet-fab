@@ -18,10 +18,10 @@ class BundleUpdateConfiguration {
                         remoteRepository = { instance() },
                         presets = listOf(
                                 BundleUpdateService.Preset(
-                                        bundleName = BundleType.LEOZ_BOOT.value,
+                                        bundleName = BundleType.LeozBoot.value,
                                         install = true),
                                 BundleUpdateService.Preset(
-                                        bundleName = BundleType.LEOZ_UI.value,
+                                        bundleName = BundleType.LeozUI.value,
                                         install = true,
                                         requiresBoot = true)))
 

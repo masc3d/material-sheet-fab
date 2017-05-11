@@ -19,8 +19,8 @@ open class HistoryJooqRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
-    @Inject
-    private lateinit var historyRepository: HistoryJooqRepository
+    //@Inject
+    //private lateinit var historyRepository: HistoryJooqRepository
 
     @Transactional(PersistenceConfiguration.QUALIFIER)
     open fun save(logEntry: TblhistorieRecord) {
@@ -36,5 +36,6 @@ open class HistoryJooqRepository {
         record.orderid = if(orderId.length>20) orderId.substring(0,20) else orderId
         record.store()
         //historyRepository.save(record)
+        //this.save(record)
     }
 }

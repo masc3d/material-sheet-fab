@@ -7,8 +7,10 @@ import org.deku.leoz.identity.Identity
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.Lifecycle
-import sx.jms.Channel
-import sx.jms.Broker
+import sx.mq.jms.JmsClient
+import sx.mq.Broker
+import sx.mq.jms.JmsChannel
+import sx.mq.jms.client
 import sx.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
@@ -23,7 +25,7 @@ import kotlin.concurrent.withLock
 class LogAppender(
         /** Messaging context */
         private val broker: Broker,
-        private val logChannelConfiguration: Channel.Configuration,
+        private val logChannelConfiguration: JmsChannel,
         private val identitySupplier: () -> Identity)
 :
         AppenderBase<ILoggingEvent>(),
@@ -59,7 +61,7 @@ class LogAppender(
             if (logMessageBuffer.size > 0) {
                 log.trace("Flushing [${logMessageBuffer.size}]")
                 try {
-                    Channel(this@LogAppender.logChannelConfiguration).use {
+                    this@LogAppender.logChannelConfiguration.client().use {
                         it.send(LogMessage(
                                 this@LogAppender.identitySupplier().key.value,
                                 logMessageBuffer.toTypedArray()))

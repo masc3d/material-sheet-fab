@@ -5,15 +5,15 @@ import org.apache.activemq.artemis.api.jms.ActiveMQJMSClient
 import org.apache.activemq.artemis.api.jms.JMSFactoryType
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants
-import org.apache.activemq.artemis.jms.client.ActiveMQQueue
-import org.apache.activemq.artemis.jms.client.ActiveMQTopic
 import org.springframework.jms.connection.CachingConnectionFactory
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
-import sx.jms.Broker
-import sx.jms.Channel
-import sx.jms.artemis.ArtemisBroker
-import sx.jms.converters.DefaultConverter
+import sx.mq.Broker
+import sx.mq.jms.JmsChannel
+import sx.mq.jms.JmsClient
+import sx.mq.jms.artemis.ArtemisBroker
+import sx.mq.jms.artemis.ArtemisContext
+import sx.mq.jms.converters.DefaultJmsConverter
 
 /**
  * Created by masc on 05/10/2016.
@@ -46,28 +46,28 @@ object ArtemisConfiguration {
         CachingConnectionFactory(cf)
     }
 
-    val centralLogQueue: Channel.Configuration by lazy {
-        val c = Channel.Configuration(
-                connectionFactory = this.connectionFactory,
-                destination = ActiveMQQueue("leoz.log.queue"),
-                deliveryMode = Channel.DeliveryMode.Persistent,
-                converter = DefaultConverter(KryoSerializer().gzip))
+    val context = ArtemisContext(connectionFactory = this.connectionFactory)
 
-        c.priority = 1
-        c
+    val centralLogQueue: JmsChannel by lazy {
+        JmsChannel(
+                context = this.context,
+                destination = this.context.createQueue("leoz.log.queue"),
+                deliveryMode = JmsClient.DeliveryMode.Persistent,
+                converter = DefaultJmsConverter(KryoSerializer().gzip),
+                priority = 1)
     }
 
-    val entitySyncQueue: Channel.Configuration by lazy {
-        Channel.Configuration(
-                connectionFactory = this.connectionFactory,
-                destination = ActiveMQQueue("leoz.entity-sync.queue"),
-                converter = DefaultConverter(KryoSerializer().gzip))
+    val entitySyncQueue: JmsChannel by lazy {
+        JmsChannel(
+                context = this.context,
+                destination = this.context.createQueue("leoz.entity-sync.queue"),
+                converter = DefaultJmsConverter(KryoSerializer().gzip))
     }
 
-    val entitySyncTopic: Channel.Configuration by lazy {
-        Channel.Configuration(
-                connectionFactory = this.connectionFactory,
-                destination = ActiveMQTopic("leoz.entity-sync.topic"),
-                converter = DefaultConverter(KryoSerializer().gzip))
+    val entitySyncTopic: JmsChannel by lazy {
+        JmsChannel(
+                context = this.context,
+                destination = this.context.createTopic("leoz.entity-sync.topic"),
+                converter = DefaultJmsConverter(KryoSerializer().gzip))
     }
 }

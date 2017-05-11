@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
+import sx.mq.Broker
+import sx.mq.jms.activemq.ActiveMQBroker
 import java.io.File
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -32,7 +32,7 @@ open class MessageBrokerTestConfiguration {
         ActiveMQBroker.instance.dataDirectory = File("build/activemq")
 
         // Initialize connection factory UDI
-        ActiveMQConfiguration.instance.connectionFactory.uri = ActiveMQBroker.instance.localUri
+        ActiveMQConfiguration.connectionFactory.uri = ActiveMQBroker.instance.localUri
     }
 
     @get:Bean

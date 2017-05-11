@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import sx.jms.Channel
-import sx.jms.Broker
-import sx.jms.activemq.ActiveMQBroker
-import sx.jms.listeners.SpringJmsListener
+import sx.mq.jms.JmsClient
+import sx.mq.Broker
+import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.listeners.SpringJmsListener
 import java.util.concurrent.ExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -30,19 +30,23 @@ open class MessageListenerConfiguration {
 
     @Inject
     private lateinit var application: Application
+
     @Inject
     private lateinit var executorService: ExecutorService
+
+    @Inject
+    private lateinit var mqConfiguration: ActiveMQConfiguration
 
     // Listeners
     val nodeQueueListener by lazy {
         SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.nodeQueue(this.application.identity.key)) },
+                mqConfiguration.nodeQueue(this.application.identity.key),
                 executorService)
     }
 
-    val nodeNotificationListener by lazy {
+    val nodeTopicListener by lazy {
         SpringJmsListener(
-                { Channel(ActiveMQConfiguration.instance.nodeNotificationTopic) },
+                mqConfiguration.nodeTopic,
                 executorService)
     }
 
@@ -78,9 +82,9 @@ open class MessageListenerConfiguration {
     @Synchronized private fun startIfReady() {
         this.stop()
 
-        if (ActiveMQConfiguration.instance.broker.isStarted) {
+        if (mqConfiguration.broker.isStarted) {
             this.nodeQueueListener.start()
-            this.nodeNotificationListener.start()
+            this.nodeTopicListener.start()
         }
     }
 
@@ -89,7 +93,7 @@ open class MessageListenerConfiguration {
      */
     @Synchronized private fun stop() {
         this.nodeQueueListener.stop()
-        this.nodeNotificationListener.stop()
+        this.nodeTopicListener.stop()
     }
     //endregion
 }
