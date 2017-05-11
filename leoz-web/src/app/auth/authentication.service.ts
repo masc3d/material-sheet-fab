@@ -20,10 +20,14 @@ export class AuthenticationService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
   public isLoggedIn = this.isLoggedInSubject.asObservable().distinctUntilChanged();
 
-  constructor(private router: Router){}
+  constructor(private router: Router){
+    if (localStorage.getItem('currentUser') !== null && localStorage.getItem('currentUser').length > 0) {
+      this.isLoggedInSubject.next(true);
+    }
+  }
 
   logout() {
-    localStorage.removeItem("currentUser");
+    localStorage.removeItem('currentUser');
     this.isLoggedInSubject.next(false);
     this.router.navigate(['login']);
   }
@@ -41,9 +45,9 @@ export class AuthenticationService {
           localStorage.setItem('currentUser', JSON.stringify(user));
         }
       });*/
-    const authenticatedUser:User = users.find(u => u.username === username);
+    const authenticatedUser: User = users.find(u => u.username === username);
     if (authenticatedUser && authenticatedUser.password === password){
-      localStorage.setItem("currentUser", JSON.stringify(authenticatedUser));
+      localStorage.setItem('currentUser', JSON.stringify(authenticatedUser));
       this.isLoggedInSubject.next(true);
       return Observable.of(new Response(new ResponseOptions({
         status: 200,

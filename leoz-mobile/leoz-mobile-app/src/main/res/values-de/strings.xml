@@ -40,4 +40,6 @@
     <string name="delivery">Zustellung</string>
     <string name="linehaul">Linie</string>
     <string name="warehouse">Lager</string>
+    <string name="dismiss">Verwerfen</string>
+    <string name="logout">Abmelden</string>
 </resources>

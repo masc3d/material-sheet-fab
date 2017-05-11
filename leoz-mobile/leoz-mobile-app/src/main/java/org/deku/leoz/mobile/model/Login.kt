@@ -116,4 +116,22 @@ class Login {
         // Return task to consumer for optionally subscribing to running authentication task as well
         return task
     }
+
+    fun logout(): Observable<User> {
+        val task = Observable.fromCallable {
+            User("", "")
+        }
+                .cache()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+
+        // Subscribing to task will actually start it
+        task.subscribe {
+            // Store authenticated user in property
+            this.authenticatedUser = it
+        }
+
+        // Return task to consumer for optionally subscribing to running authentication task as well
+        return task
+    }
 }
