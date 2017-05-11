@@ -14,6 +14,7 @@ import sx.event.EventListener
 import sx.mq.jms.JmsHandler
 import sx.logging.slf4j.info
 import sx.rs.auth.ApiKey
+import java.text.DecimalFormat
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -86,6 +87,31 @@ class AuthorizationService
         return AuthorizationService.MobileResponse(
                 key = identity.key.value
         )
+    }
+
+    override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.WebResponse {
+        val user = request
+
+        if (user == null)
+            throw DefaultProblem(title = "User is required")
+
+        val userRecord = this.userRepository.findByMail(email = user.email)
+
+        if (userRecord == null)
+            throw DefaultProblem(title = "User does not exist")
+
+        // Verify credentials
+        if (!userRecord.verifyPassword(user.password))
+            throw DefaultProblem(
+                    title = "User authentication failed",
+                    status = Response.Status.UNAUTHORIZED)
+        val debitorNo = this.userRepository.findDebitorNoById(id = userRecord.debitorId) ?:"0"
+        val df=DecimalFormat("#")
+        df.maximumFractionDigits=0
+
+        return AuthorizationService.WebResponse(
+                key = "123",
+                debitorNo = df.format(debitorNo))
     }
 
     /**

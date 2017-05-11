@@ -12,7 +12,7 @@ import javax.inject.Inject
 import sx.time.toLocalDate
 import java.util.*
 import javax.inject.Named
-
+import org.deku.leoz.central.data.jooq.tables.MstDebitor
 
 /**
  * User repository
@@ -65,10 +65,11 @@ open class UserJooqRepository {
         return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ALIAS.eq(alias))
     }
 
-    fun find(name: String): MstUserRecord? {
-        return findByAlias(name) ?: findByMail(name)
-    }
-
+    /*
+        fun find(name: String): MstUserRecord? {
+            return findByAlias(name) ?: findByMail(name)
+        }
+    */
     fun aliasExists(alias: String): Boolean {
         return findByAlias(alias) != null
     }
@@ -80,5 +81,12 @@ open class UserJooqRepository {
     fun hasAuthorizedKey(key: String): Boolean {
         val userRecord = this.findByKey(key) ?: return false
         return userRecord.active != 0 && userRecord.expiresOn.toLocalDate().isAfter(Date().toLocalDate())
+    }
+
+    fun findDebitorNoById(id: Int): Double? {
+        return dslContext.select(Tables.MST_DEBITOR.DEBITOR_NR)
+                .from(Tables.MST_DEBITOR)
+                .where(Tables.MST_DEBITOR.DEBITOR_ID.eq(id))
+                .fetchOneInto(Double::class.java)
     }
 }
