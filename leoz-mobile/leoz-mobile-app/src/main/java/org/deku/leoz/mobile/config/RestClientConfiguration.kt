@@ -35,7 +35,7 @@ class RestClientConfiguration : org.deku.leoz.config.RestClientConfiguration() {
             }
 
             bind<FeignClientProxy>() with provider {
-                val config: RestClientConfiguration = instance()
+                val config: org.deku.leoz.config.RestClientConfiguration = instance()
                 config.createClientProxy() as FeignClientProxy
             }
 
