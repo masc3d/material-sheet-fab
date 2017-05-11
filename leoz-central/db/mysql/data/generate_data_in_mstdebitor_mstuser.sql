@@ -6,7 +6,7 @@ UPDATE (mst_station INNER JOIN tbldepotliste ON mst_station.station_nr = tbldepo
 SET mst_station.debitor_id = mst_debitor.debitor_id;
 
 delete from mst_user where email='user@deku.org';
-INSERT INTO mst_user (debitor_id, email, password,alias,role,salt,active,firstname,lastname) VALUES ('4117', 'user@deku.org', 'password','testuser','POWERUSER','x',-1,'Hans','Mustermann');
+INSERT INTO mst_user (debitor_id, email, password,alias,role,salt,active,firstname,lastname) VALUES ((SELECT debitor_id FROM mst_station where station_nr=20), 'user@deku.org', '8a7880ab910b3fc2aebb8603f9a8bdafb2ae1d57','testuser','POWERUSER','x',-1,'Hans','Mustermann');
 
 /**
 
