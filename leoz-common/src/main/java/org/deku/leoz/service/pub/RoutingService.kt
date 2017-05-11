@@ -60,10 +60,10 @@ interface RoutingService {
             }
         }
 
-        @ApiModelProperty(dataType = "date", example = "2015-06-01", position = 10, required = true, value = "Send date", allowableValues = "2015-06-01")
+        @ApiModelProperty(dataType = "date", example = "2017-06-01", position = 10, required = true, value = "Send date", allowableValues = "2017-06-01")
         var sendDate: ShortDate? = null
 
-        @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Desired delivery date", allowableValues = "2015-06-02")
+        @ApiModelProperty(dataType = "date", example = "2017-06-02", position = 20, required = false, value = "Desired delivery date", allowableValues = "2017-06-02")
         var desiredDeliveryDate: ShortDate? = null
 
         @ApiModelProperty(value = "Sum of DeKu servic values", position = 22, required = false)
@@ -166,10 +166,10 @@ interface RoutingService {
         @ApiModelProperty(dataType = "string", example = "OK", position = 70, required = true, value = "Info message: \"OK\"")
         var message: String = ""
 
-        @ApiModelProperty(dataType = "date", example = "2015-06-01", position = 10, required = true, value = "Send date", allowableValues = "2015-06-01")
+        @ApiModelProperty(dataType = "date", example = "2017-06-01", position = 10, required = true, value = "Send date", allowableValues = "2017-06-01")
         var sendDate: ShortDate? = null
 
-        @ApiModelProperty(dataType = "date", example = "2015-06-02", position = 20, required = false, value = "Delivery date", allowableValues = "2015-06-01")
+        @ApiModelProperty(dataType = "date", example = "2017-06-02", position = 20, required = false, value = "Delivery date", allowableValues = "2017-06-01")
         var deliveryDate: ShortDate? = null
 
         constructor() {
