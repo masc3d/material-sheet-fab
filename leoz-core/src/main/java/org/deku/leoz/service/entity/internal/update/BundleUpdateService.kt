@@ -11,6 +11,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.Lifecycle
 import sx.concurrent.Service
+import sx.mq.Client
 import sx.mq.jms.JmsClient
 import sx.mq.jms.JmsHandler
 import sx.platform.PlatformId
@@ -116,7 +117,7 @@ class BundleUpdateService(
     /**
      * Update notification message handler
      */
-    override fun onMessage(message: UpdateInfo, replyChannel: JmsClient?) {
+    override fun onMessage(message: UpdateInfo, replyChannel: Client?) {
         val updateInfo = message
         log.info("Received update notification [${updateInfo}]")
 

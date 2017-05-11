@@ -14,6 +14,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import sx.mq.Client
 import sx.mq.jms.JmsClient
 import sx.mq.jms.JmsHandler
 import sx.mq.jms.activemq.ActiveMQBroker
@@ -79,7 +80,7 @@ class LogTest {
         }
 
         listener.addDelegate(object : JmsHandler<LogMessage> {
-            override fun onMessage(message: LogMessage, replyChannel: JmsClient?) {
+            override fun onMessage(message: LogMessage, replyChannel: Client?) {
                 log.info("${message}: ${message.logEntries.count()}")
             }
         })

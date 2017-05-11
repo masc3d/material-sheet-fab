@@ -6,6 +6,7 @@ import sx.mq.jms.JmsClient
 import sx.time.Duration
 import java.io.File
 import org.deku.leoz.node.service.internal.filesync.*
+import sx.mq.Client
 import sx.mq.jms.JmsChannel
 import sx.mq.jms.client
 import java.nio.file.StandardWatchEventKinds
@@ -125,7 +126,7 @@ class FileSyncHostService(
     /**
      * FileSyncMessage handler
      */
-    override fun onMessage(message: FileSyncMessage, replyChannel: JmsClient?) {
+    override fun onMessage(message: FileSyncMessage, replyChannel: Client?) {
         try {
             val identityKey = Identity.Key(message.key)
             log.info("Received ping from [${identityKey}]")

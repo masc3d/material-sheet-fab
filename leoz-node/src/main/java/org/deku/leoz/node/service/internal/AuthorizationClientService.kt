@@ -10,6 +10,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.node.Storage
 import org.deku.leoz.service.internal.AuthorizationService
+import sx.mq.Client
 import sx.mq.jms.JmsChannel
 import sx.mq.jms.JmsClient
 import sx.mq.jms.JmsHandler
@@ -78,7 +79,7 @@ class AuthorizationClientService(
         this.stop(async = true)
     }
 
-    override fun onMessage(message: AuthorizationService.NodeResponse, replyChannel: JmsClient?) {
+    override fun onMessage(message: AuthorizationService.NodeResponse, replyChannel: Client?) {
         // TODO: Push authorization update handling. May revoke the node's authorization key
     }
 }

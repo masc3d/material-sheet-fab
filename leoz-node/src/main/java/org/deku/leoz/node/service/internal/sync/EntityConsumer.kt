@@ -3,6 +3,7 @@ package org.deku.leoz.node.service.internal.sync
 import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repository.EntityRepository
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
+import sx.mq.Client
 import sx.mq.jms.*
 import sx.mq.jms.listeners.SpringJmsListener
 import java.util.concurrent.Executor
@@ -48,7 +49,7 @@ class EntityConsumer
     /**
      * Entity state message handler
      */
-    override fun onMessage(message: EntityStateMessage, replyChannel: JmsClient?) {
+    override fun onMessage(message: EntityStateMessage, replyChannel: Client?) {
         this.request(message.entityType!!, message.syncId)
     }
 

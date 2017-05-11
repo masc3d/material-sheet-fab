@@ -1,5 +1,7 @@
 package sx.mq.jms
 
+import sx.mq.Client
+
 /**
  * JMS message handler
  * Created by masc on 28.06.15.
@@ -11,5 +13,5 @@ interface JmsHandler<in T> {
     }
 
     /** Override for serialized/object message handling */
-    fun onMessage(message: T, replyChannel: JmsClient?)
+    fun onMessage(message: T, replyChannel: Client?)
 }

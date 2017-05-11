@@ -117,7 +117,7 @@ class AuthorizationService
     /**
      *
      */
-    override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.mq.jms.JmsClient?) {
+    override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.mq.Client?) {
         try {
             log.info(message)
 

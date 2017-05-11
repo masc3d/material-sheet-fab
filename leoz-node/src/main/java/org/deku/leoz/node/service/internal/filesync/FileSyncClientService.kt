@@ -2,6 +2,7 @@ package org.deku.leoz.node.service.internal.filesync
 
 import org.deku.leoz.identity.Identity
 import sx.concurrent.Service
+import sx.mq.Client
 import sx.mq.jms.JmsClient
 import sx.mq.jms.JmsChannel
 import sx.mq.jms.client
@@ -225,7 +226,7 @@ class FileSyncClientService constructor(
     /**
      * On file sync message
      */
-    override fun onMessage(message: FileSyncMessage, replyChannel: JmsClient?) {
+    override fun onMessage(message: FileSyncMessage, replyChannel: Client?) {
         log.info("Received notification, files available for download")
         try {
             this.incomingSyncService.trigger()

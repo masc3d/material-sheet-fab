@@ -1,6 +1,7 @@
 package org.deku.leoz.node.service.internal.sync
 
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
+import sx.mq.Client
 import sx.mq.jms.*
 import sx.mq.jms.listeners.SpringJmsListener
 import javax.jms.JMSException
@@ -40,7 +41,7 @@ class EntityPublisher(
     }
 
     @Throws(JMSException::class)
-    override fun onMessage(message: EntityStateMessage, replyChannel: JmsClient?) {
+    override fun onMessage(message: EntityStateMessage, replyChannel: Client?) {
         var em: javax.persistence.EntityManager? = null
         try {
             val sw = com.google.common.base.Stopwatch.createStarted()
@@ -57,7 +58,10 @@ class EntityPublisher(
             // Count records
             val count = er.countNewerThan(syncId)
 
-            replyChannel!!.statistics.enabled = true
+            if (replyChannel == null || !(replyChannel is JmsClient))
+                throw IllegalArgumentException("IMS reply client required")
+
+            (replyChannel as? JmsClient)?.statistics?.enabled = true
 
             // Send entity update message
             val euMessage = EntityUpdateMessage(count)
