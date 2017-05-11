@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
-import sx.mq.Broker
+import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
@@ -59,7 +59,7 @@ open class EntitySyncConfiguration {
     private lateinit var entityConsumer: EntityConsumer
 
     /** Broker listener  */
-    private val brokerEventListener = object : Broker.DefaultEventListener() {
+    private val brokerEventListener = object : MqBroker.DefaultEventListener() {
         override fun onStart() {
             log.info("Detected broker start, initializing entity sync")
             this@EntitySyncConfiguration.entityConsumer.start()

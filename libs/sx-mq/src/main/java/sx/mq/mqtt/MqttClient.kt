@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 class MqttClient(
         val channel: MqttChannel,
         mqttClient: MqttAsyncClient? = null
-) : sx.mq.Client {
+) : sx.mq.MqClient {
 
     companion object {
         val DEFAULT_RECEIVE_TIMEOUT = Duration.ofSeconds(10)

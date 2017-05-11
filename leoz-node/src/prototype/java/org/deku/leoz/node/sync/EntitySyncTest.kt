@@ -16,8 +16,7 @@ import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-import sx.mq.Broker
-import sx.mq.jms.JmsClient
+import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.artemis.ArtemisBroker
 import sx.junit.PrototypeTest
@@ -46,7 +45,7 @@ class EntitySyncTest {
     private var client: EntityConsumer? = null
 
     @Inject
-    private lateinit var broker: Broker
+    private lateinit var broker: MqBroker
 
     @Before
     @Throws(Exception::class)

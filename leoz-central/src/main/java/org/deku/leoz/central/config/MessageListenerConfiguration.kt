@@ -4,8 +4,7 @@ import org.deku.leoz.config.ActiveMQConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.mq.jms.JmsClient
-import sx.mq.Broker
+import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.listeners.SpringJmsListener
 import java.util.concurrent.ExecutorService
@@ -53,7 +52,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
     /**
      * Broker event listener
      */
-    private val brokerEventListener: Broker.EventListener = object : Broker.DefaultEventListener() {
+    private val brokerEventListener: MqBroker.EventListener = object : MqBroker.DefaultEventListener() {
         override fun onStart() {
             startIfReady()
         }

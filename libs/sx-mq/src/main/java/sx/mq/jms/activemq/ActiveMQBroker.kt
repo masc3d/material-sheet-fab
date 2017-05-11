@@ -25,7 +25,7 @@ import org.apache.activemq.store.PersistenceAdapter
 import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter
 import org.apache.activemq.store.kahadb.disk.journal.Journal
 import org.apache.activemq.transport.TransportServer
-import sx.mq.Broker
+import sx.mq.MqBroker
 import java.io.File
 import java.net.URI
 import java.net.URISyntaxException
@@ -39,7 +39,7 @@ import javax.jms.IllegalStateException
  */
 class ActiveMQBroker private constructor()
     :
-        Broker(NATIVE_TCP_PORT) {
+        MqBroker(NATIVE_TCP_PORT) {
 
     companion object {
         // Defaults

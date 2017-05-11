@@ -2,7 +2,7 @@ package org.deku.leoz.node.service.internal.filesync
 
 import org.deku.leoz.identity.Identity
 import sx.Disposable
-import sx.mq.jms.JmsHandler
+import sx.mq.MqHandler
 import java.io.File
 import java.util.concurrent.ScheduledExecutorService
 
@@ -15,7 +15,7 @@ abstract class FileSyncServiceBase(
         val baseDirectory: File,
         val identity: Identity)
 :
-        JmsHandler<FileSyncMessage>,
+        MqHandler<FileSyncMessage>,
         Disposable {
     val inDirectoryName = "in"
     val outDirectoryName = "out"

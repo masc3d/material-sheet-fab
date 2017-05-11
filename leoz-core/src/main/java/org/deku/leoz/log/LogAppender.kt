@@ -7,8 +7,7 @@ import org.deku.leoz.identity.Identity
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.Lifecycle
-import sx.mq.jms.JmsClient
-import sx.mq.Broker
+import sx.mq.MqBroker
 import sx.mq.jms.JmsChannel
 import sx.mq.jms.client
 import sx.time.Duration
@@ -24,7 +23,7 @@ import kotlin.concurrent.withLock
  */
 class LogAppender(
         /** Messaging context */
-        private val broker: Broker,
+        private val broker: MqBroker,
         private val logChannelConfiguration: JmsChannel,
         private val identitySupplier: () -> Identity)
 :
@@ -78,7 +77,7 @@ class LogAppender(
     /**
      * Broker listener, jms destination is automatically created when broker start is detected
      */
-    val brokerEventListener: Broker.EventListener = object : Broker.DefaultEventListener() {
+    val brokerEventListener: MqBroker.EventListener = object : MqBroker.DefaultEventListener() {
         override fun onStart() {
             if (this@LogAppender.isStarted)
                 service.start()

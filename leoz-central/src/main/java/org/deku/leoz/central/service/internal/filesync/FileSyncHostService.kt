@@ -2,11 +2,10 @@ package org.deku.leoz.central.service.internal.filesync
 
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.io.*
-import sx.mq.jms.JmsClient
 import sx.time.Duration
 import java.io.File
 import org.deku.leoz.node.service.internal.filesync.*
-import sx.mq.Client
+import sx.mq.MqClient
 import sx.mq.jms.JmsChannel
 import sx.mq.jms.client
 import java.nio.file.StandardWatchEventKinds
@@ -126,7 +125,7 @@ class FileSyncHostService(
     /**
      * FileSyncMessage handler
      */
-    override fun onMessage(message: FileSyncMessage, replyChannel: Client?) {
+    override fun onMessage(message: FileSyncMessage, replyClient: MqClient?) {
         try {
             val identityKey = Identity.Key(message.key)
             log.info("Received ping from [${identityKey}]")
@@ -155,8 +154,8 @@ class FileSyncHostService(
             }
 
             // Send back empty file sync message as a confirmation
-            if (replyChannel != null) {
-                replyChannel.send(FileSyncMessage())
+            if (replyClient != null) {
+                replyClient.send(FileSyncMessage())
             }
 
             this.notifyNode(identityKey)

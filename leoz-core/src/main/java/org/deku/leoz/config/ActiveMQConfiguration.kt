@@ -2,7 +2,7 @@ package org.deku.leoz.config
 
 import org.apache.activemq.broker.region.virtual.CompositeTopic
 import org.deku.leoz.identity.Identity
-import sx.mq.Broker
+import sx.mq.MqBroker
 import sx.mq.jms.JmsChannel
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.activemq.ActiveMQContext
@@ -20,7 +20,7 @@ object ActiveMQConfiguration {
         val broker = ActiveMQBroker.instance
 
         // Configure broker authentication
-        broker.user = Broker.User(
+        broker.user = MqBroker.User(
                 MqConfiguration.USERNAME,
                 MqConfiguration.PASSWORD,
                 MqConfiguration.GROUPNAME)

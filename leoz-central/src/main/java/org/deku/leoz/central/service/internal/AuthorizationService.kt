@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
 import sx.event.EventListener
-import sx.mq.jms.JmsHandler
+import sx.mq.MqHandler
 import sx.logging.slf4j.info
 import sx.rs.auth.ApiKey
 import java.text.DecimalFormat
@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response
 class AuthorizationService
     :
         AuthorizationService,
-        JmsHandler<AuthorizationService.NodeRequest> {
+        MqHandler<AuthorizationService.NodeRequest> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -117,7 +117,7 @@ class AuthorizationService
     /**
      *
      */
-    override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.mq.Client?) {
+    override fun onMessage(message: AuthorizationService.NodeRequest, replyClient: sx.mq.MqClient?) {
         try {
             log.info(message)
 
@@ -149,9 +149,9 @@ class AuthorizationService
                 if (isAuthorized)
                     this.dispatcher.emit { it.onAuthorized(identityKey) }
 
-                if (replyChannel != null) {
+                if (replyClient != null) {
                     am.authorized = isAuthorized
-                    replyChannel.send(am)
+                    replyClient.send(am)
                     log.info("Sent authorization [%s]".format(am))
                 }
             }

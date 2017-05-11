@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.mq.Broker
+import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -57,9 +57,9 @@ open class MessageBrokerConfiguration {
             // init of peer brokers should also be threaded, as timeouts may occur
             log.info("Adding peer broker: ${peerSettings.host}")
 
-            ActiveMQBroker.instance.addPeerBroker(Broker.PeerBroker(
+            ActiveMQBroker.instance.addPeerBroker(MqBroker.PeerBroker(
                     peerSettings.host!!,
-                    Broker.TransportType.TCP,
+                    MqBroker.TransportType.TCP,
                     peerSettings.broker.nativePort))
         }
 

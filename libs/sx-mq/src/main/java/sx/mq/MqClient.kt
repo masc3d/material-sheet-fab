@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException
  * Abstract messaging channel
  * Created by masc on 07.05.17.
  */
-interface Client : Disposable, Closeable {
+interface MqClient : Disposable, Closeable {
     @Throws(TimeoutException::class)
     fun <T> receive(messageType: Class<T>): T
     fun send(message: Any)

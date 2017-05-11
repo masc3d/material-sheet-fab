@@ -10,7 +10,7 @@ import java.util.*
 /**
  * Created by masc on 01.06.15.
  */
-abstract class Broker
+abstract class MqBroker
 /**
  * c'tor for derived classes to provide defaults
  * @param nativeTcpPort Native tcp port for this broker to listen to

@@ -14,9 +14,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.mq.Client
-import sx.mq.jms.JmsClient
-import sx.mq.jms.JmsHandler
+import sx.mq.MqClient
+import sx.mq.MqHandler
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.listeners.SpringJmsListener
 
@@ -79,8 +78,8 @@ class LogTest {
 
         }
 
-        listener.addDelegate(object : JmsHandler<LogMessage> {
-            override fun onMessage(message: LogMessage, replyChannel: Client?) {
+        listener.addDelegate(object : MqHandler<LogMessage> {
+            override fun onMessage(message: LogMessage, replyClient: MqClient?) {
                 log.info("${message}: ${message.logEntries.count()}")
             }
         })

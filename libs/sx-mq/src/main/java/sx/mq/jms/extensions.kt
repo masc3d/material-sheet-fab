@@ -1,6 +1,6 @@
 package sx.mq.jms
 
-import sx.mq.Channel
+import sx.mq.MqChannel
 import sx.mq.jms.converters.DefaultJmsConverter
 import sx.time.Duration
 
@@ -18,7 +18,7 @@ fun JmsChannel.client(): JmsClient {
  * @param autoCommit Auto-commit messages on send, defaults to true
  * @param receiveTimeout Default receive timeout for receive/sendReceive calls. Defaults to 10 seconds
  */
-fun Channel.toJms(
+fun MqChannel.toJms(
         context: JmsContext,
         sessionTransacted: Boolean = true,
         priority: Int? = null,

@@ -4,7 +4,7 @@ import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.mq.Broker
+import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import javax.annotation.PostConstruct
 import javax.inject.Inject
@@ -22,7 +22,7 @@ open class DatabaseSyncConfiguration {
     private lateinit var databaseSyncService: DatabaseSyncService
 
     /** Broker event listener  */
-    private val brokerEventListener = object : Broker.DefaultEventListener() {
+    private val brokerEventListener = object : MqBroker.DefaultEventListener() {
         override fun onStart() {
             databaseSyncService.start()
         }

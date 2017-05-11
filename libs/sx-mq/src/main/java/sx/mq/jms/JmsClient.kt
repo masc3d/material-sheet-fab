@@ -31,7 +31,7 @@ class JmsClient @JvmOverloads constructor(
         val channel: JmsChannel,
         session: Session? = null)
     :
-        sx.mq.Client {
+        sx.mq.MqClient {
 
     companion object {
         val DEFAULT_RECEIVE_TIMEOUT = Duration.ofSeconds(10)
@@ -277,7 +277,7 @@ class JmsClient @JvmOverloads constructor(
      * @return Temporary queue channel
      */
     private fun createReplyClientInternal(session: Session = this.sessionInstance.get(), destination: Destination? = null): JmsClient {
-        val replyChannel: JmsClient
+        val replyClient: JmsClient
         var replySession: Session? = null
         if (!session.transacted) {
             // Session is not transacted, simply reuse it
@@ -289,7 +289,7 @@ class JmsClient @JvmOverloads constructor(
         val replyDestination = destination ?:
                 session.createTemporaryQueue()
 
-        replyChannel = JmsClient(
+        replyClient = JmsClient(
                 channel = this.channel.clone(
                         // Temporary queue channels should not be transacted.
                         // EG. ActiveMQ has a problem with temporary destinations and transacted sessions, resulting in wrong message count
@@ -301,11 +301,11 @@ class JmsClient @JvmOverloads constructor(
                 session = replySession)
 
         if (destination == null) {
-            replyChannel.ownsDestination = true
-            replyChannel.connection.set({ this.connection.get() })
+            replyClient.ownsDestination = true
+            replyClient.connection.set({ this.connection.get() })
         }
 
-        return replyChannel
+        return replyClient
     }
 
     /**
@@ -354,16 +354,16 @@ class JmsClient @JvmOverloads constructor(
      * @param messageConfigurer Callback for customizing the message before sending
      */
     @JvmOverloads fun sendRequest(jmsMessage: Message,
-                                  replyChannel: JmsClient = this.createReplyClientInternal(),
+                                  replyClient: JmsClient = this.createReplyClientInternal(),
                                   messageConfigurer: ((Message) -> Unit)? = null): JmsClient {
         this.send(
                 jmsMessage = jmsMessage,
                 messageConfigurer = {
                     messageConfigurer?.invoke(it)
-                    it.jmsReplyTo = replyChannel.destination
+                    it.jmsReplyTo = replyClient.destination
                 })
 
-        return replyChannel
+        return replyClient
     }
 
     /**
@@ -398,14 +398,14 @@ class JmsClient @JvmOverloads constructor(
      * @return Response/reply channel
      */
     @JvmOverloads fun sendRequest(message: Any,
-                                  replyChannel: JmsClient = this.createReplyClientInternal(),
+                                  replyClient: JmsClient = this.createReplyClientInternal(),
                                   messageConfigurer: ((Message) -> Unit)? = null): JmsClient {
         return this.sendRequest(
                 this.converter.toMessage(
                         obj = message,
                         session = sessionInstance.get(),
                         onSize = statistics.accountSent),
-                replyChannel,
+                replyClient,
                 messageConfigurer)
     }
 

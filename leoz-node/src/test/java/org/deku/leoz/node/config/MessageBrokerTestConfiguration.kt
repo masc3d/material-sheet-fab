@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.mq.Broker
+import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import java.io.File
 import javax.annotation.PostConstruct
@@ -36,7 +36,7 @@ open class MessageBrokerTestConfiguration {
     }
 
     @get:Bean
-    open val broker: Broker = ActiveMQBroker.instance
+    open val broker: MqBroker = ActiveMQBroker.instance
 
     @PreDestroy
     fun onDestroy() {

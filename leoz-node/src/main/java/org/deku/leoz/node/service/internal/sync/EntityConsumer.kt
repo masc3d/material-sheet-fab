@@ -3,7 +3,8 @@ package org.deku.leoz.node.service.internal.sync
 import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repository.EntityRepository
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
-import sx.mq.Client
+import sx.mq.MqClient
+import sx.mq.MqHandler
 import sx.mq.jms.*
 import sx.mq.jms.listeners.SpringJmsListener
 import java.util.concurrent.Executor
@@ -29,7 +30,7 @@ class EntityConsumer
         listenerExecutor: Executor)
     :
         SpringJmsListener(notificationChannel, listenerExecutor),
-        JmsHandler<EntityStateMessage> {
+        MqHandler<EntityStateMessage> {
 
     /**
      * Executor for internal tasks, eg issuing requests
@@ -49,7 +50,7 @@ class EntityConsumer
     /**
      * Entity state message handler
      */
-    override fun onMessage(message: EntityStateMessage, replyChannel: Client?) {
+    override fun onMessage(message: EntityStateMessage, replyClient: MqClient?) {
         this.request(message.entityType!!, message.syncId)
     }
 
@@ -98,13 +99,13 @@ class EntityConsumer
                 val sw = com.google.common.base.Stopwatch.createStarted()
 
                 // Send entity state message
-                this.requestClient.createReplyClient().use { replyChannel ->
-                    requestClient.sendRequest(EntityStateMessage(entityType, syncId), replyChannel = replyChannel)
+                this.requestClient.createReplyClient().use { replyClient ->
+                    requestClient.sendRequest(EntityStateMessage(entityType, syncId), replyClient = replyClient)
 
                     log.info(lfmt("Requesting entities"))
 
                     // Receive entity update message
-                    val euMessage = replyChannel.receive(EntityUpdateMessage::class.java)
+                    val euMessage = replyClient.receive(EntityUpdateMessage::class.java)
 
                     log.debug(lfmt(euMessage.toString()))
                     val count = AtomicLong()
@@ -122,7 +123,7 @@ class EntityConsumer
                             var eos: Boolean
                             var lastJmsTimestamp: Long = 0
                             do {
-                                val tMsg = replyChannel.receive() ?: throw TimeoutException("Timeout while waiting for next entities chunk")
+                                val tMsg = replyClient.receive() ?: throw TimeoutException("Timeout while waiting for next entities chunk")
 
                                 // Verify message order
                                 if (tMsg.jmsTimestamp < lastJmsTimestamp)
@@ -136,7 +137,7 @@ class EntityConsumer
 
                                 if (!eos) {
                                     // Deserialize entities
-                                    val entities = replyChannel.converter.fromMessage(tMsg, { size ->
+                                    val entities = replyClient.converter.fromMessage(tMsg, { size ->
                                         bytesReceived += size
                                     }) as Array<*>
 

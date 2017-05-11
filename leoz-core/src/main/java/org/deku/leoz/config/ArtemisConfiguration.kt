@@ -8,7 +8,7 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants
 import org.springframework.jms.connection.CachingConnectionFactory
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
-import sx.mq.Broker
+import sx.mq.MqBroker
 import sx.mq.jms.JmsChannel
 import sx.mq.jms.JmsClient
 import sx.mq.jms.artemis.ArtemisBroker
@@ -25,7 +25,7 @@ object ArtemisConfiguration {
 
     val broker by lazy {
         val broker = ArtemisBroker()
-        broker.user = Broker.User(
+        broker.user = MqBroker.User(
                 userName = ArtemisConfiguration.USERNAME,
                 password = ArtemisConfiguration.PASSWORD,
                 groupName = "")

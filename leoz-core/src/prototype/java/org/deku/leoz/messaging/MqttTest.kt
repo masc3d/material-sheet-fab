@@ -17,10 +17,10 @@ import org.junit.Test
 import org.slf4j.LoggerFactory
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
-import sx.mq.Channel
+import sx.mq.MqChannel
+import sx.mq.MqClient
 import sx.mq.DestinationType
-import sx.mq.jms.JmsClient
-import sx.mq.jms.JmsHandler
+import sx.mq.MqHandler
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.activemq.ActiveMQContext
 import sx.mq.jms.activemq.ActiveMQPooledConnectionFactory
@@ -99,7 +99,7 @@ class MqttTest {
 
     /** Topic channel for testing notifications */
     val topicChannel by lazy {
-        Channel(
+        MqChannel(
                 destinationName = "leoz.test.topic",
                 destinationType = DestinationType.Topic,
                 persistent = true,
@@ -109,7 +109,7 @@ class MqttTest {
 
     /** Queue channel for testing queues with topic forwarding via mqtt */
     val queueChannel by lazy {
-        Channel(
+        MqChannel(
                 destinationName = "leoz.test.queue",
                 destinationType = DestinationType.Queue,
                 persistent = true,
@@ -119,7 +119,7 @@ class MqttTest {
 
     /** Virtual topic used for mqtt clients to post to queue */
     val queueTopicChannel by lazy {
-        Channel(
+        MqChannel(
                 destinationName = "leoz.test.queue.topic",
                 destinationType = DestinationType.Topic,
                 serializer = KryoSerializer().gzip
@@ -169,8 +169,8 @@ class MqttTest {
         }
 
         // Setup log message listener
-        listener.addDelegate(object : JmsHandler<LogMessage> {
-            override fun onMessage(message: LogMessage, replyChannel: JmsClient?) {
+        listener.addDelegate(object : MqHandler<LogMessage> {
+            override fun onMessage(message: LogMessage, replyClient: MqClient?) {
                 log.info("${message}: ${message.logEntries.count()}")
             }
         })

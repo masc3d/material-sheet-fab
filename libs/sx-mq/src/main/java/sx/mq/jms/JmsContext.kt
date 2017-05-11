@@ -1,7 +1,6 @@
 package sx.mq.jms
 
-import sx.mq.Broker
-import sx.mq.Channel
+import sx.mq.MqChannel
 import sx.mq.DestinationType
 import javax.jms.ConnectionFactory
 import javax.jms.Destination
@@ -17,7 +16,7 @@ interface JmsContext {
     fun createQueue(name: String): Queue
     fun createTopic(name: String): Topic
 
-    fun createDestination(channel: Channel): Destination {
+    fun createDestination(channel: MqChannel): Destination {
         return when (channel.destinationType) {
             DestinationType.Queue -> this.createQueue(channel.destinationName)
             DestinationType.Topic -> this.createTopic(channel.destinationName)

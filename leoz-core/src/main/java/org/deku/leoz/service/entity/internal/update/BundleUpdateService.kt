@@ -11,9 +11,8 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.Lifecycle
 import sx.concurrent.Service
-import sx.mq.Client
-import sx.mq.jms.JmsClient
-import sx.mq.jms.JmsHandler
+import sx.mq.MqClient
+import sx.mq.MqHandler
 import sx.platform.PlatformId
 import sx.time.Duration
 import java.util.*
@@ -45,7 +44,7 @@ class BundleUpdateService(
         val cleanup: Boolean = true,
         val alwaysQueryRepository: Boolean = false)
     :
-        JmsHandler<UpdateInfo>,
+        MqHandler<UpdateInfo>,
         Lifecycle {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -117,7 +116,7 @@ class BundleUpdateService(
     /**
      * Update notification message handler
      */
-    override fun onMessage(message: UpdateInfo, replyChannel: Client?) {
+    override fun onMessage(message: UpdateInfo, replyClient: MqClient?) {
         val updateInfo = message
         log.info("Received update notification [${updateInfo}]")
 

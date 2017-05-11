@@ -7,8 +7,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import sx.mq.jms.JmsClient
-import sx.mq.Broker
+import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.listeners.SpringJmsListener
 import java.util.concurrent.ExecutorService
@@ -66,7 +65,7 @@ open class MessageListenerConfiguration {
     /**
      * Broker event listener
      */
-    private var brokerEventListener: Broker.EventListener = object : Broker.DefaultEventListener() {
+    private var brokerEventListener: MqBroker.EventListener = object : MqBroker.DefaultEventListener() {
         override fun onStart() {
             startIfReady()
         }

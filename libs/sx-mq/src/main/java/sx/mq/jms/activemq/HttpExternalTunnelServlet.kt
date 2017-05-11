@@ -3,7 +3,7 @@ package sx.mq.jms.activemq
 import org.apache.activemq.transport.http.HttpTransportFactory
 import org.apache.activemq.transport.http.HttpTunnelServlet
 import org.slf4j.LoggerFactory
-import sx.mq.Broker
+import sx.mq.MqBroker
 import java.net.URI
 import java.util.*
 import java.util.concurrent.Executors
@@ -29,7 +29,7 @@ class HttpExternalTunnelServlet(
     }
 
     /** Broker event listener  */
-    private inner class BrokerEventListener : Broker.DefaultEventListener() {
+    private inner class BrokerEventListener : MqBroker.DefaultEventListener() {
 
         override fun onStart() {
             log.info("Finalizing activemq external tunnel servlet initialization")

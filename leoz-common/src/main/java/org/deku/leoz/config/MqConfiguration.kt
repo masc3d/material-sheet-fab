@@ -3,7 +3,7 @@ package org.deku.leoz.config
 import org.deku.leoz.identity.Identity
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
-import sx.mq.Channel
+import sx.mq.MqChannel
 import sx.mq.DestinationType
 
 /**
@@ -18,8 +18,8 @@ object MqConfiguration {
     /**
      * Central messaging queue for all messages that require central processing
      */
-    val centralQueue: Channel by lazy {
-        Channel(
+    val centralQueue: MqChannel by lazy {
+        MqChannel(
                 destinationType = DestinationType.Queue,
                 destinationName = "leoz.central.queue",
                 persistent = true,
@@ -30,8 +30,8 @@ object MqConfiguration {
     /**
      * Central queue topic for mqtt
      */
-    val centralQueueTopic: Channel by lazy {
-        Channel(
+    val centralQueueTopic: MqChannel by lazy {
+        MqChannel(
                 destinationType = DestinationType.Topic,
                 destinationName = "${this.centralQueue.destinationName}.topic",
                 persistent = false,
@@ -42,8 +42,8 @@ object MqConfiguration {
     /**
      * Central log queue, receiving log messages from all instances
      */
-    val centralLogQueue: Channel by lazy {
-        Channel(
+    val centralLogQueue: MqChannel by lazy {
+        MqChannel(
                 destinationType = DestinationType.Queue,
                 destinationName = "leoz.log.queue",
                 persistent = true,
@@ -54,8 +54,8 @@ object MqConfiguration {
     /**
      * Central log queue topic for mqtt
      */
-    val centralLogQueueTopic: Channel by lazy {
-        Channel(
+    val centralLogQueueTopic: MqChannel by lazy {
+        MqChannel(
                 destinationType = DestinationType.Topic,
                 destinationName = "${this.centralLogQueue.destinationName}.topic",
                 persistent = false,
@@ -66,8 +66,8 @@ object MqConfiguration {
     /**
      * Entity sync queue
      */
-    val entitySyncQueue: Channel by lazy {
-        Channel(
+    val entitySyncQueue: MqChannel by lazy {
+        MqChannel(
                 destinationType = DestinationType.Queue,
                 destinationName = "leoz.entity-sync.queue",
                 serializer = KryoSerializer().gzip
@@ -77,8 +77,8 @@ object MqConfiguration {
     /**
      * Entity sync notification topic
      */
-    val entitySyncTopic: Channel by lazy {
-        Channel(
+    val entitySyncTopic: MqChannel by lazy {
+        MqChannel(
                 destinationType = DestinationType.Topic,
                 destinationName = "leoz.entity-sync.topic",
                 serializer = KryoSerializer().gzip
@@ -88,16 +88,16 @@ object MqConfiguration {
     /**
      *
      */
-    fun nodeQueue(identityKey: Identity.Key): Channel {
-        return Channel(
+    fun nodeQueue(identityKey: Identity.Key): MqChannel {
+        return MqChannel(
                 destinationType = DestinationType.Queue,
                 destinationName = "leoz.node.queue.${identityKey.short}",
                 serializer = KryoSerializer().gzip
         )
     }
 
-    val nodeTopic: Channel by lazy {
-        Channel(
+    val nodeTopic: MqChannel by lazy {
+        MqChannel(
                 destinationType = DestinationType.Topic,
                 destinationName = "leoz.node.topic",
                 serializer = KryoSerializer().gzip

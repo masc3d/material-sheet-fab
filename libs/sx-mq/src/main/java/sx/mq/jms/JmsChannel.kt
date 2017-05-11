@@ -1,8 +1,5 @@
 package sx.mq.jms
 
-import sx.mq.Channel
-import sx.mq.DestinationType
-import sx.mq.jms.converters.DefaultJmsConverter
 import sx.time.Duration
 import javax.jms.Destination
 

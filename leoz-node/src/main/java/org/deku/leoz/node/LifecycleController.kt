@@ -3,7 +3,7 @@ package org.deku.leoz.node
 import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.node.config.RemotePeerConfiguration
 import sx.Lifecycle
-import sx.mq.Broker
+import sx.mq.MqBroker
 import java.util.*
 import javax.annotation.PostConstruct
 import javax.inject.Inject
@@ -31,7 +31,7 @@ class LifecycleController {
     /**
      * Broker listener
      */
-    val brokerListener = object : Broker.EventListener {
+    val brokerListener = object : MqBroker.EventListener {
         override fun onStart() {
             // If remote connection is not required, lifecycles start when the broker starts
             if (!this@LifecycleController.requiresRemoteConnection) {

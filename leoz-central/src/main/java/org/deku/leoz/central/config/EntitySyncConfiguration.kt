@@ -8,8 +8,7 @@ import org.deku.leoz.node.service.internal.sync.EntityPublisher
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.mq.Broker
-import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.MqBroker
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
@@ -42,7 +41,7 @@ open class EntitySyncConfiguration {
     private lateinit var mqConfigration: ActiveMQConfiguration
 
     /** Broker event listener  */
-    private val brokerEventListener = object : Broker.DefaultEventListener() {
+    private val brokerEventListener = object : MqBroker.DefaultEventListener() {
         override fun onStart() {
             this@EntitySyncConfiguration.entityPublisher.start()
         }

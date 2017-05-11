@@ -1,9 +1,6 @@
 package sx.mq.mqtt
 
-import sx.mq.Channel
-import sx.mq.DestinationType
-import sx.mq.jms.JmsChannel
-import sx.mq.jms.JmsClient
+import sx.mq.MqChannel
 
 /**
  * Create client for mqtt channel
@@ -19,8 +16,8 @@ fun MqttChannel.client(): MqttClient {
  *  persistence false -> qos(0)
  *  persistence true -> qus(2)
  */
-fun Channel.toMqtt(context: MqttContext,
-                   qos: Int? = null): MqttChannel {
+fun MqChannel.toMqtt(context: MqttContext,
+                     qos: Int? = null): MqttChannel {
 
     return MqttChannel(
             context = context,

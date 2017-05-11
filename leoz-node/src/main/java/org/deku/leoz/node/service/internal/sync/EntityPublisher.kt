@@ -1,7 +1,8 @@
 package org.deku.leoz.node.service.internal.sync
 
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
-import sx.mq.Client
+import sx.mq.MqClient
+import sx.mq.MqHandler
 import sx.mq.jms.*
 import sx.mq.jms.listeners.SpringJmsListener
 import javax.jms.JMSException
@@ -21,7 +22,7 @@ class EntityPublisher(
         listenerExecutor: java.util.concurrent.Executor)
 :
         SpringJmsListener(requestChannel, listenerExecutor),
-        JmsHandler<EntityStateMessage> {
+        MqHandler<EntityStateMessage> {
     init {
         this.addDelegate(this)
     }
@@ -41,7 +42,7 @@ class EntityPublisher(
     }
 
     @Throws(JMSException::class)
-    override fun onMessage(message: EntityStateMessage, replyChannel: Client?) {
+    override fun onMessage(message: EntityStateMessage, replyClient: MqClient?) {
         var em: javax.persistence.EntityManager? = null
         try {
             val sw = com.google.common.base.Stopwatch.createStarted()
@@ -58,15 +59,15 @@ class EntityPublisher(
             // Count records
             val count = er.countNewerThan(syncId)
 
-            if (replyChannel == null || !(replyChannel is JmsClient))
+            if (replyClient == null || !(replyClient is JmsClient))
                 throw IllegalArgumentException("IMS reply client required")
 
-            (replyChannel as? JmsClient)?.statistics?.enabled = true
+            (replyClient as? JmsClient)?.statistics?.enabled = true
 
             // Send entity update message
             val euMessage = EntityUpdateMessage(count)
             log.debug(lfmt(euMessage.toString()))
-            replyChannel.send(euMessage)
+            replyClient.send(euMessage)
 
             if (count > 0) {
                 // Query with cursor
@@ -85,7 +86,7 @@ class EntityPublisher(
                         }
                         if (buffer.size >= CHUNK_SIZE || next == null) {
                             if (buffer.size > 0) {
-                                replyChannel.send(buffer.toArray())
+                                replyClient.send(buffer.toArray())
                                 buffer.clear()
                             }
 
@@ -95,7 +96,7 @@ class EntityPublisher(
                     }
 
                     // Send empty array -> EOS
-                    replyChannel.send(arrayOfNulls<Any>(0), messageConfigurer = {
+                    replyClient.send(arrayOfNulls<Any>(0), messageConfigurer = {
                         it.setBooleanProperty(EOS_PROPERTY, true)
                     })
                 } finally {
@@ -103,7 +104,7 @@ class EntityPublisher(
                         cursor.close()
                 }
             }
-            log.info(lfmt("Sent ${count} in ${sw} (${replyChannel.statistics.bytesSent} bytes)"))
+            log.info(lfmt("Sent ${count} in ${sw} (${replyClient.statistics.bytesSent} bytes)"))
         } catch(e: Exception) {
             log.error(e.message, e);
         } finally {
