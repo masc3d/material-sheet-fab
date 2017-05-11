@@ -17,10 +17,10 @@ CREATE TABLE `mst_debitor` (
   PRIMARY KEY (`debitor_id`),
   UNIQUE KEY `debitor_uindex` (`debitor_nr`));
 
-ALTER TABLE `mst_node`
-  ADD COLUMN `debitor_id` INT NOT NULL AFTER `node_id`,
-  ADD COLUMN `key_id` INT NOT NULL AFTER `debitor_id`,
-  ADD COLUMN `typ` VARCHAR(10) NOT NULL default '0' AFTER `key_id`;
+# ALTER TABLE `mst_node`
+#   ADD COLUMN `debitor_id` INT NOT NULL AFTER `node_id`,
+#   ADD COLUMN `key_id` INT NOT NULL AFTER `debitor_id`,
+#   ADD COLUMN `typ` VARCHAR(10) NOT NULL default '0' AFTER `key_id`;
 
 ALTER TABLE `dekuclient`.`mst_key`
   CHANGE COLUMN `typ` `typ` VARCHAR(10) NOT NULL DEFAULT '0' ;
