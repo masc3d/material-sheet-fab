@@ -201,6 +201,8 @@ dependencies {
             // Signature pad
             "com.github.gcacace:signature-pad:1.2.1",
 
+            // MQTT client
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
             // FOR TESTING

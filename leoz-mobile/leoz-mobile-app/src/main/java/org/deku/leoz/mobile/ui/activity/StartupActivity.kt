@@ -22,7 +22,10 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import org.deku.leoz.mobile.config.LogConfiguration
+import org.deku.leoz.mobile.config.MqttConfiguration
 import org.deku.leoz.mobile.service.LocationService
+import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import sx.android.Device
 import sx.android.aidc.AidcReader
 import java.util.concurrent.TimeUnit
@@ -59,9 +62,12 @@ class StartupActivity : RxAppCompatActivity() {
         this.app.unfreezeInstanceState(this)
 
         // Load some more heavy-weight instances on startup/splash
-        val app: Application = Kodein.global.instance()
+
+        // Load log configuration first
+        Kodein.global.instance<LogConfiguration>()
+        Kodein.global.instance<Application>()
+        Kodein.global.instance<UpdateService>()
         val db: Database = Kodein.global.instance()
-        val update: UpdateService = Kodein.global.instance()
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")

@@ -57,6 +57,7 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         Kodein.global.addImport(AidcConfiguration.module)
         Kodein.global.addImport(SharedPreferenceConfiguration.module)
         Kodein.global.addImport(ToneConfiguration.module)
+        Kodein.global.addImport(MqttConfiguration.module)
 
         this.registerActivityLifecycleCallbacks(this)
     }
