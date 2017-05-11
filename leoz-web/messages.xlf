@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="92eee6be6de0b11c924e3ab27db30257159c0a7c" datatype="html">
+        <source>Home</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/menu/left-menu/left-menu.component.ts</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <note priority="1" from="description">Navigation label for home</note>
+      </trans-unit>
+      <trans-unit id="cc0be6356a2e63f73ab3dc7a561e2e0b68185155" datatype="html">
+        <source>Driver</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/menu/left-menu/left-menu.component.ts</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <note priority="1" from="description">Navigation label for driver</note>
+      </trans-unit>
+      <trans-unit id="2774598fb0585da5373b902d2f885b14e273c947" datatype="html">
+        <source>Tour</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/menu/left-menu/left-menu.component.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note priority="1" from="description">Navigation label for tour</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

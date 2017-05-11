@@ -13,6 +13,7 @@
     "build": "ng build",
     "build:prod": "ng build --prod --aot",
     "test": "ng test",
+    "translate": "ng-xi18n --i18nFormat xlf",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },

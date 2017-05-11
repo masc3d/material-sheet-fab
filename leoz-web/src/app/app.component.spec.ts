@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { AppModule } from './app.module';
 import { AppComponent } from './app.component';
 import { AppFooterComponent } from './app-footer/app-footer.component';
-import { MainMenuComponent } from './menu/main-menu/main-menu.component';
 import { TopMenuComponent } from './menu/top-menu/top-menu.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseRequestOptions, HttpModule } from '@angular/http';
@@ -28,7 +27,6 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent,
         AppFooterComponent,
-        MainMenuComponent,
         HomeComponent,
         TopMenuComponent,
         DriverComponent,
