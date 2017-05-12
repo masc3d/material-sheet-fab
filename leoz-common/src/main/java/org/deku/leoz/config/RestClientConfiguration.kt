@@ -111,8 +111,10 @@ abstract class RestClientConfiguration {
 
             bind<AuthorizationService>() with provider {
                 object : AuthorizationService {
+
                     override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.WebResponse {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                        return AuthorizationService.WebResponse(key="456",debitorNo = "2766060777",userRole = "DRIVER")
                     }
 
                     override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.MobileResponse {
