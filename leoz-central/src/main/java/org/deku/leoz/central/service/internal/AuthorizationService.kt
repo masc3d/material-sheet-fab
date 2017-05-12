@@ -111,7 +111,8 @@ class AuthorizationService
 
         return AuthorizationService.WebResponse(
                 key = "123",
-                debitorNo = df.format(debitorNo))
+                debitorNo = df.format(debitorNo),
+                userRole = userRecord.role)
     }
 
     /**

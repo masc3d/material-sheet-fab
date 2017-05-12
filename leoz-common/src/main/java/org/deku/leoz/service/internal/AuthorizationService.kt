@@ -93,7 +93,8 @@ interface AuthorizationService {
      */
     data class WebResponse(
             var key: String = "",
-            var debitorNo: String = ""
+            var debitorNo: String = "",
+            var userRole: String = ""
     )
 
     /**
