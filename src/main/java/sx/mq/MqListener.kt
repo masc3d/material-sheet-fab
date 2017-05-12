@@ -1,12 +1,14 @@
 package sx.mq
 
-import com.google.common.reflect.TypeToken
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.io.serialization.Serializer
+import sx.reflect.allGenericInterfaces
 import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 import java.util.*
 import javax.jms.Message
+import kotlin.reflect.KClass
 
 /**
  * Lightweight message listener abstraction with object conversion and dispatch support
@@ -64,24 +66,34 @@ abstract class MqListener
      */
     @Suppress("UNCHECKED_CAST")
     fun <T> addDelegate(delegate: MqHandler<T>) {
-        var messageTypes = delegate.messageTypes
-        if (messageTypes.isEmpty()) {
-            // No message types specified, extracing generic type from Handler interface
-            val handlerInterfaces = TypeToken.of(delegate.javaClass).types.interfaces()
+        val messageTypes = arrayListOf<Class<*>>()
 
-            // Find interface type for Handler<T> in hierarchy
-            val handlerInterface = handlerInterfaces
-                    .filter { it.isSubtypeOf(MqHandler::class.java) }
-                    .first()
+        // Lookup MqHandler interface
+        val handlerInterface = delegate.javaClass.allGenericInterfaces
+                .first {
+                    it is ParameterizedType && it.rawType == MqHandler::class.java
+                } as ParameterizedType
 
-            val handlerInterfaceType = handlerInterface.type
-            if (!(handlerInterfaceType is ParameterizedType))
-                throw IllegalArgumentException()
+        // The generic interface parameter (=message type)
+        val handlerMessageType = handlerInterface.actualTypeArguments.get(0) as Class<*>
 
-            messageTypes = arrayListOf(handlerInterfaceType.actualTypeArguments.get(0) as Class<*>)
+        // Locate interface method for checking types annotation
+        val interfaceType = handlerInterface.rawType as Class<*>
+        interfaceType.methods.forEach { interfaceMethod ->
+            val method = delegate.javaClass.getMethod(interfaceMethod.name, *interfaceMethod.parameterTypes)
+
+            val typesAnnotation = method.getAnnotation(MqHandler.Types::class.java)
+            if (typesAnnotation != null) {
+                messageTypes.addAll(typesAnnotation.types.map { it.java })
+            }
         }
 
-        for (c in messageTypes) {
+        if (messageTypes.isEmpty()) {
+            // No message types specified, using generic type from Handler interface
+            messageTypes.add(handlerMessageType)
+        }
+
+        messageTypes.forEach { c ->
             if (this.handlerDelegates.containsKey(c))
                 throw IllegalStateException("Listener already contains handler for message type [${c.name}]")
 
