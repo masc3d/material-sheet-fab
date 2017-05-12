@@ -95,6 +95,7 @@ abstract class MqListener
     }
 
     override fun close() {
+        // Unlike calling .stop directly, .close shouldn't throw
         try {
             this.stop()
         } catch (e: Exception) {
