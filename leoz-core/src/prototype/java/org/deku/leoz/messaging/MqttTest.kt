@@ -195,9 +195,14 @@ class MqttTest {
         listener.start()
 
         // Setup log message listener
-        listener.addDelegate(object : MqHandler<LogMessage> {
-            override fun onMessage(message: LogMessage, replyClient: MqClient?) {
-                log.info("MQTT ${message}: ${message.logEntries.count()}")
+        listener.addDelegate(object : MqHandler<Any> {
+            @MqHandler.Types(LogMessage::class)
+            override fun onMessage(message: Any, replyClient: MqClient?) {
+                when (message) {
+                    is LogMessage -> {
+                        log.info("MQTT ${message}: ${message.logEntries.count()}")
+                    }
+                }
             }
         })
 
