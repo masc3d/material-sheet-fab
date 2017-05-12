@@ -28,6 +28,7 @@ import sx.mq.jms.client
 import sx.mq.jms.listeners.SpringJmsListener
 import sx.mq.jms.toJms
 import sx.mq.mqtt.MqttContext
+import sx.mq.mqtt.MqttListener
 import sx.mq.mqtt.client
 import sx.mq.mqtt.toMqtt
 import sx.time.Duration
@@ -162,7 +163,7 @@ class MqttTest {
     @Test
     fun testListener() {
         val listener = object : SpringJmsListener(
-                jmsTopicChannel,
+                jmsQueueChannel,
                 Executors.newSingleThreadExecutor(),
                 "mqtt-subscriber-1") {
 
@@ -176,6 +177,29 @@ class MqttTest {
         })
 
         listener.start()
+
+        Thread.sleep(Long.MAX_VALUE)
+    }
+
+    @Test
+    fun testMqttListener() {
+        this.mqttClient.connect(
+                this.connectOptions
+        ).waitForCompletion()
+
+        val listener = MqttListener(
+                mqttClient = this.mqttClient,
+                mqttChannel = this.mqttTopicChannel
+        )
+
+        listener.start()
+
+        // Setup log message listener
+        listener.addDelegate(object : MqHandler<LogMessage> {
+            override fun onMessage(message: LogMessage, replyClient: MqClient?) {
+                log.info("MQTT ${message}: ${message.logEntries.count()}")
+            }
+        })
 
         Thread.sleep(Long.MAX_VALUE)
     }
@@ -194,7 +218,22 @@ class MqttTest {
             for (i in 0..100)
                 it.send(logMessage)
         }
+    }
 
+    /**
+     * For fallback testing via JMS
+     */
+    @Test
+    fun testPublishToTopicTopicViaJms() {
+        val logMessage = LogMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
+
+        // Receive
+        jmsTopicChannel.client().use {
+            it.ttl = Duration.ofMinutes(5)
+
+            for (i in 0..100)
+                it.send(logMessage)
+        }
     }
 
     /**
