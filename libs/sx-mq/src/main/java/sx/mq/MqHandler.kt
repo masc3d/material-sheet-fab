@@ -1,15 +1,15 @@
 package sx.mq
 
+import kotlin.reflect.KClass
+
 /**
  * JMS message handler
  * Created by masc on 28.06.15.
  */
 interface MqHandler<in T> {
-    // TODO: migrate to method annotation for `onMessage`. much better.
-    /** Message types to handle. Must be overridden when multiple message types should be handled (Handler<Anx>) */
-    val messageTypes: List<Class<*>> get() {
-        return arrayListOf()
-    }
+    /** Annotation for declaring Message types to handle when using a common super type eg. `MqHandler<Any>` */
+    @Target(AnnotationTarget.FUNCTION)
+    annotation class Types(vararg val types: KClass<*>)
 
     /** Override for serialized/object message handling */
     fun onMessage(message: T, replyClient: MqClient?)
