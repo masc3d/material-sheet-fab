@@ -1,12 +1,16 @@
 package org.deku.leoz.mobile.config
 
 import android.content.Context
+import ch.qos.logback.classic.LoggerContext
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
+import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.MqConfiguration
+import org.deku.leoz.identity.Identity
+import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.model.RemoteSettings
 import org.deku.leoz.mobile.service.NotificationService
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -18,7 +22,7 @@ import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import sx.mq.mqtt.MqttContext
 import sx.mq.mqtt.MqttListener
-import sx.mq.mqtt.toMqtt
+import sx.mq.mqtt.client
 
 
 /**
@@ -69,10 +73,13 @@ class MqttConfiguration(
                 mqttAndroidClient.setCallback(object : MqttCallbackExtended {
                     override fun connectComplete(reconnect: Boolean, serverURI: String) {
                         log.info("Connected successfully")
+
                         if (reconnect) {
                             log.info("Reconnected successfully")
+                        } else {
+                            val logConfig = instance<LogConfiguration>()
+                            logConfig.addAppender(instance<LogMqAppender>())
                         }
-
 
                         val mqConfig = instance<MqttConfiguration>()
                         mqConfig.mobileTopicListener.start()
@@ -83,11 +90,11 @@ class MqttConfiguration(
                     }
 
                     override fun messageArrived(topic: String, message: MqttMessage) {
-                        log.info("Incoming message")
+                        log.trace("Incoming message")
                     }
 
                     override fun deliveryComplete(token: IMqttDeliveryToken) {
-                        log.info("Delivery complete")
+                        log.trace("Delivery complete")
                     }
                 })
 
@@ -132,6 +139,14 @@ class MqttConfiguration(
             }
             bind<org.deku.leoz.config.MqttConfiguration>() with singleton {
                 instance<MqttConfiguration>()
+            }
+
+            bind<LogMqAppender>() with singleton {
+                val config = instance<MqttConfiguration>()
+                LogMqAppender(
+                        clientSupplier = { config.centralLogQueueTopic.client() },
+                        identitySupplier = { Identity("client-123", BundleType.LeozMobile.value) }
+                )
             }
 
             /**

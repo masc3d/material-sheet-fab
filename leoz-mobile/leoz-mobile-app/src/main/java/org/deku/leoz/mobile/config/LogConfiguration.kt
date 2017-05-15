@@ -8,10 +8,12 @@ import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.android.LogcatAppender
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.AppenderBase
 import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.*
+import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Storage
 import org.slf4j.LoggerFactory
@@ -24,6 +26,7 @@ import java.io.File
 class LogConfiguration(
         val path: File,
         val name: String) {
+
     companion object {
         val module = Kodein.Module {
             bind<LogConfiguration>() with eagerSingleton {
@@ -37,15 +40,23 @@ class LogConfiguration(
         }
     }
 
+    private val loggerContext by lazy {
+        LoggerFactory.getILoggerFactory() as LoggerContext
+    }
+
+    private val rootLogger by lazy {
+        LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
+    }
+
     /**
      * Configures logging
      */
     init {
         // Root logger
-        val root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as Logger
+        val root = this.rootLogger
 
         // Logger context
-        val lc = LoggerFactory.getILoggerFactory() as LoggerContext
+        val lc = this.loggerContext
         lc.reset()
 
         // Setup file logging
@@ -94,5 +105,11 @@ class LogConfiguration(
         // Add appenders
         root.addAppender(fileAppender)
         root.addAppender(logcatAppender)
+    }
+
+    fun addAppender(appender: AppenderBase<ILoggingEvent>) {
+        appender.context = this.loggerContext
+        appender.start()
+        this.rootLogger.addAppender(appender)
     }
 }
