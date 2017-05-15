@@ -58,9 +58,7 @@ export class LoginComponent implements OnInit {
   handleError(resp: Response) {
     this.loading = false;
     console.log(resp);
-    const json_string = resp.text();
-    const js_object = JSON.parse(json_string);
-    this.errMsg = js_object.title;
+    this.errMsg = resp.json().title;
   }
 
   logout() {
