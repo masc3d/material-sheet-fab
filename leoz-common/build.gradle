@@ -49,6 +49,9 @@ dependencies {
             "com.github.salomonbrys.kodein:kodein-erased:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-core:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
+
+            // Logging
+            "ch.qos.logback:logback-core:$v_logback",
     )
 
     compileOnly(

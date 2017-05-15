@@ -7,9 +7,7 @@ import org.deku.leoz.identity.Identity
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.Lifecycle
-import sx.mq.MqBroker
-import sx.mq.jms.JmsChannel
-import sx.mq.jms.client
+import sx.mq.MqClient
 import sx.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
@@ -18,13 +16,11 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /**
- * Log appender sending log messages via jms
+ * Log appender sending log messages via mq
  * Created by masc on 11.06.15.
  */
-class LogAppender(
-        /** Messaging context */
-        private val broker: MqBroker,
-        private val logChannelConfiguration: JmsChannel,
+class LogMqAppender(
+        private val clientSupplier: () -> MqClient,
         private val identitySupplier: () -> Identity)
 :
         AppenderBase<ILoggingEvent>(),
@@ -33,7 +29,7 @@ class LogAppender(
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val lock = ReentrantLock()
-    /** Log message buffer  */
+    /** Log message buffer */
     private val buffer = ArrayList<LogMessage.LogEntry>()
 
     /**
@@ -52,17 +48,17 @@ class LogAppender(
             // Flush log messages to underlying jms broker
             val logMessageBuffer = ArrayList<LogMessage.LogEntry>()
 
-            synchronized (this@LogAppender.buffer) {
-                logMessageBuffer.addAll(this@LogAppender.buffer)
-                this@LogAppender.buffer.clear()
+            synchronized (this@LogMqAppender.buffer) {
+                logMessageBuffer.addAll(this@LogMqAppender.buffer)
+                this@LogMqAppender.buffer.clear()
             }
 
             if (logMessageBuffer.size > 0) {
                 log.trace("Flushing [${logMessageBuffer.size}]")
                 try {
-                    this@LogAppender.logChannelConfiguration.client().use {
+                    this@LogMqAppender.clientSupplier().use {
                         it.send(LogMessage(
-                                this@LogAppender.identitySupplier().key.value,
+                                this@LogMqAppender.identitySupplier().key.value,
                                 logMessageBuffer.toTypedArray()))
                     }
                 } catch (e: Exception) {
@@ -73,27 +69,6 @@ class LogAppender(
     }
 
     private val service: Service = Service(Executors.newSingleThreadScheduledExecutor())
-
-    /**
-     * Broker listener, jms destination is automatically created when broker start is detected
-     */
-    val brokerEventListener: MqBroker.EventListener = object : MqBroker.DefaultEventListener() {
-        override fun onStart() {
-            if (this@LogAppender.isStarted)
-                service.start()
-        }
-
-        override fun onStop() {
-            this@LogAppender.stop()
-            if (service.isStarted)
-                service.trigger()
-            service.stop()
-        }
-    }
-
-    init {
-        this.broker.delegate.add(brokerEventListener)
-    }
 
     override fun append(eventObject: ILoggingEvent) {
         val le = eventObject as LoggingEvent
@@ -109,13 +84,14 @@ class LogAppender(
     override fun start() {
         this.lock.withLock {
             super.start()
-            if (this.broker.isStarted)
-                this.service.start()
+            this.service.start()
         }
     }
 
     override fun stop() {
         this.lock.withLock {
+            if (this.isStarted)
+                this.service.trigger()
             // Shutdown log flush gracefully
             this.service.stop()
             super.stop()

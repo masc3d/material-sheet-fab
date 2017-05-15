@@ -3,11 +3,13 @@ package org.deku.leoz.node.config
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
 import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.log.LogAppender
+import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
+import sx.mq.MqBroker
+import sx.mq.jms.client
 import java.util.logging.Level
 import java.util.logging.LogManager
 import java.util.logging.Logger
@@ -29,7 +31,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     }
 
     /** Jms log appender */
-    private var jmsLogAppender: LogAppender? = null
+    private var logMqAppender: LogMqAppender? = null
 
     /**
      * Enable or disable jms log appender
@@ -38,26 +40,43 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
         set(value: Boolean) {
             field = value
             if (value) {
-                if (this.jmsLogAppender == null) {
+                if (this.logMqAppender == null) {
                     val application: Application = Kodein.global.instance()
                     // Setup message log appender
-                    this.jmsLogAppender = LogAppender(
-                            broker = ActiveMQConfiguration.broker,
-                            logChannelConfiguration = ActiveMQConfiguration.centralLogQueue,
+                    this.logMqAppender = LogMqAppender(
+                            clientSupplier = { ActiveMQConfiguration.centralLogQueue.client() },
                             identitySupplier = { application.identity })
-                    this.jmsLogAppender!!.context = loggerContext
-                    this.jmsLogAppender!!.start()
+                    this.logMqAppender!!.context = loggerContext
+                    this.logMqAppender!!.start()
                 }
             } else {
-                if (this.jmsLogAppender != null) {
-                    this.jmsLogAppender!!.stop()
-                    rootLogger.detachAppender(this.jmsLogAppender)
-                    this.jmsLogAppender = null
+                if (this.logMqAppender != null) {
+                    this.logMqAppender!!.stop()
+                    rootLogger.detachAppender(this.logMqAppender)
+                    this.logMqAppender = null
                 }
             }
         }
 
+    /**
+     * Broker listener, jms destination is automatically created when broker start is detected
+     */
+    val brokerEventListener: MqBroker.EventListener = object : MqBroker.DefaultEventListener() {
+        override fun onStart() {
+            val appender = this@LogConfiguration.logMqAppender
+            if (appender != null && ActiveMQConfiguration.broker.isStarted) {
+                appender.start()
+            }
+        }
+
+        override fun onStop() {
+            this@LogConfiguration.logMqAppender?.stop()
+        }
+    }
+
     init {
+        ActiveMQConfiguration.broker.delegate.add(
+                this.brokerEventListener)
     }
 
     /**
@@ -79,8 +98,8 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
         }
 
         if (this.jmsAppenderEnabled) {
-            this.jmsLogAppender!!.start()
-            this.rootLogger.addAppender(this.jmsLogAppender)
+            this.logMqAppender!!.start()
+            this.rootLogger.addAppender(this.logMqAppender)
         }
     }
 

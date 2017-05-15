@@ -48,7 +48,7 @@ class LogTest {
     @Throws(JMSException::class)
     fun testSend() {
         // Setup log appender
-        val logAppender = LogAppender(
+        val logAppender = LogMqAppender(
                 broker = this.broker,
                 logChannelConfiguration= ActiveMQConfiguration.centralLogQueue,
                 identitySupplier = {
