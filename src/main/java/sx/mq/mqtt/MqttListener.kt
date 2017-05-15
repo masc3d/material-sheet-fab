@@ -11,11 +11,14 @@ import sx.mq.MqListener
  * Created by masc on 11.05.17.
  */
 class MqttListener(
-        private val mqttClient: IMqttAsyncClient,
         private val mqttChannel: MqttChannel
 )
     : MqListener() {
     private var isStarted: Boolean = false
+
+    private val mqttClient by lazy {
+        this.mqttChannel.context.client()
+    }
 
     @Synchronized override fun start() {
         this.mqttClient.subscribe(

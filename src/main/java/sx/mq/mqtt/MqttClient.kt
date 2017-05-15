@@ -1,6 +1,7 @@
 package sx.mq.mqtt
 
 import io.reactivex.Observable
+import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttMessage
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit
  */
 class MqttClient(
         val channel: MqttChannel,
-        mqttClient: MqttAsyncClient? = null
+        mqttClient: IMqttAsyncClient? = null
 ) : sx.mq.MqClient {
 
     companion object {
@@ -26,7 +27,7 @@ class MqttClient(
     /**
      * Lazy session instance
      */
-    private val mqttClientInstance = LazyInstance<MqttAsyncClient>(
+    private val mqttClientInstance = LazyInstance<IMqttAsyncClient>(
             LazyInstance.ThreadSafetyMode.None)
 
     val mqttClient by lazy {
