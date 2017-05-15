@@ -40,9 +40,11 @@ class MqttListener(
 
     @Synchronized override fun stop() {
         if (this.isStarted) {
-            this.mqttClient.unsubscribe(
-                    this.mqttChannel.topicName
-            ).waitForCompletion()
+            if (this.mqttClient.isConnected) {
+                this.mqttClient.unsubscribe(
+                        this.mqttChannel.topicName
+                ).waitForCompletion()
+            }
 
             this.isStarted = false
         }
