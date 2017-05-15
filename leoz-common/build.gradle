@@ -51,7 +51,7 @@ dependencies {
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
 
             // Logging
-            "ch.qos.logback:logback-core:$v_logback",
+            "ch.qos.logback:logback-classic:$v_logback",
     )
 
     compileOnly(
