@@ -31,9 +31,17 @@ export class DriverFormComponent implements OnInit {
       lng: [ null, Validators.pattern(/^-?\d*(\.\d{0,4})?$/) ],
     });
     this.driverForm = this.fb.group({
-      firstname: [ null, [ Validators.minLength(3), Validators.maxLength(10) ] ],
-      surname: [ null, [ Validators.minLength(3), Validators.maxLength(10) ] ],
-      drivernumber: [ null, [ Validators.required, Validators.pattern('^[0-9]{4}$') ] ],
+      firstname: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
+      surname: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
+      password: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(255) ] ],
+      email: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(100) ] ],
+      phone: [ null, [ Validators.minLength(0), Validators.maxLength(45) ] ],
+      alias: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(30) ] ],
+      salt: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
+      role: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(20) ] ],
+      active: [ null, [ Validators.required, Validators.pattern('^[0-9]{1}$') ] ],
+      drivernumber: [ null, [ Validators.pattern('^[0-9]{4}$') ] ],
+      debitor_id: [ null, [ Validators.required, Validators.pattern('^[0-9]{4}$') ] ],
       tournumber: [ null, [ Validators.pattern('^[0-9]{4}$') ] ],
       position: positionFormGroup
     });

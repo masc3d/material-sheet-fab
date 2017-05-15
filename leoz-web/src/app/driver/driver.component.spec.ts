@@ -4,7 +4,6 @@ import { DriverComponent } from './driver.component';
 import { HttpModule } from '@angular/http';
 import { ErrormsgService } from '../error/errormsg.service';
 import { DriverService } from './driver.service';
-import { DriverFormComponent } from './driver-form/driver-form.component';
 import { DriverListComponent } from './driver-list/driver-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -16,7 +15,6 @@ describe('DriverComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         DriverComponent,
-        DriverFormComponent,
         DriverListComponent
       ],
       imports: [
