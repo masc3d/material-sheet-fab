@@ -32,7 +32,7 @@ npm install -g @angular/cli@latest
 npm install
 ```
 
-### Run web application
+## Run web application
 
 ```
 ng serve
