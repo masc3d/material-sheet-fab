@@ -16,6 +16,7 @@ import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.IMqttToken
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
+import sx.mq.mqtt.MqttContext
 import sx.mq.mqtt.MqttListener
 import sx.mq.mqtt.toMqtt
 
@@ -25,8 +26,8 @@ import sx.mq.mqtt.toMqtt
  * Created by masc on 10.05.17.
  */
 class MqttConfiguration(
-        clientSupplier: () -> IMqttAsyncClient
-) : org.deku.leoz.config.MqttConfiguration(clientSupplier) {
+        context: MqttContext
+) : org.deku.leoz.config.MqttConfiguration(context) {
 
     val mobileTopicListener: MqttListener by lazy {
         MqttListener(
@@ -37,6 +38,15 @@ class MqttConfiguration(
         private val log = LoggerFactory.getLogger(MqttConfiguration::class.java)
 
         val module = Kodein.Module {
+            bind<MqttConnectOptions>() with singleton {
+                val mqttConnectOptions = MqttConnectOptions()
+                mqttConnectOptions.isAutomaticReconnect = true
+                mqttConnectOptions.isCleanSession = false
+                mqttConnectOptions.userName = MqConfiguration.USERNAME
+                mqttConnectOptions.password = MqConfiguration.PASSWORD.toCharArray()
+                mqttConnectOptions
+            }
+
             bind<IMqttAsyncClient>() with eagerSingleton {
                 val remoteSettings = instance<RemoteSettings>()
                 val androidContext = instance<Context>()
@@ -53,6 +63,10 @@ class MqttConfiguration(
                         if (reconnect) {
                             log.info("Reconnected successfully")
                         }
+
+
+                        val mqConfig = instance<MqttConfiguration>()
+                        mqConfig.mobileTopicListener.start()
                     }
 
                     override fun connectionLost(cause: Throwable) {
@@ -68,11 +82,7 @@ class MqttConfiguration(
                     }
                 })
 
-                val mqttConnectOptions = MqttConnectOptions()
-                mqttConnectOptions.isAutomaticReconnect = true
-                mqttConnectOptions.isCleanSession = false
-                mqttConnectOptions.userName = MqConfiguration.USERNAME
-                mqttConnectOptions.password = MqConfiguration.PASSWORD.toCharArray()
+                val mqttConnectOptions = instance<MqttConnectOptions>()
 
                 try {
                     mqttAndroidClient.connect(mqttConnectOptions, null, object : IMqttActionListener {
@@ -99,7 +109,11 @@ class MqttConfiguration(
 
             // Bind MQTT configuration (including base class)
             bind<MqttConfiguration>() with singleton {
-                MqttConfiguration({ instance<IMqttAsyncClient>() })
+                MqttConfiguration(
+                        context = MqttContext(
+                                client = { instance<IMqttAsyncClient>() },
+                                connectOptions = instance<MqttConnectOptions>()))
+
             }
 
             bind<org.deku.leoz.config.MqttConfiguration>() with singleton {

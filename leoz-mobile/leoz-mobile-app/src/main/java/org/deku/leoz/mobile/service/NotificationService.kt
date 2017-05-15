@@ -1,5 +1,7 @@
 package org.deku.leoz.mobile.service
 
+import org.deku.leoz.service.internal.entity.update.UpdateInfo
+import org.slf4j.LoggerFactory
 import sx.mq.MqClient
 import sx.mq.MqHandler
 
@@ -8,8 +10,12 @@ import sx.mq.MqHandler
  * Created by masc on 15.05.17.
  */
 class NotificationService : MqHandler<Any> {
-    @MqHandler.Types()
+    val log = LoggerFactory.getLogger(this.javaClass)
+
+    @MqHandler.Types(
+            UpdateInfo::class
+    )
     override fun onMessage(message: Any, replyClient: MqClient?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        log.info("Received message [${message}]")
     }
 }
