@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -36,10 +37,6 @@ class LoginFragment : Fragment() {
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")
     private val login: Login by Kodein.global.lazy.instance()
 
-    interface OnLoginSuccessfulListener {
-        fun onLoginSuccessful(userAlias: String, userStation: String)
-    }
-
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)
     }
@@ -53,9 +50,11 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxLogin.setOnClickListener(onClickListener)
-        this.uxPassword.setOnEditorActionListener { v, actionId, event -> login()}
+        this.uxPassword.setOnEditorActionListener { v, actionId, event -> login() }
 
-        //Check fot temporary saved credentials
+        val arrayAdapter = ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, arrayOf("foo@bar"))
+
+        this.uxMailaddress.setAdapter(arrayAdapter)
     }
 
     override fun onResume() {
@@ -96,45 +95,46 @@ class LoginFragment : Fragment() {
         this.uxMailaddress.error = null
         this.uxPassword.error = null
 
-        if (this.uxMailaddress.text.isEmpty()) {
-            this.uxMailaddress.error = getString(R.string.error_empty_field)
-        } else if (!isValidEmailAddress(this.uxMailaddress.text.toString()) && !this.uxMailaddress.text.matches(internalLoginRegex)) {
-            this.uxMailaddress.error = getString(R.string.error_format_mail)
-        } else if (this.uxPassword.text.isEmpty()) {
-            this.uxPassword.error = getString(R.string.error_empty_field)
-        } else {
+        when {
+            this.uxMailaddress.text.isEmpty() -> {
+                this.uxMailaddress.error = getString(R.string.error_empty_field)
+            }
+            !this.uxMailaddress.text.toString().isValidEmailAddress() && !this.uxMailaddress.text.matches(internalLoginRegex) -> {
+                this.uxMailaddress.error = getString(R.string.error_format_mail)
+            }
+            this.uxPassword.text.isEmpty() -> {
+                this.uxPassword.error = getString(R.string.error_empty_field)
+            }
+            else -> {
+                mailAddress = this.uxMailaddress.text.toString()
+                password = this.uxPassword.text.toString()
 
-            mailAddress = this.uxMailaddress.text.toString()
-            password = this.uxPassword.text.toString()
+                login.authenticate(
+                        email = mailAddress,
+                        password = password
+                )
+                        .bindUntilEvent(this, FragmentEvent.PAUSE)
+                        .subscribe {
+                            if (it != null && it.hash.isNotBlank()) {
+                                //Login succeeded
 
-            login.authenticate(
-                    email = mailAddress,
-                    password = password
-            )
-                    .bindUntilEvent(this, FragmentEvent.PAUSE)
-                    .subscribe {
-                        if (it != null && it.hash.isNotBlank()) {
-                            //Login succeeded
-
-                        } else {
-                            //Login failed
-                            tone.beep()
+                            } else {
+                                //Login failed
+                                tone.beep()
+                            }
                         }
-                    }
+            }
         }
 
         return true
     }
 
-    fun isValidEmailAddress(email: String): Boolean {
-        var result = true
-        try {
-            val emailAddr = InternetAddress(email)
-            emailAddr.validate()
+    fun String.isValidEmailAddress(): Boolean {
+        return try {
+            InternetAddress(this).validate()
+            true
         } catch (ex: AddressException) {
-            result = false
+            false
         }
-
-        return result
     }
 }

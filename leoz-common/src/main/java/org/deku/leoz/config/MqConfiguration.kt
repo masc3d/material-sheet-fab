@@ -1,12 +1,15 @@
 package org.deku.leoz.config
 
+import com.fasterxml.jackson.databind.JsonSerializable
 import org.deku.leoz.identity.Identity
+import sx.io.serialization.JacksonSerializer
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
 import sx.mq.MqChannel
 import sx.mq.DestinationType
 
 /**
+ * Generic MQ configuration
  * Created by masc on 08.05.17.
  */
 object MqConfiguration {
@@ -101,6 +104,15 @@ object MqConfiguration {
                 destinationType = DestinationType.Topic,
                 destinationName = "leoz.node.topic",
                 serializer = KryoSerializer().gzip
+        )
+    }
+
+    val mobileTopic: MqChannel by lazy {
+        MqChannel(
+                destinationType = DestinationType.Topic,
+                destinationName = "leoz.mobile.topic",
+                persistent = true,
+                serializer = JacksonSerializer().gzip
         )
     }
 }

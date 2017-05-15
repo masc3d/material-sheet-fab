@@ -1,21 +1,21 @@
 package org.deku.leoz.mobile.ui.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_aidc_camera.*
 import kotlinx.android.synthetic.main.fragment_menue.*
 
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.ui.activity.DeliveryActivity
+import sx.android.fragment.util.withTransaction
 
 
 class MenueFragment : Fragment() {
-
-    // TODO: Rename and change types of parameters
-    private val mParam1: String? = null
-    private val mParam2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +33,15 @@ class MenueFragment : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        this.uxDelivery.setOnClickListener {
+            val deliveryActivityIntent = Intent(context, DeliveryActivity::class.java)
+            startActivity(deliveryActivityIntent)
+        }
     }
 
     companion object {

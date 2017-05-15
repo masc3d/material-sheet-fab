@@ -1,35 +1,35 @@
 # Peer connectivity settings
 remote:
-    host: 'leox.derkurier.de'
+   host: 'leox.derkurier.de'
 
-    # Http related settings
-    http:
-       port: 13000
-       ssl: true
+   # Http related settings
+   http:
+      port: 13000
+      ssl: true
 
-    # Mq broker related settings
-    broker:
-       native-port: 13001
+   # Mq broker related settings
+   broker:
+      native-port: 13001
 
 # Database settings
 database:
-  # Automatically removes SQLite database on startup
-  clean-startup: false
+   # Automatically removes SQLite database on startup
+   clean-startup: false
 
 # Update service settings
 update:
-  bundle-name: 'leoz-mobile'
-  version-alias: 'snapshot'
-  force: false
-  # Cycle period in seconds
-  period: 3600
+   bundle-name: 'leoz-mobile'
+   version-alias: 'snapshot'
+   force: false
+   # Cycle period in seconds
+   period: 3600
 
 # Location service settings
 location:
-  enabled: true
-  # Minimum distance in meters
-  minDistance: 500
-  force: true
-  # Period in seconds
-  period: 600
-  allowMockLocation: false
+   enabled: true
+   # Minimum distance in meters
+   minDistance: 500
+   force: true
+   # Period in seconds
+   period: 600
+   allowMockLocation: false

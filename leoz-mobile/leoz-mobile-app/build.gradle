@@ -9,7 +9,7 @@ buildscript {
 
     dependencies {
         classpath(
-                'com.android.tools.build:gradle:2.3.1',
+                'com.android.tools.build:gradle:2.3.2',
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2",
                 "sx:sx-packager-gradle:0.1",
@@ -50,7 +50,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
-        versionName "0.5-SNAPSHOT"
+        versionName "0.7-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.setUseSupportLibrary(true)
@@ -206,11 +206,11 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
 
             // FOR TESTING
-            //Reactive Location
-            "pl.charmas.android:android-reactive-location:0.10@aar",
-            //GMS
-            "com.google.android.gms:play-services-location:9.4.0",
-            "com.google.android.gms:play-services-places:9.4.0",
+            //RX Location
+            //"com.patloew.rxlocation:rxlocation:1.0.3",
+            // GMS
+            //"com.google.android.gms:play-services-location:9.4.0",
+            //"com.google.android.gms:play-services-places:9.4.0",
             // Volley
             "com.android.volley:volley:1.0.0",
             // Flow

@@ -89,8 +89,13 @@ abstract class MqListener
         }
 
         if (messageTypes.isEmpty()) {
-            // No message types specified, using generic type from Handler interface
-            messageTypes.add(handlerMessageType)
+            // No message types specified, using generic type from Handler interface (except for Object/Any)
+            if (handlerMessageType != Any::class.java)
+                messageTypes.add(handlerMessageType)
+        }
+
+        if (messageTypes.isEmpty()) {
+            log.warn("Message delegate [${delegate.javaClass}] does not define any relevant message type")
         }
 
         messageTypes.forEach { c ->
