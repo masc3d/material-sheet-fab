@@ -29,6 +29,9 @@ class MqttConfiguration(
         context: MqttContext
 ) : org.deku.leoz.config.MqttConfiguration(context) {
 
+    /**
+     * Listener for mobile topic channel
+     */
     val mobileTopicListener: MqttListener by lazy {
         MqttListener(
                 mqttChannel = this.mobileTopic)
@@ -38,6 +41,9 @@ class MqttConfiguration(
         private val log = LoggerFactory.getLogger(MqttConfiguration::class.java)
 
         val module = Kodein.Module {
+            /**
+             * MQTT connection options
+             */
             bind<MqttConnectOptions>() with singleton {
                 val mqttConnectOptions = MqttConnectOptions()
                 mqttConnectOptions.isAutomaticReconnect = true
@@ -47,6 +53,9 @@ class MqttConfiguration(
                 mqttConnectOptions
             }
 
+            /**
+             * MQTT client
+             */
             bind<IMqttAsyncClient>() with eagerSingleton {
                 val remoteSettings = instance<RemoteSettings>()
                 val androidContext = instance<Context>()
@@ -107,7 +116,9 @@ class MqttConfiguration(
                 mqttAndroidClient
             }
 
-            // Bind MQTT configuration (including base class)
+            /**
+             * MQTT configuration
+             */
             bind<MqttConfiguration>() with singleton {
                 MqttConfiguration(
                         context = MqttContext(
@@ -115,11 +126,13 @@ class MqttConfiguration(
                                 connectOptions = instance<MqttConnectOptions>()))
 
             }
-
             bind<org.deku.leoz.config.MqttConfiguration>() with singleton {
                 instance<MqttConfiguration>()
             }
 
+            /**
+             * Notification service
+             */
             bind<NotificationService>() with eagerSingleton {
                 val mqConfig = instance<MqttConfiguration>()
                 val service = NotificationService()
