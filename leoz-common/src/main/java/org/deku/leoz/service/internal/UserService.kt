@@ -25,5 +25,5 @@ interface UserService {
     @GET
     @Path("/")
     @ApiOperation(value = "Get user")
-    fun get(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null): User
+    fun get(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null): User?
 }

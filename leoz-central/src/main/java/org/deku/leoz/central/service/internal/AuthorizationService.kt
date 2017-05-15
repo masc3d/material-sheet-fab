@@ -7,6 +7,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.AuthorizationService
+import org.deku.leoz.service.internal.entity.UserRole
 import org.slf4j.LoggerFactory
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
@@ -108,6 +109,11 @@ class AuthorizationService
         val debitorNo = this.userRepository.findDebitorNoById(id = userRecord.debitorId) ?:"0"
         val df=DecimalFormat("#")
         df.maximumFractionDigits=0
+
+        if (!UserRole.values().any{it.name==userRecord.role})
+            throw DefaultProblem(
+                    title = "User authentication failed: no valid user-role",
+                    status = Response.Status.UNAUTHORIZED)
 
         return AuthorizationService.WebResponse(
                 key = "123",

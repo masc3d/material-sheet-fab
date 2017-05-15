@@ -58,3 +58,10 @@ data class User(
         const val ROLE_CUSTOMER: String = "CUSTOMER"
     }
 }
+enum class UserRole{
+    ADMINISTRATOR,
+    POWERUSER,
+    USER,
+    DRIVER,
+    CUSTOMER
+}
