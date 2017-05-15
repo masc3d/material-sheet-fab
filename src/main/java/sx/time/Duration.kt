@@ -100,6 +100,7 @@ class Duration(val length: Long, val unit: TimeUnit) {
 
         fun ofSeconds(seconds: Long): Duration = Duration(seconds, TimeUnit.SECONDS)
         fun ofMinutes(minutes: Long): Duration = Duration(minutes, TimeUnit.MINUTES)
+        fun ofDays(days: Long): Duration = Duration(days, TimeUnit.DAYS)
     }
 }
 
