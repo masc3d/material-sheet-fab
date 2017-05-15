@@ -33,7 +33,7 @@ class MqttListener(
                         this.onError(e)
                     }
                 }
-        ).waitForCompletion()
+        )?.waitForCompletion()
 
         this.isStarted = true
     }
@@ -43,7 +43,7 @@ class MqttListener(
             if (this.mqttClient.isConnected) {
                 this.mqttClient.unsubscribe(
                         this.mqttChannel.topicName
-                ).waitForCompletion()
+                )?.waitForCompletion()
             }
 
             this.isStarted = false

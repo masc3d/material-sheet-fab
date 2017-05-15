@@ -7,7 +7,8 @@ import sx.mq.MqChannel
  * Created by masc on 09.05.17.
  */
 fun MqttChannel.client(): MqttClient {
-    return MqttClient(this)
+    return MqttClient(
+            channel = this)
 }
 
 /**

@@ -14,48 +14,19 @@ import java.util.concurrent.TimeUnit
  * Created by masc on 07.05.17.
  */
 class MqttClient(
-        val channel: MqttChannel,
-        mqttClient: IMqttAsyncClient? = null
+        val channel: MqttChannel
 ) : sx.mq.MqClient {
 
     companion object {
         val DEFAULT_RECEIVE_TIMEOUT = Duration.ofSeconds(10)
     }
 
-    private var ownsClient: Boolean = false
-
-    /**
-     * Lazy session instance
-     */
-    private val mqttClientInstance = LazyInstance<IMqttAsyncClient>(
-            LazyInstance.ThreadSafetyMode.None)
-
     val mqttClient by lazy {
-        this.mqttClientInstance.get()
-    }
-
-    init {
-        if (mqttClient == null) {
-            // Lazily create client from context
-            mqttClientInstance.set {
-                val client = this.channel.context.client()
-                client.connect(this.channel.context.connectOptions).waitForCompletion()
-                client
-            }
-            // In this case we own the client and need to close it when done
-            ownsClient = true
-        } else {
-            mqttClientInstance.set { mqttClient }
-            ownsClient = false
-        }
+        this.channel.context.client()
     }
 
     override fun close() {
-        if (this.ownsClient) {
-            this.mqttClientInstance.ifSet {
-                it.disconnect().waitForCompletion()
-            }
-        }
+        // Paho mqtt clients are always shared
     }
 
     override fun <T> receive(messageType: Class<T>): T {
@@ -92,6 +63,5 @@ class MqttClient(
                 this.channel.topicName,
                 mqttMessage
         )
-                .waitForCompletion()
     }
 }
