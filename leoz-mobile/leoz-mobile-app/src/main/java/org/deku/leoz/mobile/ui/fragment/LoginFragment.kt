@@ -50,7 +50,7 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxLogin.setOnClickListener(onClickListener)
-        this.uxPassword.setOnEditorActionListener { v, actionId, event -> login()}
+        this.uxPassword.setOnEditorActionListener { v, actionId, event -> login() }
 
         val arrayAdapter = ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, arrayOf("foo@bar"))
 
@@ -95,45 +95,46 @@ class LoginFragment : Fragment() {
         this.uxMailaddress.error = null
         this.uxPassword.error = null
 
-        if (this.uxMailaddress.text.isEmpty()) {
-            this.uxMailaddress.error = getString(R.string.error_empty_field)
-        } else if (!isValidEmailAddress(this.uxMailaddress.text.toString()) && !this.uxMailaddress.text.matches(internalLoginRegex)) {
-            this.uxMailaddress.error = getString(R.string.error_format_mail)
-        } else if (this.uxPassword.text.isEmpty()) {
-            this.uxPassword.error = getString(R.string.error_empty_field)
-        } else {
+        when {
+            this.uxMailaddress.text.isEmpty() -> {
+                this.uxMailaddress.error = getString(R.string.error_empty_field)
+            }
+            !this.uxMailaddress.text.toString().isValidEmailAddress() && !this.uxMailaddress.text.matches(internalLoginRegex) -> {
+                this.uxMailaddress.error = getString(R.string.error_format_mail)
+            }
+            this.uxPassword.text.isEmpty() -> {
+                this.uxPassword.error = getString(R.string.error_empty_field)
+            }
+            else -> {
+                mailAddress = this.uxMailaddress.text.toString()
+                password = this.uxPassword.text.toString()
 
-            mailAddress = this.uxMailaddress.text.toString()
-            password = this.uxPassword.text.toString()
+                login.authenticate(
+                        email = mailAddress,
+                        password = password
+                )
+                        .bindUntilEvent(this, FragmentEvent.PAUSE)
+                        .subscribe {
+                            if (it != null && it.hash.isNotBlank()) {
+                                //Login succeeded
 
-            login.authenticate(
-                    email = mailAddress,
-                    password = password
-            )
-                    .bindUntilEvent(this, FragmentEvent.PAUSE)
-                    .subscribe {
-                        if (it != null && it.hash.isNotBlank()) {
-                            //Login succeeded
-
-                        } else {
-                            //Login failed
-                            tone.beep()
+                            } else {
+                                //Login failed
+                                tone.beep()
+                            }
                         }
-                    }
+            }
         }
 
         return true
     }
 
-    fun isValidEmailAddress(email: String): Boolean {
-        var result = true
-        try {
-            val emailAddr = InternetAddress(email)
-            emailAddr.validate()
+    fun String.isValidEmailAddress(): Boolean {
+        return try {
+            InternetAddress(this).validate()
+            true
         } catch (ex: AddressException) {
-            result = false
+            false
         }
-
-        return result
     }
 }
