@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -36,10 +37,6 @@ class LoginFragment : Fragment() {
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")
     private val login: Login by Kodein.global.lazy.instance()
 
-    interface OnLoginSuccessfulListener {
-        fun onLoginSuccessful(userAlias: String, userStation: String)
-    }
-
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)
     }
@@ -55,7 +52,9 @@ class LoginFragment : Fragment() {
         this.uxLogin.setOnClickListener(onClickListener)
         this.uxPassword.setOnEditorActionListener { v, actionId, event -> login()}
 
-        //Check fot temporary saved credentials
+        val arrayAdapter = ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, arrayOf("foo@bar"))
+
+        this.uxMailaddress.setAdapter(arrayAdapter)
     }
 
     override fun onResume() {
