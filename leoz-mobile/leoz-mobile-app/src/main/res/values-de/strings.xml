@@ -42,4 +42,5 @@
     <string name="warehouse">Lager</string>
     <string name="dismiss">Verwerfen</string>
     <string name="logout">Abmelden</string>
+    <string name="title_activity_delivery">Zustellung</string>
 </resources>

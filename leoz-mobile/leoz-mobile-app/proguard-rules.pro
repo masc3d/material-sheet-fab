@@ -75,8 +75,11 @@
 -dontwarn sx.Disposable
 -dontwarn sx.LazyInstance
 -dontwarn sx.Process**
+-dontwarn sx.mq**
 
 -dontwarn com.esotericsoftware.**
 -dontwarn org.objenesis.**
 
 -dontwarn feign.DefaultMethodHandler
+
+-dontwarn kotlin.**

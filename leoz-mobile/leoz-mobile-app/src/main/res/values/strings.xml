@@ -51,5 +51,5 @@
     <string name="hub" translatable="false">HUB</string>
     <string name="dismiss">Dismiss</string>
     <string name="logout">Logout</string>
-    <string name="title_activity_delivery">DeliveryActivity</string>
+    <string name="title_activity_delivery">Delivery</string>
 </resources>
