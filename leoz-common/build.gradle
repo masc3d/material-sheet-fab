@@ -49,9 +49,6 @@ dependencies {
             "com.github.salomonbrys.kodein:kodein-erased:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-core:$v_kodein",
             "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
-
-            // Logging
-            "ch.qos.logback:logback-classic:$v_logback",
     )
 
     compileOnly(
@@ -76,7 +73,10 @@ dependencies {
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
 
             // Kryo
-            "com.esotericsoftware:kryo:4.0.0"
+            "com.esotericsoftware:kryo:4.0.0",
+
+            // Logging
+            "ch.qos.logback:logback-classic:$v_logback"
     )
 
     testCompile(
