@@ -97,16 +97,20 @@ class MqttConfiguration(
                     mqttAndroidClient.connect(mqttConnectOptions, null, object : IMqttActionListener {
                         override fun onSuccess(asyncActionToken: IMqttToken) {
                             log.info("Initial connection successful")
+
+                            // Setup in disconnected in-memory buffer
                             val disconnectedBufferOptions = DisconnectedBufferOptions()
                             disconnectedBufferOptions.isBufferEnabled = true
-                            disconnectedBufferOptions.bufferSize = 100
+                            // Disabling disconnected buffer persistence, as android client stores
+                            // messages in dedicated sqlite database
                             disconnectedBufferOptions.isPersistBuffer = false
                             disconnectedBufferOptions.isDeleteOldestMessages = false
+                            disconnectedBufferOptions.bufferSize = 100
                             mqttAndroidClient.setBufferOpts(disconnectedBufferOptions)
                         }
 
                         override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                            log.error("initial connection failed")
+                            log.error("Initial connection failed")
                         }
                     })
                 } catch (ex: MqttException) {
