@@ -10,11 +10,7 @@ import sx.mq.mqtt.toMqtt
  * Created by n3 on 12.05.17.
  */
 open class MqttConfiguration(
-        private val clientSupplier: () -> IMqttAsyncClient) {
-
-    private val context by lazy {
-        MqttContext(client = clientSupplier)
-    }
+        private val context: MqttContext) {
 
     val centralQueueTopic by lazy {
         MqConfiguration.centralQueueTopic.toMqtt(
@@ -32,7 +28,8 @@ open class MqttConfiguration(
 
     val mobileTopic by lazy {
         MqConfiguration.mobileTopic.toMqtt(
-                context = this.context
+                context = this.context,
+                qos = 1
         )
     }
 }

@@ -8,6 +8,7 @@ import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.activemq.ActiveMQContext
 import sx.mq.jms.activemq.ActiveMQPooledConnectionFactory
 import sx.mq.jms.toJms
+import sx.time.Duration
 
 /**
  * ActiveMQ specific messaging configuration
@@ -94,6 +95,13 @@ object ActiveMQConfiguration {
 
     val nodeTopic: JmsChannel by lazy {
         MqConfiguration.nodeTopic.toJms(
+                context = this.context
+        )
+    }
+
+    val mobileTopic: JmsChannel by lazy {
+        MqConfiguration.mobileTopic.toJms(
+                ttl = Duration.ofDays(1),
                 context = this.context
         )
     }

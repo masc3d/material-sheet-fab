@@ -3,6 +3,9 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.core.*
 import javax.ws.rs.*
 import io.swagger.annotations.*
+import org.deku.leoz.service.internal.entity.update.UpdateInfo
+import sx.mq.jms.client
+import sx.rs.PATCH
 
 /**
  * Created by masc on 09.10.15.
@@ -20,4 +23,8 @@ interface TestService {
     @Path("/test-soap-call")
     @ApiOperation(value = "Invoke soap call for testing")
     fun testSoapCall(): Response
+
+    @PATCH
+    @Path("/test-publish-updateinfo-mobile")
+    fun testPublishUpdateInfoToMobile()
 }

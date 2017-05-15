@@ -111,6 +111,7 @@ object MqConfiguration {
         MqChannel(
                 destinationType = DestinationType.Topic,
                 destinationName = "leoz.mobile.topic",
+                persistent = true,
                 serializer = JacksonSerializer().gzip
         )
     }
