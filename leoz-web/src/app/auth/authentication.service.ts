@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Response, ResponseOptions } from '@angular/http';
+import { Http, Response, ResponseOptions} from '@angular/http';
+import { RequestMethod, RequestOptions, Headers } from '@angular/http';
 
 export class User {
   constructor(public username: string,
@@ -20,7 +21,7 @@ export class AuthenticationService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
   public isLoggedIn = this.isLoggedInSubject.asObservable().distinctUntilChanged();
 
-  constructor(private router: Router){
+  constructor(private router: Router, private http: Http){
     if (localStorage.getItem('currentUser') !== null && localStorage.getItem('currentUser').length > 0) {
       this.isLoggedInSubject.next(true);
     }
@@ -33,35 +34,26 @@ export class AuthenticationService {
   }
 
   login(username: string, password: string): Observable<any> {
-    // TODO just checking against constant users array
-    /* should be done something like:
 
-      return this.http.post('/api/authenticate', JSON.stringify({ username: username, password: password }))
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+
+    const options = new RequestOptions({ headers: headers });
+
+    return this.http.patch('http://localhost:13000/rs/api/internal/v1/authorize/web',
+        JSON.stringify({
+            'email': `${username}`,
+            'password': `${password}`
+        } ), options)
       .map((response: Response) => {
-        // login successful if there's a jwt token in the response
-        let user = response.json();
-        if (user && user.token) {
-          // store user details and jwt token in local storage to keep user logged in between page refreshes
-          localStorage.setItem('currentUser', JSON.stringify(user));
-        }
-      });*/
-    const authenticatedUser: User = users.find(u => u.username === username);
-    if (authenticatedUser && authenticatedUser.password === password){
-      localStorage.setItem('currentUser', JSON.stringify(authenticatedUser));
-      this.isLoggedInSubject.next(true);
-      return Observable.of(new Response(new ResponseOptions({
-        status: 200,
-        body: {
-          username: authenticatedUser.username,
-          token: 'fake-jwt-token'
-        }
-      })));
-    }
-    this.isLoggedInSubject.next(false);
-    return Observable.of(new Response(new ResponseOptions({
-      status: 301,
-      body: 'Username or password is incorrect'
-    })));
+          if (response.status === 200) {
+            // example data {"key":"123","debitorNo":"12345"}
+            localStorage.setItem('currentUser', JSON.stringify(response.json()));
+            this.isLoggedInSubject.next(true);
+          } else {
+            this.isLoggedInSubject.next(false);
+          }
+          return response;
+      });
   }
-
 }
