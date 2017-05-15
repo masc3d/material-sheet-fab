@@ -25,8 +25,12 @@ class LogService
     @javax.inject.Inject
     private lateinit var storage: org.deku.leoz.node.Storage
 
+    data class LoggerKey(
+            val nodeType: String,
+            val nodeKey: String)
+
     /** Loggers by node id */
-    private val loggers = java.util.HashMap<String, Logger>()
+    private val loggers = java.util.HashMap<LoggerKey, Logger>()
 
     // TODO: move to LogMessage.LogEntry
     private class LoggingEvent(val logEntry: LogMessage.LogEntry) :  ch.qos.logback.classic.spi.LoggingEvent() {
@@ -71,16 +75,16 @@ class LogService
     }
 
     /**
-     * Creatze new logger for node
+     * Create new logger for node
      * @param name Name of the logger and log file
      */
-    private fun createLogger(name: String): Logger {
-        val logger = LoggerFactory.getLogger(name) as Logger
+    private fun createLogger(key: LoggerKey): Logger {
+        val logger = LoggerFactory.getLogger(key.nodeKey) as Logger
         logger.isAdditive = false
 
         val fileAppender: RollingFileAppender<ILoggingEvent> = RollingFileAppender()
         fileAppender.context = logger.loggerContext
-        fileAppender.file = this.getLogFile(name).toString()
+        fileAppender.file = this.getLogFile(key).toString()
 
         // Encoder
         val encoder = PatternLayoutEncoder()
@@ -115,25 +119,18 @@ class LogService
      * Get logger
      * @param name Base name
      */
-    private fun getLogger(name: String): Logger {
-        return this.loggers.getOrPut(name, {
-            this.createLogger(name)
+    private fun getLogger(key: LoggerKey): Logger {
+        return this.loggers.getOrPut(key, {
+            this.createLogger(key)
         })
-    }
-
-    /**
-     * Create logger name
-     */
-    private fun createName(key: String): String {
-        return "leoz-node-${key}"
     }
 
     /**
      * Get log file
      * @param baseName Base name without extension
      */
-    private fun getLogFile(baseName: String): java.io.File {
-        return storage.logDirectory.resolve("nodes").resolve("${baseName}.log")
+    private fun getLogFile(key: LoggerKey): java.io.File {
+        return storage.logDirectory.resolve(key.nodeType).resolve("${key.nodeType}-${key.nodeKey}.log")
     }
 
     /**
@@ -149,10 +146,13 @@ class LogService
 
             var logger: Logger? = null
 
-            val keyBasedName = this.createName(key = identityKey.short)
+            val loggerKey = LoggerKey(
+                    nodeType = message.nodeType,
+                    nodeKey = identityKey.short
+            )
 
             synchronized(loggers) {
-                logger = this.getLogger(keyBasedName)
+                logger = this.getLogger(loggerKey)
             }
 
             message.logEntries.forEach {

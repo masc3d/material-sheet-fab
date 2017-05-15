@@ -56,10 +56,12 @@ class LogMqAppender(
             if (logMessageBuffer.size > 0) {
                 log.trace("Flushing [${logMessageBuffer.size}]")
                 try {
+                    val identity = this@LogMqAppender.identitySupplier()
                     this@LogMqAppender.clientSupplier().use {
                         it.send(LogMessage(
-                                this@LogMqAppender.identitySupplier().key.value,
-                                logMessageBuffer.toTypedArray()))
+                                nodeType = identity.name,
+                                nodeKey = identity.key.value,
+                                logEntries = logMessageBuffer.toTypedArray()))
                     }
                 } catch (e: Exception) {
                     log.error(e.message, e)

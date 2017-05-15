@@ -3,6 +3,7 @@ package org.deku.leoz.log
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter
 import ch.qos.logback.classic.spi.LoggingEvent
 import ch.qos.logback.core.CoreConstants
+import org.deku.leoz.bundle.BundleType
 import org.slf4j.helpers.MessageFormatter
 import sx.io.serialization.Serializable
 
@@ -11,9 +12,10 @@ import sx.io.serialization.Serializable
  * Created by masc on 16.04.15.
  */
 @Serializable(0x20881e385e22b8)
-class LogMessage {
-    var nodeKey: String = ""
-    var logEntries: Array<LogEntry> = arrayOf()
+class LogMessage(
+    var nodeType: String = BundleType.LeozNode.value,
+    var nodeKey: String = "",
+    var logEntries: Array<LogEntry> = arrayOf()) {
 
     class LogEntry {
         constructor() { }
@@ -41,12 +43,5 @@ class LogMessage {
         var threadName: String = ""
         var message: String = ""
         var timestamp: Long = 0
-    }
-
-    constructor() { }
-
-    constructor(nodeKey: String, logEntries: Array<LogEntry>) {
-        this.nodeKey = nodeKey
-        this.logEntries = logEntries
     }
 }
