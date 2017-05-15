@@ -1,4 +1,44 @@
-# Junk
+# Get up and running
+
+## Installation
+
+### NodeJS
+
+##### OSX
+
+* Install [homebrew](https://brew.sh)
+
+```
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+* Install NodeJS
+
+```
+brew install nodejs
+```
+
+### Angular CLI
+
+```
+npm install -g @angular/cli@latest
+```
+
+### Project dependencies
+
+* Change directory to web project `leoz-web`
+
+```
+npm install
+```
+
+### Run web application
+
+```
+ng serve
+```
+
+# Default README
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.1.
 
