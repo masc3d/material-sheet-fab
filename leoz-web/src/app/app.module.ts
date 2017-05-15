@@ -24,6 +24,10 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { LoginComponent } from './login/login.component';
 import { AuthenticationService } from './auth/authentication.service';
 import { AuthenticationGuard } from './auth/authentication.guard';
+import {UserComponent} from './user/user.component';
+import {UserFormComponent} from './user/user-form/user-form.component';
+import {UserListComponent} from './user/user-list/user-list.component';
+import {UserService} from "./user/user.service";
 
 @NgModule({
   declarations: [
@@ -35,6 +39,9 @@ import { AuthenticationGuard } from './auth/authentication.guard';
     TourComponent,
     DriverFormComponent,
     DriverListComponent,
+    UserComponent,
+    UserFormComponent,
+    UserListComponent,
     TourMapComponent,
     TourDriverListComponent,
     LeftMenuComponent,
@@ -54,6 +61,7 @@ import { AuthenticationGuard } from './auth/authentication.guard';
     AuthenticationService,
     ErrormsgService,
     DriverService,
+    UserService,
     TourService,
     BaseRequestOptions
   ],

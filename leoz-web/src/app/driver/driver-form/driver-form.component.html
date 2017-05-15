@@ -6,20 +6,105 @@
       <label>Firstname:</label>
       <input type="text" class="form-control" formControlName="firstname">
       <div *ngIf="driverForm.controls['firstname'].hasError('minlength')" class="alert alert-danger">
-        Firstname needs to be atleast 3 characters long.
+        Firstname needs to be at least 3 characters long.
       </div>
       <div *ngIf="driverForm.controls['firstname'].hasError('maxlength')" class="alert alert-danger">
-        Firstname cannot exceed 10 characters.
+        Firstname cannot exceed 45 characters.
       </div>
     </div>
     <div class="form-group col-md-6">
       <label>Surname:</label>
       <input type="text" class="form-control" formControlName="surname" [value]="activeDriver?.surname?.toString()">
       <div *ngIf="driverForm.controls['surname'].hasError('minlength')" class="alert alert-danger">
-        Surname needs to be atleast 3 characters long.
+        Surname needs to be at least 3 characters long.
       </div>
       <div *ngIf="driverForm.controls['surname'].hasError('maxlength')" class="alert alert-danger">
-        Surname cannot exceed 10 characters.
+        Surname cannot exceed 45 characters.
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label>Password:</label>
+      <input type="text" class="form-control" formControlName="password">
+      <div *ngIf="driverForm.controls['password'].hasError('minlength')" class="alert alert-danger">
+        Password needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="driverForm.controls['password'].hasError('maxlength')" class="alert alert-danger">
+        Password cannot exceed 255 characters.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>Email:</label>
+      <input type="text" class="form-control" formControlName="email">
+      <div *ngIf="driverForm.controls['email'].hasError('minlength')" class="alert alert-danger">
+        Email needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="driverForm.controls['email'].hasError('maxlength')" class="alert alert-danger">
+        Email cannot exceed 100 characters.
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label>Phone:</label>
+      <input type="text" class="form-control" formControlName="phone">
+      <div *ngIf="driverForm.controls['phone'].hasError('maxlength')" class="alert alert-danger">
+        Phone cannot exceed 45 characters.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>Alias:</label>
+      <input type="text" class="form-control" formControlName="alias">
+      <div *ngIf="driverForm.controls['alias'].hasError('minlength')" class="alert alert-danger">
+        Alias needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="driverForm.controls['alias'].hasError('maxlength')" class="alert alert-danger">
+        Alias cannot exceed 30 characters.
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label>debitor_id:</label>
+      <input type="text" class="form-control" formControlName="debitor_id">
+      <div *ngIf="driverForm.controls['debitor_id'].touched && driverForm.controls['debitor_id'].hasError('required')" class="alert alert-danger">
+        Please enter a debitor_id.
+      </div>
+      <div *ngIf="driverForm.controls['debitor_id'].hasError('pattern')" class="alert alert-danger">
+        Invalid format must have 4 digits.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>salt:</label>
+      <input type="text" class="form-control" formControlName="salt">
+      <div *ngIf="driverForm.controls['salt'].hasError('minlength')" class="alert alert-danger">
+        salt needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="driverForm.controls['salt'].hasError('maxlength')" class="alert alert-danger">
+        salt cannot exceed 45 characters.
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label>role:</label>
+      <input type="text" class="form-control" formControlName="role">
+      <div *ngIf="driverForm.controls['role'].hasError('minlength')" class="alert alert-danger">
+        role needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="driverForm.controls['role'].hasError('maxlength')" class="alert alert-danger">
+        role cannot exceed 20 characters.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>active:</label>
+      <input type="text" class="form-control" formControlName="active">
+      <div *ngIf="driverForm.controls['active'].touched && driverForm.controls['active'].hasError('required')" class="alert alert-danger">
+        Please enter a value.
+      </div>
+      <div *ngIf="driverForm.controls['active'].hasError('pattern')" class="alert alert-danger">
+        Invalid format must have 1 digit.
       </div>
     </div>
   </div>

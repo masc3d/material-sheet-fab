@@ -20,7 +20,7 @@ import { Response } from '@angular/http';
 export class LoginComponent implements OnInit {
 
   loading = false;
-  errMsg = "";
+  errMsg = '';
 
   loginForm: FormGroup;
 
@@ -57,7 +57,10 @@ export class LoginComponent implements OnInit {
 
   handleError(resp: Response) {
     this.loading = false;
-    this.errMsg = resp.text();
+    console.log(resp);
+    const json_string = resp.text();
+    const js_object = JSON.parse(json_string);
+    this.errMsg = js_object.title;
   }
 
   logout() {

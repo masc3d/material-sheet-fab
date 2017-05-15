@@ -6,6 +6,8 @@
  */
 (function(){/* jshint ignore:start */ 
  {(function() {
+
+
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
 templates['apikey_auth'] = template({"1":function(container,depth0,helpers,partials,data) {
     var stack1;
