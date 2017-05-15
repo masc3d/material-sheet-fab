@@ -7,5 +7,5 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions
  * Created by masc on 10.05.17.
  */
 class MqttContext(
-        val client: () -> org.eclipse.paho.client.mqttv3.MqttAsyncClient,
+        val client: () -> org.eclipse.paho.client.mqttv3.IMqttAsyncClient,
         val connectOptions: MqttConnectOptions? = null)
