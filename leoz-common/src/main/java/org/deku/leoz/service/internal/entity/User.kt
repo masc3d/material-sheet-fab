@@ -8,7 +8,7 @@ import io.swagger.annotations.*
 @ApiModel(description = "User Model")
 data class User(
         @get:ApiModelProperty(example = "foo@bar.com", required = true, value = "User identifier")
-        var email: String? = null,
+        var email: String = "@",
 
         @get:ApiModelProperty(example = "12345678", required = false, value = "Allocation of User to debitor")
         var debitorId: Int? = null,
@@ -48,7 +48,9 @@ data class User(
         var phone: String? = null,
 
         @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
-        var expiresOn: java.sql.Date? = null
+        var expiresOn: java.sql.Date? = null,
+
+        var id: Int = 0
 ) {
     companion object {
         const val ROLE_ADMINISTRATOR: String = "ADMINISTRATOR"
@@ -58,7 +60,8 @@ data class User(
         const val ROLE_CUSTOMER: String = "CUSTOMER"
     }
 }
-enum class UserRole{
+
+enum class UserRole {
     ADMINISTRATOR,
     POWERUSER,
     USER,

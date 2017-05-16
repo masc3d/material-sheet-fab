@@ -8,7 +8,7 @@ package org.deku.leoz.enums
 //statuscodes+data werden von mobiles an WS gesendet-> in scascans importiert, import-automat übersetzt in tblstatus..
 //weitere statuscodes bei Auslieferhindernissen bisher aus tblsyscollections (typ=210)->in_out=null,
 // sonst Überschneidung mit Linien-Scancodes
-enum class ScanStatuscode(val statusvalue:Int) {
+enum class ScanStatuscode(val statusvalue: Int) {
     LineScanOk(1),
     LineScanRepeat(2),
     LineScanNoDB(3),
@@ -29,14 +29,14 @@ enum class ScanStatuscode(val statusvalue:Int) {
     StationExportBagFill(-11)
 }
 
-enum class BeepCode(val beepvalue:Int){
-    BeepOK(1),//green
-    BeepNOK(2),//red
-    BeepWOK(3),//repeat-scan->yellow
+enum class BeepCode(val beepvalue: Int) {
+    BeepOK(1), //green
+    BeepNOK(2), //red
+    BeepWOK(3), //repeat-scan->yellow
     BeepDepotOk(4)
 }
 
-enum class AppEnabledModul(val enabledvalue:Int){
+enum class AppEnabledModul(val enabledvalue: Int) {
     non(0),
     HUB(1),
     SMS(2),
@@ -49,10 +49,10 @@ enum class AppEnabledModul(val enabledvalue:Int){
     StartPhone(1024),
     StartWLAN(2048),
     HUBadmin(4096),
-    ALL(HUB.enabledvalue+SMS.enabledvalue+Line.enabledvalue+StationImport.enabledvalue+Delivery.enabledvalue+HUBadmin.enabledvalue)
+    ALL(HUB.enabledvalue + SMS.enabledvalue + Line.enabledvalue + StationImport.enabledvalue + Delivery.enabledvalue + HUBadmin.enabledvalue)
 }
 
-enum class ConnStatus(val statusvalue:Int){
+enum class ConnStatus(val statusvalue: Int) {
     non(0),
     GPRS(1),
     WLAN(2),
@@ -60,13 +60,13 @@ enum class ConnStatus(val statusvalue:Int){
     unknown(8)
 }
 
-enum class LineDirection(val directionvalue:Int){
+enum class LineDirection(val directionvalue: Int) {
     In(-1),
     Out(1),
     NN(0)
 }
 
-enum class Commands(val commandvalue:Int){
+enum class Commands(val commandvalue: Int) {
     Message(1),
     GetUnitsOut(2),
     SWupdateOptional(3),
@@ -90,7 +90,7 @@ enum class Commands(val commandvalue:Int){
     MessageBeep(21)
 }
 
-enum class SendData{
+enum class SendData {
     getCommands,
     sendGpsData,
     sendAcknowledge,

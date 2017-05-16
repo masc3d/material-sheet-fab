@@ -106,11 +106,11 @@ class AuthorizationService
             throw DefaultProblem(
                     title = "User authentication failed",
                     status = Response.Status.UNAUTHORIZED)
-        val debitorNo = this.userRepository.findDebitorNoById(id = userRecord.debitorId) ?:"0"
-        val df=DecimalFormat("#")
-        df.maximumFractionDigits=0
+        val debitorNo = this.userRepository.findDebitorNoById(id = userRecord.debitorId) ?: "0"
+        val df = DecimalFormat("#")
+        df.maximumFractionDigits = 0
 
-        if (!UserRole.values().any{it.name==userRecord.role})
+        if (!UserRole.values().any { it.name == userRecord.role })
             throw DefaultProblem(
                     title = "User authentication failed: no valid user-role",
                     status = Response.Status.UNAUTHORIZED)
