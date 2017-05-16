@@ -10,24 +10,20 @@ import { AppFooterComponent } from './app-footer/app-footer.component';
 import { HomeComponent } from './home/home.component';
 import { TopMenuComponent } from './menu/top-menu/top-menu.component';
 import { routes } from './app.routing';
-import { DriverComponent } from './driver/driver.component';
 import { TourComponent } from './tour/tour.component';
-import { DriverService } from './driver/driver.service';
-import { DriverFormComponent } from './driver/driver-form/driver-form.component';
-import { DriverListComponent } from './driver/driver-list/driver-list.component';
+import { DriverService } from './tour/driver.service';
 import { TourMapComponent } from './tour/tour-map/tour-map.component';
 import { TourDriverListComponent } from './tour/tour-driver-list/tour-driver-list.component';
 import { TourService } from './tour/tour.service';
-import { ErrormsgService } from './error/errormsg.service';
 import { LeftMenuComponent } from './menu/left-menu/left-menu.component';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { LoginComponent } from './login/login.component';
 import { AuthenticationService } from './auth/authentication.service';
 import { AuthenticationGuard } from './auth/authentication.guard';
-import {UserComponent} from './user/user.component';
-import {UserFormComponent} from './user/user-form/user-form.component';
-import {UserListComponent} from './user/user-list/user-list.component';
-import {UserService} from "./user/user.service";
+import { UserComponent} from './user/user.component';
+import { UserFormComponent} from './user/user-form/user-form.component';
+import { UserListComponent} from './user/user-list/user-list.component';
+import { UserService} from './user/user.service';
 
 @NgModule({
   declarations: [
@@ -35,10 +31,7 @@ import {UserService} from "./user/user.service";
     AppFooterComponent,
     HomeComponent,
     TopMenuComponent,
-    DriverComponent,
     TourComponent,
-    DriverFormComponent,
-    DriverListComponent,
     UserComponent,
     UserFormComponent,
     UserListComponent,
@@ -59,7 +52,6 @@ import {UserService} from "./user/user.service";
   providers: [
     AuthenticationGuard,
     AuthenticationService,
-    ErrormsgService,
     DriverService,
     UserService,
     TourService,

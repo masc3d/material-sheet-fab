@@ -13,13 +13,11 @@
         <accordion-group heading='Management'
                          [isOpen]='false'>
           <a [routerLink]="['user']" (click)="closeMenu()"><i class="fa fa-wheelchair-alt"></i> <span i18n="Navigation label for user">Users</span></a><br>
-          <hr style="background: #f8ae18; border: none; color: #f8ae18; height: 1px; width: 100%; margin-bottom: 0px;margin-top: 0px;">
-          <a [routerLink]="['driver']" (click)="closeMenu()"><i class="fa fa-bus"></i> <ng-container i18n="Navigation label for tour">Drivers</ng-container></a>
+          <!--<hr style="background: #f8ae18; border: none; color: #f8ae18; height: 1px; width: 100%; margin-bottom: 0px;margin-top: 0px;">-->
         </accordion-group>
         <accordion-group heading='Logout'
                          [isOpen]='false' [isDisabled]="true" (click)="navigate('logout')">
         </accordion-group>
-
       </accordion>
     </div>
   </div>

@@ -5,16 +5,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { Component } from '@angular/core';
-var DriverComponent = (function () {
-    function DriverComponent() {
+var UserComponent = (function () {
+    function UserComponent() {
     }
-    return DriverComponent;
+    return UserComponent;
 }());
-DriverComponent = __decorate([
+UserComponent = __decorate([
     Component({
-        selector: 'app-driver',
-        templateUrl: './driver.component.html'
+        selector: 'app-user',
+        templateUrl: './user.component.html'
     })
-], DriverComponent);
-export { DriverComponent };
-//# sourceMappingURL=driver.component.js.map
+], UserComponent);
+export { UserComponent };
+//# sourceMappingURL=user.component.js.map

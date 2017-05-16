@@ -1,28 +1,28 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DriverListComponent } from './driver-list.component';
+import { UserListComponent } from './user-list.component';
 import { HttpModule } from '@angular/http';
 import { ErrormsgService } from '../../error/errormsg.service';
-import { DriverService } from '../driver.service';
+import { UserService } from '../user.service';
 
-describe('DriverListComponent', () => {
-  let component: DriverListComponent;
-  let fixture: ComponentFixture<DriverListComponent>;
+describe('UserListComponent', () => {
+  let component: UserListComponent;
+  let fixture: ComponentFixture<UserListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DriverListComponent ],
+      declarations: [ UserListComponent ],
       imports: [ HttpModule ],
       providers: [
         ErrormsgService,
-        DriverService
+        UserService
       ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DriverListComponent);
+    fixture = TestBed.createComponent(UserListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

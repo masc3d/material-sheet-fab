@@ -9,7 +9,6 @@ import 'rxjs/add/observable/of';
 
 import { Driver, Position } from './driver.model';
 import { environment } from '../../environments/environment';
-import { ErrormsgService } from '../error/errormsg.service';
 
 @Injectable()
 export class DriverService {
@@ -20,8 +19,7 @@ export class DriverService {
   private activeDriverSubject = new BehaviorSubject<Driver>(new Driver());
   public activeDriver = this.activeDriverSubject.asObservable().distinctUntilChanged();
 
-  constructor(private http: Http,
-              private errormsgService: ErrormsgService) {
+  constructor(private http: Http) {
   }
 
   getDrivers() {
@@ -40,7 +38,6 @@ export class DriverService {
 
   errorHandler(error: Response) {
     console.log(error);
-    this.errormsgService.changeError(error);
     return Observable.of([]);
   }
 

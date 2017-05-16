@@ -1,0 +1,151 @@
+<div *ngIf="activeUser.id == 1">hier ist der user 11</div>
+<div *ngIf="activeUser.id != 1">alle anderen user id: {{activeUser.id}}</div>
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()" >
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label>Firstname:</label>
+      <input type="text" class="form-control" formControlName="firstname">
+      <div *ngIf="userForm.controls['firstname'].hasError('minlength')" class="alert alert-danger">
+        Firstname needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="userForm.controls['firstname'].hasError('maxlength')" class="alert alert-danger">
+        Firstname cannot exceed 45 characters.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>Surname:</label>
+      <input type="text" class="form-control" formControlName="surname" [value]="activeUser?.surname?.toString()">
+      <div *ngIf="userForm.controls['surname'].hasError('minlength')" class="alert alert-danger">
+        Surname needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="userForm.controls['surname'].hasError('maxlength')" class="alert alert-danger">
+        Surname cannot exceed 45 characters.
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label>Password:</label>
+      <input type="text" class="form-control" formControlName="password">
+      <div *ngIf="userForm.controls['password'].hasError('minlength')" class="alert alert-danger">
+        Password needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="userForm.controls['password'].hasError('maxlength')" class="alert alert-danger">
+        Password cannot exceed 255 characters.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>Email:</label>
+      <input type="text" class="form-control" formControlName="email">
+      <div *ngIf="userForm.controls['email'].hasError('minlength')" class="alert alert-danger">
+        Email needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="userForm.controls['email'].hasError('maxlength')" class="alert alert-danger">
+        Email cannot exceed 100 characters.
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label>Phone:</label>
+      <input type="text" class="form-control" formControlName="phone">
+      <div *ngIf="userForm.controls['phone'].hasError('maxlength')" class="alert alert-danger">
+        Phone cannot exceed 45 characters.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>Alias:</label>
+      <input type="text" class="form-control" formControlName="alias">
+      <div *ngIf="userForm.controls['alias'].hasError('minlength')" class="alert alert-danger">
+        Alias needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="userForm.controls['alias'].hasError('maxlength')" class="alert alert-danger">
+        Alias cannot exceed 30 characters.
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label>debitor_id:</label>
+      <input type="text" class="form-control" formControlName="debitor_id">
+      <div *ngIf="userForm.controls['debitor_id'].touched && userForm.controls['debitor_id'].hasError('required')" class="alert alert-danger">
+        Please enter a debitor_id.
+      </div>
+      <div *ngIf="userForm.controls['debitor_id'].hasError('pattern')" class="alert alert-danger">
+        Invalid format must have 4 digits.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>salt:</label>
+      <input type="text" class="form-control" formControlName="salt">
+      <div *ngIf="userForm.controls['salt'].hasError('minlength')" class="alert alert-danger">
+        salt needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="userForm.controls['salt'].hasError('maxlength')" class="alert alert-danger">
+        salt cannot exceed 45 characters.
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label>role:</label>
+      <input type="text" class="form-control" formControlName="role">
+      <div *ngIf="userForm.controls['role'].hasError('minlength')" class="alert alert-danger">
+        role needs to be at least 3 characters long.
+      </div>
+      <div *ngIf="userForm.controls['role'].hasError('maxlength')" class="alert alert-danger">
+        role cannot exceed 20 characters.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>active:</label>
+      <input type="text" class="form-control" formControlName="active">
+      <div *ngIf="userForm.controls['active'].touched && userForm.controls['active'].hasError('required')" class="alert alert-danger">
+        Please enter a value.
+      </div>
+      <div *ngIf="userForm.controls['active'].hasError('pattern')" class="alert alert-danger">
+        Invalid format must have 1 digit.
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label>Usernumber:</label>
+      <input type="text" class="form-control" formControlName="usernumber" [value]="activeUser?.usernumber?.toString()">
+      <div *ngIf="userForm.controls['usernumber'].touched && userForm.controls['usernumber'].hasError('required')" class="alert alert-danger">
+        Please enter a usernumber.
+      </div>
+      <div *ngIf="userForm.controls['usernumber'].hasError('pattern')" class="alert alert-danger">
+        Invalid format must have 4 digits.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>Tournumber:</label>
+      <input type="text" class="form-control" formControlName="tournumber" [value]="activeUser?.tournumber?.toString()">
+      <div *ngIf="userForm.controls['tournumber'].hasError('pattern')" class="alert alert-danger">
+        Invalid format must have 4 digits.
+      </div>
+    </div>
+  </div>
+  <div formGroupName="position" class="row">
+    <div class="form-group col-md-6">
+      <label>Lat:</label>
+      <input type="text" class="form-control" formControlName="lat" [value]="activeUser?.position?.lat?.toString()">
+      <div *ngIf="userForm.controls['position'].get('lat').hasError('pattern')" class="alert alert-danger">
+        Invalid format.
+      </div>
+    </div>
+    <div class="form-group col-md-6">
+      <label>Lng:</label>
+      <input type="text" class="form-control" formControlName="lng" [value]="activeUser?.position?.lng?.toString()">
+      <div *ngIf="userForm.controls['position'].get('lng').hasError('pattern')" class="alert alert-danger">
+        Invalid format.
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <button type="submit" [disabled]="!userForm.valid" class="btn btn-primary">Submit</button>
+    </div>
+  </div>
+</form>

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Driver } from '../driver.model';
-import { DriverService } from '../driver.service';
+import { User } from '../user.model';
+import { UserService } from '../user.service';
 
 @Component({
-  selector: 'app-driver-form',
-  templateUrl: './driver-form.component.html',
+  selector: 'app-user-form',
+  templateUrl: './user-form.component.html',
   styles: [ `
     input.ng-invalid {
       border-left: 5px solid red;
@@ -16,13 +16,13 @@ import { DriverService } from '../driver.service';
     }
   ` ]
 })
-export class DriverFormComponent implements OnInit {
+export class UserFormComponent implements OnInit {
 
-  activeDriver: Driver;
-  driverForm: FormGroup;
+  activeUser: User;
+  userForm: FormGroup;
 
   constructor(private fb: FormBuilder,
-              private driverService: DriverService) {
+              private userService: UserService) {
   }
 
   ngOnInit() {
@@ -30,7 +30,7 @@ export class DriverFormComponent implements OnInit {
       lat: [ null, Validators.pattern(/^-?\d*(\.\d{0,4})?$/) ],
       lng: [ null, Validators.pattern(/^-?\d*(\.\d{0,4})?$/) ],
     });
-    this.driverForm = this.fb.group({
+    this.userForm = this.fb.group({
       firstname: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
       surname: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
       password: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(255) ] ],
@@ -40,28 +40,28 @@ export class DriverFormComponent implements OnInit {
       salt: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
       role: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(20) ] ],
       active: [ null, [ Validators.required, Validators.pattern('^[0-9]{1}$') ] ],
-      drivernumber: [ null, [ Validators.pattern('^[0-9]{4}$') ] ],
+      usernumber: [ null, [ Validators.pattern('^[0-9]{4}$') ] ],
       debitor_id: [ null, [ Validators.required, Validators.pattern('^[0-9]{4}$') ] ],
       tournumber: [ null, [ Validators.pattern('^[0-9]{4}$') ] ],
       position: positionFormGroup
     });
 
-    this.driverService.activeDriver.subscribe((activeDriver: Driver) => {
-      this.activeDriver = activeDriver;
-      this.driverForm.patchValue({
-        firstname: activeDriver.firstname,
-        surname: activeDriver.surname,
-        drivernumber: activeDriver.drivernumber,
-        tournumber: activeDriver.tournumber,
+    this.userService.activeUser.subscribe((activeUser: User) => {
+      this.activeUser = activeUser;
+      this.userForm.patchValue({
+        firstname: activeUser.firstname,
+        surname: activeUser.surname,
+        usernumber: activeUser.usernumber,
+        tournumber: activeUser.tournumber,
         position: {
-          lat: activeDriver.position ? activeDriver.position.lat : '',
-          lng: activeDriver.position ? activeDriver.position.lng : ''
+          lat: activeUser.position ? activeUser.position.lat : '',
+          lng: activeUser.position ? activeUser.position.lng : ''
         }
       });
     });
   }
 
   onSubmit() {
-    console.log(this.driverForm.value);
+    console.log(this.userForm.value);
   }
 }

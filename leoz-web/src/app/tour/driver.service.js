@@ -17,7 +17,6 @@ import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/of';
 import { Driver, Position } from './driver.model';
 import { environment } from '../../environments/environment';
-import { ErrormsgService } from '../error/errormsg.service';
 var DriverService = (function () {
     function DriverService(http, errormsgService) {
         this.http = http;

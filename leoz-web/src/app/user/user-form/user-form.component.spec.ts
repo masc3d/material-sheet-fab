@@ -1,32 +1,32 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DriverFormComponent } from './driver-form.component';
+import { UserFormComponent } from './user-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DriverService } from '../driver.service';
+import { UserService } from '../user.service';
 import { ErrormsgService } from '../../error/errormsg.service';
 import { HttpModule } from '@angular/http';
 
-describe('DriverFormComponent', () => {
-  let component: DriverFormComponent;
-  let fixture: ComponentFixture<DriverFormComponent>;
+describe('UserFormComponent', () => {
+  let component: UserFormComponent;
+  let fixture: ComponentFixture<UserFormComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DriverFormComponent ],
+      declarations: [ UserFormComponent ],
       imports: [
         ReactiveFormsModule,
         HttpModule
       ],
       providers: [
         ErrormsgService,
-        DriverService
+        UserService
       ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DriverFormComponent);
+    fixture = TestBed.createComponent(UserFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

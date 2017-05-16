@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Driver } from '../driver/driver.model';
+import { Driver } from './driver.model';
 
 @Injectable()
 export class TourService {
