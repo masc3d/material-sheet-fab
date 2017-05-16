@@ -60,7 +60,7 @@ class MqttConfiguration(
             /**
              * MQTT client
              */
-            bind<IMqttAsyncClient>() with eagerSingleton {
+            bind<IMqttAsyncClient>() with singleton {
                 val androidContext = instance<Context>()
                 val remoteSettings = instance<RemoteSettings>()
                 val identity = instance<Identity>()

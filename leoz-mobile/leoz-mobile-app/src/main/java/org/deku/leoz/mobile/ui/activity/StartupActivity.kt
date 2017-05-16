@@ -73,7 +73,6 @@ class StartupActivity : RxAppCompatActivity() {
         log.trace("Intent action ${this.intent.action}")
 
         if (!this.started) {
-            // TODO: this implementation could/should be fully reactive
 
             // Start database migration (async)
             val ovMigrate = db.migrate()
@@ -122,6 +121,9 @@ class StartupActivity : RxAppCompatActivity() {
                             // Log device info/serial
                             val device: Device = Kodein.global.instance()
                             log.info(device.toString())
+
+                            // Late initialization of singletons which require eg. permissions
+                            Kodein.global.instance<IMqttAsyncClient>()
 
                             val handler = Handler()
                             handler.postDelayed({
