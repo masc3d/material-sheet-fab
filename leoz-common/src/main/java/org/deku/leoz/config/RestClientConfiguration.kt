@@ -107,19 +107,13 @@ abstract class RestClientConfiguration {
                         )
                     }
 
-                    override fun update(user: User): Boolean {
-                        return true
+                    override fun update(id: Int, user: User) {
                     }
 
-                    /**
-                    override fun delete(email: String): Boolean {
-                    return true
-
+                    override fun create(user: User) {
                     }
-                     */
 
-                    override fun delete(id: Int): Boolean {
-                        return true
+                    override fun delete(id: Int) {
                     }
                 }
             }

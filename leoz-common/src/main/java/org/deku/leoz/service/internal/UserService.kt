@@ -4,6 +4,7 @@ import org.deku.leoz.service.internal.entity.User
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
+import sx.rs.PATCH
 
 /**
  * User service
@@ -15,8 +16,8 @@ import io.swagger.annotations.*
 @Api(value = "User operations")
 interface UserService {
     companion object {
+        const val ID = "id"
         const val EMAIL = "email"
-        const val ID = "userid"
     }
 
     /**
@@ -26,21 +27,33 @@ interface UserService {
     @GET
     @Path("/")
     @ApiOperation(value = "Get user")
-    fun get(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null): User?
-
-    @sx.rs.PATCH
-    @Path("/update/")
-    @ApiOperation(value = "Create or update user")
-    fun update(@ApiParam(value = "user") user: User): Boolean
+    fun get(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null): User
 
     /**
+     * Create user
+     * @param user User to create
+     */
+    @POST
+    @Path("/")
+    @ApiOperation(value = "Create user")
+    fun create(@ApiParam(value = "User") user: User)
+
+    /**
+     * Update user (replaces entire user)
+     * @param id Id of user to update
+     * @param user User entity
+     */
+    @PUT
+    @Path("/{$ID}")
+    @ApiOperation(value = "Update user")
+    fun update(@ApiParam(value = "User ID") @PathParam(ID) id: Int, @ApiParam(value = "User") user: User)
+
+    /**
+     * Delete user
+     * @param id Id of user to delete
+     */
     @DELETE
-    @Path("/delete/{${EMAIL}}")
-    @ApiOperation(value = "delete user")
-    fun delete(@ApiParam(value = "email") @PathParam(EMAIL) email: String): Boolean
-     **/
-    @DELETE
-    @Path("/delete/{${ID}}")
-    @ApiOperation(value = "delete user")
-    fun delete(@ApiParam(value = "ID") @PathParam(ID) id: Int): Boolean
+    @Path("/{${ID}}")
+    @ApiOperation(value = "Delete user")
+    fun delete(@ApiParam(value = "User ID") @PathParam(ID) id: Int)
 }
