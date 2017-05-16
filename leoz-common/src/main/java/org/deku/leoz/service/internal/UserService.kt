@@ -16,6 +16,7 @@ import io.swagger.annotations.*
 interface UserService {
     companion object {
         const val EMAIL = "email"
+        const val ID = "userid"
     }
 
     /**
@@ -26,4 +27,20 @@ interface UserService {
     @Path("/")
     @ApiOperation(value = "Get user")
     fun get(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null): User?
+
+    @sx.rs.PATCH
+    @Path("/update/")
+    @ApiOperation(value = "Create or update user")
+    fun update(@ApiParam(value = "user") user: User): Boolean
+
+    /**
+    @DELETE
+    @Path("/delete/{${EMAIL}}")
+    @ApiOperation(value = "delete user")
+    fun delete(@ApiParam(value = "email") @PathParam(EMAIL) email: String): Boolean
+     **/
+    @DELETE
+    @Path("/delete/{${ID}}")
+    @ApiOperation(value = "delete user")
+    fun delete(@ApiParam(value = "ID") @PathParam(ID) id: Int): Boolean
 }

@@ -26,7 +26,7 @@ abstract class RestClientConfiguration {
     /**
      * HTTP host to use for rest clients
      */
-    var host: String= "localhost"
+    var host: String = "localhost"
 
     /**
      * Connect via HTTPS
@@ -39,7 +39,7 @@ abstract class RestClientConfiguration {
     var port: Int = RestConfiguration.DEFAULT_PORT
 
     fun createUri(https: Boolean, host: String, port: Int, basePath: String): URI {
-        val scheme = when(https) {
+        val scheme = when (https) {
             true -> "https"
             false -> "http"
         }
@@ -55,7 +55,7 @@ abstract class RestClientConfiguration {
      * @param https Use https or regular http. Defaults to false (=http)
      */
     fun createClientProxy(): RestClientProxy {
-        val scheme = when(https) {
+        val scheme = when (https) {
             true -> "https"
             false -> "http"
         }
@@ -106,6 +106,21 @@ abstract class RestClientConfiguration {
                                 expiresOn = Date(Date.parse("31.12.2099"))
                         )
                     }
+
+                    override fun update(user: User): Boolean {
+                        return true
+                    }
+
+                    /**
+                    override fun delete(email: String): Boolean {
+                    return true
+
+                    }
+                     */
+
+                    override fun delete(id: Int): Boolean {
+                        return true
+                    }
                 }
             }
 
@@ -114,7 +129,7 @@ abstract class RestClientConfiguration {
 
                     override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.WebResponse {
                         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                        return AuthorizationService.WebResponse(key="456",debitorNo = "2766060777",userRole = "DRIVER")
+                        return AuthorizationService.WebResponse(key = "456", debitorNo = "2766060777", userRole = "DRIVER")
                     }
 
                     override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.MobileResponse {

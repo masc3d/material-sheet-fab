@@ -13,6 +13,8 @@ import sx.time.toLocalDate
 import java.util.*
 import javax.inject.Named
 import org.deku.leoz.central.data.jooq.tables.MstDebitor
+import org.deku.leoz.service.internal.entity.User
+import org.jooq.impl.DSL.*
 
 /**
  * User repository
@@ -92,5 +94,63 @@ open class UserJooqRepository {
                 .from(Tables.MST_DEBITOR)
                 .where(Tables.MST_DEBITOR.DEBITOR_ID.eq(id))
                 .fetchOneInto(Double::class.java)
+    }
+
+    fun findById(id: Int): MstUserRecord? {
+        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ID.eq(id))
+    }
+
+    fun deleteById(id: Int): Boolean {
+        return if (dslContext.delete(Tables.MST_USER).where(Tables.MST_USER.ID.eq(id)).execute() > 0) true else false
+    }
+
+    /**
+    fun deleteByEmail(email: String): Boolean {
+    return if (dslContext.delete(Tables.MST_USER).where(Tables.MST_USER.EMAIL.eq(email)).execute() > 0) true else false
+    }
+     **/
+
+    fun updateById(user: User): Boolean {
+        var returnValue = false
+
+        val isActive: Int
+        if (user.active == null || user.active == false) isActive = 0 else isActive = -1
+
+        val isExternalUser: Int
+        if (user.externalUser == null || user.externalUser == false) isExternalUser = 0 else isExternalUser = -1
+
+        val rec: MstUserRecord?
+
+        if ((user.id == 0 || findById(user.id) == null) && !mailExists(user.email)) {
+            rec = dslContext.newRecord(Tables.MST_USER)
+        } else {
+            rec = findById(user.id)
+            rec ?: return false
+            if (!rec.email.equals(user.email)) {
+                if (mailExists(user.email)) {
+                    return false
+                }
+            }
+        }
+        rec ?: return false
+        rec.email = user.email
+        rec.debitorId = user.debitorId
+        rec.alias = user.alias
+        rec.role = user.role
+        rec.password = user.password
+        rec.salt = user.salt
+        rec.firstname = user.firstName
+        rec.lastname = user.lastName
+        rec.active = isActive
+        rec.externalUser = isExternalUser
+        rec.phone = user.phone
+        rec.expiresOn = user.expiresOn
+
+        if (rec.store() > 0) returnValue = true else returnValue = false
+        if (returnValue && user.password != null) {
+            rec.setHashedPassword(rec.password)
+            rec.store()
+        }
+        return returnValue
     }
 }
