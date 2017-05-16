@@ -61,14 +61,14 @@ class MqttConfiguration(
              * MQTT client
              */
             bind<IMqttAsyncClient>() with eagerSingleton {
-                val remoteSettings = instance<RemoteSettings>()
                 val androidContext = instance<Context>()
+                val remoteSettings = instance<RemoteSettings>()
+                val identity = instance<Identity>()
 
                 val mqttAndroidClient = MqttAndroidClient(
                         androidContext,
                         "tcp://${remoteSettings.host}:${remoteSettings.broker.nativePort}",
-                        // TODO: mobile identity
-                        "client-123")
+                        identity.key.value)
 
                 mqttAndroidClient.setCallback(object : MqttCallbackExtended {
                     override fun connectComplete(reconnect: Boolean, serverURI: String) {
@@ -77,8 +77,8 @@ class MqttConfiguration(
                         if (reconnect) {
                             log.info("Reconnected successfully")
                         } else {
-                            val logConfig = instance<LogConfiguration>()
-                            logConfig.addAppender(instance<LogMqAppender>())
+                            val appender = instance<LogMqAppender>()
+                            appender.dispatcher.start()
                         }
 
                         val mqConfig = instance<MqttConfiguration>()
@@ -108,11 +108,14 @@ class MqttConfiguration(
                             // Setup in disconnected in-memory buffer
                             val disconnectedBufferOptions = DisconnectedBufferOptions()
                             disconnectedBufferOptions.isBufferEnabled = true
-                            // Disabling disconnected buffer persistence, as android client stores
-                            // messages in dedicated sqlite database
-                            disconnectedBufferOptions.isPersistBuffer = false
-                            disconnectedBufferOptions.isDeleteOldestMessages = false
-                            disconnectedBufferOptions.bufferSize = 100
+
+                            // Persist disconnected messages using client persistence
+                            disconnectedBufferOptions.isPersistBuffer = true
+
+                            // In memory message buffer settings
+                            disconnectedBufferOptions.bufferSize = 250
+                            disconnectedBufferOptions.isDeleteOldestMessages = true
+
                             mqttAndroidClient.setBufferOpts(disconnectedBufferOptions)
                         }
 
@@ -137,31 +140,9 @@ class MqttConfiguration(
                                 connectOptions = instance<MqttConnectOptions>()))
 
             }
+
             bind<org.deku.leoz.config.MqttConfiguration>() with singleton {
                 instance<MqttConfiguration>()
-            }
-
-            bind<LogMqAppender>() with singleton {
-                val config = instance<MqttConfiguration>()
-                LogMqAppender(
-                        clientSupplier = { config.centralLogQueueTopic.client() },
-                        identitySupplier = { Identity("client-123", BundleType.LeozMobile.value) }
-                )
-            }
-
-            /**
-             * Notification service
-             */
-            bind<NotificationService>() with eagerSingleton {
-                val mqConfig = instance<MqttConfiguration>()
-                val service = NotificationService()
-
-                // Wire notification service with listener
-                mqConfig.mobileTopicListener.addDelegate(
-                        service
-                )
-
-                service
             }
         }
     }
