@@ -25,10 +25,11 @@
 -keepattributes InnerClasses
 
 # Required for JAX/RS, Feign
--keep class javax.ws.rs.** { *; }
 -keep class com.fasterxml.** { *; }
+-keep class javax.ws.rs.** { *; }
 -keep class org.deku.leoz.rest.** { *; }
 -keep class org.deku.leoz.service.** { *; }
+-keep class sx.rs.PATCH { *; }
 
 # Logback classes must be kept for correct function (especially when using xml configuration)
 # -keep class ch.qos.logback.classic.** { *; }
@@ -43,20 +44,26 @@
 # Some parts of rx have issues with obfuscation (NoSuchFieldException eg.)
 -keep class rx.** { *; }
 
-# Warnings
--dontwarn android.databinding.**
+# Serializers
+-keep class com.esotericsoftware.** { *; }
+-keep @sx.io.serialization.Serializable public class * { *; }
 
+# Warnings
+# KEEP ALPHA SORTING
+-dontwarn android.databinding.**
 -dontwarn au.com.bytecode.opencsv.bean.**
 -dontwarn ch.qos.logback.**
--dontwarn com.google.common.**
-
--dontwarn javax.**
--dontwarn com.sun.mail**
-
+-dontwarn com.esotericsoftware.**
 -dontwarn com.fasterxml.jackson.**
 -dontwarn com.github.davidmoten.rx.**
 -dontwarn com.github.salomonbrys.kodein.**
+-dontwarn com.google.common.**
+-dontwarn com.sun.mail.**
 -dontwarn com.trello.rxlifecycle.**
+-dontwarn feign.DefaultMethodHandler
+-dontwarn org.objenesis.**
+-dontwarn javax.**
+-dontwarn kotlin.**
 -dontwarn okio.**
 -dontwarn org.apache.commons.logging.**
 -dontwarn org.eclipse.persistence.**
@@ -68,6 +75,7 @@
 -dontwarn sx.io.**
 -dontwarn sx.jsch.**
 -dontwarn sx.junit.**
+-dontwarn sx.mq.**
 -dontwarn sx.platform.**
 -dontwarn sx.rs.**
 -dontwarn sx.EmbeddedExecutable**
@@ -75,11 +83,3 @@
 -dontwarn sx.Disposable
 -dontwarn sx.LazyInstance
 -dontwarn sx.Process**
--dontwarn sx.mq**
-
--dontwarn com.esotericsoftware.**
--dontwarn org.objenesis.**
-
--dontwarn feign.DefaultMethodHandler
-
--dontwarn kotlin.**
