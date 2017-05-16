@@ -52,7 +52,7 @@ dependencies {
             project(':sx-serialization'),
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
-            "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
+//            "org.jetbrains.kotlin:kotlin-reflect:$v_kotlin",
             // JMS
             "javax.jms:jms-api:1.1-rev-1",
     )
