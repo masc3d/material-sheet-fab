@@ -12,11 +12,20 @@ import sx.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /**
  * Log appender sending log messages via mq
+ *
+ * IMPORTANT NOTE: the dispatcher service of this appender must be controlled manually as it depends on
+ * a healthy client connection. This implementation is not suited for long time operation without
+ * having a dispatcher started as all entries are cached in-memory.
+ * Either a connection should be available constantly (local broker) or the provided mq client must be capable
+ * of offline buffering.
+ *
+ * TODO: add support for reactive dispatching, depending on broker/client connection
  * Created by masc on 11.06.15.
  */
 class LogMqAppender(
@@ -35,7 +44,7 @@ class LogMqAppender(
     /**
      * Flush Service
      */
-    inner private class Service(executorService: ScheduledExecutorService)
+    inner class Dispatcher(executorService: ScheduledExecutorService)
     :
             sx.concurrent.Service(
                     executorService = executorService,
@@ -70,7 +79,13 @@ class LogMqAppender(
         }
     }
 
-    private val service: Service = Service(Executors.newSingleThreadScheduledExecutor())
+    private val executor: ScheduledExecutorService by lazy {
+        val executor = Executors.newScheduledThreadPool(1) as ScheduledThreadPoolExecutor
+        executor.removeOnCancelPolicy = true
+        executor
+    }
+
+    val dispatcher: Dispatcher = Dispatcher(this.executor)
 
     override fun append(eventObject: ILoggingEvent) {
         val le = eventObject as LoggingEvent
@@ -80,22 +95,21 @@ class LogMqAppender(
     }
 
     fun flush() {
-        this.service.trigger()
+        this.dispatcher.trigger()
     }
 
     override fun start() {
         this.lock.withLock {
             super.start()
-            this.service.start()
         }
     }
 
     override fun stop() {
         this.lock.withLock {
             if (this.isStarted)
-                this.service.trigger()
+                this.dispatcher.trigger()
             // Shutdown log flush gracefully
-            this.service.stop()
+            this.dispatcher.stop()
             super.stop()
         }
     }

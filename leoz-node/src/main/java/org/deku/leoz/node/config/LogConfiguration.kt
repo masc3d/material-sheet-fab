@@ -39,20 +39,29 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
     var jmsAppenderEnabled: Boolean = false
         set(value: Boolean) {
             field = value
+            var appender = this.logMqAppender
             if (value) {
-                if (this.logMqAppender == null) {
+                if (appender == null) {
                     val application: Application = Kodein.global.instance()
+
                     // Setup message log appender
-                    this.logMqAppender = LogMqAppender(
+                    appender = LogMqAppender(
                             clientSupplier = { ActiveMQConfiguration.centralLogQueue.client() },
                             identitySupplier = { application.identity })
-                    this.logMqAppender!!.context = loggerContext
-                    this.logMqAppender!!.start()
+                    appender.context = loggerContext
+
+                    this.logMqAppender = appender
+
+                }
+                appender.start()
+                if (false/**ActiveMQConfiguration.broker.isStarted*/) {
+                    appender.dispatcher.start()
                 }
             } else {
-                if (this.logMqAppender != null) {
-                    this.logMqAppender!!.stop()
-                    rootLogger.detachAppender(this.logMqAppender)
+                if (appender != null) {
+                    appender.stop()
+                    rootLogger.detachAppender(appender)
+
                     this.logMqAppender = null
                 }
             }
@@ -65,7 +74,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
         override fun onStart() {
             val appender = this@LogConfiguration.logMqAppender
             if (appender != null && ActiveMQConfiguration.broker.isStarted) {
-                appender.start()
+                appender.dispatcher.start()
             }
         }
 
@@ -97,8 +106,11 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
             this.logFile = storageConfiguration.logFile
         }
 
-        if (this.jmsAppenderEnabled) {
-            this.logMqAppender!!.start()
+        val appender = this.logMqAppender
+        if (appender != null) {
+            appender.start()
+            if (ActiveMQConfiguration.broker.isStarted)
+                appender.dispatcher.start()
             this.rootLogger.addAppender(this.logMqAppender)
         }
     }
