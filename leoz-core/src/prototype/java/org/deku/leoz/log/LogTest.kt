@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory
 import sx.mq.MqClient
 import sx.mq.MqHandler
 import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.client
 import sx.mq.jms.listeners.SpringJmsListener
 
 import javax.jms.JMSException
@@ -49,8 +50,7 @@ class LogTest {
     fun testSend() {
         // Setup log appender
         val logAppender = LogMqAppender(
-                broker = this.broker,
-                logChannelConfiguration= ActiveMQConfiguration.centralLogQueue,
+                clientSupplier = { ActiveMQConfiguration.centralLogQueue.client() },
                 identitySupplier = {
                     DesktopIdentityFactory(BundleType.LeozNode.value, SystemInformation.Companion.create()).create()
                 })

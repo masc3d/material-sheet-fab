@@ -15,6 +15,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
+import sx.io.serialization.JacksonSerializer
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
 import sx.mq.MqChannel
@@ -188,7 +189,6 @@ class MqttTest {
         ).waitForCompletion()
 
         val listener = MqttListener(
-                mqttClient = this.mqttClient,
                 mqttChannel = this.mqttTopicChannel
         )
 
