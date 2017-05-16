@@ -37,6 +37,47 @@ class RoutingLogicTest {
         }
 
     }
+/* swagger
+DE Feiertag
+{
+  "sendDate": "2016-06-24",
+  "consignee": {
+    "country": "DE",
+    "zip": "36286",
+    "timeFrom": "09:00",
+    "timeTo": "12:00"
+  }
+}
+->
+  "labelContent": "257",
+  "message": "OK",
+  "sendDate": "2017-06-25",
+  "deliveryDate": "2017-06-27"
+}
+
+-----
+Rergionaler FT heilige drei könige ->
+{
+  "sendDate": "2017-01-05",
+  "consignee": {
+    "country": "DE",
+    "zip": "06110",
+    "timeFrom": "09:00",
+    "timeTo": "12:00",
+    "desiredStation": "020"
+  }
+->
+  ],
+  "labelContent": "406",
+  "message": "OK",
+  "sendDate": "2017-01-05",
+  "deliveryDate": "2017-01-09"
+}
+}
+*/
+
+
+
 
     @Test
     fun testRouting02() {

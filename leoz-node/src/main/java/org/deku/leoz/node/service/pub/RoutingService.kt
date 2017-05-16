@@ -367,7 +367,7 @@ class RoutingService : org.deku.leoz.service.pub.RoutingService {
         if (rHolidayCtrl != null) {
             if (rHolidayCtrl.ctrlPos == -1)
                 daytype = DayType.Holiday
-            else if (rHolidayCtrl.ctrlPos!! > 0) {
+            else if (rHolidayCtrl.ctrlPos!! >= 0) {
                 if (holidayCtrl[rHolidayCtrl.ctrlPos!!] == 'J')
                     daytype = DayType.RegionalHoliday
             }
