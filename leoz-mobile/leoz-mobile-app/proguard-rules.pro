@@ -46,7 +46,9 @@
 
 # Serializers
 -keep class com.esotericsoftware.** { *; }
--keep @sx.io.serialization.Serializable public class * { *; }
+# Doesn't work for nested/inner classes of annotated classes (tried *$*, **$**, ** etc.)
+# which means all nested serializable classes must have @Serializable
+-keep @sx.io.serialization.Serializable class * { *; }
 
 # Warnings
 # KEEP ALPHA SORTING

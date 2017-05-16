@@ -17,6 +17,7 @@ class LogMessage(
     var nodeKey: String = "",
     var logEntries: Array<LogEntry> = arrayOf()) {
 
+    @Serializable
     class LogEntry {
         constructor() { }
 
