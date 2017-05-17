@@ -91,14 +91,14 @@ abstract class RestClientConfiguration {
                     val user1 = User(
                             email = "foo@bar.com",
                             debitorId = 1,
-                            stations = listOf("002", "020", "100"),
+                            /*stations = listOf("002", "020", "100"),*/
                             alias = "testuser",
                             role = User.ROLE_DRIVER,
                             password = "password",
-                            salt = "salt",
+                            /*salt = "salt",*/
                             firstName = "Foo",
                             lastName = "Bar",
-                            apiKey = "a1b2c3d4e5g6",
+/*                            apiKey = "a1b2c3d4e5g6",*/
                             active = true,
                             externalUser = false,
                             phone = "+491725405765",

@@ -55,9 +55,9 @@ open class UserJooqRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
 
-    fun findByKey(key: String): MstUserRecord? {
-        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.API_KEY.eq(key))
-    }
+//    fun findByKey(key: String): MstUserRecord? {
+//        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.API_KEY.eq(key))
+//    }
 
     fun findByMail(email: String): MstUserRecord? {
         return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.EMAIL.eq(email))
@@ -86,10 +86,10 @@ open class UserJooqRepository {
         return findByMail(mail) != null
     }
 
-    fun hasAuthorizedKey(key: String): Boolean {
-        val userRecord = this.findByKey(key) ?: return false
-        return userRecord.active != 0 && userRecord.expiresOn.toLocalDate().isAfter(Date().toLocalDate())
-    }
+//    fun hasAuthorizedKey(key: String): Boolean {
+//        val userRecord = this.findByKey(key) ?: return false
+//        return userRecord.active != 0 && userRecord.expiresOn.toLocalDate().isAfter(Date().toLocalDate())
+//    }
 
     fun findDebitorNoById(id: Int): Double? {
         return dslContext.select(Tables.MST_DEBITOR.DEBITOR_NR)
@@ -140,7 +140,7 @@ open class UserJooqRepository {
         rec.alias = user.alias
         rec.role = user.role
         rec.password = user.password
-        rec.salt = user.salt
+        //rec.salt = user.salt
         rec.firstname = user.firstName
         rec.lastname = user.lastName
         rec.active = isActive

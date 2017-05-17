@@ -13,8 +13,8 @@ data class User(
         @get:ApiModelProperty(example = "12345678", required = false, value = "Allocation of User to debitor")
         var debitorId: Int? = null,
 
-        @get:ApiModelProperty(required = false, value = "Allocation of User to several station ids")
-        var stations: List<String>? = null,
+//        @get:ApiModelProperty(required = false, value = "Allocation of User to several station ids")
+//        var stations: List<String>? = null,
 
         @get:ApiModelProperty(example = "foo.bar", required = true, value = "Alias of the user")
         var alias: String? = null,
@@ -26,8 +26,8 @@ data class User(
         @get:ApiModelProperty(example = "MyS3cr3t", required = true, value = "Password")
         var password: String? = null,
 
-        @get:ApiModelProperty(example = "a1b2c3d4e5f6", required = true, value = "Salt")
-        var salt: String? = null,
+//        @get:ApiModelProperty(example = "a1b2c3d4e5f6", required = true, value = "Salt")
+//        var salt: String? = null,
 
         @get:ApiModelProperty(example = "Foo", required = true, value = "First name")
         var firstName: String? = null,
@@ -35,8 +35,8 @@ data class User(
         @get:ApiModelProperty(example = "Bar", required = true, value = "Last name")
         var lastName: String? = null,
 
-        @get:ApiModelProperty(example = "1a-2b-3c-4d-5e-6f", required = false, value = "API Key")
-        var apiKey: String? = null,
+//        @get:ApiModelProperty(example = "1a-2b-3c-4d-5e-6f", required = false, value = "API Key")
+//        var apiKey: String? = null,
 
         @get:ApiModelProperty(example = "true", required = false, value = "Active user")
         var active: Boolean? = null,
@@ -53,7 +53,7 @@ data class User(
         var id: Int = 0
 ) {
     companion object {
-        const val ROLE_ADMINISTRATOR: String = "ADMINISTRATOR"
+        const val ROLE_ADMINISTRATOR: String = "ADMIN"
         const val ROLE_POWERUSER: String = "POWERUSER"
         const val ROLE_USER: String = "USER"
         const val ROLE_DRIVER: String = "DRIVER"

@@ -1,5 +1,6 @@
 package org.deku.leoz.central.service.internal
 
+import org.deku.leoz.central.data.repository.KeyJooqRepository
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.verifyPassword
@@ -40,6 +41,10 @@ class AuthorizationService
 
     @Inject
     private lateinit var userRepository: UserJooqRepository
+
+    @Inject
+    private lateinit var keyRepository: KeyJooqRepository
+
 
     interface Listener : EventListener {
         fun onAuthorized(nodeIdentityKey: Identity.Key)
@@ -115,8 +120,14 @@ class AuthorizationService
                     title = "User authentication failed: no valid user-role",
                     status = Response.Status.UNAUTHORIZED)
 
+
+        val keyRecord = this.keyRepository.findByID(userRecord.keyId)
+        if (keyRecord==null)
+            throw DefaultProblem(title = "UserKey does not exist")
+        //todo generate key and write mstkey and user id
+
         return AuthorizationService.WebResponse(
-                key = "123",
+                key = keyRecord.key,
                 debitorNo = df.format(debitorNo),
                 userRole = userRecord.role)
     }

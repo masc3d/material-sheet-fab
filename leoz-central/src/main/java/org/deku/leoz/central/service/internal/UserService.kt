@@ -53,14 +53,14 @@ class UserService : UserService {
 
         val user = User(userRecord.email,
                 userRecord.debitorId,
-                null,
+                /*null,*/
                 userRecord.alias,
                 userRecord.role,
                 userRecord.password,
-                userRecord.salt,
+                /*userRecord.salt,*/
                 userRecord.firstname,
                 userRecord.lastname,
-                userRecord.apiKey,
+                /*userRecord.apiKey,*/
                 active,
                 externalUser,
                 userRecord.phone,
