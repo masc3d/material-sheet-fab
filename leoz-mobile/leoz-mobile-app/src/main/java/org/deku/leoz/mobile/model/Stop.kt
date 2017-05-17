@@ -15,17 +15,22 @@ class Stop (
     //Nested class Order
     class Order (
             val classification: OrderClassification,
-            val status: MutableList<Status>? = mutableListOf(),
+            val parcel: MutableList<Parcel> = mutableListOf(),
             val adresses: MutableList<Address>,
             val appointment: Date,
             val carrier: Carrier,
-            val labelreference: MutableList<String> = mutableListOf(),
             val service: MutableList<ParcelService>,
             val additionalInformation: MutableList<AdditionalInformation> = mutableListOf()
     ) {
         enum class OrderClassification {
             PICKUP, DELIVERY, EXCHANGE_DELIVERY, EXCHANGE_PICKUP
         }
+
+        data class Parcel (
+                val labelReference: String?,
+                val status: MutableList<Status>? = mutableListOf(),
+                val dimensions: Dimension?
+        )
 
         enum class Carrier {
             DERKURIER
@@ -46,5 +51,7 @@ class Stop (
         class Status {
 
         }
+
+        data class Dimension (val length: Double, val height: Double, val width: Double, val weight: Double)
     }
 }
