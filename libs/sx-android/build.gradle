@@ -7,8 +7,11 @@ buildscript {
         v_android_support = '25.2.0'
         v_anko = '0.10.0-rc'
         v_javamail = '1.5.5'
+        v_junit = '4.12'
         v_kotlin = '1.1.2-3'
+        v_ormlite = '5.0'
         v_paho = '1.1.1'
+        v_roboelectric = '3.3.2'
         v_rxlifecycle = '2.0.1'
     }
 
@@ -96,16 +99,32 @@ dependencies {
             "com.sun.mail:android-mail:$v_javamail",
             "com.sun.mail:android-activation:$v_javamail",
     )
+
     provided(
             'com.journeyapps:zxing-android-embedded:3.5.0',
 
-            // MQTT
-            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+            // MQTT persistence
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
     )
+
+    testCompile(
+            "junit:junit:$v_junit",
+            "org.robolectric:robolectric:$v_roboelectric",
+            "org.robolectric:shadows-multidex:$v_roboelectric"
+    )
+
     androidTestCompile(
-            "junit:junit:4.12",
+            "junit:junit:$v_junit",
+
             "com.android.support:support-annotations:$v_android_support",
             "com.android.support.test:runner:0.5",
-            "com.android.support.test:rules:0.5"
+            "com.android.support.test:rules:0.5",
+
+            // Logging
+            dependencies.create("com.github.tony19:logback-android-classic:1.1.1-6") {
+                exclude group: 'com.google.android', module: 'android'
+            },
+
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
     )
 }
