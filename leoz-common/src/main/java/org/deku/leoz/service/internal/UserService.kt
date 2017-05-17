@@ -18,6 +18,8 @@ interface UserService {
     companion object {
         const val ID = "id"
         const val EMAIL = "email"
+        const val DEBITORID="debitorid"
+        const val DEBITORNO="debitorno"
     }
 
     /**
@@ -28,6 +30,15 @@ interface UserService {
     @Path("/")
     @ApiOperation(value = "Get user")
     fun get(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null): User
+
+    /**
+     * Get user
+     * @param id Id of user
+     */
+    @GET
+    @Path("/{${ID}}")
+    @ApiOperation(value = "get user")
+    fun get(@ApiParam(value = "User ID") @PathParam(ID) id: Int): User
 
     /**
      * Create user
@@ -56,4 +67,11 @@ interface UserService {
     @Path("/{${ID}}")
     @ApiOperation(value = "Delete user")
     fun delete(@ApiParam(value = "User ID") @PathParam(ID) id: Int)
+
+    @GET
+    @Path("/debitor/{${ID}}")
+    @ApiOperation(value = "Get user of debitor-id")
+    fun getUserByDebitorID(@ApiParam(value = "Debitor ID") @PathParam(ID) id: Int): List<User>
+
+
 }

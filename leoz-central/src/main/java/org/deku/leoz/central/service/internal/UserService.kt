@@ -1,6 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.data.jooq.tables.records.MstUserRecord
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.entity.User
@@ -37,6 +38,10 @@ class UserService : UserService {
         val userRecord = userRepository.findByMail(email)
                 ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
 
+        return patchRecord2User(userRecord)
+    }
+
+    fun patchRecord2User(userRecord: MstUserRecord): User {
         val active = when (userRecord.active?.toInt()) {
             1, -1 -> true
             else -> false
@@ -61,12 +66,13 @@ class UserService : UserService {
                 userRecord.phone,
                 userRecord.expiresOn, userRecord.id
         )
-
         return user
     }
 
     override fun create(user: User) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        user.id=0
+        update(0, user)
+
     }
 
     override fun update(id: Int, user: User) {
@@ -76,16 +82,30 @@ class UserService : UserService {
         if (user.email == "@")
             throw DefaultProblem(status = Response.Status.BAD_REQUEST)
 
-        userRepository.updateById(user)
+        if (!userRepository.updateById(user))
+            throw DefaultProblem(status = Response.Status.BAD_REQUEST)
     }
 
-    /**
-    override fun delete(email: String): Boolean {
-
-    return userRepository.deleteByEmail(email)
-    }
-     **/
     override fun delete(id: Int) {
-        userRepository.deleteById(id)
+        if (!userRepository.deleteById(id))
+            throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+    }
+
+    override fun get(id: Int): User {
+        val userRecord = userRepository.findById(id)
+                ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
+        return patchRecord2User(userRecord)
+    }
+
+    override fun getUserByDebitorID(id: Int): List<User> {
+        val userRecList = userRepository.findByDebitorId(id)
+                ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
+        if (userRecList.isEmpty())
+                throw DefaultProblem(status = Response.Status.NOT_FOUND)
+        val user = mutableListOf<User>()
+        userRecList?.forEach {
+            user.add(patchRecord2User(it))
+        }
+        return user.toList()
     }
 }

@@ -88,23 +88,30 @@ abstract class RestClientConfiguration {
             bind<UserService>() with provider {
                 //createServiceProxy(config = instance(), serviceType = UserService::class.java)
                 object : UserService {
+                    val user1 = User(
+                            email = "foo@bar.com",
+                            debitorId = 1,
+                            stations = listOf("002", "020", "100"),
+                            alias = "testuser",
+                            role = User.ROLE_DRIVER,
+                            password = "password",
+                            salt = "salt",
+                            firstName = "Foo",
+                            lastName = "Bar",
+                            apiKey = "a1b2c3d4e5g6",
+                            active = true,
+                            externalUser = false,
+                            phone = "+491725405765",
+                            expiresOn = Date(Date.parse("31.12.2099"))
+                    )
+                    val user2 = user1.copy(email = "foo2@bar.com")
+
                     override fun get(email: String?): User {
-                        return User(
-                                email = "foo@bar.com",
-                                debitorId = 0,
-                                stations = listOf("002", "020", "100"),
-                                alias = "testuser",
-                                role = User.ROLE_DRIVER,
-                                password = "password",
-                                salt = "salt",
-                                firstName = "Foo",
-                                lastName = "Bar",
-                                apiKey = "a1b2c3d4e5g6",
-                                active = true,
-                                externalUser = false,
-                                phone = "+491725405765",
-                                expiresOn = Date(Date.parse("31.12.2099"))
-                        )
+                        return user1
+                    }
+
+                    override fun get(id: Int): User {
+                        return user1
                     }
 
                     override fun update(id: Int, user: User) {
@@ -114,6 +121,14 @@ abstract class RestClientConfiguration {
                     }
 
                     override fun delete(id: Int) {
+                    }
+
+                    override fun getUserByDebitorID(id: Int): List<User> {
+                        val user = mutableListOf<User>()
+                        user.add(user1)
+                        user.add(user2)
+
+                        return user.toList()
                     }
                 }
             }

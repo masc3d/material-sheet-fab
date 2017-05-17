@@ -71,11 +71,13 @@ open class UserJooqRepository {
                 .where(Tables.MST_USER.ALIAS.eq(alias).and(Tables.MST_DEBITOR.DEBITOR_NR.eq(debitor)))?.fetchOneInto(MstUser.MST_USER)
     }
 
-    /*
-        fun find(name: String): MstUserRecord? {
-            return findByAlias(name) ?: findByMail(name)
-        }
-    */
+    fun findByDebitorId(id:Int):List<MstUserRecord>? {
+        return dslContext
+                .select()
+                .from(Tables.MST_USER).where(Tables.MST_USER.DEBITOR_ID.eq(id))
+                .fetchInto(MstUserRecord::class.java)
+    }
+
     fun aliasExists(alias: String, debitor: Double): Boolean {
         return findByAlias(alias, debitor) != null
     }
