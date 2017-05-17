@@ -3,11 +3,13 @@ buildscript {
         jcenter()
     }
     ext {
-        v_kotlin = '1.1.2-3'
         v_android_buildtools = '25.0.2'
         v_android_support = '25.2.0'
-        v_rxlifecycle = '2.0.1'
+        v_anko = '0.10.0-rc'
         v_javamail = '1.5.5'
+        v_kotlin = '1.1.2-3'
+        v_paho = '1.1.1'
+        v_rxlifecycle = '2.0.1'
     }
 
     dependencies {
@@ -23,6 +25,7 @@ targetCompatibility = 1.7
 
 repositories {
     mavenCentral()
+    jcenter()
     maven { url "https://jitpack.io" }
 }
 
@@ -59,6 +62,13 @@ dependencies {
             fileTree(dir: 'libs', include: ['*.jar']),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
+            dependencies.create("org.jetbrains.anko:anko:$v_anko") { details ->
+                // masc20170516. too early for those
+                exclude group: 'org.jetbrains.anko', module: 'anko-sdk25'
+                exclude group: 'org.jetbrains.anko', module: 'anko-coroutines'
+                exclude group: 'org.jetbrains.anko', module: 'anko-sdk25-coroutines'
+                exclude group: 'org.jetbrains.anko', module: 'anko-appcompat-v7-coroutines'
+            },
 
             // Android support libs
             "com.android.support:support-annotations:$v_android_support",
@@ -81,11 +91,12 @@ dependencies {
             "com.sun.mail:android-mail:$v_javamail",
             "com.sun.mail:android-activation:$v_javamail",
     )
-
     provided(
-        'com.journeyapps:zxing-android-embedded:3.5.0'
-    )
+            'com.journeyapps:zxing-android-embedded:3.5.0',
 
+            // MQTT
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+    )
     androidTestCompile(
             "junit:junit:4.12",
             "com.android.support:support-annotations:$v_android_support",
