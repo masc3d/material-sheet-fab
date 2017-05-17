@@ -8,10 +8,12 @@ import org.jooq.util.GeneratorStrategy
 import org.jooq.util.sqlite.SQLiteDatabase
 import org.jooq.util.jaxb.*
 import org.jboss.forge.roaster.Roaster
+import org.jboss.forge.roaster.model.*
 import org.jboss.forge.roaster.model.source.*
 
 buildscript {
     ext {
+        v_ormlite = '5.0'
         v_xerial_sqlite = '3.16.1'
     }
 
@@ -20,16 +22,22 @@ buildscript {
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "org.xerial:sqlite-jdbc:$v_xerial_sqlite",
                 "org.flywaydb:flyway-gradle-plugin:$v_flyway",
+
                 // JOOQ
                 "org.jooq:jooq:$v_jooq",
                 "org.jooq:jooq-meta:$v_jooq",
                 "org.jooq:jooq-codegen:$v_jooq",
+
                 // Roaster
                 "org.jboss.forge.roaster:roaster-api:$v_roaster",
                 "org.jboss.forge.roaster:roaster-jdt:$v_roaster",
                 "org.apache.commons:commons-lang3:$v_commons_lang",
 
-                "org.eclipse.persistence:eclipselink:$v_eclipselink"
+                // JPA
+                "org.eclipse.persistence:eclipselink:$v_eclipselink",
+
+                // Requery
+                "io.requery:requery:$v_requery"
         )
     }
 }
@@ -71,12 +79,13 @@ def KAPT_DST_GENERATED_DIR = new File(GENERATED_DIR, 'kapt')
 class Constants {
     /** Package name for jooq generated classes */
     static def JOOQ_PACKAGE_NAME = 'org.deku.leoz.mobile.data.jooq'
+    /** Package name for requery interfaces */
+    static def REQUERY_PACKAGE_NAME = 'org.deku.leoz.mobile.data.requery'
     /** Package name for jpa classes */
-    static def JPA_PACKAGE_NAME = 'org.deku.leoz.mobile.data.jpa'
+    static def ORMLITE_PACKAGE_NAME = 'org.deku.leoz.mobile.data.ormlite'
 }
 
 def JOOQ_PACKAGE_NAME = Constants.JOOQ_PACKAGE_NAME
-def JPA_PACKAGE_NAME = Constants.JPA_PACKAGE_NAME
 //endregion
 
 idea {
@@ -109,8 +118,11 @@ dependencies {
             // javax.persistence
             "org.eclipse.persistence:javax.persistence:$v_javax_persistence",
 
+            // ORMLite
+            "com.j256.ormlite:ormlite-core:$v_ormlite",
+
             // Requery
-            "io.requery:requery:$v_requery",
+            "io.requery:requery:$v_requery"
     )
 
     compileOnly(
@@ -140,6 +152,9 @@ dependencies {
             // rx
             "io.reactivex.rxjava2:rxjava:$v_rxjava",
             "io.reactivex:rxkotlin:$v_rxkotlin",
+
+            // ORMLite
+            "com.j256.ormlite:ormlite-jdbc:$v_ormlite"
     )
 }
 
@@ -190,9 +205,9 @@ public class CustomJooqGeneratorStrategy extends DefaultGeneratorStrategy {
         def packageName = super.getJavaPackageName(definition, mode)
         // Mangle package name for jpa pojos
         if (mode == GeneratorStrategy.Mode.POJO) {
-            packageName = Constants.JPA_PACKAGE_NAME
+            packageName = Constants.ORMLITE_PACKAGE_NAME
         } else if (mode == GeneratorStrategy.Mode.INTERFACE) {
-            packageName = Constants.JPA_PACKAGE_NAME
+            packageName = Constants.REQUERY_PACKAGE_NAME
         }
 
         return packageName
@@ -213,7 +228,9 @@ def jooqConfiguration = new Configuration()
                 new Generate()
                         .withRecords(false)
                         .withDaos(false)
-//                        .withPojos(true)
+                // POJOs are used for ORMLite
+                        .withPojos(true)
+                // Interfaces are used for requery
                         .withInterfaces(true)
 //                        .withPojosEqualsAndHashCode(true)
                         .withJpaAnnotations(true)
@@ -284,26 +301,26 @@ static def jpaPostProcess(File sourceDir) {
             it.qualifiedName == javax.persistence.Table.canonicalName
         }
 
+        // Skip classes & interfaces without @Table annotation
         if (tableAnnotation == null)
-            // Skip
             return
 
+        // Collect all methods belonging to properties
+        def propertyMutatorMethods = jtype.properties.collect {
+            it.mutator
+        }
+        def propertyAccessorMethods = jtype.properties.collect {
+            it.accessor
+        }
+        def propertyMethods = propertyMutatorMethods + propertyAccessorMethods
+
+        // Correct column annotation names which JOOQ doesn't escape properly
+        // for all generated interfaces and classes
         if (jtype instanceof JavaInterfaceSource) {
-            // Post-processing for interfaces.
-            def jsource = (JavaInterfaceSource) jtype
-
-            // Collect all methods belonging to properties
-            def propertyMethods = jsource.properties.collect { it.mutator } + jsource.properties.collect { it.accessor }
-
-            // Remove interface methods which don't belong to properties
-            jsource.methods
-                    .findAll { !propertyMethods.contains(it) }
-                    .each {
-                jsource.removeMethod(it)
-            }
-
-            jsource.methods.each {
-                def columnAnnotation = it.annotations.find { it.qualifiedName == javax.persistence.Column.canonicalName }
+            jtype.methods.each {
+                def columnAnnotation = it.annotations.find {
+                    it.qualifiedName == javax.persistence.Column.canonicalName
+                }
 
                 if (columnAnnotation != null) {
                     def c = (AnnotationSource) columnAnnotation
@@ -317,21 +334,65 @@ static def jpaPostProcess(File sourceDir) {
                     }
                 }
             }
-        } else if (type instanceof JavaClassSource) {
-            // Post-processing for java classes
+        }
+
+        // Remove interface methods which don't belong to properties, as requery can't handle them
+        def nonPropertyMethods = jtype.methods
+                .findAll { !propertyMethods.contains(it) }
+                .collect()
+
+        nonPropertyMethods
+                .each {
+            jtype.removeMethod(it)
+        }
+
+        // Post-processing for JOOQ generated JPA pojos for ORMLite
+        if (jtype instanceof JavaClassSource) {
             def jsource = (JavaClassSource) jtype
 
-            // Amend member access rights for properties
+            // Requery processing those classes cannot be prevented and will
+            // cause errors (duplicate class members) due to inherited interface is also JPA annotated
+            // Adding requery's @Transient to prevent this
+            jsource.addAnnotation(io.requery.Transient.canonicalName)
+
+            // Move accessor annotations to fields (for ORMLite)
+            jsource.properties
+                    .findAll { it.annotations.size() > 0 }
+                    .each { property ->
+
+                def fieldSource = (FieldSource) property.field
+
+                // Move all annotations except @Override
+                def annotationsToMove = property.accessor.annotations
+                        .findAll { it.qualifiedName != java.lang.Override.canonicalName }
+                        .collect()
+
+                annotationsToMove
+                        .each { annotation ->
+
+                    def annotationSource = fieldSource.addAnnotation(annotation.qualifiedName)
+                    annotation.values.each {
+                        annotationSource.setLiteralValue(it.name, it.literalValue)
+                    }
+                }
+
+                def methodSource = (MethodSource) property.accessor
+                annotationsToMove.each {
+                    methodSource.removeAnnotation(it)
+                }
+            }
+
+            // Amend member access rights for properties, so requery doesn't complain about annotated private fields
             jsource.fields.each {
                 def fieldSource = (FieldSource) it
                 fieldSource.setPackagePrivate()
             }
 
-            jsource.properties.each {
-                def propertySource = (PropertySource) it
-                propertySource.accessor.setPackagePrivate()
-                propertySource.mutator.setPackagePrivate()
-            }
+//            jsource.properties.each {
+//                def propertySource = (PropertySource) it
+//                propertySource.accessor.setPackagePrivate()
+//                propertySource.mutator.setPackagePrivate()
+//            }
         }
 
         // Rewrite class
