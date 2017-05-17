@@ -1,5 +1,7 @@
 package org.deku.leoz.enums
 
+import org.deku.leoz.model.ParcelServiceRestriction
+
 /**
  * Created by helke on 28.04.17.
  * on changes code changes necessary
@@ -113,4 +115,124 @@ enum class SendData {
     getUnitsStationImport,
     getUnitsStationExport,
     getBags
+}
+
+enum class ParcelService (val serviceId: Long, val parcelServiceRestriction: ParcelServiceRestriction) {
+    noAdditionalService(
+            serviceId = 0,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    appointment(
+            serviceId = 1,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    suitcaseShipping(
+            serviceId = 2,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    weekend(
+            serviceId = 4,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    bankHolidayDelivery(
+            serviceId = 8,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    latePickup(
+            serviceId = 16,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    receiptAcknowledgment(
+            serviceId = 32,
+            parcelServiceRestriction = ParcelServiceRestriction(
+                    paperReceiptNeeded = true,
+                    alternateDeliveryAllowed = false
+            )),
+    selfPickup(
+            serviceId = 64,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    cashOnDelivery(
+            serviceId = 128,
+            parcelServiceRestriction = ParcelServiceRestriction(
+                    cash = true,
+                    alternateDeliveryAllowed = false
+            )),
+    valuedPackage(
+            serviceId = 256,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    pharmaceuticals(
+            serviceId = 512,
+            parcelServiceRestriction = ParcelServiceRestriction(
+                    personalDeliveryOnly = true,
+                    alternateDeliveryAllowed = false
+            )),
+    addressCorrection(
+            serviceId = 1024,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    waitingPeriodPickUp(
+            serviceId = 2048,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    waitingPeriodDelivery(
+            serviceId = 4096,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    pickUp(
+            serviceId = 8192,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    identContractService(
+            serviceId = 16384,
+            parcelServiceRestriction = ParcelServiceRestriction(
+                    personalDeliveryOnly = true,
+                    identityCheckRequired = true,
+                    alternateDeliveryAllowed = false
+            )),
+    submissionParticipation(
+            serviceId = 32768,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    securityReturn(
+            serviceId = 65536,
+            parcelServiceRestriction = ParcelServiceRestriction(
+                    imeiCheckRequired = true,
+                    alternateDeliveryAllowed = false
+            )),
+    lateDelivery(
+            serviceId = 131072,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    xChange(
+            serviceId = 262144,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    phoneReceipt(
+            serviceId = 524288,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    documentedPersonallyDelivery(
+            serviceId = 1048576,
+            parcelServiceRestriction = ParcelServiceRestriction(
+                    identityCheckRequired = true,
+                    alternateDeliveryAllowed = false,
+                    paperReceiptNeeded = true
+            )),
+    higherLiability(
+            serviceId = 2097152,
+            parcelServiceRestriction = ParcelServiceRestriction(
+                    alternateDeliveryAllowed = false
+            )),
+    departmentDelivery(
+            serviceId = 4194304,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    fixedAppointment(
+            serviceId = 8388608,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    fairService(
+            serviceId = 16777216,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    selfCompletionOfDutyPaymentAntDocuments(
+            serviceId = 33554432,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    packagingRecirculation(
+            serviceId = 67108864,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    unsuccessfulApproach(
+            serviceId = 134217728,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    postboxDelivery(
+            serviceId = 268435456,
+            parcelServiceRestriction = ParcelServiceRestriction()),
+    noAlternativelyDelivery(
+            serviceId = 536870912,
+            parcelServiceRestriction = ParcelServiceRestriction(
+                    alternateDeliveryAllowed = false
+            ))
 }
