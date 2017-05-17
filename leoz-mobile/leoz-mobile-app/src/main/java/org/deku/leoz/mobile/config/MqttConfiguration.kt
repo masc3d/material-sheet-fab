@@ -20,6 +20,7 @@ import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.IMqttToken
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
+import sx.android.mqtt.MqttClientPersistenceSQLite
 import sx.mq.mqtt.MqttContext
 import sx.mq.mqtt.MqttListener
 import sx.mq.mqtt.client
@@ -67,8 +68,15 @@ class MqttConfiguration(
 
                 val mqttAndroidClient = MqttAndroidClient(
                         androidContext,
+                        // Server URI
                         "tcp://${remoteSettings.host}:${remoteSettings.broker.nativePort}",
-                        identity.key.value)
+                        // Client ID
+                        identity.key.value,
+                        // Persistence
+                        MqttClientPersistenceSQLite(
+                                databaseFile = androidContext.getDatabasePath("mqtt.db")),
+                        // Acknowledge mode
+                        MqttAndroidClient.Ack.AUTO_ACK)
 
                 mqttAndroidClient.setCallback(object : MqttCallbackExtended {
                     override fun connectComplete(reconnect: Boolean, serverURI: String) {
