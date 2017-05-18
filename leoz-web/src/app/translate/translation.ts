@@ -1,21 +1,12 @@
-// app/translate/translation.ts
+import { Injectable } from '@angular/core';
+import { LANG_EN_TRANS } from './lang-en';
+import { LANG_DE_TRANS } from './lang-de';
 
-import { OpaqueToken } from '@angular/core';
+@Injectable()
+export class Translation {
 
-// import translations
-import { LANG_EN_NAME, LANG_EN_TRANS } from './lang-en';
-import { LANG_DE_NAME, LANG_DE_TRANS } from './lang-de';
-
-// translation token
-export const TRANSLATIONS = new OpaqueToken('translations');
-
-// all translations
-export const dictionary = {
-  [LANG_EN_NAME]: LANG_EN_TRANS,
-  [LANG_DE_NAME]: LANG_DE_TRANS,
-};
-
-// providers
-export const TRANSLATION_PROVIDERS = [
-  { provide: TRANSLATIONS, useValue: dictionary },
-];
+  public translations = {
+    ['en']: LANG_EN_TRANS,
+    ['de']: LANG_DE_TRANS
+  };
+}

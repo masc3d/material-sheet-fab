@@ -1,31 +1,22 @@
-// app/translate/translate.service.ts
-
-import {Injectable, Inject} from '@angular/core';
-import { TRANSLATIONS } from './translation'; // import our opaque token
+import {Injectable} from '@angular/core';
+import { Translation } from './translation';
 
 @Injectable()
 export class TranslateService {
-  private _currentLang: string;
+  private curLang: string;
 
-  public get currentLang() {
-    return this._currentLang;
-  }
-
-  // inject our translations
-  constructor(@Inject(TRANSLATIONS) private _translations: any) {
-  }
+  constructor(private transl: Translation) {}
 
   public use(lang: string): void {
     // set current language
-    this._currentLang = lang;
+    this.curLang = lang;
   }
 
   private translate(key: string): string {
-    // private perform translation
     const translation = key;
 
-    if (this._translations[this.currentLang] && this._translations[this.currentLang][key]) {
-      return this._translations[this.currentLang][key];
+    if (this.transl.translations[this.curLang] && this.transl.translations[this.curLang][key]) {
+      return this.transl.translations[this.curLang][key];
     }
 
     return translation;

@@ -1,8 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BaseRequestOptions, HttpModule } from '@angular/http';
-
+import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
 import { TopMenuComponent } from './menu/top-menu/top-menu.component';
 import { LoginComponent } from './login/login.component';
@@ -13,17 +12,9 @@ import { UserModule} from './user/user.module';
 import { AppRoutingModule } from './app-routing.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { HomeModule } from './home/home.module';
-import { TranslatePipe } from './translate/translate.pipe';
-import { TRANSLATION_PROVIDERS } from './translate/translation';
-import { TranslateService } from './translate/translate.service';
+import { TranslateModule } from './translate/translate.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    TopMenuComponent,
-    LoginComponent,
-    TranslatePipe
-  ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
@@ -32,14 +23,17 @@ import { TranslateService } from './translate/translate.service';
     TourModule,
     UserModule,
     DashboardModule,
-    AppRoutingModule
+    TranslateModule,
+    AppRoutingModule,
+  ],
+  declarations: [
+    AppComponent,
+    TopMenuComponent,
+    LoginComponent
   ],
   providers: [
     AuthenticationGuard,
-    AuthenticationService,
-    BaseRequestOptions,
-    TRANSLATION_PROVIDERS,
-    TranslateService
+    AuthenticationService
   ],
   bootstrap: [ AppComponent ]
 })
