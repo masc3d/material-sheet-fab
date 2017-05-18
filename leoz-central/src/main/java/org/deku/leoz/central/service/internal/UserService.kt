@@ -87,22 +87,25 @@ class UserService : UserService {
     }
 
     override fun create(user: User) {
-        user.id=0
-        update(0, user)
+        user.id = 0
+        update(user.email, user)
+
 
     }
 
-    override fun update(id: Int, user: User) {
+    override fun update(email: String, user: User) {
 
         //debitorID ?
         //role ok?
         if (user.email == "@")
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "invalid email")
+        user.role = user.role?.toUpperCase() ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "no user role")
 
-        if (!userRepository.updateById(user))
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+        if (!userRepository.updateByEmail(email, user))
+            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "invalid user role or duplicate email or duplicate alias or missing debitorId")
+
     }
-
+/*
     override fun delete(id: Int) {
         if (!userRepository.deleteById(id))
             throw DefaultProblem(status = Response.Status.BAD_REQUEST)
@@ -113,4 +116,5 @@ class UserService : UserService {
                 ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
         return patchRecord2User(userRecord)
     }
+    */
 }

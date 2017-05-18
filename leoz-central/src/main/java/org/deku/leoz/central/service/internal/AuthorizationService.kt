@@ -111,7 +111,11 @@ class AuthorizationService
             throw DefaultProblem(
                     title = "User authentication failed",
                     status = Response.Status.UNAUTHORIZED)
-        val debitorNo = this.userRepository.findDebitorNoById(id = userRecord.debitorId) ?: "0"
+        val debitorNo = this.userRepository.findDebitorNoById(id = userRecord.debitorId)
+                ?: throw DefaultProblem(
+                title = "User authentication failed - no debitor",
+                status = Response.Status.UNAUTHORIZED)
+
         val df = DecimalFormat("#")
         df.maximumFractionDigits = 0
 
@@ -122,7 +126,7 @@ class AuthorizationService
 
 
         val keyRecord = this.keyRepository.findByID(userRecord.keyId)
-        if (keyRecord==null)
+        if (keyRecord == null)
             throw DefaultProblem(title = "UserKey does not exist")
         //todo generate key and write mstkey and user id
 
