@@ -263,10 +263,11 @@ class BundleInstaller(
             if (bundle == null)
                 bundle = Bundle.load(bundlePath)
 
+            bundle.install()
+
             if (productive)
                 bundle.prepareProduction()
 
-            bundle.install()
             bundle.start()
         }
 
