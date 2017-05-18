@@ -106,8 +106,8 @@ abstract class RestClientConfiguration {
                     )
                     val user2 = user1.copy(email = "foo2@bar.com")
 
-                    override fun get(email: String?): User {
-                        return user1
+                    override fun get(email: String?, debitorId: Int?): List<User> {
+                        return listOf(user1)
                     }
 
                     override fun get(id: Int): User {
@@ -121,14 +121,6 @@ abstract class RestClientConfiguration {
                     }
 
                     override fun delete(id: Int) {
-                    }
-
-                    override fun getUserByDebitorID(id: Int): List<User> {
-                        val user = mutableListOf<User>()
-                        user.add(user1)
-                        user.add(user2)
-
-                        return user.toList()
                     }
                 }
             }
