@@ -1,21 +1,20 @@
 export class User {
+
   id: number;
-  firstname: string;
-  surname: string;
-  usernumber: number;
-  tournumber: number;
-  position: Position;
+  active: boolean;
+  alias: string;
+  debitorId: number;
+  email: string;
+  expiresOn: string;
+  externalUser: boolean;
+  firstName: string;
+  lastName: string;
+  password: string;
+  phone: string;
+  role: string; // TODO enum
+  salt: string;
 
   toString(): string {
-    return `firstname: ${this.firstname} / surname: ${this.surname}`;
-  }
-}
-
-export class Position {
-  lat: number;
-  lng: number;
-
-  toString(): string {
-    return `lat: ${this.lat}; lng: ${this.lng}`;
+    return `firstname: ${this.firstName} / surname: ${this.lastName}`;
   }
 }
