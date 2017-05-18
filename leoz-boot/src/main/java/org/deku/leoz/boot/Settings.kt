@@ -35,8 +35,8 @@ class Settings {
     @Parameter(names = arrayOf("--http-host"), description = "Http(s) host to connect to for service calls")
     var httpHost: String? = null
 
-    @Parameter(names = arrayOf("--https"), description = "Use https for web/rest connections")
-    var https: Boolean? = null
+    @Parameter(names = arrayOf("--https"), description = "Use https for web/rest connections. This switch only has an effect when using --http-host")
+    var https: Boolean = false
 
     @Parameter(names = arrayOf("--rsync-host"), description = "Rsync host to connect to for retrieving bundles")
     var rsyncHost: String? = null
