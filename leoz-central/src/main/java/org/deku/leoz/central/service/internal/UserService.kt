@@ -31,14 +31,31 @@ class UserService : UserService {
     @Inject
     private lateinit var userRepository: UserJooqRepository
 
-    override fun get(email: String?): User {
-        if (email == null)
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST)
-
-        val userRecord = userRepository.findByMail(email)
-                ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
-
-        return patchRecord2User(userRecord)
+    override fun get(email: String?, debitorId: Int?): List<User> {
+        when {
+            debitorId != null -> {
+                val userRecList = userRepository.findByDebitorId(debitorId)
+                        ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
+                if (userRecList.isEmpty())
+                    throw DefaultProblem(status = Response.Status.NOT_FOUND)
+                val user = mutableListOf<User>()
+                userRecList.forEach {
+                    user.add(patchRecord2User(it))
+                }
+                return user.toList()
+            }
+            email != null -> {
+                val userRecord = userRepository.findByMail(email)
+                        ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
+                return listOf(patchRecord2User(userRecord))
+            }
+            else -> {
+                // All query params are omitted.
+                // We may return all users here at one point, for those who require it
+                // In this case we should sensibly check if the user is allowed to do that.
+                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+            }
+        }
     }
 
     fun patchRecord2User(userRecord: MstUserRecord): User {
@@ -95,17 +112,5 @@ class UserService : UserService {
         val userRecord = userRepository.findById(id)
                 ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
         return patchRecord2User(userRecord)
-    }
-
-    override fun getUserByDebitorID(id: Int): List<User> {
-        val userRecList = userRepository.findByDebitorId(id)
-                ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
-        if (userRecList.isEmpty())
-                throw DefaultProblem(status = Response.Status.NOT_FOUND)
-        val user = mutableListOf<User>()
-        userRecList?.forEach {
-            user.add(patchRecord2User(it))
-        }
-        return user.toList()
     }
 }
