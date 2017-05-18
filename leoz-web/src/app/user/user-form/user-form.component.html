@@ -4,21 +4,21 @@
   <div class="row">
     <div class="form-group col-md-6">
       <label>Firstname:</label>
-      <input type="text" class="form-control" formControlName="firstname">
-      <div *ngIf="userForm.controls['firstname'].hasError('minlength')" class="alert alert-danger">
+      <input type="text" class="form-control" formControlName="firstName">
+      <div *ngIf="userForm.controls['firstName'].hasError('minlength')" class="alert alert-danger">
         Firstname needs to be at least 3 characters long.
       </div>
-      <div *ngIf="userForm.controls['firstname'].hasError('maxlength')" class="alert alert-danger">
+      <div *ngIf="userForm.controls['firstName'].hasError('maxlength')" class="alert alert-danger">
         Firstname cannot exceed 45 characters.
       </div>
     </div>
     <div class="form-group col-md-6">
       <label>Surname:</label>
-      <input type="text" class="form-control" formControlName="surname" [value]="activeUser?.surname?.toString()">
-      <div *ngIf="userForm.controls['surname'].hasError('minlength')" class="alert alert-danger">
+      <input type="text" class="form-control" formControlName="lastName" [value]="activeUser?.lastName?.toString()">
+      <div *ngIf="userForm.controls['lastName'].hasError('minlength')" class="alert alert-danger">
         Surname needs to be at least 3 characters long.
       </div>
-      <div *ngIf="userForm.controls['surname'].hasError('maxlength')" class="alert alert-danger">
+      <div *ngIf="userForm.controls['lastName'].hasError('maxlength')" class="alert alert-danger">
         Surname cannot exceed 45 characters.
       </div>
     </div>
@@ -66,12 +66,12 @@
   </div>
   <div class="row">
     <div class="form-group col-md-6">
-      <label>debitor_id:</label>
-      <input type="text" class="form-control" formControlName="debitor_id">
-      <div *ngIf="userForm.controls['debitor_id'].touched && userForm.controls['debitor_id'].hasError('required')" class="alert alert-danger">
+      <label>debitorId:</label>
+      <input type="text" class="form-control" formControlName="debitorId">
+      <div *ngIf="userForm.controls['debitorId'].touched && userForm.controls['debitorId'].hasError('required')" class="alert alert-danger">
         Please enter a debitor_id.
       </div>
-      <div *ngIf="userForm.controls['debitor_id'].hasError('pattern')" class="alert alert-danger">
+      <div *ngIf="userForm.controls['debitorId'].hasError('pattern')" class="alert alert-danger">
         Invalid format must have 4 digits.
       </div>
     </div>

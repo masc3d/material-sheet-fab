@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -8,13 +8,11 @@ import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/of';
 
 import { Driver, Position } from './driver.model';
-import { environment } from '../../environments/environment';
 
 @Injectable()
 export class DriverService {
 
-  // private driverListUrl = `${environment.apiUrl}/drivers`;
-  private driverListUrl = `${environment.apiUrl}/driverlist.json`;
+  private driverListUrl = `assets/sampledata/driverlist.json`;
 
   private activeDriverSubject = new BehaviorSubject<Driver>(new Driver());
   public activeDriver = this.activeDriverSubject.asObservable().distinctUntilChanged();

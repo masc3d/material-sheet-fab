@@ -3,16 +3,12 @@
   <tr>
     <th>Firstname</th>
     <th>Surname</th>
-    <th>Usernumber</th>
-    <th>Tournumber</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let user of users | async" (click)="selected(user)">
-    <td>{{user.firstname}}</td>
-    <td>{{user.surname}}</td>
-    <td>{{user.usernumber}}</td>
-    <td>{{user.tournumber}}</td>
+    <td>{{user.firstName}}</td>
+    <td>{{user.lastName}}</td>
   </tr>
   </tbody>
 </table>

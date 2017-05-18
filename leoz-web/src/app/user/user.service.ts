@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { Injectable } from '@angular/core';
+import { Headers, Http, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/map';
@@ -7,14 +7,13 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/of';
 
-import { User, Position } from './user.model';
+import { User } from './user.model';
 import { environment } from '../../environments/environment';
 
 @Injectable()
 export class UserService {
 
-  // private userListUrl = `${environment.apiUrl}/users`;
-  private userListUrl = `${environment.apiUrl}/userlist.json`;
+  private userListUrl = `${environment.apiUrl}/user/debitor/7`;
 
   private activeUserSubject = new BehaviorSubject<User>(new User());
   public activeUser = this.activeUserSubject.asObservable().distinctUntilChanged();
@@ -23,12 +22,17 @@ export class UserService {
   }
 
   getUsers() {
-    return this.http.get(this.userListUrl)
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('x-api-key', '123');
+
+    const options = new RequestOptions({ headers: headers });
+
+    return this.http.get(this.userListUrl, options)
       .map((response: Response) => {
         const userArr: User[] = [];
         response.json().forEach(function (json) {
           const user = Object.assign(new User(), json);
-          user.position = Object.assign(new Position(), user.position);
           userArr.push(user);
         });
         return userArr;

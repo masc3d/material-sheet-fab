@@ -1,5 +1,6 @@
 import { Component, Inject, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
+import { TranslateService } from '../../translate/translate.service';
 
 @Component({
   selector: 'app-top-menu',
@@ -7,7 +8,13 @@ import { DOCUMENT } from '@angular/platform-browser';
 })
 export class TopMenuComponent {
 
-  public constructor(private renderer: Renderer2, @Inject(DOCUMENT) private document: any) {
+  public constructor(private renderer: Renderer2,
+                     @Inject(DOCUMENT) private document: any,
+                     private translateService: TranslateService ) {
+  }
+
+  public changeLang(lang: string) {
+    this.translateService.use(lang);
   }
 
   public toggle(): void {

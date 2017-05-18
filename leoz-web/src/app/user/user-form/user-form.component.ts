@@ -26,37 +26,34 @@ export class UserFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    const positionFormGroup = this.fb.group({
-      lat: [ null, Validators.pattern(/^-?\d*(\.\d{0,4})?$/) ],
-      lng: [ null, Validators.pattern(/^-?\d*(\.\d{0,4})?$/) ],
-    });
     this.userForm = this.fb.group({
-      firstname: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
-      surname: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
-      password: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(255) ] ],
+      firstName: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
+      lastName: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
+      password: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(25) ] ],
       email: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(100) ] ],
       phone: [ null, [ Validators.minLength(0), Validators.maxLength(45) ] ],
       alias: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(30) ] ],
       salt: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
       role: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(20) ] ],
       active: [ null, [ Validators.required, Validators.pattern('^[0-9]{1}$') ] ],
-      usernumber: [ null, [ Validators.pattern('^[0-9]{4}$') ] ],
-      debitor_id: [ null, [ Validators.required, Validators.pattern('^[0-9]{4}$') ] ],
-      tournumber: [ null, [ Validators.pattern('^[0-9]{4}$') ] ],
-      position: positionFormGroup
+      id: [ null, [ Validators.pattern('^[0-9]{4}$') ] ],
+      debitorId: [ null, [ Validators.required, Validators.pattern('^[0-9]{4}$') ] ]
     });
 
     this.userService.activeUser.subscribe((activeUser: User) => {
       this.activeUser = activeUser;
       this.userForm.patchValue({
-        firstname: activeUser.firstname,
-        surname: activeUser.surname,
-        usernumber: activeUser.usernumber,
-        tournumber: activeUser.tournumber,
-        position: {
-          lat: activeUser.position ? activeUser.position.lat : '',
-          lng: activeUser.position ? activeUser.position.lng : ''
-        }
+        firstName: activeUser.firstName,
+        lastName: activeUser.lastName,
+        password: activeUser.password,
+        email: activeUser.email,
+        phone: activeUser.phone,
+        alias: activeUser.alias,
+        salt: activeUser.salt,
+        role: activeUser.role,
+        active: activeUser.active,
+        id: activeUser.id,
+        debitorId: activeUser.debitorId
       });
     });
   }
