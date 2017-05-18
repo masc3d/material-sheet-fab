@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
     ];
 
     // set current language
-    this.selectLang('de');
+    this.selectLang('en');
   }
 
   selectLang(lang: string) {
