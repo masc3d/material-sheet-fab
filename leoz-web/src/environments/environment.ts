@@ -5,6 +5,6 @@
 
 export const environment = {
   production: false,
-  apiUrl: "assets/sampledata"
-  // apiUrl: "http://localhost:8080/leozdummyrest/resources"
+  // apiUrl: "assets/sampledata"
+  apiUrl: "http://localhost:13000/rs/api/internal/v1"
 };
