@@ -157,7 +157,8 @@ class Boot {
     fun install(bundleName: String,
                 forceDownload: Boolean,
                 versionAlias: String? = null,
-                versionPattern: String? = null): Observable<Event> {
+                versionPattern: String? = null,
+                productive: Boolean = false): Observable<Event> {
         return task<Event> { onNext ->
             if (Strings.isNullOrEmpty(bundleName))
                 throw IllegalArgumentException("Missing or empty bundle parameter. Nothing to do, exiting")
@@ -206,7 +207,9 @@ class Boot {
 
             onNext(Event(-1.0))
 
-            this.installer.install(bundleName)
+            this.installer.install(
+                    bundleName = bundleName,
+                    productive = productive)
 
             onNext(Event(100.0))
         }
@@ -230,11 +233,10 @@ class Boot {
             else
                 Observable.empty())
                     .concatWith(Observable.fromCallable {
-                        if (settings.httpHost != null)
+                        if (settings.httpHost != null) {
                             restConfiguration.host = settings.httpHost!!
-
-                        if (settings.https != null)
-                            restConfiguration.https = settings.https!!
+                            restConfiguration.https = settings.https
+                        }
 
                         if (settings.rsyncHost != null)
                             bundleConfiguration.rsyncHost = settings.rsyncHost!!
@@ -250,7 +252,8 @@ class Boot {
                     bundleName = settings.bundle,
                     forceDownload = settings.forceDownload,
                     versionAlias = settings.versionAlias,
-                    versionPattern = settings.versionPattern)
+                    versionPattern = settings.versionPattern,
+                    productive = settings.productive)
 
         // Concat tasks and skew progress events
         return Observable.concat(
@@ -264,13 +267,7 @@ class Boot {
                 mainTask
                         .map {
                             Boot.Event(this.skewProgress(0.3, 1.0, it.progress))
-                        },
-                task {
-                    if (settings.productive)
-                        Bundle.load(
-                                this.installer.bundlePath(settings.bundle))
-                                .prepareProduction()
-                })
+                        })
                 .doAfterTerminate {
                     // Cleanup
                     sshTunnelProvider.close()
