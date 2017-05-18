@@ -49,7 +49,12 @@ class UserService : UserService {
                         ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
                 return listOf(patchRecord2User(userRecord))
             }
-            else -> throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+            else -> {
+                // All query params are omitted.
+                // We may return all users here at one point, for those who require it
+                // In this case we should sensibly check if the user is allowed to do that.
+                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+            }
         }
     }
 
