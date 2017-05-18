@@ -1,8 +1,6 @@
 package sx.packager
 
-import org.apache.commons.lang3.SystemUtils
 import org.slf4j.LoggerFactory
-import sx.platform.OperatingSystem
 import sx.platform.PlatformId
 import java.io.File
 import java.nio.file.Files
@@ -10,7 +8,6 @@ import java.util.*
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import sx.rx.retryWith
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 /**
@@ -198,12 +195,14 @@ class BundleInstaller(
      * Installs previously downloaded bundle-
      * Performs native installation by calling into the bundle process' native entry points
      * @param bundleName Name of bundle to install
+     * @param productive Triggers invocation of prepare-production process entry point before installation
      * @param omitNativeInstallation Do not call into bundle process for native stop/start/install/uninstall. This is merely
      * an optimization for bundles which do not require those entry points (eg. leoz-boot)
      * @return If changes have been applied
      */
     fun install(
             bundleName: String,
+            productive: Boolean = false,
             omitNativeInstallation: Boolean = false) {
 
         log.info("Installing [${bundleName}]")
@@ -263,6 +262,9 @@ class BundleInstaller(
             // Create a stub bundle instance if needed
             if (bundle == null)
                 bundle = Bundle.load(bundlePath)
+
+            if (productive)
+                bundle.prepareProduction()
 
             bundle.install()
             bundle.start()
