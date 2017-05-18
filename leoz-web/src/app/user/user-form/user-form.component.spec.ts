@@ -3,7 +3,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserFormComponent } from './user-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../user.service';
-import { ErrormsgService } from '../../error/errormsg.service';
 import { HttpModule } from '@angular/http';
 
 describe('UserFormComponent', () => {
@@ -18,7 +17,6 @@ describe('UserFormComponent', () => {
         HttpModule
       ],
       providers: [
-        ErrormsgService,
         UserService
       ]
     })

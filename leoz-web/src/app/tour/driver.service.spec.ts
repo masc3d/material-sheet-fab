@@ -1,7 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
 import { DriverService } from './driver.service';
-import { ErrormsgService } from '../error/errormsg.service';
 import { HttpModule } from '@angular/http';
 
 describe('DriverService', () => {
@@ -9,8 +8,7 @@ describe('DriverService', () => {
     TestBed.configureTestingModule({
       imports: [ HttpModule ],
       providers: [
-        DriverService,
-        ErrormsgService
+        DriverService
       ]
     });
   });

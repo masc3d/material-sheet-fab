@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
         (resp: Response) => {
           if (resp.status === 200) {
             this.loading = false;
-            this.router.navigate([ '' ]);
+            this.router.navigate([ 'dashboard/home' ]);
           } else {
             this.handleError(resp);
           }
