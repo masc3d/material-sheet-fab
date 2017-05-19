@@ -115,62 +115,19 @@ open class UserJooqRepository {
                 .fetchOneInto(Int::class.java)
     }
 
+    fun findByKey(apiKey:String):MstUserRecord? {
+        return dslContext.select()
+                .from(Tables.MST_USER.innerJoin(Tables.MST_KEY)
+                        .on(Tables.MST_USER.KEY_ID.eq(Tables.MST_KEY.KEY_ID)))
+                .where(Tables.MST_KEY.KEY.eq(apiKey))?.fetchOneInto(MstUser.MST_USER)
+    }
+
 
     fun deleteById(id: Int): Boolean {
         return if (dslContext.delete(Tables.MST_USER).where(Tables.MST_USER.ID.eq(id)).execute() > 0) true else false
     }
 
-    /**
-    fun deleteByEmail(email: String): Boolean {
-    return if (dslContext.delete(Tables.MST_USER).where(Tables.MST_USER.EMAIL.eq(email)).execute() > 0) true else false
-    }
-     **/
 
-    fun updateById(user: User): Boolean {
-        var returnValue = false
-        if (!UserRole.values().any { it.name == user.role })
-            return false
-
-        val isActive: Int
-        if (user.active == null || user.active == false) isActive = 0 else isActive = -1
-
-        val isExternalUser: Int
-        if (user.externalUser == null || user.externalUser == false) isExternalUser = 0 else isExternalUser = -1
-
-        val rec: MstUserRecord?
-
-        if ((user.id == 0 || findById(user.id) == null) && !mailExists(user.email)) {
-            rec = dslContext.newRecord(Tables.MST_USER)
-        } else {
-            rec = findById(user.id)
-            rec ?: return false
-            if (!rec.email.equals(user.email)) {
-                if (mailExists(user.email)) {
-                    return false
-                }
-            }
-        }
-        rec ?: return false
-        rec.email = user.email
-        rec.debitorId = user.debitorId
-        rec.alias = user.alias
-        rec.role = user.role
-        rec.password = user.password
-        //rec.salt = user.salt
-        rec.firstname = user.firstName
-        rec.lastname = user.lastName
-        rec.active = isActive
-        rec.externalUser = isExternalUser
-        rec.phone = user.phone
-        rec.expiresOn = user.expiresOn
-
-        if (rec.store() > 0) returnValue = true else returnValue = false
-        if (returnValue && user.password != null) {
-            rec.setHashedPassword(rec.password)
-            rec.store()
-        }
-        return returnValue
-    }
 
     fun updateByEmail(email: String, user: User): Boolean {
         var returnValue = false

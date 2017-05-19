@@ -110,6 +110,7 @@ abstract class RestClientConfiguration {
                         return listOf(user1)
                     }
 
+
                     /*
                                         override fun get(id: Int): User {
                                             return user1
@@ -120,10 +121,9 @@ abstract class RestClientConfiguration {
 
                     override fun create(user: User) {
                     }
-/*
-                    override fun delete(id: Int) {
-                    }
-                    */
+
+
+
                 }
             }
 

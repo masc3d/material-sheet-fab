@@ -12,6 +12,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import org.deku.leoz.service.internal.UserService
+import javax.ws.rs.HeaderParam
 import javax.ws.rs.core.Response
 
 /**
@@ -31,13 +32,24 @@ class UserService : UserService {
     @Inject
     private lateinit var userRepository: UserJooqRepository
 
-    override fun get(email: String?, debitorId: Int?): List<User> {
+    override fun get(email: String?, debitorId: Int?, apiKey: String?): List<User> {
+        var debitor_id = debitorId
+
+        if (debitor_id == null && email == null) {
+            apiKey ?:
+                    throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+            val authorizedUserRecord = userRepository.findByKey(apiKey)
+            debitor_id = authorizedUserRecord?.debitorId
+
+        }
+
         when {
-            debitorId != null -> {
-                val userRecList = userRepository.findByDebitorId(debitorId)
-                        ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
+
+            debitor_id != null -> {
+                val userRecList = userRepository.findByDebitorId(debitor_id)
+                        ?: throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "no user found by debitor-id")
                 if (userRecList.isEmpty())
-                    throw DefaultProblem(status = Response.Status.NOT_FOUND)
+                    throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "no user found by debitor-id")
                 val user = mutableListOf<User>()
                 userRecList.forEach {
                     user.add(patchRecord2User(it))
@@ -46,17 +58,20 @@ class UserService : UserService {
             }
             email != null -> {
                 val userRecord = userRepository.findByMail(email)
-                        ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
+                        ?: throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "no user found by email")
                 return listOf(patchRecord2User(userRecord))
             }
             else -> {
                 // All query params are omitted.
                 // We may return all users here at one point, for those who require it
                 // In this case we should sensibly check if the user is allowed to do that.
+
                 throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+
             }
         }
     }
+
 
     fun patchRecord2User(userRecord: MstUserRecord): User {
         val active = when (userRecord.active?.toInt()) {
@@ -81,13 +96,13 @@ class UserService : UserService {
                 active,
                 externalUser,
                 userRecord.phone,
-                userRecord.expiresOn, userRecord.id
+                userRecord.expiresOn//, userRecord.id
         )
         return user
     }
 
     override fun create(user: User) {
-        user.id = 0
+        //user.id = 0
         update(user.email, user)
 
 
@@ -105,6 +120,8 @@ class UserService : UserService {
             throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "invalid user role or duplicate email or duplicate alias or missing debitorId")
 
     }
+
+
 /*
     override fun delete(id: Int) {
         if (!userRepository.deleteById(id))

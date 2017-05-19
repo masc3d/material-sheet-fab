@@ -16,10 +16,11 @@ import sx.rs.PATCH
 @Api(value = "User operations")
 interface UserService {
     companion object {
-        const val ID = "id"
+        //const val ID = "id"
         const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
-        const val DEBITOR_NO = "debitor-no"
+        //const val DEBITOR_NO = "debitor-no"
+        const val HEADERPARAM_APIKEY="x-api-key"
     }
 
     /**
@@ -31,8 +32,11 @@ interface UserService {
     @ApiOperation(value = "Get user")
     fun get(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
-            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null
+            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
+            @HeaderParam(HEADERPARAM_APIKEY) apiKey:String?
     ): List<User>
+
+
 
     /**
      * Get user
@@ -73,4 +77,14 @@ interface UserService {
     @ApiOperation(value = "Delete user")
     fun delete(@ApiParam(value = "User ID") @PathParam(ID) id: Int)
     */
+
+
+
+    /*
+        @GET
+        @Path("/debitor/")
+        @ApiOperation(value = "Get user of debitor-no")
+        fun getUserByDebitorNo(@QueryParam(DEBITORNO) @ApiParam(value = "Debitor No") debitorNo: Double): List<User>
+    */
+
 }

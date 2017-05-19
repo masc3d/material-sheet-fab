@@ -48,9 +48,9 @@ data class User(
         var phone: String? = null,
 
         @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
-        var expiresOn: java.sql.Date? = null,
+        var expiresOn: java.sql.Date? = null
 
-        var id: Int = 0
+        //var id: Int = 0
 ) {
     companion object {
         const val ROLE_ADMINISTRATOR: String = "ADMIN"
