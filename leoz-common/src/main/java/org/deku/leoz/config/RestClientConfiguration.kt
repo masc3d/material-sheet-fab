@@ -106,7 +106,7 @@ abstract class RestClientConfiguration {
                     )
                     val user2 = user1.copy(email = "foo2@bar.com")
 
-                    override fun get(email: String?, debitorId: Int?): List<User> {
+                    override fun get(email: String?, debitorId: Int?,apiKey:String?): List<User> {
                         return listOf(user1)
                     }
 
