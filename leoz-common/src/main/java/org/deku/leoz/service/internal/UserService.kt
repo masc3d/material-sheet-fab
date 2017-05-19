@@ -38,11 +38,12 @@ interface UserService {
      * Get user
      * @param id Id of user
      */
+    /*
     @GET
     @Path("/{${ID}}")
     @ApiOperation(value = "Get user")
     fun get(@ApiParam(value = "User ID") @PathParam(ID) id: Int): User
-
+*/
     /**
      * Create user
      * @param user User to create
@@ -58,17 +59,18 @@ interface UserService {
      * @param user User entity
      */
     @PUT
-    @Path("/{$ID}")
+    @Path("/")
     @ApiOperation(value = "Update user")
-    fun update(@ApiParam(value = "User ID") @PathParam(ID) id: Int, @ApiParam(value = "User") user: User)
+    fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String, @ApiParam(value = "User") user: User)
 
     /**
      * Delete user
      * @param id Id of user to delete
      */
+    /*
     @DELETE
     @Path("/{${ID}}")
     @ApiOperation(value = "Delete user")
     fun delete(@ApiParam(value = "User ID") @PathParam(ID) id: Int)
-
+    */
 }

@@ -98,7 +98,7 @@ abstract class RestClientConfiguration {
                             /*salt = "salt",*/
                             firstName = "Foo",
                             lastName = "Bar",
-/*                            apiKey = "a1b2c3d4e5g6",*/
+                            /*                            apiKey = "a1b2c3d4e5g6",*/
                             active = true,
                             externalUser = false,
                             phone = "+491725405765",
@@ -110,18 +110,20 @@ abstract class RestClientConfiguration {
                         return listOf(user1)
                     }
 
-                    override fun get(id: Int): User {
-                        return user1
-                    }
-
-                    override fun update(id: Int, user: User) {
+                    /*
+                                        override fun get(id: Int): User {
+                                            return user1
+                                        }
+                    */
+                    override fun update(email: String, user: User) {
                     }
 
                     override fun create(user: User) {
                     }
-
+/*
                     override fun delete(id: Int) {
                     }
+                    */
                 }
             }
 

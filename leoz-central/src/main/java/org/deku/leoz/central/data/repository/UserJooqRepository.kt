@@ -15,6 +15,8 @@ import javax.inject.Named
 import org.deku.leoz.central.data.jooq.tables.MstDebitor
 import org.deku.leoz.service.internal.entity.User
 import org.jooq.impl.DSL.*
+import org.deku.leoz.service.internal.entity.UserRole
+
 
 /**
  * User repository
@@ -70,8 +72,11 @@ open class UserJooqRepository {
                         .on(Tables.MST_USER.DEBITOR_ID.eq(Tables.MST_DEBITOR.DEBITOR_ID)))
                 .where(Tables.MST_USER.ALIAS.eq(alias).and(Tables.MST_DEBITOR.DEBITOR_NR.eq(debitor)))?.fetchOneInto(MstUser.MST_USER)
     }
+    fun findByAlias(alias: String, debitorid: Int): MstUserRecord? {
+        return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ALIAS.eq(alias).and(Tables.MST_USER.DEBITOR_ID.eq(debitorid)))
+    }
 
-    fun findByDebitorId(id:Int):List<MstUserRecord>? {
+    fun findByDebitorId(id: Int): List<MstUserRecord>? {
         return dslContext
                 .select()
                 .from(Tables.MST_USER).where(Tables.MST_USER.DEBITOR_ID.eq(id))
@@ -80,6 +85,9 @@ open class UserJooqRepository {
 
     fun aliasExists(alias: String, debitor: Double): Boolean {
         return findByAlias(alias, debitor) != null
+    }
+    fun aliasExists(alias: String, debitorid: Int): Boolean {
+        return findByAlias(alias, debitorid) != null
     }
 
     fun mailExists(mail: String): Boolean {
@@ -102,6 +110,12 @@ open class UserJooqRepository {
         return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ID.eq(id))
     }
 
+    fun findDebitorIdByNr(no: Double): Int? {
+        return dslContext.select(Tables.MST_DEBITOR.DEBITOR_ID).from(Tables.MST_DEBITOR).where(Tables.MST_DEBITOR.DEBITOR_NR.eq(no))
+                .fetchOneInto(Int::class.java)
+    }
+
+
     fun deleteById(id: Int): Boolean {
         return if (dslContext.delete(Tables.MST_USER).where(Tables.MST_USER.ID.eq(id)).execute() > 0) true else false
     }
@@ -114,6 +128,8 @@ open class UserJooqRepository {
 
     fun updateById(user: User): Boolean {
         var returnValue = false
+        if (!UserRole.values().any { it.name == user.role })
+            return false
 
         val isActive: Int
         if (user.active == null || user.active == false) isActive = 0 else isActive = -1
@@ -155,4 +171,66 @@ open class UserJooqRepository {
         }
         return returnValue
     }
+
+    fun updateByEmail(email: String, user: User): Boolean {
+        var returnValue = false
+
+        if (!UserRole.values().any { it.name == user.role })
+            return false
+
+        user.alias ?: return false
+        user.debitorId ?: return false
+
+        val isActive: Int
+        if (user.active == null || user.active == false) isActive = 0 else isActive = -1
+
+        val isExternalUser: Int
+        if (user.externalUser == null || user.externalUser == false) isExternalUser = 0 else isExternalUser = -1
+
+        val rec: MstUserRecord?
+
+        if (findByMail(email) == null && !mailExists(user.email) && !aliasExists(user.alias!!, user.debitorId!!)) {
+            rec = dslContext.newRecord(Tables.MST_USER)
+        } else {
+            rec = findByMail(email)
+            rec ?: return false
+            if (!rec.email.equals(user.email)) {
+                if (mailExists(user.email)) {
+                    return false
+                }
+            }
+            if (!rec.alias.equals(user.alias) || rec.debitorId != user.debitorId) {
+                if (aliasExists(user.alias!!, user.debitorId!!)) {
+                    return false
+                }
+            }
+
+        }
+
+
+        rec ?: return false
+
+
+
+        rec.email = user.email
+        rec.debitorId = user.debitorId
+        rec.alias = user.alias
+        rec.role = user.role
+        rec.password = user.password
+        //rec.salt = user.salt
+        rec.firstname = user.firstName
+        rec.lastname = user.lastName
+        rec.active = isActive
+        rec.externalUser = isExternalUser
+        rec.phone = user.phone
+        rec.expiresOn = user.expiresOn
+
+        if (rec.store() > 0) returnValue = true else returnValue = false
+        if (returnValue && user.password != null) {
+            rec.setHashedPassword(rec.password)
+            rec.store()
+        }
+        return returnValue
+    }
+
 }
