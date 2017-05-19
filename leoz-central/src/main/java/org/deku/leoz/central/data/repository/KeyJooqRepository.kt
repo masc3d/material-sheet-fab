@@ -21,15 +21,23 @@ class KeyJooqRepository {
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     lateinit var dslContext: DSLContext
 
-    fun findByID(ID:   Int): MstKeyRecord? {
-        if (ID==0)
+    fun findByID(ID: Int): MstKeyRecord? {
+        if (ID == 0)
             return null
         else
-            return dslContext.fetchOne( MstKey.MST_KEY,Tables.MST_KEY.KEY_ID.eq(ID))
+            return dslContext.fetchOne(MstKey.MST_KEY, Tables.MST_KEY.KEY_ID.eq(ID))
     }
 
-    fun findValidByKey(Key:   String): Boolean {
-        return ( dslContext.fetchOne( MstKey.MST_KEY,Tables.MST_KEY.KEY.eq(Key) ) != null)
+    fun findValidByKey(Key: String): Boolean {
+        return (dslContext.fetchOne(MstKey.MST_KEY, Tables.MST_KEY.KEY.eq(Key)) != null)
     }
 
+    fun insertNew(Key: String): Int {
+
+        val r = dslContext.newRecord(Tables.MST_KEY)
+        r.key = Key
+        r.store()
+
+        return dslContext.lastID().toInt()
+    }
 }

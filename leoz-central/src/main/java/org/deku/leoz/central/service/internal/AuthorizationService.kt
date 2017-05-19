@@ -1,5 +1,6 @@
 package org.deku.leoz.central.service.internal
 
+import org.apache.commons.lang3.RandomStringUtils
 import org.deku.leoz.central.data.repository.KeyJooqRepository
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
@@ -124,15 +125,20 @@ class AuthorizationService
                     title = "User authentication failed: no valid user-role",
                     status = Response.Status.UNAUTHORIZED)
 
+        var keyRecord = this.keyRepository.findByID(userRecord.keyId)
 
-        val keyRecord = this.keyRepository.findByID(userRecord.keyId)
-        if (keyRecord == null)
-            throw DefaultProblem(title = "UserKey does not exist")
-        //todo generate key and write mstkey and user id
+        if (keyRecord == null) {
+            val keyID = this.keyRepository.insertNew(RandomStringUtils.randomAlphanumeric(30))
+            this.userRepository.updateKeyIdById(userRecord.id, keyID)
+            keyRecord = this.keyRepository.findByID(keyID)
+        }
+
+        if (keyRecord == null || keyRecord.key.length < 30)
+            throw DefaultProblem(title = "UserKey not valid")
 
         return AuthorizationService.WebResponse(
                 key = keyRecord.key,
-                debitorNo = df.format(debitorNo),
+                debitorNo = userRecord.debitorId.toString(),
                 userRole = userRecord.role)
     }
 

@@ -127,7 +127,12 @@ open class UserJooqRepository {
         return if (dslContext.delete(Tables.MST_USER).where(Tables.MST_USER.ID.eq(id)).execute() > 0) true else false
     }
 
-
+    fun updateKeyIdById(id: Int, keyID: Int): Boolean {
+        val rec = findById(id)
+        rec ?: return false
+        rec.keyId = keyID
+        return (rec.store() > 0)
+    }
 
     fun updateByEmail(email: String, user: User): Boolean {
         var returnValue = false
