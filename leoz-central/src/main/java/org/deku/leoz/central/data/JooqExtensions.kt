@@ -3,6 +3,7 @@ package org.deku.leoz.central.data
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
 import org.jooq.Record
 import org.jooq.ResultQuery
+import org.jooq.exception.DataAccessException
 import org.jooq.types.UInteger
 
 /**
@@ -19,7 +20,8 @@ fun <R, T> ResultQuery<R>.prepared(block: (q: ResultQuery<R>) -> T): T where R :
     } catch(e: Throwable) {
         val closeOnExceptions = listOf<Class<*>>(
                 CommunicationsException::class.java,
-                com.mysql.jdbc.CommunicationsException::class.java
+                com.mysql.jdbc.CommunicationsException::class.java,
+                DataAccessException::class.java
         )
 
         if (closeOnExceptions.contains(e.javaClass) || (e.cause != null && closeOnExceptions.contains(e.cause!!.javaClass))) {
