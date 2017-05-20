@@ -28,9 +28,13 @@ fun MqChannel.toJms(
 
     return JmsChannel(
             context = context,
+            sessionTransacted = sessionTransacted,
+            deliveryMode = if (this.persistent)
+                JmsClient.DeliveryMode.Persistent
+            else
+                JmsClient.DeliveryMode.NonPersistent,
             destination = context.createDestination(this),
             converter = DefaultJmsConverter(this.serializer),
-            sessionTransacted = sessionTransacted,
             priority = priority,
             ttl = ttl,
             autoCommit = autoCommit,
