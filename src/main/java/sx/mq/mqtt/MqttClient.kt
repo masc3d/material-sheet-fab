@@ -1,15 +1,16 @@
 package sx.mq.mqtt
 
 import io.reactivex.Observable
-import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener
-import org.eclipse.paho.client.mqttv3.MqttAsyncClient
-import org.eclipse.paho.client.mqttv3.MqttMessage
+import org.eclipse.paho.client.mqttv3.*
+import org.slf4j.LoggerFactory
 import sx.LazyInstance
+import sx.mq.mqtt.paho.MqttRxClient
 import sx.time.Duration
+import java.lang.UnsupportedOperationException
 import java.util.concurrent.TimeUnit
 
 /**
+ * MQTT channel client
  * @property channel Mqtt channel
  * Created by masc on 07.05.17.
  */
@@ -17,12 +18,15 @@ class MqttClient(
         val channel: MqttChannel
 ) : sx.mq.MqClient {
 
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     companion object {
-        val DEFAULT_RECEIVE_TIMEOUT = Duration.ofSeconds(10)
+        val DEFAULT_SEND_TIMEOUT = Duration.ofSeconds(5)
     }
 
     val mqttClient by lazy {
-        this.channel.context.client()
+        MqttRxClient(
+                this.channel.context.client())
     }
 
     override fun close() {
@@ -30,38 +34,19 @@ class MqttClient(
     }
 
     override fun <T> receive(messageType: Class<T>): T {
-        return Observable.create<T> {
-            try {
-                this.mqttClient.subscribe(
-                        this.channel.topicName,
-                        this.channel.qos,
-                        object : IMqttMessageListener {
-                            override fun messageArrived(topic: String, message: MqttMessage) {
-                                try {
-                                    @Suppress("UNCHECKED_CAST")
-                                    it.onNext(
-                                            this@MqttClient.channel.serializer.deserializeFrom(message.payload) as T)
-                                    it.onComplete()
-                                } catch(e: Throwable) {
-                                    it.onError(e)
-                                }
-                            }
-                        }).waitForCompletion(DEFAULT_RECEIVE_TIMEOUT.toMillis())
-            } catch(e: Throwable) {
-                it.onError(e)
-            }
-        }
-                .timeout(DEFAULT_RECEIVE_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
-                .blockingFirst()
+        throw UnsupportedOperationException("MQTT channel clients do not support receiving messages on demand")
     }
 
     override fun send(message: Any) {
-        val mqttMessage = MqttMessage(this.channel.serializer.serializeToByteArray(message))
+        val mqttMessage = MqttMessage(
+                // Payload
+                this.channel.serializer.serializeToByteArray(message))
+
         mqttMessage.qos = this.channel.qos
 
-        this.mqttClient.publish(
-                this.channel.topicName,
-                mqttMessage
-        )
+        this.mqttClient
+                .publish(this.channel.topicName, mqttMessage)
+                .timeout(DEFAULT_SEND_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
+                .blockingAwait()
     }
 }
