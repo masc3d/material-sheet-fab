@@ -66,12 +66,12 @@ open class UserJooqRepository {
     }
 
     fun findByAlias(alias: String, debitor: Double): MstUserRecord? {
-        //return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ALIAS.eq(alias))
         return dslContext.select()
                 .from(Tables.MST_USER.innerJoin(Tables.MST_DEBITOR)
                         .on(Tables.MST_USER.DEBITOR_ID.eq(Tables.MST_DEBITOR.DEBITOR_ID)))
                 .where(Tables.MST_USER.ALIAS.eq(alias).and(Tables.MST_DEBITOR.DEBITOR_NR.eq(debitor)))?.fetchOneInto(MstUser.MST_USER)
     }
+
     fun findByAlias(alias: String, debitorid: Int): MstUserRecord? {
         return dslContext.fetchOne(MstUser.MST_USER, Tables.MST_USER.ALIAS.eq(alias).and(Tables.MST_USER.DEBITOR_ID.eq(debitorid)))
     }
@@ -86,6 +86,7 @@ open class UserJooqRepository {
     fun aliasExists(alias: String, debitor: Double): Boolean {
         return findByAlias(alias, debitor) != null
     }
+
     fun aliasExists(alias: String, debitorid: Int): Boolean {
         return findByAlias(alias, debitorid) != null
     }
@@ -93,11 +94,6 @@ open class UserJooqRepository {
     fun mailExists(mail: String): Boolean {
         return findByMail(mail) != null
     }
-
-//    fun hasAuthorizedKey(key: String): Boolean {
-//        val userRecord = this.findByKey(key) ?: return false
-//        return userRecord.active != 0 && userRecord.expiresOn.toLocalDate().isAfter(Date().toLocalDate())
-//    }
 
     fun findDebitorNoById(id: Int): Double? {
         return dslContext.select(Tables.MST_DEBITOR.DEBITOR_NR)
@@ -115,7 +111,7 @@ open class UserJooqRepository {
                 .fetchOneInto(Int::class.java)
     }
 
-    fun findByKey(apiKey:String):MstUserRecord? {
+    fun findByKey(apiKey: String): MstUserRecord? {
         return dslContext.select()
                 .from(Tables.MST_USER.innerJoin(Tables.MST_KEY)
                         .on(Tables.MST_USER.KEY_ID.eq(Tables.MST_KEY.KEY_ID)))
@@ -166,20 +162,15 @@ open class UserJooqRepository {
                     return false
                 }
             }
-
         }
 
-
         rec ?: return false
-
-
 
         rec.email = user.email
         rec.debitorId = user.debitorId
         rec.alias = user.alias
         rec.role = user.role
         rec.password = user.password
-        //rec.salt = user.salt
         rec.firstname = user.firstName
         rec.lastname = user.lastName
         rec.active = isActive
