@@ -1,18 +1,17 @@
-package org.deku.leoz.messaging
+package sx.mq.jms
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
-import org.deku.leoz.config.ActiveMQConfiguration
-import org.deku.leoz.config.MessagingTestConfiguration
 import org.junit.After
-import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.mq.jms.activemq.ActiveMQBroker
+import sx.logging.slf4j.info
+import sx.mq.MqBroker
+import sx.mq.config.MqTestConfiguration
+import javax.jms.ConnectionFactory
 import javax.jms.DeliveryMode
-import sx.logging.slf4j.*
 
 /**
  * Created by masc on 20/02/16.
@@ -21,12 +20,13 @@ class JmsTest {
     val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
-        Kodein.global.addImport(MessagingTestConfiguration.module)
+        Kodein.global.addImport(MqTestConfiguration.module)
     }
 
-    val broker: ActiveMQBroker by Kodein.global.lazy.instance()
+    val broker: MqBroker by Kodein.global.lazy.instance()
+    val connectionFactory: ConnectionFactory by Kodein.global.lazy.instance()
 
-    @Before
+    @org.junit.Before
     fun setup() {
         this.broker.start()
     }
@@ -38,7 +38,7 @@ class JmsTest {
 
     @Test
     fun testTemporaryQueueSendReceiveWithTransaction() {
-        val cn = ActiveMQConfiguration.connectionFactory.createConnection()
+        val cn = connectionFactory.createConnection()
         cn.start()
         val s = cn.createSession(true, -1)
         val q = s.createTemporaryQueue()

@@ -1,4 +1,4 @@
-package sx.mq.jms.prototype.artemis
+package sx.mq.jms.artemis
 
 import org.apache.activemq.artemis.api.core.TransportConfiguration
 import org.apache.activemq.artemis.api.jms.ActiveMQJMSClient
@@ -8,7 +8,6 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants
 import org.junit.Test
 import org.springframework.jms.connection.CachingConnectionFactory
 import sx.mq.MqBroker
-import sx.mq.jms.artemis.ArtemisBroker
 import java.io.File
 
 /**

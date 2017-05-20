@@ -1,13 +1,10 @@
-package org.deku.leoz.messaging
+package sx.mq.mqtt
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.apache.activemq.broker.region.virtual.CompositeTopic
-import org.deku.leoz.config.MessagingTestConfiguration
-import org.deku.leoz.config.MqConfiguration
-import org.deku.leoz.log.LogMessage
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
@@ -15,23 +12,20 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.io.serialization.JacksonSerializer
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
+import sx.mq.DestinationType
 import sx.mq.MqChannel
 import sx.mq.MqClient
-import sx.mq.DestinationType
 import sx.mq.MqHandler
+import sx.mq.config.MqTestConfiguration
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.activemq.ActiveMQContext
 import sx.mq.jms.activemq.ActiveMQPooledConnectionFactory
 import sx.mq.jms.client
 import sx.mq.jms.listeners.SpringJmsListener
 import sx.mq.jms.toJms
-import sx.mq.mqtt.MqttContext
-import sx.mq.mqtt.MqttListener
-import sx.mq.mqtt.client
-import sx.mq.mqtt.toMqtt
+import sx.mq.message.TestMessage
 import sx.time.Duration
 import java.net.URI
 import java.util.concurrent.Executors
@@ -44,7 +38,7 @@ class MqttTest {
     val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
-        Kodein.global.addImport(MessagingTestConfiguration.module)
+        Kodein.global.addImport(MqTestConfiguration.module)
     }
 
     val broker: ActiveMQBroker by Kodein.global.lazy.instance()
@@ -75,8 +69,8 @@ class MqttTest {
     private val connectOptions: MqttConnectOptions by lazy {
         val mqttConnectOptions = MqttConnectOptions()
         mqttConnectOptions.isCleanSession = false
-        mqttConnectOptions.userName = MqConfiguration.USERNAME
-        mqttConnectOptions.password = MqConfiguration.PASSWORD.toCharArray()
+        mqttConnectOptions.userName = MqTestConfiguration.USERNAME
+        mqttConnectOptions.password = MqTestConfiguration.PASSWORD.toCharArray()
         mqttConnectOptions
     }
 
@@ -88,8 +82,8 @@ class MqttTest {
 
     val jmsContext by lazy {
         ActiveMQContext(ActiveMQPooledConnectionFactory(URI.create("tcp://localhost:61616"),
-                username = MqConfiguration.USERNAME,
-                password = MqConfiguration.PASSWORD))
+                username = MqTestConfiguration.USERNAME,
+                password = MqTestConfiguration.PASSWORD))
     }
 
     val mqttContext by lazy {
@@ -102,7 +96,7 @@ class MqttTest {
     /** Topic channel for testing notifications */
     val topicChannel by lazy {
         MqChannel(
-                destinationName = "leoz.test.topic",
+                destinationName = "test.topic",
                 destinationType = DestinationType.Topic,
                 persistent = true,
                 serializer = KryoSerializer().gzip
@@ -112,7 +106,7 @@ class MqttTest {
     /** Queue channel for testing queues with topic forwarding via mqtt */
     val queueChannel by lazy {
         MqChannel(
-                destinationName = "leoz.test.queue",
+                destinationName = "test.queue",
                 destinationType = DestinationType.Queue,
                 persistent = true,
                 serializer = KryoSerializer().gzip
@@ -122,7 +116,7 @@ class MqttTest {
     /** Virtual topic used for mqtt clients to post to queue */
     val queueTopicChannel by lazy {
         MqChannel(
-                destinationName = "leoz.test.queue.topic",
+                destinationName = "test.queue.topic",
                 destinationType = DestinationType.Topic,
                 serializer = KryoSerializer().gzip
         )
@@ -171,8 +165,8 @@ class MqttTest {
         }
 
         // Setup log message listener
-        listener.addDelegate(object : MqHandler<LogMessage> {
-            override fun onMessage(message: LogMessage, replyClient: MqClient?) {
+        listener.addDelegate(object : MqHandler<TestMessage> {
+            override fun onMessage(message: TestMessage, replyClient: MqClient?) {
                 log.info("${message}: ${message.logEntries.count()}")
             }
         })
@@ -196,10 +190,10 @@ class MqttTest {
 
         // Setup log message listener
         listener.addDelegate(object : MqHandler<Any> {
-            @MqHandler.Types(LogMessage::class)
+            @MqHandler.Types(TestMessage::class)
             override fun onMessage(message: Any, replyClient: MqClient?) {
                 when (message) {
-                    is LogMessage -> {
+                    is TestMessage -> {
                         log.info("MQTT ${message}: ${message.logEntries.count()}")
                     }
                 }
@@ -214,7 +208,7 @@ class MqttTest {
      */
     @Test
     fun testPublishToQueueTopicViaJms() {
-        val logMessage = LogMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
+        val logMessage = TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
 
         // Receive
         jmsQueueTopicChannel.client().use {
@@ -230,7 +224,7 @@ class MqttTest {
      */
     @Test
     fun testPublishToTopicTopicViaJms() {
-        val logMessage = LogMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
+        val logMessage = TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
 
         // Receive
         jmsTopicChannel.client().use {
@@ -248,7 +242,7 @@ class MqttTest {
     fun testPublishToQueueTopicViaMqtt() {
         this.mqttQueueTopicChannel.client().use {
             for (i in 0..100) {
-                val logMessage = LogMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
+                val logMessage = TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
                 it.send(logMessage)
             }
         }
@@ -260,11 +254,11 @@ class MqttTest {
     @Test
     fun testSendAndReceiveMqttTopic() {
         this.mqttTopicChannel.client().use {
-            it.send(LogMessage(nodeKey = "MqttPublisher", logEntries = arrayOf()))
+            it.send(TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf()))
         }
 
         this.mqttTopicChannel.client().use {
-            log.info("${it.receive(LogMessage::class.java)}")
+            log.info("${it.receive(TestMessage::class.java)}")
         }
     }
 }

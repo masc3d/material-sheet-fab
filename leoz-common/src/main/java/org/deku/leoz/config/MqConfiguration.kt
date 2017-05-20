@@ -1,6 +1,5 @@
 package org.deku.leoz.config
 
-import com.fasterxml.jackson.databind.JsonSerializable
 import org.deku.leoz.identity.Identity
 import sx.io.serialization.JacksonSerializer
 import sx.io.serialization.KryoSerializer
