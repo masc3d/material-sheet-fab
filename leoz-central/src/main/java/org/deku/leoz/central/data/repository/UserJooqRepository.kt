@@ -15,7 +15,6 @@ import javax.inject.Named
 import org.deku.leoz.central.data.jooq.tables.MstDebitor
 import org.deku.leoz.service.internal.entity.User
 import org.jooq.impl.DSL.*
-import org.deku.leoz.service.internal.entity.UserRole
 
 
 /**
@@ -130,60 +129,34 @@ open class UserJooqRepository {
         return (rec.store() > 0)
     }
 
-    fun updateByEmail(email: String, user: User): Boolean {
-        var returnValue = false
-
-        if (!UserRole.values().any { it.name == user.role })
-            return false
-
-        user.alias ?: return false
-        user.debitorId ?: return false
-
-        val isActive: Int
-        if (user.active == null || user.active == false) isActive = 0 else isActive = -1
-
-        val isExternalUser: Int
-        if (user.externalUser == null || user.externalUser == false) isExternalUser = 0 else isExternalUser = -1
-
-        val rec: MstUserRecord?
-
-        if (findByMail(email) == null && !mailExists(user.email) && !aliasExists(user.alias!!, user.debitorId!!)) {
-            rec = dslContext.newRecord(Tables.MST_USER)
-        } else {
-            rec = findByMail(email)
-            rec ?: return false
-            if (!rec.email.equals(user.email)) {
-                if (mailExists(user.email)) {
-                    return false
-                }
-            }
-            if (!rec.alias.equals(user.alias) || rec.debitorId != user.debitorId) {
-                if (aliasExists(user.alias!!, user.debitorId!!)) {
-                    return false
-                }
-            }
-        }
-
-        rec ?: return false
-
-        rec.email = user.email
-        rec.debitorId = user.debitorId
-        rec.alias = user.alias
-        rec.role = user.role
-        rec.password = user.password
-        rec.firstname = user.firstName
-        rec.lastname = user.lastName
-        rec.active = isActive
-        rec.externalUser = isExternalUser
-        rec.phone = user.phone
-        rec.expiresOn = user.expiresOn
-
-        if (rec.store() > 0) returnValue = true else returnValue = false
-        if (returnValue && user.password != null) {
-            rec.setHashedPassword(rec.password)
-            rec.store()
-        }
-        return returnValue
+    fun save(userRecord: MstUserRecord): Boolean {
+        userRecord ?: return false
+        return (userRecord.store() > 0)
     }
 
 }
+
+fun MstUserRecord.toUser(): User {
+
+    val user = User(this.email,
+            this.debitorId,
+            /*null,*/
+            this.alias,
+            this.role,
+            this.password,
+            /*userRecord.salt,*/
+            this.firstname,
+            this.lastname,
+            /*userRecord.apiKey,*/
+            this.isActive,
+            this.isExternalUser,
+            this.phone,
+            this.expiresOn//, userRecord.id
+    )
+    return user
+}
+
+val MstUserRecord.isActive: Boolean
+    get() = (this.active ?: 0) != 0
+val MstUserRecord.isExternalUser: Boolean
+    get() = (this.externalUser ?: 0) != 0

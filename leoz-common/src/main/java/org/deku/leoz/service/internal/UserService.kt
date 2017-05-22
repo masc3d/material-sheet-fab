@@ -20,7 +20,7 @@ interface UserService {
         const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
         //const val DEBITOR_NO = "debitor-no"
-        const val HEADERPARAM_APIKEY="x-api-key"
+        const val HEADERPARAM_APIKEY = "x-api-key"
     }
 
     /**
@@ -33,21 +33,10 @@ interface UserService {
     fun get(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
-            @HeaderParam(HEADERPARAM_APIKEY) apiKey:String?
+            @HeaderParam(HEADERPARAM_APIKEY) apiKey: String?
     ): List<User>
 
 
-
-    /**
-     * Get user
-     * @param id Id of user
-     */
-    /*
-    @GET
-    @Path("/{${ID}}")
-    @ApiOperation(value = "Get user")
-    fun get(@ApiParam(value = "User ID") @PathParam(ID) id: Int): User
-*/
     /**
      * Create user
      * @param user User to create
@@ -55,7 +44,7 @@ interface UserService {
     @POST
     @Path("/")
     @ApiOperation(value = "Create user")
-    fun create(@ApiParam(value = "User") user: User)
+    fun create(@ApiParam(value = "User") user: User, @HeaderParam(HEADERPARAM_APIKEY) apiKey: String?)
 
     /**
      * Update user (replaces entire user)
@@ -65,26 +54,8 @@ interface UserService {
     @PUT
     @Path("/")
     @ApiOperation(value = "Update user")
-    fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String, @ApiParam(value = "User") user: User)
-
-    /**
-     * Delete user
-     * @param id Id of user to delete
-     */
-    /*
-    @DELETE
-    @Path("/{${ID}}")
-    @ApiOperation(value = "Delete user")
-    fun delete(@ApiParam(value = "User ID") @PathParam(ID) id: Int)
-    */
-
-
-
-    /*
-        @GET
-        @Path("/debitor/")
-        @ApiOperation(value = "Get user of debitor-no")
-        fun getUserByDebitorNo(@QueryParam(DEBITORNO) @ApiParam(value = "Debitor No") debitorNo: Double): List<User>
-    */
+    fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String,
+               @ApiParam(value = "User") user: User,
+               @HeaderParam(HEADERPARAM_APIKEY) apiKey: String?)
 
 }

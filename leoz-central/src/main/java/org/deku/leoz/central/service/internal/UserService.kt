@@ -1,8 +1,11 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.MstUserRecord
 import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
+import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.entity.User
 import org.jooq.DSLContext
@@ -12,6 +15,9 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import org.deku.leoz.service.internal.UserService
+import org.deku.leoz.service.internal.entity.UserRole
+import org.deku.leoz.service.internal.entity.isActive
+import org.deku.leoz.service.internal.entity.isExternalUser
 import javax.ws.rs.HeaderParam
 import javax.ws.rs.core.Response
 
@@ -52,14 +58,14 @@ class UserService : UserService {
                     throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "no user found by debitor-id")
                 val user = mutableListOf<User>()
                 userRecList.forEach {
-                    user.add(patchRecord2User(it))
+                    user.add(it.toUser())
                 }
                 return user.toList()
             }
             email != null -> {
                 val userRecord = userRepository.findByMail(email)
                         ?: throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "no user found by email")
-                return listOf(patchRecord2User(userRecord))
+                return listOf(userRecord.toUser())
             }
             else -> {
                 // All query params are omitted.
@@ -73,65 +79,80 @@ class UserService : UserService {
     }
 
 
-    fun patchRecord2User(userRecord: MstUserRecord): User {
-        val active = when (userRecord.active?.toInt()) {
-            1, -1 -> true
-            else -> false
-        }
-        val externalUser = when (userRecord.externalUser?.toInt()) {
-            1, -1 -> true
-            else -> false
-        }
-
-        val user = User(userRecord.email,
-                userRecord.debitorId,
-                /*null,*/
-                userRecord.alias,
-                userRecord.role,
-                userRecord.password,
-                /*userRecord.salt,*/
-                userRecord.firstname,
-                userRecord.lastname,
-                /*userRecord.apiKey,*/
-                active,
-                externalUser,
-                userRecord.phone,
-                userRecord.expiresOn//, userRecord.id
-        )
-        return user
-    }
-
-    override fun create(user: User) {
-        //user.id = 0
-        update(user.email, user)
-
+    override fun create(user: User, apiKey: String?) {
+        update(user.email, user, apiKey)
 
     }
 
-    override fun update(email: String, user: User) {
+    override fun update(email: String, user: User, apiKey: String?) {
 
-        //debitorID ?
-        //role ok?
+
+        apiKey ?:
+                throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "no apiKey")
+        val authorizedUserRecord = userRepository.findByKey(apiKey)
+        authorizedUserRecord ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "login user not found")
+
         if (user.email == "@")
             throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "invalid email")
         user.role = user.role?.toUpperCase() ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "no user role")
 
-        if (!userRepository.updateByEmail(email, user))
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "invalid user role or duplicate email or duplicate alias or missing debitorId")
+
+        if (!UserRole.values().any { it.name == user.role })
+            throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "user role unknown")
+
+        user.alias ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "no alias")
+        user.debitorId ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "no debitorId")
+
+        if (!UserRole.values().any { it.name == authorizedUserRecord.role })
+            throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "login user role unknown")
+
+        if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMINISTRATOR) {
+            if (authorizedUserRecord.debitorId != user.debitorId) {
+                throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "login user can not change debitorId")
+            }
+        }
+        val userRole = user.role ?: UserRole.CUSTOMER.toString()
+        if (UserRole.valueOf(authorizedUserRecord.role).value < UserRole.valueOf(userRole).value) {
+            throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "login user can not create/change user - no permission")
+        }
+
+
+        val rec: MstUserRecord?
+
+        if (userRepository.findByMail(email) == null && !userRepository.mailExists(user.email) && !userRepository.aliasExists(user.alias!!, user.debitorId!!)) {
+            rec = dslContext.newRecord(Tables.MST_USER)
+        } else {
+            rec = userRepository.findByMail(email)
+            rec ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "user unknown")
+            if (!rec.email.equals(user.email)) {
+                if (userRepository.mailExists(user.email)) {
+                    throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "duplicate email")
+                }
+            }
+            if (!rec.alias.equals(user.alias) || rec.debitorId != user.debitorId) {
+                if (userRepository.aliasExists(user.alias!!, user.debitorId!!)) {
+                    throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "duplicate alias or debitorId")
+                }
+            }
+        }
+
+        rec ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "not found")
+
+        rec.email = user.email
+        rec.debitorId = user.debitorId
+        rec.alias = user.alias
+        rec.role = user.role
+        rec.setHashedPassword(user.password ?: "123")
+        rec.firstname = user.firstName
+        rec.lastname = user.lastName
+        rec.active = user.isActive
+        rec.externalUser = user.isExternalUser
+        rec.phone = user.phone
+        rec.expiresOn = user.expiresOn
+
+        if (!userRepository.save(rec))
+            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "Problem on update")
 
     }
 
-
-/*
-    override fun delete(id: Int) {
-        if (!userRepository.deleteById(id))
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST)
-    }
-
-    override fun get(id: Int): User {
-        val userRecord = userRepository.findById(id)
-                ?: throw DefaultProblem(status = Response.Status.NOT_FOUND)
-        return patchRecord2User(userRecord)
-    }
-    */
 }
