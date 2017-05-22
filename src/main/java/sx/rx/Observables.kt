@@ -5,6 +5,7 @@ import io.reactivex.*
 import io.reactivex.exceptions.OnErrorNotImplementedException
 import io.reactivex.functions.BiFunction
 import io.reactivex.observables.ConnectableObservable
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
@@ -21,6 +22,14 @@ fun <T> Throwable.toObservable(): Observable<T> = Observable.error(this)
  * @param executor Executor to subscribe on.
  */
 fun <T> Observable<T>.subscribeOn(executor: Executor? = null): Observable<T> {
+    return if (executor != null) this.subscribeOn(Schedulers.from(executor)) else this
+}
+
+/**
+ * Subscribe on a specific sexecutor
+ * @param executor Executor to subscribe on.
+ */
+fun Completable.subscribeOn(executor: Executor? = null): Completable {
     return if (executor != null) this.subscribeOn(Schedulers.from(executor)) else this
 }
 
@@ -56,6 +65,18 @@ fun <T> Observable<T>.toHotReplay(executor: Executor? = null): Observable<T> {
 }
 
 /**
+ * Transforms Completable into a hot one with cache applied
+ */
+fun Completable.toHotCache(executor: Executor? = null, onError: (Throwable) -> Unit = {}): Completable {
+    val c = this.subscribeOn(executor)
+            .cache()
+
+    c.subscribeBy(onError = onError)
+
+    return c
+}
+
+/**
  * Transform Observable into a hot one with replay applied
  */
 fun <T> Observable<T>.toHotReplay(scheduler: Scheduler? = null): Observable<T> {
@@ -68,168 +89,19 @@ fun <T> Observable<T>.toHotReplay(): Observable<T> {
     return this.toHotReplay(scheduler = null)
 }
 
-// TODO: the following additions would require migration to rxjava2 (if they are still useful)
-///**
-// * Transforming function subscribe modifier
-// * @param observable Observable
-// * @param init FunctionSubscriber
-// */
-//class TransformingFunctionSubscriberModifier<T>(observable: Observable<T>, init: FunctionSubscriber<T> = subscriber()) {
-//    var observable: Observable<T> = observable
-//        private set
-//    var subscriber: FunctionSubscriber<T> = init
-//        private set
-//
-//    init {
-//        this.observable = observable
-//    }
-//
-//    fun observeOn(observeOnFunction: () -> Scheduler): Unit {
-//        observable = observable.observeOn(observeOnFunction())
-//    }
-//
-//    fun transform(onTransformFunction: (o: Observable<T>) -> Observable<T>): Unit {
-//        observable = onTransformFunction(observable)
-//    }
-//
-//    fun compose(onComposeFunction: () -> Observable.Transformer<T, T>): Unit {
-//        observable = observable.compose(onComposeFunction())
-//    }
-//
-//    fun onCompleted(onCompletedFunction: () -> Unit): Unit {
-//        subscriber = subscriber.onCompleted(onCompletedFunction)
-//    }
-//
-//    fun onError(onErrorFunction: (t: Throwable) -> Unit): Unit {
-//        subscriber = subscriber.onError(onErrorFunction)
-//    }
-//
-//    fun onNext(onNextFunction: (t: T) -> Unit): Unit {
-//        subscriber = subscriber.onNext(onNextFunction)
-//    }
-//
-//    fun onStart(onStartFunction: () -> Unit): Unit {
-//        subscriber = subscriber.onStart(onStartFunction)
-//    }
-//}
-//
-///**
-// * Specific subscription which can be awaited on or cancalled
-// */
-//interface Awaitable : Subscription {
-//    fun await()
-//    fun await(timeout: Long, unit: TimeUnit)
-//    fun cancel()
-//}
-
-///**
-// * Awaitable implementation
-// */
-//class AwaitableImpl<T>(
-//        observable: Observable<T>,
-//        subscriber: Subscriber<T>) : Awaitable {
-//
-//    private val log = LoggerFactory.getLogger(this.javaClass)
-//
-//    /**
-//     * Publish subject used for injecting items ie. CancellationException
-//     */
-//    private val subject: Subject<T, T>
-//    /**
-//     * The final observable
-//     */
-//    private val observable: Observable<T>
-//    /**
-//     * Subscription
-//     */
-//    private val subscription: Subscription
-//
-//    init {
-//        this.subject = PublishSubject.create<T>().synchronized()
-//
-//        // Merge subject with observable
-//        this.observable = this.subject.mergeWith(
-//                // Complete the subject when the Observable completes
-//                observable
-//                        .doOnCompleted {
-//                            subject.onCompleted()
-//                        })
-//                // Cache items, so the Completable used for waiting seems the same sequence/completion
-//                // REMARK/BUG: share() misbehaves, re-emits items when {@link Completable#await} is called
-//                // after the Observable has completed (no matter when the Completable actually has been created)
-//                .cache()
-//
-//        // Subscribe to it internally
-//        this.subscription = this.observable.subscribe(subscriber)
-//    }
-//
-//    /**
-//     * Lazily created {@link rx.Completable} for awaiting completion
-//     */
-//    private val completable: Completable by lazy {
-//        this.observable.toCompletable()
-//    }
-//
-//    /**
-//     * Wait for completion
-//     */
-//    override fun await() {
-//        this.completable.await()
-//    }
-//
-//    /**
-//     * Wait for completion
-//     * @param timeout Timeout
-//     * @param unit Timeout unit
-//     */
-//    override fun await(timeout: Long, unit: TimeUnit) {
-//        this.completable.await(timeout, unit)
-//    }
-//
-//    /**
-//     * Cancel observable
-//     */
-//    override fun cancel() {
-//        this.subject.onError(CancellationException())
-//    }
-//
-//    /**
-//     * @see {@link rx.Subscription#isUnsubscribed}
-//     */
-//    override fun isUnsubscribed(): Boolean {
-//        return this.subscription.isUnsubscribed
-//    }
-//
-//    /**
-//     * @see {@link rx.Subscription#unsubscribe}
-//     */
-//    override fun unsubscribe() {
-//        this.subscription.unsubscribe()
-//    }
-//}
-
-///**
-// * Subscribe with a subscriber that is configured inside body
-// */
-//inline fun <T> Observable<T>.subscribeAwaitableWith(body: TransformingFunctionSubscriberModifier<T>.() -> Unit): Awaitable {
-//    val modifier = TransformingFunctionSubscriberModifier(this)
-//    modifier.body()
-//
-//    return AwaitableImpl(modifier.observable, modifier.subscriber)
-//}
-
 /**
  * Retry with specific count, action handler and timer provider
  * @param count Retry count
  * @param action Callback invoked for every retry/error, returning a (timer) Observable
  */
 fun <T> Observable<T>.retryWith(
+        // TODO: Int.MAX_VALUE doesn't seem to work for this implementation (freezes), while it works with Completable which is essentially the same implementation
         count: Int,
-        action: (retry: Int, error: Throwable) -> Observable<Long> = { _, _ -> Observable.just(0) })
+        action: (retry: Long, error: Throwable) -> Observable<Long> = { _, _ -> Observable.just(0) })
         : Observable<T> {
 
     return this.retryWhen { attempts ->
-        attempts.zipWith(Observable.range(1, count + 1), BiFunction { n: Throwable, i: Int ->
+        attempts.zipWith(Observable.rangeLong(1, count.toLong() + 1), BiFunction { n: Throwable, i: Long ->
             Pair(n, i)
         }).flatMap { p ->
             val error = p.first
@@ -243,4 +115,31 @@ fun <T> Observable<T>.retryWith(
         }
     }
 }
+
+/**
+ * Retry with specific count, action handler and timer provider
+ * @param count Retry count
+ * @param action Callback invoked for every retry/error, returning a (timer) Observable
+ */
+fun Completable.retryWith(
+        count: Int,
+        action: (retry: Long, error: Throwable) -> Flowable<Long> = { _, _ -> Flowable.just(0) })
+        : Completable {
+
+    return this.retryWhen { attempts ->
+        attempts.zipWith(Flowable.rangeLong(1, count.toLong() + 1), BiFunction { n: Throwable, i: Long ->
+            Pair(n, i)
+        }).flatMap { p ->
+            val error = p.first
+            val retryCount = p.second
+
+            if (retryCount <= count) {
+                return@flatMap action(retryCount, error)
+            } else {
+                return@flatMap Flowable.error<Throwable>(error)
+            }
+        }
+    }
+}
+
 
