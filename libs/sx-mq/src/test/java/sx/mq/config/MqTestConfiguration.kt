@@ -2,8 +2,8 @@ package sx.mq.config
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.singleton
-import org.apache.activemq.ActiveMQConnectionFactory
 import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.activemq.ActiveMQPooledConnectionFactory
@@ -19,7 +19,7 @@ class MqTestConfiguration {
         val PASSWORD = "mq"
 
         val module = Kodein.Module {
-            bind<MqBroker>() with singleton {
+            bind<ActiveMQBroker>() with singleton {
                 val broker = ActiveMQBroker.instance
                 broker.user = MqBroker.User(
                         userName = USERNAME,
@@ -27,6 +27,9 @@ class MqTestConfiguration {
                         groupName = USERNAME)
                 broker.dataDirectory = File("build/activemq")
                 broker
+            }
+            bind<MqBroker>() with singleton {
+                instance<ActiveMQBroker>()
             }
 
             bind<ConnectionFactory>() with singleton {
