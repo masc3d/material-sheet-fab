@@ -2,20 +2,17 @@ package org.deku.leoz.mobile.ui.fragment
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_aidc_camera.*
 import kotlinx.android.synthetic.main.fragment_menue.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
-import sx.android.fragment.util.withTransaction
 
 
-class MenueFragment : Fragment() {
+class MenuFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,11 +46,11 @@ class MenueFragment : Fragment() {
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
-         * @return A new instance of fragment MenueFragment.
+         * @return A new instance of fragment MenuFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(): MenueFragment {
-            val fragment = MenueFragment()
+        fun newInstance(): MenuFragment {
+            val fragment = MenuFragment()
             return fragment
         }
     }
