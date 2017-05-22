@@ -28,7 +28,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.main_nav_header.*
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.User
-import org.deku.leoz.mobile.ui.fragment.MenueFragment
+import org.deku.leoz.mobile.ui.fragment.MenuFragment
 import org.deku.leoz.mobile.SharedPreference
 
 
@@ -123,7 +123,7 @@ class MainActivity : Activity() {
                         uxActiveUser?.text = user.name
                         this.supportActionBar?.title = "Menue"
                         this.supportFragmentManager.withTransaction {
-                            it.replace(R.id.uxContainer, MenueFragment())
+                            it.replace(R.id.uxContainer, MenuFragment())
                         }
                         queryChangelogDisplay()
                     }

@@ -13,7 +13,7 @@ data class User(
         @get:ApiModelProperty(example = "12345678", required = false, value = "Allocation of User to debitor")
         var debitorId: Int? = null,
 
-//        @get:ApiModelProperty(required = false, value = "Allocation of User to several station ids")
+        //        @get:ApiModelProperty(required = false, value = "Allocation of User to several station ids")
 //        var stations: List<String>? = null,
 
         @get:ApiModelProperty(example = "foo.bar", required = true, value = "Alias of the user")
@@ -26,7 +26,7 @@ data class User(
         @get:ApiModelProperty(example = "MyS3cr3t", required = true, value = "Password")
         var password: String? = null,
 
-//        @get:ApiModelProperty(example = "a1b2c3d4e5f6", required = true, value = "Salt")
+        //        @get:ApiModelProperty(example = "a1b2c3d4e5f6", required = true, value = "Salt")
 //        var salt: String? = null,
 
         @get:ApiModelProperty(example = "Foo", required = true, value = "First name")
@@ -35,7 +35,7 @@ data class User(
         @get:ApiModelProperty(example = "Bar", required = true, value = "Last name")
         var lastName: String? = null,
 
-//        @get:ApiModelProperty(example = "1a-2b-3c-4d-5e-6f", required = false, value = "API Key")
+        //        @get:ApiModelProperty(example = "1a-2b-3c-4d-5e-6f", required = false, value = "API Key")
 //        var apiKey: String? = null,
 
         @get:ApiModelProperty(example = "true", required = false, value = "Active user")
@@ -61,10 +61,16 @@ data class User(
     }
 }
 
-enum class UserRole {
-    ADMINISTRATOR,
-    POWERUSER,
-    USER,
-    DRIVER,
-    CUSTOMER
+enum class UserRole(val value: Int) {
+    ADMINISTRATOR(10),
+    POWERUSER(7),
+    USER(6),
+    DRIVER(4),
+    CUSTOMER(2)
 }
+
+val User.isActive: Int
+    get() = if (this.active == null || this.active == false) 0 else -1
+
+val User.isExternalUser: Int
+    get() = if (this.externalUser == null || this.externalUser == false) 0 else -1
