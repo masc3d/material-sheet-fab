@@ -12,12 +12,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.io.serialization.KryoSerializer
-import sx.io.serialization.gzip
-import sx.mq.DestinationType
-import sx.mq.MqChannel
 import sx.mq.MqClient
 import sx.mq.MqHandler
+import sx.mq.Channels
 import sx.mq.config.MqTestConfiguration
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.activemq.ActiveMQContext
@@ -47,8 +44,8 @@ class MqttTest {
     fun setup() {
         // Add composite destination, forwarding topic messages to queue
         val d = CompositeTopic()
-        d.name = this.queueTopicChannel.destinationName
-        d.forwardTo = listOf(this.jmsQueueChannel.destination)
+        d.name = Channels.testQueueForwarder.destinationName
+        d.forwardTo = listOf(Jms.testQueue.destination)
         d.isForwardOnly = true
 
         this.broker.addCompositeDestination(d)
@@ -61,104 +58,78 @@ class MqttTest {
         this.broker.stop()
     }
 
-    private val mqttClient: MqttAsyncClient by lazy {
-        val mqttClient = MqttAsyncClient("tcp://localhost:61616", "mqtt-client-1", MemoryPersistence())
-        mqttClient
-    }
-
-    private val connectOptions: MqttConnectOptions by lazy {
-        val mqttConnectOptions = MqttConnectOptions()
-        mqttConnectOptions.isCleanSession = false
-        mqttConnectOptions.userName = MqTestConfiguration.USERNAME
-        mqttConnectOptions.password = MqTestConfiguration.PASSWORD.toCharArray()
-        mqttConnectOptions
-    }
-
     @Test
-    fun testConnection() {
-        this.mqttClient.connect(connectOptions)
-        this.mqttClient.disconnect()
+    fun testConnect() {
+        Mqtt.client.connect().blockingGet()
+        Mqtt.client.disconnect().blockingGet()
     }
 
-    val jmsContext by lazy {
-        ActiveMQContext(ActiveMQPooledConnectionFactory(URI.create("tcp://localhost:61616"),
-                username = MqTestConfiguration.USERNAME,
-                password = MqTestConfiguration.PASSWORD))
+    object Jms {
+        val context by lazy {
+            ActiveMQContext(ActiveMQPooledConnectionFactory(URI.create("tcp://localhost:61616"),
+                    username = MqTestConfiguration.USERNAME,
+                    password = MqTestConfiguration.PASSWORD))
+        }
+
+        val testQueue by lazy {
+            Channels.testQueue.toJms(
+                    context = this.context
+            )
+        }
+
+        val testTopic by lazy {
+            Channels.testTopic.toJms(
+                    context = this.context
+            )
+        }
+
+        val testQueueForwarder by lazy {
+            Channels.testQueueForwarder.toJms(
+                    context = this.context
+            )
+        }
     }
 
-    val mqttContext by lazy {
-        MqttContext(
-                client = { this.mqttClient },
-                connectOptions = this.connectOptions
-        )
+    object Mqtt {
+        val connectOptions: MqttConnectOptions by lazy {
+            val mqttConnectOptions = MqttConnectOptions()
+            mqttConnectOptions.isCleanSession = false
+            mqttConnectOptions.userName = MqTestConfiguration.USERNAME
+            mqttConnectOptions.password = MqTestConfiguration.PASSWORD.toCharArray()
+            mqttConnectOptions
+        }
+
+        val client: MqttRxClient by lazy {
+            val mqttClient = MqttRxClient(
+                    parent = MqttAsyncClient("tcp://localhost:61616", "mqtt-client-1", MemoryPersistence()),
+                    connectOptions = connectOptions)
+            mqttClient
+        }
+
+        val context by lazy {
+            MqttContext(
+                    client = { this.client })
+        }
+
+        val testQueueForwarder by lazy {
+            Channels.testQueueForwarder.toMqtt(
+                    context = this.context,
+                    qos = 2
+            )
+        }
+
+        val testTopic by lazy {
+            Channels.testTopic.toMqtt(
+                    context = this.context
+            )
+        }
     }
 
-    /** Topic channel for testing notifications */
-    val topicChannel by lazy {
-        MqChannel(
-                destinationName = "test.topic",
-                destinationType = DestinationType.Topic,
-                persistent = true,
-                serializer = KryoSerializer().gzip
-        )
-    }
-
-    /** Queue channel for testing queues with topic forwarding via mqtt */
-    val queueChannel by lazy {
-        MqChannel(
-                destinationName = "test.queue",
-                destinationType = DestinationType.Queue,
-                persistent = true,
-                serializer = KryoSerializer().gzip
-        )
-    }
-
-    /** Virtual topic used for mqtt clients to post to queue */
-    val queueTopicChannel by lazy {
-        MqChannel(
-                destinationName = "test.queue.topic",
-                destinationType = DestinationType.Topic,
-                serializer = KryoSerializer().gzip
-        )
-    }
-
-    // Referring JMS channels
-    val jmsQueueChannel by lazy {
-        this.queueChannel.toJms(
-                context = this.jmsContext
-        )
-    }
-
-    val jmsTopicChannel by lazy {
-        this.topicChannel.toJms(
-                context = this.jmsContext
-        )
-    }
-
-    val jmsQueueTopicChannel by lazy {
-        this.queueTopicChannel.toJms(
-                context = this.jmsContext
-        )
-    }
-
-    // Referring MQTT channels
-    val mqttQueueTopicChannel by lazy {
-        this.queueTopicChannel.toMqtt(
-                context = this.mqttContext,
-                qos = 2
-        )
-    }
-
-    val mqttTopicChannel by lazy {
-        this.topicChannel.toMqtt(
-                context = this.mqttContext
-        )
-    }
 
     @Test
     fun testListener() {
         val listener = object : SpringJmsListener(
-                jmsQueueChannel,
+                Jms.testQueue,
                 Executors.newSingleThreadExecutor(),
                 "mqtt-subscriber-1") {
 
@@ -178,12 +149,11 @@ class MqttTest {
 
     @Test
     fun testMqttListener() {
-        this.mqttClient.connect(
-                this.connectOptions
-        ).waitForCompletion()
+        Mqtt.client.connect()
+                .blockingGet()
 
         val listener = MqttListener(
-                mqttChannel = this.mqttTopicChannel
+                mqttChannel = Mqtt.testTopic
         )
 
         listener.start()
@@ -207,11 +177,11 @@ class MqttTest {
      * For fallback testing via JMS
      */
     @Test
-    fun testPublishToQueueTopicViaJms() {
+    fun testPublishToQueueForwarderViaJms() {
         val logMessage = TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
 
         // Receive
-        jmsQueueTopicChannel.client().use {
+        Jms.testQueueForwarder.client().use {
             it.ttl = Duration.ofMinutes(5)
 
             for (i in 0..100)
@@ -223,11 +193,11 @@ class MqttTest {
      * For fallback testing via JMS
      */
     @Test
-    fun testPublishToTopicTopicViaJms() {
+    fun testPublishToTopicViaJms() {
         val logMessage = TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
 
         // Receive
-        jmsTopicChannel.client().use {
+        Jms.testTopic.client().use {
             it.ttl = Duration.ofMinutes(5)
 
             for (i in 0..100)
@@ -239,8 +209,11 @@ class MqttTest {
      * Test publishing to virtual topic via mqtt
      */
     @Test
-    fun testPublishToQueueTopicViaMqtt() {
-        this.mqttQueueTopicChannel.client().use {
+    fun testPublishToQueueForwarderViaMqtt() {
+        Mqtt.client.connect()
+                .blockingGet()
+
+        Mqtt.testQueueForwarder.client().use {
             for (i in 0..100) {
                 val logMessage = TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
                 it.send(logMessage)
@@ -253,11 +226,11 @@ class MqttTest {
      */
     @Test
     fun testSendAndReceiveMqttTopic() {
-        this.mqttTopicChannel.client().use {
+        Mqtt.testTopic.client().use {
             it.send(TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf()))
         }
 
-        this.mqttTopicChannel.client().use {
+        Mqtt.testTopic.client().use {
             log.info("${it.receive(TestMessage::class.java)}")
         }
     }
