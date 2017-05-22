@@ -1,7 +1,7 @@
 package sx.mq.jms
 
-import sx.mq.MqChannel
 import sx.mq.DestinationType
+import sx.mq.MqChannel
 import javax.jms.ConnectionFactory
 import javax.jms.Destination
 import javax.jms.Queue

@@ -1,12 +1,11 @@
 package sx.mq.jms.artemis
 
+import org.apache.activemq.artemis.jms.client.ActiveMQQueue
+import org.apache.activemq.artemis.jms.client.ActiveMQTopic
 import sx.mq.jms.JmsContext
 import javax.jms.ConnectionFactory
 import javax.jms.Queue
 import javax.jms.Topic
-
-import org.apache.activemq.artemis.jms.client.ActiveMQQueue
-import org.apache.activemq.artemis.jms.client.ActiveMQTopic
 
 /**
  * Created by masc on 08.05.17.
