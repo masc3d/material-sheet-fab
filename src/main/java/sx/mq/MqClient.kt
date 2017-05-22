@@ -1,7 +1,6 @@
 package sx.mq
 
 import sx.Disposable
-import sx.io.serialization.Serializer
 import java.io.Closeable
 import java.util.concurrent.TimeoutException
 

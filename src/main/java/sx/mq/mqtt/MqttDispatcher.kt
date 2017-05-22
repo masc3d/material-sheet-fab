@@ -104,13 +104,13 @@ class MqttDispatcher(
                             }
                             .concatMap {
                                 // Map each persisted message to publish/remove flow (sequentially)
-                                log.trace("Publishing [m${it.messageId}]")
+                                log.trace("Publishing [m${it.persistentId}]")
                                 this.client
                                         .publish(it.topicName, it.toMqttMessage())
                                         .concatWith(Completable.fromAction {
                                             // Remove from persistence when publish was successful
                                             this.persistence.remove(it)
-                                            log.trace("Removed [m${it.messageId}]")
+                                            log.trace("Removed [m${it.persistentId}]")
                                         })
                                         .toSingleDefault(it)
                                         .toObservable()
