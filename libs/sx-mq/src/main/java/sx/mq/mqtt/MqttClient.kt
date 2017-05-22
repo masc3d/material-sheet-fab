@@ -1,10 +1,7 @@
 package sx.mq.mqtt
 
-import io.reactivex.Observable
-import org.eclipse.paho.client.mqttv3.*
+import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.slf4j.LoggerFactory
-import sx.LazyInstance
-import sx.mq.mqtt.paho.MqttRxClient
 import sx.time.Duration
 import java.lang.UnsupportedOperationException
 import java.util.concurrent.TimeUnit
@@ -25,8 +22,7 @@ class MqttClient(
     }
 
     val mqttClient by lazy {
-        MqttRxClient(
-                this.channel.context.client())
+        this.channel.context.client()
     }
 
     override fun close() {
