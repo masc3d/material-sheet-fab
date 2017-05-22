@@ -1,12 +1,7 @@
 package sx.mq.jms
 
-import com.google.common.reflect.TypeToken
-import org.slf4j.LoggerFactory
-import sx.Disposable
-import sx.io.serialization.Serializer
 import sx.mq.MqHandler
 import sx.mq.MqListener
-import java.lang.reflect.ParameterizedType
 import java.util.*
 import javax.jms.ExceptionListener
 import javax.jms.JMSException

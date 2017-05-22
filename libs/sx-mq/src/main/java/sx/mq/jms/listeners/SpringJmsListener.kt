@@ -4,7 +4,6 @@ import org.springframework.jms.connection.JmsTransactionManager
 import org.springframework.jms.listener.DefaultMessageListenerContainer
 import org.springframework.jms.listener.SessionAwareMessageListener
 import org.springframework.util.ErrorHandler
-import sx.mq.jms.JmsClient
 import sx.mq.jms.JmsChannel
 import sx.mq.jms.JmsListener
 import java.util.concurrent.Executor

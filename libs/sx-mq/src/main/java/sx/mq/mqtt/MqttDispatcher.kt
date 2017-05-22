@@ -89,7 +89,7 @@ class MqttDispatcher(
 
         // This observable never comples, as it's subject based.
         this.dequeueSubscription = this.dequeueTrigger
-                // Backpressure trigger events as each published message triggers one
+                // Backpressure trigger events as each message publish emits
                 .toFlowable(BackpressureStrategy.LATEST)
                 .toObservable()
                 .concatMap {
@@ -183,7 +183,7 @@ class MqttDispatcher(
                     this.client.connect()
                 }
                 .retryWith(Int.MAX_VALUE, { retry, error ->
-                    log.error("${retry} ${error.message}", error)
+                    log.error("${retry} ${error.message}")
                     // TODO: exponential backoff
                     Flowable.timer(1, TimeUnit.SECONDS)
                 })
