@@ -19,6 +19,8 @@ import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.IMqttToken
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
+import org.eclipse.paho.client.mqttv3.MqttClient
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import sx.android.mqtt.MqttClientPersistenceSQLite
 import sx.mq.mqtt.*
 import sx.rx.retryWith
@@ -87,12 +89,12 @@ class MqttConfiguration(
                 val remoteSettings = instance<RemoteSettings>()
                 val identity = instance<Identity>()
 
-                MqttAndroidClient(
-                        androidContext,
+                MqttAsyncClient(
                         // Server URI
                         "tcp://${remoteSettings.host}:${remoteSettings.broker.nativePort}",
                         // Client ID
-                        identity.key.value)
+                        identity.key.value,
+                        MemoryPersistence())
             }
 
             bind<MqttRxClient>() with singleton {
