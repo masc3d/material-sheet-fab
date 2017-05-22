@@ -15,6 +15,12 @@ class Job {
 //    val doneStopProperty = ObservableRxProperty<List<Stop>>(mutableListOf())
 //    val doneStop: List<Stop> by doneStopProperty
 
+    val newOrderProperty = ObservableRxProperty<Stop.Order?>(null)
+    var newOrder: Stop.Order? by newOrderProperty
+
+    val activeStopProperty = ObservableRxProperty<Stop?>(null)
+    val activeStop: Stop? by activeStopProperty
+
     val stopList: MutableList<Stop> = mutableListOf()
     val orderList: MutableList<Stop.Order> = mutableListOf()
 
@@ -31,8 +37,16 @@ class Job {
         }
 
         for (order in orderList) {
-            integrateIncomingOrder(order)
+            integrateOrder(order)
         }
+    }
+
+    /**
+     * Should be called from the receiver of the order.
+     * @param order Stop.Order
+     */
+    fun addOrder(order: Stop.Order) {
+        newOrder = order
     }
 
     /**
@@ -41,10 +55,14 @@ class Job {
      * This method tries to find a stop in the existing stopList where the given order can be integrated.
      * If no suitable Stop has been found, a new stop with this order will be created.
      */
-    fun integrateIncomingOrder(order: Stop.Order): Stop {
+    fun integrateOrder(order: Stop.Order): Stop {
         val existingStopIndex = order.findSuitableStopIndex(stopList)
 
-        if(existingStopIndex > -1) {
+        if (!orderList.contains(order)) {
+            orderList.add(order)
+        }
+
+        if (existingStopIndex > -1) {
             stopList[existingStopIndex].order.add(order)
             stopList[existingStopIndex].appointment = minOf(order.appointment, stopList[existingStopIndex].appointment)
             return stopList[existingStopIndex]
@@ -58,6 +76,24 @@ class Job {
                     )
             )
             return stopList.last()
+        }
+    }
+
+    fun findStopByLabelReference(labelReference: String): List<Stop> {
+        return stopList.filter {
+            it.order.filter {
+                it.parcel.filter {
+                    it.labelReference == labelReference
+                }.isNotEmpty()
+            }.isNotEmpty()
+        }
+    }
+
+    fun findOrderByLabelReference(labelReference: String): List<Stop.Order> {
+        return orderList.filter {
+            it.parcel.filter {
+                it.labelReference == labelReference
+            }.isNotEmpty()
         }
     }
 }
