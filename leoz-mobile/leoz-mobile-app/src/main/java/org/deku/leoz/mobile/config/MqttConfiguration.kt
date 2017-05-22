@@ -1,18 +1,17 @@
 package org.deku.leoz.mobile.config
 
 import android.content.Context
-import ch.qos.logback.classic.LoggerContext
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import org.deku.leoz.bundle.BundleType
+import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.config.MqConfiguration
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.model.RemoteSettings
-import org.deku.leoz.mobile.service.NotificationService
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.slf4j.LoggerFactory
@@ -21,9 +20,11 @@ import org.eclipse.paho.client.mqttv3.IMqttToken
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import sx.android.mqtt.MqttClientPersistenceSQLite
-import sx.mq.mqtt.MqttContext
-import sx.mq.mqtt.MqttListener
-import sx.mq.mqtt.client
+import sx.mq.mqtt.*
+import sx.rx.retryWith
+import sx.rx.subscribeOn
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -45,14 +46,34 @@ class MqttConfiguration(
     companion object {
         private val log = LoggerFactory.getLogger(MqttConfiguration::class.java)
 
+        var sub: Disposable? = null
+
+        /**
+         * Extension to enable paho's disconnected offline buffering
+         */
+        fun MqttAndroidClient.enableDisconnectedBuffer() {
+            // Setup in disconnected in-memory buffer
+            val disconnectedBufferOptions = DisconnectedBufferOptions()
+            disconnectedBufferOptions.isBufferEnabled = false
+
+            // Persist disconnected messages using client persistence
+            disconnectedBufferOptions.isPersistBuffer = false
+
+            // In memory message buffer settings
+            disconnectedBufferOptions.bufferSize = 250
+            disconnectedBufferOptions.isDeleteOldestMessages = false
+
+            this.setBufferOpts(disconnectedBufferOptions)
+        }
+
         val module = Kodein.Module {
             /**
              * MQTT connection options
              */
             bind<MqttConnectOptions>() with singleton {
                 val mqttConnectOptions = MqttConnectOptions()
-                mqttConnectOptions.isAutomaticReconnect = true
-                mqttConnectOptions.isCleanSession = false
+                mqttConnectOptions.isAutomaticReconnect = false
+                mqttConnectOptions.isCleanSession = true
                 mqttConnectOptions.userName = MqConfiguration.USERNAME
                 mqttConnectOptions.password = MqConfiguration.PASSWORD.toCharArray()
                 mqttConnectOptions
@@ -66,76 +87,44 @@ class MqttConfiguration(
                 val remoteSettings = instance<RemoteSettings>()
                 val identity = instance<Identity>()
 
-                val mqttAndroidClient = MqttAndroidClient(
+                MqttAndroidClient(
                         androidContext,
                         // Server URI
                         "tcp://${remoteSettings.host}:${remoteSettings.broker.nativePort}",
                         // Client ID
-                        identity.key.value,
-                        // Persistence
-                        MqttClientPersistenceSQLite(
-                                databaseFile = androidContext.getDatabasePath("mqtt.db")),
-                        // Acknowledge mode
-                        MqttAndroidClient.Ack.AUTO_ACK)
+                        identity.key.value)
+            }
 
-                mqttAndroidClient.setCallback(object : MqttCallbackExtended {
-                    override fun connectComplete(reconnect: Boolean, serverURI: String) {
-                        log.info("Connected successfully")
+            bind<MqttRxClient>() with singleton {
+                val client = MqttRxClient(
+                        parent = instance<IMqttAsyncClient>(),
+                        connectOptions = instance<MqttConnectOptions>()
+                )
 
-                        if (reconnect) {
-                            log.info("Reconnected successfully")
-                        } else {
-                            val appender = instance<LogMqAppender>()
-                            appender.dispatcher.start()
+                // TODO: dispatcher should support durable subscriptions
+                client.statusEvent.subscribeBy(onNext = {
+                    when {
+                        it is MqttRxClient.Status.ConnectionComplete -> {
+                            // Start listeners on connection
+                            val mqConfig = instance<MqttConfiguration>()
+                            mqConfig.mobileTopicListener.start()
                         }
-
-                        val mqConfig = instance<MqttConfiguration>()
-                        mqConfig.mobileTopicListener.start()
-                    }
-
-                    override fun connectionLost(cause: Throwable) {
-                        log.info("Connection lost")
-                    }
-
-                    override fun messageArrived(topic: String, message: MqttMessage) {
-                        log.trace("Incoming message")
-                    }
-
-                    override fun deliveryComplete(token: IMqttDeliveryToken) {
-                        log.trace("Delivery complete")
                     }
                 })
 
-                val mqttConnectOptions = instance<MqttConnectOptions>()
+                client
+            }
 
-                try {
-                    mqttAndroidClient.connect(mqttConnectOptions, null, object : IMqttActionListener {
-                        override fun onSuccess(asyncActionToken: IMqttToken) {
-                            log.info("Initial connection successful")
+            bind<MqttDispatcher>() with singleton {
+                val dispatcher = MqttDispatcher(
+                        client = instance<MqttRxClient>(),
+                        persistence = MqttInMemoryPersistence()
+                )
 
-                            // Setup in disconnected in-memory buffer
-                            val disconnectedBufferOptions = DisconnectedBufferOptions()
-                            disconnectedBufferOptions.isBufferEnabled = true
+                // Dispatcher will always auto-reconnect
+                dispatcher.connect()
 
-                            // Persist disconnected messages using client persistence
-                            disconnectedBufferOptions.isPersistBuffer = true
-
-                            // In memory message buffer settings
-                            disconnectedBufferOptions.bufferSize = 250
-                            disconnectedBufferOptions.isDeleteOldestMessages = true
-
-                            mqttAndroidClient.setBufferOpts(disconnectedBufferOptions)
-                        }
-
-                        override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                            log.error("Initial connection failed")
-                        }
-                    })
-                } catch (ex: MqttException) {
-                    ex.printStackTrace()
-                }
-
-                mqttAndroidClient
+                dispatcher
             }
 
             /**
@@ -144,9 +133,8 @@ class MqttConfiguration(
             bind<MqttConfiguration>() with singleton {
                 MqttConfiguration(
                         context = MqttContext(
-                                client = { instance<IMqttAsyncClient>() },
-                                connectOptions = instance<MqttConnectOptions>()))
-
+                                client = { instance<MqttDispatcher>() })
+                )
             }
 
             bind<org.deku.leoz.config.MqttConfiguration>() with singleton {
@@ -154,5 +142,4 @@ class MqttConfiguration(
             }
         }
     }
-
 }

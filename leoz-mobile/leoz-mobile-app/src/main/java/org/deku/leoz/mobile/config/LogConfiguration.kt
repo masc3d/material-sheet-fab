@@ -48,6 +48,7 @@ class LogConfiguration {
 
                 appender.context = loggerContext
                 appender.start()
+                appender.dispatcher.start()
 
                 appender
             }
