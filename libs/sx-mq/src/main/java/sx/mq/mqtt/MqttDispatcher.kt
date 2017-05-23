@@ -12,6 +12,8 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.toSingle
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
+import org.eclipse.paho.client.mqttv3.MqttException
+import org.eclipse.paho.client.mqttv3.MqttException.REASON_CODE_CLIENT_CONNECTED
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.internal.wire.MqttPublish
 import org.slf4j.LoggerFactory
@@ -185,6 +187,13 @@ class MqttDispatcher(
         this.connectionSubscription = Completable
                 .defer {
                     this.client.connect()
+                }
+                .onErrorComplete {
+                    when (it) {
+                        // Avoid retries when already connected
+                        is MqttException -> it.reasonCode == REASON_CODE_CLIENT_CONNECTED.toInt()
+                        else -> false
+                    }
                 }
                 .retryWithExponentialBackoff(
                         initialDelay = Duration.ofSeconds(2),
