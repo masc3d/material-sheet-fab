@@ -1,8 +1,8 @@
 import {Component, Inject, Renderer2, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {DOCUMENT} from '@angular/platform-browser';
-import { TranslateService } from '../../translate/translate.service';
 import { environment } from '../../../environments/environment';
+import { TranslateService } from '../../core/translate/translate.service';
 
 @Component({
   selector: 'app-left-menu',

@@ -1,6 +1,6 @@
 import { Component, Inject, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
-import { TranslateService } from '../translate/translate.service';
+import { TranslateService } from '../core/translate/translate.service';
 
 @Component({
   selector: 'app-top-bar',

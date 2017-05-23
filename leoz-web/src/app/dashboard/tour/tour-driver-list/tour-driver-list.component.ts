@@ -3,8 +3,8 @@ import { DriverService } from '../driver.service';
 import { Driver } from '../driver.model';
 import { TourService } from '../tour.service';
 import { Observable } from 'rxjs/Observable';
-import { TranslateService } from '../../../translate/translate.service';
 import { environment } from '../../../../environments/environment';
+import { TranslateService } from '../../../core/translate/translate.service';
 
 @Component({
   selector: 'app-tour-driver-list',
