@@ -57,8 +57,11 @@ class MqttConfiguration(
              */
             bind<MqttConnectOptions>() with singleton {
                 val mqttConnectOptions = MqttConnectOptions()
+                // Disabling paho's automatic reconnection feature. MqttDispatcher provides this transparently
                 mqttConnectOptions.isAutomaticReconnect = false
+                // MqttRxClient requires clean sessions {@see MqttRxClient}
                 mqttConnectOptions.isCleanSession = true
+                // MQ credentials
                 mqttConnectOptions.userName = MqConfiguration.USERNAME
                 mqttConnectOptions.password = MqConfiguration.PASSWORD.toCharArray()
                 mqttConnectOptions
