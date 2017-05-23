@@ -5,7 +5,9 @@ import { Translation } from './translation';
 export class TranslateService {
   private curLang: string;
 
-  constructor(private transl: Translation) {}
+  constructor(private transl: Translation) {
+    console.log('-----translation');
+  }
 
   public use(lang: string): void {
     // set current language

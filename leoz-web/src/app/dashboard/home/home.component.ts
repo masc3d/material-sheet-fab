@@ -1,15 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { environment } from '../../../environments/environment';
-import { TranslateService } from '../../core/translate/translate.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html'
 })
-export class HomeComponent implements OnInit {
-  constructor(private translateService: TranslateService){}
-
-  ngOnInit(): void {
-    this.translateService.use(`${environment.defLang}`);
-  }
+export class HomeComponent {
 }
