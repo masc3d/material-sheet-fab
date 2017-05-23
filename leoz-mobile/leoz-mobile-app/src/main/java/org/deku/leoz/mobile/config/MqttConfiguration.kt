@@ -1,36 +1,23 @@
 package org.deku.leoz.mobile.config
 
 import android.content.Context
-import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
-import com.github.salomonbrys.kodein.Kodein
+import android.net.NetworkInfo
 import com.github.salomonbrys.kodein.Kodein.Module
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.config.MqConfiguration
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.model.RemoteSettings
-import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.slf4j.LoggerFactory
-import org.eclipse.paho.client.mqttv3.MqttException
-import org.eclipse.paho.client.mqttv3.IMqttToken
-import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions
-import org.eclipse.paho.client.mqttv3.IMqttActionListener
-import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import sx.android.Connectivity
-import sx.android.mqtt.MqttClientPersistenceSQLite
 import sx.android.mqtt.MqttSqlitePersistence
 import sx.mq.mqtt.*
-import sx.rx.retryWith
-import sx.rx.subscribeOn
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.TimeUnit
 
 
 /**
@@ -117,8 +104,8 @@ class MqttConfiguration(
                 // Dispatcher will always auto-reconnect
                 dispatcher.connect()
 
-                instance<Connectivity>().stateProperty.subscribe {
-                    if (it.value.isAvailable)
+                instance<Connectivity>().networkProperty.subscribe {
+                    if (it.value.state == NetworkInfo.State.CONNECTED)
                         dispatcher.connect()
                     else
                         dispatcher.disconnect()

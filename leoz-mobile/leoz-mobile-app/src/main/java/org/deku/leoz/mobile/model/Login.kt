@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.model
 
+import android.net.NetworkInfo
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -53,7 +54,7 @@ class Login {
             )
 
             if (email.equals("foo@bar", ignoreCase = true) && password.equals("foobar", ignoreCase = false)) {
-                if(connectivity.state.isAvailable) {
+                if(connectivity.network.state == NetworkInfo.State.CONNECTED) {
                     log.debug("Connection established, login online.")
                     val request = AuthorizationService.MobileRequest(
                             user = AuthorizationService.Credentials(
