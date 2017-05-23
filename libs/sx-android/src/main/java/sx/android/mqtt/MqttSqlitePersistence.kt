@@ -46,7 +46,7 @@ class MqttSqlitePersistence constructor(
     }
 
     init {
-        log.trace("Datbase version [${this.db.version}]")
+        log.trace("Database version [${this.db.version}]")
 
         this.db.createTable(
                 tableName = TABLE_NAME,

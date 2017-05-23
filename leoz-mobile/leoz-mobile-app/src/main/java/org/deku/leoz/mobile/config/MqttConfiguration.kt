@@ -106,6 +106,7 @@ class MqttConfiguration(
             bind<MqttDispatcher>() with singleton {
                 val dispatcher = MqttDispatcher(
                         client = instance<MqttRxClient>(),
+                        executorService = instance<ExecutorService>(),
                         persistence = MqttSqlitePersistence(
                                 databaseFile = instance<Context>().getDatabasePath("mqtt.db"))
                 )
