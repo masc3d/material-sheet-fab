@@ -150,11 +150,10 @@ fun Completable.retryWithExponentialBackoff(
         initialDelay: Duration,
         maximumDelay: Duration,
         exponentialBackoff: Double = 2.0,
-        action: (retry: Long, error: Throwable) -> Unit = { _, _ -> }): Completable {
+        action: (retry: Long, delay: Duration, error: Throwable) -> Unit = { _, _, _ -> }): Completable {
     return this.retryWith(
             count = count,
             action = { retry: Long, error: Throwable ->
-                action(retry, error)
                 var delay = initialDelay.times(Math.pow(
                         exponentialBackoff,
                         retry.toDouble()).toLong())
@@ -162,6 +161,8 @@ fun Completable.retryWithExponentialBackoff(
                 if (delay > maximumDelay) {
                     delay = maximumDelay
                 }
+
+                action(retry, delay, error)
 
                 Flowable.timer(delay.toMillis(), TimeUnit.MILLISECONDS)
             }
