@@ -2,14 +2,15 @@ package sx.mq.mqtt
 
 import io.reactivex.Observable
 import org.eclipse.paho.client.mqttv3.MqttMessage
-import org.eclipse.paho.client.mqttv3.internal.wire.MqttPublish
 import org.slf4j.LoggerFactory
 import java.util.*
-import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.ConcurrentLinkedDeque
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * MQTT persistence
- * Implmentations should be threadsafe
+ * Implmentations should be thread-safe
  * Created by masc on 20.05.17.
  */
 interface IMqttPersistence {
@@ -35,26 +36,28 @@ interface IMqttPersistence {
  */
 class MqttInMemoryPersistence : IMqttPersistence {
     private var nextId: Int = 0
-    private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val queue = ConcurrentLinkedQueue<MqttPersistentMessage>()
+    private val lock = ReentrantLock()
+    private val messages = ConcurrentLinkedDeque<MqttPersistentMessage>()
 
     override fun add(topicName: String, message: MqttMessage) {
-        nextId++
+        this.lock.withLock {
+            nextId++
 
-        queue.add(message.toPersistentMessage(
-                topicName = topicName,
-                persistentId = nextId))
+            messages.add(message.toPersistentMessage(
+                    topicName = topicName,
+                    persistentId = nextId))
+        }
     }
 
     override fun get(topicName: String?): Observable<MqttPersistentMessage> {
         return Observable.fromIterable(
-                if (topicName == null) queue else queue.filter { it.topicName == topicName }
+                if (topicName == null) messages else messages.filter { it.topicName == topicName }
         )
     }
 
     override fun remove(message: MqttPersistentMessage) {
-        this.queue.remove(message)
+        this.messages.remove(message)
     }
 }
 
@@ -73,7 +76,7 @@ data class MqttPersistentMessage(
         return this.persistentId
     }
 
-    override fun equals(other: Any?): Boolean{
+    override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
 

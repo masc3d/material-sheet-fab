@@ -11,6 +11,7 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
+import org.slf4j.LoggerFactory
 import sx.rx.toHotCache
 import sx.rx.toHotReplay
 
@@ -57,6 +58,17 @@ class MqttRxClient(
         data class ConnectionLost(val cause: Throwable?) : MqttRxClient.Status()
         data class MessageArrived(val topic: String, val message: MqttMessage) : MqttRxClient.Status()
         data class DeliveryComplete(val token: IMqttDeliveryToken?) : MqttRxClient.Status()
+    }
+
+    init {
+        if (connectOptions.isCleanSession == false) {
+            // When cleanSession is false, paho's async function are not determinstic, eg.
+            // publish may invoke onFailure callback mutliple times as it attempts retries.
+            // All RX operations need to either complete or terminate with error (once).
+            // This is basically a design flaw in paho, as a clean session should not necessarily
+            // imply that async calls become non-determinstic due to internal retries.
+            throw IllegalStateException("Clean session not set in connection options. Unclean sessions are not compatible with MqttRxClient")
+        }
     }
 
     /**
