@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Http, Response, ResponseOptions} from '@angular/http';
-import { RequestMethod, RequestOptions, Headers } from '@angular/http';
+import { Http, Response } from '@angular/http';
+import { RequestOptions, Headers } from '@angular/http';
 
 @Injectable()
 export class AuthenticationService {
 
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
-  // public isLoggedIn = this.isLoggedInSubject.asObservable().distinctUntilChanged();
 
   constructor(private router: Router, private http: Http){
     this.isLoggedInSubject.next(localStorage.getItem('currentUser') !== null && localStorage.getItem('currentUser').length > 0);
