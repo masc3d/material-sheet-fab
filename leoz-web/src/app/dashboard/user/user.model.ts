@@ -11,7 +11,7 @@ export class User {
   lastName: string;
   password: string;
   phone: string;
-  role: string; // TODO enum
+  role: string; // OPEN TASK enum
   salt: string;
 
   toString(): string {

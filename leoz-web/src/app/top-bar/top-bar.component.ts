@@ -1,12 +1,12 @@
 import { Component, Inject, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
-import { TranslateService } from '../../translate/translate.service';
+import { TranslateService } from '../translate/translate.service';
 
 @Component({
-  selector: 'app-top-menu',
-  templateUrl: './top-menu.component.html'
+  selector: 'app-top-bar',
+  templateUrl: './top-bar.component.html'
 })
-export class TopMenuComponent {
+export class TopBarComponent {
 
   public constructor(private renderer: Renderer2,
                      @Inject(DOCUMENT) private document: any,

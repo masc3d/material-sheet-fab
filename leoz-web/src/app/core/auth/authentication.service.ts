@@ -5,26 +5,14 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Http, Response, ResponseOptions} from '@angular/http';
 import { RequestMethod, RequestOptions, Headers } from '@angular/http';
 
-export class User {
-  constructor(public username: string,
-    public password: string, public depotId: number) { }
-}
-
-const users = [
-  new User('user1', 'user1', 1),
-  new User('user2', 'user2', 2)
-];
-
 @Injectable()
 export class AuthenticationService {
 
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
-  public isLoggedIn = this.isLoggedInSubject.asObservable().distinctUntilChanged();
+  // public isLoggedIn = this.isLoggedInSubject.asObservable().distinctUntilChanged();
 
   constructor(private router: Router, private http: Http){
-    if (localStorage.getItem('currentUser') !== null && localStorage.getItem('currentUser').length > 0) {
-      this.isLoggedInSubject.next(true);
-    }
+    this.isLoggedInSubject.next(localStorage.getItem('currentUser') !== null && localStorage.getItem('currentUser').length > 0);
   }
 
   logout() {

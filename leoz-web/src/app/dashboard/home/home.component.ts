@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '../translate/translate.service';
-import { environment } from '../../environments/environment';
+import { TranslateService } from '../../translate/translate.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home',

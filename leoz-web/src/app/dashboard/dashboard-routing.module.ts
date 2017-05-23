@@ -1,18 +1,18 @@
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { AuthenticationGuard } from '../auth/authentication.guard';
-import { UserComponent } from '../user/user.component';
-import { TourComponent } from '../tour/tour.component';
-import { HomeComponent } from 'app/home/home.component';
 import { DashboardComponent } from 'app/dashboard/dashboard.component';
+import { AuthenticationGuard } from '../core/auth/authentication.guard';
 
 export const routes = [
   {
     path: '', component: DashboardComponent, canActivate: [ AuthenticationGuard ],
     children: [
-      { path: 'home', data: [ 'Home' ], component: HomeComponent, canActivate: [ AuthenticationGuard ] },
-      { path: 'user', data: [ 'Users' ], component: UserComponent, canActivate: [ AuthenticationGuard ] },
-      { path: 'tour', data: [ 'Tour' ], component: TourComponent, canActivate: [ AuthenticationGuard ] }
+      { path: 'home', data: [ 'Home' ], canActivate: [ AuthenticationGuard ],
+        loadChildren: 'app/dashboard/home/home.module#HomeModule'},
+      { path: 'user', data: [ 'Users' ], canActivate: [ AuthenticationGuard ],
+        loadChildren: 'app/dashboard/user/user.module#UserModule'},
+      { path: 'tour', data: [ 'Tour' ],  canActivate: [ AuthenticationGuard ],
+        loadChildren: 'app/dashboard/tour/tour.module#TourModule'}
     ]
   }
 ];
