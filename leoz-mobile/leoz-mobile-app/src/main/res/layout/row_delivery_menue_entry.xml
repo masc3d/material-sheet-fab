@@ -16,11 +16,13 @@
 
         <ImageView
             android:id="@+id/uxMenuIcon"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             app:srcCompat="@drawable/ic_cancel_black_48px" />
 
         <TextView
@@ -33,7 +35,7 @@
             android:layout_toRightOf="@+id/uxMenuIcon"
             android:gravity="center_vertical"
             android:text="Menu-Name"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView

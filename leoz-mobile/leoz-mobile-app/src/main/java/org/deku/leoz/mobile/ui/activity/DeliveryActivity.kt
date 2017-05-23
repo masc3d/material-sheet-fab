@@ -48,7 +48,7 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryFragment.On
      */
 
     override fun onDeliveryMenuChoosed(entryType: DeliveryMenuListAdapter.DeliveryMenuEntry.Entry) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        log.debug("ONDELIVERYMENUCHOOSED")
     }
 
     override fun onCameraFragmentPictureTaken(data: ByteArray?) {

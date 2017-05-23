@@ -11,7 +11,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.fragment_delivery.*
 import org.deku.leoz.mobile.BuildConfig
 
 import org.deku.leoz.mobile.R
@@ -42,6 +42,29 @@ class DeliveryFragment : Fragment() {
 
         this.uxVersion?.text = "v${BuildConfig.VERSION_NAME}"
 
+        this.uxMenuList.adapter = DeliveryMenuListAdapter(
+                context = context,
+                entry = mutableListOf(
+                        DeliveryMenuListAdapter.DeliveryMenuEntry(
+                                entryType = DeliveryMenuListAdapter.DeliveryMenuEntry.Entry.LOADING,
+                                description = "Fahrzeugbeladung",
+                                counter = 10,
+                                icon = resources.getDrawable(R.drawable.ic_truck_delivery)
+                        ),
+                        DeliveryMenuListAdapter.DeliveryMenuEntry(
+                                entryType = DeliveryMenuListAdapter.DeliveryMenuEntry.Entry.ORDERLIST,
+                                description = "Auftragsliste",
+                                counter = 55,
+                                icon = resources.getDrawable(R.drawable.ic_format_list_bulleted)
+                        )
+                ),
+                rootViewGroup = null)
+
+        this.uxMenuList.setOnItemClickListener { parent, view, position, id ->
+            onEntryPressed(
+                    entry = (this.uxMenuList.getItemAtPosition(position) as DeliveryMenuListAdapter.DeliveryMenuEntry)
+            )
+        }
     }
 
     fun onEntryPressed(entry: DeliveryMenuListAdapter.DeliveryMenuEntry) {

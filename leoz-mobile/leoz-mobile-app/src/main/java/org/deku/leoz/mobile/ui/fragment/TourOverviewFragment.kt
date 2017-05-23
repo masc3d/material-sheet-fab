@@ -6,13 +6,8 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_tour_overview.*
-import org.deku.leoz.enums.ParcelService
 
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Stop
-import org.deku.leoz.mobile.ui.StopListAdapter
-import java.util.*
 
 
 /**
