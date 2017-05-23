@@ -107,7 +107,10 @@ dependencies {
 
             // MQTT persistence
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
-            "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho"
+            "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho",
+
+            // ReactiveNetwork
+            'com.github.pwittchen:reactivenetwork-rx2:0.9.1'
     )
 
     testCompile(
