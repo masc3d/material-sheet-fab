@@ -15,7 +15,7 @@ import org.deku.leoz.mobile.R
 /**
  * Created by 27694066 on 23.05.2017.
  */
-class DeliveryMenuListAdapter (val context: Context, val entry: List<DeliveryMenuEntry>, val rootViewGroup: ViewGroup): BaseAdapter() {
+class DeliveryMenuListAdapter (val context: Context, val entry: List<DeliveryMenuEntry>, val rootViewGroup: ViewGroup?): BaseAdapter() {
     var inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -46,7 +46,11 @@ class DeliveryMenuListAdapter (val context: Context, val entry: List<DeliveryMen
         return entry.size
     }
 
-    data class DeliveryMenuEntry (val entryType: Entry, val description: String, val counter: Int, val icon: Drawable) {
+    fun setEntryCounter(position: Int, counter: Int) {
+        (getItem(position) as DeliveryMenuEntry).counter = counter
+    }
+
+    data class DeliveryMenuEntry (val entryType: Entry, val description: String, var counter: Int, val icon: Drawable) {
         enum class Entry(val id: Long) {
             ORDERLIST(0),
             LOADING(1)
