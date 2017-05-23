@@ -15,6 +15,7 @@ class Stop (
 
     //Nested class Order
     class Order (
+            val id: String,
             val classification: OrderClassification,
             val parcel: MutableList<Parcel> = mutableListOf(),
             val addresses: MutableList<Address>,
@@ -29,6 +30,7 @@ class Stop (
         }
 
         data class Parcel (
+                val id: String,
                 val labelReference: String?,
                 val status: MutableList<Status>? = mutableListOf(),
                 val dimensions: Dimension?
@@ -92,7 +94,7 @@ class Stop (
             }
         }
 
-        class Address (val classification: AddressClassification, val contactPerson: String, val addressLine1: String, val addressLineNo1: String = "", val zipCode: String, val city: String, val geoLocation: Pair<Double, Double>?) {
+        class Address (val classification: AddressClassification, val addressLine1: String, val addressLineNo1: String = "", val addressLine2: String = "", val addressLineNo2: String = "", val street: String, val streetNo: String = "", val zipCode: String, val city: String, val geoLocation: Pair<Double, Double>?) {
             enum class AddressClassification {
                 PICKUP, DELIVERY, EXCHANGE_DELIVERY, EXCHANGE_PICKUP
             }

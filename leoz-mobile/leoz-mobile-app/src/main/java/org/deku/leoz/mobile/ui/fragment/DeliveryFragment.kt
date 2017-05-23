@@ -1,6 +1,8 @@
 package org.deku.leoz.mobile.ui.fragment
 
 
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,99 +16,57 @@ import org.deku.leoz.mobile.BuildConfig
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Job
+import org.deku.leoz.mobile.ui.DeliveryMenuListAdapter
 import org.slf4j.LoggerFactory
-import sx.android.aidc.AidcReader
-import sx.android.fragment.CameraFragment
-import sx.android.fragment.util.withTransaction
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class DeliveryFragment : Fragment(), CameraFragment.Listener {
+class DeliveryFragment : Fragment() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val job: Job by Kodein.global.lazy.instance()
-    private var recentFragment: Fragment? = null
 
-    companion object {
-        const val FRAGMENT_TAG_CAMERA = "fragmentCamera"
-        const val FRAGMENT_TAG_SIGNATURE = "fragmentSignature"
-        const val FRAGMENT_TAG_TOURSELECTION = "fragmentTourSelection"
-        const val FRAGMENT_TAG_TOUROVERVIEW = "fragmentTourOverview"
-        const val FRAGMENT_TAG_DELIVERYMENUE = "fragmentDeliveryMenue"
-    }
+    private var mListener: OnDeliveryMenuChoosed? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         // Reusing fragment_main (trying)
-        return inflater!!.inflate(R.layout.fragment_main, container, false)
+        return inflater!!.inflate(R.layout.fragment_delivery, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxLogo.setImageResource(R.drawable.ic_truck_fast)
-        this.uxTitle.text = "mobile:Drive"
         this.uxVersion?.text = "v${BuildConfig.VERSION_NAME}"
 
-        if (savedInstanceState == null) {
-//            when {
-//                job.stopList.isEmpty() -> {
-//                    //showTourSelection()
-//                    showTourOverview()
-//                }
-//                job.activeStop != null -> {
-//
-//                }
-//            }
+    }
+
+    fun onEntryPressed(entry: DeliveryMenuListAdapter.DeliveryMenuEntry) {
+        if (mListener != null) {
+            mListener!!.onDeliveryMenuChoosed(entry.entryType)
         }
     }
 
-    override fun onCameraFragmentPictureTaken(data: ByteArray?) {
-        log.debug("ONCAMERAFRAGMENTPICTURETAKEN")
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-
-    }
-
-    override fun onCameraFragmentShutter() {
-        log.debug("ONCAMERAFRAGMENTSHUTTER")
-    }
-
-    override fun onCameraFragmentDiscarded() {
-        log.debug("ONCAMERAFRAGMENTDISCARDED")
-    }
-
-    fun showCamera() {
-        childFragmentManager.withTransaction {
-            it.replace(this.uxContainer.id, CameraFragment(), FRAGMENT_TAG_CAMERA)
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if (context is DeliveryFragment.OnDeliveryMenuChoosed) {
+            mListener = context as DeliveryFragment.OnDeliveryMenuChoosed?
+        } else {
+            throw RuntimeException(context!!.toString() + " must implement OnDeliveryMenuChoosed")
         }
     }
 
-    fun showSignaturePad() {
-        childFragmentManager.withTransaction {
-            it.replace(this.uxContainer.id, SignatureFragment(), FRAGMENT_TAG_SIGNATURE)
-        }
+    override fun onDetach() {
+        super.onDetach()
+        mListener = null
     }
 
-    fun showTourSelection() {
-        childFragmentManager.withTransaction {
-            it.replace(this.uxContainer.id, TourSelectionFragment(), FRAGMENT_TAG_TOURSELECTION)
-        }
+    interface OnDeliveryMenuChoosed {
+        // TODO: Update argument type and name
+        fun onDeliveryMenuChoosed(entryType: DeliveryMenuListAdapter.DeliveryMenuEntry.Entry)
     }
-
-    fun showTourOverview() {
-        childFragmentManager.withTransaction {
-            it.replace(this.uxContainer.id, TourOverviewFragment(), FRAGMENT_TAG_TOUROVERVIEW)
-        }
-    }
-
-//    fun showDeliveryMenu() {
-//        childFragmentManager.withTransaction {
-//            it.replace(this.uxContainer.id, DeliveryMenuFragment(), FRAGMENT_TAG_DELIVERYMENUE)
-//        }
-//    }
 
 }
