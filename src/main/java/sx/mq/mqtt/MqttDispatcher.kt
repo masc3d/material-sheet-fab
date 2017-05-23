@@ -99,7 +99,7 @@ class MqttDispatcher(
                 .toFlowable(BackpressureStrategy.LATEST)
                 .toObservable()
                 .concatMap { trigger ->
-                    log.trace("Dequeue start")
+                    log.trace("Starting dequeue flow")
                     this.persistence.get()
                             .doOnSubscribe {
                                 count = 0
@@ -180,8 +180,8 @@ class MqttDispatcher(
      * The returned {@link Completable} will always be completed without error.
      */
     override fun connect(): Completable {
-        log.info("Starting connection flow")
-        // RxClient observable are hot, thus need to defer in order to re-subscribe properly on retry
+        log.info("Starting connection cycle")
+        // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
         this.connectionSubscription = Completable
                 .defer {
                     this.client.connect()
