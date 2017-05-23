@@ -53,7 +53,7 @@ class Login {
             )
 
             if (email.equals("foo@bar", ignoreCase = true) && password.equals("foobar", ignoreCase = false)) {
-                if(connectivity.isEstablished) {
+                if(connectivity.state.isAvailable) {
                     log.debug("Connection established, login online.")
                     val request = AuthorizationService.MobileRequest(
                             user = AuthorizationService.Credentials(

@@ -1,7 +1,9 @@
 package org.deku.leoz.mobile.config
 
 import android.content.Context
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.Kodein.Module
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
@@ -21,6 +23,7 @@ import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
+import sx.android.Connectivity
 import sx.android.mqtt.MqttClientPersistenceSQLite
 import sx.android.mqtt.MqttSqlitePersistence
 import sx.mq.mqtt.*
@@ -51,7 +54,7 @@ class MqttConfiguration(
 
         var sub: Disposable? = null
 
-        val module = Kodein.Module {
+        val module = Module {
             /**
              * MQTT connection options
              */
@@ -113,6 +116,13 @@ class MqttConfiguration(
 
                 // Dispatcher will always auto-reconnect
                 dispatcher.connect()
+
+                instance<Connectivity>().stateProperty.subscribe {
+                    if (it.value.isAvailable)
+                        dispatcher.connect()
+                    else
+                        dispatcher.disconnect()
+                }
 
                 dispatcher
             }
