@@ -52,7 +52,7 @@ class MqttSqlitePersistence constructor(
                 tableName = TABLE_NAME,
                 ifNotExists = true,
                 columns = *arrayOf(
-                        Pair(COL_ID, INTEGER.plus(PRIMARY_KEY)),
+                        Pair(COL_ID, INTEGER + PRIMARY_KEY),
                         Pair(COL_TOPIC, TEXT),
                         Pair(COL_QOS, INTEGER),
                         Pair(COL_RETAINED, INTEGER),
