@@ -13,7 +13,7 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class UserService {
 
-  private userListUrl = `${environment.apiUrl}/user/debitor/7`;
+  private userListUrl = `${environment.apiUrl}/user?email=${environment.devEmail}&debitor-id=${environment.devdebId}`;
 
   private activeUserSubject = new BehaviorSubject<User>(new User());
   public activeUser = this.activeUserSubject.asObservable().distinctUntilChanged();
@@ -23,8 +23,9 @@ export class UserService {
 
   getUsers() {
     const headers = new Headers();
+
     headers.append('Content-Type', 'application/json');
-    headers.append('x-api-key', '123');
+    headers.append('x-api-key', `${environment.devapiKey}`);
 
     const options = new RequestOptions({ headers: headers });
 

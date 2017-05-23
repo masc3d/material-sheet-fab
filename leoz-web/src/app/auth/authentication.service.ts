@@ -47,7 +47,7 @@ export class AuthenticationService {
         } ), options)
       .map((response: Response) => {
           if (response.status === 200) {
-            // example data {"key":"123","debitorNo":"12345"}
+            // example data {"key":"DArZpI5njClOAHjueuspWmw1dQdGcj","debitorNo":"5"}
             localStorage.setItem('currentUser', JSON.stringify(response.json()));
             this.isLoggedInSubject.next(true);
           } else {

@@ -6,11 +6,13 @@ import {TourDriverListComponent} from './tour-driver-list/tour-driver-list.compo
 import {DriverService} from './driver.service';
 import {TourService} from './tour.service';
 import {YagaModule} from '@yaga/leaflet-ng2';
+import { TranslateModule } from '../translate/translate.module';
 
 @NgModule({
   imports: [
     CommonModule,
-    YagaModule
+    YagaModule,
+    TranslateModule
   ],
   declarations: [
     TourComponent,

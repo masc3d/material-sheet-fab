@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private router: Router,
-              private authenticationService:AuthenticationService) { }
+              private authenticationService: AuthenticationService) { }
 
   ngOnInit() {
     // reset login status

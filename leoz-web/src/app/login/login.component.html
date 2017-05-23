@@ -5,7 +5,7 @@
     </div>
 
     <div id="content" class="content-box">
-      <div *ngIf="errMsg.length > 0" class="alert alert-danger">{{errMsg}}</div>
+      <div *ngIf="errMsg.length > 0" class="alert alert-danger">{{errMsg | translate}}</div>
       <form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
         <div class="form-group">
           <label>{{'username' | translate}}</label>
@@ -13,20 +13,20 @@
                  (focus)="resetErrMsg()" required/>
           <div *ngIf="loginForm.controls['username'].touched && loginForm.controls['username'].hasError('required')"
                class="alert alert-danger">
-            Username is required
+            <span>{{'username is required' | translate}}</span>
           </div>
         </div>
         <div class="form-group">
-          <label>Password</label>
+          <label>{{'password' | translate}}</label>
           <input type="password" class="form-control" [ngClass]="{'invalid': errMsg.length > 0}"
                  formControlName="password" (focus)="resetErrMsg()" required/>
           <div *ngIf="loginForm.controls['password'].touched && loginForm.controls['password'].hasError('required')"
                class="alert alert-danger">
-            Password is required
+            <span>{{'password is required' | translate}}</span>
           </div>
         </div>
         <div class="form-group">
-          <button [disabled]="!loginForm.valid || loading" class="btn btn-primary">Login</button>
+          <button [disabled]="!loginForm.valid || loading" class="btn btn-primary">{{'btlogin' | translate}}</button>
           <img *ngIf="loading"
                src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
         </div>

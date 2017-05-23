@@ -1,14 +1,16 @@
 <table class="table table-striped">
   <thead>
   <tr>
-    <th>Firstname</th>
-    <th>Surname</th>
+    <th>{{'firstname' | translate}}</th>
+    <th>{{'surname' | translate}}</th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let user of users | async" (click)="selected(user)">
+  <tr *ngFor="let user of users | async">
     <td>{{user.firstName}}</td>
     <td>{{user.lastName}}</td>
+    <td (click)="selected(user)"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></td>
+    <td><i class="fa fa-trash-o fa-fw" aria-hidden="true"></i></td><!--<td>nur deaktivieren</td>-->
   </tr>
   </tbody>
 </table>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from './auth/authentication.service';
 import { TranslateService } from './translate/translate.service';
+import { environment } from '../environments/environment';
 
 @Component({
   moduleId: module.id,
@@ -9,30 +10,12 @@ import { TranslateService } from './translate/translate.service';
 })
 export class AppComponent implements OnInit {
   isLoggedIn: boolean;
-  public translatedText: string;
-  public supportedLanguages: any[];
 
   constructor(private authService: AuthenticationService, private _translate: TranslateService){}
 
   ngOnInit() {
     this.authService.isLoggedIn.subscribe((isLoggedIn: boolean) => this.isLoggedIn = isLoggedIn);
-    this.supportedLanguages = [
-      { display: 'English', value: 'en' },
-      { display: 'Deutsch', value: 'de' },
-    ];
-
     // set current language
-    this.selectLang('en');
-  }
-
-  selectLang(lang: string) {
-    // set current lang;
-    this._translate.use(lang);
-    this.refreshText();
-  }
-
-  refreshText() {
-    // refresh translation when language change
-    this.translatedText = this._translate.instant('hello world');
+    this._translate.use(`${environment.defLang}`);
   }
 }
