@@ -52,7 +52,7 @@ class MqttDispatcherTest {
     object Mqtt {
         val connectOptions: MqttConnectOptions by lazy {
             val mqttConnectOptions = MqttConnectOptions()
-            mqttConnectOptions.isCleanSession = false
+            mqttConnectOptions.isCleanSession = true
             mqttConnectOptions.userName = MqTestConfiguration.USERNAME
             mqttConnectOptions.password = MqTestConfiguration.PASSWORD.toCharArray()
             mqttConnectOptions
