@@ -99,7 +99,8 @@ class Application : javafx.application.Application() {
             log.info("${this.settings}")
 
             // Parse leoz-boot command line
-            JCommander(this.settings, *this.parameters.raw.toTypedArray())
+            val jc = JCommander(this.settings)
+            jc.parse(*this.parameters.raw.toTypedArray())
 
             if (settings.hideUi || GraphicsEnvironment.isHeadless()) {
                 // Execute boot task on this thread

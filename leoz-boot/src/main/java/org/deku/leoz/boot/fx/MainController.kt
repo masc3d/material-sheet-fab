@@ -61,7 +61,7 @@ class MainController : Initializable {
      * Run task
      */
     fun run(task: Observable<Boot.Event>) {
-        var verb: String = "Initializing"
+        var verb: String
         val verbPast: String
 
         val bundleName = this.settings.bundle
