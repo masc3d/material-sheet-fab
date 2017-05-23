@@ -93,7 +93,7 @@ class MqttDispatcher(
                 .toFlowable(BackpressureStrategy.LATEST)
                 .toObservable()
                 .concatMap {
-                    log.info("Dequeue start")
+                    log.trace("Dequeue start")
                     this.persistence.get()
                             .doOnSubscribe {
                                 count = 0

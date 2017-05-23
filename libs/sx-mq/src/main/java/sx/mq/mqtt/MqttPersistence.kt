@@ -4,6 +4,7 @@ import io.reactivex.Observable
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.slf4j.LoggerFactory
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -37,7 +38,7 @@ class MqttInMemoryPersistence : IMqttPersistence {
     private var nextId: Int = 0
 
     private val lock = ReentrantLock()
-    private val messages = LinkedList<MqttPersistentMessage>()
+    private val messages = ConcurrentLinkedDeque<MqttPersistentMessage>()
 
     override fun add(topicName: String, message: MqttMessage) {
         this.lock.withLock {
@@ -50,17 +51,13 @@ class MqttInMemoryPersistence : IMqttPersistence {
     }
 
     override fun get(topicName: String?): Observable<MqttPersistentMessage> {
-        this.lock.withLock {
-            return Observable.fromIterable(
-                    if (topicName == null) messages else messages.filter { it.topicName == topicName }
-            )
-        }
+        return Observable.fromIterable(
+                if (topicName == null) messages else messages.filter { it.topicName == topicName }
+        )
     }
 
     override fun remove(message: MqttPersistentMessage) {
-        this.lock.withLock {
-            this.messages.remove(message)
-        }
+        this.messages.remove(message)
     }
 }
 
@@ -79,7 +76,7 @@ data class MqttPersistentMessage(
         return this.persistentId
     }
 
-    override fun equals(other: Any?): Boolean{
+    override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
 
