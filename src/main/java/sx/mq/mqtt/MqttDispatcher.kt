@@ -93,12 +93,12 @@ class MqttDispatcher(
         val sw = Stopwatch.createUnstarted()
         var count: Int = 0
 
-        // This observable never comples, as it's subject based.
+        // This observable never completes, as it's subject based.
         this.dequeueSubscription = this.dequeueTrigger
                 // Backpressure trigger events as each message publish emits
                 .toFlowable(BackpressureStrategy.LATEST)
                 .toObservable()
-                .concatMap {
+                .concatMap { trigger ->
                     log.trace("Dequeue start")
                     this.persistence.get()
                             .doOnSubscribe {
@@ -125,9 +125,9 @@ class MqttDispatcher(
                                 if (count > 0)
                                     log.info("Dequeued ${count} in [${sw}]")
                             }
-                            // Map each processed message back to trigger unit
+                            // Map processed batch back to trigger unit
                             .ignoreElements()
-                            .toSingleDefault(it)
+                            .toSingleDefault(trigger)
                             .toObservable()
                 }
                 .subscribeOn(executorService)
