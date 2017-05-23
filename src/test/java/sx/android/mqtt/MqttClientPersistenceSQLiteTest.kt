@@ -21,6 +21,7 @@ class MqttClientPersistenceSQLiteTest {
     private val databaseFile by lazy {
         // Storing database in the root project build directory
         val file = File("build/sqlite/mqtt.db")
+        log.info("Database path [${file}]")
         file.parentFile.mkdirs()
         file.delete()
         file
@@ -32,22 +33,23 @@ class MqttClientPersistenceSQLiteTest {
     }
 
     fun createRandomBlob(): ByteArray {
-        val b = ByteArray(256)
+        val b = ByteArray(1024)
         Random().nextBytes(b)
         return b
     }
 
-    fun createRandomMessage(): MqttPublish {
-        return MqttPublish(
+    val message by lazy {
+        MqttPublish(
                 "topicname",
                 MqttMessage(this.createRandomBlob()))
+
     }
 
     fun storeMessages(count: Int) {
         for (i in 0..count) {
-            this.mqttPersistence.put(
+            mqttPersistence.put(
                     i.toString(),
-                    createRandomMessage()
+                    this.message
             )
         }
     }
@@ -55,8 +57,15 @@ class MqttClientPersistenceSQLiteTest {
     @Test
     fun testPut() {
         sx.Stopwatch.createStarted("put", { log.info(it) }, { _, _ ->
-            this.storeMessages(1)
+            this.storeMessages(1000)
         })
+
+        this.mqttPersistence.clear()
+
+        sx.Stopwatch.createStarted("put", { log.info(it) }, { _, _ ->
+            this.storeMessages(1000)
+        })
+
     }
 
     @Test

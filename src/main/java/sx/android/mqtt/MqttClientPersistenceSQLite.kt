@@ -31,7 +31,7 @@ class MqttClientPersistenceSQLite constructor(
         SQLiteDatabase.openOrCreateDatabase(this.databaseFile, null)
     })
 
-    val db by lazy {
+    private val db by lazy {
         this.dbInstance.get()
     }
 
