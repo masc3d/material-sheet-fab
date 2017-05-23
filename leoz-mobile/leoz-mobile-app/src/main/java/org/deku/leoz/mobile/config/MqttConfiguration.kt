@@ -104,11 +104,12 @@ class MqttConfiguration(
                 // Dispatcher will always auto-reconnect
                 dispatcher.connect()
 
+                // Wire connectivity
                 instance<Connectivity>().networkProperty.subscribe {
-                    if (it.value.state == NetworkInfo.State.CONNECTED)
-                        dispatcher.connect()
-                    else
-                        dispatcher.disconnect()
+                    when (it.value.state) {
+                        NetworkInfo.State.CONNECTED -> dispatcher.connect()
+                        else -> dispatcher.disconnect()
+                    }
                 }
 
                 dispatcher
