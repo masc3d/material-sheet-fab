@@ -1,7 +1,5 @@
 package sx.android
 
-import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.Context
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
@@ -20,8 +18,14 @@ class Connectivity(
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    val stateProperty = ObservableRxProperty<Connectivity>(Connectivity.create())
-    var state by stateProperty
+    /**
+     * Network state, observable property
+     */
+    val networkProperty = ObservableRxProperty<Connectivity>(Connectivity.create())
+    /**
+     * Current network state
+     */
+    var network by networkProperty
         private set
 
     init {
@@ -29,7 +33,7 @@ class Connectivity(
                 .subscribeOn(scheduler)
                 .subscribeBy(onNext = {
                     log.info("Network connectivity state change [${it}]")
-                    state = it
+                    this.network = it
                 })
     }
 }
