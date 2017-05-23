@@ -1,16 +1,11 @@
 package sx.rx
 
-import org.slf4j.LoggerFactory
 import io.reactivex.*
-import io.reactivex.exceptions.OnErrorNotImplementedException
 import io.reactivex.functions.BiFunction
 import io.reactivex.observables.ConnectableObservable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
-import java.util.ArrayList
-import java.util.concurrent.CancellationException
+import sx.time.Duration
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
@@ -140,6 +135,37 @@ fun Completable.retryWith(
             }
         }
     }
+}
+
+/**
+ * Retry with exponential backoff
+ * @param count Retry count
+ * @param initialDelay Initial delay
+ * @param maximumDelay Maximum delay
+ * @param exponentialBackoff Exponential backoff factor. Defaults to 2.0.
+ * @param action Action on retry
+ */
+fun Completable.retryWithExponentialBackoff(
+        count: Int = Int.MAX_VALUE,
+        initialDelay: Duration,
+        maximumDelay: Duration,
+        exponentialBackoff: Double = 2.0,
+        action: (retry: Long, error: Throwable) -> Unit = { _, _ -> }): Completable {
+    return this.retryWith(
+            count = count,
+            action = { retry: Long, error: Throwable ->
+                action(retry, error)
+                var delay = initialDelay.times(Math.pow(
+                        exponentialBackoff,
+                        retry.toDouble()).toLong())
+
+                if (delay > maximumDelay) {
+                    delay = maximumDelay
+                }
+
+                Flowable.timer(delay.toMillis(), TimeUnit.MILLISECONDS)
+            }
+    )
 }
 
 
