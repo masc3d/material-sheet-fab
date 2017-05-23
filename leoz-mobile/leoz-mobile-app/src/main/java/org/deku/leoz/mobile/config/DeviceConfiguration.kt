@@ -29,9 +29,7 @@ class DeviceConfiguration {
             }
 
             bind<Connectivity>() with singleton {
-                Connectivity(
-                        context = instance<Context>(),
-                        scheduler = Schedulers.from(instance<ExecutorService>()))
+                Connectivity(context = instance<Context>())
             }
         }
     }
