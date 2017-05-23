@@ -22,6 +22,7 @@ import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import sx.android.mqtt.MqttClientPersistenceSQLite
+import sx.android.mqtt.MqttSqlitePersistence
 import sx.mq.mqtt.*
 import sx.rx.retryWith
 import sx.rx.subscribeOn
@@ -120,7 +121,8 @@ class MqttConfiguration(
             bind<MqttDispatcher>() with singleton {
                 val dispatcher = MqttDispatcher(
                         client = instance<MqttRxClient>(),
-                        persistence = MqttInMemoryPersistence()
+                        persistence = MqttSqlitePersistence(
+                                databaseFile = instance<Context>().getDatabasePath("mqtt.db"))
                 )
 
                 // Dispatcher will always auto-reconnect
