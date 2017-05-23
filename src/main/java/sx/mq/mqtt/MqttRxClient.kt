@@ -1,6 +1,7 @@
 package sx.mq.mqtt
 
 import io.reactivex.*
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
@@ -59,6 +60,8 @@ class MqttRxClient(
         data class MessageArrived(val topic: String, val message: MqttMessage) : MqttRxClient.Status()
         data class DeliveryComplete(val token: IMqttDeliveryToken?) : MqttRxClient.Status()
     }
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     init {
         if (connectOptions.isCleanSession == false) {
@@ -192,17 +195,21 @@ class MqttRxClient(
     override fun connect(): Completable {
         return Completable.create {
             try {
-                this.parent.connect(this.connectOptions,
-                        null,
-                        object : IMqttActionListener {
-                            override fun onSuccess(asyncActionToken: IMqttToken?) {
-                                it.onComplete()
-                            }
+                if (!this.parent.isConnected) {
+                    this.parent.connect(this.connectOptions,
+                            null,
+                            object : IMqttActionListener {
+                                override fun onSuccess(asyncActionToken: IMqttToken?) {
+                                    it.onComplete()
+                                }
 
-                            override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                                it.onError(exception ?: MqttException(null))
-                            }
-                        })
+                                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                                    it.onError(exception ?: MqttException(null))
+                                }
+                            })
+                } else {
+                    it.onComplete()
+                }
             } catch(e: Throwable) {
                 it.onError(e)
             }
