@@ -31,7 +31,7 @@ import kotlin.concurrent.withLock
 class LogMqAppender(
         private val clientSupplier: () -> MqClient,
         private val identitySupplier: () -> Identity)
-:
+    :
         AppenderBase<ILoggingEvent>(),
         Lifecycle,
         Disposable {
@@ -45,7 +45,7 @@ class LogMqAppender(
      * Flush Service
      */
     inner class Dispatcher(executorService: ScheduledExecutorService)
-    :
+        :
             sx.concurrent.Service(
                     executorService = executorService,
                     period = Duration.ofSeconds(5),
@@ -57,7 +57,7 @@ class LogMqAppender(
             // Flush log messages to underlying jms broker
             val logMessageBuffer = ArrayList<LogMessage.LogEntry>()
 
-            synchronized (this@LogMqAppender.buffer) {
+            synchronized(this@LogMqAppender.buffer) {
                 logMessageBuffer.addAll(this@LogMqAppender.buffer)
                 this@LogMqAppender.buffer.clear()
             }
@@ -81,7 +81,11 @@ class LogMqAppender(
 
     private val executor: ScheduledExecutorService by lazy {
         val executor = Executors.newScheduledThreadPool(1) as ScheduledThreadPoolExecutor
-        executor.removeOnCancelPolicy = true
+        try {
+            executor.removeOnCancelPolicy = true
+        } catch(e: Throwable) {
+            log.warn("Could not set ScheduledExecutorService.removeOnCancelPolicy [${e.message}]")
+        }
         executor
     }
 
@@ -89,7 +93,7 @@ class LogMqAppender(
 
     override fun append(eventObject: ILoggingEvent) {
         val le = eventObject as LoggingEvent
-        synchronized (buffer) {
+        synchronized(buffer) {
             buffer.add(LogMessage.LogEntry(le))
         }
     }
