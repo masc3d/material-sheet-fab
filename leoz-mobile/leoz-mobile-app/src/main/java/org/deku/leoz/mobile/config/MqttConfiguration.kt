@@ -51,24 +51,6 @@ class MqttConfiguration(
 
         var sub: Disposable? = null
 
-        /**
-         * Extension to enable paho's disconnected offline buffering
-         */
-        fun MqttAndroidClient.enableDisconnectedBuffer() {
-            // Setup in disconnected in-memory buffer
-            val disconnectedBufferOptions = DisconnectedBufferOptions()
-            disconnectedBufferOptions.isBufferEnabled = false
-
-            // Persist disconnected messages using client persistence
-            disconnectedBufferOptions.isPersistBuffer = false
-
-            // In memory message buffer settings
-            disconnectedBufferOptions.bufferSize = 250
-            disconnectedBufferOptions.isDeleteOldestMessages = false
-
-            this.setBufferOpts(disconnectedBufferOptions)
-        }
-
         val module = Kodein.Module {
             /**
              * MQTT connection options
