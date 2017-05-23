@@ -22,6 +22,7 @@ import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import sx.android.mqtt.MqttClientPersistenceSQLite
+import sx.android.mqtt.MqttSqlitePersistence
 import sx.mq.mqtt.*
 import sx.rx.retryWith
 import sx.rx.subscribeOn
@@ -50,32 +51,17 @@ class MqttConfiguration(
 
         var sub: Disposable? = null
 
-        /**
-         * Extension to enable paho's disconnected offline buffering
-         */
-        fun MqttAndroidClient.enableDisconnectedBuffer() {
-            // Setup in disconnected in-memory buffer
-            val disconnectedBufferOptions = DisconnectedBufferOptions()
-            disconnectedBufferOptions.isBufferEnabled = false
-
-            // Persist disconnected messages using client persistence
-            disconnectedBufferOptions.isPersistBuffer = false
-
-            // In memory message buffer settings
-            disconnectedBufferOptions.bufferSize = 250
-            disconnectedBufferOptions.isDeleteOldestMessages = false
-
-            this.setBufferOpts(disconnectedBufferOptions)
-        }
-
         val module = Kodein.Module {
             /**
              * MQTT connection options
              */
             bind<MqttConnectOptions>() with singleton {
                 val mqttConnectOptions = MqttConnectOptions()
+                // Disabling paho's automatic reconnection feature. MqttDispatcher provides this transparently
                 mqttConnectOptions.isAutomaticReconnect = false
+                // MqttRxClient requires clean sessions {@see MqttRxClient}
                 mqttConnectOptions.isCleanSession = true
+                // MQ credentials
                 mqttConnectOptions.userName = MqConfiguration.USERNAME
                 mqttConnectOptions.password = MqConfiguration.PASSWORD.toCharArray()
                 mqttConnectOptions
@@ -120,7 +106,8 @@ class MqttConfiguration(
             bind<MqttDispatcher>() with singleton {
                 val dispatcher = MqttDispatcher(
                         client = instance<MqttRxClient>(),
-                        persistence = MqttInMemoryPersistence()
+                        persistence = MqttSqlitePersistence(
+                                databaseFile = instance<Context>().getDatabasePath("mqtt.db"))
                 )
 
                 // Dispatcher will always auto-reconnect

@@ -101,6 +101,8 @@ dependencies {
     )
 
     provided(
+            project(':sx-mq'),
+
             'com.journeyapps:zxing-android-embedded:3.5.0',
 
             // MQTT persistence
