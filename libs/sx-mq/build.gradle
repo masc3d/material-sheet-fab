@@ -5,6 +5,7 @@ buildscript {
     ext {
         v_activemq = '5.14.5'
         v_artemis = '1.5.4'
+        v_kodein = '3.3.0'
         v_kotlin = '1.1.2-3'
         v_protostuff = '1.5.3'
         v_spring = '4.3.8.RELEASE'
@@ -96,7 +97,25 @@ dependencies {
 
     testCompile(
             "junit:junit:4.12",
+
+            // Logging
             "ch.qos.logback:logback-classic:1.2.3",
+
+            // Kodein
+            "com.github.salomonbrys.kodein:kodein:$v_kodein",
+            "com.github.salomonbrys.kodein:kodein-conf:$v_kodein",
+
+            // ActiveMQ
+            "org.apache.activemq:activemq-broker:$v_activemq",
+            "org.apache.activemq:activemq-kahadb-store:$v_activemq",
+            "org.apache.activemq:activemq-jms-pool:$v_activemq",
+            "org.apache.activemq:activemq-jaas:$v_activemq",
+            "org.apache.activemq:activemq-mqtt:$v_activemq",
+            dependencies.create("org.apache.activemq:activemq-http:$v_activemq") {
+                exclude group: 'org.springframework'
+                exclude group: 'org.apache.activemq', module: 'activemq-spring'
+                exclude group: 'org.eclipse.jetty.aggregate'
+            },
 
             // Artemis
             dependencies.create("org.apache.activemq:artemis-jms-server:$v_artemis") {
@@ -118,6 +137,9 @@ dependencies {
             "org.springframework:spring-jms:$v_spring",
 
             // MQTT client
-            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho"
+            "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
+
+            // Kryo
+            "com.esotericsoftware:kryo:4.0.0"
     )
 }

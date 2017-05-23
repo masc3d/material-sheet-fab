@@ -2,10 +2,13 @@ package sx.mq.jms.listeners
 
 import sx.LazyInstance
 import sx.mq.jms.JmsChannel
-import sx.mq.jms.JmsClient
 import sx.mq.jms.JmsListener
-import javax.jms.*
-import kotlin.IllegalStateException
+import javax.jms.Connection
+import javax.jms.JMSException
+import javax.jms.Message
+import javax.jms.MessageConsumer
+import javax.jms.MessageListener
+import javax.jms.Session
 
 /**
  * Simple single threaded jms listener

@@ -55,9 +55,6 @@
         <service
             android:name=".service.LocationService"
             android:enabled="true" />
-        <service
-            android:name="org.eclipse.paho.android.service.MqttService"
-            android:enabled="true" />
     </application>
 
 </manifest>

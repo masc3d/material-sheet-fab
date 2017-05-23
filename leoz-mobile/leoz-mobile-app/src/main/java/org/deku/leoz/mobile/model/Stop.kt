@@ -9,7 +9,7 @@ import java.util.*
 class Stop (
         val order: MutableList<Order>,
         val address: Order.Address,
-        var appointment: Date,
+        var appointment: String,
         var sort: Int
 ) {
 
@@ -18,7 +18,7 @@ class Stop (
             val classification: OrderClassification,
             val parcel: MutableList<Parcel> = mutableListOf(),
             val addresses: MutableList<Address>,
-            val appointment: Date,
+            val appointment: String,
             val carrier: Carrier,
             val service: MutableList<ParcelService>,
             val additionalInformation: MutableList<AdditionalInformation> = mutableListOf(),
@@ -92,7 +92,7 @@ class Stop (
             }
         }
 
-        class Address (val classification: AddressClassification, val addressLine1: String, val addressLineNo1: String = "", val zipCode: String, val city: String, val geoLocation: Pair<Double, Double>?) {
+        class Address (val classification: AddressClassification, val contactPerson: String, val addressLine1: String, val addressLineNo1: String = "", val zipCode: String, val city: String, val geoLocation: Pair<Double, Double>?) {
             enum class AddressClassification {
                 PICKUP, DELIVERY, EXCHANGE_DELIVERY, EXCHANGE_PICKUP
             }

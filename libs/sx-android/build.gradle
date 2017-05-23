@@ -105,6 +105,7 @@ dependencies {
 
             // MQTT persistence
             "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$v_paho",
+            "org.eclipse.paho:org.eclipse.paho.android.service:$v_paho"
     )
 
     testCompile(

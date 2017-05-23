@@ -16,6 +16,9 @@ class ExecutorConfiguration {
                 CompositeExecutorService.create(
                         scheduledCorePoolSize = 2)
             }
+            bind<ExecutorService>() with singleton {
+                instance<ScheduledExecutorService>()
+            }
         }
     }
 }

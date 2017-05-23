@@ -1,7 +1,6 @@
 package sx.mq.mqtt
 
-import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener
+import io.reactivex.rxkotlin.subscribeBy
 import sx.mq.MqListener
 
 /**
@@ -23,28 +22,28 @@ class MqttListener(
     @Synchronized override fun start() {
         this.mqttClient.subscribe(
                 this.mqttChannel.topicName,
-                this.mqttChannel.qos,
-                { topic, message ->
-                    try {
-                        this.handleMessage(
-                                messageObject = this.mqttChannel.serializer.deserializeFrom(message.payload),
-                                replyClient = null)
-                    } catch(e: Throwable) {
-                        this.onError(e)
-                    }
-                }
-        )?.waitForCompletion()
+                this.mqttChannel.qos)
+                .subscribeBy(
+                        onNext = {
+                            try {
+                                this.handleMessage(
+                                        messageObject = this.mqttChannel.serializer.deserializeFrom(it.payload),
+                                        replyClient = null)
+                            } catch(e: Throwable) {
+                                this.onError(e)
+                            }
+                        },
+                        onError = {
+                            this.onError(it)
+                        })
 
         this.isStarted = true
     }
 
     @Synchronized override fun stop() {
         if (this.isStarted) {
-            if (this.mqttClient.isConnected) {
-                this.mqttClient.unsubscribe(
-                        this.mqttChannel.topicName
-                )?.waitForCompletion()
-            }
+            this.mqttClient.unsubscribe(this.mqttChannel.topicName)
+                    .blockingGet()
 
             this.isStarted = false
         }
