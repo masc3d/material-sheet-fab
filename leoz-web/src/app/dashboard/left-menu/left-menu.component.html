@@ -2,20 +2,19 @@
   <div class="main-menu-container">
     <div class="menu-content" style="color: #ffffff">
       <accordion>
-        <accordion-group i18n-heading='Navigation label for home' heading='Home'
+        <accordion-group heading="{{'home' | translate}}"
                          [isOpen]='false' [isDisabled]="true" (click)="navigate('dashboard/home')">
         </accordion-group>
-        <accordion-group i18n-heading='Navigation label for dispo' heading='Dispo'
+        <accordion-group heading="{{'dispo' | translate}}"
                          [isOpen]='false'>
 
-          <a [routerLink]="['tour']" (click)="navigate('dashboard/tour')"><i class="fa fa-bus"></i> <ng-container i18n="Navigation label for tour">Tour</ng-container></a>
+          <a [routerLink]="['tour']" (click)="navigate('dashboard/tour')"><i class="fa fa-bus"></i> <ng-container>{{'tour' | translate}}</ng-container></a>
         </accordion-group>
-        <accordion-group i18n-heading='Navigation label for management' heading='Management'
+        <accordion-group heading="{{'management' | translate}}"
                          [isOpen]='false'>
-          <a [routerLink]="['user']" (click)="navigate('dashboard/user')"><i class="fa fa-wheelchair-alt"></i> <span i18n="Navigation label for user">Users</span></a><br>
-          <!--<hr style="background: #f8ae18; border: none; color: #f8ae18; height: 1px; width: 100%; margin-bottom: 0px;margin-top: 0px;">-->
+          <a [routerLink]="['user']" (click)="navigate('dashboard/user')"><i class="fa fa-wheelchair-alt"></i> <ng-container >{{'users' | translate}}</ng-container></a><br>
         </accordion-group>
-        <accordion-group i18n-heading='Navigation label for logout'heading='Logout'
+        <accordion-group heading="{{'logout' | translate}}"
                          [isOpen]='false' [isDisabled]="true" (click)="navigate('logout')">
         </accordion-group>
       </accordion>

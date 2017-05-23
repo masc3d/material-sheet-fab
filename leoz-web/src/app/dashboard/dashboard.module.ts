@@ -8,6 +8,7 @@ import { HomeModule } from '../home/home.module';
 import { AppFooterComponent } from '../app-footer/app-footer.component';
 import { AccordionModule } from 'ngx-bootstrap';
 import { LeftMenuComponent } from './left-menu/left-menu.component';
+import { TranslateModule } from '../translate/translate.module';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { LeftMenuComponent } from './left-menu/left-menu.component';
     UserModule,
     TourModule,
     HomeModule,
+    TranslateModule,
     AccordionModule.forRoot()
   ],
   declarations: [DashboardComponent, LeftMenuComponent, AppFooterComponent],
