@@ -4,26 +4,31 @@ import { LeftMenuComponent } from './left-menu.component';
 import { AccordionModule } from 'ngx-bootstrap';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '../../shared/shared.module';
+import { CoreModule } from '../../core/core.module';
 
-describe('LeftMenuComponent', () => {
+describe( 'LeftMenuComponent', () => {
   let component: LeftMenuComponent;
   let fixture: ComponentFixture<LeftMenuComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [ RouterTestingModule, SharedModule, AccordionModule.forRoot() ],
+  beforeEach( async( () => {
+    TestBed.configureTestingModule( {
+      imports: [
+        RouterTestingModule,
+        SharedModule,
+        CoreModule.forRoot(),
+        AccordionModule.forRoot() ],
       declarations: [ LeftMenuComponent ]
-    })
-    .compileComponents();
-  }));
+    } )
+      .compileComponents();
+  } ) );
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(LeftMenuComponent);
+  beforeEach( () => {
+    fixture = TestBed.createComponent( LeftMenuComponent );
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  } );
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+  it( 'should create', () => {
+    expect( component ).toBeTruthy();
+  } );
+} );

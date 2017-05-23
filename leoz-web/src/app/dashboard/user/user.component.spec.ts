@@ -2,11 +2,12 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserComponent } from './user.component';
 import { HttpModule } from '@angular/http';
-import { ErrormsgService } from '../error/errormsg.service';
 import { UserService } from './user.service';
 import { UserFormComponent } from './user-form/user-form.component';
 import { UserListComponent } from './user-list/user-list.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../../shared/shared.module';
+import { UserRoutingModule } from './user-routing.module';
+import { CoreModule } from '../../core/core.module';
 
 describe('UserComponent', () => {
   let component: UserComponent;
@@ -20,11 +21,12 @@ describe('UserComponent', () => {
         UserListComponent
       ],
       imports: [
-        ReactiveFormsModule,
-        HttpModule
+        HttpModule,
+        SharedModule,
+        CoreModule.forRoot(),
+        UserRoutingModule
       ],
       providers: [
-        ErrormsgService,
         UserService
       ]
     })

@@ -2,8 +2,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserListComponent } from './user-list.component';
 import { HttpModule } from '@angular/http';
-import { ErrormsgService } from '../../error/errormsg.service';
 import { UserService } from '../user.service';
+import { SharedModule } from '../../../shared/shared.module';
+import { CoreModule } from '../../../core/core.module';
 
 describe('UserListComponent', () => {
   let component: UserListComponent;
@@ -12,9 +13,11 @@ describe('UserListComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ UserListComponent ],
-      imports: [ HttpModule ],
+      imports: [ HttpModule,
+        SharedModule,
+        CoreModule.forRoot()
+      ],
       providers: [
-        ErrormsgService,
         UserService
       ]
     })

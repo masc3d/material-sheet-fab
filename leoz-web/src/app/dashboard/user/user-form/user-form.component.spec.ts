@@ -4,6 +4,8 @@ import { UserFormComponent } from './user-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../user.service';
 import { HttpModule } from '@angular/http';
+import { SharedModule } from '../../../shared/shared.module';
+import { CoreModule } from '../../../core/core.module';
 
 describe('UserFormComponent', () => {
   let component: UserFormComponent;
@@ -14,7 +16,9 @@ describe('UserFormComponent', () => {
       declarations: [ UserFormComponent ],
       imports: [
         ReactiveFormsModule,
-        HttpModule
+        HttpModule,
+        SharedModule,
+        CoreModule.forRoot(),
       ],
       providers: [
         UserService

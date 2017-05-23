@@ -5,9 +5,11 @@ import { TourDriverListComponent } from './tour-driver-list/tour-driver-list.com
 import { TourMapComponent } from './tour-map/tour-map.component';
 import { HttpModule } from '@angular/http';
 import { YagaModule } from '@yaga/leaflet-ng2';
-import { ErrormsgService } from '../error/errormsg.service';
-import { DriverService } from '../driver/driver.service';
 import { TourService } from './tour.service';
+import { TourRoutingModule } from './tour-routing.module';
+import { SharedModule } from '../../shared/shared.module';
+import { CoreModule } from '../../core/core.module';
+import { DriverService } from './driver.service';
 
 describe('TourComponent', () => {
   let component: TourComponent;
@@ -22,10 +24,12 @@ describe('TourComponent', () => {
       ],
       imports: [
         HttpModule,
-        YagaModule
+        YagaModule,
+        SharedModule,
+        CoreModule.forRoot(),
+        TourRoutingModule
       ],
       providers: [
-        ErrormsgService,
         DriverService,
         TourService
       ]

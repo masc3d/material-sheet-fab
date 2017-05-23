@@ -1,7 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
 import { UserService } from './user.service';
-import { ErrormsgService } from '../error/errormsg.service';
 import { HttpModule } from '@angular/http';
 
 describe('UserService', () => {
@@ -10,7 +9,6 @@ describe('UserService', () => {
       imports: [ HttpModule ],
       providers: [
         UserService,
-        ErrormsgService
       ]
     });
   });
