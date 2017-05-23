@@ -16,13 +16,13 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.internal.wire.MqttPublish
 import org.slf4j.LoggerFactory
 import sx.Stopwatch
-import sx.rx.retryWith
-import sx.rx.subscribeOn
-import sx.rx.toHotCache
-import sx.rx.toHotCompletable
+import sx.rx.*
+import sx.time.Duration
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * MQTT dispatcher
@@ -36,6 +36,8 @@ class MqttDispatcher(
         private val executorService: ExecutorService = Executors.newSingleThreadExecutor()
 ) : IMqttRxClient {
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    private val lock = ReentrantLock()
 
     init {
         this.client.statusEvent.subscribe { it ->
@@ -60,9 +62,11 @@ class MqttDispatcher(
      */
     private var connectionSubscription: Disposable? = null
         set(value) {
-            // Dispose the previous connection subscription
-            field?.dispose()
-            field = value
+            this.lock.withLock {
+                // Dispose the previous connection subscription
+                field?.dispose()
+                field = value
+            }
         }
 
     /**
@@ -75,8 +79,10 @@ class MqttDispatcher(
      */
     private var dequeueSubscription: Disposable? = null
         set(value) {
-            field?.dispose()
-            field = value
+            this.lock.withLock {
+                field?.dispose()
+                field = value
+            }
         }
 
     init {
@@ -124,15 +130,9 @@ class MqttDispatcher(
                             .toSingleDefault(it)
                             .toObservable()
                 }
-                // TODO exponential backoff
-                .retryWhen {
-                    it.concatMap {
-                        Observable.timer(5, TimeUnit.SECONDS)
-                    }
-                }
                 .subscribeOn(executorService)
                 .subscribeBy(onError = {
-                    log.error(it.message, it)
+                    log.error("Dequeue terminated with error [${it.message}]")
                 })
     }
 
@@ -148,8 +148,10 @@ class MqttDispatcher(
                     topicName = topicName,
                     message = message)
 
-            // Trigger dequeue flow
-            this.dequeueTrigger.onNext(Unit)
+            if (this.isConnected) {
+                // Trigger dequeue flow
+                this.dequeueTrigger.onNext(Unit)
+            }
         }
                 .toHotCache()
     }
@@ -163,6 +165,7 @@ class MqttDispatcher(
      * The returned {@link Completable} will always be completed without error.
      */
     override fun disconnect(): Completable {
+        log.info("Disconnecting")
         this.connectionSubscription = null
         return this.client.disconnect()
     }
@@ -177,16 +180,18 @@ class MqttDispatcher(
      * The returned {@link Completable} will always be completed without error.
      */
     override fun connect(): Completable {
+        log.info("Starting connection flow")
         // RxClient observable are hot, thus need to defer in order to re-subscribe properly on retry
         this.connectionSubscription = Completable
                 .defer {
                     this.client.connect()
                 }
-                .retryWith(Int.MAX_VALUE, { retry, error ->
-                    log.error("${retry} ${error.message}")
-                    // TODO: exponential backoff
-                    Flowable.timer(1, TimeUnit.SECONDS)
-                })
+                .retryWithExponentialBackoff(
+                        initialDelay = Duration.ofSeconds(2),
+                        maximumDelay = Duration.ofMinutes(2),
+                        action = { retry, delay, error ->
+                            log.error("Connection failed. [${error.message}] Retry [${retry}] in ${delay}")
+                        })
                 .subscribe()
 
         return Completable.fromAction { }
