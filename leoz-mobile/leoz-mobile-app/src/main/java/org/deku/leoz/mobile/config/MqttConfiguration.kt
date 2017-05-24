@@ -6,9 +6,10 @@ import com.github.salomonbrys.kodein.Kodein.Module
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
-import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.config.MqConfiguration
+import org.deku.leoz.mobile.mq.MqttChannels
+import org.deku.leoz.mobile.mq.MqttListeners
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.model.RemoteSettings
 import org.eclipse.paho.client.mqttv3.*
@@ -26,20 +27,10 @@ import java.util.concurrent.ExecutorService
  */
 class MqttConfiguration(
         context: MqttContext
-) : org.deku.leoz.config.MqttConfiguration(context) {
-
-    /**
-     * Listener for mobile topic channel
-     */
-    val mobileTopicListener: MqttListener by lazy {
-        MqttListener(
-                mqttChannel = this.mobileTopic)
-    }
+) {
 
     companion object {
         private val log = LoggerFactory.getLogger(MqttConfiguration::class.java)
-
-        var sub: Disposable? = null
 
         val module = Module {
             /**
@@ -61,7 +52,6 @@ class MqttConfiguration(
              * MQTT client
              */
             bind<IMqttAsyncClient>() with singleton {
-                val androidContext = instance<Context>()
                 val remoteSettings = instance<RemoteSettings>()
                 val identity = instance<Identity>()
 
@@ -84,8 +74,7 @@ class MqttConfiguration(
                     when {
                         it is MqttRxClient.Status.ConnectionComplete -> {
                             // Start listeners on connection
-                            val mqConfig = instance<MqttConfiguration>()
-                            mqConfig.mobileTopicListener.start()
+                            instance<MqttListeners>().mobile.topic.start()
                         }
                     }
                 })
@@ -101,9 +90,6 @@ class MqttConfiguration(
                                 databaseFile = instance<Context>().getDatabasePath("mqtt.db"))
                 )
 
-                // Dispatcher will always auto-reconnect
-                dispatcher.connect()
-
                 // Wire connectivity
                 instance<Connectivity>().networkProperty.subscribe {
                     when (it.value.state) {
@@ -115,18 +101,23 @@ class MqttConfiguration(
                 dispatcher
             }
 
-            /**
-             * MQTT configuration
-             */
-            bind<MqttConfiguration>() with singleton {
-                MqttConfiguration(
-                        context = MqttContext(
-                                client = { instance<MqttDispatcher>() })
+            bind<MqttContext>() with singleton {
+                MqttContext(
+                        // Using the dispatcher as a client proxy for transparent reocnnection and persistence
+                        client = { instance<MqttDispatcher>() }
                 )
             }
 
-            bind<org.deku.leoz.config.MqttConfiguration>() with singleton {
-                instance<MqttConfiguration>()
+            bind<MqttChannels>() with singleton {
+                MqttChannels(
+                        context = instance<MqttContext>()
+                )
+            }
+
+            bind<MqttListeners>() with singleton {
+                MqttListeners(
+                        channels = instance<MqttChannels>()
+                )
             }
         }
     }

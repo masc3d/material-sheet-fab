@@ -64,11 +64,9 @@ class MqttDispatcher(
      */
     private var connectionSubscription: Disposable? = null
         set(value) {
-            this.lock.withLock {
-                // Dispose the previous connection subscription
-                field?.dispose()
-                field = value
-            }
+            // Dispose the previous connection subscription
+            field?.dispose()
+            field = value
         }
 
     /**
@@ -167,9 +165,11 @@ class MqttDispatcher(
      * The returned {@link Completable} will always be completed without error.
      */
     override fun disconnect(): Completable {
-        log.info("Disconnecting")
-        this.connectionSubscription = null
-        return this.client.disconnect()
+        this.lock.withLock {
+            log.info("Disconnecting")
+            this.connectionSubscription = null
+            return this.client.disconnect()
+        }
     }
 
     override fun unsubscribe(topicName: String): Completable {
@@ -182,28 +182,30 @@ class MqttDispatcher(
      * The returned {@link Completable} will always be completed without error.
      */
     override fun connect(): Completable {
-        log.info("Starting connection cycle")
-        // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
-        this.connectionSubscription = Completable
-                .defer {
-                    this.client.connect()
-                }
-                .onErrorComplete {
-                    when (it) {
-                        // Avoid retries when already connected
-                        is MqttException -> it.reasonCode == REASON_CODE_CLIENT_CONNECTED.toInt()
-                        else -> false
+        this.lock.withLock {
+            log.info("Starting connection cycle")
+            // RxClient observables are hot, thus need to defer in order to re-subscribe properly on retry
+            this.connectionSubscription = Completable
+                    .defer {
+                        this.client.connect()
                     }
-                }
-                .retryWithExponentialBackoff(
-                        initialDelay = Duration.ofSeconds(2),
-                        maximumDelay = Duration.ofMinutes(2),
-                        action = { retry, delay, error ->
-                            log.error("Connection failed. [${error.message}] Retry [${retry}] in ${delay}")
-                        })
-                .subscribe()
+                    .onErrorComplete {
+                        when (it) {
+                        // Avoid retries when already connected
+                            is MqttException -> it.reasonCode == REASON_CODE_CLIENT_CONNECTED.toInt()
+                            else -> false
+                        }
+                    }
+                    .retryWithExponentialBackoff(
+                            initialDelay = Duration.ofSeconds(2),
+                            maximumDelay = Duration.ofMinutes(2),
+                            action = { retry, delay, error ->
+                                log.error("Connection failed. [${error.message}] Retry [${retry}] in ${delay}")
+                            })
+                    .subscribe()
 
-        return Completable.fromAction { }
+            return Completable.complete()
+        }
     }
 
     /**

@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.eagerSingleton
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
+import org.deku.leoz.mobile.mq.MqttListeners
 import org.deku.leoz.mobile.service.NotificationService
 import org.deku.leoz.mobile.service.UpdateService
 import sx.ConfigurationMap
@@ -21,13 +22,10 @@ class ServiceConfiguration {
              * Notification service
              */
             bind<NotificationService>() with eagerSingleton {
-                val mqConfig = instance<MqttConfiguration>()
                 val service = NotificationService()
 
                 // Wire notification service with listener
-                mqConfig.mobileTopicListener.addDelegate(
-                        service
-                )
+                instance<MqttListeners>().mobile.topic.addDelegate(service)
 
                 service
             }

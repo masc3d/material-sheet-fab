@@ -3,6 +3,7 @@ package org.deku.leoz.node.service.internal
 import org.deku.leoz.node.*
 import org.deku.leoz.bundle.boot
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.service.entity.internal.update.BundleUpdateService
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.ApplicationService.Version
@@ -28,8 +29,6 @@ class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
     private lateinit var storage: Storage
     @Inject
     private lateinit var bundleUpdateService: BundleUpdateService
-    @Inject
-    private lateinit var mq: ActiveMQConfiguration
 
     override fun restart() {
         val bundleInstaller = sx.packager.BundleInstaller(
@@ -51,7 +50,7 @@ class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
     override fun notifyBundleUpdate(bundleName: String) {
         val message = UpdateInfo(bundleName)
 
-        mq.nodeTopic.client().use {
+        JmsChannels.node.topic.client().use {
             it.send(UpdateInfo(bundleName))
         }
 

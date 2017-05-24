@@ -1,6 +1,7 @@
 package org.deku.leoz.node.service.internal
 
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.mq.jms.client
 import javax.ws.rs.core.Response
@@ -37,7 +38,7 @@ class TestService : org.deku.leoz.service.internal.TestService {
     private var testCounter: Int = 0
 
     override fun testPublishUpdateInfoToMobile() {
-        ActiveMQConfiguration.mobileTopic.client().use {
+        JmsChannels.mobile.topic.client().use {
             it.send(UpdateInfo(bundleName = "leoz-test-${++testCounter}"))
         }
     }

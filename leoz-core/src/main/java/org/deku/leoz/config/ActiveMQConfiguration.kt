@@ -8,7 +8,62 @@ import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.activemq.ActiveMQContext
 import sx.mq.jms.activemq.ActiveMQPooledConnectionFactory
 import sx.mq.jms.toJms
-import sx.time.Duration
+
+object JmsChannels {
+    // JMS channels
+
+    /** Local JMS broker context */
+    val context = ActiveMQContext(connectionFactory = ActiveMQConfiguration.connectionFactory)
+
+    object central {
+
+        val mainQueue: JmsChannel by lazy {
+            MqConfiguration.central.mainQueue.toJms(
+                    context = context)
+        }
+
+        val logQueue: JmsChannel by lazy {
+            MqConfiguration.central.logQueue.toJms(
+                    context = context,
+                    priority = 1
+            )
+        }
+
+        val entitySyncQueue: JmsChannel by lazy {
+            MqConfiguration.central.entitySyncQueue.toJms(
+                    context = context
+            )
+        }
+
+        val entitySyncTopic: JmsChannel by lazy {
+            MqConfiguration.central.entitySyncTopic.toJms(
+                    context = context
+            )
+        }
+    }
+
+    object node {
+        fun queue(identityKey: Identity.Key): JmsChannel {
+            return MqConfiguration
+                    .node.queue(identityKey)
+                    .toJms(context = context)
+        }
+
+        val topic: JmsChannel by lazy {
+            MqConfiguration.node.topic.toJms(
+                    context = context
+            )
+        }
+    }
+
+    object mobile {
+        val topic by lazy {
+            MqConfiguration.mobile.topic.toJms(
+                    context = context
+            )
+        }
+    }
+}
 
 /**
  * ActiveMQ specific messaging configuration
@@ -31,17 +86,17 @@ object ActiveMQConfiguration {
         // which are forwarded to queues internally.
         broker.addCompositeDestination({
             val d = CompositeTopic()
-            d.name = MqConfiguration.centralQueueTopic.destinationName
+            d.name = MqConfiguration.central.mainQueueMqtt.destinationName
             d.forwardTo = listOf(
-                    this.centralQueue.destination)
+                    JmsChannels.central.mainQueue.destination)
             d
         }())
 
         broker.addCompositeDestination({
             val d = CompositeTopic()
-            d.name = MqConfiguration.centralLogQueueTopic.destinationName
+            d.name = MqConfiguration.central.logQueueMqtt.destinationName
             d.forwardTo = listOf(
-                    this.centralLogQueue.destination)
+                    JmsChannels.central.logQueue.destination)
             d
         }())
 
@@ -58,51 +113,4 @@ object ActiveMQConfiguration {
                 MqConfiguration.PASSWORD)
     }
 
-    /** Local JMS broker context */
-    val context = ActiveMQContext(connectionFactory = this.connectionFactory)
-
-    // JMS channels
-
-    val centralQueue: JmsChannel by lazy {
-        MqConfiguration.centralQueue.toJms(
-                context = this.context)
-    }
-
-    val centralLogQueue: JmsChannel by lazy {
-        MqConfiguration.centralLogQueue.toJms(
-                context = this.context,
-                priority = 1
-        )
-    }
-
-    val entitySyncQueue: JmsChannel by lazy {
-        MqConfiguration.entitySyncQueue.toJms(
-                context = this.context
-        )
-    }
-
-    val entitySyncTopic: JmsChannel by lazy {
-        MqConfiguration.entitySyncTopic.toJms(
-                context = this.context
-        )
-    }
-
-    fun nodeQueue(identityKey: Identity.Key): JmsChannel {
-        return MqConfiguration
-                .nodeQueue(identityKey)
-                .toJms(context = this.context)
-    }
-
-    val nodeTopic: JmsChannel by lazy {
-        MqConfiguration.nodeTopic.toJms(
-                context = this.context
-        )
-    }
-
-    val mobileTopic: JmsChannel by lazy {
-        MqConfiguration.mobileTopic.toJms(
-                ttl = Duration.ofDays(1),
-                context = this.context
-        )
-    }
 }

@@ -1,26 +1,24 @@
 package org.deku.leoz.mobile.config
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.android.LogcatAppender
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.core.AppenderBase
 import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.*
+import org.deku.leoz.mobile.mq.MqttChannels
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Storage
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.client
-import java.io.File
 
 /**
  * Log configuration
@@ -39,10 +37,10 @@ class LogConfiguration {
 
         val module = Kodein.Module {
             bind<LogMqAppender>() with singleton {
-                val mqConfig = instance<MqttConfiguration>()
+                val channels = instance<MqttChannels>()
 
                 val appender = LogMqAppender(
-                        clientSupplier = { mqConfig.centralLogQueueTopic.client() },
+                        clientSupplier = { channels.central.logQueue.client() },
                         identitySupplier = { instance<Identity>() }
                 )
 

@@ -1,7 +1,7 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.bundle.boot
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.service.internal.AuthorizationClientService
@@ -39,7 +39,7 @@ open class AuthorizationClientConfiguration {
     open val authorizationClientService: AuthorizationClientService
         get() = AuthorizationClientService(
                 executorService = this.executorService,
-                channel = ActiveMQConfiguration.centralQueue,
+                channel = JmsChannels.central.mainQueue,
                 identitySupplier = { this.application.identity },
                 onRejected = { identity ->
                     log.warn("Authorization rejected for identity [${identity}]")

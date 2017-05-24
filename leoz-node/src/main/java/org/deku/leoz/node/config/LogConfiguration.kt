@@ -3,6 +3,7 @@ package org.deku.leoz.node.config
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
 import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
@@ -46,7 +47,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
 
                     // Setup message log appender
                     appender = LogMqAppender(
-                            clientSupplier = { ActiveMQConfiguration.centralLogQueue.client() },
+                            clientSupplier = { JmsChannels.central.logQueue.client() },
                             identitySupplier = { application.identity })
                     appender.context = loggerContext
 
