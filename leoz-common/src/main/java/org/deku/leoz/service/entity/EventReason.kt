@@ -4,6 +4,7 @@ package org.deku.leoz.service.entity
  * Created by 27694066 on 24.05.2017.
  */
 /**
+ * The EventReason object defines the valid combinations of events and reasons. It also enrich these combinations with additional information / restrictions
  * @param requireAdditionalInformation Should the user enter additional information? e.g. EventReason "Waiting for Customer" is set, the user should enter the amount of "wasted" time.
  * @param requirePhoto Is it required to take a photo of the parcel, after setting this EventReason? e.g. "Parcel damaged"
  * @param deliverable Is it still possible to deliver this order in the current process after setting this EventReason?
@@ -23,8 +24,14 @@ data class EventReason (
         val notification: String = "",
         val description: Map<String, String>) {
 
+    /**
+     * To be defined in details
+     */
     data class Event (val eventCode: Int, val name: Map<String, String>)
 
+    /**
+     * To be defined in details
+     */
     data class Reason(val reasonCode: Int, val name: Map<String, String>)
 
 }
