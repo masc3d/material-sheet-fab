@@ -12,7 +12,7 @@ import ch.qos.logback.core.rolling.TimeBasedRollingPolicy
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.*
-import org.deku.leoz.mobile.mq.MqttChannels
+import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.R
@@ -37,7 +37,7 @@ class LogConfiguration {
 
         val module = Kodein.Module {
             bind<LogMqAppender>() with singleton {
-                val mqttChannels = instance<MqttChannels>()
+                val mqttChannels = instance<MqttEndpoints>()
 
                 val appender = LogMqAppender(
                         channelSupplier = { mqttChannels.central.transient.channel() },

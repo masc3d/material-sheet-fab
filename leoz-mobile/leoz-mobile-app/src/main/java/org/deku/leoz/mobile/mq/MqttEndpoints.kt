@@ -9,7 +9,7 @@ import sx.mq.mqtt.toMqtt
  * MQTT channels
  * Created by masc on 12.05.17.
  */
-class MqttChannels(
+class MqttEndpoints(
         private val context: MqttContext) {
 
     inner class Central {

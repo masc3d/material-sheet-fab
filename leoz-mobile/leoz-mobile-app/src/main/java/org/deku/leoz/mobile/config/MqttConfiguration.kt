@@ -8,7 +8,7 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.singleton
 import io.reactivex.rxkotlin.subscribeBy
 import org.deku.leoz.config.MqConfiguration
-import org.deku.leoz.mobile.mq.MqttChannels
+import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.MqttListeners
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.mobile.model.RemoteSettings
@@ -108,15 +108,15 @@ class MqttConfiguration(
                 )
             }
 
-            bind<MqttChannels>() with singleton {
-                MqttChannels(
+            bind<MqttEndpoints>() with singleton {
+                MqttEndpoints(
                         context = instance<MqttContext>()
                 )
             }
 
             bind<MqttListeners>() with singleton {
                 MqttListeners(
-                        channels = instance<MqttChannels>()
+                        endpoints = instance<MqttEndpoints>()
                 )
             }
         }

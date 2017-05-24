@@ -7,7 +7,7 @@ import sx.mq.mqtt.MqttListener
  * Created by masc on 12.05.17.
  */
 class MqttListeners(
-        private val channels: MqttChannels)
+        private val endpoints: MqttEndpoints)
 {
     inner class Mobile {
         /**
@@ -15,7 +15,7 @@ class MqttListeners(
          */
         val topic: MqttListener by lazy {
             MqttListener(
-                    mqttEndpoint = channels.mobile.topic)
+                    mqttEndpoint = endpoints.mobile.topic)
         }
     }
     val mobile = Mobile()
