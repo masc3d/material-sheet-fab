@@ -4,12 +4,11 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.provider
-import org.deku.leoz.service.internal.AuthorizationService
-import org.deku.leoz.service.internal.BundleServiceV2
-import org.deku.leoz.service.internal.StationService
-import org.deku.leoz.service.internal.UserService
+import org.deku.leoz.service.internal.*
+import org.deku.leoz.service.internal.entity.GpsData
 import org.deku.leoz.service.internal.entity.User
 import sx.rs.proxy.RestClientProxy
+import sx.time.toTimestamp
 import java.net.URI
 import java.sql.Date
 
@@ -138,6 +137,16 @@ abstract class RestClientConfiguration {
                         return AuthorizationService.MobileResponse(
                                 key = "a1b2c3d4"
                         )
+                    }
+                }
+            }
+
+            bind<LocationService>() with provider {
+                object : LocationService {
+                    override fun get(email: String?, debitorId: Int?, apiKey: String?): List<GpsData> {
+                        val dtNow = java.util.Date()
+                        val gpsdata = GpsData(49.9, 9.06, 25.3, dtNow.toTimestamp())
+                        return listOf(gpsdata)
                     }
                 }
             }
