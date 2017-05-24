@@ -16,23 +16,23 @@ data class User(
         //        @get:ApiModelProperty(required = false, value = "Allocation of User to several station ids")
 //        var stations: List<String>? = null,
 
-        @get:ApiModelProperty(example = "foo.bar", required = true, value = "Alias of the user")
+        @get:ApiModelProperty(example = "foo.bar", required = false, value = "Alias of the user")
         var alias: String? = null,
 
         @get:ApiModelProperty(example = org.deku.leoz.service.internal.entity.User.Companion.ROLE_USER, required = true, value = "Role of the user", allowableValues = "${org.deku.leoz.service.internal.entity.User.Companion.ROLE_ADMINISTRATOR},${org.deku.leoz.service.internal.entity.User.Companion.ROLE_POWERUSER},${org.deku.leoz.service.internal.entity.User.Companion.ROLE_USER},${org.deku.leoz.service.internal.entity.User.Companion.ROLE_DRIVER},${org.deku.leoz.service.internal.entity.User.Companion.ROLE_CUSTOMER}")
         var role: String? = null,
 
         // TODO: should be hash instead of pw
-        @get:ApiModelProperty(example = "MyS3cr3t", required = true, value = "Password")
+        @get:ApiModelProperty(example = "MyS3cr3t", required = false, value = "Password")
         var password: String? = null,
 
         //        @get:ApiModelProperty(example = "a1b2c3d4e5f6", required = true, value = "Salt")
 //        var salt: String? = null,
 
-        @get:ApiModelProperty(example = "Foo", required = true, value = "First name")
+        @get:ApiModelProperty(example = "Foo", required = false, value = "First name")
         var firstName: String? = null,
 
-        @get:ApiModelProperty(example = "Bar", required = true, value = "Last name")
+        @get:ApiModelProperty(example = "Bar", required = false, value = "Last name")
         var lastName: String? = null,
 
         //        @get:ApiModelProperty(example = "1a-2b-3c-4d-5e-6f", required = false, value = "API Key")
@@ -44,7 +44,7 @@ data class User(
         @get:ApiModelProperty(example = "true", required = false, value = "External user")
         var externalUser: Boolean? = null,
 
-        @get:ApiModelProperty(example = "+496677950", required = true, value = "Phone number")
+        @get:ApiModelProperty(example = "+496677950", required = false, value = "Phone number")
         var phone: String? = null,
 
         @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
@@ -62,7 +62,7 @@ data class User(
 }
 
 enum class UserRole(val value: Int) {
-    ADMINISTRATOR(10),
+    ADMIN(10),
     POWERUSER(7),
     USER(6),
     DRIVER(4),

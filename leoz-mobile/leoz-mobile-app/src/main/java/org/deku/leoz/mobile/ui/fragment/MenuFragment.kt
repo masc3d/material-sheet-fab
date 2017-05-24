@@ -36,9 +36,15 @@ class MenuFragment : Fragment() {
         super.onStart()
 
         this.uxDelivery.setOnClickListener {
-            val deliveryActivityIntent = Intent(context, DeliveryActivity::class.java)
-            startActivity(deliveryActivityIntent)
+            startDeliveryActivity()
         }
+
+        startDeliveryActivity()
+    }
+
+    private fun startDeliveryActivity() {
+        val deliveryActivityIntent = Intent(context, DeliveryActivity::class.java)
+        startActivity(deliveryActivityIntent)
     }
 
     companion object {

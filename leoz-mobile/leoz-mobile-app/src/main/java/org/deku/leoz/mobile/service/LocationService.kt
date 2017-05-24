@@ -80,9 +80,9 @@ class LocationService(
 
             override fun onLocationChanged(location: Location?) {
                 lastLocation.set(location)
-                log.debug("ONLOCATIONCHANGED")
+                log.info("ONLOCATIONCHANGED")
 
-                log.debug("Location changed. Provider [${location?.provider}] Time [${location?.time}] Lat [${location?.latitude}] Lng [${location?.longitude}] Accuracy [${location?.accuracy}] Altitude [${location?.altitude}] Bearing [${location?.bearing}] Speed [${location?.speed}]")
+                log.info("Location changed. Provider [${location?.provider}] Time [${location?.time}] Lat [${location?.latitude}] Lng [${location?.longitude}] Accuracy [${location?.accuracy}] Altitude [${location?.altitude}] Bearing [${location?.bearing}] Speed [${location?.speed}]")
                 // TODO: Do something here
             }
 

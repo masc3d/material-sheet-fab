@@ -120,12 +120,13 @@ class MainActivity : Activity() {
                 .subscribe {
                     val user: User? = it.value
                     if (user != null && user.hash.isNotBlank()) {
+                        queryChangelogDisplay()
+
                         uxActiveUser?.text = user.name
                         this.supportActionBar?.title = "Menue"
                         this.supportFragmentManager.withTransaction {
                             it.replace(R.id.uxContainer, MenuFragment())
                         }
-                        queryChangelogDisplay()
                     }
                 }
     }
