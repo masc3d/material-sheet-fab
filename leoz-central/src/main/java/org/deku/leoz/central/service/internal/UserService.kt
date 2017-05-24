@@ -53,9 +53,13 @@ class UserService : UserService {
 
             debitor_id != null -> {
                 val userRecList = userRepository.findByDebitorId(debitor_id)
-                        ?: throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "no user found by debitor-id")
+                        ?: throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "no user found by debitor-id")
                 if (userRecList.isEmpty())
-                    throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "no user found by debitor-id")
+                    throw DefaultProblem(
+                            status = Response.Status.NOT_FOUND,
+                            title = "no user found by debitor-id")
                 val user = mutableListOf<User>()
                 userRecList.forEach {
                     user.add(it.toUser())
@@ -64,7 +68,9 @@ class UserService : UserService {
             }
             email != null -> {
                 val userRecord = userRepository.findByMail(email)
-                        ?: throw DefaultProblem(status = Response.Status.NOT_FOUND, title = "no user found by email")
+                        ?: throw DefaultProblem(
+                        status = Response.Status.NOT_FOUND,
+                        title = "no user found by email")
                 return listOf(userRecord.toUser())
             }
             else -> {
@@ -80,6 +86,7 @@ class UserService : UserService {
 
 
     override fun create(user: User, apiKey: String?) {
+
         update(user.email, user, apiKey)
 
     }
@@ -88,70 +95,188 @@ class UserService : UserService {
 
 
         apiKey ?:
-                throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "no apiKey")
+                throw DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "no apiKey")
         val authorizedUserRecord = userRepository.findByKey(apiKey)
-        authorizedUserRecord ?: throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "login user not found")
-
-        if (user.email == "@")
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "invalid email")
-        user.role = user.role?.toUpperCase() ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "no user role")
+        authorizedUserRecord ?: throw DefaultProblem(
+                status = Response.Status.BAD_REQUEST,
+                title = "login user not found")
 
 
-        if (!UserRole.values().any { it.name == user.role })
-            throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "user role unknown")
+        var debitor = user.debitorId
 
-        user.alias ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "no alias")
-        user.debitorId ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "no debitorId")
+        val userRole = user.role?.toUpperCase()
+        val alias = user.alias
+        val password = user.password
+        val lastName = user.lastName
+        val firstName = user.firstName
+        val phone = user.phone
+
+        var isNew = false
+        var rec = userRepository.findByMail(email)
+        if (rec == null) {
+            isNew = true
+            rec = dslContext.newRecord(Tables.MST_USER)
+            if (user.email == null || user.email.equals("@"))
+                user.email = email
+            if (!user.email.equals(email)) {
+                throw  DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "multiple email for new record")
+            }
+        } else {
+            if (rec.debitorId == null) rec.debitorId = authorizedUserRecord.debitorId
+            if (rec.debitorId != authorizedUserRecord.debitorId)
+                throw  DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "login user can not change user - debitorId")
+            if (rec.role == null) rec.role = authorizedUserRecord.role
+            if (UserRole.valueOf(authorizedUserRecord.role).value < UserRole.valueOf(rec.role).value) {
+                throw  DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "login user can not create/change user - no permission")
+            }
+
+            if (user.email != null) {
+                if (!rec.email.equals(user.email)) {
+                    if (userRepository.mailExists(user.email)) {
+                        throw  DefaultProblem(
+                                status = Response.Status.BAD_REQUEST,
+                                title = "duplicate email")
+                    }
+                }
+            }
+
+            val testAlias: String
+            if (alias != null) {
+                testAlias = alias
+            } else
+                testAlias = rec.alias
+            val testDebitor: Int
+            if (debitor != null)
+                testDebitor = debitor
+            else
+                testDebitor = rec.debitorId
+
+            if (!rec.alias.equals(testAlias) || rec.debitorId != testDebitor) {
+                if (userRepository.aliasExists(testAlias, testDebitor)) {
+                    throw  DefaultProblem(
+                            status = Response.Status.BAD_REQUEST,
+                            title = "duplicate alias or debitorId")
+                }
+            }
+        }
+
+
+
+        if (isNew) {
+            alias ?: throw  DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "no alias")
+            userRole ?: throw  DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "no user role")
+            password ?: throw  DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "no password")
+            firstName ?: throw  DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "no first name")
+            lastName ?: throw  DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "no last name")
+            phone ?: throw  DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "no phone")
+
+            if (user.active == null)
+                user.active = false
+
+            if (userRepository.mailExists(user.email))
+                throw DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "duplicate email")
+
+            if (debitor == null)
+                debitor = authorizedUserRecord.debitorId
+            if (debitor == null)
+                throw DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "missing debitor of login user")
+
+            if (userRepository.aliasExists(alias, debitor))
+                throw DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "duplicate alias/debitor")
+        }
+
+
 
         if (!UserRole.values().any { it.name == authorizedUserRecord.role })
-            throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "login user role unknown")
+            throw  DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "login user role unknown")
 
-        if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMINISTRATOR) {
-            if (authorizedUserRecord.debitorId != user.debitorId) {
-                throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "login user can not change debitorId")
-            }
-        }
-        val userRole = user.role ?: UserRole.CUSTOMER.toString()
-        if (UserRole.valueOf(authorizedUserRecord.role).value < UserRole.valueOf(userRole).value) {
-            throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "login user can not create/change user - no permission")
-        }
+        if (debitor != null) {
 
-
-        val rec: MstUserRecord?
-
-        if (userRepository.findByMail(email) == null && !userRepository.mailExists(user.email) && !userRepository.aliasExists(user.alias!!, user.debitorId!!)) {
-            rec = dslContext.newRecord(Tables.MST_USER)
-        } else {
-            rec = userRepository.findByMail(email)
-            rec ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "user unknown")
-            if (!rec.email.equals(user.email)) {
-                if (userRepository.mailExists(user.email)) {
-                    throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "duplicate email")
-                }
-            }
-            if (!rec.alias.equals(user.alias) || rec.debitorId != user.debitorId) {
-                if (userRepository.aliasExists(user.alias!!, user.debitorId!!)) {
-                    throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "duplicate alias or debitorId")
+            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+                if (authorizedUserRecord.debitorId != debitor) {
+                    throw  DefaultProblem(
+                            status = Response.Status.BAD_REQUEST,
+                            title = "login user can not change debitorId")
                 }
             }
         }
 
-        rec ?: throw  DefaultProblem(status = Response.Status.BAD_REQUEST, title = "not found")
+        if (userRole != null) {
+            if (!UserRole.values().any { it.name == userRole })
+                throw  DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "user role unknown")
 
-        rec.email = user.email
-        rec.debitorId = user.debitorId
-        rec.alias = user.alias
-        rec.role = user.role
-        rec.setHashedPassword(user.password ?: "123")
-        rec.firstname = user.firstName
-        rec.lastname = user.lastName
-        rec.active = user.isActive
-        rec.externalUser = user.isExternalUser
-        rec.phone = user.phone
-        rec.expiresOn = user.expiresOn
+            if (UserRole.valueOf(authorizedUserRecord.role).value < UserRole.valueOf(userRole).value) {
+                throw  DefaultProblem(
+                        status = Response.Status.BAD_REQUEST,
+                        title = "login user can not create/change user - no permission")
+            }
+        }
+
+
+
+
+
+        rec ?: throw  DefaultProblem(
+                status = Response.Status.BAD_REQUEST,
+                title = "not found")
+
+        if ((user.email != null)&&(user.email != "@"))
+            rec.email = user.email
+        if (debitor != null)
+            rec.debitorId = debitor
+        if (alias != null)
+            rec.alias = alias
+        if (userRole != null)
+            rec.role = userRole
+        if (password != null)
+            rec.setHashedPassword(password)
+        if (firstName != null)
+            rec.firstname = firstName
+        if (lastName != null)
+            rec.lastname = lastName
+        if (user.active != null)
+            rec.active = user.isActive
+        if (user.externalUser != null)
+            rec.externalUser = user.isExternalUser
+        if (phone != null)
+            rec.phone = phone
+        if (user.expiresOn != null)
+            rec.expiresOn = user.expiresOn
 
         if (!userRepository.save(rec))
-            throw DefaultProblem(status = Response.Status.BAD_REQUEST, title = "Problem on update")
+            throw DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "Problem on update")
 
     }
 

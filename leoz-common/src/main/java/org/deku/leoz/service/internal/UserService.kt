@@ -33,7 +33,7 @@ interface UserService {
     fun get(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
-            @HeaderParam(HEADERPARAM_APIKEY) apiKey: String?
+            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden=true) apiKey: String?
     ): List<User>
 
 
@@ -44,7 +44,7 @@ interface UserService {
     @POST
     @Path("/")
     @ApiOperation(value = "Create user")
-    fun create(@ApiParam(value = "User") user: User, @HeaderParam(HEADERPARAM_APIKEY) apiKey: String?)
+    fun create(@ApiParam(value = "User") user: User, @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden=true) apiKey: String?)
 
     /**
      * Update user (replaces entire user)
@@ -56,6 +56,6 @@ interface UserService {
     @ApiOperation(value = "Update user")
     fun update(@QueryParam(EMAIL) @ApiParam(value = "User email address") email: String,
                @ApiParam(value = "User") user: User,
-               @HeaderParam(HEADERPARAM_APIKEY) apiKey: String?)
+               @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden=true) apiKey: String?)
 
 }
