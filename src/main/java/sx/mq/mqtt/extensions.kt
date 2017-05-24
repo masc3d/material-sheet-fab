@@ -1,14 +1,14 @@
 package sx.mq.mqtt
 
-import sx.mq.MqChannel
+import sx.mq.MqEndpoint
 
 /**
  * Create client for mqtt channel
  * Created by masc on 09.05.17.
  */
-fun MqttChannel.client(): MqttClient {
-    return MqttClient(
-            channel = this)
+fun MqttEndpoint.channel(): MqttChannel {
+    return MqttChannel(
+            endpoint = this)
 }
 
 /**
@@ -17,10 +17,10 @@ fun MqttChannel.client(): MqttClient {
  *  persistence false -> qos(0)
  *  persistence true -> qus(2)
  */
-fun MqChannel.toMqtt(context: MqttContext,
-                     qos: Int? = null): MqttChannel {
+fun MqEndpoint.toMqtt(context: MqttContext,
+                      qos: Int? = null): MqttEndpoint {
 
-    return MqttChannel(
+    return MqttEndpoint(
             context = context,
             // Convert JMS destination name to mqtt topic name
             topicName = destinationName.replace('.', '/'),

@@ -1,7 +1,7 @@
 package sx.mq.jms.listeners
 
 import sx.LazyInstance
-import sx.mq.jms.JmsChannel
+import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.JmsListener
 import javax.jms.Connection
 import javax.jms.JMSException
@@ -16,9 +16,9 @@ import javax.jms.Session
  * @param connectionFactory Connection factory
  * @param converter Message converter
  */
-open class SimpleJmsListener(channel: JmsChannel)
+open class SimpleJmsListener(endpoint: JmsEndpoint)
     :
-        JmsListener(channel) {
+        JmsListener(endpoint) {
 
     private val connection = LazyInstance<Connection>({
         this.context.connectionFactory.createConnection()
@@ -29,7 +29,7 @@ open class SimpleJmsListener(channel: JmsChannel)
     })
 
     private val consumer = LazyInstance<MessageConsumer>({
-        this.session.get().createConsumer(this.channel.destination)
+        this.session.get().createConsumer(this.endpoint.destination)
     })
 
     /**

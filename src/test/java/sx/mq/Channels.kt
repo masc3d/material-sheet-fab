@@ -9,7 +9,7 @@ import sx.io.serialization.gzip
 object Channels {
     /** Topic channel for testing notifications */
     val testTopic by lazy {
-        MqChannel(
+        MqEndpoint(
                 destinationName = "test.topic",
                 destinationType = DestinationType.Topic,
                 persistent = true,
@@ -19,7 +19,7 @@ object Channels {
 
     /** Queue channel for testing queues with topic forwarding via mqtt */
     val testQueue by lazy {
-        MqChannel(
+        MqEndpoint(
                 destinationName = "test.queue",
                 destinationType = DestinationType.Queue,
                 persistent = true,
@@ -29,7 +29,7 @@ object Channels {
 
     /** Virtual topic used for mqtt clients to post to queue */
     val testQueueForwarder by lazy {
-        MqChannel(
+        MqEndpoint(
                 destinationName = "test.queue.topic",
                 destinationType = DestinationType.Topic,
                 persistent = true,

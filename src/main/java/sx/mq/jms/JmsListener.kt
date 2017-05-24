@@ -12,12 +12,12 @@ import javax.jms.Session
  * Lightweight jms message listener abstraction with object conversion and dispatch support
  * One or more object message handlers can be registered with the listener, converted messages will be dispatched by type (class)
  * Created by masc on 16.04.15.
- * @property channel Messaging channel
+ * @property endpoint Messaging channel
  * @property executor Thread executor
  */
 abstract class JmsListener(
         /** Connection factory  */
-        val channel: JmsChannel)
+        val endpoint: JmsEndpoint)
 :
         MqListener(),
         ExceptionListener {
@@ -30,14 +30,14 @@ abstract class JmsListener(
     private inner class HandlingException(message: String) : RuntimeException(message)
 
     protected val context by lazy {
-        this.channel.context ?: throw IllegalStateException("Listener channel requires context")
+        this.endpoint.context ?: throw IllegalStateException("Listener channel requires context")
     }
 
     /**
      * Messaging channel
      */
     private val client by lazy {
-        JmsClient(channel)
+        JmsChannel(endpoint)
     }
 
     /**
@@ -51,7 +51,7 @@ abstract class JmsListener(
         var messageObject: Any? = null
 
         // Deserialize if there's a converter and determine handler
-        val converter = this.channel.converter
+        val converter = this.endpoint.converter
 
         try {
             messageObject = converter.fromMessage(message)
@@ -61,12 +61,12 @@ abstract class JmsListener(
         }
 
         // Prepare reply channel if applicable
-        var replyClient: JmsClient? = null
+        var replyChannel: JmsChannel? = null
         if (message.jmsReplyTo != null) {
-            replyClient = this.client.createReplyClient(session, message.jmsReplyTo)
+            replyChannel = this.client.createReplyClient(session, message.jmsReplyTo)
         }
 
-        this.handleMessage(messageObject, replyClient)
+        this.handleMessage(messageObject, replyChannel)
     }
 
     final override fun onException(e: JMSException) {

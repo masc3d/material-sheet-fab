@@ -12,14 +12,14 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.mq.MqClient
+import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.Channels
 import sx.mq.config.MqTestConfiguration
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.activemq.ActiveMQContext
 import sx.mq.jms.activemq.ActiveMQPooledConnectionFactory
-import sx.mq.jms.client
+import sx.mq.jms.channel
 import sx.mq.jms.listeners.SpringJmsListener
 import sx.mq.jms.toJms
 import sx.mq.message.TestMessage
@@ -137,7 +137,7 @@ class MqttTest {
 
         // Setup log message listener
         listener.addDelegate(object : MqHandler<TestMessage> {
-            override fun onMessage(message: TestMessage, replyClient: MqClient?) {
+            override fun onMessage(message: TestMessage, replyChannel: MqChannel?) {
                 log.info("${message}: ${message.logEntries.count()}")
             }
         })
@@ -153,7 +153,7 @@ class MqttTest {
                 .blockingGet()
 
         val listener = MqttListener(
-                mqttChannel = Mqtt.testTopic
+                mqttEndpoint = Mqtt.testTopic
         )
 
         listener.start()
@@ -161,7 +161,7 @@ class MqttTest {
         // Setup log message listener
         listener.addDelegate(object : MqHandler<Any> {
             @MqHandler.Types(TestMessage::class)
-            override fun onMessage(message: Any, replyClient: MqClient?) {
+            override fun onMessage(message: Any, replyChannel: MqChannel?) {
                 when (message) {
                     is TestMessage -> {
                         log.info("MQTT ${message}: ${message.logEntries.count()}")
@@ -181,7 +181,7 @@ class MqttTest {
         val logMessage = TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
 
         // Receive
-        Jms.testQueueForwarder.client().use {
+        Jms.testQueueForwarder.channel().use {
             it.ttl = Duration.ofMinutes(5)
 
             for (i in 0..100)
@@ -197,7 +197,7 @@ class MqttTest {
         val logMessage = TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
 
         // Receive
-        Jms.testTopic.client().use {
+        Jms.testTopic.channel().use {
             it.ttl = Duration.ofMinutes(5)
 
             for (i in 0..100)
@@ -213,7 +213,7 @@ class MqttTest {
         Mqtt.client.connect()
                 .blockingGet()
 
-        Mqtt.testQueueForwarder.client().use {
+        Mqtt.testQueueForwarder.channel().use {
             for (i in 0..100) {
                 val logMessage = TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf())
                 it.send(logMessage)
@@ -226,11 +226,11 @@ class MqttTest {
      */
     @Test
     fun testSendAndReceiveMqttTopic() {
-        Mqtt.testTopic.client().use {
+        Mqtt.testTopic.channel().use {
             it.send(TestMessage(nodeKey = "MqttPublisher", logEntries = arrayOf()))
         }
 
-        Mqtt.testTopic.client().use {
+        Mqtt.testTopic.channel().use {
             log.info("${it.receive(TestMessage::class.java)}")
         }
     }

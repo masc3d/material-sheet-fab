@@ -103,7 +103,7 @@ class MqttDispatcherTest {
 
         Stopwatch.createStarted("publish", { log.info(it) }, { _, _ ->
             for (i in 0..10000){
-                Mqtt.testQueue.client().send(TestMessage())
+                Mqtt.testQueue.channel().send(TestMessage())
             }
         })
 

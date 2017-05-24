@@ -31,7 +31,7 @@ abstract class MqListener
 
     abstract fun stop()
 
-    protected fun handleMessage(messageObject: Any, replyClient: MqClient? = null) {
+    protected fun handleMessage(messageObject: Any, replyChannel: MqChannel? = null) {
         val mqHandler: MqHandler<*>?
 
         mqHandler = this.handlerDelegates.get(messageObject.javaClass)
@@ -42,10 +42,10 @@ abstract class MqListener
 
         // Delegate to handler
         try {
-            mqHandler.onMessage(messageObject, replyClient)
+            mqHandler.onMessage(messageObject, replyChannel)
         } finally {
-            if (replyClient != null)
-                replyClient.close()
+            if (replyChannel != null)
+                replyChannel.close()
         }
     }
 
