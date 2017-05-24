@@ -26,7 +26,7 @@ object JmsConfiguration {
         // which are forwarded to queues internally.
         broker.addCompositeDestination({
             val d = CompositeTopic()
-            d.name = MqChannels.central.main.mqtt.kryo.destinationName
+            d.name = MqEndpoints.central.main.mqtt.kryo.destinationName
             d.forwardTo = listOf(
                     JmsChannels.central.main.kryo.destination)
             d
@@ -34,7 +34,7 @@ object JmsConfiguration {
 
         broker.addCompositeDestination({
             val d = CompositeTopic()
-            d.name = MqChannels.central.transient.mqtt.kryo.destinationName
+            d.name = MqEndpoints.central.transient.mqtt.kryo.destinationName
             d.forwardTo = listOf(
                     JmsChannels.central.transient.kryo.destination)
             d

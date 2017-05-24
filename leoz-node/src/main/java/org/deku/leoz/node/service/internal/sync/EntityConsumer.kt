@@ -3,7 +3,7 @@ package org.deku.leoz.node.service.internal.sync
 import org.deku.leoz.node.data.PersistenceUtil
 import org.deku.leoz.node.data.repository.EntityRepository
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
-import sx.mq.MqClient
+import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.*
 import sx.mq.jms.listeners.SpringJmsListener
@@ -22,14 +22,14 @@ import javax.persistence.EntityManagerFactory
 class EntityConsumer
 (
         /** Messaging context  */
-        private val requestChannel: JmsChannel,
-        private val notificationChannel: JmsChannel,
+        private val requestEndpoint: JmsEndpoint,
+        private val notificationEndpoint: JmsEndpoint,
         /** Entity manager factory  */
         private val entityManagerFactory: EntityManagerFactory,
         /** Executor used for listening/processing incoming messages */
         listenerExecutor: Executor)
     :
-        SpringJmsListener(notificationChannel, listenerExecutor),
+        SpringJmsListener(notificationEndpoint, listenerExecutor),
         MqHandler<EntityStateMessage> {
 
     /**
@@ -50,12 +50,12 @@ class EntityConsumer
     /**
      * Entity state message handler
      */
-    override fun onMessage(message: EntityStateMessage, replyClient: MqClient?) {
+    override fun onMessage(message: EntityStateMessage, replyChannel: MqChannel?) {
         this.request(message.entityType!!, message.syncId)
     }
 
     val requestClient by lazy {
-        this.requestChannel.client()
+        this.requestEndpoint.channel()
     }
 
     /**
@@ -100,7 +100,7 @@ class EntityConsumer
 
                 // Send entity state message
                 this.requestClient.createReplyClient().use { replyClient ->
-                    requestClient.sendRequest(EntityStateMessage(entityType, syncId), replyClient = replyClient)
+                    requestClient.sendRequest(EntityStateMessage(entityType, syncId), replyChannel = replyClient)
 
                     log.info(lfmt("Requesting entities"))
 

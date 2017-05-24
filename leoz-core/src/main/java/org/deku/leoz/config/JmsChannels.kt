@@ -1,7 +1,7 @@
 package org.deku.leoz.config
 
 import org.deku.leoz.identity.Identity
-import sx.mq.jms.JmsChannel
+import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.activemq.ActiveMQContext
 import sx.mq.jms.toJms
 
@@ -14,7 +14,7 @@ object JmsChannels {
             connectionFactory = JmsConfiguration.connectionFactory)
 
     class QueueChannels(
-            val mqChannel: MqChannels.QueueChannels) {
+            val mqChannel: MqEndpoints.QueueEndpoints) {
 
         val kryo =  mqChannel.kryo.toJms(
                 context = context
@@ -27,22 +27,22 @@ object JmsChannels {
 
     object central {
         val main = QueueChannels(
-                MqChannels.central.main
+                MqEndpoints.central.main
         )
 
         val transient = QueueChannels(
-                MqChannels.central.transient
+                MqEndpoints.central.transient
         )
 
         object entitySync {
-            val queue: JmsChannel by lazy {
-                MqChannels.central.entitySync.queue.toJms(
+            val queue: JmsEndpoint by lazy {
+                MqEndpoints.central.entitySync.queue.toJms(
                         context = context
                 )
             }
 
-            val topic: JmsChannel by lazy {
-                MqChannels.central.entitySync.topic.toJms(
+            val topic: JmsEndpoint by lazy {
+                MqEndpoints.central.entitySync.topic.toJms(
                         context = context
                 )
             }
@@ -50,13 +50,13 @@ object JmsChannels {
     }
 
     object node {
-        fun queue(identityKey: Identity.Key): JmsChannel {
-            return MqChannels.node.queue(identityKey)
+        fun queue(identityKey: Identity.Key): JmsEndpoint {
+            return MqEndpoints.node.queue(identityKey)
                     .toJms(context = context)
         }
 
-        val topic: JmsChannel by lazy {
-            MqChannels.node.topic.toJms(
+        val topic: JmsEndpoint by lazy {
+            MqEndpoints.node.topic.toJms(
                     context = context
             )
         }
@@ -64,7 +64,7 @@ object JmsChannels {
 
     object mobile {
         val topic by lazy {
-            MqChannels.mobile.topic.toJms(
+            MqEndpoints.mobile.topic.toJms(
                     context = context
             )
         }

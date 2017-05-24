@@ -12,5 +12,5 @@ interface MqHandler<in T> {
     annotation class Types(vararg val types: KClass<*>)
 
     /** Override for serialized/object message handling */
-    fun onMessage(message: T, replyClient: MqClient?)
+    fun onMessage(message: T, replyChannel: MqChannel?)
 }

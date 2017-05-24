@@ -63,8 +63,8 @@ open class EntitySyncConfiguration {
     fun onInitialize() {
         // Setup entity publisher
         this.entityPublisher = EntityPublisher(
-                requestChannel = JmsChannels.central.entitySync.queue,
-                notificationChannel = JmsChannels.central.entitySync.topic,
+                requestEndpoint = JmsChannels.central.entitySync.queue,
+                notificationEndpoint = JmsChannels.central.entitySync.topic,
                 entityManagerFactory = this.entityManagerFactory,
                 listenerExecutor = this.executorService)
 

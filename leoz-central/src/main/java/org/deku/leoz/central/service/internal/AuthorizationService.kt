@@ -145,7 +145,7 @@ class AuthorizationService
     /**
      *
      */
-    override fun onMessage(message: AuthorizationService.NodeRequest, replyClient: sx.mq.MqClient?) {
+    override fun onMessage(message: AuthorizationService.NodeRequest, replyChannel: sx.mq.MqChannel?) {
         try {
             log.info(message)
 
@@ -177,9 +177,9 @@ class AuthorizationService
                 if (isAuthorized)
                     this.dispatcher.emit { it.onAuthorized(identityKey) }
 
-                if (replyClient != null) {
+                if (replyChannel != null) {
                     am.authorized = isAuthorized
-                    replyClient.send(am)
+                    replyChannel.send(am)
                     log.info("Sent authorization [%s]".format(am))
                 }
             }

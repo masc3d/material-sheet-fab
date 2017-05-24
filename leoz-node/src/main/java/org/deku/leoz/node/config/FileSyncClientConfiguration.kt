@@ -55,7 +55,7 @@ open class FileSyncClientConfiguration {
                                 RsyncConfiguration.ModuleNames.TRANSFER),
                         password = RsyncConfiguration.PASSWORD,
                         sshTunnelProvider = this.sshTunnelProvider),
-                centralChannelSupplier = { JmsChannels.central.main.kryo })
+                centralEndpointSupplier = { JmsChannels.central.main.kryo })
 
     @PostConstruct
     fun onInitialize() {

@@ -1,6 +1,6 @@
 package sx.mq.jms
 
-import sx.mq.MqChannel
+import sx.mq.MqEndpoint
 import sx.mq.jms.converters.DefaultJmsConverter
 import sx.time.Duration
 
@@ -8,8 +8,8 @@ import sx.time.Duration
  * Create client for jms channel
  * Created by masc on 09.05.17.
  */
-fun JmsChannel.client(): JmsClient {
-    return JmsClient(this)
+fun JmsEndpoint.channel(): JmsChannel {
+    return JmsChannel(this)
 }
 
 /**
@@ -18,21 +18,21 @@ fun JmsChannel.client(): JmsClient {
  * @param autoCommit Auto-commit messages on send, defaults to true
  * @param receiveTimeout Default receive timeout for receive/sendReceive calls. Defaults to 10 seconds
  */
-fun MqChannel.toJms(
+fun MqEndpoint.toJms(
         context: JmsContext,
         sessionTransacted: Boolean = true,
         priority: Int? = null,
-        ttl: Duration = JmsClient.DEFAULT_JMS_TTL,
+        ttl: Duration = JmsChannel.DEFAULT_JMS_TTL,
         autoCommit: Boolean = true,
-        receiveTimeout: Duration = JmsClient.DEFAULT_RECEIVE_TIMEOUT): JmsChannel {
+        receiveTimeout: Duration = JmsChannel.DEFAULT_RECEIVE_TIMEOUT): JmsEndpoint {
 
-    return JmsChannel(
+    return JmsEndpoint(
             context = context,
             sessionTransacted = sessionTransacted,
             deliveryMode = if (this.persistent)
-                JmsClient.DeliveryMode.Persistent
+                JmsChannel.DeliveryMode.Persistent
             else
-                JmsClient.DeliveryMode.NonPersistent,
+                JmsChannel.DeliveryMode.NonPersistent,
             destination = context.createDestination(this),
             converter = DefaultJmsConverter(this.serializer),
             priority = priority,

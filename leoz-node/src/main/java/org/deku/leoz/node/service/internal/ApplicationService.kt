@@ -6,7 +6,7 @@ import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.service.entity.internal.update.BundleUpdateService
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.deku.leoz.service.internal.ApplicationService.Version
-import sx.mq.jms.client
+import sx.mq.jms.channel
 import sx.rs.auth.ApiKey
 import javax.inject.Inject
 import javax.inject.Named
@@ -49,7 +49,7 @@ class ApplicationService : org.deku.leoz.service.internal.ApplicationService {
     override fun notifyBundleUpdate(bundleName: String) {
         val message = UpdateInfo(bundleName)
 
-        JmsChannels.node.topic.client().use {
+        JmsChannels.node.topic.channel().use {
             it.send(UpdateInfo(bundleName))
         }
 

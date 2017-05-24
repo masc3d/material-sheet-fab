@@ -5,9 +5,9 @@ import org.deku.leoz.io.*
 import sx.time.Duration
 import java.io.File
 import org.deku.leoz.node.service.internal.filesync.*
-import sx.mq.MqClient
-import sx.mq.jms.JmsChannel
-import sx.mq.jms.client
+import sx.mq.MqChannel
+import sx.mq.jms.JmsEndpoint
+import sx.mq.jms.channel
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchKey
 import java.nio.file.WatchService
@@ -23,7 +23,7 @@ class FileSyncHostService(
         executorService: ScheduledExecutorService,
         baseDirectory: File,
         identity: Identity,
-        private val nodeChannelSupplier: (identityKey: Identity.Key) -> JmsChannel)
+        private val nodeEndpointSupplier: (identityKey: Identity.Key) -> JmsEndpoint)
 :
         FileSyncServiceBase(
                 executorService = executorService,
@@ -125,7 +125,7 @@ class FileSyncHostService(
     /**
      * FileSyncMessage handler
      */
-    override fun onMessage(message: FileSyncMessage, replyClient: MqClient?) {
+    override fun onMessage(message: FileSyncMessage, replyChannel: MqChannel?) {
         try {
             val identityKey = Identity.Key(message.key)
             log.info("Received ping from [${identityKey}]")
@@ -154,8 +154,8 @@ class FileSyncHostService(
             }
 
             // Send back empty file sync message as a confirmation
-            if (replyClient != null) {
-                replyClient.send(FileSyncMessage())
+            if (replyChannel != null) {
+                replyChannel.send(FileSyncMessage())
             }
 
             this.notifyNode(identityKey)
@@ -172,7 +172,7 @@ class FileSyncHostService(
         val out = this.nodeOutDirectory(identityKey)
         if (out.exists() && out.listFiles().count() > 0) {
             log.trace("Sending file sync notification to [${identityKey}]")
-            this.nodeChannelSupplier(identityKey).client().use {
+            this.nodeEndpointSupplier(identityKey).channel().use {
                 it.send(FileSyncMessage())
             }
         }

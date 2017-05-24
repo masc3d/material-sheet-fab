@@ -46,8 +46,8 @@ open class EntitySyncConfiguration {
     @Bean
     open fun createEntityConsumer(): EntityConsumer {
         return EntityConsumer(
-                notificationChannel = JmsChannels.central.entitySync.topic,
-                requestChannel = JmsChannels.central.entitySync.queue,
+                notificationEndpoint = JmsChannels.central.entitySync.topic,
+                requestEndpoint = JmsChannels.central.entitySync.queue,
                 entityManagerFactory = this.entityManagerFactory,
                 listenerExecutor = this.executorService)
     }

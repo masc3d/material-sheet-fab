@@ -14,7 +14,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.slf4j.LoggerFactory
-import sx.mq.MqClient
+import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.listeners.SpringJmsListener
@@ -49,7 +49,7 @@ class LogTest {
     fun testSend() {
         // Setup log appender
         val logAppender = LogMqAppender(
-                clientSupplier = { JmsConfiguration.centralLogQueue.client() },
+                channelSupplier = { JmsConfiguration.centralLogQueue.client() },
                 identitySupplier = {
                     DesktopIdentityFactory(BundleType.LeozNode.value, SystemInformation.Companion.create()).create()
                 })
@@ -78,7 +78,7 @@ class LogTest {
         }
 
         listener.addDelegate(object : MqHandler<LogMessage> {
-            override fun onMessage(message: LogMessage, replyClient: MqClient?) {
+            override fun onMessage(message: LogMessage, replyChannel: MqChannel?) {
                 log.info("${message}: ${message.logEntries.count()}")
             }
         })

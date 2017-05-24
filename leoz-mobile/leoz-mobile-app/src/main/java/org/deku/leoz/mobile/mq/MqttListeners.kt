@@ -15,7 +15,7 @@ class MqttListeners(
          */
         val topic: MqttListener by lazy {
             MqttListener(
-                    mqttChannel = channels.mobile.topic)
+                    mqttEndpoint = channels.mobile.topic)
         }
     }
     val mobile = Mobile()

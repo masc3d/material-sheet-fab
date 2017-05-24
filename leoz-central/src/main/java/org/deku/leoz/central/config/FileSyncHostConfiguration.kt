@@ -37,7 +37,7 @@ open class FileSyncHostConfiguration {
                 baseDirectory = storage.transferDirectory,
                 executorService = this.executorService,
                 identity = this.application.identity,
-                nodeChannelSupplier = { JmsChannels.node.queue(it) }
+                nodeEndpointSupplier = { JmsChannels.node.queue(it) }
         )
 
     /**

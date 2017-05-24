@@ -4,7 +4,7 @@ import org.springframework.jms.connection.JmsTransactionManager
 import org.springframework.jms.listener.DefaultMessageListenerContainer
 import org.springframework.jms.listener.SessionAwareMessageListener
 import org.springframework.util.ErrorHandler
-import sx.mq.jms.JmsChannel
+import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.JmsListener
 import java.util.concurrent.Executor
 import javax.jms.JMSException
@@ -14,16 +14,16 @@ import javax.jms.Session
 /**
  * Spring listener implementation
  * Created by masc on 07.06.15.
- * @param channel The channel to listen on
+ * @param endpoint The channel to listen on
  * @param durationClientId The client id to use for durable topic subscriptions. Setting this identifier enables durable subscription.
  * @param executor The executor to spawn threads from
  */
 open class SpringJmsListener(
-        channel: JmsChannel,
+        endpoint: JmsEndpoint,
         private val executor: Executor,
         private val durableClientId: String? = null)
     :
-        JmsListener(channel),
+        JmsListener(endpoint),
         ErrorHandler {
 
     /** Spring message listener container  */
@@ -39,7 +39,7 @@ open class SpringJmsListener(
     }
 
     private val description by lazy({
-        "[${this.javaClass.simpleName}] for [${this.channel}]"
+        "[${this.javaClass.simpleName}] for [${this.endpoint}]"
     })
 
     /**
@@ -64,7 +64,7 @@ open class SpringJmsListener(
             }
             lc.isSessionTransacted = true
             lc.errorHandler = this
-            lc.destination = this.channel.destination
+            lc.destination = this.endpoint.destination
             lc.setTaskExecutor(this.executor)
             this.configure(lc)
             lc.afterPropertiesSet()

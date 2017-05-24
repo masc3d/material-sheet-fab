@@ -18,7 +18,7 @@ import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Storage
 import org.slf4j.LoggerFactory
-import sx.mq.mqtt.client
+import sx.mq.mqtt.channel
 
 /**
  * Log configuration
@@ -40,7 +40,7 @@ class LogConfiguration {
                 val mqttChannels = instance<MqttChannels>()
 
                 val appender = LogMqAppender(
-                        clientSupplier = { mqttChannels.central.transient.client() },
+                        channelSupplier = { mqttChannels.central.transient.channel() },
                         identitySupplier = { instance<Identity>() }
                 )
 

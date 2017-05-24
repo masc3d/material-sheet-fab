@@ -10,7 +10,7 @@ import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
 import sx.mq.MqBroker
-import sx.mq.jms.client
+import sx.mq.jms.channel
 import java.util.logging.Level
 import java.util.logging.LogManager
 import java.util.logging.Logger
@@ -47,7 +47,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
 
                     // Setup message log appender
                     appender = LogMqAppender(
-                            clientSupplier = { JmsChannels.central.transient.kryo.client() },
+                            channelSupplier = { JmsChannels.central.transient.kryo.channel() },
                             identitySupplier = { application.identity })
                     appender.context = loggerContext
 

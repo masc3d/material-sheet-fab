@@ -1,22 +1,15 @@
 package sx.mq
 
-import sx.io.serialization.Serializer
+import sx.Disposable
+import java.io.Closeable
+import java.util.concurrent.TimeoutException
 
 /**
  * Abstract messaging channel
- *
- * This class is not base class of specific channels on purpose, as semantics for each messaging technology/protocol
- * are too specific to have a clean abstraction.
- *
- * This class can be used as a common base configuration for mq technologies, eg using jms backend and mqtt clients.
- * Instances shouls be explicitly transformed into specific api/protocol related channels (eg., JmsChannel)
- *
  * Created by masc on 07.05.17.
  */
-class MqChannel(
-        /** Destination name, following JMS specifications */
-        val destinationName: String,
-        val destinationType: DestinationType,
-        val persistent: Boolean = false,
-        val serializer: Serializer
-)
+interface MqChannel : Disposable, Closeable {
+    @Throws(TimeoutException::class)
+    fun <T> receive(messageType: Class<T>): T
+    fun send(message: Any)
+}

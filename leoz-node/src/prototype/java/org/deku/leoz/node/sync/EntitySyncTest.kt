@@ -20,7 +20,7 @@ import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.artemis.ArtemisBroker
 import sx.junit.PrototypeTest
-import sx.mq.jms.JmsChannel
+import sx.mq.jms.JmsEndpoint
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.persistence.EntityManagerFactory
@@ -56,8 +56,8 @@ class EntitySyncTest {
         // Starting broker
         this.broker.start()
 
-        val notificationChannelConfig: JmsChannel
-        val requestChannelConfig: JmsChannel
+        val notificationChannelConfig: JmsEndpoint
+        val requestChannelConfig: JmsEndpoint
         when (this.broker) {
             is ActiveMQBroker -> {
                 notificationChannelConfig = JmsConfiguration.entitySyncTopic
@@ -71,14 +71,14 @@ class EntitySyncTest {
         }
 
         listener = EntityPublisher(
-                notificationChannel = notificationChannelConfig,
-                requestChannel = requestChannelConfig,
+                notificationEndpoint = notificationChannelConfig,
+                requestEndpoint = requestChannelConfig,
                 entityManagerFactory = entityManagerFactory,
                 listenerExecutor = Executors.newSingleThreadExecutor())
 
         client = EntityConsumer(
-                notificationChannel = notificationChannelConfig,
-                requestChannel = requestChannelConfig,
+                notificationEndpoint = notificationChannelConfig,
+                requestEndpoint = requestChannelConfig,
                 entityManagerFactory = entityManagerFactory,
                 listenerExecutor = Executors.newSingleThreadExecutor())
     }

@@ -5,28 +5,28 @@ import sx.io.serialization.JacksonSerializer
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
 import sx.mq.DestinationType
-import sx.mq.MqChannel
+import sx.mq.MqEndpoint
 
 /**
- * Leoz channel templates
+ * Leoz mq endpoints
  */
-object MqChannels {
+object MqEndpoints {
     /**
-     * Compound channel collection, exposing queues for protocols and referring virtual topics (for mqtt)
+     * Compound endpoint collection, exposing queues for protocols and referring virtual topics (for mqtt)
      */
-    class QueueChannels(
+    class QueueEndpoints(
             /** Destination base name */
             val destinationBaseName: String,
             val persistent: Boolean = false) {
 
-        val kryo = MqChannel(
+        val kryo = MqEndpoint(
                 destinationType = DestinationType.Queue,
                 destinationName = "${destinationBaseName}.q.kryo",
                 persistent = persistent,
                 serializer = KryoSerializer().gzip
         )
 
-        val json = MqChannel(
+        val json = MqEndpoint(
                 destinationType = DestinationType.Queue,
                 destinationName = "${destinationBaseName}.q.json",
                 persistent = persistent,
@@ -34,23 +34,23 @@ object MqChannels {
         )
 
         inner class Mqtt() {
-            val kryo = MqChannel(
+            val kryo = MqEndpoint(
                     destinationType = DestinationType.Topic,
-                    destinationName = "${this@QueueChannels.kryo.destinationName}.mqtt",
+                    destinationName = "${this@QueueEndpoints.kryo.destinationName}.mqtt",
                     persistent = false,
-                    serializer = this@QueueChannels.kryo.serializer
+                    serializer = this@QueueEndpoints.kryo.serializer
             )
 
-            val json = MqChannel(
+            val json = MqEndpoint(
                     destinationType = DestinationType.Topic,
-                    destinationName = "${this@QueueChannels.json.destinationName}.mqtt",
+                    destinationName = "${this@QueueEndpoints.json.destinationName}.mqtt",
                     persistent = false,
-                    serializer = this@QueueChannels.json.serializer
+                    serializer = this@QueueEndpoints.json.serializer
             )
         }
 
         /**
-         * Virtual topic channels for MQTT
+         * Virtual topic endpoints for MQTT
          */
         val mqtt = Mqtt()
     }
@@ -59,14 +59,14 @@ object MqChannels {
         /**
          * Central main queue
          */
-        val main = QueueChannels(
+        val main = QueueEndpoints(
                 destinationBaseName = "leoz.central.main",
                 persistent = true)
 
         /**
          * Central transient queue
          */
-        val transient = QueueChannels(
+        val transient = QueueEndpoints(
                 destinationBaseName = "leoz.central.transient",
                 persistent = true
         )
@@ -75,8 +75,8 @@ object MqChannels {
             /**
              * Entity sync queue
              */
-            val queue: MqChannel by lazy {
-                MqChannel(
+            val queue: MqEndpoint by lazy {
+                MqEndpoint(
                         destinationType = DestinationType.Queue,
                         destinationName = "leoz.entity-sync.q.kryo",
                         serializer = KryoSerializer().gzip
@@ -86,8 +86,8 @@ object MqChannels {
             /**
              * Entity sync notification topic
              */
-            val topic: MqChannel by lazy {
-                MqChannel(
+            val topic: MqEndpoint by lazy {
+                MqEndpoint(
                         destinationType = DestinationType.Topic,
                         destinationName = "leoz.entity-sync.t.kryo",
                         serializer = KryoSerializer().gzip
@@ -97,16 +97,16 @@ object MqChannels {
     }
 
     object node {
-        fun queue(identityKey: Identity.Key): MqChannel {
-            return MqChannel(
+        fun queue(identityKey: Identity.Key): MqEndpoint {
+            return MqEndpoint(
                     destinationType = DestinationType.Queue,
                     destinationName = "leoz.node.queue.${identityKey.short}",
                     serializer = KryoSerializer().gzip
             )
         }
 
-        val topic: MqChannel by lazy {
-            MqChannel(
+        val topic: MqEndpoint by lazy {
+            MqEndpoint(
                     destinationType = DestinationType.Topic,
                     destinationName = "leoz.node.topic",
                     serializer = KryoSerializer().gzip
@@ -115,8 +115,8 @@ object MqChannels {
     }
 
     object mobile {
-        val topic: MqChannel by lazy {
-            MqChannel(
+        val topic: MqEndpoint by lazy {
+            MqEndpoint(
                     destinationType = DestinationType.Topic,
                     destinationName = "leoz.mobile.topic",
                     persistent = true,

@@ -1,13 +1,5 @@
 package org.deku.leoz.config
 
-import org.deku.leoz.identity.Identity
-import sx.Disposable
-import sx.io.serialization.JacksonSerializer
-import sx.io.serialization.KryoSerializer
-import sx.io.serialization.gzip
-import sx.mq.MqChannel
-import sx.mq.DestinationType
-
 /**
  * Generic MQ configuration
  * Created by masc on 08.05.17.

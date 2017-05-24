@@ -1,7 +1,7 @@
 package org.deku.leoz.mobile.mq
 
-import org.deku.leoz.config.MqChannels
 import org.deku.leoz.config.MqConfiguration
+import org.deku.leoz.config.MqEndpoints
 import sx.mq.mqtt.MqttContext
 import sx.mq.mqtt.toMqtt
 
@@ -14,14 +14,14 @@ class MqttChannels(
 
     inner class Central {
         val main by lazy {
-            MqChannels.central.main.mqtt.kryo.toMqtt(
+            MqEndpoints.central.main.mqtt.kryo.toMqtt(
                     context = context,
                     qos = 2
             )
         }
 
         val transient by lazy {
-            MqChannels.central.transient.mqtt.kryo.toMqtt(
+            MqEndpoints.central.transient.mqtt.kryo.toMqtt(
                     context = context,
                     qos = 1
             )
@@ -31,7 +31,7 @@ class MqttChannels(
 
     inner class Mobile {
         val topic by lazy {
-            MqChannels.mobile.topic.toMqtt(
+            MqEndpoints.mobile.topic.toMqtt(
                     context = context,
                     qos = 1
             )
