@@ -106,9 +106,7 @@ class Stop (
             }
         }
 
-        data class Status (val event: Long, val reason: Long, val date: Date, val geoLocation: Pair<Double, Double>, val recipient: String?, val information: String?) {
-
-        }
+        data class Status (val event: Long, val reason: Long, val date: Date, val geoLocation: Pair<Double, Double>, val recipient: String?, val information: String?)
 
         data class Dimension (val length: Double, val height: Double, val width: Double, val weight: Double)
     }

@@ -2,8 +2,9 @@ package org.deku.leoz.mobile.ui.fragment
 
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
+import android.support.graphics.drawable.VectorDrawableCompat
+import android.support.v7.content.res.AppCompatResources
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,13 +50,13 @@ class DeliveryFragment : Fragment() {
                                 entryType = DeliveryMenuListAdapter.DeliveryMenuEntry.Entry.LOADING,
                                 description = "Fahrzeugbeladung",
                                 counter = 10,
-                                icon = resources.getDrawable(R.drawable.ic_truck_delivery)
+                                icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_delivery)!!
                         ),
                         DeliveryMenuListAdapter.DeliveryMenuEntry(
                                 entryType = DeliveryMenuListAdapter.DeliveryMenuEntry.Entry.ORDERLIST,
                                 description = "Auftragsliste",
-                                counter = 55,
-                                icon = resources.getDrawable(R.drawable.ic_format_list_bulleted)
+                                counter = job.stopList.size,
+                                icon = AppCompatResources.getDrawable(context, R.drawable.ic_format_list_bulleted)!!
                         )
                 ),
                 rootViewGroup = null)

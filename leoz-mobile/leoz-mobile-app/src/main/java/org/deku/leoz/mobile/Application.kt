@@ -1,14 +1,12 @@
 package org.deku.leoz.mobile
 
 import android.app.Activity
-import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
 import android.support.multidex.MultiDexApplication
-import android.util.Log
+import android.support.v7.app.AppCompatDelegate
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.*
 import com.github.salomonbrys.kodein.android.androidModule
@@ -17,10 +15,6 @@ import com.tinsuke.icekick.extension.freezeInstanceState
 import com.tinsuke.icekick.extension.unfreezeInstanceState
 import org.deku.leoz.mobile.config.*
 import org.slf4j.LoggerFactory
-import sx.Stopwatch
-import sx.android.Device
-import sx.android.aidc.AidcReader
-import sx.android.honeywell.aidc.HoneywellAidcReader
 
 /**
  * Application
@@ -33,6 +27,8 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
 
     override fun onCreate() {
         super.onCreate()
+
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         // Base modules
         Kodein.global.addImport(StorageConfiguration.module)
