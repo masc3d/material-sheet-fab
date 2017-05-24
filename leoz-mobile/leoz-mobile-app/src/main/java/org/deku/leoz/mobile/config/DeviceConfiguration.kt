@@ -28,7 +28,8 @@ class DeviceConfiguration {
                 ).create()
             }
 
-            bind<Connectivity>() with singleton {
+            // Intiial connectivity state updates may take a while to arrive, thus binding eagerly
+            bind<Connectivity>() with eagerSingleton {
                 Connectivity(context = instance<Context>())
             }
         }
