@@ -2,13 +2,11 @@ package org.deku.leoz.central.config
 
 import org.deku.leoz.central.Application
 import org.deku.leoz.central.service.internal.filesync.FileSyncHostService
-import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.node.Storage
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
-import sx.mq.jms.JmsClient
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy

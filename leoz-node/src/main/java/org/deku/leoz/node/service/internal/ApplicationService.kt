@@ -2,7 +2,6 @@ package org.deku.leoz.node.service.internal
 
 import org.deku.leoz.node.*
 import org.deku.leoz.bundle.boot
-import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.service.entity.internal.update.BundleUpdateService
 import org.deku.leoz.service.internal.entity.update.UpdateInfo

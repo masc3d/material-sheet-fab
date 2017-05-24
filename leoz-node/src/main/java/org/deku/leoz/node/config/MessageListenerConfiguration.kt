@@ -1,6 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsConfiguration
 import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.node.Application
 import org.slf4j.LoggerFactory
@@ -35,7 +35,7 @@ open class MessageListenerConfiguration {
     private lateinit var executorService: ExecutorService
 
     @Inject
-    private lateinit var mqConfiguration: ActiveMQConfiguration
+    private lateinit var mqConfiguration: JmsConfiguration
 
     // Listeners
     val nodeQueueListener by lazy {

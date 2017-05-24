@@ -1,10 +1,8 @@
 package org.deku.leoz.node.service.internal
 
-import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.mq.jms.client
-import javax.ws.rs.core.Response
 
 /**
  * Created by masc on 09.10.15.

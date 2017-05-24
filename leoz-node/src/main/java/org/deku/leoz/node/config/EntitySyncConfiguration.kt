@@ -1,6 +1,5 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.ActiveMQConfiguration
 import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
@@ -12,7 +11,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
 import sx.mq.MqBroker
-import sx.mq.jms.JmsChannel
 import sx.mq.jms.activemq.ActiveMQBroker
 import java.util.concurrent.ScheduledExecutorService
 import javax.annotation.PostConstruct
@@ -48,8 +46,8 @@ open class EntitySyncConfiguration {
     @Bean
     open fun createEntityConsumer(): EntityConsumer {
         return EntityConsumer(
-                notificationChannel = JmsChannels.central.entitySyncTopic,
-                requestChannel = JmsChannels.central.entitySyncQueue,
+                notificationChannel = JmsChannels.central.entitySync.topic,
+                requestChannel = JmsChannels.central.entitySync.queue,
                 entityManagerFactory = this.entityManagerFactory,
                 listenerExecutor = this.executorService)
     }

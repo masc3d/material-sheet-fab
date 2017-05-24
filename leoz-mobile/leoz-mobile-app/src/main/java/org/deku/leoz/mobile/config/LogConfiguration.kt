@@ -37,10 +37,10 @@ class LogConfiguration {
 
         val module = Kodein.Module {
             bind<LogMqAppender>() with singleton {
-                val channels = instance<MqttChannels>()
+                val mqttChannels = instance<MqttChannels>()
 
                 val appender = LogMqAppender(
-                        clientSupplier = { channels.central.logQueue.client() },
+                        clientSupplier = { mqttChannels.central.transient.client() },
                         identitySupplier = { instance<Identity>() }
                 )
 
