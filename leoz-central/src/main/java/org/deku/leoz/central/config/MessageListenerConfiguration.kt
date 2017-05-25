@@ -1,6 +1,7 @@
 package org.deku.leoz.central.config
 
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsConfiguration
+import org.deku.leoz.config.JmsChannels
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -25,7 +26,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
     private lateinit var executorService: ExecutorService
 
     @Inject
-    private lateinit var mqConfiguration: ActiveMQConfiguration
+    private lateinit var mqConfiguration: JmsConfiguration
 
     @Inject
     private lateinit var broker: ActiveMQBroker
@@ -35,7 +36,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
      */
     val centralQueueListener by lazy {
         SpringJmsListener(
-                channel = mqConfiguration.centralQueue,
+                endpoint = JmsChannels.central.main.kryo,
                 executor = this.executorService)
     }
 
@@ -44,7 +45,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
      */
     val centralLogQueueListener by lazy {
         SpringJmsListener(
-                channel = mqConfiguration.centralLogQueue,
+                endpoint = JmsChannels.central.transient.kryo,
                 executor = this.executorService)
     }
 

@@ -1,6 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.context.annotation.Profile
-import sx.mq.jms.JmsClient
 import sx.rsync.Rsync
 import sx.ssh.SshTunnelProvider
 import java.util.concurrent.ScheduledExecutorService
@@ -42,8 +41,6 @@ open class FileSyncClientConfiguration {
     private lateinit var lifecycleController: LifecycleController
     @Inject
     private lateinit var storage: Storage
-    @Inject
-    private lateinit var mqConfiguration: ActiveMQConfiguration
 
     @get:Bean
     open val fileSyncClientService: FileSyncClientService
@@ -58,7 +55,7 @@ open class FileSyncClientConfiguration {
                                 RsyncConfiguration.ModuleNames.TRANSFER),
                         password = RsyncConfiguration.PASSWORD,
                         sshTunnelProvider = this.sshTunnelProvider),
-                centralChannelSupplier = { mqConfiguration.centralQueue })
+                centralEndpointSupplier = { JmsChannels.central.main.kryo })
 
     @PostConstruct
     fun onInitialize() {

@@ -11,7 +11,7 @@ import org.deku.leoz.identity.Identity
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import sx.Lifecycle
 import sx.concurrent.Service
-import sx.mq.MqClient
+import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.platform.PlatformId
 import sx.time.Duration
@@ -116,7 +116,7 @@ class BundleUpdateService(
     /**
      * Update notification message handler
      */
-    override fun onMessage(message: UpdateInfo, replyClient: MqClient?) {
+    override fun onMessage(message: UpdateInfo, replyChannel: MqChannel?) {
         val updateInfo = message
         log.info("Received update notification [${updateInfo}]")
 

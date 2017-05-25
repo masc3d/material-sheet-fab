@@ -1,6 +1,6 @@
 package org.deku.leoz.node.sync
 
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.config.MessageBrokerTestConfiguration
@@ -20,7 +20,7 @@ import sx.mq.MqBroker
 import sx.mq.jms.activemq.ActiveMQBroker
 import sx.mq.jms.artemis.ArtemisBroker
 import sx.junit.PrototypeTest
-import sx.mq.jms.JmsChannel
+import sx.mq.jms.JmsEndpoint
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.persistence.EntityManagerFactory
@@ -56,12 +56,12 @@ class EntitySyncTest {
         // Starting broker
         this.broker.start()
 
-        val notificationChannelConfig: JmsChannel
-        val requestChannelConfig: JmsChannel
+        val notificationChannelConfig: JmsEndpoint
+        val requestChannelConfig: JmsEndpoint
         when (this.broker) {
             is ActiveMQBroker -> {
-                notificationChannelConfig = ActiveMQConfiguration.entitySyncTopic
-                requestChannelConfig = ActiveMQConfiguration.entitySyncQueue
+                notificationChannelConfig = JmsConfiguration.entitySyncTopic
+                requestChannelConfig = JmsConfiguration.entitySyncQueue
             }
             is ArtemisBroker -> {
                 notificationChannelConfig = ArtemisConfiguration.entitySyncTopic
@@ -71,14 +71,14 @@ class EntitySyncTest {
         }
 
         listener = EntityPublisher(
-                notificationChannel = notificationChannelConfig,
-                requestChannel = requestChannelConfig,
+                notificationEndpoint = notificationChannelConfig,
+                requestEndpoint = requestChannelConfig,
                 entityManagerFactory = entityManagerFactory,
                 listenerExecutor = Executors.newSingleThreadExecutor())
 
         client = EntityConsumer(
-                notificationChannel = notificationChannelConfig,
-                requestChannel = requestChannelConfig,
+                notificationEndpoint = notificationChannelConfig,
+                requestEndpoint = requestChannelConfig,
                 entityManagerFactory = entityManagerFactory,
                 listenerExecutor = Executors.newSingleThreadExecutor())
     }

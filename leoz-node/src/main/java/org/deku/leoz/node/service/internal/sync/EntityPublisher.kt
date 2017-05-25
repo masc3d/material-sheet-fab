@@ -1,7 +1,7 @@
 package org.deku.leoz.node.service.internal.sync
 
 import org.deku.leoz.node.service.internal.sync.EntityUpdateMessage.Companion.EOS_PROPERTY
-import sx.mq.MqClient
+import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.*
 import sx.mq.jms.listeners.SpringJmsListener
@@ -14,14 +14,14 @@ import javax.jms.JMSException
  * @param entityManagerFactory
  */
 class EntityPublisher(
-        private val requestChannel: JmsChannel,
-        private val notificationChannel: JmsChannel,
+        private val requestEndpoint: JmsEndpoint,
+        private val notificationEndpoint: JmsEndpoint,
         /** Entity manager factory  */
         private val entityManagerFactory: javax.persistence.EntityManagerFactory,
         /** Executor used for listening/processing incoming messages */
         listenerExecutor: java.util.concurrent.Executor)
 :
-        SpringJmsListener(requestChannel, listenerExecutor),
+        SpringJmsListener(requestEndpoint, listenerExecutor),
         MqHandler<EntityStateMessage> {
     init {
         this.addDelegate(this)
@@ -34,7 +34,7 @@ class EntityPublisher(
      */
     @Throws(javax.jms.JMSException::class)
     fun publish(entityType: Class<*>, syncId: Long?) {
-        this.notificationChannel.client().use {
+        this.notificationEndpoint.channel().use {
             val msg = EntityStateMessage(entityType, syncId)
             log.info("Publishing [${msg}]")
             it.send(msg)
@@ -42,7 +42,7 @@ class EntityPublisher(
     }
 
     @Throws(JMSException::class)
-    override fun onMessage(message: EntityStateMessage, replyClient: MqClient?) {
+    override fun onMessage(message: EntityStateMessage, replyChannel: MqChannel?) {
         var em: javax.persistence.EntityManager? = null
         try {
             val sw = com.google.common.base.Stopwatch.createStarted()
@@ -59,15 +59,15 @@ class EntityPublisher(
             // Count records
             val count = er.countNewerThan(syncId)
 
-            if (replyClient == null || !(replyClient is JmsClient))
+            if (replyChannel == null || !(replyChannel is JmsChannel))
                 throw IllegalArgumentException("IMS reply client required")
 
-            (replyClient as? JmsClient)?.statistics?.enabled = true
+            (replyChannel as? JmsChannel)?.statistics?.enabled = true
 
             // Send entity update message
             val euMessage = EntityUpdateMessage(count)
             log.debug(lfmt(euMessage.toString()))
-            replyClient.send(euMessage)
+            replyChannel.send(euMessage)
 
             if (count > 0) {
                 // Query with cursor
@@ -86,7 +86,7 @@ class EntityPublisher(
                         }
                         if (buffer.size >= CHUNK_SIZE || next == null) {
                             if (buffer.size > 0) {
-                                replyClient.send(buffer.toArray())
+                                replyChannel.send(buffer.toArray())
                                 buffer.clear()
                             }
 
@@ -96,7 +96,7 @@ class EntityPublisher(
                     }
 
                     // Send empty array -> EOS
-                    replyClient.send(arrayOfNulls<Any>(0), messageConfigurer = {
+                    replyChannel.send(arrayOfNulls<Any>(0), messageConfigurer = {
                         it.setBooleanProperty(EOS_PROPERTY, true)
                     })
                 } finally {
@@ -104,7 +104,7 @@ class EntityPublisher(
                         cursor.close()
                 }
             }
-            log.info(lfmt("Sent ${count} in ${sw} (${replyClient.statistics.bytesSent} bytes)"))
+            log.info(lfmt("Sent ${count} in ${sw} (${replyChannel.statistics.bytesSent} bytes)"))
         } catch(e: Exception) {
             log.error(e.message, e);
         } finally {

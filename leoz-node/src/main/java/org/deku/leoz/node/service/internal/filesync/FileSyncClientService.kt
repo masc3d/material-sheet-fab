@@ -2,9 +2,9 @@ package org.deku.leoz.node.service.internal.filesync
 
 import org.deku.leoz.identity.Identity
 import sx.concurrent.Service
-import sx.mq.MqClient
-import sx.mq.jms.JmsChannel
-import sx.mq.jms.client
+import sx.mq.MqChannel
+import sx.mq.jms.JmsEndpoint
+import sx.mq.jms.channel
 import sx.rsync.Rsync
 import sx.rsync.RsyncClient
 import sx.time.Duration
@@ -24,7 +24,7 @@ class FileSyncClientService constructor(
         baseDirectory: File,
         identity: Identity,
         rsyncEndpoint: Rsync.Endpoint,
-        private val centralChannelSupplier: () -> JmsChannel)
+        private val centralEndpointSupplier: () -> JmsEndpoint)
     :
         FileSyncServiceBase(
                 executorService = executorService,
@@ -191,7 +191,7 @@ class FileSyncClientService constructor(
      * Ping host (with message)
      */
     private fun ping() {
-        this.centralChannelSupplier().client().use() {
+        this.centralEndpointSupplier().channel().use() {
             it.sendRequest(FileSyncMessage(this.identity.key.value)).use {
                 it.receive()
             }
@@ -225,7 +225,7 @@ class FileSyncClientService constructor(
     /**
      * On file sync message
      */
-    override fun onMessage(message: FileSyncMessage, replyClient: MqClient?) {
+    override fun onMessage(message: FileSyncMessage, replyChannel: MqChannel?) {
         log.info("Received notification, files available for download")
         try {
             this.incomingSyncService.trigger()

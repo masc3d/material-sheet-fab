@@ -2,7 +2,8 @@ package org.deku.leoz.central.config
 
 import org.deku.leoz.central.Application
 import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsConfiguration
+import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.service.internal.sync.EntityPublisher
 import org.slf4j.LoggerFactory
@@ -38,7 +39,7 @@ open class EntitySyncConfiguration {
     private lateinit var entityPublisher: EntityPublisher
 
     @Inject
-    private lateinit var mqConfigration: ActiveMQConfiguration
+    private lateinit var mqConfigration: JmsConfiguration
 
     /** Broker event listener  */
     private val brokerEventListener = object : MqBroker.DefaultEventListener() {
@@ -62,8 +63,8 @@ open class EntitySyncConfiguration {
     fun onInitialize() {
         // Setup entity publisher
         this.entityPublisher = EntityPublisher(
-                requestChannel = this.mqConfigration.entitySyncQueue,
-                notificationChannel = this.mqConfigration.entitySyncTopic,
+                requestEndpoint = JmsChannels.central.entitySync.queue,
+                notificationEndpoint = JmsChannels.central.entitySync.topic,
                 entityManagerFactory = this.entityManagerFactory,
                 listenerExecutor = this.executorService)
 

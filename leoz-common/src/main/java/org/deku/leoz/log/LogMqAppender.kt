@@ -7,7 +7,7 @@ import org.deku.leoz.identity.Identity
 import org.slf4j.LoggerFactory
 import sx.Disposable
 import sx.Lifecycle
-import sx.mq.MqClient
+import sx.mq.MqChannel
 import sx.time.Duration
 import java.util.*
 import java.util.concurrent.Executors
@@ -29,7 +29,7 @@ import kotlin.concurrent.withLock
  * Created by masc on 11.06.15.
  */
 class LogMqAppender(
-        private val clientSupplier: () -> MqClient,
+        private val channelSupplier: () -> MqChannel,
         private val identitySupplier: () -> Identity)
     :
         AppenderBase<ILoggingEvent>(),
@@ -66,7 +66,7 @@ class LogMqAppender(
                 log.trace("Flushing [${logMessageBuffer.size}]")
                 try {
                     val identity = this@LogMqAppender.identitySupplier()
-                    this@LogMqAppender.clientSupplier().use {
+                    this@LogMqAppender.channelSupplier().use {
                         it.send(LogMessage(
                                 nodeType = identity.name,
                                 nodeKey = identity.key.value,

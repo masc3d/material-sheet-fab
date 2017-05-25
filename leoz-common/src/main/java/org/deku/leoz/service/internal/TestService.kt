@@ -3,8 +3,6 @@ package org.deku.leoz.service.internal
 import javax.ws.rs.core.*
 import javax.ws.rs.*
 import io.swagger.annotations.*
-import org.deku.leoz.service.internal.entity.update.UpdateInfo
-import sx.mq.jms.client
 import sx.rs.PATCH
 
 /**

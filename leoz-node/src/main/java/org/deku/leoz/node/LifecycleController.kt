@@ -1,6 +1,6 @@
 package org.deku.leoz.node
 
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsConfiguration
 import org.deku.leoz.node.config.RemotePeerConfiguration
 import sx.Lifecycle
 import sx.mq.MqBroker
@@ -78,6 +78,6 @@ class LifecycleController {
 
     @PostConstruct
     fun onInitialize() {
-        ActiveMQConfiguration.broker.delegate.add(this.brokerListener)
+        JmsConfiguration.broker.delegate.add(this.brokerListener)
     }
 }

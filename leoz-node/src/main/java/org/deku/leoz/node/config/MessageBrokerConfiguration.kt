@@ -1,7 +1,7 @@
 package org.deku.leoz.node.config
 
 import com.google.common.base.Strings
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
 import org.slf4j.LoggerFactory
@@ -64,14 +64,14 @@ open class MessageBrokerConfiguration {
         }
 
         // Initialize connection factory UDI
-        ActiveMQConfiguration.connectionFactory.uri = ActiveMQBroker.instance.localUri
+        JmsConfiguration.connectionFactory.uri = ActiveMQBroker.instance.localUri
 
         // The broker is currently started by the http tunnel servlet, initialized via web context
     }
 
     @get:Bean
     open val activeMqConfiguration
-        get() = ActiveMQConfiguration
+        get() = JmsConfiguration
 
     @get:Bean
     open val activeMqBroker

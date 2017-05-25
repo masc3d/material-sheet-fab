@@ -19,6 +19,7 @@ import sx.mq.mqtt.toPersistentMessage
  * MQTT dispatcher persistence implementation for SQLite on android
  * @param databaseFile Database file to use
  * Created by masc on 16.05.17.
+ * TODO: (not yet) thread-safe. currently not suited for sharing among multiple dispatchers (or a dispatcher implementing multi-threaded dequee)
  */
 class MqttSqlitePersistence constructor(
         private val databaseFile: File

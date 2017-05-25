@@ -9,8 +9,8 @@ import org.springframework.jms.connection.CachingConnectionFactory
 import sx.io.serialization.KryoSerializer
 import sx.io.serialization.gzip
 import sx.mq.MqBroker
+import sx.mq.jms.JmsEndpoint
 import sx.mq.jms.JmsChannel
-import sx.mq.jms.JmsClient
 import sx.mq.jms.artemis.ArtemisBroker
 import sx.mq.jms.artemis.ArtemisContext
 import sx.mq.jms.converters.DefaultJmsConverter
@@ -48,24 +48,24 @@ object ArtemisConfiguration {
 
     val context = ArtemisContext(connectionFactory = this.connectionFactory)
 
-    val centralLogQueue: JmsChannel by lazy {
-        JmsChannel(
+    val centralLogQueue: JmsEndpoint by lazy {
+        JmsEndpoint(
                 context = this.context,
                 destination = this.context.createQueue("leoz.log.queue"),
-                deliveryMode = JmsClient.DeliveryMode.Persistent,
+                deliveryMode = JmsChannel.DeliveryMode.Persistent,
                 converter = DefaultJmsConverter(KryoSerializer().gzip),
                 priority = 1)
     }
 
-    val entitySyncQueue: JmsChannel by lazy {
-        JmsChannel(
+    val entitySyncQueue: JmsEndpoint by lazy {
+        JmsEndpoint(
                 context = this.context,
                 destination = this.context.createQueue("leoz.entity-sync.queue"),
                 converter = DefaultJmsConverter(KryoSerializer().gzip))
     }
 
-    val entitySyncTopic: JmsChannel by lazy {
-        JmsChannel(
+    val entitySyncTopic: JmsEndpoint by lazy {
+        JmsEndpoint(
                 context = this.context,
                 destination = this.context.createTopic("leoz.entity-sync.topic"),
                 converter = DefaultJmsConverter(KryoSerializer().gzip))

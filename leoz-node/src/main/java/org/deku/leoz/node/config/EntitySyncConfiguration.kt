@@ -1,6 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsChannels
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
 import org.deku.leoz.node.data.jpa.*
@@ -40,17 +40,14 @@ open class EntitySyncConfiguration {
     private lateinit var lifecycleController: LifecycleController
 
     @Inject
-    private lateinit var mqConfiguration: ActiveMQConfiguration
-
-    @Inject
     private lateinit var broker: ActiveMQBroker
 
     /** Entity sync consumer */
     @Bean
     open fun createEntityConsumer(): EntityConsumer {
         return EntityConsumer(
-                notificationChannel = mqConfiguration.entitySyncTopic,
-                requestChannel = mqConfiguration.entitySyncQueue,
+                notificationEndpoint = JmsChannels.central.entitySync.topic,
+                requestEndpoint = JmsChannels.central.entitySync.queue,
                 entityManagerFactory = this.entityManagerFactory,
                 listenerExecutor = this.executorService)
     }

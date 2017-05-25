@@ -2,7 +2,7 @@ package org.deku.leoz.mobile.service
 
 import org.deku.leoz.service.internal.entity.update.UpdateInfo
 import org.slf4j.LoggerFactory
-import sx.mq.MqClient
+import sx.mq.MqChannel
 import sx.mq.MqHandler
 
 /**
@@ -15,7 +15,7 @@ class NotificationService : MqHandler<Any> {
     @MqHandler.Types(
             UpdateInfo::class
     )
-    override fun onMessage(message: Any, replyClient: MqClient?) {
+    override fun onMessage(message: Any, replyChannel: MqChannel?) {
         log.info("Received message [${message}]")
     }
 }

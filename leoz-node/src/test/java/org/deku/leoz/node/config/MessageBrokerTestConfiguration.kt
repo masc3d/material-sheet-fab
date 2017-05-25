@@ -1,7 +1,7 @@
 package org.deku.leoz.node.config
 
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory
-import org.deku.leoz.config.ActiveMQConfiguration
+import org.deku.leoz.config.JmsConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
@@ -32,7 +32,7 @@ open class MessageBrokerTestConfiguration {
         ActiveMQBroker.instance.dataDirectory = File("build/activemq")
 
         // Initialize connection factory UDI
-        ActiveMQConfiguration.connectionFactory.uri = ActiveMQBroker.instance.localUri
+        JmsConfiguration.connectionFactory.uri = ActiveMQBroker.instance.localUri
     }
 
     @get:Bean
