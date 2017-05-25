@@ -33,11 +33,9 @@ export class UserFormComponent implements OnInit {
       email: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(100) ] ],
       phone: [ null, [ Validators.minLength(0), Validators.maxLength(45) ] ],
       alias: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(30) ] ],
-      salt: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(45) ] ],
       role: [ null, [ Validators.required, Validators.minLength(3), Validators.maxLength(20) ] ],
-      active: [ null, [ Validators.required, Validators.pattern('^[0-9]{1}$') ] ],
-      id: [ null, [ Validators.pattern('^[0-9]{4}$') ] ],
-      debitorId: [ null, [ Validators.required, Validators.pattern('^[0-9]{4}$') ] ]
+      active: [ null, [ Validators.required ] ]
+      /*active: [ null, [ Validators.required, Validators.pattern('^[0-9]{1}$') ] ]*/
     });
 
     this.userService.activeUser.subscribe((activeUser: User) => {
@@ -45,15 +43,13 @@ export class UserFormComponent implements OnInit {
       this.userForm.patchValue({
         firstName: activeUser.firstName,
         lastName: activeUser.lastName,
-        password: activeUser.password,
+        /*password: activeUser.password,*/
+        password: '',
         email: activeUser.email,
         phone: activeUser.phone,
         alias: activeUser.alias,
-        salt: activeUser.salt,
         role: activeUser.role,
-        active: activeUser.active,
-        id: activeUser.id,
-        debitorId: activeUser.debitorId
+        active: activeUser.active
       });
     });
   }

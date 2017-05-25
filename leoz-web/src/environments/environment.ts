@@ -5,11 +5,6 @@
 
 export const environment = {
   production: false,
-  // apiUrl: "assets/sampledata"
-  apiUrl: 'http://localhost:13000/rs/api/internal/v1',
-  devapiKey: 'DArZpI5njClOAHjueuspWmw1dQdGcj',
-  devdebId: 1028,
+  apiUrl: 'http://localhost:13000/rs/api',
   defLang: 'de',
-  devEmail: 'user%40deku.org'
-   /* `${environment.apiUrl}/user/debitor/5` */
 };

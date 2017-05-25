@@ -1,6 +1,5 @@
 export class User {
 
-  id: number;
   active: boolean;
   alias: string;
   debitorId: number;
@@ -11,10 +10,20 @@ export class User {
   lastName: string;
   password: string;
   phone: string;
-  role: string; // OPEN TASK enum
-  salt: string;
+  role: User.RoleEnum;
 
   toString(): string {
     return `firstname: ${this.firstName} / surname: ${this.lastName}`;
   }
 }
+
+export namespace User {
+  export enum RoleEnum {
+    ADMIN = <any> 'ADMIN',
+    POWERUSER = <any> 'POWERUSER',
+    USER = <any> 'USER',
+    DRIVER = <any> 'DRIVER',
+    CUSTOMER = <any> 'CUSTOMER'
+  }
+}
+
