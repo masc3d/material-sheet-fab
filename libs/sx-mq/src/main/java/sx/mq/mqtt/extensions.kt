@@ -3,7 +3,7 @@ package sx.mq.mqtt
 import sx.mq.MqEndpoint
 
 /**
- * Create client for mqtt channel
+ * Create channel for mqtt channel
  * Created by masc on 09.05.17.
  */
 fun MqttEndpoint.channel(): MqttChannel {
@@ -12,7 +12,7 @@ fun MqttEndpoint.channel(): MqttChannel {
 }
 
 /**
- * Convert base channel to mqtt
+ * Convert base endpont to mqtt
  * @param qos Override qos. When omitted, conversion will  be as follows:
  *  persistence false -> qos(0)
  *  persistence true -> qus(2)
