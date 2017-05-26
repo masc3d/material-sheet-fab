@@ -10,6 +10,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Job
 import org.deku.leoz.mobile.ui.DeliveryMenuListAdapter
 import org.deku.leoz.mobile.ui.fragment.DeliveryFragment
+import org.deku.leoz.mobile.ui.fragment.DeliveryProcessFragment
 import org.slf4j.LoggerFactory
 import sx.android.fragment.CameraFragment
 import sx.android.fragment.util.withTransaction
@@ -49,6 +50,18 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryFragment.On
 
     override fun onDeliveryMenuChoosed(entryType: DeliveryMenuListAdapter.DeliveryMenuEntry.Entry) {
         log.debug("ONDELIVERYMENUCHOOSED")
+        when(entryType){
+            DeliveryMenuListAdapter.DeliveryMenuEntry.Entry.ORDERLIST -> {
+                supportFragmentManager.withTransaction {
+                    it.replace(this.uxContainer.id, DeliveryProcessFragment())
+                }
+            }
+            DeliveryMenuListAdapter.DeliveryMenuEntry.Entry.LOADING -> {
+                /**
+                 * Start "vehicle loading" process
+                 */
+            }
+        }
     }
 
     override fun onCameraFragmentPictureTaken(data: ByteArray?) {
