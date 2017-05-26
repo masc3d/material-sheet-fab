@@ -1,6 +1,7 @@
 import { Component, Inject, Renderer2 } from '@angular/core';
 import { Router } from '@angular/router';
 import { DOCUMENT } from '@angular/platform-browser';
+import { RoleGuard } from '../../core/auth/role.guard';
 
 @Component( {
   selector: 'app-left-menu',
@@ -11,7 +12,8 @@ export class LeftMenuComponent {
 
   constructor( private renderer: Renderer2,
                @Inject( DOCUMENT ) private document: any,
-               private router: Router ) {
+               private router: Router,
+               private roleGuard: RoleGuard) {
   }
 
   navigate( path: string ) {
