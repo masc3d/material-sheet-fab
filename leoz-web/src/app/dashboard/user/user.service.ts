@@ -15,10 +15,39 @@ export class UserService {
 
   private userListUrl = `${environment.apiUrl}/internal/v1/user`;
 
+  // private usersSubject = new BehaviorSubject<User[]>( [] );
+  // public users = this.usersSubject.asObservable().distinctUntilChanged();
   private activeUserSubject = new BehaviorSubject<User>( new User() );
   public activeUser = this.activeUserSubject.asObservable().distinctUntilChanged();
 
   constructor( private http: Http ) {
+  }
+
+  insert( userData: any ): Observable<Response> {
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    const headers = new Headers();
+    headers.append( 'Content-Type', 'application/json' );
+    headers.append( 'x-api-key', currUser.key );
+
+    const options = new RequestOptions( { headers: headers } );
+    return this.http.post( this.userListUrl,
+      JSON.stringify( userData ), options );
+  }
+
+  update( userData: any ): Observable<Response> {
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+    const headers = new Headers();
+    headers.append( 'Content-Type', 'application/json' );
+    headers.append( 'x-api-key', currUser.key );
+    const queryParameters = new URLSearchParams();
+    queryParameters.set( 'email', userData.originEmail );
+
+    const options = new RequestOptions( {
+      headers: headers,
+      search: queryParameters
+    } );
+    return this.http.put( this.userListUrl,
+      JSON.stringify( userData ), options );
   }
 
   getUsers() {
@@ -45,6 +74,7 @@ export class UserService {
           const user = Object.assign( new User(), json );
           userArr.push( user );
         } );
+        // this.usersSubject.next(userArr);
         return userArr;
       } )
       .catch( ( error: Response ) => this.errorHandler( error ) );

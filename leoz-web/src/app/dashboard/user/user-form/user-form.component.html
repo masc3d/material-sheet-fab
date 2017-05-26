@@ -1,13 +1,10 @@
-<!--<div *ngIf="activeUser.id == 1">hier ist der user 11</div>-->
-<!--<div *ngIf="activeUser.id != 1">alle anderen user id: {{activeUser.id}}</div>-->
+<div *ngIf="errMsg.length > 0" class="alert alert-danger">{{errMsg | translate}}</div>
+<!--<app-errormessage [errMsg]="errMsg"></app-errormessage>-->
 <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
   <div class="row">
     <div class="form-group col-md-6">
       <label>{{'firstname' | translate}}:</label>
       <input type="text" class="form-control" formControlName="firstName">
-      <div *ngIf="userForm.controls['firstName'].hasError('minlength')" class="alert alert-danger">
-        {{'FirstnameMinLength' | translate}}.
-      </div>
       <div *ngIf="userForm.controls['firstName'].hasError('maxlength')" class="alert alert-danger">
         {{'FirstnameMaxLength' | translate}}.
       </div>
@@ -15,9 +12,6 @@
     <div class="form-group col-md-6">
       <label>{{'surname' | translate}}:</label>
       <input type="text" class="form-control" formControlName="lastName" [value]="activeUser?.lastName?.toString()">
-      <div *ngIf="userForm.controls['lastName'].hasError('minlength')" class="alert alert-danger">
-        {{'SurnameMinLength' | translate}}.
-      </div>
       <div *ngIf="userForm.controls['lastName'].hasError('maxlength')" class="alert alert-danger">
         {{'SurnameMaxLength' | translate}}.
       </div>
@@ -37,11 +31,8 @@
     <div class="form-group col-md-6">
       <label>{{'email' | translate}}:</label>
       <input type="text" class="form-control" formControlName="email">
-      <div *ngIf="userForm.controls['email'].hasError('minlength')" class="alert alert-danger">
-        {{'EmailMinLength' | translate}}.
-      </div>
-      <div *ngIf="userForm.controls['email'].hasError('maxlength')" class="alert alert-danger">
-        {{'EmailMaxLength' | translate}}.
+      <div *ngIf="!userForm.controls['email'].untouched && userForm.controls['email'].hasError('email')" class="alert alert-danger">
+        {{'EmailFormat' | translate}}.
       </div>
     </div>
   </div>
@@ -56,9 +47,6 @@
     <div class="form-group col-md-6">
       <label>{{'alias' | translate}}:</label>
       <input type="text" class="form-control" formControlName="alias">
-      <div *ngIf="userForm.controls['alias'].hasError('minlength')" class="alert alert-danger">
-        {{'AliasMinLength' | translate}}.
-      </div>
       <div *ngIf="userForm.controls['alias'].hasError('maxlength')" class="alert alert-danger">
         {{'AliasMaxLength' | translate}}.
       </div>
@@ -68,10 +56,10 @@
     <div class="form-group col-md-6">
       <label>{{'role' | translate}}:</label>
       <select class="form-control" formControlName="role">
-        <option value="ADMINISTRATOR">ADMINISTRATOR</option>
-        <option value="POWERUSER">POWERUSER</option>
-        <option value="USER">USER</option>
-        <option value="DRIVER">DRIVER</option>
+        <option *ngIf="roleGuard.isPoweruser()" value="POWERUSER">Poweruser</option>
+        <option *ngIf="roleGuard.isPoweruser() || roleGuard.isUser()" value="USER">User</option>
+        <option *ngIf="roleGuard.isPoweruser() || roleGuard.isUser()" value="DRIVER">Driver</option>
+        <option *ngIf="roleGuard.isPoweruser() || roleGuard.isUser()" value="CUSTOMER">Customer</option>
       </select>
     </div>
     <div class="form-group col-md-6">
@@ -84,8 +72,8 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <button type="submit" [disabled]="!userForm.valid" class="btn btn-primary">{{'save' | translate}}</button>
-      <button type="submit" [disabled]="!userForm.valid" class="btn btn-primary">{{'clear' | translate}}</button>
+      <button type="submit" name="save" [disabled]="!userForm.valid" class="btn btn-primary">{{'save' | translate}}</button>
+      <button (click)="clearFields()" class="btn btn-primary">{{'clear' | translate}}</button>
     </div>
   </div>
 </form>
