@@ -8,8 +8,14 @@ import org.slf4j.LoggerFactory
 /**
  * Created by n3 on 01/03/2017.
  */
-open class Fragment : RxAppCompatDialogFragment() {
+open class Fragment(var fragmentTitle: String = "") : RxAppCompatDialogFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    init {
+        if (fragmentTitle.isNullOrBlank()) {
+            fragmentTitle = javaClass.simpleName
+        }
+    }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
