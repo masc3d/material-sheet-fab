@@ -4,8 +4,8 @@
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
 
-    <string name="app_name" translatable="false">mobile:Suite</string>
-    <string name="app_name_long" translatable="false">mobile:Suite</string>
+    <string name="app_name" translatable="false">Mobile Suite</string>
+    <string name="app_name_long" translatable="false">Mobile Suite</string>
     <string name="app_project_name" translatable="false">leoz-mobile</string>
 
     <string name="error_database_inconsistent">Inconsistent database state</string>

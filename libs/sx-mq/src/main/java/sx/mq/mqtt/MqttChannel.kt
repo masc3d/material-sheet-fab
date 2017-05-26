@@ -7,8 +7,8 @@ import java.lang.UnsupportedOperationException
 import java.util.concurrent.TimeUnit
 
 /**
- * MQTT channel client
- * @property endpoint Mqtt channel
+ * MQTT channel
+ * @property endpoint Mqtt endpoint
  * Created by masc on 07.05.17.
  */
 class MqttChannel(

@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.model
 
+import org.deku.leoz.enums.Carrier
 import org.deku.leoz.enums.ParcelService
 import java.util.*
 
@@ -35,10 +36,6 @@ class Stop (
                 val status: MutableList<Status>? = mutableListOf(),
                 val dimensions: Dimension?
         )
-
-        enum class Carrier {
-            DERKURIER
-        }
 
         fun equalsAddress(order: Order): Boolean {
             var adrType: Address.AddressClassification? = null

@@ -6,7 +6,15 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.conf.global
+import com.github.salomonbrys.kodein.instance
+import com.github.salomonbrys.kodein.lazy
+import org.deku.leoz.mobile.mq.MqttEndpoints
+import org.deku.leoz.service.entity.Position
 import org.slf4j.LoggerFactory
+import sx.mq.mqtt.MqttChannel
+import sx.mq.mqtt.channel
 import sx.time.Duration
 
 class LocationService(
@@ -76,14 +84,32 @@ class LocationService(
 
         class LTRLocationListener(provider: String) : android.location.LocationListener {
             private val log = LoggerFactory.getLogger(this.javaClass)
+            val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
             val lastLocation = Location(provider)
 
             override fun onLocationChanged(location: Location?) {
-                lastLocation.set(location)
-                log.info("ONLOCATIONCHANGED")
 
-                log.info("Location changed. Provider [${location?.provider}] Time [${location?.time}] Lat [${location?.latitude}] Lng [${location?.longitude}] Accuracy [${location?.accuracy}] Altitude [${location?.altitude}] Bearing [${location?.bearing}] Speed [${location?.speed}]")
-                // TODO: Do something here
+                log.debug("ONLOCATIONCHANGED")
+
+                if (location == null) {
+                    log.warn("Location object is null.")
+                    return
+                }
+
+                val currentPosition = Position(
+                        latitude = location.latitude,
+                        longitude = location.longitude,
+                        time = location.time,
+                        speed = location.speed,
+                        bearing = location.bearing,
+                        altitude = location.altitude,
+                        accuracy = location.accuracy
+                )
+                lastLocation.set(location)
+
+                log.info("Location changed. Provider [${location?.provider}] Position [$currentPosition]")
+
+                mqttChannels.central.transient.channel().send(currentPosition)
             }
 
             override fun onProviderDisabled(provider: String?) {

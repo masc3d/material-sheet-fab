@@ -9,6 +9,16 @@ import java.sql.Time
 /**
  * Created by JT on 24.05.17.
  */
+@ApiModel(description = "Loading List")
+data class LoadingList(
+        @ApiModelProperty(example = "12345678", position = 10, required = true, value = "LoadingListID")
+        val id: String,
+        @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
+        val date: ShortDate,
+        @ApiModelProperty(position = 30, required = true, value = "Orders")
+        val orders: List<Order>
+)
+
 @ApiModel(description = "Order Model")
 data class Order(
 
@@ -26,7 +36,7 @@ data class Order(
         //todo EXCHANGE_DELIVERY, EXCHANGE_PICKUP wie in stop.kt sehe ich nicht als addressclassifikation sondern als service
 
         @get:ApiModelProperty(example = "DELIVERY", position = 40, required = true, value = "OrderClassifikation")
-        var orderClassifikation: OrderClassifikation = OrderClassifikation.DELIVERY,
+        var orderClassification: OrderClassifikation = OrderClassifikation.DELIVERY,
 
         @get:ApiModelProperty(example = "xChange", position = 50, required = false, value = "Shipment Service")
         var services: List<org.deku.leoz.enums.ParcelService>? = null,
@@ -41,14 +51,17 @@ data class Order(
 
         //todo @masc ist Time hier best?
         @get:ApiModelProperty(example = "09:00-12:00", position = 80, required = true, value = "pickup Tiemwindow")
-        var pickupTiemwindow: Pair<Time, Time> = Pair(Time(0), Time(0)),
+        var pickupAppointment: Pair<Time, Time> = Pair(Time(0), Time(0)),
 
         @get:ApiModelProperty(example = "13-05-2017", position = 90, required = true, value = "delivery Date")
         var deliveryDate: ShortDate? = null,
 
         @get:ApiModelProperty(example = "09:00-12:00", position = 100, required = true, value = "delivery Tiemwindow")
-        var deliveryTiemwindow: Pair<Time, Time> = Pair(Time(0), Time(0)),
+        var deliveryAppointment: Pair<Time, Time> = Pair(Time(0), Time(0)),
 
+        /**
+         * TODO: Nach Möglichkeit einen generischen Typen nehmen, der 0..n Zusatzinformationen wie z.B. Nachnahmebetrag, Ident-Nummer, IMEI-Nummer halten kann [zum Beispiel List<AdditionalInformation>]
+         */
         @get:ApiModelProperty(example = "10.10", position = 110, required = false, value = "cashAmount")
         var cashAmount: Double? = null,
 

@@ -128,7 +128,7 @@
                     android:background="@android:color/transparent"
                     android:padding="10dp"
                     android:scaleType="fitCenter"
-                    android:src="@mipmap/ic_station_black_24dp"
+                    android:src="@drawable/ic_station"
                     android:tint="@color/colorPrimaryDark" />
 
                 <TextView

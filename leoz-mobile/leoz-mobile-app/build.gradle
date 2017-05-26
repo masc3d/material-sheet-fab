@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 buildscript {
     repositories {
         mavenCentral()
@@ -12,6 +14,7 @@ buildscript {
                 'com.android.tools.build:gradle:2.3.2',
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2",
+                "com.trello:victor:0.3.0",
                 "sx:sx-packager-gradle:0.1",
         )
     }
@@ -29,6 +32,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'com.trello.victor'
 apply plugin: 'sx-packager-android'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
@@ -36,6 +40,14 @@ targetCompatibility = JavaVersion.VERSION_1_7
 
 def sdk = android.getSdkDirectory().toString()
 def adb = android.getAdbExe().toString()
+
+def GENERATED_DIR = project.projectDir.toPath()
+        .resolve('src')
+        .resolve('generated')
+        .toFile()
+
+def GENERATED_SVG_DIR = new File(GENERATED_DIR,
+        'svg')
 
 kapt {
     generateStubs true
@@ -76,6 +88,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+
         debug {
             minifyEnabled false
             debuggable true
@@ -85,7 +98,12 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main {
+            svg.srcDirs += 'src/main/svg'
+            java.srcDirs += 'src/main/kotlin'
+
+            res.srcDirs += GENERATED_SVG_DIR
+        }
     }
 
     packagingOptions {
@@ -255,6 +273,43 @@ dependencies {
     kapt(
             "org.parceler:parceler:1.1.6"
     )
+}
+
+victor {
+    // Any assets defined in relative terms needs a base DPI specified
+    svgDpi = 72
+
+    // Do not generate these densities for SVG assets
+    excludeDensities = [ 'ldpi' ]
+
+    // WARNING: EXPERIMENTAL
+    // Generates Android drawables instead of PNGs.
+    // This is known not to work on only a subset of SVGs (e.g., does not support any value besides px).
+    generateVectorDrawables = false
+}
+
+clean {
+    doFirst {
+        GENERATED_DIR.deleteDir()
+    }
+}
+
+afterEvaluate {
+    // masc20170526. amend output paths of victor, as AndroidStudio designer cannot see
+    // generated resources/drawables in build folder
+    GENERATED_DIR.mkdirs()
+
+    if (tasks.findByPath('rasterizeSvgsForDebug') != null) {
+        tasks.rasterizeSvgsForDebug {
+            outputDir GENERATED_SVG_DIR
+        }
+    }
+
+    if (tasks.findByPath('rasterizeSvgsForRelease') != null) {
+        tasks.rasterizeSvgsForRelease {
+            outputDir GENERATED_SVG_DIR
+        }
+    }
 }
 
 /**
