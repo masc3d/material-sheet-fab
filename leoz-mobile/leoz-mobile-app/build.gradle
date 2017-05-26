@@ -41,6 +41,14 @@ targetCompatibility = JavaVersion.VERSION_1_7
 def sdk = android.getSdkDirectory().toString()
 def adb = android.getAdbExe().toString()
 
+def GENERATED_DIR = project.projectDir.toPath()
+        .resolve('src')
+        .resolve('generated')
+        .toFile()
+
+def GENERATED_SVG_DIR = new File(GENERATED_DIR,
+        'svg')
+
 kapt {
     generateStubs true
 }
@@ -80,6 +88,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+
         debug {
             minifyEnabled false
             debuggable true
@@ -92,6 +101,8 @@ android {
         main {
             svg.srcDirs += 'src/main/svg'
             java.srcDirs += 'src/main/kotlin'
+
+            res.srcDirs += GENERATED_SVG_DIR
         }
     }
 
@@ -275,6 +286,24 @@ victor {
     // Generates Android drawables instead of PNGs.
     // This is known not to work on only a subset of SVGs (e.g., does not support any value besides px).
     generateVectorDrawables = false
+}
+
+clean {
+    doFirst {
+        GENERATED_DIR.deleteDir()
+    }
+}
+
+afterEvaluate {
+    GENERATED_DIR.mkdirs()
+
+    tasks.rasterizeSvgsForDebug {
+        outputDir GENERATED_SVG_DIR
+    }
+
+    tasks.rasterizeSvgsForRelease {
+        outputDir GENERATED_SVG_DIR
+    }
 }
 
 /**
