@@ -117,7 +117,7 @@ enum class SendData {
     getBags
 }
 
-enum class ParcelService (val serviceId: Long, val parcelServiceRestriction: ParcelServiceRestriction) {
+enum class ParcelService(val serviceId: Long, val parcelServiceRestriction: ParcelServiceRestriction) {
     noAdditionalService(
             serviceId = 0,
             parcelServiceRestriction = ParcelServiceRestriction()),
@@ -235,4 +235,27 @@ enum class ParcelService (val serviceId: Long, val parcelServiceRestriction: Par
             parcelServiceRestriction = ParcelServiceRestriction(
                     alternateDeliveryAllowed = false
             ))
+}
+
+/**
+ * Created by JT on 24.05.17.
+ */
+enum class Carrier {
+    DERKURIER,
+    UNKNOWN
+}
+
+/**
+ * Created by JT on 24.05.17.
+ */
+enum class OrderClassifikation {
+    PICKUP, DELIVERY, PICKUP_DELIVERY
+}
+
+
+/**
+ * Created by JT on 24.05.17.
+ */
+enum class ShipmentInternalServices {
+    FIXTIMEWINDOWPICKUP, FIXTIMEWINDOWDELIVERY
 }

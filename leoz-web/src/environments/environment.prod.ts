@@ -5,6 +5,6 @@
 
 export const environment = {
   production: true,
-  // apiUrl: "assets/sampledata"
-  apiUrl: "http://localhost:13000/rs/api/internal/v1"
-};
+  apiUrl: 'http://localhost:13000/rs/api',
+  defLang: 'de',
+}
