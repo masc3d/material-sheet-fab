@@ -295,6 +295,8 @@ clean {
 }
 
 afterEvaluate {
+    // masc20170526. amend output paths of victor, as AndroidStudio designer cannot see
+    // generated resources/drawables in build folder
     GENERATED_DIR.mkdirs()
 
     if (tasks.findByPath('rasterizeSvgsForDebug') != null) {
