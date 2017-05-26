@@ -45,7 +45,7 @@
                 <ImageButton
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    app:srcCompat="@drawable/ic_hub"
+                    app:srcCompat="@drawable/ic_launcher"
                     android:id="@+id/uxHubButton"
                     android:alpha="1"
                     android:background="@android:color/transparent"

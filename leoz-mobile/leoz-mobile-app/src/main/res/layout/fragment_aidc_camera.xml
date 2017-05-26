@@ -25,6 +25,6 @@
         app:layout_anchorGravity="start"
         app:elevation="@dimen/fab_elevate"
         app:backgroundTint="@color/colorDarkGrey"
-        app:srcCompat="@drawable/ic_wb_sunny_black_24dp" />
+        app:srcCompat="@drawable/ic_flash" />
 
 </FrameLayout>

@@ -297,12 +297,16 @@ clean {
 afterEvaluate {
     GENERATED_DIR.mkdirs()
 
-    tasks.rasterizeSvgsForDebug {
-        outputDir GENERATED_SVG_DIR
+    if (tasks.findByPath('rasterizeSvgsForDebug') != null) {
+        tasks.rasterizeSvgsForDebug {
+            outputDir GENERATED_SVG_DIR
+        }
     }
 
-    tasks.rasterizeSvgsForRelease {
-        outputDir GENERATED_SVG_DIR
+    if (tasks.findByPath('rasterizeSvgsForRelease') != null) {
+        tasks.rasterizeSvgsForRelease {
+            outputDir GENERATED_SVG_DIR
+        }
     }
 }
 
