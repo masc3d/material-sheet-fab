@@ -84,7 +84,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_done_black_48px" />
+                    app:srcCompat="@drawable/ic_done_black" />
 
             </LinearLayout>
 
@@ -122,7 +122,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_cancel_black_48px" />
+                    app:srcCompat="@drawable/ic_cancel_black" />
             </LinearLayout>
 
         </LinearLayout>
@@ -159,7 +159,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_cancel_black_48px" />
+                    app:srcCompat="@drawable/ic_cancel_black" />
             </LinearLayout>
         </LinearLayout>
 
