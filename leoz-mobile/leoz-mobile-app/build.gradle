@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 buildscript {
     repositories {
         mavenCentral()
@@ -12,6 +14,7 @@ buildscript {
                 'com.android.tools.build:gradle:2.3.2',
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2",
+                "com.trello:victor:0.3.0",
                 "sx:sx-packager-gradle:0.1",
         )
     }
@@ -29,6 +32,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'com.trello.victor'
 apply plugin: 'sx-packager-android'
 
 sourceCompatibility = JavaVersion.VERSION_1_7
@@ -85,7 +89,10 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main {
+            svg.srcDirs += 'src/main/svg'
+            java.srcDirs += 'src/main/kotlin'
+        }
     }
 
     packagingOptions {
@@ -255,6 +262,19 @@ dependencies {
     kapt(
             "org.parceler:parceler:1.1.6"
     )
+}
+
+victor {
+    // Any assets defined in relative terms needs a base DPI specified
+    svgDpi = 72
+
+    // Do not generate these densities for SVG assets
+    excludeDensities = [ 'ldpi' ]
+
+    // WARNING: EXPERIMENTAL
+    // Generates Android drawables instead of PNGs.
+    // This is known not to work on only a subset of SVGs (e.g., does not support any value besides px).
+    generateVectorDrawables = false
 }
 
 /**

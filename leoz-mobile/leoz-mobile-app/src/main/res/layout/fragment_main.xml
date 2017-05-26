@@ -20,7 +20,7 @@
             android:layout_gravity="center"
             android:layout_marginLeft="32dp"
             android:layout_marginRight="32dp"
-            app:srcCompat="@mipmap/img_deku_logo" />
+            app:srcCompat="@drawable/img_deku_logo" />
 
         <TextView
             android:id="@+id/uxTitle"

@@ -67,7 +67,7 @@
         app:backgroundTint="@color/colorAccent"
         app:elevation="@dimen/fab_elevate"
         app:layout_anchor="@+id/uxHelpFab"
-        app:srcCompat="@mipmap/ic_barcode"
+        app:srcCompat="@drawable/ic_barcode"
         app:useCompatPadding="true" />
 
 </android.support.design.widget.CoordinatorLayout>

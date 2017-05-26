@@ -13,6 +13,6 @@
         app:useCompatPadding="true"
         app:elevation="@dimen/fab_elevate"
         app:backgroundTint="@color/colorDarkGrey"
-        app:srcCompat="@mipmap/ic_wb_sunny_black_24dp" />
+        app:srcCompat="@drawable/ic_wb_sunny_black_24dp" />
 
 </org.deku.leoz.mobile.prototype.AidcCameraView>

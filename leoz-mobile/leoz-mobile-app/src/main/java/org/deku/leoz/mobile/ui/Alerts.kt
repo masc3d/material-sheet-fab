@@ -19,7 +19,7 @@ fun Context.showErrorAlert(text: CharSequence,
                            onNegativeButton: ((dialogInterface: DialogInterface) -> Unit)? = null) {
     var builder = AlertDialog.Builder(this)
             .setTitle(title)
-            .setIcon(org.deku.leoz.mobile.R.mipmap.ic_launcher)
+            .setIcon(org.deku.leoz.mobile.R.drawable.ic_launcher)
     if (onPositiveButton != null) {
         builder = builder.setPositiveButton(positiveButtonText, { dialogInterface, i ->
             onPositiveButton(dialogInterface)
@@ -40,7 +40,7 @@ fun Context.showAlert(text: CharSequence,
                       negativeButton: AlertButton? = null) {
     var builder = AlertDialog.Builder(this)
             .setTitle(title)
-            .setIcon(org.deku.leoz.mobile.R.mipmap.ic_launcher)
+            .setIcon(org.deku.leoz.mobile.R.drawable.ic_launcher)
 
     if (positiveButton != null) {
         builder = builder
