@@ -23,7 +23,7 @@
             android:layout_alignParentTop="true"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/ic_cancel_black_48px" />
+            app:srcCompat="@drawable/ic_cancel_black" />
 
         <TextView
             android:id="@+id/uxMenuDescription"
