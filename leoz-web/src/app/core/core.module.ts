@@ -4,6 +4,7 @@ import { AuthenticationService } from './auth/authentication.service';
 import { AuthenticationGuard } from './auth/authentication.guard';
 import { Translation } from './translate/translation';
 import { TranslateService } from './translate/translate.service';
+import { RoleGuard } from './auth/role.guard';
 
 @NgModule( {
   imports: [
@@ -19,6 +20,10 @@ export class CoreModule {
       providers: [
         AuthenticationService,
         AuthenticationGuard,
+        // AdminRoleGuard,
+        RoleGuard,
+        // UserRoleGuard,
+        // DriverRoleGuard,
         Translation,
         TranslateService ]
     };

@@ -5,12 +5,12 @@
         <accordion-group heading="{{'home' | translate}}"
                          [isOpen]='false' [isDisabled]="true" (click)="navigate('dashboard/home')">
         </accordion-group>
-        <accordion-group heading="{{'dispo' | translate}}"
+        <accordion-group *ngIf="roleGuard.isDriver() || roleGuard.isUser() || roleGuard.isPoweruser()" heading="{{'dispo' | translate}}"
                          [isOpen]='false'>
 
           <a [routerLink]="['tour']" (click)="navigate('dashboard/tour')"><i class="fa fa-bus"></i> <ng-container>{{'tour' | translate}}</ng-container></a>
         </accordion-group>
-        <accordion-group heading="{{'management' | translate}}"
+        <accordion-group *ngIf="roleGuard.isUser() || roleGuard.isPoweruser()" heading="{{'management' | translate}}"
                          [isOpen]='false'>
           <a [routerLink]="['user']" (click)="navigate('dashboard/user')"><i class="fa fa-wheelchair-alt"></i> <ng-container >{{'users' | translate}}</ng-container></a><br>
         </accordion-group>

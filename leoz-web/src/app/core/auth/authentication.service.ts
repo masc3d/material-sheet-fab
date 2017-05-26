@@ -4,16 +4,20 @@ import { Observable } from 'rxjs/Observable';
 import { Http, Response } from '@angular/http';
 import { RequestOptions, Headers } from '@angular/http';
 import { environment } from '../../../environments/environment';
+import { RoleGuard } from './role.guard';
 
 @Injectable()
 export class AuthenticationService {
 
   private authUrl = `${environment.apiUrl}/internal/v1/authorize/web`;
 
-  constructor( private router: Router, private http: Http ) {
+  constructor( private router: Router,
+               private http: Http,
+               private roleGuard: RoleGuard ) {
   }
 
   logout() {
+    this.roleGuard.userRole = null;
     localStorage.removeItem( 'currentUser' );
     this.router.navigate( [ 'login' ] );
   }
@@ -32,7 +36,9 @@ export class AuthenticationService {
       } ), options )
       .map( ( response: Response ) => {
         if (response.status === 200) {
-          localStorage.setItem( 'currentUser', JSON.stringify( response.json() ) );
+          const userJson = response.json();
+          this.roleGuard.userRole = userJson.userRole;
+          localStorage.setItem( 'currentUser', JSON.stringify( userJson ) );
         }
         return response;
       } );
