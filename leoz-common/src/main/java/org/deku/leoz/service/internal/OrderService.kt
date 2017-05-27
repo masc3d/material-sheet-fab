@@ -20,11 +20,11 @@ import javax.ws.rs.core.MediaType
 
 interface OrderService  {
     companion object {
-        const val PARCELSCAN = "ParcelScan"
-        const val ORDERID = "orderId"
-        const val LABELREFERENCE = "labelReference"
-        const val CUSTOMERSREFERENCE = "customerReference"
-        const val LOADINGLIST = "loadingList"
+        const val PARCELSCAN = "parcel-scan"
+        const val ORDERID = "order-id"
+        const val LABELREFERENCE = "label-reference"
+        const val CUSTOMERSREFERENCE = "customer-reference"
+        const val LOADINGLIST = "loading-list"
     }
 
     /**
@@ -44,29 +44,29 @@ interface OrderService  {
      */
     @GET
     @Path("/order/find")
-    @ApiOperation(value = "Get Order by label reference")
+    @ApiOperation(value = "Get order by label reference")
     fun getOrderByReference(
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null
     ): List<Order>
 
     @GET
-    @Path("/order/$ORDERID")
-    @ApiOperation(value = "Get Order by label reference")
+    @Path("/order/{$ORDERID}")
+    @ApiOperation(value = "Get order by label reference")
     fun getOrderByID(
             @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) ref: String? = null
     ): Order
 
     @GET
-    @Path("/loadingList/$LOADINGLIST")
-    @ApiOperation(value = "Get Order")
+    @Path("/loadingList/{$LOADINGLIST}")
+    @ApiOperation(value = "Get order")
     fun getLoadingListOrderByID(
             @PathParam(LOADINGLIST) @ApiParam(value = "Loadinglist ID", required = true) ref: String? = null
     ): LoadingList
 
     @GET
     @Path("/loadingList/find")
-    @ApiOperation(value = "Get Order")
+    @ApiOperation(value = "Get order")
     fun getLoadingListOrderyOrder(
             @QueryParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) ref: String
     ): List<LoadingList>
