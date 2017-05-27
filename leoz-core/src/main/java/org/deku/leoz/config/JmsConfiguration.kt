@@ -28,7 +28,7 @@ object JmsConfiguration {
             val d = CompositeTopic()
             d.name = MqEndpoints.central.main.mqtt.kryo.destinationName
             d.forwardTo = listOf(
-                    JmsChannels.central.main.kryo.destination)
+                    JmsEndpoints.central.main.kryo.destination)
             d
         }())
 
@@ -36,7 +36,7 @@ object JmsConfiguration {
             val d = CompositeTopic()
             d.name = MqEndpoints.central.transient.mqtt.kryo.destinationName
             d.forwardTo = listOf(
-                    JmsChannels.central.transient.kryo.destination)
+                    JmsEndpoints.central.transient.kryo.destination)
             d
         }())
 

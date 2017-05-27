@@ -3,7 +3,7 @@ package org.deku.leoz.central.config
 import org.deku.leoz.central.Application
 import org.deku.leoz.central.service.internal.sync.DatabaseSyncService
 import org.deku.leoz.config.JmsConfiguration
-import org.deku.leoz.config.JmsChannels
+import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.node.config.PersistenceConfiguration
 import org.deku.leoz.node.service.internal.sync.EntityPublisher
 import org.slf4j.LoggerFactory
@@ -63,8 +63,8 @@ open class EntitySyncConfiguration {
     fun onInitialize() {
         // Setup entity publisher
         this.entityPublisher = EntityPublisher(
-                requestEndpoint = JmsChannels.central.entitySync.queue,
-                notificationEndpoint = JmsChannels.central.entitySync.topic,
+                requestEndpoint = JmsEndpoints.central.entitySync.queue,
+                notificationEndpoint = JmsEndpoints.central.entitySync.topic,
                 entityManagerFactory = this.entityManagerFactory,
                 listenerExecutor = this.executorService)
 

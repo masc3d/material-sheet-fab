@@ -1,6 +1,6 @@
 package org.deku.leoz.node.config
 
-import org.deku.leoz.config.JmsChannels
+import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.config.RsyncConfiguration
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.LifecycleController
@@ -55,7 +55,7 @@ open class FileSyncClientConfiguration {
                                 RsyncConfiguration.ModuleNames.TRANSFER),
                         password = RsyncConfiguration.PASSWORD,
                         sshTunnelProvider = this.sshTunnelProvider),
-                centralEndpointSupplier = { JmsChannels.central.main.kryo })
+                centralEndpointSupplier = { JmsEndpoints.central.main.kryo })
 
     @PostConstruct
     fun onInitialize() {

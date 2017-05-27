@@ -8,7 +8,7 @@ import sx.mq.jms.toJms
 /**
  * Created by masc on 24.05.17.
  */
-object JmsChannels {
+object JmsEndpoints {
     /** Local JMS broker context */
     val context = ActiveMQContext(
             connectionFactory = JmsConfiguration.connectionFactory)

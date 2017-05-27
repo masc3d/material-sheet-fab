@@ -3,7 +3,7 @@ package org.deku.leoz.node.config
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.conf.global
 import org.deku.leoz.config.JmsConfiguration
-import org.deku.leoz.config.JmsChannels
+import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.node.Application
 import org.deku.leoz.node.Storage
@@ -47,7 +47,7 @@ open class LogConfiguration : org.deku.leoz.config.LogConfiguration() {
 
                     // Setup message log appender
                     appender = LogMqAppender(
-                            channelSupplier = { JmsChannels.central.transient.kryo.channel() },
+                            channelSupplier = { JmsEndpoints.central.transient.kryo.channel() },
                             identitySupplier = { application.identity })
                     appender.context = loggerContext
 

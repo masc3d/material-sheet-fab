@@ -2,7 +2,7 @@ package org.deku.leoz.central.config
 
 import org.deku.leoz.central.Application
 import org.deku.leoz.central.service.internal.filesync.FileSyncHostService
-import org.deku.leoz.config.JmsChannels
+import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.node.Storage
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -37,7 +37,7 @@ open class FileSyncHostConfiguration {
                 baseDirectory = storage.transferDirectory,
                 executorService = this.executorService,
                 identity = this.application.identity,
-                nodeEndpointSupplier = { JmsChannels.node.queue(it) }
+                nodeEndpointSupplier = { JmsEndpoints.node.queue(it) }
         )
 
     /**

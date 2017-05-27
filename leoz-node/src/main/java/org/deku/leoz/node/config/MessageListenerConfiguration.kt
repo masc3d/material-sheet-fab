@@ -1,7 +1,7 @@
 package org.deku.leoz.node.config
 
 import org.deku.leoz.config.JmsConfiguration
-import org.deku.leoz.config.JmsChannels
+import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.node.Application
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
@@ -40,13 +40,13 @@ open class MessageListenerConfiguration {
     // Listeners
     val nodeQueueListener by lazy {
         SpringJmsListener(
-                JmsChannels.node.queue(this.application.identity.key),
+                JmsEndpoints.node.queue(this.application.identity.key),
                 executorService)
     }
 
     val nodeTopicListener by lazy {
         SpringJmsListener(
-                JmsChannels.node.topic,
+                JmsEndpoints.node.topic,
                 executorService)
     }
 
