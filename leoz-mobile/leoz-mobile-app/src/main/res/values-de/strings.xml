@@ -35,7 +35,7 @@
     <string name="error_empty_field">Feld darf nicht leer sein.</string>
     <string name="error_format_mail">This is not a valid email format</string>
     <string name="error_invalid_credentials">Email &amp; Passwort Kombination konnte nicht gefunden werden.</string>
-    <string name="hint_field_mail">max@mustermann.de</string>
+    <string name="hint_field_mail">Email Addresse</string>
     <string name="hint_field_password">Passwort</string>
     <string name="delivery">Zustellung</string>
     <string name="linehaul">Linie</string>

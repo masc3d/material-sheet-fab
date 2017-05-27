@@ -32,14 +32,12 @@ import javax.mail.internet.InternetAddress
  */
 class LoginFragment : Fragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
+
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val tone: Tone by Kodein.global.lazy.instance()
+
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")
     private val login: Login by Kodein.global.lazy.instance()
-
-    override fun onAttach(activity: Activity?) {
-        super.onAttach(activity)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
@@ -92,15 +90,15 @@ class LoginFragment : Fragment() {
         val mailAddress: String
         val password: String
 
-        this.uxMailaddress.error = null
+        this.uxMailaddressLayout.error = null
         this.uxPassword.error = null
 
         when {
             this.uxMailaddress.text.isEmpty() -> {
-                this.uxMailaddress.error = getString(R.string.error_empty_field)
+                this.uxMailaddressLayout.error = getString(R.string.error_empty_field)
             }
             !this.uxMailaddress.text.toString().isValidEmailAddress() && !this.uxMailaddress.text.matches(internalLoginRegex) -> {
-                this.uxMailaddress.error = getString(R.string.error_format_mail)
+                this.uxMailaddressLayout.error = getString(R.string.error_format_mail)
             }
             this.uxPassword.text.isEmpty() -> {
                 this.uxPassword.error = getString(R.string.error_empty_field)

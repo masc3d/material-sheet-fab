@@ -43,7 +43,7 @@
     <string name="error_empty_field">Field cannot be empty.</string>
     <string name="error_format_mail">This is not a valid email format</string>
     <string name="error_invalid_credentials">Email/Password combination could not be found.</string>
-    <string name="hint_field_mail">foo@bar.com</string>
+    <string name="hint_field_mail">Email Address</string>
     <string name="hint_field_password">Password</string>
     <string name="warehouse">Warehouse</string>
     <string name="delivery">Delivery</string>

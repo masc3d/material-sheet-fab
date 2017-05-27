@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:divider="@drawable/divider_vertical"
-    android:orientation="vertical"
-    android:showDividers="middle">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:divider="@drawable/divider_vertical"
+              android:orientation="vertical"
+              android:showDividers="middle">
 
     <LinearLayout
         android:id="@+id/formContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,17 +26,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|center_horizontal"
-                app:srcCompat="@drawable/ic_email_black" />
+                android:layout_marginBottom="6dp"
+                app:srcCompat="@drawable/ic_email_black"/>
 
-            <AutoCompleteTextView
-                android:id="@+id/uxMailaddress"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/uxMailaddressLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:hint="@string/hint_field_mail"
-                android:inputType="textEmailAddress"
-                android:textAppearance="@android:style/TextAppearance.Material.Medium.Inverse" />
+                app:errorEnabled="true">
+
+                <AutoCompleteTextView
+                    android:id="@+id/uxMailaddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:hint="@string/hint_field_mail"
+                    android:inputType="textEmailAddress"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+            </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
 
@@ -53,18 +61,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|center_horizontal"
-                app:srcCompat="@drawable/ic_lock" />
+                android:layout_marginBottom="6dp"
+                app:srcCompat="@drawable/ic_lock"/>
 
-            <EditText
-                android:id="@+id/uxPassword"
+            <android.support.design.widget.TextInputLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/hint_field_password"
-                android:inputType="textPassword"
-                android:selectAllOnFocus="true"
-                android:singleLine="true" />
+                app:errorEnabled="true">
 
+                <EditText
+                    android:id="@+id/uxPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/hint_field_password"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:selectAllOnFocus="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+            </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -72,19 +88,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <!--<Button-->
-            <!--android:id="@+id/button"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="end"-->
-            <!--android:text="Login" />-->
-
             <Button
                 android:id="@+id/uxLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/login"
-                android:visibility="gone" />
+                android:visibility="gone"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -96,7 +105,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="8dp"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
 </LinearLayout>
 
