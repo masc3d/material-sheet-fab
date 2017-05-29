@@ -1,28 +1,27 @@
 package org.deku.leoz.mobile.ui.fragment
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.Login
-import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.slf4j.LoggerFactory
-import sx.android.Device
 import sx.android.aidc.*
-import sx.android.fragment.util.withTransaction
+import sx.rx.toSingletonObservable
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
 
@@ -47,12 +46,25 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxLogin.setOnClickListener(onClickListener)
-        this.uxPassword.setOnEditorActionListener { v, actionId, event -> login() }
+        this.uxMailaddress.requestFocus()
 
-        val arrayAdapter = ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, arrayOf("foo@bar"))
+        // On-the-fly validations
 
-        this.uxMailaddress.setAdapter(arrayAdapter)
+        RxView.focusChanges(this.uxMailaddress)
+                .filter { it == false }
+                .subscribe {
+                    this.validateMailAddress()
+                }
+
+        // Clear error condition on typing
+
+        RxTextView.textChanges(uxMailaddress).subscribe {
+            this.uxMailaddressLayout.error = null
+        }
+
+        RxTextView.textChanges(uxPassword).subscribe {
+            this.uxPasswordLayout.error = null
+        }
     }
 
     override fun onResume() {
@@ -71,68 +83,84 @@ class LoginFragment : Fragment() {
                 .subscribe {
                     log.info("Barcode scanned ${it.data}")
                 }
-    }
 
-    val onClickListener: View.OnClickListener = View.OnClickListener {
-        when (it.id) {
-            R.id.uxLogin -> {
-                log.debug("ONCLICK [$it]")
-                login()
-            }
-            else -> log.warn("ONCLICK unhandled [$it]")
-        }
-    }
+        // Actions triggering login
 
-    /**
-     *
-     */
-    fun login(): Boolean {
-        val mailAddress: String
-        val password: String
+        val rxLoginTrigger =
+                Observable.merge(listOf(
+                        RxView.clicks(this.uxLogin)
+                                .map { Unit },
+                        RxTextView.editorActions(this.uxPassword)
+                                .map { Unit }
+                                .replay(1).refCount()
+                ))
 
-        this.uxMailaddressLayout.error = null
-        this.uxPassword.error = null
-
-        when {
-            this.uxMailaddress.text.isEmpty() -> {
-                this.uxMailaddressLayout.error = getString(R.string.error_empty_field)
-            }
-            !this.uxMailaddress.text.toString().isValidEmailAddress() && !this.uxMailaddress.text.matches(internalLoginRegex) -> {
-                this.uxMailaddressLayout.error = getString(R.string.error_format_mail)
-            }
-            this.uxPassword.text.isEmpty() -> {
-                this.uxPassword.error = getString(R.string.error_empty_field)
-            }
-            else -> {
-                mailAddress = this.uxMailaddress.text.toString()
-                password = this.uxPassword.text.toString()
-
-                login.authenticate(
-                        email = mailAddress,
-                        password = password
-                )
-                        .bindUntilEvent(this, FragmentEvent.PAUSE)
-                        .subscribe {
-                            if (it != null && it.hash.isNotBlank()) {
-                                //Login succeeded
-
-                            } else {
-                                //Login failed
-                                tone.beep()
-                            }
+        rxLoginTrigger
+                .switchMap {
+                    Observable.fromCallable {
+                        // Verify all fields
+                        if (listOf(
+                                validateMailAddress(),
+                                validatePassword()
+                        ).any { it == false }) {
+                            throw IllegalArgumentException("Validation failed")
                         }
-            }
-        }
-
-        return true
+                    }
+                }
+                .switchMap {
+                    login.authenticate(
+                            email = uxMailaddress.text.toString(),
+                            password = uxPassword.text.toString()
+                    )
+                }
+                .doOnError {
+                    tone.beep()
+                    log.error(it.message)
+                }
+                .retry()
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    log.info("Login successful $it")
+                }
     }
 
-    fun String.isValidEmailAddress(): Boolean {
+    private fun String.isValidEmailAddress(): Boolean {
         return try {
             InternetAddress(this).validate()
             true
         } catch (ex: AddressException) {
             false
+        }
+    }
+
+    private fun validateMailAddress(): Boolean {
+        return when {
+            uxMailaddress.text.isEmpty() -> {
+                this.uxMailaddressLayout.error = getString(R.string.error_empty_field)
+                false
+            }
+            !uxMailaddress.text.toString().isValidEmailAddress() && !uxMailaddress.text.matches(internalLoginRegex) -> {
+                this.uxMailaddressLayout.error = getString(R.string.error_format_mail)
+                false
+            }
+            else -> {
+                this.uxMailaddressLayout.error = null
+                true
+            }
+        }
+    }
+
+    private fun validatePassword(): Boolean {
+        return when {
+            this.uxPassword.text.isEmpty() -> {
+                this.uxPasswordLayout.error = getString(R.string.error_empty_field)
+                false
+            }
+            else -> {
+                this.uxPasswordLayout.error = null
+                true
+            }
         }
     }
 }
