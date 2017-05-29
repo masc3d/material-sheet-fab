@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui.dialog
 
 import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.TextInputEditText
 import android.support.v7.app.AlertDialog
 import android.text.Editable
 import com.github.salomonbrys.kodein.Kodein
@@ -22,16 +23,25 @@ import android.view.LayoutInflater
 /**
  * Created by phpr on 29.05.2017.
  */
-class VehicleLoadingDialog( /* appContext: Context, */ val listener: OnDialogResultListener): Dialog() {
+class VehicleLoadingDialog(val listener: OnDialogResultListener): Dialog() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
+    val builderView by lazy {
+        activity.layoutInflater.inflate(R.layout.dialog_vehicle_loading, null)
+    }
+
+    val uxDeliveryList by lazy {
+        builderView.findViewById(R.id.uxDeliveryList) as TextInputEditText
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
         val builder = AlertDialog.Builder(context)
         val inflater = activity.layoutInflater
+
         builder.setTitle("Specify a delivery list")
-                .setView(inflater.inflate(R.layout.dialog_vehicle_loading, null))
+                .setView(this.builderView)
                 .setPositiveButton(R.string.ok, { dialog, which ->
                     if (this.uxDeliveryList.text.isNotBlank()) {
                         listener.onDeliveryListEntered(this.uxDeliveryList.text.toString())
@@ -74,7 +84,7 @@ class VehicleLoadingDialog( /* appContext: Context, */ val listener: OnDialogRes
     }
 
     fun processScannedData(data: String) {
-        /* this.uxDeliveryList.setText(data) not working yet. (null object reference) */
+        this.uxDeliveryList.setText(data)
     }
 
     interface OnDialogResultListener {

@@ -61,7 +61,7 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryFragment.On
                 /**
                  * Start "vehicle loading" process
                  */
-                val dialog: VehicleLoadingDialog = VehicleLoadingDialog(applicationContext, this)
+                val dialog: VehicleLoadingDialog = VehicleLoadingDialog(this)
                 dialog.show(supportFragmentManager, "LOADINGDIALOG")
             }
         }
