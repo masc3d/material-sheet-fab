@@ -1,34 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 import { TourService } from '../tour.service';
-import { Driver, Position } from '../driver.model';
+import { Position } from '../position.model';
 
-@Component({
+@Component( {
   selector: 'app-tour-map',
   templateUrl: './tour-map.component.html'
-})
+} )
 export class TourMapComponent implements OnInit {
 
   lat: number;
-  lng: number;
+  long: number;
   displayMarker: boolean;
   name: string;
 
-  constructor(private tourService: TourService) {
+  constructor( private tourService: TourService ) {
   }
 
   ngOnInit() {
     this.lat = 48.57;
-    this.lng = 13.26;
+    this.long = 13.26;
     this.displayMarker = false;
-    this.name = '';
+    // this.name = '';
 
-    this.tourService.activeDriverMarker.subscribe((activeDriverMarker: Driver) => {
-      this.displayMarker = activeDriverMarker.position instanceof Position;
+    this.tourService.activeMarker.subscribe( ( activeMarker: Position ) => {
+      console.log( '-------- activeMarker', activeMarker );
+      this.displayMarker = activeMarker.lat > 0;
       if (this.displayMarker) {
-        this.name = activeDriverMarker.surname;
-        this.lat = activeDriverMarker.position.lat;
-        this.lng = activeDriverMarker.position.lng;
+        // this.name = activeDriverMarker.lastName;
+        this.lat = activeMarker.lat;
+        this.long = activeMarker.long;
       }
-    });
+    } );
   }
 }
