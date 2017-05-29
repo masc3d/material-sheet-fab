@@ -46,4 +46,9 @@
     <string name="cancel">Abbrechen</string>
     <string name="continue_without">Ohne fortfahren</string>
     <string name="skip">Überspringen</string>
+    <string name="tools">Tools</string>
+    <string name="check_for_updates">Check for updates</string>
+    <string name="report_bug">Report bug</string>
+    <string name="capture_image">Capture image</string>
+    <string name="dev_login">Developer login</string>
 </resources>

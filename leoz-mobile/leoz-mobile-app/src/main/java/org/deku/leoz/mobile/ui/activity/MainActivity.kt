@@ -77,11 +77,10 @@ class MainActivity : Activity() {
     }
 
     override fun onBackPressed() {
-        if (login.authenticatedUser?.hash?.isBlank() ?: true) {
-            showExitDialog()
-            return
-        }
-        super.onBackPressed()
+        showExitDialog()
+        return
+
+        //super.onBackPressed()
     }
 
     /**
@@ -119,14 +118,8 @@ class MainActivity : Activity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     val user: User? = it.value
-                    if (user != null && user.hash.isNotBlank()) {
+                    if (user != null) {
                         queryChangelogDisplay()
-
-                        uxActiveUser?.text = user.name
-                        this.supportActionBar?.title = "Menue"
-                        this.supportFragmentManager.withTransaction {
-                            it.replace(R.id.uxContainer, MenuFragment())
-                        }
                     }
                 }
     }

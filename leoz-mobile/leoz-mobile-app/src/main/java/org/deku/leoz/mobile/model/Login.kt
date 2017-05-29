@@ -11,12 +11,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.identity.Identity
+import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
 import sx.android.Device
 import sx.rx.ObservableRxProperty
 import sx.text.parseHex
+import java.lang.IllegalStateException
+import java.lang.UnsupportedOperationException
 
 /**
  * Login model
@@ -46,7 +49,7 @@ class Login {
     fun authenticate(email: String, password: String): Observable<User> {
         val task = Observable.fromCallable {
             val authResponse: AuthorizationService.MobileResponse
-            var user: User = User("", "")
+            val user: User
 
             val hashedPassword = hashUserPassword(
                     salt = SALT,
@@ -54,8 +57,13 @@ class Login {
                     password = password
             )
 
-            if (email.equals("foo@bar", ignoreCase = true) && password.equals("foobar", ignoreCase = false)) {
-                if(connectivity.network.state == NetworkInfo.State.CONNECTED) {
+            // Debug/dev supoort for development login
+            if (BuildConfig.DEBUG && email == "foo@bar" && password == "foobar") {
+                user = User(
+                        name = "dev@leoz",
+                        hash = "abcdef")
+            } else {
+                if (connectivity.network.state == NetworkInfo.State.CONNECTED) {
                     log.debug("Connection established, login online.")
                     val request = AuthorizationService.MobileRequest(
                             user = AuthorizationService.Credentials(
@@ -71,35 +79,38 @@ class Login {
 
                     authResponse = authService.authorizeMobile(request)
 
-                    if (authResponse.key.isNotBlank()) {
-                        user = User(
-                                name = email,
-                                hash = hashedPassword
-                        )
+                    if (authResponse.key.isBlank())
+                        throw IllegalStateException()
 
-                        /**
-                         * Storing credentials (including API-Key) as Identity.
-                         * Filename of the stored identity depends on username 'USERNAME.ident'.
-                         * Identity.name = hashed password
-                         * Identity.key = API key
-                         */
-                        Identity(authResponse.key, hashedPassword)
-                                .save(storage.dataDir.resolve("$email.ident"))
-                    }
+                    user = User(
+                            name = email,
+                            hash = hashedPassword
+                    )
+
+                    // TODO: needs rework, store in db
+                    // Storing credentials (including API-Key) as Identity.
+                    // Filename of the stored identity depends on username 'USERNAME.ident'.
+                    // Identity.name = hashed password
+                    // Identity.key = API key
+//                        Identity(authResponse.key, hashedPassword)
+//                                .save(storage.dataDir.resolve("$email.ident"))
                 } else {
-                    log.debug("Connectivity not established. Trying offline login.")
+                    throw UnsupportedOperationException()
 
-                    if (storage.dataDir.resolve("$email.ident").exists()) {
-                        val identity = Identity.load(storage.dataDir.resolve("$email.ident"))
-                        if (hashedPassword == identity.name) {
-                            User(
-                                    name = email,
-                                    hash = hashedPassword
-                            )
-                        }
-                    } else {
-                        log.debug("Offline login failed: Unknown user.")
-                    }
+                    // TODO: needs rework
+//                    log.debug("Connectivity not established. Trying offline login.")
+//
+//                    if (storage.dataDir.resolve("$email.ident").exists()) {
+//                        val identity = Identity.load(storage.dataDir.resolve("$email.ident"))
+//                        if (hashedPassword == identity.name) {
+//                            User(
+//                                    name = email,
+//                                    hash = hashedPassword
+//                            )
+//                        }
+//                    } else {
+//                        throw IllegalArgumentException("Offline login failed: Unknown user.")
+//                    }
                 }
             }
 

@@ -39,7 +39,7 @@ class MenuFragment : Fragment() {
             startDeliveryActivity()
         }
 
-        startDeliveryActivity()
+//        startDeliveryActivity()
     }
 
     private fun startDeliveryActivity() {

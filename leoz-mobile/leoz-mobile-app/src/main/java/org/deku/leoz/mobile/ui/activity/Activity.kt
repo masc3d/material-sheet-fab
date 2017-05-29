@@ -1,23 +1,27 @@
 package org.deku.leoz.mobile.ui.activity
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
-import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.util.AttributeSet
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
+import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.android.synthetic.main.main.view.*
 import kotlinx.android.synthetic.main.main_app_bar.*
@@ -31,8 +35,9 @@ import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import kotlinx.android.synthetic.main.main_nav_header.*
 import org.deku.leoz.mobile.model.Login
-import org.w3c.dom.Text
+import org.deku.leoz.mobile.ui.fragment.MenuFragment
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
@@ -58,6 +63,8 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
 
         this.setContentView(org.deku.leoz.mobile.R.layout.main)
 
+        this.nav_view.setNavigationItemSelectedListener(this)
+
         //region Action bar
         setSupportActionBar(this.toolbar)
 
@@ -71,12 +78,6 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
         this.drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
         //endregion
-
-        // Setup navigation drawer
-        val navHeaderView = this.drawer_layout.nav_view.getHeaderView(0)
-        navHeaderView.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
-
-        this.nav_view.setNavigationItemSelectedListener(this)
 
         //region Camera control
         this.cameraAidcFragmentVisible = false
@@ -104,21 +105,13 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                             })
                             sb.show()
 
-                            val navItem: TextView? = findViewById(R.id.nav_trigger_updateservice) as TextView
+                            val navItem: TextView? = findViewById(R.id.nav_check_updates) as TextView
                             navItem?.gravity = Gravity.CENTER_VERTICAL
                             navItem?.setTypeface(null, Typeface.BOLD)
                             navItem?.setTextColor(resources.getColor(R.color.colorAccent))
                             navItem?.text = "1+"
                         })
-
         //endregion
-
-        // Invalidate options menu on specific model changes
-
-        this.login.authenticatedUserProperty
-                .subscribe {
-                    this@Activity.invalidateOptionsMenu()
-                }
     }
 
     override fun onBackPressed() {
@@ -153,11 +146,6 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
             }
             R.id.action_logout -> {
                 login.logout()
-                startActivity(
-                        Intent(applicationContext, MainActivity::class.java)
-                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                        Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
                 return true
             }
             else -> {
@@ -166,29 +154,42 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         val id = item.itemId
 
-        log.debug("ONNAVIGATIONITEMSELECTED [$id]")
+        when (id) {
+            R.id.nav_delivery -> {
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+            }
 
-        } else if (id == R.id.nav_slideshow) {
+            R.id.nav_camera -> {
+                // Handle the camera action
+            }
 
-        } else if (id == R.id.nav_manage) {
+            R.id.nav_dev_prototype -> {
 
-        } else if (id == R.id.nav_trigger_updateservice) {
-            updateService.trigger()
-        } else if (id == R.id.nav_send) {
+            }
 
+            R.id.nav_check_updates -> {
+                updateService.trigger()
+            }
+
+            R.id.nav_send -> {
+            }
+
+            R.id.nav_dev_login -> {
+                login.authenticate("foo@bar", "foobar")
+            }
+
+            R.id.nav_logout -> {
+                login.logout()
+            }
         }
 
         this.drawer_layout.closeDrawer(GravityCompat.START)
-        return true
+
+        return false
     }
 
     private var cameraAidcFragmentVisible: Boolean
@@ -225,8 +226,74 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
             }
         }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
+
+        // Customize navigation drawer
+
+        val navHeaderView = this.drawer_layout.nav_view.getHeaderView(0)
+        navHeaderView.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
+
+        if (BuildConfig.DEBUG) {
+            this.nav_view.menu.findItem(R.id.nav_dev_login).setVisible(true)
+            this.nav_view.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
+        }
+
+        // Authentication changes
+
+        this.login.authenticatedUserProperty
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .subscribe {
+                    this@Activity.invalidateOptionsMenu()
+
+                    val user = it.value
+                    when {
+                        user != null -> {
+                            this.nav_view.menu
+                                    .findItem(R.id.nav_logout)
+                                    .setVisible(true)
+
+                            this.nav_view.menu
+                                    .findItem(R.id.nav_dev_login)
+                                    .setVisible(false)
+
+                            // Update navigation header
+                            navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
+                            navHeaderView.uxActiveUser.text = user.name
+                            navHeaderView.uxStationID.text = "-_-"
+
+//                            this.supportActionBar?.title = "Menu"
+//                            this.supportFragmentManager.withTransaction {
+//                                it.replace(R.id.uxContainer, MenuFragment())
+//                            }
+                            if (this.javaClass != DeliveryActivity::class.java) {
+                                this.startActivity(
+                                        Intent(applicationContext, DeliveryActivity::class.java))
+                            }
+                        }
+                        else -> {
+                            this.nav_view.menu
+                                    .findItem(R.id.nav_logout)
+                                    .setVisible(false)
+
+                            this.nav_view.menu
+                                    .findItem(R.id.nav_dev_login)
+                                    .setVisible(BuildConfig.DEBUG)
+
+                            // Hide navigation header
+                            navHeaderView.uxUserAreaLayout.visibility = View.GONE
+
+                            // Anywhere else but in main, actively logout
+                            if (this.javaClass != MainActivity::class.java) {
+                                this.startActivity(
+                                        Intent(applicationContext, MainActivity::class.java)
+                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                                        Intent.FLAG_ACTIVITY_NEW_TASK)
+                                )
+                            }
+                        }
+                    }
+                }
 
         this.aidcReader.bindActivity(this)
 
