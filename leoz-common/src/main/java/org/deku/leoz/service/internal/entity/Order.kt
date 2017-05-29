@@ -15,11 +15,9 @@ import java.sql.Date
  *  Shipment:   = Order
  *  Parcel:     (Packstück / Collie ) entält als Eigenschaft nur Gewicht und Größe
  *  Unit:       = Parcel
- *  Loadinglist:
+ *  Loadinglist:  Loadinglist ist keine Eigenschaft von Parcel. Nach neuer dispo kann das gleiche Parcel in einer anderen Loadinlist kommen
  *  Stop
  *  Job
- *
- *
  *
  *
  */
@@ -37,14 +35,14 @@ data class LoadingList(
 data class Order(
 
         //pickups haben evtl keine parcels und benötigen daher eine id
-        @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "ShippmentID")
-        var shippmentID: Int = 0,
+        @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "OrderID")
+        var orderID: Int = 0,
 
         @get:ApiModelProperty(example = "DERKURIER", position = 20, required = true, value = "Carrier")
         var carrier: Carrier = Carrier.UNKNOWN,
 
-        @get:ApiModelProperty(example = "12345678901", position = 30, required = false, value = "referencToExchangeShipmentID")
-        var referencToExchangeShipmentID: Int = 0,
+        @get:ApiModelProperty(example = "12345678901", position = 30, required = false, value = "referencToExchangeOrderID")
+        var referencToExchangeOrderID: Int = 0,
 
         //todo ich sehe nur OrderClassifikation.     PICKUP, DELIVERY, PICKUP_DELIVERY .
         //todo EXCHANGE_DELIVERY, EXCHANGE_PICKUP wie in stop.kt sehe ich nicht als addressclassifikation
@@ -87,7 +85,7 @@ data class Appointment(
         val noDeliveryBefore: Boolean = false,
         //todo ich habe jetzt den Service und die additionalinfos in den Stop mit reingenommen. jetzt ist die differenzierung wann der service relevant ist klarer
         //todo auch die evtl kommende abholnachnahme ist so besser
-        @get:ApiModelProperty(example = "xChange", position = 40, required = false, value = "Shipment Service")
+        @get:ApiModelProperty(example = "xChange", position = 40, required = false, value = "Order Service")
         var services: List<org.deku.leoz.enums.ParcelService>? = null,
         @get:ApiModelProperty(example = "AdditionalInformation", position = 50, required = false, value = "AdditionalInformation")
         var AdditionalInformation: List<AdditionalInformation>? = null
@@ -107,16 +105,13 @@ data class AdditionalInformation(
 
 )
 
-@ApiModel(value = "Parcel", description = "Parcel within Shipment")
+@ApiModel(value = "Parcel", description = "Parcel within Order")
 data class Parcel(
         @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "parcelScanNumber")
         var parcelScanNumber: String = "",
 
         @get:ApiModelProperty(example = "12345678901", position = 20, required = true, value = "parcelID")
         var parcelID: Int = 0,
-
-        @get:ApiModelProperty(example = "12345678901", position = 30, required = false, value = "loadingListNo")
-        var loadingListNo: Int? = null,
 
         @get:ApiModelProperty(position = 40, required = true, value = "ParcelDimension")
         var dimention: ParcelDimension? = null
