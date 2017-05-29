@@ -26,26 +26,32 @@ interface OrderService {
     }
 
     /**
-     * Get Order
-     * @param Order ref
+     * Get order by id
+     * @param id Order id
      */
 
     @GET
     @Path("/{$ORDERID}")
-    @ApiOperation(value = "Get order by Order ID")
-    fun getOrderByID(
-            @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) ref: String? = null
+    @ApiOperation(value = "Get order by order ID")
+    fun getById(
+            @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) id: String
     ): Order
 
 
+    /**
+     * Get orders
+     * @param labelRef Label reference (optional query param)
+     * @param custRef Custom reference (optional query param)
+     * @param ref Order reference (optional query param)
+     */
     @GET
-    @Path("/find")
-    @ApiOperation(value = "Get order by label reference")
-    fun getOrderByReference(
+    @Path("/")
+    @ApiOperation(value = "Get orders")
+    fun get(
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null,
-            @QueryParam(PARCELSCAN) @ApiParam(value = "Order Reference") ref: String? = null
-    ): Order
+            @QueryParam(PARCELSCAN) @ApiParam(value = "Order reference") ref: String? = null
+    ): List<Order>
 }
 
 

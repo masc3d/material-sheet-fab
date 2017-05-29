@@ -12,10 +12,10 @@ import javax.ws.rs.core.MediaType
  * Created by JT on 29.05.17.
  */
 
-@Path("internal/v1/deliverylist")
+@Path("internal/v1/delivery-list")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "DeliveryList service")
+@Api(value = "Delivery list service")
 
 interface DeliveryListService {
 
@@ -27,17 +27,15 @@ interface DeliveryListService {
 
     @GET
     @Path("/{${DELIVERYLIST}}")
-    @ApiOperation(value = "Get List<order> by Deliverylist")
-    fun getOrderByDeliverylist(
-            @PathParam(DELIVERYLIST) @ApiParam(value = "Deliverylist ID", required = true) ref: String? = null
-    ): List<Order>
+    @ApiOperation(value = "Get delivery list by id")
+    fun getById(
+            @PathParam(DELIVERYLIST) @ApiParam(value = "Delivery list ID", required = true) id: String
+    ): DeliveryList
 
     @GET
-    @Path("/find")
-    @ApiOperation(value = "valid DeliveryLists")
-    fun getDeliveryList(
+    @Path("/")
+    @ApiOperation(value = "Get delivery list")
+    fun get(
             @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null
     ): List<DeliveryList>
-
-
 }
