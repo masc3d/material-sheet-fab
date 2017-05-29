@@ -15,18 +15,24 @@ import java.sql.Date
  *  Shipment:   = Order
  *  Parcel:     (Packstück / Collie ) entält als Eigenschaft nur Gewicht und Größe
  *  Unit:       = Parcel
- *  Loadinglist:  Loadinglist ist keine Eigenschaft von Parcel. Nach neuer dispo kann das gleiche Parcel in einer anderen Loadinlist kommen
+ *  Deliverylist:  List<Order>
  *  Stop
  *  Job
  *
  *
  */
-@ApiModel(description = "Loading List")
-data class LoadingList(
-        @ApiModelProperty(example = "12345678", position = 10, required = true, value = "LoadingListID")
+
+//todo change to nested classes
+
+@ApiModel(description = "Delivery List")
+data class DeliveryList(
+        @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
         val id: String,
+
+        //todo eigentlich überflüssig, da immer nur das aktuelle Datum zurückkommen kann
         @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
         val date: ShortDate,
+
         @ApiModelProperty(position = 30, required = true, value = "Orders")
         val orders: List<Order>
 )
@@ -41,8 +47,8 @@ data class Order(
         @get:ApiModelProperty(example = "DERKURIER", position = 20, required = true, value = "Carrier")
         var carrier: Carrier = Carrier.UNKNOWN,
 
-        @get:ApiModelProperty(example = "12345678901", position = 30, required = false, value = "referencToExchangeOrderID")
-        var referencToExchangeOrderID: Int = 0,
+        @get:ApiModelProperty(example = "12345678901", position = 30, required = false, value = "referencIDToExchangeOrderID")
+        var referencIDToExchangeOrderID: Int = 0,
 
         //todo ich sehe nur OrderClassifikation.     PICKUP, DELIVERY, PICKUP_DELIVERY .
         //todo EXCHANGE_DELIVERY, EXCHANGE_PICKUP wie in stop.kt sehe ich nicht als addressclassifikation
@@ -51,17 +57,21 @@ data class Order(
 
         @get:ApiModelProperty(position = 60, required = true, value = "appointmentPickup")
         var appointmentPickup: Appointment,
+        @get:ApiModelProperty(required = true, position = 120, value = "Pickup address")
+        var pickupAddress: Address = Address(),
+        @get:ApiModelProperty(required = true, position = 120, value = "Pickup service")
+        var pickupService: Service? = null,
+        @get:ApiModelProperty(required = true, position = 120, value = "Pickup information")
+        var pickupInformation: Information? = null,
 
         @get:ApiModelProperty(position = 60, required = true, value = "appointmentDelivery")
         var appointmentDelivery: Appointment,
-
-        //todo leo ist an der stelle kein Argument warum nicht eine List<Address> mit Classificirung der Adressen gemacht werden könnte.
-        //todo Aber ich sehe keine weiteren. und dann find ich das klarer da die ja auch required sind
-        @get:ApiModelProperty(required = true, position = 120, value = "Pickup address")
-        var pickupAddress: Address = Address(),
-
         @ApiModelProperty(required = true, position = 130, value = "Delivery address")
         var deliveryAddress: Address = Address(),
+        @get:ApiModelProperty(required = true, position = 120, value = "delivery services")
+        var deliveryService: Service? = null,
+        @get:ApiModelProperty(required = true, position = 120, value = "delivery information")
+        var deliveryInformation: Information? = null,
 
         @get:ApiModelProperty(position = 140, required = false, value = "Parcels")
         var Parcels: List<Parcel>
@@ -74,6 +84,20 @@ data class Order(
 
 }
 
+@ApiModel(value = "Service", description = "Service")
+data class Service(
+        @get:ApiModelProperty(example = "xChange", position = 40, required = false, value = "Order Service")
+        var services: List<org.deku.leoz.enums.ParcelService>? = null,
+        @get:ApiModelProperty(example = "AdditionalInformation", position = 50, required = false, value = "AdditionalInformation")
+        var AdditionalInformation: List<AdditionalInformation>? = null
+)
+
+@ApiModel(value = "Information", description = "Information")
+data class Information(
+        @get:ApiModelProperty(example = "AdditionalInformation", position = 50, required = false, value = "AdditionalInformation")
+        var AdditionalInformation: List<AdditionalInformation>? = null
+)
+
 
 @ApiModel(value = "Appointment", description = "Apointment")
 data class Appointment(
@@ -82,13 +106,7 @@ data class Appointment(
         @ApiModelProperty(position = 20, required = true, value = "AppointmentEnd")
         val dateEnd: Date? = null,
         @ApiModelProperty(position = 30, required = false, value = "noDeliveryBefore")
-        val noDeliveryBefore: Boolean = false,
-        //todo ich habe jetzt den Service und die additionalinfos in den Stop mit reingenommen. jetzt ist die differenzierung wann der service relevant ist klarer
-        //todo auch die evtl kommende abholnachnahme ist so besser
-        @get:ApiModelProperty(example = "xChange", position = 40, required = false, value = "Order Service")
-        var services: List<org.deku.leoz.enums.ParcelService>? = null,
-        @get:ApiModelProperty(example = "AdditionalInformation", position = 50, required = false, value = "AdditionalInformation")
-        var AdditionalInformation: List<AdditionalInformation>? = null
+        val noDeliveryBefore: Boolean = false
 )
 
 @ApiModel(value = "AdditionalInformation", description = "AdditionalInformation")

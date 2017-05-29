@@ -272,25 +272,33 @@ enum class ParcelService(val serviceId: Long, val parcelServiceRestriction: Parc
 /**
  * Created by JT on 24.05.17.
  */
-enum class Carrier {
-    DERKURIER,
-    UNKNOWN
+enum class Carrier(val carriervalue: Int) {
+    DERKURIER(0),
+    UNKNOWN(1)
 }
 
 /**
  * Created by JT on 24.05.17.
  */
-enum class OrderClassifikation {
-    PICKUP, DELIVERY, PICKUP_DELIVERY
+enum class OrderClassifikation(val orderclassifikationvalue: Int) {
+    PICKUP(0),
+    DELIVERY(1),
+    PICKUP_DELIVERY(2)
 }
 
 /**
  * Created by JT on 27.05.17.
  */
-enum class StopClassifikation {
-    PICKUP, DELIVERY, BOTH
+enum class StopClassifikation(val stopclassifikationvalue: Int) {
+    PICKUP(0),
+    DELIVERY(1),
+    BOTH(2)
 }
 
-enum class AdditionalInformationType {
-    IMEI, IDENTITYCARDID, LOADINGLISTINFORMATION, DRIVERINFORMATION, CASH
+enum class AdditionalInformationType(additionalinformationvalue: Int) {
+    IMEI(0),
+    IDENTITYCARDID(1),
+    LOADINGLISTINFORMATION(2),
+    DRIVERINFORMATION(3),
+    CASH(4)
 }
