@@ -52,4 +52,8 @@
     <string name="dismiss">Dismiss</string>
     <string name="logout">Logout</string>
     <string name="title_activity_delivery">Delivery</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="continue_without">Continue withour</string>
+    <string name="skip">Skip</string>
 </resources>

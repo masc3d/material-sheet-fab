@@ -43,4 +43,7 @@
     <string name="dismiss">Verwerfen</string>
     <string name="logout">Abmelden</string>
     <string name="title_activity_delivery">Zustellung</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="continue_without">Ohne fortfahren</string>
+    <string name="skip">Überspringen</string>
 </resources>
