@@ -40,13 +40,14 @@ class UserService : UserService {
 
     override fun get(email: String?, debitorId: Int?, apiKey: String?): List<User> {
         var debitor_id = debitorId
+        apiKey ?:
+                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+        val authorizedUserRecord = userRepository.findByKey(apiKey)
+        authorizedUserRecord ?:
+                throw DefaultProblem(status = Response.Status.BAD_REQUEST)
 
         if (debitor_id == null && email == null) {
-            apiKey ?:
-                    throw DefaultProblem(status = Response.Status.BAD_REQUEST)
-            val authorizedUserRecord = userRepository.findByKey(apiKey)
-            debitor_id = authorizedUserRecord?.debitorId
-
+            debitor_id = authorizedUserRecord.debitorId
         }
 
         when {
@@ -62,7 +63,17 @@ class UserService : UserService {
                             title = "no user found by debitor-id")
                 val user = mutableListOf<User>()
                 userRecList.forEach {
-                    user.add(it.toUser())
+
+                    if (UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN) {
+                        user.add(it.toUser())
+                    } else {
+                        if (authorizedUserRecord.debitorId == it.debitorId) {
+                            if (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(it.role).value) {
+                                user.add(it.toUser())
+                            }
+                        }
+                    }
+
                 }
                 return user.toList()
             }
@@ -71,7 +82,15 @@ class UserService : UserService {
                         ?: throw DefaultProblem(
                         status = Response.Status.NOT_FOUND,
                         title = "no user found by email")
-                return listOf(userRecord.toUser())
+                if (UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN)
+                    return listOf(userRecord.toUser())
+                if ((UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(userRecord.role).value) && (authorizedUserRecord.debitorId == userRecord.debitorId)) {
+                    return listOf(userRecord.toUser())
+                } else {
+                    throw DefaultProblem(
+                            status = Response.Status.FORBIDDEN,
+                            title = "user found but no permission returning this user")
+                }
             }
             else -> {
                 // All query params are omitted.
@@ -127,14 +146,18 @@ class UserService : UserService {
             }
         } else {
             if (rec.debitorId == null) rec.debitorId = authorizedUserRecord.debitorId
-            if (rec.debitorId != authorizedUserRecord.debitorId)
-                throw  DefaultProblem(
-                        status = Response.Status.BAD_REQUEST,
-                        title = "login user can not change user - debitorId")
             if (rec.role == null) rec.role = authorizedUserRecord.role
+
+            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+                if (rec.debitorId != authorizedUserRecord.debitorId)
+                    throw  DefaultProblem(
+                            status = Response.Status.FORBIDDEN,
+                            title = "login user can not change user - debitorId")
+            }
+
             if (UserRole.valueOf(authorizedUserRecord.role).value < UserRole.valueOf(rec.role).value) {
                 throw  DefaultProblem(
-                        status = Response.Status.BAD_REQUEST,
+                        status = Response.Status.FORBIDDEN,
                         title = "login user can not create/change user - no permission")
             }
 
@@ -223,7 +246,7 @@ class UserService : UserService {
             if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
                 if (authorizedUserRecord.debitorId != debitor) {
                     throw  DefaultProblem(
-                            status = Response.Status.BAD_REQUEST,
+                            status = Response.Status.FORBIDDEN,
                             title = "login user can not change debitorId")
                 }
             }
@@ -237,7 +260,7 @@ class UserService : UserService {
 
             if (UserRole.valueOf(authorizedUserRecord.role).value < UserRole.valueOf(userRole).value) {
                 throw  DefaultProblem(
-                        status = Response.Status.BAD_REQUEST,
+                        status = Response.Status.FORBIDDEN,
                         title = "login user can not create/change user - no permission")
             }
         }
@@ -250,7 +273,7 @@ class UserService : UserService {
                 status = Response.Status.BAD_REQUEST,
                 title = "not found")
 
-        if ((user.email != null)&&(user.email != "@"))
+        if ((user.email != null) && (user.email != "@"))
             rec.email = user.email
         if (debitor != null)
             rec.debitorId = debitor

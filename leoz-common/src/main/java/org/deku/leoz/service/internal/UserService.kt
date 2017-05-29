@@ -1,6 +1,7 @@
 package org.deku.leoz.service.internal
 
 import org.deku.leoz.service.internal.entity.User
+import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
@@ -20,7 +21,7 @@ interface UserService {
         const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
         //const val DEBITOR_NO = "debitor-no"
-        const val HEADERPARAM_APIKEY = "x-api-key"
+        //const val HEADERPARAM_APIKEY = "x-api-key"
     }
 
     /**

@@ -4,6 +4,7 @@ import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import io.swagger.annotations.*
 import org.deku.leoz.service.internal.entity.GpsData
+import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 
 /**
  * Created by helke on 24.05.17.
@@ -16,7 +17,7 @@ interface LocationService {
     companion object {
         const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
-        const val HEADERPARAM_APIKEY = "x-api-key"
+        //const val HEADERPARAM_APIKEY = "x-api-key"
     }
 
     /**

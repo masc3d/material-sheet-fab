@@ -74,3 +74,5 @@ val User.isActive: Int
 
 val User.isExternalUser: Int
     get() = if (this.externalUser == null || this.externalUser == false) 0 else -1
+
+const val HEADERPARAM_APIKEY = "x-api-key"
