@@ -1,7 +1,7 @@
 package org.deku.leoz.mobile.model
 
-import org.deku.leoz.enums.Carrier
-import org.deku.leoz.enums.ParcelService
+import org.deku.leoz.model.Carrier
+import org.deku.leoz.model.ParcelService
 import java.util.*
 
 /**

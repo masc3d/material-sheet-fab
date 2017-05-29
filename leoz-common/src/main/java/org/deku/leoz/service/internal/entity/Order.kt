@@ -1,9 +1,10 @@
 package org.deku.leoz.service.internal.entity
 
 import io.swagger.annotations.*
-import org.deku.leoz.enums.AdditionalInformationType
-import org.deku.leoz.enums.Carrier
-import org.deku.leoz.enums.OrderClassifikation
+import org.deku.leoz.model.AdditionalInformationType
+import org.deku.leoz.model.Carrier
+import org.deku.leoz.model.OrderClassifikation
+import org.deku.leoz.model.ParcelService
 import org.deku.leoz.service.entity.ShortDate
 import java.sql.Date
 
@@ -87,7 +88,7 @@ data class Order(
 @ApiModel(value = "Service", description = "Service")
 data class Service(
         @get:ApiModelProperty(example = "xChange", position = 40, required = false, value = "Order Service")
-        var services: List<org.deku.leoz.enums.ParcelService>? = null,
+        var services: List<ParcelService>? = null,
         @get:ApiModelProperty(example = "AdditionalInformation", position = 50, required = false, value = "AdditionalInformation")
         var AdditionalInformation: List<AdditionalInformation>? = null
 )

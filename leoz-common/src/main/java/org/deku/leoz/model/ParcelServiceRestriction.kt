@@ -1,8 +1,5 @@
 package org.deku.leoz.model
 
-import org.deku.leoz.enums.ParcelService
-import java.util.HashMap
-
 /**
  * Created by 27694066 on 17.05.2017.
  * Configure/Map delivery restrictions and particularities for the delivery/pickup process depending on service

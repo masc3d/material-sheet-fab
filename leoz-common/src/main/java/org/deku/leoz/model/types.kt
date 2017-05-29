@@ -1,6 +1,4 @@
-package org.deku.leoz.enums
-
-import org.deku.leoz.model.ParcelServiceRestriction
+package org.deku.leoz.model
 
 /**
  * Created by helke on 28.04.17.
