@@ -1,45 +1,59 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { Headers, Http, RequestMethod, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/of';
-
-import { Driver, Position } from './driver.model';
+import { environment } from '../../../environments/environment';
+import { Driver } from './driver.model';
 
 @Injectable()
 export class DriverService {
 
-  private driverListUrl = `assets/sampledata/driverlist.json`;
+  private driverListUrl = `${environment.apiUrl}/internal/v1/user`;
 
-  private activeDriverSubject = new BehaviorSubject<Driver>(new Driver());
+  // private usersSubject = new BehaviorSubject<User[]>( [] );
+  // public users = this.usersSubject.asObservable().distinctUntilChanged();
+  private activeDriverSubject = new BehaviorSubject<Driver>( new Driver() );
   public activeDriver = this.activeDriverSubject.asObservable().distinctUntilChanged();
 
-  constructor(private http: Http) {
+  constructor( private http: Http ) {
   }
 
   getDrivers() {
-    return this.http.get(this.driverListUrl)
-      .map((response: Response) => {
+    const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
+
+    const headers = new Headers();
+    headers.append( 'Content-Type', 'application/json' );
+    headers.append( 'x-api-key', currUser.key );
+
+    const queryParameters = new URLSearchParams();
+    // queryParameters.set('email', currUser.email);
+    // queryParameters.set('debitor-id', currUser.debitorNo);
+
+    const options = new RequestOptions( {
+      method: RequestMethod.Get,
+      headers: headers,
+      search: queryParameters
+    } );
+
+    return this.http.request( this.driverListUrl, options )
+      .map( ( response: Response ) => {
         const driverArr: Driver[] = [];
-        response.json().forEach(function (json) {
-          const driver = Object.assign(new Driver(), json);
-          driver.position = Object.assign(new Position(), driver.position);
-          driverArr.push(driver);
-        });
+        response.json().forEach( function ( json ) {
+          const driver = Object.assign( new Driver(), json );
+          driverArr.push( driver );
+        } );
         return driverArr;
-      })
-      .catch((error: Response) => this.errorHandler(error));
+      } )
+      .catch( ( error: Response ) => this.errorHandler( error ) );
   }
 
-  errorHandler(error: Response) {
-    console.log(error);
-    return Observable.of([]);
+  errorHandler( error: Response ) {
+    console.log( error );
+    return Observable.of( [] );
   }
 
-  changeActiveDriver(selectedDriver) {
-    this.activeDriverSubject.next(selectedDriver);
-  }
 }

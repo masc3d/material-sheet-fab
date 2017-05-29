@@ -8,7 +8,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let driver of drivers | async">
+  <tr *ngFor="let driver of drivers | async | driverfilter">
     <td>{{driver.firstName}}</td>
     <td>{{driver.lastName}}</td>
     <td>{{driver.email}}</td>

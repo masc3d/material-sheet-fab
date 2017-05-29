@@ -17,7 +17,7 @@ import { AppComponent } from './app.component';
     LoginModule,
     AccordionModule.forRoot(),
     CoreModule.forRoot(),
-    AppRoutingModule,
+    AppRoutingModule
   ],
   declarations: [
     AppComponent
