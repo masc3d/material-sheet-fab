@@ -93,25 +93,32 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onNext = { event ->
-                        val sb = Snackbar.make(
-                                this@Activity.uxContainer,
-                                this@Activity.getString(org.deku.leoz.mobile.R.string.version_available, event.version),
-                                Snackbar.LENGTH_INDEFINITE)
-                        sb.setAction(org.deku.leoz.mobile.R.string.update, {
-                            sb.dismiss()
-                            event.apk.install(this@Activity)
-                        })
-                        sb.show()
+                        onNext = { event ->
+                            val sb = Snackbar.make(
+                                    this@Activity.uxContainer,
+                                    this@Activity.getString(org.deku.leoz.mobile.R.string.version_available, event.version),
+                                    Snackbar.LENGTH_INDEFINITE)
+                            sb.setAction(org.deku.leoz.mobile.R.string.update, {
+                                sb.dismiss()
+                                event.apk.install(this@Activity)
+                            })
+                            sb.show()
 
-                        val navItem: TextView? = findViewById(R.id.nav_trigger_updateservice) as TextView
-                        navItem?.gravity = Gravity.CENTER_VERTICAL
-                        navItem?.setTypeface(null, Typeface.BOLD)
-                        navItem?.setTextColor(resources.getColor(R.color.colorAccent))
-                        navItem?.text = "1+"
-                    })
+                            val navItem: TextView? = findViewById(R.id.nav_trigger_updateservice) as TextView
+                            navItem?.gravity = Gravity.CENTER_VERTICAL
+                            navItem?.setTypeface(null, Typeface.BOLD)
+                            navItem?.setTextColor(resources.getColor(R.color.colorAccent))
+                            navItem?.text = "1+"
+                        })
 
         //endregion
+
+        // Invalidate options menu on specific model changes
+
+        this.login.authenticatedUserProperty
+                .subscribe {
+                    this@Activity.invalidateOptionsMenu()
+                }
     }
 
     override fun onBackPressed() {
@@ -125,6 +132,12 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menuInflater.inflate(R.menu.main, menu)
+
+        // Show logout only if there's a user actually logged in
+        menu
+                .findItem(R.id.action_logout)
+                .setVisible(this.login.authenticatedUser != null)
+
         return true
     }
 
@@ -134,25 +147,23 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
         // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
 
-        when(id) {
+        when (id) {
             R.id.action_settings -> {
                 return false
             }
             R.id.action_logout -> {
                 login.logout()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe {
-                            val intent = Intent(applicationContext, MainActivity::class.java)
-                            startActivity(intent)
-                        }
+                startActivity(
+                        Intent(applicationContext, MainActivity::class.java)
+                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                        Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
                 return true
             }
             else -> {
-                return false
+                return super.onOptionsItemSelected(item)
             }
         }
-
-        return super.onOptionsItemSelected(item)
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

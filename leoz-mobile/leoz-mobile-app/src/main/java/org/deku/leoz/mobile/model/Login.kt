@@ -5,6 +5,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -118,21 +119,7 @@ class Login {
         return task
     }
 
-    fun logout(): Observable<User> {
-        val task = Observable.fromCallable {
-            User("", "")
-        }
-                .cache()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-
-        // Subscribing to task will actually start it
-        task.subscribe {
-            // Store authenticated user in property
-            this.authenticatedUser = it
-        }
-
-        // Return task to consumer for optionally subscribing to running authentication task as well
-        return task
+    fun logout() {
+        this.authenticatedUser = null
     }
 }
