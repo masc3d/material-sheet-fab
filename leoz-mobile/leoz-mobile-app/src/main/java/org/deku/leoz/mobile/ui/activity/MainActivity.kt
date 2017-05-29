@@ -68,8 +68,6 @@ class MainActivity : Activity() {
                         title = "Call assistance?",
                         text = "Are you sure you want to call a supervisor?",
                         positiveButton = AlertButton(text = android.R.string.yes, handler = {
-                            val intent = Intent(this, ProtoMainActivity::class.java)
-                            startActivity(intent)
                         }),
                         negativeButton = AlertButton(text = android.R.string.cancel))
             }).show()
@@ -79,8 +77,6 @@ class MainActivity : Activity() {
     override fun onBackPressed() {
         showExitDialog()
         return
-
-        //super.onBackPressed()
     }
 
     /**
@@ -119,9 +115,19 @@ class MainActivity : Activity() {
                 .subscribe {
                     val user: User? = it.value
                     if (user != null) {
-                        queryChangelogDisplay()
+                        this.queryChangelogDisplay()
+                        this.processLogin()
                     }
                 }
+    }
+
+    fun processLogin() {
+//        this.supportFragmentManager.withTransaction {
+//            it.replace(R.id.uxContainer, MenuFragment())
+//        }
+
+        this.startActivity(
+                Intent(applicationContext, DeliveryActivity::class.java))
     }
 
     private fun showChangelogDialog() {

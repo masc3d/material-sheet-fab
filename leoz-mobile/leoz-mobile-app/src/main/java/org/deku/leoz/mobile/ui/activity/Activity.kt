@@ -37,6 +37,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.main_nav_header.*
 import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.ui.fragment.MenuFragment
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
@@ -168,7 +169,8 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
             }
 
             R.id.nav_dev_prototype -> {
-
+                this.startActivity(
+                        Intent(applicationContext, ProtoMainActivity::class.java))
             }
 
             R.id.nav_check_updates -> {
@@ -180,6 +182,11 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
 
             R.id.nav_dev_login -> {
                 login.authenticate("foo@bar", "foobar")
+                        .subscribe {
+                            if (this is MainActivity) {
+                                this.processLogin()
+                            }
+                        }
             }
 
             R.id.nav_logout -> {
@@ -202,12 +209,10 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                 true -> {
                     this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorDarkGrey, iconTint = R.color.colorAccent)
                     this.uxAidcCameraFab.alpha = 0.6F
-                    this.uxHelpFab.alpha = 0.6F
                 }
                 false -> {
                     this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorAccent, iconTint = android.R.color.black)
                     this.uxAidcCameraFab.alpha = 0.85F
-                    this.uxHelpFab.alpha = 0.85F
                 }
             }
 
@@ -254,6 +259,10 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                                     .setVisible(true)
 
                             this.nav_view.menu
+                                    .findItem(R.id.nav_dev_prototype)
+                                    .setVisible(BuildConfig.DEBUG)
+
+                            this.nav_view.menu
                                     .findItem(R.id.nav_dev_login)
                                     .setVisible(false)
 
@@ -261,19 +270,14 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
                             navHeaderView.uxActiveUser.text = user.name
                             navHeaderView.uxStationID.text = "-_-"
-
-//                            this.supportActionBar?.title = "Menu"
-//                            this.supportFragmentManager.withTransaction {
-//                                it.replace(R.id.uxContainer, MenuFragment())
-//                            }
-                            if (this.javaClass != DeliveryActivity::class.java) {
-                                this.startActivity(
-                                        Intent(applicationContext, DeliveryActivity::class.java))
-                            }
                         }
                         else -> {
                             this.nav_view.menu
                                     .findItem(R.id.nav_logout)
+                                    .setVisible(false)
+
+                            this.nav_view.menu
+                                    .findItem(R.id.nav_dev_prototype)
                                     .setVisible(false)
 
                             this.nav_view.menu
