@@ -1,16 +1,19 @@
 <table class="table table-striped">
   <thead>
   <tr>
-    <th>{{'firstname' | translate}} {{'surname' | translate}}</th>
-    <th>Tour</th>
-    <th>Position</th>
+    <th>{{'firstname' | translate}}</th>
+    <th>{{'surname' | translate}}</th>
+    <th>{{'email' | translate}}</th>
+    <th>{{'role' | translate}}</th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let driver of drivers | async" (click)="showPosition(driver)">
-    <td>{{driver.firstname}} {{driver.surname}}</td>
-    <td>{{driver.tournumber}}</td>
-    <td>{{driver.position}}</td>
+  <tr *ngFor="let driver of drivers | async">
+    <td>{{driver.firstName}}</td>
+    <td>{{driver.lastName}}</td>
+    <td>{{driver.email}}</td>
+    <td>{{driver.role}}</td>
+    <td (click)="showPosition(driver)"><i class="fa fa-location-arrow" aria-hidden="true"></i></td>
   </tr>
   </tbody>
 </table>

@@ -3,12 +3,14 @@
   <tr>
     <th>{{'firstname' | translate}}</th>
     <th>{{'surname' | translate}}</th>
+    <th>{{'role' | translate}}</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let user of users | async">
     <td>{{user.firstName}}</td>
     <td>{{user.lastName}}</td>
+    <td>{{user.role}}</td>
     <td (click)="selected(user)"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></td>
     <td><i class="fa fa-trash-o fa-fw" aria-hidden="true"></i></td><!--<td>nur deaktivieren</td>-->
   </tr>

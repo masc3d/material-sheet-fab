@@ -25,6 +25,7 @@ interface OrderService  {
         const val LABELREFERENCE = "label-reference"
         const val CUSTOMERSREFERENCE = "customer-reference"
         const val LOADINGLIST = "loading-list"
+        const val DRIVER = "driver"
     }
 
     /**
@@ -36,7 +37,8 @@ interface OrderService  {
     @ApiOperation(value = "Get Order")
     fun get(
             @QueryParam(PARCELSCAN) @ApiParam(value = "Order Reference") ref : String
-    ): List<Order>
+//todo im Fall xchange muss falls der Rücksatz benötigt wird dieser separat geholt werden
+    ): Order
 
     /**
      * Vorschlag als Ergänzung
@@ -48,28 +50,29 @@ interface OrderService  {
     fun getOrderByReference(
             @QueryParam(LABELREFERENCE) @ApiParam(value = "Label reference", required = false) labelRef: String? = null,
             @QueryParam(CUSTOMERSREFERENCE) @ApiParam(value = "Customers reference", required = false) custRef: String? = null
-    ): List<Order>
+    ): Order
 
     @GET
-    @Path("/order/{$ORDERID}")
+    @Path("/order/find/{$ORDERID}")
     @ApiOperation(value = "Get order by label reference")
     fun getOrderByID(
             @PathParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) ref: String? = null
     ): Order
 
     @GET
-    @Path("/loadingList/{$LOADINGLIST}")
-    @ApiOperation(value = "Get order")
-    fun getLoadingListOrderByID(
+    @Path("/order/loadingList/{$LOADINGLIST}")
+    @ApiOperation(value = "Get List<order> by Loadinlist")
+    fun getOrderByLoadinglist(
             @PathParam(LOADINGLIST) @ApiParam(value = "Loadinglist ID", required = true) ref: String? = null
-    ): LoadingList
+    ): List<Order>
 
     @GET
     @Path("/loadingList/find")
-    @ApiOperation(value = "Get order")
+    @ApiOperation(value = "valid loadingLists")
     fun getLoadingListOrderyOrder(
-            @QueryParam(ORDERID) @ApiParam(value = "Unique order identifier", required = true) ref: String
-    ): List<LoadingList>
+            @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null
+            ): List<LoadingList>
+
 }
 
 
