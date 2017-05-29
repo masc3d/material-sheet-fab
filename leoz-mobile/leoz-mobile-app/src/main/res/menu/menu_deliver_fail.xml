@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <item
+        android:id="@+id/action_deliver_cancel"
+        android:orderInCategory="100"
+        android:title="Cancel process"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_deliver_failed"
+        android:orderInCategory="500"
+        android:title="Delivery failed"
+        app:showAsAction="never" />
+</menu>
