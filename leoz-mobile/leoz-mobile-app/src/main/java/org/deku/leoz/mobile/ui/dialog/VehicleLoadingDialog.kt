@@ -17,7 +17,7 @@ import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 import sx.android.aidc.*
 import android.view.LayoutInflater
-
+import kotlinx.android.synthetic.main.dialog_vehicle_loading.view.*
 
 
 /**
@@ -32,18 +32,13 @@ class VehicleLoadingDialog(val listener: OnDialogResultListener): Dialog() {
         activity.layoutInflater.inflate(R.layout.dialog_vehicle_loading, null)
     }
 
-    val uxDeliveryList by lazy {
-        builderView.findViewById(R.id.uxDeliveryList) as TextInputEditText
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
         val builder = AlertDialog.Builder(context)
-        val inflater = activity.layoutInflater
 
         builder.setTitle("Specify a delivery list")
                 .setView(this.builderView)
                 .setPositiveButton(R.string.ok, { dialog, which ->
-                    if (this.uxDeliveryList.text.isNotBlank()) {
+                    if (this.builderView.uxDeliveryList.text.isNotBlank()) {
                         listener.onDeliveryListEntered(this.uxDeliveryList.text.toString())
                     }
                 })
@@ -84,7 +79,7 @@ class VehicleLoadingDialog(val listener: OnDialogResultListener): Dialog() {
     }
 
     fun processScannedData(data: String) {
-        this.uxDeliveryList.setText(data)
+        this.builderView.uxDeliveryList.setText(data)
     }
 
     interface OnDialogResultListener {
