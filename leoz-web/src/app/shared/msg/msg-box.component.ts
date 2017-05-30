@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Msg } from './msg.model';
 
 @Component({
   selector: 'app-msg-box',
@@ -6,6 +7,5 @@ import { Component, Input } from '@angular/core';
 })
 export class MsgBoxComponent {
 
-  @Input() msg: string;
-  @Input() alertStyle: string;
+  @Input() msg: Msg;
 }

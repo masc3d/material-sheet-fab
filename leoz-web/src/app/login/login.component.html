@@ -5,7 +5,7 @@
     </div>
 
     <div id="content" class="content-box">
-      <app-msg-box [msg]="errMsg" [alertStyle]="'alert-danger'"></app-msg-box>
+      <app-msg-box [msg]="errMsg"></app-msg-box>
       <form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
         <div class="form-group">
           <label>{{'username' | translate}}</label>
