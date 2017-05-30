@@ -23,8 +23,8 @@
 
             <ImageView
                 android:id="@+id/uxSerialnumberImage"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_marginBottom="6dp"
                 app:srcCompat="@drawable/ic_email_black"/>
@@ -62,8 +62,8 @@
 
             <ImageView
                 android:id="@+id/uxPasswordImage"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_marginBottom="6dp"
                 app:srcCompat="@drawable/ic_lock"/>
