@@ -1,40 +1,36 @@
 package org.deku.leoz.mobile.model
 
-import org.deku.leoz.model.Carrier
+import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.model.ParcelService
+import org.deku.leoz.service.internal.entity.Order
 import java.util.*
-
 /**
  * Created by 27694066 on 10.05.2017.
  */
 class Stop (
         val order: MutableList<Order>,
         val address: Order.Address,
-        var appointment: String,
+        var appointment: org.deku.leoz.service.internal.entity.Order.Appointment,
         var sort: Int
 ) {
 
     //Nested class Order
     class Order (
             val id: String,
-            val classification: OrderClassification,
-            val parcel: MutableList<Parcel> = mutableListOf(),
+            val classification: org.deku.leoz.model.OrderClassification,
+            val parcel: List<Parcel> = mutableListOf(),
             val addresses: MutableList<Address>,
-            val appointment: String,
-            val carrier: Carrier,
-            val service: MutableList<ParcelService>,
-            val additionalInformation: MutableList<AdditionalInformation> = mutableListOf(),
+            val appointment: Map<OrderClassification, org.deku.leoz.service.internal.entity.Order.Appointment>,
+            val carrier: org.deku.leoz.model.Carrier,
+            val service: Map<OrderClassification, List<ParcelService>>,
+            val additionalInformation: Map<OrderClassification, MutableList<org.deku.leoz.service.internal.entity.Order.Information>>? = null,
             val sort: Int
     ) {
-        enum class OrderClassification {
-            PICKUP, DELIVERY, EXCHANGE_DELIVERY, EXCHANGE_PICKUP, DIRECT_PICKUP, DIRECT_DELIVERY
-        }
-
         data class Parcel (
                 val id: String,
                 val labelReference: String?,
                 val status: MutableList<Status>? = mutableListOf(),
-                val dimensions: Dimension?
+                val dimensions: org.deku.leoz.service.internal.entity.Order.Parcel.ParcelDimension?
         )
 
         fun equalsAddress(order: Order): Boolean {
@@ -61,8 +57,8 @@ class Stop (
             var adrType: Address.AddressClassification? = null
 
             when {
-                this.classification == OrderClassification.DELIVERY -> adrType = Address.AddressClassification.DELIVERY
-                this.classification == OrderClassification.PICKUP -> adrType = Address.AddressClassification.PICKUP
+                this.classification == org.deku.leoz.model.OrderClassification.DELIVERY -> adrType = Address.AddressClassification.DELIVERY
+                this.classification == org.deku.leoz.model.OrderClassification.PICKUP -> adrType = Address.AddressClassification.PICKUP
             }
 
             val address: Address = this.addresses.first {
@@ -91,20 +87,23 @@ class Stop (
             }
         }
 
-        class Address (val classification: AddressClassification, val addressLine1: String, val addressLineNo1: String = "", val addressLine2: String = "", val addressLineNo2: String = "", val street: String, val streetNo: String = "", val zipCode: String, val city: String, val geoLocation: Pair<Double, Double>?) {
+        class Address (
+                val classification: AddressClassification,
+                val addressLine1: String,
+                val addressLine2: String = "",
+                val street: String,
+                val streetNo: String = "",
+                val zipCode: String,
+                val city: String,
+                val geoLocation: org.deku.leoz.service.internal.entity.Order.Address.GeoLocation?
+        ) {
             enum class AddressClassification {
                 PICKUP, DELIVERY, EXCHANGE_DELIVERY, EXCHANGE_PICKUP
             }
         }
 
-        data class AdditionalInformation (val type: AdditionalInformationType, val information: String) {
-            enum class AdditionalInformationType {
-                IMEI, IDENTITYCARDID, LOADINGLISTINFORMATION
-            }
-        }
-
         data class Status (val event: Long, val reason: Long, val date: Date, val geoLocation: Pair<Double, Double>, val recipient: String?, val information: String?)
 
-        data class Dimension (val length: Double, val height: Double, val width: Double, val weight: Double)
+        //data class Dimension (val length: Double, val height: Double, val width: Double, val weight: Double)
     }
 }

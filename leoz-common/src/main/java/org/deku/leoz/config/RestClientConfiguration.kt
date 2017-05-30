@@ -84,6 +84,14 @@ abstract class RestClientConfiguration {
                 createServiceProxy(config = instance(), serviceType = BundleServiceV2::class.java)
             }
 
+            bind<DeliveryListService>() with provider {
+                createServiceProxy(config = instance(), serviceType = DeliveryListService::class.java)
+            }
+
+            bind<OrderService>() with provider {
+                createServiceProxy(config = instance(), serviceType = OrderService::class.java)
+            }
+
             bind<UserService>() with provider {
                 //createServiceProxy(config = instance(), serviceType = UserService::class.java)
                 object : UserService {
