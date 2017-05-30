@@ -1,5 +1,4 @@
-<div *ngIf="errMsg.length > 0" class="alert alert-danger">{{errMsg | translate}}</div>
-<!--<app-errormessage [errMsg]="errMsg"></app-errormessage>-->
+<app-msg-box [msg]="errMsg"></app-msg-box>
 <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
   <div class="row">
     <div class="form-group col-md-6">

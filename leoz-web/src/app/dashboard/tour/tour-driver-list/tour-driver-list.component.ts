@@ -16,7 +16,8 @@ export class TourDriverListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.drivers = this.driverService.getDrivers();
+    this.drivers = this.driverService.drivers;
+    this.driverService.getDrivers();
   }
 
   showPosition(driver: Driver) {
