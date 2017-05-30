@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Response } from '@angular/http';
 import { AuthenticationService } from '../core/auth/authentication.service';
 import { Subscription } from 'rxjs/Subscription';
+import { Msg } from '../shared/msg/msg.model';
+import { MsgService } from '../shared/msg/msg.service';
 
 @Component( {
   selector: 'app-login',
@@ -14,15 +16,17 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   loading = false;
 
-  errMsg = '';
+  errMsg: Msg;
   loginForm: FormGroup;
 
   constructor( private fb: FormBuilder,
                private router: Router,
-               private authenticationService: AuthenticationService ) {
+               private authenticationService: AuthenticationService,
+               private msgService: MsgService ) {
   }
 
   ngOnInit() {
+    this.errMsg = this.msgService.clear();
     // reset login status
     this.authenticationService.logout();
 
@@ -47,18 +51,14 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.loading = false;
             this.router.navigate( [ 'dashboard/home' ] );
           } else {
-            this.handleError( resp );
+            this.loading = false;
+            this.errMsg = this.msgService.handleResponse(resp);
           }
         },
         ( error: Response ) => {
-          this.handleError( error );
+          this.loading = false;
+          this.errMsg = this.msgService.handleResponse(error);
         } );
-  }
-
-  handleError( resp: Response ) {
-    this.loading = false;
-    console.log( resp );
-    this.errMsg = resp.json().title;
   }
 
   logout() {
@@ -66,6 +66,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   resetErrMsg() {
-    this.errMsg = '';
+    this.errMsg = this.msgService.clear();
   }
 }

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TopBarComponent } from '../top-bar/top-bar.component';
 import { TranslateModule } from '../core/translate/translate.module';
-import { MsgBoxComponent } from './msg-box/msg-box.component';
+import { MsgBoxComponent } from './msg/msg-box.component';
+import { MsgService } from './msg/msg.service';
 
 @NgModule( {
   imports: [
@@ -11,9 +12,10 @@ import { MsgBoxComponent } from './msg-box/msg-box.component';
     ReactiveFormsModule,
     TranslateModule
   ],
+  providers: [ MsgService ],
   declarations: [
     TopBarComponent,
-    MsgBoxComponent],
+    MsgBoxComponent ],
   exports: [
     CommonModule,
     ReactiveFormsModule,
