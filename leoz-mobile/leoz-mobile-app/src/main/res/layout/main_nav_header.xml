@@ -80,7 +80,6 @@
                 android:layout_height="@dimen/icon_size"
                 android:layout_gravity="top"
                 android:gravity="top"
-                android:scaleType="center"
                 android:tint="@color/colorDarkIcon"
                 app:srcCompat="@drawable/ic_user" />
 
@@ -105,7 +104,6 @@
                 android:layout_height="@dimen/icon_size"
                 android:layout_gravity="top"
                 android:gravity="top"
-                android:scaleType="center"
                 android:tint="@color/colorDarkIcon"
                 app:srcCompat="@drawable/ic_station" />
 
