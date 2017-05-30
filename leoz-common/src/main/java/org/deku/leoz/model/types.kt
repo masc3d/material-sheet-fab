@@ -8,7 +8,7 @@ package org.deku.leoz.model
 //statuscodes+data werden von mobiles an WS gesendet-> in scascans importiert, import-automat übersetzt in tblstatus..
 //weitere statuscodes bei Auslieferhindernissen bisher aus tblsyscollections (typ=210)->in_out=null,
 // sonst Überschneidung mit Linien-Scancodes
-enum class ScanStatuscode(val statusvalue: Int) {
+enum class ScanStatuscode(val value: Int) {
     LineScanOk(1),
     LineScanRepeat(2),
     LineScanNoDB(3),
@@ -29,14 +29,14 @@ enum class ScanStatuscode(val statusvalue: Int) {
     StationExportBagFill(-11)
 }
 
-enum class BeepCode(val beepvalue: Int) {
+enum class BeepCode(val value: Int) {
     BeepOK(1), //green
     BeepNOK(2), //red
     BeepWOK(3), //repeat-scan->yellow
     BeepDepotOk(4)
 }
 
-enum class AppEnabledModul(val enabledvalue: Int) {
+enum class AppEnabledModul(val value: Int) {
     non(0),
     HUB(1),
     SMS(2),
@@ -49,10 +49,10 @@ enum class AppEnabledModul(val enabledvalue: Int) {
     StartPhone(1024),
     StartWLAN(2048),
     HUBadmin(4096),
-    ALL(HUB.enabledvalue + SMS.enabledvalue + Line.enabledvalue + StationImport.enabledvalue + Delivery.enabledvalue + HUBadmin.enabledvalue)
+    ALL(HUB.value + SMS.value + Line.value + StationImport.value + Delivery.value + HUBadmin.value)
 }
 
-enum class ConnStatus(val statusvalue: Int) {
+enum class ConnStatus(val value: Int) {
     non(0),
     GPRS(1),
     WLAN(2),
@@ -60,13 +60,13 @@ enum class ConnStatus(val statusvalue: Int) {
     unknown(8)
 }
 
-enum class LineDirection(val directionvalue: Int) {
+enum class LineDirection(val value: Int) {
     In(-1),
     Out(1),
     NN(0)
 }
 
-enum class Commands(val commandvalue: Int) {
+enum class Commands(val value: Int) {
     Message(1),
     GetUnitsOut(2),
     SWupdateOptional(3),
@@ -116,187 +116,190 @@ enum class SendData {
 }
 
 //todo StopClassifizierung noch nicht volltändig
-enum class ParcelService(val serviceId: Long, val parcelServiceRestriction: ParcelServiceRestriction, val validForStop: StopClassification) {
-    noAdditionalService(
+enum class ParcelService(
+        val serviceId: Long,
+        val parcelServiceRestriction: ParcelServiceRestriction,
+        val validForStop: StopClassification) {
+    NoAdditionalService(
             serviceId = 0,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    appointment(
+            validForStop = StopClassification.Both),
+    Appointment(
             serviceId = 1,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    suitcaseShipping(
+            validForStop = StopClassification.Both),
+    SuitcaseShipping(
             serviceId = 2,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    weekend(
+            validForStop = StopClassification.Both),
+    Weekend(
             serviceId = 4,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    bankHolidayDelivery(
+            validForStop = StopClassification.Both),
+    BankHolidayDelivery(
             serviceId = 8,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    latePickup(
+            validForStop = StopClassification.Both),
+    LatePickup(
             serviceId = 16,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    receiptAcknowledgment(
+            validForStop = StopClassification.Both),
+    ReceiptAcknowledgment(
             serviceId = 32,
             parcelServiceRestriction = ParcelServiceRestriction(
                     paperReceiptNeeded = true,
                     alternateDeliveryAllowed = false
             ),
-            validForStop = StopClassification.BOTH),
-    selfPickup(
+            validForStop = StopClassification.Both),
+    SelfPickup(
             serviceId = 64,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    cashOnDelivery(
+            validForStop = StopClassification.Both),
+    CashOnDelivery(
             serviceId = 128,
             parcelServiceRestriction = ParcelServiceRestriction(
                     cash = true,
                     alternateDeliveryAllowed = false
             ),
-            validForStop = StopClassification.BOTH),
-    valuedPackage(
+            validForStop = StopClassification.Both),
+    ValuedPackage(
             serviceId = 256,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    pharmaceuticals(
+            validForStop = StopClassification.Both),
+    Pharmaceuticals(
             serviceId = 512,
             parcelServiceRestriction = ParcelServiceRestriction(
                     personalDeliveryOnly = true,
                     alternateDeliveryAllowed = false
             ),
 
-            validForStop = StopClassification.BOTH),
-    addressCorrection(
+            validForStop = StopClassification.Both),
+    AddressCorrection(
             serviceId = 1024,
-            parcelServiceRestriction = ParcelServiceRestriction(), validForStop = StopClassification.BOTH),
-    waitingPeriodPickUp(
+            parcelServiceRestriction = ParcelServiceRestriction(), validForStop = StopClassification.Both),
+    WaitingPeriodPickUp(
             serviceId = 2048,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    waitingPeriodDelivery(
+            validForStop = StopClassification.Both),
+    WaitingPeriodDelivery(
             serviceId = 4096,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    pickUp(
+            validForStop = StopClassification.Both),
+    PickUp(
             serviceId = 8192,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    identContractService(
+            validForStop = StopClassification.Both),
+    IdentContractService(
             serviceId = 16384,
             parcelServiceRestriction = ParcelServiceRestriction(
                     personalDeliveryOnly = true,
                     identityCheckRequired = true,
                     alternateDeliveryAllowed = false
             ),
-            validForStop = StopClassification.BOTH),
-    submissionParticipation(
+            validForStop = StopClassification.Both),
+    SubmissionParticipation(
             serviceId = 32768,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    securityReturn(
+            validForStop = StopClassification.Both),
+    SecurityReturn(
             serviceId = 65536,
             parcelServiceRestriction = ParcelServiceRestriction(
                     imeiCheckRequired = true,
                     alternateDeliveryAllowed = false
             ),
-            validForStop = StopClassification.BOTH),
-    lateDelivery(
+            validForStop = StopClassification.Both),
+    LateDelivery(
             serviceId = 131072,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    xChange(
+            validForStop = StopClassification.Both),
+    Xchange(
             serviceId = 262144,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.DELIVERY),
-    phoneReceipt(
+            validForStop = StopClassification.Delivery),
+    PhoneReceipt(
             serviceId = 524288,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    documentedPersonallyDelivery(
+            validForStop = StopClassification.Both),
+    DocumentedPersonallyDelivery(
             serviceId = 1048576,
             parcelServiceRestriction = ParcelServiceRestriction(
                     identityCheckRequired = true,
                     alternateDeliveryAllowed = false,
                     paperReceiptNeeded = true
             ),
-            validForStop = StopClassification.BOTH),
-    higherLiability(
+            validForStop = StopClassification.Both),
+    HigherLiability(
             serviceId = 2097152,
             parcelServiceRestriction = ParcelServiceRestriction(
                     alternateDeliveryAllowed = false
             ),
-            validForStop = StopClassification.BOTH),
-    departmentDelivery(
+            validForStop = StopClassification.Both),
+    DepartmentDelivery(
             serviceId = 4194304,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    fixedAppointment(
+            validForStop = StopClassification.Both),
+    FixedAppointment(
             serviceId = 8388608,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    fairService(
+            validForStop = StopClassification.Both),
+    RairService(
             serviceId = 16777216,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    selfCompletionOfDutyPaymentAntDocuments(
+            validForStop = StopClassification.Both),
+    SelfCompletionOfDutyPaymentAntDocuments(
             serviceId = 33554432,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    packagingRecirculation(
+            validForStop = StopClassification.Both),
+    PackagingRecirculation(
             serviceId = 67108864,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    unsuccessfulApproach(
+            validForStop = StopClassification.Both),
+    UnsuccessfulApproach(
             serviceId = 134217728,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    postboxDelivery(
+            validForStop = StopClassification.Both),
+    PostboxDelivery(
             serviceId = 268435456,
             parcelServiceRestriction = ParcelServiceRestriction(),
-            validForStop = StopClassification.BOTH),
-    noAlternativelyDelivery(
+            validForStop = StopClassification.Both),
+    NoAlternativelyDelivery(
             serviceId = 536870912,
             parcelServiceRestriction = ParcelServiceRestriction(
                     alternateDeliveryAllowed = false
             ),
-            validForStop = StopClassification.BOTH)
+            validForStop = StopClassification.Both)
 }
 
 /**
  * Created by JT on 24.05.17.
  */
-enum class Carrier(val carriervalue: Int) {
-    DERKURIER(0),
-    UNKNOWN(1)
+enum class Carrier(val value: Int) {
+    DerKurier(0),
+    Unknown(1)
 }
 
 /**
  * Created by JT on 24.05.17.
  */
-enum class OrderClassification(val orderClassificationValue: Int) {
-    PICKUP(0),
-    DELIVERY(1),
-    PICKUP_DELIVERY(2)
+enum class OrderClassification(val value: Int) {
+    PickUp(0),
+    Delivery(1),
+    PickUpDelivery(2)
 }
 
 /**
  * Created by JT on 27.05.17.
  */
-enum class StopClassification(val stopClassificationValue: Int) {
-    PICKUP(0),
-    DELIVERY(1),
-    BOTH(2)
+enum class StopClassification(val value: Int) {
+    PickUp(0),
+    Delivery(1),
+    Both(2)
 }
 
-enum class AdditionalInformationType(additionalInformationValue: Int) {
+enum class AdditionalInformationType(val value: Int) {
     IMEI(0),
-    IDENTITYCARDID(1),
-    LOADINGLISTINFORMATION(2),
-    DRIVERINFORMATION(3),
-    CASH(4)
+    IdentityCardId(1),
+    LoadingListInformation(2),
+    DriverInformation(3),
+    Cash(4)
 }

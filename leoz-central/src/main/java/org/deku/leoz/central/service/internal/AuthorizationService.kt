@@ -81,16 +81,16 @@ class AuthorizationService
                     title = "User authentication failed",
                     status = Response.Status.UNAUTHORIZED)
 
+        // TODO: check against/create `mst_key` entry
+
+        // TODO: use ApiKeyFactory (still has to be implemented)
         val identityFactory = MobileIdentityFactory(
                 serial = serial ?: "",
                 imei = imei ?: ""
         )
 
         val identity = identityFactory.create()
-
-        // TODO: check against/create `mst_node` entry
-        // TODO: add hash for mobile device info to prevent forging
-
+        
         return AuthorizationService.MobileResponse(
                 key = identity.key.value
         )

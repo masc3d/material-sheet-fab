@@ -23,7 +23,7 @@ class Stop (
             val appointment: Map<OrderClassification, org.deku.leoz.service.internal.entity.Order.Appointment>,
             val carrier: org.deku.leoz.model.Carrier,
             val service: Map<OrderClassification, List<ParcelService>>,
-            val additionalInformation: Map<OrderClassification, MutableList<org.deku.leoz.service.internal.entity.Order.Information>>? = null,
+            val additionalInformation: Map<OrderClassification, List<org.deku.leoz.service.internal.entity.Order.Information>>? = null,
             val sort: Int
     ) {
         data class Parcel (
@@ -34,7 +34,7 @@ class Stop (
         )
 
         fun equalsAddress(order: Order): Boolean {
-            var adrType: Address.AddressClassification? = null
+            val adrType: Address.AddressClassification? = null
 
             if (this.classification != order.classification) {
                 throw IllegalArgumentException()
@@ -57,8 +57,8 @@ class Stop (
             var adrType: Address.AddressClassification? = null
 
             when {
-                this.classification == org.deku.leoz.model.OrderClassification.DELIVERY -> adrType = Address.AddressClassification.DELIVERY
-                this.classification == org.deku.leoz.model.OrderClassification.PICKUP -> adrType = Address.AddressClassification.PICKUP
+                this.classification == OrderClassification.Delivery -> adrType = Address.AddressClassification.DELIVERY
+                this.classification == OrderClassification.PickUp -> adrType = Address.AddressClassification.PICKUP
             }
 
             val address: Address = this.addresses.first {
@@ -83,7 +83,7 @@ class Stop (
 
         fun findSuitableStopIndex(stopList: MutableList<Stop>): Int {
             return stopList.indexOfFirst {
-                it.address.equals(this.getAddressOfInterest())
+                it.address == this.getAddressOfInterest()
             }
         }
 

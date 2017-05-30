@@ -27,7 +27,6 @@ import java.sql.Date
 data class DeliveryList(
         @ApiModelProperty(position = 10, required = true, value = "DeliveryListInfo")
         val id: DeliveryListInfo,
-
         @ApiModelProperty(position = 30, required = true, value = "Orders")
         val orders: List<Order>
 )
@@ -36,7 +35,6 @@ data class DeliveryList(
 data class DeliveryListInfo(
         @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
         val id: String,
-
         @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
         val date: ShortDate
 )
@@ -49,7 +47,7 @@ data class Order(
         var orderID: Int = 0,
 
         @get:ApiModelProperty(example = "DERKURIER", position = 20, required = true, value = "Carrier")
-        var carrier: Carrier = Carrier.UNKNOWN,
+        var carrier: Carrier = Carrier.Unknown,
 
         @get:ApiModelProperty(example = "12345678901", position = 30, required = false, value = "referencIDToExchangeOrderID")
         var referencIDToExchangeOrderID: Int = 0,
@@ -57,25 +55,25 @@ data class Order(
         //todo ich sehe nur OrderClassification.     PICKUP, DELIVERY, PICKUP_DELIVERY .
         //todo EXCHANGE_DELIVERY, EXCHANGE_PICKUP wie in stop.kt sehe ich nicht als addressclassifikation
         @get:ApiModelProperty(example = "DELIVERY", position = 40, required = true, value = "OrderClassification")
-        var orderClassification: OrderClassification = OrderClassification.DELIVERY,
+        var orderClassification: OrderClassification = OrderClassification.Delivery,
 
         @get:ApiModelProperty(position = 60, required = true, value = "appointmentPickup")
         var appointmentPickup: Appointment,
         @get:ApiModelProperty(required = true, position = 120, value = "Pickup address")
         var pickupAddress: Address = Address(),
         @get:ApiModelProperty(required = true, position = 120, value = "Pickup service")
-        var pickupService: Service = Order.Service(listOf(ParcelService.noAdditionalService)),
+        var pickupService: Service = Order.Service(listOf(ParcelService.NoAdditionalService)),
         @get:ApiModelProperty(required = true, position = 120, value = "Pickup information")
-        var pickupInformation: MutableList<Information> = mutableListOf(),
+        var pickupInformation: List<Information> = listOf(),
 
         @get:ApiModelProperty(position = 60, required = true, value = "appointmentDelivery")
         var appointmentDelivery: Appointment,
         @ApiModelProperty(required = true, position = 130, value = "Delivery address")
         var deliveryAddress: Address = Address(),
         @get:ApiModelProperty(required = true, position = 120, value = "delivery services")
-        var deliveryService: Service = Order.Service(listOf(ParcelService.noAdditionalService)),
+        var deliveryService: Service = Order.Service(listOf(ParcelService.NoAdditionalService)),
         @get:ApiModelProperty(required = true, position = 120, value = "delivery information")
-        var deliveryInformation: MutableList<Information> = mutableListOf(),
+        var deliveryInformation: List<Information> = listOf(),
 
         @get:ApiModelProperty(position = 140, required = false, value = "Parcels")
         var Parcels: List<Parcel>

@@ -1,20 +1,16 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
-import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.UserJooqRepository
-import org.deku.leoz.node.rest.DefaultProblem
-import org.deku.leoz.service.entity.Position
+import org.deku.leoz.service.internal.entity.GpsDataPoint
 import org.deku.leoz.service.internal.entity.GpsData
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.rs.auth.ApiKey
-import sx.time.toTimestamp
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
-import javax.ws.rs.core.Response
 import org.deku.leoz.service.internal.LocationService
 import sx.mq.MqChannel
 import sx.mq.MqHandler
@@ -25,7 +21,7 @@ import sx.mq.MqHandler
 @Named
 @ApiKey(true)
 @Path("internal/v1/location")
-class LocationService : LocationService, MqHandler<Position> {
+class LocationService : LocationService, MqHandler<GpsDataPoint> {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
@@ -37,7 +33,12 @@ class LocationService : LocationService, MqHandler<Position> {
         var user_id: Int?
         val dtNow = Date()
         //val gpsdata = GpsData(49.9, 9.06, 25.3, dtNow.toTimestamp())
-        val pos = Position(49.9, 9.06, 1496060435, 25.3.toFloat(), null, null, null, null)
+        val pos = GpsDataPoint(
+                latitude = 49.9,
+                longitude = 9.06,
+                time = Date(),
+                speed = 25.3.toFloat())
+
         val gpsdata = GpsData("foo@bar.com", listOf(pos))
         val gpsdataList = mutableListOf<GpsData>()
 
@@ -89,7 +90,7 @@ class LocationService : LocationService, MqHandler<Position> {
         */
     }
 
-    override fun onMessage(message: Position, replyChannel: MqChannel?) {
+    override fun onMessage(message: GpsDataPoint, replyChannel: MqChannel?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

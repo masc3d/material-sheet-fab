@@ -17,9 +17,7 @@ import javax.ws.rs.core.MediaType
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "Delivery list service")
-
 interface DeliveryListService {
-
     companion object {
         const val ORDERID = "order-id"
         const val DELIVERYLIST = "delivery-list"

@@ -70,7 +70,7 @@ class Job {
                                             it.parcelID.toString(),
                                             it.parcelScanNumber,
                                             null,
-                                            it.dimention
+                                            it.dimension
                                     )
                                 },
                                 mutableListOf(
@@ -96,16 +96,16 @@ class Job {
                                         )
                                 ),
                                 mapOf(
-                                        Pair(OrderClassification.DELIVERY, it.appointmentDelivery),
-                                        Pair(OrderClassification.PICKUP, it.appointmentPickup)
+                                        Pair(OrderClassification.Delivery, it.appointmentDelivery),
+                                        Pair(OrderClassification.PickUp, it.appointmentPickup)
                                 ),
                                 it.carrier,
                                 mapOf(
-                                        Pair(OrderClassification.DELIVERY, it.deliveryService.services ?: listOf(ParcelService.noAdditionalService))
+                                        Pair(OrderClassification.Delivery, it.deliveryService.services ?: listOf(ParcelService.NoAdditionalService))
                                 ),
                                 mapOf(
-                                        Pair(OrderClassification.DELIVERY, it.deliveryInformation),
-                                        Pair(OrderClassification.PICKUP, it.pickupInformation)
+                                        Pair(OrderClassification.Delivery, it.deliveryInformation),
+                                        Pair(OrderClassification.PickUp, it.pickupInformation)
                                 ),
                                 0
                         )

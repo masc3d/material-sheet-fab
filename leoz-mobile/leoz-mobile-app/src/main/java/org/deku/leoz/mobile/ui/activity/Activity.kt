@@ -60,8 +60,6 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        log.trace("ONCREATE")
-
         this.setContentView(org.deku.leoz.mobile.R.layout.main)
 
         this.nav_view.setNavigationItemSelectedListener(this)

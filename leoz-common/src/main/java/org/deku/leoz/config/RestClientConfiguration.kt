@@ -5,13 +5,8 @@ import com.github.salomonbrys.kodein.erased.bind
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.erased.provider
 import org.deku.leoz.service.internal.*
-import org.deku.leoz.service.internal.entity.GpsData
-import org.deku.leoz.service.internal.entity.User
-import org.deku.leoz.service.entity.Position
 import sx.rs.proxy.RestClientProxy
-import sx.time.toTimestamp
 import java.net.URI
-import java.sql.Date
 
 /**
  * Base class for JAX/RS REST client configurations
@@ -55,11 +50,6 @@ abstract class RestClientConfiguration {
      * @param https Use https or regular http. Defaults to false (=http)
      */
     fun createClientProxy(): RestClientProxy {
-        val scheme = when (https) {
-            true -> "https"
-            false -> "http"
-        }
-
         val uri = this.createUri(https, host, port, RestConfiguration.MAPPING_PREFIX)
 
         // Ignore SSL certificate for (usually testing/dev) remote hosts which are not in the business domain
@@ -94,72 +84,15 @@ abstract class RestClientConfiguration {
             }
 
             bind<UserService>() with provider {
-                //createServiceProxy(config = instance(), serviceType = UserService::class.java)
-                object : UserService {
-                    val user1 = User(
-                            email = "foo@bar.com",
-                            debitorId = 1,
-                            /*stations = listOf("002", "020", "100"),*/
-                            alias = "testuser",
-                            role = User.ROLE_DRIVER,
-                            password = "password",
-                            /*salt = "salt",*/
-                            firstName = "Foo",
-                            lastName = "Bar",
-                            /*                            apiKey = "a1b2c3d4e5g6",*/
-                            active = true,
-                            externalUser = false,
-                            phone = "+491725405765",
-                            expiresOn = Date(Date.parse("31.12.2099"))
-                    )
-                    val user2 = user1.copy(email = "foo2@bar.com")
-
-                    override fun get(email: String?, debitorId: Int?, apiKey: String?): List<User> {
-                        return listOf(user1)
-                    }
-
-
-                    /*
-                                        override fun get(id: Int): User {
-                                            return user1
-                                        }
-                    */
-                    override fun update(email: String, user: User, apiKey: String?) {
-                    }
-
-                    override fun create(user: User, apiKey: String?) {
-                    }
-
-
-                }
+                createServiceProxy(config = instance(), serviceType = UserService::class.java)
             }
 
             bind<AuthorizationService>() with provider {
-                object : AuthorizationService {
-
-                    override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.WebResponse {
-                        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                        return AuthorizationService.WebResponse(key = "456", debitorNo = "2766060777", userRole = "DRIVER")
-                    }
-
-                    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.MobileResponse {
-                        return AuthorizationService.MobileResponse(
-                                key = "a1b2c3d4"
-                        )
-                    }
-                }
+                createServiceProxy(config = instance(), serviceType = AuthorizationService::class.java)
             }
 
             bind<LocationService>() with provider {
-                object : LocationService {
-                    override fun get(email: String?, debitorId: Int?, apiKey: String?): List<GpsData> {
-                        val dtNow = java.util.Date()
-                        val pos = Position(49.9, 9.06, 1496060435, 21.5.toFloat(), null, null, null, null)
-                        val gpsdata = GpsData("foo@bar.com", listOf(pos))
-
-                        return listOf(gpsdata)
-                    }
-                }
+                createServiceProxy(config = instance(), serviceType = LocationService::class.java)
             }
         }
     }
