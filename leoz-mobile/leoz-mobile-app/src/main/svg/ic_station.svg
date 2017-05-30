@@ -1,1 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M18,15H16V17H18M18,11H16V13H18M20,19H12V17H14V15H12V13H14V11H12V9H20M10,7H8V5H10M10,11H8V9H10M10,15H8V13H10M10,19H8V17H10M6,7H4V5H6M6,11H4V9H6M6,15H4V13H6M6,19H4V17H6M12,7V3H2V21H22V7H12Z" /></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48pt" height="48pt" viewBox="0 0 48 48" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 36 30 L 32 30 L 32 34 L 36 34 M 36 22 L 32 22 L 32 26 L 36 26 M 40 38 L 24 38 L 24 34 L 28 34 L 28 30 L 24 30 L 24 26 L 28 26 L 28 22 L 24 22 L 24 18 L 40 18 M 20 14 L 16 14 L 16 10 L 20 10 M 20 22 L 16 22 L 16 18 L 20 18 M 20 30 L 16 30 L 16 26 L 20 26 M 20 38 L 16 38 L 16 34 L 20 34 M 12 14 L 8 14 L 8 10 L 12 10 M 12 22 L 8 22 L 8 18 L 12 18 M 12 30 L 8 30 L 8 26 L 12 26 M 12 38 L 8 38 L 8 34 L 12 34 M 24 14 L 24 6 L 4 6 L 4 42 L 44 42 L 44 14 Z M 24 14 "/>
+</g>
+</svg>

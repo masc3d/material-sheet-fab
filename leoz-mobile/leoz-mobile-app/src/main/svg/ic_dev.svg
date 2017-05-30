@@ -1,5 +1,6 @@
-<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M-74 29h48v48h-48V29z" fill="none"/>
-    <path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14zM6 13h5v4H6zm6-6h4v3h-4zM6 7h5v5H6zm6 4h4v6h-4z"/>
-    <path d="M0 0h24v24H0zm0 0h24v24H0z" fill="none"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48pt" height="48pt" viewBox="0 0 48 48" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 44 18 L 44 14 L 40 14 L 40 10 C 40 7.800781 38.199219 6 36 6 L 8 6 C 5.800781 6 4 7.800781 4 10 L 4 38 C 4 40.199219 5.800781 42 8 42 L 36 42 C 38.199219 42 40 40.199219 40 38 L 40 34 L 44 34 L 44 30 L 40 30 L 40 26 L 44 26 L 44 22 L 40 22 L 40 18 Z M 36 38 L 8 38 L 8 10 L 36 10 Z M 12 26 L 22 26 L 22 34 L 12 34 Z M 24 14 L 32 14 L 32 20 L 24 20 Z M 12 14 L 22 14 L 22 24 L 12 24 Z M 24 22 L 32 22 L 32 34 L 24 34 Z M 24 22 "/>
+</g>
 </svg>

@@ -4,7 +4,7 @@ buildscript {
     }
     ext {
         v_android_buildtools = '25.0.2'
-        v_android_support = '25.3.0'
+        v_android_support = '25.3.1'
         v_anko = '0.10.0'
         v_javamail = '1.5.5'
         v_junit = '4.12'
@@ -12,7 +12,7 @@ buildscript {
         v_ormlite = '5.0'
         v_paho = '1.1.1'
         v_roboelectric = '3.3.2'
-        v_rxlifecycle = '2.0.1'
+        v_rxlifecycle = '2.1.0'
     }
 
     dependencies {
