@@ -2,7 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/nav_group_1"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_delivery"
             android:icon="@drawable/ic_truck_delivery"
@@ -13,34 +15,32 @@
             android:icon="@drawable/ic_dev"
             android:title="@string/prototype"
             android:visible="false"/>
+    </group>
+
+    <group android:id="@+id/nav_group_2">
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/capture_image"/>
+        <item
+            android:id="@+id/nav_check_updates"
+            android:actionViewClass="android.widget.TextView"
+            android:icon="@android:drawable/ic_popup_sync"
+            android:title="@string/check_for_updates"/>
+        <item
+            android:id="@+id/nav_send"
+            android:icon="@drawable/ic_bug"
+            android:title="@string/report_bug"/>
+        <item
+            android:id="@+id/nav_dev_login"
+            android:icon="@drawable/ic_wand"
+            android:title="@string/dev_login"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
             android:title="@string/logout"
             android:visible="false"/>
     </group>
-
-    <item android:title="@string/tools">
-        <menu>
-            <item
-                android:id="@+id/nav_camera"
-                android:icon="@drawable/ic_menu_camera"
-                android:title="@string/capture_image"/>
-            <item
-                android:id="@+id/nav_check_updates"
-                android:actionViewClass="android.widget.TextView"
-                android:icon="@android:drawable/ic_popup_sync"
-                android:title="@string/check_for_updates"/>
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_bug"
-                android:title="@string/report_bug"/>
-            <item
-                android:id="@+id/nav_dev_login"
-                android:icon="@drawable/ic_wand"
-                android:title="@string/dev_login"
-                android:visible="false"/>
-        </menu>
-    </item>
 
 </menu>
