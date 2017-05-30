@@ -7,16 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 @Component( {
   selector: 'app-login',
-  templateUrl: './login.component.html',
-  styles: [ `
-    input.ng-invalid, input.invalid {
-      border-left: 5px solid red !important;
-    }
-
-    input.ng-valid {
-      border-left: 5px solid green;
-    }
-  ` ]
+  templateUrl: './login.component.html'
 } )
 export class LoginComponent implements OnInit, OnDestroy {
   subscription: Subscription;
@@ -42,7 +33,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log( '----------- ngONDestroy LoginComponent' );
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
