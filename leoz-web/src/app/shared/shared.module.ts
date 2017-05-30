@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TopBarComponent } from '../top-bar/top-bar.component';
 import { TranslateModule } from '../core/translate/translate.module';
+import { MsgBoxComponent } from './msg-box/msg-box.component';
 
 @NgModule( {
   imports: [
@@ -11,12 +12,14 @@ import { TranslateModule } from '../core/translate/translate.module';
     TranslateModule
   ],
   declarations: [
-    TopBarComponent],
+    TopBarComponent,
+    MsgBoxComponent],
   exports: [
     CommonModule,
     ReactiveFormsModule,
     TranslateModule,
-    TopBarComponent ]
+    TopBarComponent,
+    MsgBoxComponent ]
 } )
 export class SharedModule {
 }

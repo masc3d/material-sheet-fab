@@ -17,6 +17,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   private loading = false;
   private errMsg = '';
+  private alertStyle = 'alert-danger';
 
   constructor( private fb: FormBuilder,
                private userService: UserService,
@@ -65,6 +66,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
           if (resp.status === 204) {
             this.loading = false;
             this.errMsg = 'User insert successful';
+            this.alertStyle = 'alert-success';
             this.clearFields();
           } else {
             this.handleError( resp );
@@ -79,20 +81,12 @@ export class UserFormComponent implements OnInit, OnDestroy {
     this.loading = false;
     console.log( resp );
     this.errMsg = resp.json().title;
+    this.alertStyle = 'alert-danger';
   }
 
   clearFields() {
-    this.userForm.patchValue( {
-      firstName: '',
-      lastName: '',
-      password: '',
-      email: '',
-      phone: '',
-      alias: '',
-      role: '',
-      active: true
-    } );
-    this.userForm.get( 'email' ).markAsUntouched();
+    this.errMsg = '';
+    this.userService.changeActiveUser( <User>{} );
     return false;
   }
 }
