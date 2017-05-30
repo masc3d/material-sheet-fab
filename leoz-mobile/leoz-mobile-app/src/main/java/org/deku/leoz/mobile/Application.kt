@@ -13,6 +13,7 @@ import com.github.salomonbrys.kodein.android.androidModule
 import com.github.salomonbrys.kodein.conf.global
 import com.tinsuke.icekick.extension.freezeInstanceState
 import com.tinsuke.icekick.extension.unfreezeInstanceState
+import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
 import org.slf4j.LoggerFactory
 
@@ -56,6 +57,30 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
         Kodein.global.addImport(MqttConfiguration.module)
 
         this.registerActivityLifecycleCallbacks(this)
+
+        //region Global exception handler
+        run {
+            val androidHandler = Thread.getDefaultUncaughtExceptionHandler()
+
+            Thread.setDefaultUncaughtExceptionHandler { paramThread, paramThrowable ->
+                log.error("Uncaught exception [${paramThread}] ${paramThrowable.message}", paramThrowable)
+
+                // Stop log appender to make sure all logs are flushed before termination
+                Kodein.global.instance<LogMqAppender>().stop()
+
+                if (androidHandler != null) {
+                    // Delegate back to android's exception handler
+                    androidHandler.uncaughtException(
+                            paramThread,
+                            paramThrowable
+                    )
+                } else {
+                    // Service apps may not have an exception handler, just terminating
+                    System.exit(1)
+                }
+            }
+        }
+        //endregion
     }
 
     override fun onTerminate() {
