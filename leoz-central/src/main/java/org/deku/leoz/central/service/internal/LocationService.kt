@@ -4,6 +4,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.node.rest.DefaultProblem
+import org.deku.leoz.service.entity.Position
 import org.deku.leoz.service.internal.entity.GpsData
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
@@ -15,6 +16,8 @@ import javax.inject.Named
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 import org.deku.leoz.service.internal.LocationService
+import sx.mq.MqChannel
+import sx.mq.MqHandler
 
 /**
  * Created by helke on 24.05.17.
@@ -22,7 +25,7 @@ import org.deku.leoz.service.internal.LocationService
 @Named
 @ApiKey(true)
 @Path("internal/v1/location")
-class LocationService : LocationService {
+class LocationService : LocationService, MqHandler<Position> {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
@@ -81,5 +84,9 @@ class LocationService : LocationService {
             }
         }
         */
+    }
+
+    override fun onMessage(message: Position, replyChannel: MqChannel?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

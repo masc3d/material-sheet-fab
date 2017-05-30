@@ -24,10 +24,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
 
     @Inject
     private lateinit var executorService: ExecutorService
-
-    @Inject
-    private lateinit var mqConfiguration: JmsConfiguration
-
+    
     @Inject
     private lateinit var broker: ActiveMQBroker
 
@@ -43,7 +40,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
     /**
      * Central log queue listener
      */
-    val centralLogQueueListener by lazy {
+    val centralTransientQueueListener by lazy {
         SpringJmsListener(
                 endpoint = JmsEndpoints.central.transient.kryo,
                 executor = this.executorService)
@@ -71,7 +68,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
 
         if (this.broker.isStarted) {
             this.centralQueueListener.start()
-            this.centralLogQueueListener.start()
+            this.centralTransientQueueListener.start()
         }
     }
 
@@ -80,7 +77,7 @@ open class MessageListenerConfiguration : org.deku.leoz.node.config.MessageListe
      */
     private fun stop() {
         this.centralQueueListener.stop()
-        this.centralLogQueueListener.stop()
+        this.centralTransientQueueListener.stop()
     }
 
     @PostConstruct
