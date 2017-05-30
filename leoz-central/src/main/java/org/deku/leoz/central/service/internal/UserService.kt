@@ -106,6 +106,13 @@ class UserService : UserService {
 
     override fun create(user: User, apiKey: String?) {
 
+        var rec = userRepository.findByMail(user.email)
+        if (rec != null) {
+            throw DefaultProblem(
+                    status = Response.Status.BAD_REQUEST,
+                    title = "email exists")
+        }
+
         update(user.email, user, apiKey)
 
     }
