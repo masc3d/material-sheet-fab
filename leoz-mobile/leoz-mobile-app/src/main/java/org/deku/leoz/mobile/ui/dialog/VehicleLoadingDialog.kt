@@ -35,11 +35,10 @@ class VehicleLoadingDialog(val listener: OnDialogResultListener): Dialog() {
     override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
         val builder = AlertDialog.Builder(context)
 
-        builder.setTitle("Specify a delivery list")
-                .setView(this.builderView)
+        builder.setView(this.builderView)
                 .setPositiveButton(R.string.ok, { dialog, which ->
                     if (this.builderView.uxDeliveryList.text.isNotBlank()) {
-                        listener.onDeliveryListEntered(this.uxDeliveryList.text.toString())
+                        listener.onDeliveryListEntered(this.builderView.uxDeliveryList.text.toString())
                     }
                 })
                 .setNeutralButton(R.string.continue_without, { dialog, which ->
@@ -50,6 +49,7 @@ class VehicleLoadingDialog(val listener: OnDialogResultListener): Dialog() {
                     //Abort
                     listener.onCanceled()
                 })
+                .setCancelable(false)
         return builder.create()
     }
 
