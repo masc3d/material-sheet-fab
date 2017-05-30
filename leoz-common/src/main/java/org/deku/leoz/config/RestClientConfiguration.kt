@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.erased.provider
 import org.deku.leoz.service.internal.*
 import org.deku.leoz.service.internal.entity.GpsData
 import org.deku.leoz.service.internal.entity.User
+import org.deku.leoz.service.entity.Position
 import sx.rs.proxy.RestClientProxy
 import sx.time.toTimestamp
 import java.net.URI
@@ -153,7 +154,9 @@ abstract class RestClientConfiguration {
                 object : LocationService {
                     override fun get(email: String?, debitorId: Int?, apiKey: String?): List<GpsData> {
                         val dtNow = java.util.Date()
-                        val gpsdata = GpsData(49.9, 9.06, 25.3, dtNow.toTimestamp())
+                        val pos = Position(49.9, 9.06, 1496060435, 21.5.toFloat(), null, null, null, null)
+                        val gpsdata = GpsData("foo@bar.com", listOf(pos))
+
                         return listOf(gpsdata)
                     }
                 }

@@ -70,6 +70,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
             this.loading = false;
             this.errMsg = this.msgService.success('User insert successful');
             this.clearActiveUser();
+            this.userService.getUsers();
           } else {
             this.loading = false;
             this.errMsg = this.msgService.handleResponse( resp );

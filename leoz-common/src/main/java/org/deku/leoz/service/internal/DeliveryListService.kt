@@ -4,6 +4,7 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import org.deku.leoz.service.internal.entity.DeliveryList
+import org.deku.leoz.service.internal.entity.DeliveryListInfo
 import org.deku.leoz.service.internal.entity.Order
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -34,8 +35,8 @@ interface DeliveryListService {
 
     @GET
     @Path("/")
-    @ApiOperation(value = "Get delivery list")
+    @ApiOperation(value = "Get delivery list info")
     fun get(
             @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null
-    ): List<DeliveryList>
+    ): List<DeliveryListInfo>
 }
