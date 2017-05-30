@@ -30,6 +30,6 @@ interface LocationService {
     fun get(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
-            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden=true) apiKey: String?
+            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
     ): List<GpsData>
 }

@@ -36,8 +36,11 @@ class LocationService : LocationService, MqHandler<Position> {
         var debitor_id = debitorId
         var user_id: Int?
         val dtNow = Date()
-        val gpsdata = GpsData(49.9, 9.06, 25.3, dtNow.toTimestamp())
-        val gpsdataList=mutableListOf<GpsData>()
+        //val gpsdata = GpsData(49.9, 9.06, 25.3, dtNow.toTimestamp())
+        val pos = Position(49.9, 9.06, 1496060435, 25.3.toFloat(), null, null, null, null)
+        val gpsdata = GpsData("foo@bar.com", listOf(pos))
+        val gpsdataList = mutableListOf<GpsData>()
+
         gpsdataList.add(gpsdata)
         return gpsdataList
 
