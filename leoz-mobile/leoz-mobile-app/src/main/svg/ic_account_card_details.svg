@@ -1,1 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 24 24"><path d="M2,3H22C23.05,3 24,3.95 24,5V19C24,20.05 23.05,21 22,21H2C0.95,21 0,20.05 0,19V5C0,3.95 0.95,3 2,3M14,6V7H22V6H14M14,8V9H21.5L22,9V8H14M14,10V11H21V10H14M8,13.91C6,13.91 2,15 2,17V18H14V17C14,15 10,13.91 8,13.91M8,6A3,3 0 0,0 5,9A3,3 0 0,0 8,12A3,3 0 0,0 11,9A3,3 0 0,0 8,6Z" /></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48pt" height="48pt" viewBox="0 0 48 48" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 4 6 L 44 6 C 46.101562 6 48 7.898438 48 10 L 48 38 C 48 40.101562 46.101562 42 44 42 L 4 42 C 1.898438 42 0 40.101562 0 38 L 0 10 C 0 7.898438 1.898438 6 4 6 M 28 12 L 28 14 L 44 14 L 44 12 L 28 12 M 28 16 L 28 18 L 44 18 L 44 16 L 28 16 M 28 20 L 28 22 L 42 22 L 42 20 L 28 20 M 16 27.820312 C 12 27.820312 4 30 4 34 L 4 36 L 28 36 L 28 34 C 28 30 20 27.820312 16 27.820312 M 16 12 C 12.6875 12 10 14.6875 10 18 C 10 21.3125 12.6875 24 16 24 C 19.3125 24 22 21.3125 22 18 C 22 14.6875 19.3125 12 16 12 Z M 16 12 "/>
+</g>
+</svg>
