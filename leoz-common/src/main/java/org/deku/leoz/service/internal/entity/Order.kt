@@ -23,19 +23,22 @@ import java.sql.Date
  *
  */
 
-//todo change to nested classes
-
 @ApiModel(description = "Delivery List")
 data class DeliveryList(
-        @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
-        val id: String,
-
-        //todo eigentlich überflüssig, da immer nur das aktuelle Datum zurückkommen kann
-        @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
-        val date: ShortDate,
+        @ApiModelProperty(position = 10, required = true, value = "DeliveryListInfo")
+        val id: DeliveryListInfo,
 
         @ApiModelProperty(position = 30, required = true, value = "Orders")
         val orders: List<Order>
+)
+
+@ApiModel(description = "Delivery List Info")
+data class DeliveryListInfo(
+        @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
+        val id: String,
+
+        @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
+        val date: ShortDate
 )
 
 @ApiModel(description = "Order Model")
