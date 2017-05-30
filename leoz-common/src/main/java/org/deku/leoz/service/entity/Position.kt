@@ -11,7 +11,6 @@ data class Position (
         val longitude: Double? = null,
         val time: Long? = null,
         val speed: Float? = null,
-        val meh: String? = "",
         val bearing: Float? = null,
         val altitude: Double? = null,
         val accuracy: Float? = null)
