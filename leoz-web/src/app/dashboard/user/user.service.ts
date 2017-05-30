@@ -17,7 +17,7 @@ export class UserService {
 
   // private usersSubject = new BehaviorSubject<User[]>( [] );
   // public users = this.usersSubject.asObservable().distinctUntilChanged();
-  private activeUserSubject = new BehaviorSubject<User>( new User() );
+  private activeUserSubject = new BehaviorSubject<User>( <User> {} );
   public activeUser = this.activeUserSubject.asObservable().distinctUntilChanged();
 
   constructor( private http: Http ) {
@@ -68,15 +68,7 @@ export class UserService {
     } );
 
     return this.http.request( this.userListUrl, options )
-      .map( ( response: Response ) => {
-        const userArr: User[] = [];
-        response.json().forEach( function ( json ) {
-          const user = Object.assign( new User(), json );
-          userArr.push( user );
-        } );
-        // this.usersSubject.next(userArr);
-        return userArr;
-      } )
+      .map( ( response: Response ) => <User[]> response.json() ) // this.usersSubject.next(userArr);
       .catch( ( error: Response ) => this.errorHandler( error ) );
   }
 

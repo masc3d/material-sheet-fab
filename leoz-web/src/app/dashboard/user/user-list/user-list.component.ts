@@ -16,7 +16,7 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     console.log( '-------------- UserListComponent ngOnInit' );
-    this.selected( new User() );
+    this.selected( <User> {} );
     this.users = this.userService.getUsers();
   }
 

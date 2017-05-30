@@ -16,7 +16,7 @@ export class DriverService {
 
   // private usersSubject = new BehaviorSubject<User[]>( [] );
   // public users = this.usersSubject.asObservable().distinctUntilChanged();
-  private activeDriverSubject = new BehaviorSubject<Driver>( new Driver() );
+  private activeDriverSubject = new BehaviorSubject<Driver>( <Driver> {} );
   public activeDriver = this.activeDriverSubject.asObservable().distinctUntilChanged();
 
   constructor( private http: Http ) {
@@ -40,14 +40,7 @@ export class DriverService {
     } );
 
     return this.http.request( this.driverListUrl, options )
-      .map( ( response: Response ) => {
-        const driverArr: Driver[] = [];
-        response.json().forEach( function ( json ) {
-          const driver = Object.assign( new Driver(), json );
-          driverArr.push( driver );
-        } );
-        return driverArr;
-      } )
+      .map( ( response: Response ) => <Driver[]> response.json() )
       .catch( ( error: Response ) => this.errorHandler( error ) );
   }
 
