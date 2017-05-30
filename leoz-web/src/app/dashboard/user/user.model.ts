@@ -1,4 +1,4 @@
-export class User {
+export interface User {
 
   active: boolean;
   alias: string;
@@ -12,9 +12,6 @@ export class User {
   phone: string;
   role: User.RoleEnum;
 
-  toString(): string {
-    return `firstname: ${this.firstName} / surname: ${this.lastName}`;
-  }
 }
 
 export namespace User {

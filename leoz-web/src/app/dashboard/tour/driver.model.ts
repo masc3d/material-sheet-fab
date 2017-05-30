@@ -1,12 +1,7 @@
-export class Driver {
-
+export interface Driver {
   firstName: string;
   lastName: string;
   role: Driver.RoleEnum;
-
-  toString(): string {
-    return `firstname: ${this.firstName}; lastname: ${this.lastName}`;
-  }
 }
 
 export namespace Driver {

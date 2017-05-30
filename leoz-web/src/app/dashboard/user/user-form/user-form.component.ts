@@ -8,16 +8,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 @Component( {
   selector: 'app-user-form',
-  templateUrl: './user-form.component.html',
-  styles: [ `
-    input.ng-invalid, select.ng-invalid {
-      border-left: 5px solid red;
-    }
-
-    input.ng-valid, select.ng-valid {
-      border-left: 5px solid green;
-    }
-  ` ]
+  templateUrl: './user-form.component.html'
 } )
 export class UserFormComponent implements OnInit, OnDestroy {
 
@@ -49,7 +40,6 @@ export class UserFormComponent implements OnInit, OnDestroy {
       this.userForm.patchValue( {
         firstName: activeUser.firstName,
         lastName: activeUser.lastName,
-        /*password: activeUser.password,*/
         password: '',
         email: activeUser.email,
         phone: activeUser.phone,

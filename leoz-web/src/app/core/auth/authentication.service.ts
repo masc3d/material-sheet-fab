@@ -5,6 +5,7 @@ import { Http, Response } from '@angular/http';
 import { RequestOptions, Headers } from '@angular/http';
 import { environment } from '../../../environments/environment';
 import { RoleGuard } from './role.guard';
+import { ApiKeyHeaderFactory } from '../api-key-header.factory';
 
 @Injectable()
 export class AuthenticationService {
@@ -24,16 +25,14 @@ export class AuthenticationService {
 
   login( username: string, password: string ): Observable<any> {
 
-    const headers = new Headers();
-    headers.append( 'Content-Type', 'application/json' );
+    const options = new RequestOptions( { headers: ApiKeyHeaderFactory.headers() } );
 
-    const options = new RequestOptions( { headers: headers } );
+    const body = JSON.stringify( {
+      'email': `${username}`,
+      'password': `${password}`
+    } );
 
-    return this.http.patch( this.authUrl,
-      JSON.stringify( {
-        'email': `${username}`,
-        'password': `${password}`
-      } ), options )
+    return this.http.patch( this.authUrl, body, options )
       .map( ( response: Response ) => {
         if (response.status === 200) {
           const userJson = response.json();
