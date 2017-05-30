@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { environment } from '../../../environments/environment';
 import { Position } from './position.model';
 import { Subscription } from 'rxjs/Subscription';
+import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 
 @Injectable()
 export class TourService {
@@ -20,21 +21,15 @@ export class TourService {
   getLocation(email: string): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
-    const headers = new Headers();
-    headers.append( 'Content-Type', 'application/json' );
-    headers.append( 'x-api-key', currUser.key );
-
     // const queryParameters = new URLSearchParams();
     // queryParameters.set('email', email);
-    // queryParameters.set('debitor-id', currUser.debitorNo);
 
     const options = new RequestOptions( {
-      method: RequestMethod.Get,
-      headers: headers,
+      headers: ApiKeyHeaderFactory.headers( currUser.key ),
       // search: queryParameters
     } );
 
-    return this.http.request( `${this.locationUrl}?email=${email}`, options );
+    return this.http.get( `${this.locationUrl}?email=${email}`, options );
   }
 
   changeActiveMarker( selectedDriver ) {

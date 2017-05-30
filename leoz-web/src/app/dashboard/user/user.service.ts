@@ -9,6 +9,7 @@ import 'rxjs/add/observable/of';
 
 import { User } from './user.model';
 import { environment } from '../../../environments/environment';
+import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 
 @Injectable()
 export class UserService {
@@ -25,25 +26,19 @@ export class UserService {
 
   insert( userData: any ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-    const headers = new Headers();
-    headers.append( 'Content-Type', 'application/json' );
-    headers.append( 'x-api-key', currUser.key );
 
-    const options = new RequestOptions( { headers: headers } );
     return this.http.post( this.userListUrl,
-      JSON.stringify( userData ), options );
+      JSON.stringify( userData ),
+      new RequestOptions( { headers: ApiKeyHeaderFactory.headers( currUser.key ) } ));
   }
 
   update( userData: any ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-    const headers = new Headers();
-    headers.append( 'Content-Type', 'application/json' );
-    headers.append( 'x-api-key', currUser.key );
     const queryParameters = new URLSearchParams();
     queryParameters.set( 'email', userData.originEmail );
 
     const options = new RequestOptions( {
-      headers: headers,
+      headers: ApiKeyHeaderFactory.headers( currUser.key ),
       search: queryParameters
     } );
     return this.http.put( this.userListUrl,
@@ -53,21 +48,12 @@ export class UserService {
   getUsers() {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
-    const headers = new Headers();
-    headers.append( 'Content-Type', 'application/json' );
-    headers.append( 'x-api-key', currUser.key );
-
-    const queryParameters = new URLSearchParams();
-    // queryParameters.set('email', currUser.email);
-    // queryParameters.set('debitor-id', currUser.debitorNo);
-
     const options = new RequestOptions( {
-      method: RequestMethod.Get,
-      headers: headers,
-      search: queryParameters
+      headers: ApiKeyHeaderFactory.headers( currUser.key ),
+      search: new URLSearchParams()
     } );
 
-    return this.http.request( this.userListUrl, options )
+    return this.http.get( this.userListUrl, options )
       .map( ( response: Response ) => <User[]> response.json() ) // this.usersSubject.next(userArr);
       .catch( ( error: Response ) => this.errorHandler( error ) );
   }

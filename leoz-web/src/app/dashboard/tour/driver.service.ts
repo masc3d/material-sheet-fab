@@ -8,6 +8,7 @@ import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/of';
 import { environment } from '../../../environments/environment';
 import { Driver } from './driver.model';
+import { ApiKeyHeaderFactory } from '../../core/api-key-header.factory';
 
 @Injectable()
 export class DriverService {
@@ -25,21 +26,12 @@ export class DriverService {
   getDrivers() {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
-    const headers = new Headers();
-    headers.append( 'Content-Type', 'application/json' );
-    headers.append( 'x-api-key', currUser.key );
-
-    const queryParameters = new URLSearchParams();
-    // queryParameters.set('email', currUser.email);
-    // queryParameters.set('debitor-id', currUser.debitorNo);
-
     const options = new RequestOptions( {
-      method: RequestMethod.Get,
-      headers: headers,
-      search: queryParameters
+      headers:  ApiKeyHeaderFactory.headers(currUser.key),
+      search: new URLSearchParams()
     } );
 
-    return this.http.request( this.driverListUrl, options )
+    return this.http.get( this.driverListUrl, options )
       .map( ( response: Response ) => <Driver[]> response.json() )
       .catch( ( error: Response ) => this.errorHandler( error ) );
   }
