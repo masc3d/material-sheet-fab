@@ -1,23 +1,46 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
     <string name="action_settings">Einstellungen</string>
     <string name="action_sign_in">Anmelden / Registrieren</string>
     <string name="action_sign_in_short">Anmelden</string>
 
+    <string name="cancel">Abbrechen</string>
+
+    <string name="capture_image">Capture image</string>
+
+    <string name="check_for_updates">Check for updates</string>
+
+    <string name="continue_without">Ohne fortfahren</string>
+
+    <string name="delivery">Zustellung</string>
+
+    <string name="dev_login">Developer login</string>
+
+    <string name="dismiss">Verwerfen</string>
+
     <string name="error_database_inconsistent">Inkonsistente Datenbank</string>
+    <string name="error_empty_field">Feld darf nicht leer sein.</string>
     <string name="error_fatal">Kritischer Fehler</string>
     <string name="error_field_required">Das Feld ist erforderlich</string>
+    <string name="error_format_mail">This is not a valid email format</string>
     <string name="error_imager_scan_failed">Unvollständiger oder fehlerhafter Scan</string>
     <string name="error_incorrect_password">Das Passwort ist falsch</string>
+    <string name="error_invalid_credentials">Email &amp; Passwort Kombination konnte nicht gefunden werden.</string>
     <string name="error_invalid_email">Die eMail-Adresse ist falsch</string>
     <string name="error_invalid_password">Das Passwort ist zu kurz</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="hint_field_mail">Email Addresse</string>
+    <string name="hint_field_password">Passwort</string>
     <string name="hint_leadseal_white_not_yellow">Scan white lead-seal! Not yellow!</string>
     <string name="hint_not_available">Nicht verfügbar</string>
     <string name="hint_scan_label_upper_bc">Scan upper barcode on label!</string>
+
+    <string name="linehaul">Linie</string>
+
+    <string name="logout">Abmelden</string>
 
     <string name="navigation_drawer_close">Navigation schließen</string>
     <string name="navigation_drawer_open">Navigation öffnen</string>
@@ -25,30 +48,22 @@
     <string name="prompt_password">Passwort (optional)</string>
     <string name="prompt_reinstall">Bitte installieren Sie die Anwendung neu</string>
 
+    <string name="prototype">Prototyp</string>
+
+    <string name="report_bug">Report bug</string>
+
+    <string name="skip">Überspringen</string>
+
     <string name="station_id">Station:</string>
 
+    <string name="title_activity_delivery">Zustellung</string>
+
     <string name="update">Aktualisieren</string>
+
     <string name="user">Benutzer:</string>
 
     <string name="version">App-Version:</string>
     <string name="version_available">v%s ist verfügbar</string>
-    <string name="error_empty_field">Feld darf nicht leer sein.</string>
-    <string name="error_format_mail">This is not a valid email format</string>
-    <string name="error_invalid_credentials">Email &amp; Passwort Kombination konnte nicht gefunden werden.</string>
-    <string name="hint_field_mail">Email Addresse</string>
-    <string name="hint_field_password">Passwort</string>
-    <string name="delivery">Zustellung</string>
-    <string name="linehaul">Linie</string>
+
     <string name="warehouse">Lager</string>
-    <string name="dismiss">Verwerfen</string>
-    <string name="logout">Abmelden</string>
-    <string name="title_activity_delivery">Zustellung</string>
-    <string name="cancel">Abbrechen</string>
-    <string name="continue_without">Ohne fortfahren</string>
-    <string name="skip">Überspringen</string>
-    <string name="tools">Tools</string>
-    <string name="check_for_updates">Check for updates</string>
-    <string name="report_bug">Report bug</string>
-    <string name="capture_image">Capture image</string>
-    <string name="dev_login">Developer login</string>
 </resources>

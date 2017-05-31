@@ -39,6 +39,7 @@ import kotlinx.android.synthetic.main.main_nav_header.*
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.ui.fragment.MenuFragment
+import org.jetbrains.anko.contentView
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
@@ -179,16 +180,15 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
             }
 
             R.id.nav_dev_login -> {
-                login.authenticate("foo@bar", "foobar")
-                        .subscribe {
-                            if (this is MainActivity) {
-                                this.processLogin()
-                            }
-                        }
+                this.nav_view.postDelayed({
+                    login.authenticate("foo@bar", "foobar")
+                },20)
             }
 
             R.id.nav_logout -> {
-                login.logout()
+                this.nav_view.postDelayed({
+                    login.logout()
+                },20)
             }
         }
 

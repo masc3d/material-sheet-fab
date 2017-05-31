@@ -8,9 +8,8 @@ import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Job
-import org.deku.leoz.mobile.ui.DeliveryMenuListAdapter
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
-import org.deku.leoz.mobile.ui.fragment.DeliveryFragment
+import org.deku.leoz.mobile.ui.fragment.DeliveryMainFragment
 import org.deku.leoz.mobile.ui.fragment.DeliveryProcessFragment
 import org.deku.leoz.mobile.ui.fragment.VehicleLoadingFragment
 import org.slf4j.LoggerFactory
@@ -20,7 +19,7 @@ import sx.android.fragment.util.withTransaction
 /**
  * Created by 27694066 on 09.05.2017.
  */
-class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryFragment.OnDeliveryMenuChoosed /* TODO: To be removed / use RX instead */, VehicleLoadingDialog.OnDialogResultListener /* TODO: To be removed / use RX instead */ {
+class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragment.Listener /* TODO: To be removed / use RX instead */, VehicleLoadingDialog.OnDialogResultListener /* TODO: To be removed / use RX instead */ {
     private val log = LoggerFactory.getLogger(this.javaClass)
     val job: Job by Kodein.global.lazy.instance()
 
@@ -37,27 +36,26 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryFragment.On
 
         if(savedInstanceState == null) {
             supportFragmentManager.withTransaction {
-                it.replace(this.uxContainer.id, DeliveryFragment())
+                it.replace(this.uxContainer.id, DeliveryMainFragment())
             }
 
             this.supportActionBar?.setTitle(R.string.delivery)
         }
     }
 
-
     /**
      * Fragment listener
      */
 
-    override fun onDeliveryMenuChoosed(entryType: DeliveryMenuListAdapter.DeliveryMenuEntry.Entry) {
+    override fun onDeliveryMenuChoosed(entryType: DeliveryMainFragment.MenuEntry.Entry) {
         log.debug("ONDELIVERYMENUCHOOSED")
         when(entryType){
-            DeliveryMenuListAdapter.DeliveryMenuEntry.Entry.ORDERLIST -> {
+            DeliveryMainFragment.MenuEntry.Entry.ORDERLIST -> {
                 supportFragmentManager.withTransaction {
                     it.replace(this.uxContainer.id, DeliveryProcessFragment())
                 }
             }
-            DeliveryMenuListAdapter.DeliveryMenuEntry.Entry.LOADING -> {
+            DeliveryMainFragment.MenuEntry.Entry.LOADING -> {
                 /**
                  * Start "vehicle loading" process
                  */

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
     <string name="action_settings">Settings</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -8,58 +8,74 @@
     <string name="app_name_long" translatable="false">Mobile Suite</string>
     <string name="app_project_name" translatable="false">leoz-mobile</string>
 
+    <string name="cancel">Cancel</string>
+
+    <string name="capture_image">Capture image</string>
+
+    <string name="check_for_updates">Check for updates</string>
+
+    <string name="continue_without">Continue withour</string>
+
+    <string name="delivery">Delivery</string>
+
+    <string name="dev_login">Developer login</string>
+
+    <string name="dismiss">Dismiss</string>
+
     <string name="error_database_inconsistent">Inconsistent database state</string>
+    <string name="error_empty_field">Field cannot be empty.</string>
     <string name="error_fatal">Fatal error</string>
     <string name="error_field_required">This field is required</string>
+    <string name="error_format_mail">This is not a valid email format</string>
     <string name="error_imager_scan_failed">Incomplete or failed scan</string>
     <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_credentials">Email/Password combination could not be found.</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="hint_field_mail">Email Address</string>
+    <string name="hint_field_password">Password</string>
     <string name="hint_leadseal_white_not_yellow">Scan white lead-seal! Not yellow!</string>
     <string name="hint_not_available">Not available</string>
     <string name="hint_scan_label_upper_bc">Scan upper barcode on label!</string>
 
+    <string name="hub" translatable="false">HUB</string>
+
+    <string name="linehaul">Linehaul</string>
+
     <string name="login" translatable="false">Login</string>
+
+    <string name="logout">Logout</string>
 
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
+
+    <string name="ok" translatable="false">OK</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email" translatable="false">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="prompt_reinstall">Please reinstall the application</string>
 
+    <string name="prototype">Prototype</string>
+
+    <string name="report_bug">Report bug</string>
+
+    <string name="skip">Skip</string>
+
     <string name="station_id">Station ID</string>
 
+    <string name="title_activity_delivery">Delivery</string>
+
     <string name="update">Update</string>
+
     <string name="user">User</string>
 
     <string name="version">Version</string>
     <string name="version_available">v%s is available</string>
-    <string name="error_empty_field">Field cannot be empty.</string>
-    <string name="error_format_mail">This is not a valid email format</string>
-    <string name="error_invalid_credentials">Email/Password combination could not be found.</string>
-    <string name="hint_field_mail">Email Address</string>
-    <string name="hint_field_password">Password</string>
+
     <string name="warehouse">Warehouse</string>
-    <string name="delivery">Delivery</string>
-    <string name="linehaul">Linehaul</string>
-    <string name="hub" translatable="false">HUB</string>
-    <string name="dismiss">Dismiss</string>
-    <string name="logout">Logout</string>
-    <string name="title_activity_delivery">Delivery</string>
-    <string name="cancel">Cancel</string>
-    <string name="ok" translatable="false">OK</string>
-    <string name="continue_without">Continue withour</string>
-    <string name="skip">Skip</string>
-    <string name="tools">Tools</string>
-    <string name="check_for_updates">Check for updates</string>
-    <string name="report_bug">Report bug</string>
-    <string name="prototype">Prototype</string>
-    <string name="capture_image">Capture image</string>
-    <string name="dev_login">Developer login</string>
 </resources>

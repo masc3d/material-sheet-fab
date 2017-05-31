@@ -27,6 +27,16 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- Layout styles -->
+    <style name="AppTheme.Layout" />
+    <!-- Use this style for all content areas which require default margins -->
+    <style name="AppTheme.Layout.Content">
+        <item name="android:layout_marginBottom">@dimen/activity_vertical_margin</item>
+        <item name="android:layout_marginLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
+    </style>
+
     <!-- Colored button style -->
     <style name="AppTheme.Button.Colored" parent="Widget.AppCompat.Button.Colored">
         <item name="android:paddingTop">18dp</item>
