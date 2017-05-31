@@ -19,31 +19,31 @@ open class Fragment(var fragmentTitle: String = "") : RxAppCompatDialogFragment(
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        log.debug("ONATTACH")
+        log.trace("ONATTACH")
     }
 
     override fun onDetach() {
         super.onDetach()
-        log.debug("ONDETACH")
+        log.trace("ONDETACH")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        log.debug("ONCREATE")
+        log.trace("ONCREATE")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        log.debug("ONDESTROY")
+        log.trace("ONDESTROY")
     }
 
     override fun onPause() {
         super.onPause()
-        log.debug("ONPAUSE")
+        log.trace("ONPAUSE")
     }
 
     override fun onResume() {
         super.onResume()
-        log.debug("ONRESUME")
+        log.trace("ONRESUME")
     }
 }

@@ -116,43 +116,43 @@ open class Application : MultiDexApplication(), android.app.Application.Activity
     }
 
     override fun onConfigurationChanged(p0: Configuration?) {
-        log.info("CONFIGCHANGE")
+        log.trace("CONFIGCHANGE")
     }
 
     override fun onLowMemory() {
-        log.info("LOWMEM")
+        log.trace("LOWMEM")
     }
 
     override fun onTrimMemory(p0: Int) {
-        log.info("TRIMMEM")
+        log.trace("TRIMMEM")
     }
 
     override fun onActivityCreated(p0: Activity?, p1: Bundle?) {
-        log.info("ACT_CREATED [${p0}]")
+        log.trace("ACT_CREATED [${p0}]")
     }
 
     override fun onActivityDestroyed(p0: Activity?) {
-        log.info("ACT_DESTROYED [${p0}]")
+        log.trace("ACT_DESTROYED [${p0}]")
     }
 
     override fun onActivityPaused(p0: Activity?) {
-        log.info("ACT_PAUSED [${p0}]")
+        log.trace("ACT_PAUSED [${p0}]")
     }
 
     override fun onActivityResumed(p0: Activity?) {
-        log.info("ACT_RESUMED [${p0}]")
+        log.trace("ACT_RESUMED [${p0}]")
     }
 
     override fun onActivitySaveInstanceState(p0: Activity?, p1: Bundle?) {
-        log.info("ACT_SAVEINSTANCESTATE [${p0}]")
+        log.trace("ACT_SAVEINSTANCESTATE [${p0}]")
     }
 
     override fun onActivityStarted(p0: Activity?) {
-        log.info("ACT_STARTED [${p0}]")
+        log.trace("ACT_STARTED [${p0}]")
     }
 
     override fun onActivityStopped(p0: Activity?) {
-        log.info("ACT_STOPPED [${p0}]")
+        log.trace("ACT_STOPPED [${p0}]")
     }
 }
 
