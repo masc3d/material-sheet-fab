@@ -7,7 +7,8 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let user of users | async">
+  <!--<tr *ngFor="let user of users | async">-->
+  <tr *ngFor="let user of users | async | userfilter">
     <td>{{user.firstName}}</td>
     <td>{{user.lastName}}</td>
     <td>{{user.role}}</td>
