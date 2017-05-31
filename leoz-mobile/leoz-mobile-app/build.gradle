@@ -13,7 +13,7 @@ buildscript {
         classpath(
                 'com.android.tools.build:gradle:2.3.2',
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
-                "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2",
+                "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.4",
                 "com.trello:victor:0.3.0",
                 "sx:sx-packager-gradle:0.1",
         )
@@ -22,6 +22,8 @@ buildscript {
     ext {
         v_android_buildtools = '25.0.2'
         v_android_support = '25.3.1'
+        v_dbflow = '4.0.2'
+        v_parceler = '1.1.8'
         v_roboelectric = '3.3.2'
         v_rxlifecycle = '2.1.0'
         v_stetho = '1.5.0'
@@ -31,6 +33,7 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.trello.victor'
 apply plugin: 'sx-packager-android'
@@ -48,10 +51,6 @@ def GENERATED_DIR = project.projectDir.toPath()
 
 def GENERATED_SVG_DIR = new File(GENERATED_DIR,
         'svg')
-
-kapt {
-    generateStubs true
-}
 
 android {
     compileSdkVersion 25
@@ -215,7 +214,7 @@ dependencies {
             // Kotlin extensions for activity/fragment state persistence
             "com.github.tinsukE:icekick:0.2",
 
-            "org.parceler:parceler-api:1.1.6",
+            "org.parceler:parceler-api:$v_parceler",
             'com.journeyapps:zxing-android-embedded:3.5.0',
 
             // YAML
@@ -230,20 +229,36 @@ dependencies {
 
             'com.github.pwittchen:reactivenetwork-rx2:0.9.1',
 
+            // Kryo
+            dependencies.create("com.esotericsoftware:kryo:4.0.0") {
+                exclude group: 'org.ow2.asm', module: 'asm'
+            },
+
             // FOR TESTING
+
             //RX Location
             //"com.patloew.rxlocation:rxlocation:1.0.3",
             // GMS
             //"com.google.android.gms:play-services-location:9.4.0",
             //"com.google.android.gms:play-services-places:9.4.0",
+
             // Volley
             "com.android.volley:volley:1.0.0",
+
             // Flow
             'com.squareup.flow:flow:1.0.0-alpha2',
-            // Kryo
-            dependencies.create("com.esotericsoftware:kryo:4.0.0") {
-                exclude group: 'org.ow2.asm', module: 'asm'
-            }
+
+            "com.github.Raizlabs.DBFlow:dbflow-core:$v_dbflow",
+            "com.github.Raizlabs.DBFlow:dbflow:$v_dbflow",
+
+            // kotlin extensions
+            "com.github.Raizlabs.DBFlow:dbflow-kotlinextensions:$v_dbflow",
+
+            // RXJava 2 support
+            "com.github.Raizlabs.DBFlow:dbflow-rx2:$v_dbflow",
+
+            // RXJava 2 Kotlin Extensions Support
+            "com.github.Raizlabs.DBFlow:dbflow-rx2-kotlinextensions:$v_dbflow"
     )
 
     debugCompile(
@@ -271,7 +286,8 @@ dependencies {
     )
 
     kapt(
-            "org.parceler:parceler:1.1.6"
+            "org.parceler:parceler:$v_parceler",
+            "com.github.Raizlabs.DBFlow:dbflow-processor:$v_dbflow"
     )
 }
 

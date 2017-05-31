@@ -14,7 +14,7 @@ import org.jboss.forge.roaster.model.source.*
 buildscript {
     ext {
         v_ormlite = '5.0'
-        v_xerial_sqlite = '3.16.1'
+        v_xerial_sqlite = '3.18.0'
     }
 
     dependencies {
