@@ -1,6 +1,6 @@
 export interface Position {
-  lat: number;
-  long: number;
+  latitude: number;
+  longitude: number;
   speed: number;
-  gpsTimestamp: string;
+  time: string;
 }

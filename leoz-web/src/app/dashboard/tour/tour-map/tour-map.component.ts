@@ -8,8 +8,8 @@ import { Position } from '../position.model';
 } )
 export class TourMapComponent implements OnInit {
 
-  lat: number;
-  long: number;
+  latitude: number;
+  longitude: number;
   displayMarker: boolean;
   name: string;
 
@@ -17,18 +17,18 @@ export class TourMapComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.lat = 48.57;
-    this.long = 13.26;
+    this.latitude = 48.57;
+    this.longitude = 13.26;
     this.displayMarker = false;
     // this.name = '';
 
     this.tourService.activeMarker.subscribe( ( activeMarker: Position ) => {
-      console.log( '-------- activeMarker', activeMarker );
-      this.displayMarker = activeMarker.lat > 0;
+      // console.log( '-------- activeMarker', activeMarker );
+      this.displayMarker = activeMarker.latitude > 0;
       if (this.displayMarker) {
         // this.name = activeDriverMarker.lastName;
-        this.lat = activeMarker.lat;
-        this.long = activeMarker.long;
+        this.latitude = activeMarker.latitude;
+        this.longitude = activeMarker.longitude;
       }
     } );
   }

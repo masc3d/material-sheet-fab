@@ -22,6 +22,6 @@ export class TourDriverListComponent implements OnInit {
 
   showPosition(driver: Driver) {
     this.tourService.changeActiveMarker(driver);
-    console.log('showPosition', driver);
+    // console.log('showPosition', driver);
   }
 }

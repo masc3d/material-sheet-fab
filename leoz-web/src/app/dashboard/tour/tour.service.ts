@@ -35,7 +35,7 @@ export class TourService {
   changeActiveMarker( selectedDriver ) {
     this.subscription = this.getLocation(selectedDriver.email)
       .subscribe( ( response: Response ) =>  {
-          const positions = <Position[]> response.json();
+          const positions = <Position[]> response.json()[0]['gpsDataPoints'];
           this.activeMarkerSubject.next( positions[0] );
       },
       ( error: Response ) => this.errorHandler( error ) );
