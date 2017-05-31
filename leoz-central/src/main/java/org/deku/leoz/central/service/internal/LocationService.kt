@@ -2,8 +2,6 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.repository.UserJooqRepository
-import org.deku.leoz.service.internal.entity.GpsDataPoint
-import org.deku.leoz.service.internal.entity.GpsData
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.rs.auth.ApiKey
@@ -21,26 +19,26 @@ import sx.mq.MqHandler
 @Named
 @ApiKey(true)
 @Path("internal/v1/location")
-class LocationService : LocationService, MqHandler<GpsDataPoint> {
+class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint> {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
     @Inject
     private lateinit var userRepository: UserJooqRepository
 
-    override fun get(email: String?, debitorId: Int?, apiKey: String?): List<GpsData> {
+    override fun get(email: String?, debitorId: Int?, apiKey: String?): List<LocationService.GpsData> {
         var debitor_id = debitorId
         var user_id: Int?
         val dtNow = Date()
         //val gpsdata = GpsData(49.9, 9.06, 25.3, dtNow.toTimestamp())
-        val pos = GpsDataPoint(
+        val pos = LocationService.GpsDataPoint(
                 latitude = 49.9,
                 longitude = 9.06,
                 time = Date(),
                 speed = 25.3.toFloat())
 
-        val gpsdata = GpsData("foo@bar.com", listOf(pos))
-        val gpsdataList = mutableListOf<GpsData>()
+        val gpsdata = LocationService.GpsData("foo@bar.com", listOf(pos))
+        val gpsdataList = mutableListOf<LocationService.GpsData>()
 
         gpsdataList.add(gpsdata)
         return gpsdataList
@@ -90,7 +88,7 @@ class LocationService : LocationService, MqHandler<GpsDataPoint> {
         */
     }
 
-    override fun onMessage(message: GpsDataPoint, replyChannel: MqChannel?) {
+    override fun onMessage(message: LocationService.GpsDataPoint, replyChannel: MqChannel?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
