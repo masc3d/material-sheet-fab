@@ -26,8 +26,8 @@
                 android:layout_width="@dimen/icon_size"
                 android:layout_height="@dimen/icon_size"
                 android:layout_gravity="center"
-                android:adjustViewBounds="true"
                 android:layout_marginRight="@dimen/horizontal_large_margin"
+                android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/ic_cancel_black"/>
 
@@ -41,17 +41,13 @@
 
         </LinearLayout>
 
-        <TextView
+        <sx.android.widget.BadgeTextView
             android:id="@+id/uxCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/rounded_corner_background_white"
-            android:gravity="center_vertical|center_horizontal"
-            android:padding="5dp"
-            android:text="0"
-            android:textAlignment="center"/>
+            android:background="@color/colorAccent"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>
