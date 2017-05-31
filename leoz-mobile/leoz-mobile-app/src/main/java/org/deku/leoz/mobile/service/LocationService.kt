@@ -11,7 +11,7 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.mq.MqttEndpoints
-import org.deku.leoz.service.internal.entity.GpsDataPoint
+import org.deku.leoz.service.internal.LocationService
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.MqttChannel
 import sx.mq.mqtt.channel
@@ -97,7 +97,7 @@ class LocationService(
                     return
                 }
 
-                val currentPosition = GpsDataPoint(
+                val currentPosition = LocationService.GpsDataPoint(
                         latitude = location.latitude,
                         longitude = location.longitude,
                         time = Date(location.time),
