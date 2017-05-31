@@ -64,7 +64,7 @@ data class Order(
         @get:ApiModelProperty(required = true, position = 120, value = "Pickup service")
         var pickupService: Service = Order.Service(listOf(ParcelService.NoAdditionalService)),
         @get:ApiModelProperty(required = true, position = 120, value = "Pickup information")
-        var pickupInformation: List<Information> = listOf(),
+        var pickupInformation: Information? = null,
 
         @get:ApiModelProperty(position = 60, required = true, value = "appointmentDelivery")
         var appointmentDelivery: Appointment,
@@ -73,7 +73,7 @@ data class Order(
         @get:ApiModelProperty(required = true, position = 120, value = "delivery services")
         var deliveryService: Service = Order.Service(listOf(ParcelService.NoAdditionalService)),
         @get:ApiModelProperty(required = true, position = 120, value = "delivery information")
-        var deliveryInformation: List<Information> = listOf(),
+        var deliveryInformation: Information? = null,
 
         @get:ApiModelProperty(position = 140, required = false, value = "Parcels")
         var Parcels: List<Parcel>

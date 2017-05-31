@@ -9,7 +9,6 @@ import org.deku.leoz.model.ParcelService
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
 import org.deku.leoz.service.internal.entity.DeliveryList
-import org.deku.leoz.service.internal.entity.Order
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
 
@@ -28,14 +27,14 @@ class Job {
 //    val doneStopProperty = ObservableRxProperty<List<Stop>>(mutableListOf())
 //    val doneStop: List<Stop> by doneStopProperty
 
-    val newOrderProperty = ObservableRxProperty<Stop.Order?>(null)
-    var newOrder: Stop.Order? by newOrderProperty
+    val newOrderProperty = ObservableRxProperty<Order?>(null)
+    var newOrder: Order? by newOrderProperty
 
     val activeStopProperty = ObservableRxProperty<Stop?>(null)
     val activeStop: Stop? by activeStopProperty
 
     val stopList: MutableList<Stop> = mutableListOf()
-    val orderList: MutableList<Stop.Order> = mutableListOf()
+    val orderList: MutableList<Order> = mutableListOf()
 
     /**
      * Clean the existing Job.stopList
@@ -62,52 +61,72 @@ class Job {
 
             orderList.addAll(deliveryList.orders
                     .map {
-                        Stop.Order(
-                                it.orderID.toString(),
-                                it.orderClassification,
-                                it.Parcels.map {
-                                    Stop.Order.Parcel(
+                        Order(
+                                id =  it.orderID.toString(),
+                                classification =  it.orderClassification,
+                                parcel = it.Parcels.map {
+                                    Order.Parcel(
                                             it.parcelID.toString(),
                                             it.parcelScanNumber,
                                             null,
                                             it.dimension
                                     )
                                 },
-                                mutableListOf(
-                                        Stop.Order.Address(
-                                                Stop.Order.Address.AddressClassification.DELIVERY,
+                                addresses = mutableListOf(
+                                        Order.Address(
+                                                Order.Address.Classification.DELIVERY,
                                                 it.deliveryAddress.addressLine1,
                                                 it.deliveryAddress.addressLine2 ?: "",
                                                 it.deliveryAddress.street,
                                                 it.deliveryAddress.streetNo ?: "",
                                                 it.deliveryAddress.zipCode,
                                                 it.deliveryAddress.city,
-                                                it.deliveryAddress.geoLocation
+                                                Pair(it.deliveryAddress.geoLocation?.latitude ?: 0.0, it.deliveryAddress.geoLocation?.longitude ?: 0.0)
                                         ),
-                                        Stop.Order.Address(
-                                                Stop.Order.Address.AddressClassification.PICKUP,
+                                        Order.Address(
+                                                Order.Address.Classification.PICKUP,
                                                 it.pickupAddress.addressLine1,
                                                 it.pickupAddress.addressLine2 ?: "",
                                                 it.pickupAddress.street,
                                                 it.pickupAddress.streetNo ?: "",
                                                 it.pickupAddress.zipCode,
                                                 it.pickupAddress.city,
-                                                it.pickupAddress.geoLocation
+                                                Pair(it.pickupAddress.geoLocation?.latitude ?: 0.0, it.pickupAddress.geoLocation?.longitude ?: 0.0)
                                         )
                                 ),
-                                mapOf(
-                                        Pair(OrderClassification.Delivery, it.appointmentDelivery),
-                                        Pair(OrderClassification.PickUp, it.appointmentPickup)
+                                appointment = listOf(),
+                                carrier = it.carrier,
+                                service = listOf(
+                                        Order.Service(
+                                                classification = Order.Service.Classification.DELIVERY_SERVICE,
+                                                service = it.deliveryService.services ?: listOf(ParcelService.NoAdditionalService)
+                                        ),
+                                        Order.Service(
+                                                classification = Order.Service.Classification.PICKUP_SERVICE,
+                                                service = it.pickupService.services ?: listOf(ParcelService.NoAdditionalService)
+                                        )
                                 ),
-                                it.carrier,
-                                mapOf(
-                                        Pair(OrderClassification.Delivery, it.deliveryService.services ?: listOf(ParcelService.NoAdditionalService))
+                                information = listOf(
+                                        Order.Information(
+                                                classification = Order.Information.Classification.DELIVERY_INFO,
+                                                additionalInformation = it.deliveryInformation!!.AdditionalInformation!!.map {
+                                                    Order.Information.AdditionalInformation(
+                                                            type = it.AdditionalInformationType!!,
+                                                            value = it.information ?: ""
+                                                    )
+                                                }
+                                        ),
+                                        Order.Information(
+                                                classification = Order.Information.Classification.PICKUP_INFO,
+                                                additionalInformation = it.pickupInformation!!.AdditionalInformation!!.map {
+                                                    Order.Information.AdditionalInformation(
+                                                            type = it.AdditionalInformationType!!,
+                                                            value = it.information ?: ""
+                                                    )
+                                                }
+                                        )
                                 ),
-                                mapOf(
-                                        Pair(OrderClassification.Delivery, it.deliveryInformation),
-                                        Pair(OrderClassification.PickUp, it.pickupInformation)
-                                ),
-                                0
+                                sort = 0
                         )
                     })
 
@@ -121,7 +140,7 @@ class Job {
      * Should be called from the receiver of the order.
      * @param order Stop.Order
      */
-    fun addOrder(order: Stop.Order) {
+    fun addOrder(order: Order) {
         newOrder = order
     }
 
@@ -131,7 +150,7 @@ class Job {
      * This method tries to find a stop in the existing stopList where the given order can be integrated.
      * If no suitable Stop has been found, a new stop with this order will be created.
      */
-    fun integrateOrder(order: Stop.Order): Stop {
+    fun integrateOrder(order: Order): Stop {
         val existingStopIndex = order.findSuitableStopIndex(stopList)
 
         if (!orderList.contains(order)) {
@@ -140,19 +159,23 @@ class Job {
 
         if (existingStopIndex > -1) {
             stopList[existingStopIndex].order.add(order)
+            TODO("To be fixed before use")
+            /* TODO
             stopList[existingStopIndex].appointment = minOf(order.appointment[order.classification]!!, stopList[existingStopIndex].appointment, Comparator<Order.Appointment> { o1, o2 ->
                 when {
                     o1.dateStart!!.before(o2.dateStart) -> 1
                     else -> 2
                 }
-            })
+            }) */
             return stopList[existingStopIndex]
         } else {
             stopList.add(
                     Stop(
                             order = mutableListOf(order),
                             address = order.getAddressOfInterest(),
-                            appointment = order.appointment[order.classification]!!,
+                            appointment = order.appointment.first {
+                                (it.classification == Order.Appointment.Classification.DELIVERY && order.classification == OrderClassification.Delivery) || (it.classification == Order.Appointment.Classification.PICKUP && order.classification == OrderClassification.PickUp)
+                            },
                             sort = stopList.last().sort + 1
                     )
             )
@@ -170,7 +193,7 @@ class Job {
         }
     }
 
-    fun findOrderByLabelReference(labelReference: String): List<Stop.Order> {
+    fun findOrderByLabelReference(labelReference: String): List<Order> {
         return orderList.filter {
             it.parcel.filter {
                 it.labelReference == labelReference
