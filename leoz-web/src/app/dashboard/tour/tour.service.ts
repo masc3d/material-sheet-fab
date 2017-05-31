@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Headers, Http, RequestMethod, RequestOptions, Response } from '@angular/http';
+import { Http, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { environment } from '../../../environments/environment';
 import { Position } from './position.model';
