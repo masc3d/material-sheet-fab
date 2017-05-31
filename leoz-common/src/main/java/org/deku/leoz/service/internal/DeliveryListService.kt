@@ -1,11 +1,7 @@
 package org.deku.leoz.service.internal
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiParam
-import org.deku.leoz.service.internal.entity.DeliveryList
-import org.deku.leoz.service.internal.entity.DeliveryListInfo
-import org.deku.leoz.service.internal.entity.Order
+import io.swagger.annotations.*
+import org.deku.leoz.service.entity.ShortDate
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -37,4 +33,40 @@ interface DeliveryListService {
     fun get(
             @QueryParam(DRIVER) @ApiParam(value = "Driver", required = false) driver: String? = null
     ): List<DeliveryListInfo>
+
+
+
+    /**
+     * Created by JT on 24.05.17.
+     *
+     *
+     *  Order:       (Auftrag / Sendung) kann Packstücke beinhalten
+     *  Shipment:   = Order
+     *  Parcel:     (Packstück / Collie ) entält als Eigenschaft nur Gewicht und Größe
+     *  Unit:       = Parcel
+     *  Deliverylist:  List<Order>
+     *  Stop
+     *  Job
+     *
+     *
+     */
+
+    @ApiModel(description = "Delivery List")
+    data class DeliveryList(
+            @ApiModelProperty(position = 10, required = true, value = "DeliveryListInfo")
+            val id: DeliveryListInfo,
+            @ApiModelProperty(position = 30, required = true, value = "Orders")
+            val orders: List<OrderService.Order>
+    )
+
+    @ApiModel(description = "Delivery List Info")
+    data class DeliveryListInfo(
+            @ApiModelProperty(example = "12345678", position = 10, required = true, value = "DeliveryListID")
+            val id: String,
+            @ApiModelProperty(example = "2017-05-26", position = 20, required = true, value = "Date")
+            val date: ShortDate
+    )
+
+
+
 }
