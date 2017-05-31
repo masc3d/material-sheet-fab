@@ -11,6 +11,7 @@ import org.deku.leoz.mobile.model.Job
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.fragment.DeliveryMainFragment
 import org.deku.leoz.mobile.ui.fragment.DeliveryProcessFragment
+import org.deku.leoz.mobile.ui.fragment.TourOverviewFragment
 import org.deku.leoz.mobile.ui.fragment.VehicleLoadingFragment
 import org.slf4j.LoggerFactory
 import sx.android.fragment.CameraFragment
@@ -52,7 +53,7 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragmen
         when(entryType){
             DeliveryMainFragment.MenuEntry.Entry.ORDERLIST -> {
                 supportFragmentManager.withTransaction {
-                    it.replace(this.uxContainer.id, DeliveryProcessFragment())
+                    it.replace(this.uxContainer.id, TourOverviewFragment())
                 }
             }
             DeliveryMainFragment.MenuEntry.Entry.LOADING -> {

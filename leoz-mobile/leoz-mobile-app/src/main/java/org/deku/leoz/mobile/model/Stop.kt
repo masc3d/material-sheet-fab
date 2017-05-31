@@ -11,8 +11,13 @@ class Stop (
         val order: MutableList<Order>,
         val address: Order.Address,
         var appointment: org.deku.leoz.service.internal.entity.Order.Appointment,
-        var sort: Int
+        var sort: Int,
+        val status: StopStatus = Stop.StopStatus.PENDING
 ) {
+
+    enum class StopStatus {
+        PENDING, DONE, FAILED
+    }
 
     //Nested class Order
     class Order (
