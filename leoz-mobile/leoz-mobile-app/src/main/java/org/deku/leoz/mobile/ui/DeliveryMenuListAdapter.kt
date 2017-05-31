@@ -53,7 +53,8 @@ class DeliveryMenuListAdapter (val context: Context, val entry: List<DeliveryMen
     data class DeliveryMenuEntry (val entryType: Entry, val description: String, var counter: Int, val icon: Drawable) {
         enum class Entry(val id: Long) {
             ORDERLIST(0),
-            LOADING(1)
+            LOADING(1),
+            UNLOADING(2)
         }
     }
 }

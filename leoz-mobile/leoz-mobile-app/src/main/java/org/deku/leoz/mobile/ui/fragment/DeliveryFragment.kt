@@ -17,6 +17,7 @@ import org.deku.leoz.mobile.BuildConfig
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Job
+import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.DeliveryMenuListAdapter
 import org.slf4j.LoggerFactory
 
@@ -57,6 +58,22 @@ class DeliveryFragment : Fragment() {
                                 description = "Auftragsliste",
                                 counter = job.stopList.size,
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_format_list_bulleted)!!
+                        ),
+                        DeliveryMenuListAdapter.DeliveryMenuEntry(
+                                entryType = DeliveryMenuListAdapter.DeliveryMenuEntry.Entry.UNLOADING,
+                                description = "Entladung",
+                                counter = job.stopList.filter {
+                                    it.status != Stop.StopStatus.PENDING
+                                }.size,
+                                icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_delivery)!!
+                        ),
+                        DeliveryMenuListAdapter.DeliveryMenuEntry(
+                                entryType = DeliveryMenuListAdapter.DeliveryMenuEntry.Entry.UNLOADING,
+                                description = "Statistik",
+                                counter = job.stopList.filter {
+                                    it.status != Stop.StopStatus.PENDING
+                                }.size,
+                                icon = AppCompatResources.getDrawable(context, R.drawable.ic_truck_delivery)!!
                         )
                 ),
                 rootViewGroup = null)
