@@ -4,6 +4,7 @@ import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.*
 import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.model.DebugSettings
 import org.deku.leoz.mobile.model.RemoteSettings
 import sx.ConfigurationMap
 import sx.YamlConfigurationMap
@@ -44,7 +45,11 @@ class SettingsConfiguration {
             }
 
             bind<RemoteSettings>() with singleton {
-                RemoteSettings(instance())
+                RemoteSettings(instance<ConfigurationMap>())
+            }
+
+            bind<DebugSettings>() with singleton {
+                DebugSettings(instance<ConfigurationMap>())
             }
         }
     }

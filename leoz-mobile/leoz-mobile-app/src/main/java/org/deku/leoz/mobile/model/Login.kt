@@ -28,10 +28,16 @@ import java.lang.UnsupportedOperationException
 class Login {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    companion object {
+        val DEV_USER = "foo@bar"
+        val DEV_PASSWORD = "foobar"
+    }
+
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
     private val device: Device = Kodein.global.instance()
     private val authService: AuthorizationService by Kodein.global.lazy.instance()
     private val storage: Storage by Kodein.global.lazy.instance()
+    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     private val SALT = "f169bf5444f57fbc4abdd5d089c8395e".parseHex()
 
@@ -58,7 +64,7 @@ class Login {
             )
 
             // Debug/dev supoort for development login
-            if (BuildConfig.DEBUG && email == "foo@bar" && password == "foobar") {
+            if (debugSettings.enabled && email == DEV_USER && password == DEV_PASSWORD) {
                 user = User(
                         name = "dev@leoz",
                         hash = "abcdef")

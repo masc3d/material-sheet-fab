@@ -16,6 +16,8 @@ import com.tinsuke.icekick.extension.unfreezeInstanceState
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.config.*
 import org.slf4j.LoggerFactory
+import sx.ConfigurationMap
+import sx.ConfigurationMapPath
 
 /**
  * Application

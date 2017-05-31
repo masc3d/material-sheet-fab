@@ -33,3 +33,7 @@ location:
    # Period in seconds
    period: 600
    allowMockLocation: false
+
+# Developer/debug settings
+debug:
+   enabled: false

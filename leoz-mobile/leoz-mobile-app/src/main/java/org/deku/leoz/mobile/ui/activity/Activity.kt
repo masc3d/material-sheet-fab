@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.main_nav_header.*
+import org.deku.leoz.mobile.model.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.ui.fragment.MenuFragment
@@ -57,6 +58,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
     private val tone: Tone by Kodein.global.lazy.instance()
     private val updateService: UpdateService by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
+    private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -237,7 +239,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
         val navHeaderView = this.drawer_layout.nav_view.getHeaderView(0)
         navHeaderView.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
 
-        if (BuildConfig.DEBUG) {
+        if (this.debugSettings.enabled) {
             this.nav_view.menu.findItem(R.id.nav_dev_login).setVisible(true)
             this.nav_view.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
         }
@@ -258,7 +260,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
 
                             this.nav_view.menu
                                     .findItem(R.id.nav_dev_prototype)
-                                    .setVisible(BuildConfig.DEBUG)
+                                    .setVisible(this.debugSettings.enabled)
 
                             this.nav_view.menu
                                     .findItem(R.id.nav_dev_login)
@@ -280,7 +282,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
 
                             this.nav_view.menu
                                     .findItem(R.id.nav_dev_login)
-                                    .setVisible(BuildConfig.DEBUG)
+                                    .setVisible(this.debugSettings.enabled)
 
                             // Hide navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.GONE
