@@ -10,6 +10,7 @@ import java.util.*
  */
 class Order (
         val id: String,
+        val state: State = Order.State.PENDING,
         val classification: org.deku.leoz.model.OrderClassification,
         val parcel: List<Parcel> = mutableListOf(),
         val addresses: MutableList<Address>,
@@ -24,7 +25,10 @@ class Order (
             val id: String,
             val labelReference: String?,
             val status: MutableList<Status>? = mutableListOf(),
-            val dimensions: org.deku.leoz.service.internal.entity.Order.Parcel.ParcelDimension?
+            val length: Float = 0.0F,
+            val height: Float = 0.0F,
+            val width: Float = 0.0F,
+            val weight: Float = 0.0F
     )
 
     data class Address (
@@ -42,7 +46,14 @@ class Order (
         }
     }
 
-    data class Status (val event: Long, val reason: Long, val date: Date, val geoLocation: Pair<Double, Double>, val recipient: String?, val information: String?)
+    data class Status (
+            val event: Long,
+            val reason: Long,
+            val date: Date,
+            val geoLocation: Pair<Double, Double>,
+            val recipient: String?,
+            val information: String?
+    )
 
     data class Appointment(
             val classification: Classification,

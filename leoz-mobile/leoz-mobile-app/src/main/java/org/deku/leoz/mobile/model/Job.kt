@@ -8,7 +8,6 @@ import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.model.ParcelService
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
-import org.deku.leoz.service.internal.entity.DeliveryList
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
 
@@ -37,6 +36,13 @@ class Job {
     val orderList: MutableList<Order> = mutableListOf()
 
     /**
+     * When initiating, check for existing orders stored in the local DB and (re)load them into the variables.
+     */
+    init {
+
+    }
+
+    /**
      * Clean the existing Job.stopList
      * Merge existing orders in Job.orderList into the cleaned Job.stopList
      */
@@ -53,7 +59,7 @@ class Job {
      */
     fun queryDeliveryList(listId: String): Boolean {
         try{
-            val deliveryList: DeliveryList = deliveryListService.getById(id = listId)
+            val deliveryList: DeliveryListService.DeliveryList = deliveryListService.getById(id = listId)
 
             if (deliveryList.orders.isEmpty()) {
                 return false
@@ -63,13 +69,17 @@ class Job {
                     .map {
                         Order(
                                 id =  it.orderID.toString(),
+                                state = Order.State.PENDING,
                                 classification =  it.orderClassification,
                                 parcel = it.Parcels.map {
                                     Order.Parcel(
-                                            it.parcelID.toString(),
-                                            it.parcelScanNumber,
-                                            null,
-                                            it.dimension
+                                            id = it.parcelID.toString(),
+                                            labelReference = it.parcelScanNumber,
+                                            status = null,
+                                            length = it.dimension?.length?.toFloat() ?: 0.0F,
+                                            height = it.dimension?.height?.toFloat() ?: 0.0F,
+                                            width = it.dimension?.width?.toFloat() ?: 0.0F,
+                                            weight = it.dimension?.weight?.toFloat() ?: 0.0F
                                     )
                                 },
                                 addresses = mutableListOf(
