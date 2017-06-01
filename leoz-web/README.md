@@ -18,6 +18,10 @@
 brew install nodejs
 ```
 
+##### Windows
+
+* Install [NodeJS](https://nodejs.org/en/download/current/) 
+
 ### Angular CLI
 
 ```
@@ -32,10 +36,18 @@ npm install -g @angular/cli@latest
 npm install
 ```
 
-## Run web application
+## Build and run web application
+
+For localhost only
 
 ```
 ng serve
+```
+
+For public access
+
+```
+ng serve --host <host> --port <port>
 ```
 
 # Default README
