@@ -36,17 +36,19 @@ export class UserService {
       new RequestOptions( { headers: ApiKeyHeaderFactory.headers( currUser.key ) } ) );
   }
 
-  update( userData: any ): Observable<Response> {
+  update( userData: any, originEmail: string ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-    const queryParameters = new URLSearchParams();
-    queryParameters.set( 'email', userData.originEmail );
+    // const queryParameters = new URLSearchParams();
+    // queryParameters.set( 'email', originEmail );
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
-      search: queryParameters
+      search: new URLSearchParams()
     } );
-    return this.http.put( this.userListUrl,
+    return this.http.put( `${this.userListUrl}?email=${originEmail}`,
       JSON.stringify( userData ), options );
+    // return this.http.put( this.userListUrl,
+    //   JSON.stringify( userData ), options );
   }
 
   getUsers(): void {

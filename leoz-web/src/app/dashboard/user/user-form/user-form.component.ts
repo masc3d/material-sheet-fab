@@ -16,7 +16,8 @@ export class UserFormComponent implements OnInit, OnDestroy {
 
   activeUser: User;
   userForm: FormGroup;
-  private subscription: Subscription;
+  private subscriptionCRUD: Subscription;
+  private subscriptionActiveUser: Subscription;
   private loading = false;
   private errMsg: Msg;
 
@@ -29,19 +30,29 @@ export class UserFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.errMsg = this.msgService.clear();
     this.userForm = this.fb.group( {
+      emailOrigin: [ null ],
       firstName: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],
       lastName: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],
-      password: [ null, [ Validators.required, Validators.minLength( 5 ), Validators.maxLength( 25 ) ] ],
+      password: [ null ],
       email: [ null, [ Validators.required, Validators.email ] ],
-      phone: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],
+      phone: [ null, [ Validators.required ] ],
       alias: [ null, [ Validators.required, Validators.maxLength( 30 ) ] ],
       role: [ null, [ Validators.required ] ],
       active: [ null, [ Validators.required ] ]
     } );
 
-    this.userService.activeUser.subscribe( ( activeUser: User ) => {
+    this.subscriptionActiveUser = this.userService.activeUser.subscribe( ( activeUser: User ) => {
       this.activeUser = activeUser;
+      const passwordControl = this.userForm.get( 'password' );
+      passwordControl.clearValidators();
+      passwordControl.setValidators( [ Validators.maxLength( 25 ) ] );
+      if (this.isEditMode( activeUser )) {
+        this.errMsg = this.msgService.clear();
+      } else {
+        passwordControl.setValidators( [ Validators.required ] );
+      }
       this.userForm.patchValue( {
+        emailOrigin: activeUser.email,
         firstName: activeUser.firstName,
         lastName: activeUser.lastName,
         password: '',
@@ -49,26 +60,73 @@ export class UserFormComponent implements OnInit, OnDestroy {
         phone: activeUser.phone,
         alias: activeUser.alias,
         role: activeUser.role,
-        active: activeUser.active
+        active: activeUser.active,
       } );
     } );
   }
 
+  private isEditMode( activeUser: User ) {
+    return activeUser.email && activeUser.email.length > 0;
+  }
+
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+    if (this.subscriptionCRUD) {
+      this.subscriptionCRUD.unsubscribe();
+    }
+    if (this.subscriptionActiveUser) {
+      this.subscriptionActiveUser.unsubscribe();
     }
   }
 
   onSubmit() {
-    console.log( this.userForm.value );
     this.loading = true;
-    this.subscription = this.userService.insert( this.userForm.value )
+    const removeFields = [ 'emailOrigin' ];
+    if (!this.userForm.value.emailOrigin || this.userForm.value.emailOrigin.length === 0) {
+      this.createUser( this.cloneAndRemove( this.userForm.value, removeFields ) );
+    } else {
+      if (!this.userForm.value.password || this.userForm.value.password.length === 0) {
+        removeFields.push( 'password' );
+      }
+      this.updateUser( this.cloneAndRemove( this.userForm.value, removeFields ),
+        this.userForm.value.emailOrigin );
+    }
+  }
+
+  private cloneAndRemove( value: any, removeFields: string[] ): any {
+    const copy = { ...value };
+    for (const removeField of removeFields) {
+      delete copy[ removeField ];
+    }
+    return copy;
+  }
+
+  protected createUser( userData: any ) {
+    this.subscriptionCRUD = this.userService.insert( userData )
       .subscribe(
         ( resp: Response ) => {
           if (resp.status === 204) {
             this.loading = false;
-            this.errMsg = this.msgService.success('User insert successful');
+            this.errMsg = this.msgService.success( 'User insert successful' );
+            this.clearActiveUser();
+            this.userService.getUsers();
+          } else {
+            this.loading = false;
+            this.errMsg = this.msgService.handleResponse( resp );
+          }
+        },
+        ( error: Response ) => {
+          this.loading = false;
+          this.errMsg = this.msgService.handleResponse( error );
+        } );
+  }
+
+  protected updateUser( userData: any, originEmail: string ) {
+    this.subscriptionCRUD = this.userService.update( userData, originEmail )
+      .subscribe(
+        ( resp: Response ) => {
+          if (resp.status === 204) {
+            this.loading = false;
+            this.errMsg = this.msgService.success( 'User update successful' );
             this.clearActiveUser();
             this.userService.getUsers();
           } else {
