@@ -36,6 +36,12 @@ npm install -g @angular/cli@latest
 npm install
 ```
 
+## Configuration
+
+For customizing REST host among others
+
+`src/environments/*.ts`
+
 ## Build and run web application
 
 For localhost only
