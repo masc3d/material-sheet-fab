@@ -1,3 +1,5 @@
+use dekuclient;
+
 CREATE TABLE `tblauftrag_xml` (
   `OrderID` double NOT NULL DEFAULT '0',
   `AuftragsID` varchar(25) DEFAULT NULL,
