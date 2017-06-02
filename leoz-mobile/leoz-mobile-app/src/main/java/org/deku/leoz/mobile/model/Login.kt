@@ -8,9 +8,11 @@ import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.requery.Persistable
+import io.requery.sql.EntityDataStore
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.mobile.DebugSettings
-import org.deku.leoz.mobile.Storage
+import org.deku.leoz.mobile.data.requery.UserEntity
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
@@ -27,16 +29,21 @@ class Login {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     companion object {
-        val DEV_USER = "foo@bar"
-        val DEV_PASSWORD = "foobar"
+        val DEV_EMAIL = "dev@leoz"
+        val DEV_PASSWORD = "password"
     }
 
     private val connectivity: Connectivity by Kodein.global.lazy.instance()
     private val device: Device = Kodein.global.instance()
-    private val authService: AuthorizationService by Kodein.global.lazy.instance()
-    private val storage: Storage by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
+    private val entityStore: EntityDataStore<Persistable> by Kodein.global.lazy.instance()
+
+    private val authService: AuthorizationService by Kodein.global.lazy.instance()
+
+    /**
+     * SALT for hashing passwords locally
+     */
     private val SALT = "f169bf5444f57fbc4abdd5d089c8395e".parseHex()
 
     // Consumers can observe this property for changes
@@ -52,7 +59,6 @@ class Login {
      */
     fun authenticate(email: String, password: String): Observable<User> {
         val task = Observable.fromCallable {
-            val authResponse: AuthorizationService.MobileResponse
             val user: User
 
             val hashedPassword = hashUserPassword(
@@ -62,10 +68,10 @@ class Login {
             )
 
             // Debug/dev supoort for development login
-            if (debugSettings.enabled && email == DEV_USER && password == DEV_PASSWORD) {
+            if (debugSettings.enabled && email == DEV_EMAIL && password == DEV_PASSWORD) {
                 user = User(
-                        name = "dev@leoz",
-                        hash = "abcdef")
+                        name = DEV_EMAIL,
+                        hash = hashedPassword)
             } else {
                 if (connectivity.network.state == NetworkInfo.State.CONNECTED) {
                     log.debug("Connection established, login online.")
@@ -81,23 +87,18 @@ class Login {
                             )
                     )
 
-                    authResponse = authService.authorizeMobile(request)
-
-                    if (authResponse.key.isBlank())
-                        throw IllegalStateException()
+                    val authResponse = authService.authorizeMobile(request)
 
                     user = User(
                             name = email,
                             hash = hashedPassword
                     )
 
-                    // TODO: needs rework, store in db
-                    // Storing credentials (including API-Key) as Identity.
-                    // Filename of the stored identity depends on username 'USERNAME.ident'.
-                    // Identity.name = hashed password
-                    // Identity.key = API key
-//                        Identity(authResponse.key, hashedPassword)
-//                                .save(storage.dataDir.resolve("$email.ident"))
+                    val rUser = UserEntity()
+                    rUser.email = email
+                    rUser.password = hashedPassword
+                    rUser.apiKey = authResponse.key
+                    entityStore.upsert(rUser)
                 } else {
                     throw UnsupportedOperationException()
 

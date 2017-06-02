@@ -178,7 +178,9 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
 
             R.id.nav_dev_login -> {
                 this.nav_view.postDelayed({
-                    login.authenticate("foo@bar", "foobar")
+                    login.authenticate(
+                            email = Login.DEV_EMAIL,
+                            password = Login.DEV_PASSWORD)
                 },20)
             }
 
