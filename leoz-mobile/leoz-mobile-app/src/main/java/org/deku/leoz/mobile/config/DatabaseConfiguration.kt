@@ -5,18 +5,13 @@ import android.database.sqlite.SQLiteDatabase
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.erased.*
-import com.github.salomonbrys.kodein.genericSingleton
 import io.requery.Persistable
 import io.requery.android.sqlite.DatabaseSource
 import io.requery.reactivex.KotlinReactiveEntityStore
-import io.requery.reactivex.ReactiveEntityStore
-import io.requery.reactivex.ReactiveSupport
-import io.requery.sql.EntityDataStore
-import io.requery.sql.KotlinConfiguration
 import io.requery.sql.KotlinEntityDataStore
-import io.requery.sql.TableCreationMode
 import org.deku.leoz.mobile.data.requery.Models
 import org.deku.leoz.mobile.Database
+import org.deku.leoz.mobile.R
 import org.slf4j.LoggerFactory
 import sx.ConfigurationMap
 import sx.ConfigurationMapPath
@@ -41,19 +36,14 @@ class DatabaseConfiguration {
             bind<Database>() with singleton {
                 val settings = Settings(instance())
 
-                Database(
-                        context = instance(),
-                        cleanStartup = settings.cleanStartup)
-            }
+                val context = instance<Context>()
+                val name = "${context.getString(R.string.app_project_name)}.db"
 
-            /**
-             * Requery data source
-             */
-            bind<DatabaseSource>() with singleton {
+                // Requery data store
                 val ds = object : DatabaseSource(
                         instance<Context>(),
                         Models.REQUERY,
-                        instance<Database>().name,
+                        name,
                         1) {
 
                     override fun onCreate(db: SQLiteDatabase?) {
@@ -65,18 +55,19 @@ class DatabaseConfiguration {
                     }
                 }
 
-                ds
+                val store = KotlinReactiveEntityStore(
+                        store = KotlinEntityDataStore<Persistable>(
+                                configuration = ds.configuration))
+
+                Database(
+                        context = instance(),
+                        name = name,
+                        store = store,
+                        clean = settings.cleanStartup)
             }
 
-            /**
-             * Requery reactive entity store
-             */
-            bindGeneric<KotlinReactiveEntityStore<Persistable>>() with singleton {
-                val configuration = instance<DatabaseSource>().configuration
-
-                KotlinReactiveEntityStore(
-                        store = KotlinEntityDataStore<Persistable>(
-                                configuration = configuration))
+            bind<Database.Migration>() with singleton {
+                instance<Database>().Migration()
             }
         }
     }

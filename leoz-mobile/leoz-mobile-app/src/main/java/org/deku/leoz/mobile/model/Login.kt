@@ -13,6 +13,7 @@ import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
 import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.hashUserPassword
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.data.requery.UserEntity
 import org.deku.leoz.service.internal.AuthorizationService
@@ -39,7 +40,7 @@ class Login {
     private val device: Device = Kodein.global.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
-    private val db: KotlinReactiveEntityStore<Persistable> by Kodein.global.lazy.genericInstance()
+    private val db: Database by Kodein.global.lazy.instance()
 
     private val authService: AuthorizationService by Kodein.global.lazy.instance()
 
@@ -102,12 +103,13 @@ class Login {
                     rUser.email = email
                     rUser.password = hashedPassword
                     rUser.apiKey = authResponse.key
-                    db.upsert(rUser).blockingGet()
+                    db.store.upsert(rUser).blockingGet()
 
                 } else {
                     log.info("Authorizing user [${email}] offline")
 
-                    val rUser = (db.select(UserEntity::class) where UserEntity.EMAIL.eq(email))
+                    val rUser = db.store.select(UserEntity::class)
+                            .where(UserEntity.EMAIL.eq(email))
                             .get()
                             .firstOrNull()
 

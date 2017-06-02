@@ -65,7 +65,7 @@ class StartupActivity : RxAppCompatActivity() {
         Kodein.global.instance<LogConfiguration>()
         Kodein.global.instance<Application>()
         Kodein.global.instance<UpdateService>()
-        val db: Database = Kodein.global.instance()
+        val dbMigration: Database.Migration = Kodein.global.instance()
 
         log.info("${this.app.name} v${this.app.version}")
         log.trace("Intent action ${this.intent.action}")
@@ -73,7 +73,7 @@ class StartupActivity : RxAppCompatActivity() {
         if (!this.started) {
 
             // Start database migration (async)
-            val ovMigrate = db.migrate()
+            val ovMigrate = dbMigration.run()
                     // Ignore this exception here, as StartupActivity is about to finish.
                     // Migration result will be evaluated in MainActivity
                     .onErrorReturnItem(0)

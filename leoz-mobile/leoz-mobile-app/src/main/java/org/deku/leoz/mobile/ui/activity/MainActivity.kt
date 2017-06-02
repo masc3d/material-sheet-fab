@@ -20,14 +20,10 @@ import sx.android.fragment.util.withTransaction
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.view.LayoutInflater
-import com.github.salomonbrys.kodein.genericInstance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.requery.Persistable
-import io.requery.reactivex.KotlinReactiveEntityStore
-import io.requery.sql.KotlinEntityDataStore
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.User
 import org.deku.leoz.mobile.SharedPreference
@@ -42,9 +38,9 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         // Check (asynchronous) database migration result
-        val database: Database = Kodein.global.instance()
+        val database: Database.Migration = Kodein.global.instance()
 
-        val migrationResult = database.migrationResult
+        val migrationResult = database.result
         if (migrationResult != null) {
             // Build error message
             var text = "${this.getText(org.deku.leoz.mobile.R.string.error_database_inconsistent)}"
@@ -109,8 +105,6 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-
-        val k: KotlinReactiveEntityStore<Persistable> = Kodein.global.genericInstance()
 
         login.authenticatedUserProperty
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
