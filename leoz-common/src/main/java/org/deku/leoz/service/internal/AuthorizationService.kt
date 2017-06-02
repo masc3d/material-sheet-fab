@@ -115,3 +115,9 @@ interface AuthorizationService {
     @ApiOperation(value = "Request web authorization")
     fun authorizeWeb(request: Credentials): WebResponse
 }
+
+// TODO: removing this unused (extension) method will cause CT-50 to segfault when update service downloads apk file. requires investigation.
+// Extensions
+fun AuthorizationService.Credentials.hashPassword(salt: ByteArray): String {
+    return hashUserPassword(salt = salt, email = this.email, password = this.password)
+}
