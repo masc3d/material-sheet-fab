@@ -2,6 +2,7 @@ package org.deku.leoz.node.sync
 
 import org.deku.leoz.config.JmsConfiguration
 import org.deku.leoz.config.ArtemisConfiguration
+import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.node.config.MessageBrokerTestConfiguration
 import org.deku.leoz.node.config.PersistenceConfiguration
@@ -60,8 +61,8 @@ class EntitySyncTest {
         val requestChannelConfig: JmsEndpoint
         when (this.broker) {
             is ActiveMQBroker -> {
-                notificationChannelConfig = JmsConfiguration.entitySyncTopic
-                requestChannelConfig = JmsConfiguration.entitySyncQueue
+                notificationChannelConfig = JmsEndpoints.central.entitySync.topic
+                requestChannelConfig = JmsEndpoints.central.entitySync.queue
             }
             is ArtemisBroker -> {
                 notificationChannelConfig = ArtemisConfiguration.entitySyncTopic
