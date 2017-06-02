@@ -1,4 +1,4 @@
-CREATE TABLE mst_station (
+CREATE TABLE station (
   station_nr       INTEGER   NOT NULL,
   address1         VARCHAR,
   address2         VARCHAR,
@@ -32,4 +32,11 @@ CREATE TABLE mst_station (
   'timestamp'      TIMESTAMP NOT NULL,
   sync_id          BIGINT    NOT NULL,
   PRIMARY KEY (station_nr)
+);
+
+CREATE TABLE user (
+  email         VARCHAR NOT NULL,
+  password      VARCHAR NOT NULL,
+  api_key       VARCHAR NOT NULL,
+  PRIMARY KEY (email)
 );
