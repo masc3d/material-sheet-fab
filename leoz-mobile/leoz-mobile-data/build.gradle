@@ -122,7 +122,8 @@ dependencies {
             "com.j256.ormlite:ormlite-core:$v_ormlite",
 
             // Requery
-            "io.requery:requery:$v_requery"
+            "io.requery:requery:$v_requery",
+            "io.requery:requery-kotlin:$v_requery"
     )
 
     compileOnly(
@@ -211,6 +212,17 @@ public class CustomJooqGeneratorStrategy extends DefaultGeneratorStrategy {
         }
 
         return packageName
+    }
+
+    @Override
+    String getJavaClassName(Definition definition, GeneratorStrategy.Mode mode) {
+        String baseName = super.getJavaClassName(definition, mode)
+
+        if (mode == GeneratorStrategy.Mode.INTERFACE) {
+            return "${baseName}Entity"
+        } else {
+            return baseName
+        }
     }
 }
 
