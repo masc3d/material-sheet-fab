@@ -30,8 +30,9 @@ class ObjectMapperProvider : ContextResolver<ObjectMapper> {
         // Write date/times in JSON notation instead of (numeric) timestamps or arrays
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
         // Read/Write enums using index
-        mapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true)
-        mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true)
+        mapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, false)
+        mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, false)
+        mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, false)
         // Enable support for java.time (java 8)
 //        mapper.registerModule(JavaTimeModule());
         mapper.setDateFormat(ISO8601DateFormat())
