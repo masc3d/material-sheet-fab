@@ -19,6 +19,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.Storage
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
+import sx.time.Duration
 
 /**
  * Log configuration
@@ -46,6 +47,9 @@ class LogConfiguration {
 
                 appender.context = loggerContext
                 appender.start()
+                appender.flushPeriod = Duration.ofMinutes(5)
+                appender.flushBufferThreshold = 20
+                appender.flushOnError = true
                 appender.dispatcher.start()
 
                 appender
