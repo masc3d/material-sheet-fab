@@ -7,6 +7,7 @@ import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
 import io.requery.sql.EntityDataStore
@@ -126,10 +127,11 @@ class Login {
                 .observeOn(AndroidSchedulers.mainThread())
 
         // Subscribing to task will actually start it
-        task.subscribe {
-            // Store authenticated user in property
-            this.authenticatedUser = it
-        }
+        task.subscribeBy(
+                onNext = {
+                    // Store authenticated user in property
+                    this.authenticatedUser = it
+                }, onError = {})
 
         // Return task to consumer for optionally subscribing to running authentication task as well
         return task
