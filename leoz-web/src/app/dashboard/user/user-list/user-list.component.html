@@ -13,7 +13,7 @@
     <td>{{user.lastName}}</td>
     <td>{{user.role}}</td>
     <td (click)="selected(user)"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></td>
-    <td><i class="fa fa-trash-o fa-fw" aria-hidden="true"></i></td><!--<td>nur deaktivieren</td>-->
+    <td (click)="deactivate(user)"><i class="fa fa-trash-o fa-fw" aria-hidden="true"></i></td><!--<td>nur deaktivieren</td>-->
   </tr>
   </tbody>
 </table>

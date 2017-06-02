@@ -39,7 +39,8 @@ class Order (
             val streetNo: String = "",
             val zipCode: String,
             val city: String,
-            val geoLocation: Pair<Double, Double>?
+            val latitude: Double = 0.0,
+            val longitude: Double = 0.0
     ) {
         enum class Classification {
             PICKUP, DELIVERY, EXCHANGE_DELIVERY, EXCHANGE_PICKUP
@@ -71,6 +72,29 @@ class Order (
     ) {
         enum class Classification {
             DELIVERY_SERVICE, PICKUP_SERVICE
+        }
+
+        fun getParcelServiceListFromBinary(value: Long): List<ParcelService> {
+
+            val parcelServiceList: MutableList<ParcelService> = mutableListOf()
+
+            for (p: ParcelService in ParcelService.values()) {
+                if ((p.serviceId and value) == p.serviceId) {
+                    parcelServiceList.add(p)
+                }
+            }
+
+            return if(parcelServiceList.size == 0) listOf(ParcelService.NoAdditionalService) else parcelServiceList
+        }
+
+        fun getBinaryFromService(service: Service): Long {
+            var value: Long = 0
+
+            service.service.forEach {
+                value + it.serviceId
+            }
+
+            return value
         }
     }
 

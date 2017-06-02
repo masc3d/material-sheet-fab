@@ -68,7 +68,4 @@ export class UserService {
   changeActiveUser( selectedUser ): void {
     this.activeUserSubject.next( selectedUser );
   }
-  deactivateActiveUser( selectedUser ): void {
-    // this.activeUserSubject.next( selectedUser );
-  }
 }

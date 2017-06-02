@@ -13,6 +13,7 @@ import { MsgService } from '../shared/msg/msg.service';
 } )
 export class LoginComponent implements OnInit, OnDestroy {
   subscription: Subscription;
+  subscriptionMsg: Subscription;
 
   loading = false;
 
@@ -26,7 +27,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.errMsg = this.msgService.clear();
+    this.msgService.clear();
+    this.subscriptionMsg = this.msgService.msg.subscribe((msg: Msg) => this.errMsg = msg);
     // reset login status
     this.authenticationService.logout();
 
@@ -40,6 +42,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    if (this.subscriptionMsg) {
+      this.subscriptionMsg.unsubscribe();
+    }
   }
 
   login() {
@@ -52,12 +57,12 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.router.navigate( [ 'dashboard/home' ] );
           } else {
             this.loading = false;
-            this.errMsg = this.msgService.handleResponse(resp);
+            this.msgService.handleResponse(resp);
           }
         },
         ( error: Response ) => {
           this.loading = false;
-          this.errMsg = this.msgService.handleResponse(error);
+          this.msgService.handleResponse(error);
         } );
   }
 
@@ -66,6 +71,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   resetErrMsg() {
-    this.errMsg = this.msgService.clear();
+    this.msgService.clear();
   }
 }

@@ -33,7 +33,7 @@ class StopListAdapter(val context: Context, val data: List<Stop>, val rootViewGr
         (vi.findViewById(R.id.uxZip) as TextView).text = data[position].address.zipCode
         (vi.findViewById(R.id.uxCity) as TextView).text = data[position].address.city
         (vi.findViewById(R.id.uxReceipient) as TextView).text = data[position].address.addressLine1
-        (vi.findViewById(R.id.uxAppointment) as TextView).text = "${data[position].appointment.dateStart} - ${data[position].appointment.dateEnd}"
+        (vi.findViewById(R.id.uxAppointment) as TextView).text = "${data[position].appointment.dateFrom} - ${data[position].appointment.dateTo}"
         (vi.findViewById(R.id.uxOrderCount) as TextView).text = data[position].order.size.toString()
         (vi.findViewById(R.id.uxParcelCount) as TextView).text = parcelCount.toString()
 
