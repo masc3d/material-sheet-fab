@@ -123,6 +123,11 @@ class StartupActivity : RxAppCompatActivity() {
                             // Late initialization of singletons which require eg. permissions
                             Kodein.global.instance<IMqttAsyncClient>()
 
+                            // Initialize location service
+                            this.startService(
+                                    Intent(applicationContext, LocationService::class.java))
+
+                            // Start main activity
                             val handler = Handler()
                             handler.postDelayed({
                                 this@StartupActivity.startMainActivity(withAnimation = true)
@@ -133,9 +138,6 @@ class StartupActivity : RxAppCompatActivity() {
                             log.error(e.message, e)
                             this@StartupActivity.finishAffinity()
                         })
-
-            val serviceIntent = Intent(applicationContext, LocationService::class.java)
-            this.startService(serviceIntent)
         } else {
             this.startMainActivity(withAnimation = false)
         }
