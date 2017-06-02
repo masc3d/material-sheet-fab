@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.ui.activity
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
@@ -8,7 +7,6 @@ import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.util.AttributeSet
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -35,12 +33,9 @@ import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
-import kotlinx.android.synthetic.main.main_nav_header.*
-import org.deku.leoz.mobile.model.DebugSettings
+import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
-import org.deku.leoz.mobile.ui.fragment.MenuFragment
-import org.jetbrains.anko.contentView
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction

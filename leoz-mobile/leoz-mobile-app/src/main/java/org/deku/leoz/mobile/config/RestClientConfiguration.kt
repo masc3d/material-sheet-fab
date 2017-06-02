@@ -6,11 +6,8 @@ import com.github.salomonbrys.kodein.eagerSingleton
 import com.github.salomonbrys.kodein.erased.*
 import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
-import org.deku.leoz.config.RestConfiguration
-import org.deku.leoz.mobile.model.RemoteSettings
+import org.deku.leoz.mobile.RemoteSettings
 import org.slf4j.LoggerFactory
-import sx.ConfigurationMap
-import sx.ConfigurationMapPath
 import sx.rs.proxy.FeignClientProxy
 import sx.rs.proxy.RestClientProxy
 import java.net.URI

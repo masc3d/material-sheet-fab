@@ -14,14 +14,13 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import org.deku.leoz.mobile.Application
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.freezeInstanceState
-import org.deku.leoz.mobile.model.Database
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.unfreezeInstanceState
 import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.mobile.config.LogConfiguration
 import org.deku.leoz.mobile.service.LocationService
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient

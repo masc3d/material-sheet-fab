@@ -11,7 +11,7 @@ import org.deku.leoz.config.MqConfiguration
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.mobile.mq.MqttListeners
 import org.deku.leoz.identity.Identity
-import org.deku.leoz.mobile.model.RemoteSettings
+import org.deku.leoz.mobile.RemoteSettings
 import org.eclipse.paho.client.mqttv3.*
 import org.slf4j.LoggerFactory
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence

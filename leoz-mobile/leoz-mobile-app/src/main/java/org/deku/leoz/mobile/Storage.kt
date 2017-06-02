@@ -1,7 +1,6 @@
-package org.deku.leoz.mobile.model
+package org.deku.leoz.mobile
 
 import android.content.Context
-import android.os.Environment
 import android.support.v4.content.ContextCompat
 import org.slf4j.LoggerFactory
 import java.io.File

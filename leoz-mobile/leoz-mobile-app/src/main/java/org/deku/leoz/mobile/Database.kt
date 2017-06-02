@@ -1,7 +1,6 @@
-package org.deku.leoz.mobile.model
+package org.deku.leoz.mobile
 
 import android.content.Context
-import org.deku.leoz.mobile.R
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.android.ContextHolder
 import org.slf4j.LoggerFactory

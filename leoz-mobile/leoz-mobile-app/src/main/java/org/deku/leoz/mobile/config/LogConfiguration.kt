@@ -16,7 +16,7 @@ import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.log.LogMqAppender
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Storage
+import org.deku.leoz.mobile.Storage
 import org.slf4j.LoggerFactory
 import sx.mq.mqtt.channel
 

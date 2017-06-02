@@ -10,8 +10,7 @@ import com.github.salomonbrys.kodein.erased.instance
 import kotlinx.android.synthetic.main.main_app_bar.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.app
-import org.deku.leoz.mobile.model.Database
-import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.ui.AlertButton
 import org.deku.leoz.mobile.ui.fragment.MainFragment
 import org.deku.leoz.mobile.ui.showAlert
@@ -25,10 +24,8 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.main_nav_header.*
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.User
-import org.deku.leoz.mobile.ui.fragment.MenuFragment
 import org.deku.leoz.mobile.SharedPreference
 
 

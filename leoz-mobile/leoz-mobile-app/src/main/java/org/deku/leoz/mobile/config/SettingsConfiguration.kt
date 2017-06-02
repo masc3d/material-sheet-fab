@@ -4,11 +4,10 @@ import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.*
 import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.model.DebugSettings
-import org.deku.leoz.mobile.model.RemoteSettings
+import org.deku.leoz.mobile.DebugSettings
+import org.deku.leoz.mobile.RemoteSettings
 import sx.ConfigurationMap
 import sx.YamlConfigurationMap
-import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 

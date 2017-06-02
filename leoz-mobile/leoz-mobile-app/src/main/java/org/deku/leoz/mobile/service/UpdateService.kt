@@ -1,15 +1,12 @@
 package org.deku.leoz.mobile.service
 
-import android.content.Context
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import feign.Feign
 import feign.FeignException
 import org.deku.leoz.mobile.BuildConfig
-import org.deku.leoz.mobile.model.Storage
-import sx.rs.proxy.FeignClientProxy.*
+import org.deku.leoz.mobile.Storage
 import org.deku.leoz.service.internal.BundleServiceV2
 import org.slf4j.LoggerFactory
 import io.reactivex.subjects.BehaviorSubject

@@ -5,20 +5,18 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.deku.leoz.hashUserPassword
-import org.deku.leoz.identity.Identity
-import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.DebugSettings
+import org.deku.leoz.mobile.Storage
 import org.deku.leoz.service.internal.AuthorizationService
 import org.slf4j.LoggerFactory
 import sx.android.Connectivity
 import sx.android.Device
 import sx.rx.ObservableRxProperty
 import sx.text.parseHex
-import java.lang.IllegalStateException
 import java.lang.UnsupportedOperationException
 
 /**
