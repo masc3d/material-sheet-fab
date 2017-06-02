@@ -86,7 +86,6 @@ interface AuthorizationService {
      */
     data class MobileResponse(
             var key: String = ""
-//todo eMail zurückgeben
     )
 
     /**

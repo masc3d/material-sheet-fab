@@ -18,6 +18,7 @@ import sx.mq.MqHandler
 import sx.logging.slf4j.info
 import sx.rs.auth.ApiKey
 import java.text.DecimalFormat
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
@@ -65,6 +66,11 @@ class AuthorizationService
         if (serial.isNullOrEmpty() || imei.isNullOrEmpty())
             throw DefaultProblem(title = "At least one of serial or imei must be provided")
 
+        // TODO: handle mobile info as required
+
+        // TODO: when response is unified, we could simply delegate to `authorizeWeb` from here (and make it generic)
+
+        //region Deprecated
         val user = request.user
 
         if (user == null)
@@ -81,19 +87,12 @@ class AuthorizationService
                     title = "User authentication failed",
                     status = Response.Status.UNAUTHORIZED)
 
-        // TODO: check against/create `mst_key` entry
+        val apiKey = UUID.randomUUID()
 
-        // TODO: use ApiKeyFactory (still has to be implemented)
-        val identityFactory = MobileIdentityFactory(
-                serial = serial ?: "",
-                imei = imei ?: ""
-        )
-
-        val identity = identityFactory.create()
-        
         return AuthorizationService.MobileResponse(
-                key = identity.key.value
+                key = apiKey.toString()
         )
+        //endregion
     }
 
     override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.WebResponse {
@@ -114,7 +113,7 @@ class AuthorizationService
                     status = Response.Status.UNAUTHORIZED)
         val debitorNo = this.userRepository.findDebitorNoById(id = userRecord.debitorId)
                 ?: throw DefaultProblem(
-                title = "User authentication failed - no debitor",
+                title = "Missing sdebitor",
                 status = Response.Status.UNAUTHORIZED)
 
         val df = DecimalFormat("#")
@@ -122,19 +121,25 @@ class AuthorizationService
 
         if (!UserRole.values().any { it.name == userRecord.role })
             throw DefaultProblem(
-                    title = "User authentication failed: no valid user-role",
+                    title = "Invalid user role",
                     status = Response.Status.UNAUTHORIZED)
 
         var keyRecord = this.keyRepository.findByID(userRecord.keyId)
 
         if (keyRecord == null) {
-            val keyID = this.keyRepository.insertNew(RandomStringUtils.randomAlphanumeric(30))
+            val keyID = this.keyRepository.insertNew(
+                    key = UUID.randomUUID().toString())
+
             this.userRepository.updateKeyIdById(userRecord.id, keyID)
+
             keyRecord = this.keyRepository.findByID(keyID)
         }
 
-        if (keyRecord == null || keyRecord.key.length < 30)
-            throw DefaultProblem(title = "UserKey not valid")
+//        // TODO: in case we really want to verify key/content validity. but I believe we don't need it.
+//        val isValid = try { UUID.fromString(keyRecord.key); true } catch(e: Throwable) { false }
+
+        if (keyRecord == null)
+            throw DefaultProblem(title = "User key not valid")
 
         return AuthorizationService.WebResponse(
                 key = keyRecord.key,

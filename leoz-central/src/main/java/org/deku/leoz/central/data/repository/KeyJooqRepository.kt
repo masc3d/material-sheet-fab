@@ -13,29 +13,29 @@ import org.springframework.beans.factory.annotation.Qualifier
 /**
  * Created by JT on 17.05.17.
  */
-
-
 @Named
 class KeyJooqRepository {
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     lateinit var dslContext: DSLContext
 
-    fun findByID(ID: Int): MstKeyRecord? {
-        if (ID == 0)
+    fun findByID(id: Int): MstKeyRecord? {
+        if (id == 0)
             return null
         else
-            return dslContext.fetchOne(MstKey.MST_KEY, Tables.MST_KEY.KEY_ID.eq(ID))
+            return dslContext.fetchOne(MstKey.MST_KEY, Tables.MST_KEY.KEY_ID.eq(id))
     }
 
-    fun findValidByKey(Key: String): Boolean {
-        return (dslContext.fetchOne(MstKey.MST_KEY, Tables.MST_KEY.KEY.eq(Key)) != null)
+    fun findValidByKey(key: String): Boolean {
+        return (dslContext.fetchOne(
+                MstKey.MST_KEY,
+                Tables.MST_KEY.KEY.eq(key)
+        ) != null)
     }
 
-    fun insertNew(Key: String): Int {
-
+    fun insertNew(key: String): Int {
         val r = dslContext.newRecord(Tables.MST_KEY)
-        r.key = Key
+        r.key = key
         r.store()
 
         return dslContext.lastID().toInt()
