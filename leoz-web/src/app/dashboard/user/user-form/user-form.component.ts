@@ -7,6 +7,7 @@ import { RoleGuard } from '../../../core/auth/role.guard';
 import { Subscription } from 'rxjs/Subscription';
 import { Msg } from '../../../shared/msg/msg.model';
 import { MsgService } from '../../../shared/msg/msg.service';
+import { Observable } from 'rxjs/Observable';
 
 @Component( {
   selector: 'app-user-form',
@@ -17,6 +18,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
   activeUser: User;
   userForm: FormGroup;
   private subscriptionCRUD: Subscription;
+  private subscriptionMsg: Subscription;
   private subscriptionActiveUser: Subscription;
   private loading = false;
   private errMsg: Msg;
@@ -28,7 +30,8 @@ export class UserFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.errMsg = this.msgService.clear();
+    this.subscriptionMsg = this.msgService.msg.subscribe((msg: Msg) => this.errMsg = msg);
+    this.msgService.clear();
     this.userForm = this.fb.group( {
       emailOrigin: [ null ],
       firstName: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],
@@ -47,7 +50,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
       passwordControl.clearValidators();
       passwordControl.setValidators( [ Validators.maxLength( 25 ) ] );
       if (this.isEditMode( activeUser )) {
-        this.errMsg = this.msgService.clear();
+        this.msgService.clear();
       } else {
         passwordControl.setValidators( [ Validators.required ] );
       }
@@ -75,6 +78,9 @@ export class UserFormComponent implements OnInit, OnDestroy {
     }
     if (this.subscriptionActiveUser) {
       this.subscriptionActiveUser.unsubscribe();
+    }
+    if (this.subscriptionMsg) {
+      this.subscriptionMsg.unsubscribe();
     }
   }
 
@@ -106,17 +112,17 @@ export class UserFormComponent implements OnInit, OnDestroy {
         ( resp: Response ) => {
           if (resp.status === 204) {
             this.loading = false;
-            this.errMsg = this.msgService.success( 'User insert successful' );
+            this.msgService.success( 'User insert successful' );
             this.clearActiveUser();
             this.userService.getUsers();
           } else {
             this.loading = false;
-            this.errMsg = this.msgService.handleResponse( resp );
+            this.msgService.handleResponse( resp );
           }
         },
         ( error: Response ) => {
           this.loading = false;
-          this.errMsg = this.msgService.handleResponse( error );
+          this.msgService.handleResponse( error );
         } );
   }
 
@@ -126,22 +132,22 @@ export class UserFormComponent implements OnInit, OnDestroy {
         ( resp: Response ) => {
           if (resp.status === 204) {
             this.loading = false;
-            this.errMsg = this.msgService.success( 'User update successful' );
+            this.msgService.success( 'User update successful' );
             this.clearActiveUser();
             this.userService.getUsers();
           } else {
             this.loading = false;
-            this.errMsg = this.msgService.handleResponse( resp );
+            this.msgService.handleResponse( resp );
           }
         },
         ( error: Response ) => {
           this.loading = false;
-          this.errMsg = this.msgService.handleResponse( error );
+          this.msgService.handleResponse( error );
         } );
   }
 
   clearFields() {
-    this.errMsg = this.msgService.clear();
+    this.msgService.clear();
     this.clearActiveUser();
     return false;
   }
