@@ -114,9 +114,4 @@ interface AuthorizationService {
     @Path("/web")
     @ApiOperation(value = "Request web authorization")
     fun authorizeWeb(request: Credentials): WebResponse
-
-    // Extensions
-    fun Credentials.hashPassword(salt: ByteArray): String {
-        return hashUserPassword(salt = salt, email = this.email, password = this.password)
-    }
 }
