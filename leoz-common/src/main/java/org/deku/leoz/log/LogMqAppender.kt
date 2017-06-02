@@ -1,5 +1,6 @@
 package org.deku.leoz.log
 
+import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.spi.LoggingEvent
 import ch.qos.logback.core.AppenderBase
@@ -95,12 +96,37 @@ class LogMqAppender(
         val le = eventObject as LoggingEvent
         synchronized(buffer) {
             buffer.add(LogMessage.LogEntry(le))
+
+            val flushThreshold = this.flushBufferThreshold
+            if (flushThreshold != null && this.buffer.size >= flushThreshold) {
+                this.flush()
+            }
+
+            if (this.flushOnError && eventObject.level == Level.ERROR)
+                this.flush()
         }
     }
 
     fun flush() {
         this.dispatcher.trigger()
     }
+
+    /**
+     * A fixed rate at which the appender attempts to dispatch log messages
+     */
+    var flushPeriod: Duration?
+        get() = this.dispatcher.period
+        set(value) { this.dispatcher.period = value }
+
+    /**
+     * Buffer threshold for dispatching messages
+     */
+    var flushBufferThreshold: Int? = null
+
+    /**
+     * If flush should occur instantly on errors
+     */
+    var flushOnError: Boolean = false
 
     override fun start() {
         this.lock.withLock {
