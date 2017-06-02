@@ -6,6 +6,10 @@ import org.flywaydb.core.api.android.ContextHolder
 import org.slf4j.LoggerFactory
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import io.requery.Persistable
+import io.requery.reactivex.KotlinReactiveEntityStore
+import io.requery.sql.Configuration
+import io.requery.sql.KotlinEntityDataStore
 import sx.rx.toHotReplay
 
 /**
@@ -18,11 +22,15 @@ class Database(
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    val name by lazy {
+        "${context.getString(R.string.app_project_name)}.db"
+    }
+
     /**
      * Database file
      */
     val file by lazy {
-        context.getDatabasePath("${context.getString(R.string.app_project_name)}.db")
+        context.getDatabasePath(this.name)
     }
 
     /**

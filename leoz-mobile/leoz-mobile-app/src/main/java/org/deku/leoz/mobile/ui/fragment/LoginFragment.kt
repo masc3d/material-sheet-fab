@@ -1,6 +1,7 @@
 package org.deku.leoz.mobile.ui.fragment
 
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -115,6 +116,8 @@ class LoginFragment : Fragment() {
                 }
                 .doOnError {
                     tone.beep()
+                    Snackbar.make(this.view!!, "Login failed", Snackbar.LENGTH_SHORT)
+                            .show()
                     log.error(it.message)
                 }
                 .retry()

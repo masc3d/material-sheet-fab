@@ -265,7 +265,7 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
 
                             // Update navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
-                            navHeaderView.uxActiveUser.text = user.name
+                            navHeaderView.uxActiveUser.text = user.email
                             navHeaderView.uxStationID.text = "-_-"
                         }
                         else -> {

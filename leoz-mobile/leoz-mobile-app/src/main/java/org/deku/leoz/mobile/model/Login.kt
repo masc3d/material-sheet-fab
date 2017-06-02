@@ -3,14 +3,15 @@ package org.deku.leoz.mobile.model
 import android.net.NetworkInfo
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.instance
+import com.github.salomonbrys.kodein.erased.*
+import com.github.salomonbrys.kodein.genericInstance
 import com.github.salomonbrys.kodein.lazy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.requery.Persistable
-import io.requery.sql.EntityDataStore
+import io.requery.reactivex.KotlinReactiveEntityStore
 import org.deku.leoz.hashUserPassword
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.data.requery.UserEntity
@@ -20,7 +21,7 @@ import sx.android.Connectivity
 import sx.android.Device
 import sx.rx.ObservableRxProperty
 import sx.text.parseHex
-import java.lang.UnsupportedOperationException
+import java.util.*
 
 /**
  * Login model
@@ -38,7 +39,7 @@ class Login {
     private val device: Device = Kodein.global.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
-    private val entityStore: EntityDataStore<Persistable> by Kodein.global.lazy.instance()
+    private val db: KotlinReactiveEntityStore<Persistable> by Kodein.global.lazy.genericInstance()
 
     private val authService: AuthorizationService by Kodein.global.lazy.instance()
 
@@ -71,11 +72,12 @@ class Login {
             // Debug/dev supoort for development login
             if (debugSettings.enabled && email == DEV_EMAIL && password == DEV_PASSWORD) {
                 user = User(
-                        name = DEV_EMAIL,
-                        hash = hashedPassword)
+                        email = DEV_EMAIL,
+                        apiKey = UUID.randomUUID().toString())
             } else {
                 if (connectivity.network.state == NetworkInfo.State.CONNECTED) {
-                    log.debug("Connection established, login online.")
+                    log.info("Authorizing user [${email}] online")
+
                     val request = AuthorizationService.MobileRequest(
                             user = AuthorizationService.Credentials(
                                     email = email,
@@ -91,32 +93,28 @@ class Login {
                     val authResponse = authService.authorizeMobile(request)
 
                     user = User(
-                            name = email,
-                            hash = hashedPassword
+                            email = email,
+                            apiKey = authResponse.key
                     )
 
+                    // Store user in database
                     val rUser = UserEntity()
                     rUser.email = email
                     rUser.password = hashedPassword
                     rUser.apiKey = authResponse.key
-                    entityStore.upsert(rUser)
-                } else {
-                    throw UnsupportedOperationException()
+                    db.upsert(rUser).blockingGet()
 
-                    // TODO: needs rework
-//                    log.debug("Connectivity not established. Trying offline login.")
-//
-//                    if (storage.dataDir.resolve("$email.ident").exists()) {
-//                        val identity = Identity.load(storage.dataDir.resolve("$email.ident"))
-//                        if (hashedPassword == identity.name) {
-//                            User(
-//                                    name = email,
-//                                    hash = hashedPassword
-//                            )
-//                        }
-//                    } else {
-//                        throw IllegalArgumentException("Offline login failed: Unknown user.")
-//                    }
+                } else {
+                    log.info("Authorizing user [${email}] offline")
+
+                    val rUser = (db.select(UserEntity::class) where UserEntity.EMAIL.eq(email))
+                            .get()
+                            .firstOrNull()
+
+                    if (rUser == null)
+                        throw NoSuchElementException("User [${email}] not found, offline login not applicable")
+
+                    user = User(email = rUser.email, apiKey = rUser.apiKey)
                 }
             }
 
