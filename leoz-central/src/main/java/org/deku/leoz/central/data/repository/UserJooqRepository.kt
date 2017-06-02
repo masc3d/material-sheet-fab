@@ -15,6 +15,7 @@ import javax.inject.Named
 import org.deku.leoz.central.data.jooq.tables.MstDebitor
 import org.deku.leoz.service.internal.entity.User
 import org.jooq.impl.DSL.*
+import org.deku.leoz.service.internal.LocationService
 
 
 /**
@@ -160,3 +161,23 @@ val MstUserRecord.isActive: Boolean
     get() = (this.active ?: 0) != 0
 val MstUserRecord.isExternalUser: Boolean
     get() = (this.externalUser ?: 0) != 0
+
+fun MstUserRecord.toLocationServiceUser(): LocationService.User {
+
+    val user = LocationService.User(this.email,
+            this.debitorId,
+            /*null,*/
+            this.alias,
+            this.role,
+            this.password,
+            /*userRecord.salt,*/
+            this.firstname,
+            this.lastname,
+            /*userRecord.apiKey,*/
+            this.isActive,
+            this.isExternalUser,
+            this.phone,
+            this.expiresOn//, userRecord.id
+    )
+    return user
+}

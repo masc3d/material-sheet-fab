@@ -237,7 +237,8 @@ jooq {
                         'tblhublinien',
                         'tblhublinienplan',
                         'tblsyscollections',
-                        'usystblzaehler'
+                        'usystblzaehler',
+                        'trn_.*'
 
                 ].join('|')
             }
