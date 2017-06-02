@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, RequestOptions, Response } from '@angular/http';
+import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/map';
@@ -38,17 +38,15 @@ export class UserService {
 
   update( userData: any, originEmail: string ): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
-    // const queryParameters = new URLSearchParams();
-    // queryParameters.set( 'email', originEmail );
+    const queryParameters = new URLSearchParams();
+    queryParameters.set( 'email', originEmail );
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
-      search: new URLSearchParams()
+      params: queryParameters
     } );
-    return this.http.put( `${this.userListUrl}?email=${originEmail}`,
+    return this.http.put( this.userListUrl,
       JSON.stringify( userData ), options );
-    // return this.http.put( this.userListUrl,
-    //   JSON.stringify( userData ), options );
   }
 
   getUsers(): void {
@@ -69,5 +67,8 @@ export class UserService {
 
   changeActiveUser( selectedUser ): void {
     this.activeUserSubject.next( selectedUser );
+  }
+  deactivateActiveUser( selectedUser ): void {
+    // this.activeUserSubject.next( selectedUser );
   }
 }

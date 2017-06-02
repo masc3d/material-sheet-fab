@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Http, RequestOptions, Response } from '@angular/http';
+import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { environment } from '../../../environments/environment';
 import { Position } from './position.model';
@@ -21,15 +21,15 @@ export class TourService {
   getLocation(email: string): Observable<Response> {
     const currUser = JSON.parse( localStorage.getItem( 'currentUser' ) );
 
-    // const queryParameters = new URLSearchParams();
-    // queryParameters.set('email', email);
+    const queryParameters = new URLSearchParams();
+    queryParameters.set('email', email);
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
-      // search: queryParameters
+      params: queryParameters
     } );
 
-    return this.http.get( `${this.locationUrl}?email=${email}`, options );
+    return this.http.get( this.locationUrl, options );
   }
 
   changeActiveMarker( selectedDriver ) {
