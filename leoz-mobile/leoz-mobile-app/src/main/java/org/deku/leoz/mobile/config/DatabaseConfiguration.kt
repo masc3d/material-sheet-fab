@@ -39,30 +39,9 @@ class DatabaseConfiguration {
                 val context = instance<Context>()
                 val name = "${context.getString(R.string.app_project_name)}.db"
 
-                // Requery data store
-                val ds = object : DatabaseSource(
-                        instance<Context>(),
-                        Models.REQUERY,
-                        name,
-                        1) {
-
-                    override fun onCreate(db: SQLiteDatabase?) {
-                        // Leave creation/migration to flyway
-                    }
-
-                    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-                        // Leave creation/migration to flyway
-                    }
-                }
-
-                val store = KotlinReactiveEntityStore(
-                        store = KotlinEntityDataStore<Persistable>(
-                                configuration = ds.configuration))
-
                 Database(
                         context = instance(),
                         name = name,
-                        store = store,
                         clean = settings.cleanStartup)
             }
 

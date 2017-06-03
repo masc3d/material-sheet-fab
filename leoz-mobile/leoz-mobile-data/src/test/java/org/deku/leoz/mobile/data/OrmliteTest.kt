@@ -6,7 +6,7 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import com.j256.ormlite.dao.DaoManager
 import com.j256.ormlite.support.ConnectionSource
-import org.deku.leoz.mobile.data.ormlite.MstStation
+import org.deku.leoz.mobile.data.ormlite.StationEntity
 import org.junit.Test
 import java.sql.Timestamp
 
@@ -25,13 +25,13 @@ class OrmliteTest {
 
     @Test
     fun testInsert() {
-        val station = MstStation()
+        val station = StationEntity()
         station.address1 = "1234"
         station.timestamp = Timestamp(0)
         station.syncId = 0
         station.stationNr = 50
 
-        val dao = DaoManager.createDao(connectionSource, MstStation::class.java)
+        val dao = DaoManager.createDao(connectionSource, StationEntity::class.java)
         dao.create(station)
     }
 }

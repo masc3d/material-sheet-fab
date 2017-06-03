@@ -15,7 +15,7 @@ import org.sqlite.SQLiteDataSource
 import org.sqlite.javax.SQLiteConnectionPoolDataSource
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.toObservable
-import org.deku.leoz.mobile.data.requery.MstStation
+import org.deku.leoz.mobile.data.requery.StationEntity
 import java.sql.Timestamp
 import java.util.*
 
@@ -36,7 +36,7 @@ class RequeryTest {
         val r = Models.REQUERY
 
         entityStore
-                .select(MstStation::class.java)
+                .select(StationEntity::class.java)
                 .get()
                 .toObservable().subscribeBy(
                 onNext = {
@@ -48,7 +48,7 @@ class RequeryTest {
     fun testInsert() {
         val r = Models.REQUERY
 
-        val e = MstStation()
+        val e = StationEntity()
         e.address1 = "1234"
         e.timestamp = Timestamp(0)
         e.syncId = 0
