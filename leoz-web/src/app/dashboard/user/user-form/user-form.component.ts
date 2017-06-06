@@ -1,19 +1,26 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ValidatorFn } from '@angular/forms';
 import { Response } from '@angular/http';
+import { Subscription } from 'rxjs/Subscription';
+
+import { SelectItem } from "primeng/primeng";
+
 import { User } from '../user.model';
 import { UserService } from '../user.service';
 import { RoleGuard } from '../../../core/auth/role.guard';
-import { Subscription } from 'rxjs/Subscription';
 import { Msg } from '../../../shared/msg/msg.model';
 import { MsgService } from '../../../shared/msg/msg.service';
-import { Observable } from 'rxjs/Observable';
+import { TranslateService } from "app/core/translate/translate.service";
+import { AbstractTranslateComponent } from "app/core/translate/abstract-translate.component";
 
 @Component( {
   selector: 'app-user-form',
   templateUrl: './user-form.component.html'
 } )
-export class UserFormComponent implements OnInit, OnDestroy {
+export class UserFormComponent extends AbstractTranslateComponent {
+
+  roleOptions: SelectItem[];
+  stateOptions: SelectItem[];
 
   activeUser: User;
   userForm: FormGroup;
@@ -21,22 +28,32 @@ export class UserFormComponent implements OnInit, OnDestroy {
   private subscriptionMsg: Subscription;
   private subscriptionActiveUser: Subscription;
   private loading = false;
-  private errMsg: Msg;
+  public errMsg: Msg;
 
   constructor( private fb: FormBuilder,
                private userService: UserService,
                private msgService: MsgService,
-               private roleGuard: RoleGuard ) {
+               private roleGuard: RoleGuard,
+               protected translate: TranslateService ) {
+    super( translate, () => {
+      this.roleOptions = this.createRoleOptions();
+      this.stateOptions = this.createStateOptions();
+    } );
   }
 
   ngOnInit() {
-    this.subscriptionMsg = this.msgService.msg.subscribe((msg: Msg) => this.errMsg = msg);
+    super.ngOnInit();
+
+    this.roleOptions = this.createRoleOptions();
+    this.stateOptions = this.createStateOptions();
+
+    this.subscriptionMsg = this.msgService.msg.subscribe( ( msg: Msg ) => this.errMsg = msg );
     this.msgService.clear();
     this.userForm = this.fb.group( {
       emailOrigin: [ null ],
       firstName: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],
       lastName: [ null, [ Validators.required, Validators.maxLength( 45 ) ] ],
-      password: [ null ],
+      password: [ null, [ Validators.required, Validators.maxLength( 25 ) ] ],
       email: [ null, [ Validators.required, Validators.email ] ],
       phone: [ null, [ Validators.required ] ],
       alias: [ null, [ Validators.required, Validators.maxLength( 30 ) ] ],
@@ -47,13 +64,15 @@ export class UserFormComponent implements OnInit, OnDestroy {
     this.subscriptionActiveUser = this.userService.activeUser.subscribe( ( activeUser: User ) => {
       this.activeUser = activeUser;
       const passwordControl = this.userForm.get( 'password' );
-      passwordControl.clearValidators();
-      passwordControl.setValidators( [ Validators.maxLength( 25 ) ] );
+      const validators = <ValidatorFn[]> [];
+      validators.push( Validators.maxLength( 25 ) );
       if (this.isEditMode( activeUser )) {
         this.msgService.clear();
       } else {
-        passwordControl.setValidators( [ Validators.required ] );
+        validators.push( Validators.required );
       }
+      passwordControl.clearValidators();
+      passwordControl.setValidators( validators );
       this.userForm.patchValue( {
         emailOrigin: activeUser.email,
         firstName: activeUser.firstName,
@@ -68,11 +87,8 @@ export class UserFormComponent implements OnInit, OnDestroy {
     } );
   }
 
-  private isEditMode( activeUser: User ) {
-    return activeUser.email && activeUser.email.length > 0;
-  }
-
   ngOnDestroy() {
+    super.ngOnDestroy();
     if (this.subscriptionCRUD) {
       this.subscriptionCRUD.unsubscribe();
     }
@@ -82,6 +98,30 @@ export class UserFormComponent implements OnInit, OnDestroy {
     if (this.subscriptionMsg) {
       this.subscriptionMsg.unsubscribe();
     }
+  }
+
+  private createStateOptions(): SelectItem[] {
+    const stateOptions = [];
+    stateOptions.push( { label: this.translate.instant( 'active' ), value: 1 } );
+    stateOptions.push( { label: this.translate.instant( 'inactive' ), value: 0 } );
+    return stateOptions;
+  }
+
+  private createRoleOptions(): SelectItem[] {
+    const roleOptions = [];
+    if (this.roleGuard.isPoweruser()) {
+      roleOptions.push( { label: this.translate.instant( 'Poweruser' ), value: 'POWERUSER' } );
+    }
+    if (this.roleGuard.isPoweruser() || this.roleGuard.isUser()) {
+      roleOptions.push( { label: this.translate.instant( 'User' ), value: 'USER' } );
+      roleOptions.push( { label: this.translate.instant( 'Driver' ), value: 'DRIVER' } );
+      roleOptions.push( { label: this.translate.instant( 'Customer' ), value: 'CUSTOMER' } );
+    }
+    return roleOptions;
+  }
+
+  private isEditMode( activeUser: User ) {
+    return activeUser.email && activeUser.email.length > 0;
   }
 
   onSubmit() {

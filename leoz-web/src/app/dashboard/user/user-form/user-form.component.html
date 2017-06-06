@@ -1,79 +1,76 @@
 <app-msg-box [msg]="errMsg"></app-msg-box>
 <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
   <input type="hidden" class="form-control" formControlName="emailOrigin">
-  <div class="row">
-    <div class="form-group col-md-6">
-      <label>{{'firstname' | translate}}:</label>
-      <input type="text" class="form-control" formControlName="firstName">
-      <div *ngIf="userForm.controls['firstName'].hasError('maxlength')" class="alert alert-danger">
-        {{'FirstnameMaxLength' | translate}}.
+  <div class="ui-fluid">
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-6">
+        <div>{{'firstname' | translate}}:</div>
+        <div><input pInputText type="text" formControlName="firstName"></div>
+        <div *ngIf="userForm.controls['firstName'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
+          {{'FirstnameMaxLength' | translate}}.
+        </div>
+      </div>
+      <div class="ui-g-12 ui-md-6">
+        <div>{{'surname' | translate}}:</div>
+        <div><input pInputText type="text" formControlName="lastName"></div>
+        <div *ngIf="userForm.controls['lastName'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
+          {{'SurnameMaxLength' | translate}}.
+        </div>
       </div>
     </div>
-    <div class="form-group col-md-6">
-      <label>{{'surname' | translate}}:</label>
-      <input type="text" class="form-control" formControlName="lastName" [value]="activeUser?.lastName?.toString()">
-      <div *ngIf="userForm.controls['lastName'].hasError('maxlength')" class="alert alert-danger">
-        {{'SurnameMaxLength' | translate}}.
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-6">
+        <div>{{'password' | translate}}:</div>
+        <div><input pInputText type="text" formControlName="password"></div>
+        <div *ngIf="userForm.controls['password'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
+          {{'PwdMaxLength' | translate}}.
+        </div>
+      </div>
+      <div class="ui-g-12 ui-md-6">
+        <div>{{'email' | translate}}:</div>
+        <div><input pInputText type="text" formControlName="email"></div>
+          <div *ngIf="!userForm.controls['email'].untouched && userForm.controls['email'].hasError('email')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
+          {{'EmailFormat' | translate}}.
+        </div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="form-group col-md-6">
-      <label>{{'password' | translate}}:</label>
-      <input type="text" class="form-control" formControlName="password">
-      <div *ngIf="userForm.controls['password'].hasError('minlength')" class="alert alert-danger">
-        {{'PwdMinLength' | translate}}.
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-6">
+        <div>{{'phone' | translate}}:</div>
+        <div><input pInputText type="text" formControlName="phone"></div>
+        <div *ngIf="userForm.controls['phone'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
+          {{'PhoneMaxLength' | translate}}.
+        </div>
       </div>
-      <div *ngIf="userForm.controls['password'].hasError('maxlength')" class="alert alert-danger">
-        {{'PwdMaxLength' | translate}}.
-      </div>
-    </div>
-    <div class="form-group col-md-6">
-      <label>{{'email' | translate}}:</label>
-      <input type="text" class="form-control" formControlName="email">
-      <div *ngIf="!userForm.controls['email'].untouched && userForm.controls['email'].hasError('email')" class="alert alert-danger">
-        {{'EmailFormat' | translate}}.
+      <div class="ui-g-12 ui-md-6">
+        <div>{{'alias' | translate}}:</div>
+        <div><input pInputText type="text" formControlName="alias"></div>
+        <div *ngIf="userForm.controls['alias'].hasError('maxlength')" class="ui-g-12 ui-message ui-widget ui-corner-all ui-messages-error">
+          {{'AliasMaxLength' | translate}}.
+        </div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="form-group col-md-6">
-      <label>{{'phone' | translate}}:</label>
-      <input type="text" class="form-control" formControlName="phone">
-      <div *ngIf="userForm.controls['phone'].hasError('maxlength')" class="alert alert-danger">
-        {{'PhoneMaxLength' | translate}}.
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-6">
+        <div>{{'role' | translate}}:</div>
+        <p-dropdown [options]="roleOptions" formControlName="role" placeholder="&nbsp;"></p-dropdown>
+      </div>
+      <div class="ui-g-12 ui-md-6">
+        <div>{{'active' | translate}}:</div>
+        <p-dropdown [options]="stateOptions" formControlName="active" placeholder="&nbsp;"></p-dropdown>
       </div>
     </div>
-    <div class="form-group col-md-6">
-      <label>{{'alias' | translate}}:</label>
-      <input type="text" class="form-control" formControlName="alias">
-      <div *ngIf="userForm.controls['alias'].hasError('maxlength')" class="alert alert-danger">
-        {{'AliasMaxLength' | translate}}.
+
+    <div class="ui-g">
+      <div class="ui-g-12">
+      <button pButton type="button" (click)="onSubmit()" [disabled]="!userForm.valid" label="{{'save' | translate}}" style="width:100px"></button>
+      <button pButton type="button" (click)="clearFields()" label="{{'clear' | translate}}" style="width:100px"></button>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="form-group col-md-6">
-      <label>{{'role' | translate}}:</label>
-      <select class="form-control" formControlName="role">
-        <option *ngIf="roleGuard.isPoweruser()" value="POWERUSER">Poweruser</option>
-        <option *ngIf="roleGuard.isPoweruser() || roleGuard.isUser()" value="USER">User</option>
-        <option *ngIf="roleGuard.isPoweruser() || roleGuard.isUser()" value="DRIVER">Driver</option>
-        <option *ngIf="roleGuard.isPoweruser() || roleGuard.isUser()" value="CUSTOMER">Customer</option>
-      </select>
-    </div>
-    <div class="form-group col-md-6">
-      <label>{{'active' | translate}}:</label>
-      <select class="form-control" formControlName="active">
-        <option value="true">{{'active' | translate}}</option>
-        <option value="false">{{'inactive' | translate}}</option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <button type="submit" name="save" [disabled]="!userForm.valid" class="btn btn-primary">{{'save' | translate}}</button>
-      <button (click)="clearFields()" class="btn btn-primary">{{'clear' | translate}}</button>
-    </div>
+
   </div>
 </form>

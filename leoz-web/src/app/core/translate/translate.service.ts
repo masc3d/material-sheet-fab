@@ -1,8 +1,10 @@
-import {Injectable} from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { Translation } from './translation';
 
 @Injectable()
 export class TranslateService {
+
+  public onLangChanged: EventEmitter<string> = new EventEmitter<string>();
   private curLang: string;
 
   constructor(private transl: Translation) {
@@ -12,6 +14,7 @@ export class TranslateService {
   public use(lang: string): void {
     // set current language
     this.curLang = lang;
+    this.onLangChanged.emit(lang);
   }
 
   private translate(key: string): string {

@@ -4,7 +4,21 @@ import { TranslateService } from '../core/translate/translate.service';
 
 @Component({
   selector: 'app-top-bar',
-  templateUrl: './top-bar.component.html'
+  template: `
+    <div id="top-menu">
+      <div>
+        <img src="assets/images/logo.png" alt="">
+      </div>
+      <div style="margin-top: 10px; margin-left: 80px;">
+        <img (click)="changeLang('de')" src="assets/images/de.png" width="33px" height="20px" alt="de">
+        <br>
+        <img (click)="changeLang('en')" src="assets/images/gb.png" width="33px" height="19px" alt="gb">
+      </div>
+      <div id="mobile-main-menu" (click)="toggle()">
+        <i class="fa fa-bars" style="color: #ffffff; font-size: 32px;"></i>
+      </div>
+    </div>
+  `
 })
 export class TopBarComponent {
 

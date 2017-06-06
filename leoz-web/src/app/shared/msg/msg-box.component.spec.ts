@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { MsgBoxComponent } from './msg-box.component';
+import { SharedModule } from '../shared.module';
+import { TranslateModule } from '../../core/translate/translate.module';
+import { MsgService } from './msg.service';
+import { Msg } from './msg.model';
 
 describe('MsgBoxComponent', () => {
   let component: MsgBoxComponent;
@@ -8,7 +11,10 @@ describe('MsgBoxComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MsgBoxComponent ]
+      declarations: [ MsgBoxComponent ],
+      imports: [
+        TranslateModule
+      ],
     })
     .compileComponents();
   }));
@@ -16,6 +22,7 @@ describe('MsgBoxComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MsgBoxComponent);
     component = fixture.componentInstance;
+    component.msg = <Msg> {text: '', alertStyle: ''};
     fixture.detectChanges();
   });
 

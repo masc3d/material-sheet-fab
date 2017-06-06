@@ -15,11 +15,11 @@ export class MsgService {
   }
 
   success( text: string ): void {
-    this.msgSubject.next( <Msg> { text: text, alertStyle: 'alert-success' } );
+    this.msgSubject.next( <Msg> { text: text, alertStyle: 'ui-messages-success' } );
   }
 
   handleResponse( resp: Response ): void {
     console.log( resp );
-    this.msgSubject.next( <Msg> { text: resp.json().title || 'webservice not available' , alertStyle: 'alert-danger' } );
+    this.msgSubject.next( <Msg> { text: resp.json().title || 'webservice not available' , alertStyle: 'ui-messages-error' } );
   }
 }

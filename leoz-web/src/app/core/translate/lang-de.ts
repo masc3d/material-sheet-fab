@@ -27,7 +27,7 @@ export const LANG_DE_TRANS = {
   'FirstnameMaxLength': 'Der Vorname darf maximal 45 Zeichen lang sein',
   // 'SurnameMinLength': 'Der Nachname muss aus mindestens 3 Zeichen bestehen',
   'SurnameMaxLength': 'Der Nachname darf maximal 45 Zeichen lang sein',
-  'PwdMinLength': 'Das Kennwort muss aus mindestens 5 Zeichen bestehen',
+  // 'PwdMinLength': 'Das Kennwort muss aus mindestens 5 Zeichen bestehen',
   'PwdMaxLength': 'Das Kennwort darf nicht mehr als 25 Zeichen haben',
   // 'EmailMinLength': 'Die Emailadresse muss aus mindestens 3 Zeichen bestehen',
   // 'EmailMaxLength': 'Die Emailadresse darf nicht mehr als 100 Zeichen haben',
@@ -35,6 +35,12 @@ export const LANG_DE_TRANS = {
   // 'AliasMinLength': 'Alias muss aus mindestens 3 Zeichen bestehen',
   'AliasMaxLength': 'Alias darf maximal 30 Zeichen lang sein',
   'save': 'Speichern',
-  'clear': 'Leeren'
+  'clear': 'Leeren',
+  'Poweruser': 'Extrem-Benutzer',
+  'User': 'Benutzer',
+  'Driver': 'Fahrer',
+  'Customer': 'Kunde',
+  'EmailFormat': 'Kein korrektes Format der E-Mailadresse',
+  'duplicate email': 'Die E-Mailadresse existiert bereits.'
 };
 

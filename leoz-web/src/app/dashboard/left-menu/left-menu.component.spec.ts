@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { PanelMenuModule } from 'primeng/primeng';
 
 import { LeftMenuComponent } from './left-menu.component';
-import { AccordionModule } from 'ngx-bootstrap';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '../../shared/shared.module';
 import { CoreModule } from '../../core/core.module';
@@ -15,8 +15,8 @@ describe( 'LeftMenuComponent', () => {
       imports: [
         RouterTestingModule,
         SharedModule,
-        CoreModule.forRoot(),
-        AccordionModule.forRoot() ],
+        PanelMenuModule,
+        CoreModule.forRoot() ],
       declarations: [ LeftMenuComponent ]
     } )
       .compileComponents();

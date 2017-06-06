@@ -6,6 +6,7 @@ import { RequestOptions } from '@angular/http';
 import { environment } from '../../../environments/environment';
 import { RoleGuard } from './role.guard';
 import { ApiKeyHeaderFactory } from '../api-key-header.factory';
+import 'rxjs/add/operator/map';
 
 @Injectable()
 export class AuthenticationService {
@@ -32,8 +33,7 @@ export class AuthenticationService {
       'password': `${password}`
     } );
 
-    return this.http.patch( this.authUrl, body, options )
-      .map( ( response: Response ) => {
+    return this.http.patch( this.authUrl, body, options ).map( ( response: Response ) => {
         if (response.status === 200) {
           const userJson = response.json();
           this.roleGuard.userRole = userJson.userRole;

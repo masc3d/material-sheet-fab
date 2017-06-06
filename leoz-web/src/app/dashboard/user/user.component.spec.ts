@@ -1,17 +1,25 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpModule } from '@angular/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {
+DataTableModule,
+InputTextModule,
+DropdownModule,
+ButtonModule } from 'primeng/primeng';
 
 import { UserComponent } from './user.component';
-import { HttpModule } from '@angular/http';
 import { UserService } from './user.service';
 import { UserFormComponent } from './user-form/user-form.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { SharedModule } from '../../shared/shared.module';
-import { UserRoutingModule } from './user-routing.module';
 import { CoreModule } from '../../core/core.module';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('UserComponent', () => {
   let component: UserComponent;
   let fixture: ComponentFixture<UserComponent>;
+  let userService: UserService;
+  let spy: jasmine.Spy;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -21,10 +29,15 @@ describe('UserComponent', () => {
         UserListComponent
       ],
       imports: [
+        RouterTestingModule,
         HttpModule,
+        BrowserAnimationsModule,
         SharedModule,
-        CoreModule.forRoot(),
-        UserRoutingModule
+        DataTableModule,
+        InputTextModule,
+        DropdownModule,
+        ButtonModule,
+        CoreModule.forRoot()
       ],
       providers: [
         UserService
@@ -36,10 +49,12 @@ describe('UserComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(UserComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    userService = fixture.debugElement.injector.get(UserService);
   });
 
   it('should create', () => {
+    spy = spyOn(userService, 'getUsers');
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 });

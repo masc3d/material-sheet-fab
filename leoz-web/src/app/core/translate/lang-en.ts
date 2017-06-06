@@ -1,4 +1,3 @@
-// lang-en.ts
 export const LANG_EN_TRANS = {
   'login': 'Login',
   'username': 'Username',
@@ -27,7 +26,7 @@ export const LANG_EN_TRANS = {
   'FirstnameMaxLength': 'Firstname cannot exceed 45 characters',
   // 'SurnameMinLength': 'Surname needs to be at least 3 characters long',
   'SurnameMaxLength': 'Surname cannot exceed 45 characters',
-  'PwdMinLength': 'Password needs to be at least 5 characters long',
+  // 'PwdMinLength': 'Password needs to be at least 5 characters long',
   'PwdMaxLength': 'Password cannot exceed 25 characters',
   // 'EmailMinLength': 'Email needs to be at least 3 characters long',
   // 'EmailMaxLength': 'Email cannot exceed 100 characters',
@@ -35,5 +34,12 @@ export const LANG_EN_TRANS = {
   // 'AliasMinLength': 'Alias needs to be at least 3 characters long',
   'AliasMaxLength': 'Alias cannot exceed 30 characters',
   'save': 'Save',
-  'clear': 'Clear'
+  'clear': 'Clear',
+  'Poweruser': 'Poweruser',
+  'User': 'User',
+  'Driver': 'Driver',
+  'Customer': 'Customer',
+  'EmailFormat': 'Invalid format of email address',
+  'duplicate email': 'Email address already exists.'
 };
+// lang-en.ts
