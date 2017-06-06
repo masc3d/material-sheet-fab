@@ -14,7 +14,7 @@ import { RoleGuard } from '../../../core/auth/role.guard';
       <p-column field="email" header="{{'email' | translate}}"></p-column>
       <p-column header="">
         <ng-template let-user="rowData" pTemplate="body">
-          <i class="fa fa-pencil fa-fw" aria-hidden="true" (click)="showPosition(driver)"></i>
+          <i class="fa fa-crosshairs fa-fw" aria-hidden="true" (click)="showPosition(driver)"></i>
         </ng-template>
       </p-column>
     </p-dataTable>
