@@ -31,7 +31,7 @@ CREATE TABLE information
 	value VARCHAR NULL
 );
 
-CREATE TABLE orders
+CREATE TABLE `order`
 (
 	id VARCHAR NOT NULL PRIMARY KEY,
 	state VARCHAR NULL,
