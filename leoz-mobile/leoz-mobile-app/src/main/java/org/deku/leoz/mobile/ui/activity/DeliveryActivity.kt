@@ -7,7 +7,7 @@ import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Job
+import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
 import org.deku.leoz.mobile.ui.fragment.DeliveryMainFragment
 import org.deku.leoz.mobile.ui.fragment.StopOverviewFragment
@@ -21,7 +21,7 @@ import sx.android.fragment.util.withTransaction
  */
 class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragment.Listener /* TODO: To be removed / use RX instead */, VehicleLoadingDialog.OnDialogResultListener /* TODO: To be removed / use RX instead */ {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    val job: Job by Kodein.global.lazy.instance()
+    val delivery: Delivery by Kodein.global.lazy.instance()
 
     companion object {
         const val FRAGMENT_TAG_CAMERA = "fragmentCamera"
