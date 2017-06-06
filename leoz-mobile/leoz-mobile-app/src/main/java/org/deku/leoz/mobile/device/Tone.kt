@@ -65,6 +65,9 @@ class Tone {
 
     fun beep() {
         this.toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200)
-//        this.playSample(this.regularBeep)
+    }
+
+    fun errorBeep() {
+        this.toneGenerator.startTone(ToneGenerator.TONE_CDMA_EMERGENCY_RINGBACK, 400)
     }
 }
