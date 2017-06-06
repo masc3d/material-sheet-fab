@@ -42,12 +42,12 @@ data class User(
         var expiresOn: java.sql.Date? = null
 )
 
-enum class UserRole(val value: String) {
-    Admin("admin"),
-    PowerUser("power-user"),
-    User("user"),
-    Driver("driver"),
-    Customer("customer")
+enum class UserRole(val value: Int) {
+    ADMIN(10),
+    POWERUSER(7),
+    USER(6),
+    DRIVER(4),
+    CUSTOMER(2)
 }
 
 val User.isActive: Int
