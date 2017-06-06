@@ -1,23 +1,19 @@
 package org.deku.leoz.mobile.ui.fragment
 
 
-import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.fragment_delivery_process.*
 
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.model.Order
+import org.deku.leoz.mobile.model.Stop
 
 
-/**
- * A simple [Fragment] subclass.
- */
-class DeliveryProcessFragment : Fragment() {
-
+class DeliveryProcessFragment(val stop: Stop) : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -28,26 +24,28 @@ class DeliveryProcessFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxViewPager.adapter = DeliveryProcessPageAdapter(context, childFragmentManager, listOf(
-                TourOverviewFragment(),
-                TourSelectionFragment()
-        ))
-    }
+        this.uxStreet.text = stop.address.street
+        this.uxStreetNo.text = stop.address.streetNo
+        this.uxZip.text = stop.address.zipCode
+        this.uxCity.text = stop.address.city
+        this.uxReceipient.text = stop.address.addressLine1
+        this.uxAppointment.text = "${stop.appointment.dateFrom} - ${stop.appointment.dateTo}"
 
-    class DeliveryProcessPageAdapter(val context: Context, fragmentManager: FragmentManager, val fragment: List<Fragment>): FragmentPagerAdapter(fragmentManager) {
+        //region TODO To be replaced by a custom adapter
+        val parcelList = mutableListOf<Order.Parcel>()
 
-        override fun getItem(position: Int): android.support.v4.app.Fragment {
-            return fragment[position]
+        stop.order.forEach {
+            parcelList.addAll(it.parcel)
         }
 
-        override fun getCount(): Int {
-            return fragment.size
+        val parcelRefList: List<String> = parcelList.map {
+            it.labelReference ?: ""
         }
+        
+        val arrayAdapter: ArrayAdapter<String> = ArrayAdapter(context, android.R.layout.simple_list_item_1, parcelRefList)
 
-        override fun getPageTitle(position: Int): CharSequence {
-            return fragment[position].fragmentTitle
-        }
-
+        this.uxParcelList.adapter = arrayAdapter
+        //endregion
     }
 
 }

@@ -13,7 +13,6 @@ import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.mobile.mq.MqttEndpoints
 import org.deku.leoz.service.internal.LocationService
 import org.slf4j.LoggerFactory
-import sx.mq.mqtt.MqttChannel
 import sx.mq.mqtt.channel
 import sx.time.Duration
 import java.util.*
@@ -109,6 +108,10 @@ class LocationService(
                 lastLocation.set(location)
 
                 log.info("Location changed. Provider [${location?.provider}] Position [$currentPosition]")
+
+                /**
+                 * TODO: Store location data in database and send it as an set of multiple positions once.
+                 */
 
                 mqttChannels.central.transient.channel().send(currentPosition)
             }

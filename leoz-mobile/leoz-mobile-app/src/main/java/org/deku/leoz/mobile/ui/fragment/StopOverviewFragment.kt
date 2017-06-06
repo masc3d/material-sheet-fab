@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_tour_overview.*
+import kotlinx.android.synthetic.main.fragment_stop_overview.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Stop
@@ -15,13 +15,12 @@ import org.deku.leoz.mobile.ui.dialog.TourListDialog
 /**
  * A simple [Fragment] subclass.
  */
-class TourOverviewFragment : Fragment() {
-
+class StopOverviewFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_tour_overview, container, false)
+        return inflater!!.inflate(R.layout.fragment_stop_overview, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
