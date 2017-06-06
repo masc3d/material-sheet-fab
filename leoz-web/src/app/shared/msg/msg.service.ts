@@ -18,8 +18,15 @@ export class MsgService {
     this.msgSubject.next( <Msg> { text: text, alertStyle: 'ui-messages-success' } );
   }
 
+  error( text: string ): void {
+    this.msgSubject.next( <Msg> { text: text, alertStyle: 'ui-messages-error' } );
+  }
+
   handleResponse( resp: Response ): void {
     console.log( resp );
-    this.msgSubject.next( <Msg> { text: resp.json().title || 'webservice not available' , alertStyle: 'ui-messages-error' } );
+    this.msgSubject.next( <Msg> {
+      text: resp.json().title || 'webservice not available',
+      alertStyle: 'ui-messages-error'
+    } );
   }
 }

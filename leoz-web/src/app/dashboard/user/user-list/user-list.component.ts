@@ -4,13 +4,12 @@ import { User } from '../user.model';
 import { Subscription } from 'rxjs/Subscription';
 import { Response } from '@angular/http';
 import { MsgService } from '../../../shared/msg/msg.service';
-import { PermissionCheck } from "app/core/auth/permission-check";
-import { RoleGuard } from '../../../core/auth/role.guard';
+import { Observable } from 'rxjs/Observable';
 
 @Component( {
   selector: 'app-user-list',
   template: `
-    <p-dataTable [value]="users">
+    <p-dataTable [value]="users | async | userfilter">
       <p-column field="firstName" header="{{'firstname' | translate}}" [sortable]="true"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}"></p-column>
       <p-column field="role" header="{{'role' | translate}}"></p-column>
@@ -25,30 +24,23 @@ import { RoleGuard } from '../../../core/auth/role.guard';
 } )
 export class UserListComponent implements OnInit, OnDestroy {
 
-  users: User[];
+  users: Observable<User[]>;
 
-  private subscription: Subscription;
   private subscriptionCRUD: Subscription;
 
   constructor( private userService: UserService,
-               private msgService: MsgService,
-               private roleGuard: RoleGuard ) {
+               private msgService: MsgService ) {
   }
 
   ngOnInit() {
     console.log( '-------------- UserListComponent ngOnInit' );
     this.deactivate( <User> {} );
     this.selected( <User> {} );
-    this.subscription = this.userService.users.subscribe((users: User[]) => {
-      this.users = users.filter( item => PermissionCheck.isAllowedRole( this.roleGuard.userRole, item.role ) );
-    });
+    this.users = this.userService.users;
     this.userService.getUsers();
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
     if (this.subscriptionCRUD) {
       this.subscriptionCRUD.unsubscribe();
     }

@@ -32,11 +32,11 @@ export class TourDriverListComponent implements OnInit {
   ngOnInit() {
      this.subscription = this.driverService.drivers.subscribe((drivers: Driver[]) => {
 
-       if (this.roleGuard.userRole === Driver.RoleEnum.DRIVER) {
+       if (this.roleGuard.userRole === Driver.RoleEnum.Driver) {
          // this.drivers = drivers.filter( item => item.email === currUserEmail );
          this.drivers = drivers.filter( (driver: Driver) => driver.email === 'driver@deku.org' );
        } else {
-         this.drivers = drivers.filter( (driver: Driver) => driver.role === Driver.RoleEnum.DRIVER );
+         this.drivers = drivers.filter( (driver: Driver) => driver.role === Driver.RoleEnum.Driver );
        }
 
        });

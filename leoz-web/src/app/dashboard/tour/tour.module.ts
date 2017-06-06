@@ -9,6 +9,7 @@ import { TourService } from './tour.service';
 import { YagaModule } from '@yaga/leaflet-ng2';
 import { TourRoutingModule } from './tour-routing.module';
 import { DriverService } from './driver.service';
+import { DriverFilterPipe } from './driver.pipe';
 
 @NgModule( {
   imports: [
@@ -20,7 +21,8 @@ import { DriverService } from './driver.service';
   declarations: [
     TourComponent,
     TourMapComponent,
-    TourDriverListComponent
+    TourDriverListComponent,
+    DriverFilterPipe
   ],
   providers: [
     DriverService,
