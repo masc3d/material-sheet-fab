@@ -7,13 +7,13 @@ export class RoleGuard implements CanActivate {
 
   public userRole: User.RoleEnum;
   private allowedRoutes = {
-    'Customer': [],
-    'Admin': [],
-    'Driver': [ 'tour' ],
-    'User': [
+    'CUSTOMER': [],
+    'ADMIN': [],
+    'DRIVER': [ 'tour' ],
+    'USER': [
       'user',
       'tour' ],
-    'PowerUser': [
+    'POWERUSER': [
       'user',
       'tour' ],
   };
@@ -42,14 +42,14 @@ export class RoleGuard implements CanActivate {
   }
 
   public isDriver(): boolean {
-    return this.userRole === User.RoleEnum.Driver;
+    return this.userRole === User.RoleEnum.DRIVER;
   }
 
   public isUser(): boolean {
-    return this.userRole === User.RoleEnum.User;
+    return this.userRole === User.RoleEnum.USER;
   }
 
   public isPoweruser(): boolean {
-    return this.userRole === User.RoleEnum.PowerUser;
+    return this.userRole === User.RoleEnum.POWERUSER;
   }
 }

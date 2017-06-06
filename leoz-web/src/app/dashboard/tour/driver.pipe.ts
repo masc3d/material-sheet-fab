@@ -14,11 +14,11 @@ export class DriverFilterPipe implements PipeTransform {
     if (!drivers) {
       return;
     }
-    if (this.roleGuard.userRole === Driver.RoleEnum.Driver) {
+    if (this.roleGuard.userRole === Driver.RoleEnum.DRIVER) {
       // return drivers.filter( ( driver: Driver ) => driver.email === currUserEmail );
       return drivers.filter( ( driver: Driver ) => driver.email === 'driver@deku.org' );
     } else {
-      return drivers.filter( ( driver: Driver ) => driver.role === Driver.RoleEnum.Driver );
+      return drivers.filter( ( driver: Driver ) => driver.role === Driver.RoleEnum.DRIVER );
     }
   }
 }

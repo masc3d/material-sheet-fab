@@ -16,11 +16,11 @@ export interface User {
 
 export namespace User {
   export enum RoleEnum {
-    Admin = <any> 'Admin',
-    PowerUser = <any> 'PowerUser',
-    User = <any> 'User',
-    Driver = <any> 'Driver',
-    Customer = <any> 'Customer'
+    ADMIN = <any> 'ADMIN',
+    POWERUSER = <any> 'POWERUSER',
+    USER = <any> 'USER',
+    DRIVER = <any> 'DRIVER',
+    CUSTOMER = <any> 'CUSTOMER'
   }
 }
 
