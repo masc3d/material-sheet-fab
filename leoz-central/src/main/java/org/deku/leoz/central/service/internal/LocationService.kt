@@ -82,7 +82,7 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
                 val user = mutableListOf<LocationService.User>()
                 userRecList.forEach {
 
-                    if ((UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN)
+                    if ((UserRole.valueOf(authorizedUserRecord.role) == UserRole.Admin)
                             || ((authorizedUserRecord.debitorId == it.debitorId)
                             && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(it.role).value))) {
 
@@ -107,7 +107,7 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
                         status = Response.Status.NOT_FOUND,
                         title = "no user found by email")
 
-                if ((UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN)
+                if ((UserRole.valueOf(authorizedUserRecord.role) == UserRole.Admin)
                         || ((authorizedUserRecord.debitorId == userRecord.debitorId)
                         && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(userRecord.role).value))) {
 
