@@ -216,8 +216,12 @@ public class CustomJooqGeneratorStrategy extends DefaultGeneratorStrategy {
 
     @Override
     String getJavaClassName(Definition definition, GeneratorStrategy.Mode mode) {
-        String baseName = super.getJavaClassName(definition, mode)
+        String baseName = super
+                .getJavaClassName(definition, mode)
 
+        def ENTITY = "entity"
+        if (baseName.toLowerCase().endsWith(ENTITY))
+            baseName = baseName.substring(0, baseName.length() - ENTITY.length())
         if (mode == GeneratorStrategy.Mode.INTERFACE) {
             return "${baseName}Entity"
         } else {
