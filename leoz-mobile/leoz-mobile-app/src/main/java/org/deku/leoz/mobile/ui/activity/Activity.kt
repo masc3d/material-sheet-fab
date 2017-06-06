@@ -180,14 +180,24 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                 this.nav_view.postDelayed({
                     login.authenticate(
                             email = Login.DEV_EMAIL,
-                            password = Login.DEV_PASSWORD)
-                },20)
+                            password = Login.DEV_PASSWORD
+
+                    )
+                            .subscribeBy(
+                                    onNext = {
+
+                                    },
+                                    onError = {
+                                        tone.errorBeep()
+                                    }
+                            )
+                }, 20)
             }
 
             R.id.nav_logout -> {
                 this.nav_view.postDelayed({
                     login.logout()
-                },20)
+                }, 20)
             }
         }
 

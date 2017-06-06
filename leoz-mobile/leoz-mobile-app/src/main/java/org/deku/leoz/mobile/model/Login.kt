@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory
 import sx.android.Connectivity
 import sx.android.Device
 import sx.rx.ObservableRxProperty
+import sx.rx.toHotReplay
 import sx.text.parseHex
 import java.util.*
 
@@ -59,6 +60,7 @@ class Login {
      *
      * @param email User email
      * @param password User password
+     * @return Hot observable
      */
     fun authenticate(email: String, password: String): Observable<User> {
         val task = Observable.fromCallable {
@@ -71,67 +73,62 @@ class Login {
             )
 
             // Debug/dev supoort for development login
-            if (debugSettings.enabled && email == DEV_EMAIL && password == DEV_PASSWORD) {
+
+            if (connectivity.network.state == NetworkInfo.State.CONNECTED) {
+                log.info("Authorizing user [${email}] online")
+
+                val request = AuthorizationService.MobileRequest(
+                        user = AuthorizationService.Credentials(
+                                email = email,
+                                password = password
+                        ),
+                        mobile = AuthorizationService.Mobile(
+                                model = device.model.name,
+                                serial = device.serial,
+                                imei = device.imei
+                        )
+                )
+
+                val authResponse = authService.authorizeMobile(request)
+
                 user = User(
-                        email = DEV_EMAIL,
-                        apiKey = UUID.randomUUID().toString())
+                        email = email,
+                        apiKey = authResponse.key
+                )
+
+                // Store user in database
+                val rUser = UserEntity()
+                rUser.email = email
+                rUser.password = hashedPassword
+                rUser.apiKey = authResponse.key
+                db.store.upsert(rUser).blockingGet()
+
             } else {
-                if (connectivity.network.state == NetworkInfo.State.CONNECTED) {
-                    log.info("Authorizing user [${email}] online")
+                log.info("Authorizing user [${email}] offline")
 
-                    val request = AuthorizationService.MobileRequest(
-                            user = AuthorizationService.Credentials(
-                                    email = email,
-                                    password = password
-                            ),
-                            mobile = AuthorizationService.Mobile(
-                                    model = device.model.name,
-                                    serial = device.serial,
-                                    imei = device.imei
-                            )
-                    )
+                val rUser = db.store.select(UserEntity::class)
+                        .where(UserEntity.EMAIL.eq(email))
+                        .get()
+                        .firstOrNull()
 
-                    val authResponse = authService.authorizeMobile(request)
+                if (rUser == null)
+                    throw NoSuchElementException("User [${email}] not found, offline login not applicable")
 
-                    user = User(
-                            email = email,
-                            apiKey = authResponse.key
-                    )
-
-                    // Store user in database
-                    val rUser = UserEntity()
-                    rUser.email = email
-                    rUser.password = hashedPassword
-                    rUser.apiKey = authResponse.key
-                    db.store.upsert(rUser).blockingGet()
-
-                } else {
-                    log.info("Authorizing user [${email}] offline")
-
-                    val rUser = db.store.select(UserEntity::class)
-                            .where(UserEntity.EMAIL.eq(email))
-                            .get()
-                            .firstOrNull()
-
-                    if (rUser == null)
-                        throw NoSuchElementException("User [${email}] not found, offline login not applicable")
-
-                    user = User(email = rUser.email, apiKey = rUser.apiKey)
-                }
+                user = User(email = rUser.email, apiKey = rUser.apiKey)
             }
 
             user
         }
-                .cache()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-
-        // Subscribing to task will actually start it
-        task.subscribeBy(
-                onNext = {
+                .doOnNext {
                     // Store authenticated user in property
                     this.authenticatedUser = it
-                }, onError = {})
+                }
+                .doOnError {
+                    log.error(it.message)
+                }
+                .toHotReplay()
 
         // Return task to consumer for optionally subscribing to running authentication task as well
         return task

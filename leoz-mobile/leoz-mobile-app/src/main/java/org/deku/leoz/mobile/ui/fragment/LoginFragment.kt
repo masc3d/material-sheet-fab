@@ -115,10 +115,9 @@ class LoginFragment : Fragment() {
                     )
                 }
                 .doOnError {
-                    tone.beep()
+                    tone.errorBeep()
                     Snackbar.make(this.view!!, "Login failed", Snackbar.LENGTH_SHORT)
                             .show()
-                    log.error(it.message)
                 }
                 .retry()
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
@@ -132,7 +131,7 @@ class LoginFragment : Fragment() {
         return try {
             InternetAddress(this).validate()
             true
-        } catch (ex: AddressException) {
+        } catch (e: AddressException) {
             false
         }
     }
