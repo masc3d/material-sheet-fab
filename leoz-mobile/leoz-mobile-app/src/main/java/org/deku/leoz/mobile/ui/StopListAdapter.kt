@@ -7,6 +7,7 @@ import android.widget.BaseAdapter
 import org.deku.leoz.mobile.model.Stop
 import android.view.LayoutInflater
 import android.widget.TextView
+import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import org.deku.leoz.mobile.R
 import sx.time.toLocalDate
 import sx.time.toTimestamp

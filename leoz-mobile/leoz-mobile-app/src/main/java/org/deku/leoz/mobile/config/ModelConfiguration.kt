@@ -2,10 +2,8 @@ package org.deku.leoz.mobile.config
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.erased.*
-import org.deku.leoz.mobile.model.Job
+import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.Login
-import sx.concurrent.task.CompositeExecutorService
-import java.util.concurrent.*
 
 /**
  * Model configuration
@@ -18,8 +16,8 @@ class ModelConfiguration {
                 Login()
             }
 
-            bind<Job>() with eagerSingleton {
-                Job()
+            bind<Delivery>() with eagerSingleton {
+                Delivery()
             }
         }
     }

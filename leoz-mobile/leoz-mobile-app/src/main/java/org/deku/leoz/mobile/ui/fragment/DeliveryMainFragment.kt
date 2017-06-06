@@ -9,8 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ImageView
-import android.widget.TextView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -19,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_delivery.*
 import kotlinx.android.synthetic.main.row_delivery_menu_entry.view.*
 
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.model.Job
+import org.deku.leoz.mobile.model.Delivery
 import org.slf4j.LoggerFactory
 import sx.android.getLayoutInflater
 
@@ -31,7 +29,7 @@ import sx.android.getLayoutInflater
 class DeliveryMainFragment : Fragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    private val job: Job by Kodein.global.lazy.instance()
+    private val delivery: Delivery by Kodein.global.lazy.instance()
 
     data class MenuEntry(val entryType: Entry, val description: String, var counter: Int, val icon: Drawable) {
         enum class Entry(val value: Long) {
@@ -104,7 +102,7 @@ class DeliveryMainFragment : Fragment() {
                         MenuEntry(
                                 entryType = MenuEntry.Entry.ORDERLIST,
                                 description = "Auftragsliste",
-                                counter = job.stopList.size,
+                                counter = delivery.stopList.size,
                                 icon = AppCompatResources.getDrawable(context, R.drawable.ic_format_list_bulleted)!!
                         )
                 ))

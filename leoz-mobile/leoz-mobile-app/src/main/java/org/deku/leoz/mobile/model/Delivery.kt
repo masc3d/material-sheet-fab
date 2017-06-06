@@ -16,7 +16,7 @@ import java.util.*
 /**
  * Created by 27694066 on 09.05.2017.
  */
-class Job {
+class Delivery {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
@@ -81,11 +81,37 @@ class Job {
                 sort = 0,
                 state = Stop.State.PENDING
         ))
+
+        stopList.add(Stop(
+                order = mutableListOf(
+                        Order(
+                                id = "2",
+                                state = Order.State.PENDING,
+                                classification = OrderClassification.Delivery,
+                                parcel = listOf(Order.Parcel(
+                                        id = "a",
+                                        labelReference = "02000000001"
+                                )),
+                                addresses = mutableListOf(addr),
+                                appointment = listOf(appointment),
+                                carrier = Carrier.DerKurier,
+                                service = listOf(Order.Service(
+                                        classification = Order.Service.Classification.DELIVERY_SERVICE,
+                                        service = listOf(ParcelService.NoAdditionalService))
+                                ),
+                                sort = 0
+                        )
+                ),
+                address = addr,
+                appointment = appointment,
+                sort = 0,
+                state = Stop.State.PENDING
+        ))
     }
 
     /**
-     * Clean the existing Job.stopList
-     * Merge existing orders in Job.orderList into the cleaned Job.stopList
+     * Clean the existing Delivery.stopList
+     * Merge existing orders in Delivery.orderList into the cleaned Delivery.stopList
      */
     fun initializeStopList() {
         stopList.clear()
