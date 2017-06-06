@@ -44,7 +44,7 @@ CREATE TABLE orders
 CREATE TABLE parcel
 (
 	id VARCHAR NOT NULL PRIMARY KEY,
-	label_reference VARCHAR NULL,
+	label_ref VARCHAR NULL,
 	`length` DOUBLE NULL,
 	height DOUBLE NULL,
 	width DOUBLE NULL,
