@@ -2,7 +2,6 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
-import org.deku.leoz.central.data.jooq.tables.records.MstUserRecord
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
 import org.deku.leoz.central.data.repository.toUser
@@ -18,7 +17,6 @@ import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.service.internal.entity.UserRole
 import org.deku.leoz.service.internal.entity.isActive
 import org.deku.leoz.service.internal.entity.isExternalUser
-import javax.ws.rs.HeaderParam
 import javax.ws.rs.core.Response
 
 /**
@@ -64,7 +62,7 @@ class UserService : UserService {
                 val user = mutableListOf<User>()
                 userRecList.forEach {
 
-                    if (UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN) {
+                    if (UserRole.valueOf(authorizedUserRecord.role) == UserRole.Admin) {
                         user.add(it.toUser())
                     } else {
                         if (authorizedUserRecord.debitorId == it.debitorId) {
@@ -82,7 +80,7 @@ class UserService : UserService {
                         ?: throw DefaultProblem(
                         status = Response.Status.NOT_FOUND,
                         title = "no user found by email")
-                if (UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN)
+                if (UserRole.valueOf(authorizedUserRecord.role) == UserRole.Admin)
                     return listOf(userRecord.toUser())
                 if ((UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(userRecord.role).value) && (authorizedUserRecord.debitorId == userRecord.debitorId)) {
                     return listOf(userRecord.toUser())
@@ -155,7 +153,7 @@ class UserService : UserService {
             if (rec.debitorId == null) rec.debitorId = authorizedUserRecord.debitorId
             if (rec.role == null) rec.role = authorizedUserRecord.role
 
-            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.Admin) {
                 if (rec.debitorId != authorizedUserRecord.debitorId)
                     throw  DefaultProblem(
                             status = Response.Status.FORBIDDEN,
@@ -250,7 +248,7 @@ class UserService : UserService {
 
         if (debitor != null) {
 
-            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.ADMIN) {
+            if (UserRole.valueOf(authorizedUserRecord.role) != UserRole.Admin) {
                 if (authorizedUserRecord.debitorId != debitor) {
                     throw  DefaultProblem(
                             status = Response.Status.FORBIDDEN,
