@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { DashboardRoutingModule } from './dashboard-routing.module';
-import { AccordionModule } from 'ngx-bootstrap';
 
 import { DashboardComponent } from './dashboard.component';
 import { LeftMenuComponent } from './left-menu/left-menu.component';
+import { PanelMenuModule } from 'primeng/primeng';
 
 @NgModule({
   imports: [
     SharedModule,
-    AccordionModule,
+    PanelMenuModule,
     DashboardRoutingModule
   ],
   declarations: [DashboardComponent, LeftMenuComponent],

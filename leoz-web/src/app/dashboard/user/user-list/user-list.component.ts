@@ -1,36 +1,56 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
 import { User } from '../user.model';
-import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { Response } from '@angular/http';
 import { MsgService } from '../../../shared/msg/msg.service';
+import { PermissionCheck } from "app/core/auth/permission-check";
+import { RoleGuard } from '../../../core/auth/role.guard';
 
 @Component( {
   selector: 'app-user-list',
-  templateUrl: './user-list.component.html'
+  template: `
+    <p-dataTable [value]="users">
+      <p-column field="firstName" header="{{'firstname' | translate}}" [sortable]="true"></p-column>
+      <p-column field="lastName" header="{{'surname' | translate}}"></p-column>
+      <p-column field="role" header="{{'role' | translate}}"></p-column>
+      <p-column header="">
+        <ng-template let-user="rowData" pTemplate="body">
+          <i class="fa fa-pencil fa-fw" aria-hidden="true" (click)="selected(user)"></i>
+          <i class="fa fa-trash-o fa-fw" aria-hidden="true" (click)="deactivate(user)"></i>
+        </ng-template>
+      </p-column>
+    </p-dataTable>
+  `
 } )
 export class UserListComponent implements OnInit, OnDestroy {
 
-  users: Observable<User[]>;
+  users: User[];
+
+  private subscription: Subscription;
   private subscriptionCRUD: Subscription;
 
   constructor( private userService: UserService,
-               private msgService: MsgService ) {
+               private msgService: MsgService,
+               private roleGuard: RoleGuard ) {
   }
 
   ngOnInit() {
     console.log( '-------------- UserListComponent ngOnInit' );
     this.deactivate( <User> {} );
     this.selected( <User> {} );
-    this.users = this.userService.users;
+    this.subscription = this.userService.users.subscribe((users: User[]) => {
+      this.users = users.filter( item => PermissionCheck.isAllowedRole( this.roleGuard.userRole, item.role ) );
+    });
     this.userService.getUsers();
   }
 
   ngOnDestroy() {
-    console.log( '----------- ngONDestroy UserListComponent' );
-    if (this.users) {
-      this.users = null;
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    if (this.subscriptionCRUD) {
+      this.subscriptionCRUD.unsubscribe();
     }
   }
 

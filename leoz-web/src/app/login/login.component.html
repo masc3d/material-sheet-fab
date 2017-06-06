@@ -3,34 +3,35 @@
     <div class="content-header">
       <h2>{{'login' | translate}}</h2>
     </div>
-
-    <div id="content" class="content-box">
-      <app-msg-box [msg]="errMsg"></app-msg-box>
-      <form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
-        <div class="form-group">
-          <label>{{'username' | translate}}</label>
-          <input type="text" class="form-control" [ngClass]="{'invalid': errMsg.length > 0}" formControlName="username"
-                 (focus)="resetErrMsg()" required/>
-          <div *ngIf="loginForm.controls['username'].touched && loginForm.controls['username'].hasError('required')"
-               class="alert alert-danger">
-            <span>{{'username is required' | translate}}</span>
+    <app-msg-box [msg]="errMsg"></app-msg-box>
+    <form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
+      <div class="ui-fluid">
+        <div class="ui-g">
+          <div class="ui-g-12">
+            <div>{{'username' | translate}}</div>
+            <div><input pInputText type="text" [ngClass]="{'invalid': errMsg.text.length > 0}"
+                        formControlName="username"
+                        (focus)="resetErrMsg()" required/></div>
+            <div *ngIf="loginForm.controls['username'].touched && loginForm.controls['username'].hasError('required')"
+                 class="ui-message ui-widget ui-corner-all ui-messages-error">
+              {{'username is required' | translate}}
+            </div>
+          </div>
+          <div class="ui-g-12">
+            <div>{{'password' | translate}}</div>
+            <input pInputText type="password" [ngClass]="{'invalid': errMsg.text.length > 0}"
+                   formControlName="password" (focus)="resetErrMsg()" required/>
+            <div *ngIf="loginForm.controls['password'].touched && loginForm.controls['password'].hasError('required')"
+                 class="ui-message ui-widget ui-corner-all ui-messages-error">
+              {{'password is required' | translate}}
+            </div>
+          </div>
+          <div class="ui-g-12">
+            <button pButton type="button" (click)="login()" [disabled]="!loginForm.valid || loading"  style="width:100px" label="{{'btlogin' | translate}}"></button>
+            <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
           </div>
         </div>
-        <div class="form-group">
-          <label>{{'password' | translate}}</label>
-          <input type="password" class="form-control" [ngClass]="{'invalid': errMsg.length > 0}"
-                 formControlName="password" (focus)="resetErrMsg()" required/>
-          <div *ngIf="loginForm.controls['password'].touched && loginForm.controls['password'].hasError('required')"
-               class="alert alert-danger">
-            <span>{{'password is required' | translate}}</span>
-          </div>
-        </div>
-        <div class="form-group">
-          <button [disabled]="!loginForm.valid || loading" class="btn btn-primary">{{'btlogin' | translate}}</button>
-          <img *ngIf="loading"
-               src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
-        </div>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
 </div>

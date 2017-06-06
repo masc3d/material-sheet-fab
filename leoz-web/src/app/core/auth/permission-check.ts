@@ -12,5 +12,5 @@ export class PermissionCheck {
   public static isAllowedRole( ownRole: User.RoleEnum, givenRole: User.RoleEnum ): boolean {
     return this.roleSorting.indexOf( ownRole) <= this.roleSorting.indexOf( givenRole );
   }
-}
 
+}

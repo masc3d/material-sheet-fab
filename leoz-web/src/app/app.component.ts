@@ -5,7 +5,10 @@ import { environment } from '../environments/environment';
 @Component({
   moduleId: module.id,
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  template: `
+    <app-top-bar></app-top-bar>
+    <router-outlet></router-outlet>
+  `
 })
 export class AppComponent implements OnInit {
 

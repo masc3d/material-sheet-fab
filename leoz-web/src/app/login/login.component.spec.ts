@@ -5,6 +5,7 @@ import { SharedModule } from '../shared/shared.module';
 import { AppRoutingModule } from '../app-routing.module';
 import { CoreModule } from '../core/core.module';
 import { HttpModule } from '@angular/http';
+import { ButtonModule, InputTextModule } from 'primeng/primeng';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -15,6 +16,8 @@ describe('LoginComponent', () => {
       imports: [
         HttpModule,
         SharedModule,
+        InputTextModule,
+        ButtonModule,
         CoreModule.forRoot(),
         AppRoutingModule
       ],
