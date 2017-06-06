@@ -234,6 +234,10 @@ dependencies {
                 exclude group: 'org.ow2.asm', module: 'asm'
             },
 
+            // UI
+            "com.gordonwong:material-sheet-fab:1.2.1",
+            "eu.davidea:flexible-adapter:5.0.0-rc1",
+
             // FOR TESTING
 
             //RX Location
