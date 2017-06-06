@@ -40,8 +40,9 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/uxAppointment"
             android:layout_alignBottom="@+id/uxAppointment"
-            android:layout_alignEnd="@+id/uxReceipient"
-            android:layout_alignRight="@+id/uxReceipient"
+            android:layout_marginLeft="5dp"
+            android:layout_toEndOf="@+id/uxZip"
+            android:layout_toRightOf="@+id/uxZip"
             android:text="Bad Hersfeld"
             android:textStyle="bold" />
 

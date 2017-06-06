@@ -107,7 +107,7 @@ class LocationService(
                 )
                 lastLocation.set(location)
 
-                log.info("Location changed. Provider [${location?.provider}] Position [$currentPosition]")
+                log.info("Location changed. Provider [${location.provider}] Position [$currentPosition]")
 
                 /**
                  * TODO: Store location data in database and send it as an set of multiple positions once.

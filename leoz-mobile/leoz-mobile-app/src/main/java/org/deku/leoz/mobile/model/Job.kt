@@ -4,12 +4,14 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import org.deku.leoz.model.Carrier
 import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.model.ParcelService
 import org.deku.leoz.service.internal.DeliveryListService
 import org.deku.leoz.service.internal.OrderService
 import org.slf4j.LoggerFactory
 import sx.rx.ObservableRxProperty
+import java.util.*
 
 /**
  * Created by 27694066 on 09.05.2017.
@@ -39,7 +41,46 @@ class Job {
      * When initiating, check for existing orders stored in the local DB and (re)load them into the variables.
      */
     init {
+        val addr = Order.Address(
+                classification = Order.Address.Classification.DELIVERY,
+                addressLine1 = "Prangenberg",
+                addressLine2 = "DEK KURIER",
+                street = "Dörrwiese",
+                streetNo = "2",
+                zipCode = "36286",
+                city = "Neuenstein"
+        )
+        val appointment = Order.Appointment(
+                classification = Order.Appointment.Classification.DELIVERY,
+                dateFrom = Date(),
+                dateTo = Date()
+        )
 
+        stopList.add(Stop(
+                order = mutableListOf(
+                        Order(
+                                id = "1",
+                                state = Order.State.PENDING,
+                                classification = OrderClassification.Delivery,
+                                parcel = listOf(Order.Parcel(
+                                        id = "a",
+                                        labelReference = "10000000001"
+                                )),
+                                addresses = mutableListOf(addr),
+                                appointment = listOf(appointment),
+                                carrier = Carrier.DerKurier,
+                                service = listOf(Order.Service(
+                                        classification = Order.Service.Classification.DELIVERY_SERVICE,
+                                        service = listOf(ParcelService.NoAdditionalService))
+                                ),
+                                sort = 0
+                        )
+                ),
+                address = addr,
+                appointment = appointment,
+                sort = 0,
+                state = Stop.State.PENDING
+        ))
     }
 
     /**
