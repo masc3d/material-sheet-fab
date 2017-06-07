@@ -17,7 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.aidc.CompositeAidcReader
-import sx.android.widget.setIconTint
+import sx.android.view.setIconTint
 
 /**
  * Aidc camera fragment

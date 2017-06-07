@@ -39,7 +39,7 @@ import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
-import sx.android.widget.setColors
+import sx.android.view.setColors
 
 /**
  * Leoz activity base class

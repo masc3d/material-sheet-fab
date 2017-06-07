@@ -1,4 +1,4 @@
-package sx.android.widget
+package sx.android.view
 
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat

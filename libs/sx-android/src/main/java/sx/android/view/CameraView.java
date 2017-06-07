@@ -1,4 +1,4 @@
-package sx.android.widget;
+package sx.android.view;
 
 import android.content.Context;
 import android.hardware.Camera;
