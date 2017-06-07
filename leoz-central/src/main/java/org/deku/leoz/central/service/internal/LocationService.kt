@@ -14,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import org.deku.leoz.service.internal.LocationService
-import org.deku.leoz.service.internal.entity.UserRole
+import org.deku.leoz.model.UserRole
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.time.plusDays
