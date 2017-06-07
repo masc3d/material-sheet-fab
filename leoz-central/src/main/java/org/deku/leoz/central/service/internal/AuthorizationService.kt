@@ -5,11 +5,12 @@ import org.deku.leoz.central.data.repository.KeyJooqRepository
 import org.deku.leoz.central.data.repository.NodeJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.verifyPassword
+import org.deku.leoz.central.data.repository.toAuthorizationServiceUser
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.AuthorizationService
-import org.deku.leoz.service.internal.entity.UserRole
+import org.deku.leoz.model.UserRole
 import org.slf4j.LoggerFactory
 import sx.event.EventDelegate
 import sx.event.EventDispatcher
@@ -59,7 +60,7 @@ class AuthorizationService
     /**
      * Mobile authorization request
      */
-    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.MobileResponse {
+    override fun authorizeMobile(request: AuthorizationService.MobileRequest): AuthorizationService.WebResponse {
         val serial = request.mobile?.serial
         val imei = request.mobile?.imei
 
@@ -70,40 +71,20 @@ class AuthorizationService
 
         // TODO: when response is unified, we could simply delegate to `authorizeWeb` from here (and make it generic)
 
-        //region Deprecated
         val user = request.user
 
-        if (user == null)
+        user ?:
             throw DefaultProblem(title = "User is required")
 
-        val userRecord = this.userRepository.findByMail(email = user.email)
-
-        if (userRecord == null)
-            throw DefaultProblem(title = "User does not exist")
-
-        // Verify credentials
-        if (!userRecord.verifyPassword(user.password))
-            throw DefaultProblem(
-                    title = "User authentication failed",
-                    status = Response.Status.UNAUTHORIZED)
-
-        val apiKey = UUID.randomUUID()
-
-        return AuthorizationService.MobileResponse(
-                key = apiKey.toString()
-        )
-        //endregion
+        return authorizeWeb(AuthorizationService.Credentials(user.email,user.password))
     }
 
     override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.WebResponse {
         val user = request
 
-        if (user == null)
-            throw DefaultProblem(title = "User is required")
-
         val userRecord = this.userRepository.findByMail(email = user.email)
 
-        if (userRecord == null)
+        userRecord ?:
             throw DefaultProblem(title = "User does not exist")
 
         // Verify credentials
@@ -143,8 +124,7 @@ class AuthorizationService
 
         return AuthorizationService.WebResponse(
                 key = keyRecord.key,
-                debitorNo = userRecord.debitorId.toString(),
-                userRole = userRecord.role)
+                user=userRecord.toAuthorizationServiceUser())
     }
 
     /**

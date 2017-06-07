@@ -13,9 +13,10 @@ import sx.time.toLocalDate
 import java.util.*
 import javax.inject.Named
 import org.deku.leoz.central.data.jooq.tables.MstDebitor
-import org.deku.leoz.service.internal.entity.User
 import org.jooq.impl.DSL.*
 import org.deku.leoz.service.internal.LocationService
+import org.deku.leoz.service.internal.AuthorizationService
+import org.deku.leoz.service.internal.UserService
 
 
 /**
@@ -137,22 +138,19 @@ open class UserJooqRepository {
 
 }
 
-fun MstUserRecord.toUser(): User {
+fun MstUserRecord.toUser(): UserService.User {
 
-    val user = User(this.email,
+    val user = UserService.User(this.email,
             this.debitorId,
-            /*null,*/
             this.alias,
             this.role,
             this.password,
-            /*userRecord.salt,*/
             this.firstname,
             this.lastname,
-            /*userRecord.apiKey,*/
             this.isActive,
             this.isExternalUser,
             this.phone,
-            this.expiresOn//, userRecord.id
+            this.expiresOn
     )
     return user
 }
@@ -166,18 +164,21 @@ fun MstUserRecord.toLocationServiceUser(): LocationService.User {
 
     val user = LocationService.User(this.email,
             this.debitorId,
-            /*null,*/
+            this.alias,
+            this.role
+    )
+    return user
+}
+
+fun MstUserRecord.toAuthorizationServiceUser(): AuthorizationService.User {
+
+    val user = AuthorizationService.User(this.email,
+            this.debitorId,
             this.alias,
             this.role,
-            this.password,
-            /*userRecord.salt,*/
             this.firstname,
             this.lastname,
-            /*userRecord.apiKey,*/
-            this.isActive,
-            this.isExternalUser,
-            this.phone,
-            this.expiresOn//, userRecord.id
+            this.expiresOn
     )
     return user
 }

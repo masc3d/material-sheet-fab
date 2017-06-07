@@ -303,3 +303,11 @@ enum class AdditionalInformationType(val value: Int) {
     DriverInformation(3),
     Cash(4)
 }
+
+enum class UserRole(val value: Int) {
+    ADMIN(10),
+    POWERUSER(7),
+    USER(6),
+    DRIVER(4),
+    CUSTOMER(2)
+}

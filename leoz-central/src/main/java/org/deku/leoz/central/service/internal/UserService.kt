@@ -6,7 +6,7 @@ import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
 import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.node.rest.DefaultProblem
-import org.deku.leoz.service.internal.entity.User
+import org.deku.leoz.service.internal.UserService.User
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
 import sx.rs.auth.ApiKey
@@ -14,9 +14,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.ws.rs.Path
 import org.deku.leoz.service.internal.UserService
-import org.deku.leoz.service.internal.entity.UserRole
-import org.deku.leoz.service.internal.entity.isActive
-import org.deku.leoz.service.internal.entity.isExternalUser
+import org.deku.leoz.model.UserRole
 import javax.ws.rs.core.Response
 
 /**

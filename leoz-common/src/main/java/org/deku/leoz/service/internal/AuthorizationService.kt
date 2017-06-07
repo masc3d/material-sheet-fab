@@ -1,6 +1,7 @@
 package org.deku.leoz.service.internal
 
 import io.swagger.annotations.Api
+import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 import io.swagger.annotations.ApiOperation
 import org.deku.leoz.hashUserPassword
@@ -81,21 +82,48 @@ interface AuthorizationService {
             var mobile: Mobile? = null
     )
 
-    /**
-     * Mobile authorization response
-     */
-    data class MobileResponse(
-            var key: String = ""
-    )
 
     /**
      * Web authorization response
      */
     data class WebResponse(
             var key: String = "",
-            var debitorNo: String = "",
-            var userRole: String = ""
+            var user: User?=null
     )
+
+    /**
+     * Created by 27694066 on 25.04.2017.
+     */
+    @ApiModel(description = "User Model")
+    data class User(
+            @get:ApiModelProperty(example = "foo@bar.com", required = true, value = "User identifier")
+            var email: String = "@",
+
+            @get:ApiModelProperty(example = "12345678", required = false, value = "Allocation of User to debitor")
+            var debitorId: Int? = null,
+
+
+            @get:ApiModelProperty(example = "foo.bar", required = false, value = "Alias of the user")
+            var alias: String? = null,
+
+            @get:ApiModelProperty(example = "User", required = true, value = "Role of the user", allowableValues = "Admin, PowerUser, User, Driver, Customer")
+            var role: String? = null,
+
+
+            @get:ApiModelProperty(example = "Foo", required = false, value = "First name")
+            var firstName: String? = null,
+
+            @get:ApiModelProperty(example = "Bar", required = false, value = "Last name")
+            var lastName: String? = null,
+
+
+            @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
+            var expiresOn: java.sql.Date? = null
+
+
+    )
+
+
 
     /**
      * Request authorization
@@ -104,7 +132,7 @@ interface AuthorizationService {
     @PATCH
     @Path("/mobile")
     @ApiOperation(value = "Request mobile device authorization")
-    fun authorizeMobile(request: MobileRequest): MobileResponse
+    fun authorizeMobile(request: MobileRequest): WebResponse
 
     /**
      * Request authorization
