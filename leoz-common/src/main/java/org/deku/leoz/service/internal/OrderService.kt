@@ -9,11 +9,9 @@ import java.sql.Date
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
-
 /**
  * Created by JT on 24.05.17.
  */
-
 @Path("internal/v1/order")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -63,20 +61,20 @@ interface OrderService {
             var orderID: Int = 0,
 
             @get:ApiModelProperty(example = "DERKURIER", position = 20, required = true, value = "Carrier")
-            var carrier: Carrier = Carrier.Unknown,
+            var carrier: Carrier = Carrier.UNKNOWN,
 
             @get:ApiModelProperty(example = "12345678901", position = 30, required = false, value = "referencIDToExchangeOrderID")
             var referencIDToExchangeOrderID: Int = 0,
 
             @get:ApiModelProperty(example = "DELIVERY", position = 40, required = true, value = "OrderClassification")
-            var orderClassification: OrderClassification = OrderClassification.Delivery,
+            var orderClassification: OrderClassification = OrderClassification.DELIVERY,
 
             @get:ApiModelProperty(position = 60, required = true, value = "appointmentPickup")
             var appointmentPickup: Appointment,
             @get:ApiModelProperty(required = true, position = 120, value = "Pickup address")
             var pickupAddress: Address = Address(),
             @get:ApiModelProperty(required = true, position = 120, value = "Pickup service")
-            var pickupService: Service = Order.Service(listOf(ParcelService.NoAdditionalService)),
+            var pickupService: Service = Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE)),
             @get:ApiModelProperty(required = true, position = 120, value = "Pickup information")
             var pickupInformation: Information? = null,
 
@@ -85,7 +83,7 @@ interface OrderService {
             @ApiModelProperty(required = true, position = 130, value = "Delivery address")
             var deliveryAddress: Address = Address(),
             @get:ApiModelProperty(required = true, position = 120, value = "delivery services")
-            var deliveryService: Service = Order.Service(listOf(ParcelService.NoAdditionalService)),
+            var deliveryService: Service = Order.Service(listOf(ParcelService.NO_ADDITIONAL_SERVICE)),
             @get:ApiModelProperty(required = true, position = 120, value = "delivery information")
             var deliveryInformation: Information? = null,
 

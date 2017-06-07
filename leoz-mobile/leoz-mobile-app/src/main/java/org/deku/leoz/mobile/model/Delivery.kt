@@ -61,17 +61,17 @@ class Delivery {
                         Order(
                                 id = "1",
                                 state = Order.State.PENDING,
-                                classification = OrderClassification.Delivery,
+                                classification = OrderClassification.DELIVERY,
                                 parcel = listOf(Order.Parcel(
                                         id = "a",
                                         labelReference = "10000000001"
                                 )),
                                 addresses = mutableListOf(addr),
                                 appointment = listOf(appointment),
-                                carrier = Carrier.DerKurier,
+                                carrier = Carrier.DER_KURIER,
                                 service = listOf(Order.Service(
                                         classification = Order.Service.Classification.DELIVERY_SERVICE,
-                                        service = listOf(ParcelService.NoAdditionalService))
+                                        service = listOf(ParcelService.NO_ADDITIONAL_SERVICE))
                                 ),
                                 sort = 0
                         )
@@ -87,17 +87,17 @@ class Delivery {
                         Order(
                                 id = "2",
                                 state = Order.State.PENDING,
-                                classification = OrderClassification.Delivery,
+                                classification = OrderClassification.DELIVERY,
                                 parcel = listOf(Order.Parcel(
                                         id = "a",
                                         labelReference = "02000000001"
                                 )),
                                 addresses = mutableListOf(addr),
                                 appointment = listOf(appointment),
-                                carrier = Carrier.DerKurier,
+                                carrier = Carrier.DER_KURIER,
                                 service = listOf(Order.Service(
                                         classification = Order.Service.Classification.DELIVERY_SERVICE,
-                                        service = listOf(ParcelService.NoAdditionalService))
+                                        service = listOf(ParcelService.NO_ADDITIONAL_SERVICE))
                                 ),
                                 sort = 0
                         )
@@ -211,11 +211,11 @@ class Delivery {
                     service = listOf(
                             Order.Service(
                                     classification = Order.Service.Classification.DELIVERY_SERVICE,
-                                    service = it.deliveryService.services ?: listOf(ParcelService.NoAdditionalService)
+                                    service = it.deliveryService.services ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
                             ),
                             Order.Service(
                                     classification = Order.Service.Classification.PICKUP_SERVICE,
-                                    service = it.pickupService.services ?: listOf(ParcelService.NoAdditionalService)
+                                    service = it.pickupService.services ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
                             )
                     ),
                     information = listOf(
@@ -281,7 +281,7 @@ class Delivery {
                             order = mutableListOf(order),
                             address = order.getAddressOfInterest(),
                             appointment = order.appointment.first {
-                                (it.classification == Order.Appointment.Classification.DELIVERY && order.classification == OrderClassification.Delivery) || (it.classification == Order.Appointment.Classification.PICKUP && order.classification == OrderClassification.PickUp)
+                                (it.classification == Order.Appointment.Classification.DELIVERY && order.classification == OrderClassification.DELIVERY) || (it.classification == Order.Appointment.Classification.PICKUP && order.classification == OrderClassification.PICKUP)
                             },
                             sort = stopList.last().sort + 1
                     )

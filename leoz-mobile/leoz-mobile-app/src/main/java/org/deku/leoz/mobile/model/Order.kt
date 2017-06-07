@@ -84,7 +84,7 @@ class Order (
                 }
             }
 
-            return if(parcelServiceList.size == 0) listOf(ParcelService.NoAdditionalService) else parcelServiceList
+            return if(parcelServiceList.size == 0) listOf(ParcelService.NO_ADDITIONAL_SERVICE) else parcelServiceList
         }
 
         fun getBinaryFromService(service: Service): Long {
@@ -140,8 +140,8 @@ class Order (
         var adrType: Address.Classification? = null
 
         when {
-            this.classification == OrderClassification.Delivery -> adrType = Address.Classification.DELIVERY
-            this.classification == OrderClassification.PickUp -> adrType = Address.Classification.PICKUP
+            this.classification == OrderClassification.DELIVERY-> adrType = Address.Classification.DELIVERY
+            this.classification == OrderClassification.PICKUP-> adrType = Address.Classification.PICKUP
         }
 
         val address: Address = this.addresses.first {
