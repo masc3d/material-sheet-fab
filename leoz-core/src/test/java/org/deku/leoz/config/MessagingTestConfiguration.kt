@@ -14,7 +14,7 @@ class MessagingTestConfiguration {
     companion object {
         val module = Kodein.Module {
             bind<ActiveMQBroker>() with singleton {
-                val broker = ActiveMQConfiguration.broker
+                val broker = ActiveMQBroker.instance
                 broker.user = MqBroker.User(
                         userName = MqConfiguration.USERNAME,
                         password = MqConfiguration.PASSWORD,

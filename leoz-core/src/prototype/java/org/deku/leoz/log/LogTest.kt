@@ -8,6 +8,7 @@ import com.github.salomonbrys.kodein.lazy
 import org.deku.leoz.SystemInformation
 import org.deku.leoz.bundle.BundleType
 import org.deku.leoz.config.JmsConfiguration
+import org.deku.leoz.config.JmsEndpoints
 import org.deku.leoz.config.MessagingTestConfiguration
 import org.deku.leoz.identity.DesktopIdentityFactory
 import org.junit.After
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory
 import sx.mq.MqChannel
 import sx.mq.MqHandler
 import sx.mq.jms.activemq.ActiveMQBroker
+import sx.mq.jms.channel
 import sx.mq.jms.listeners.SpringJmsListener
 
 import javax.jms.JMSException
@@ -49,7 +51,7 @@ class LogTest {
     fun testSend() {
         // Setup log appender
         val logAppender = LogMqAppender(
-                channelSupplier = { JmsConfiguration.centralLogQueue.client() },
+                channelSupplier = { JmsEndpoints.central.transient.kryo.channel() },
                 identitySupplier = {
                     DesktopIdentityFactory(BundleType.LeozNode.value, SystemInformation.Companion.create()).create()
                 })
@@ -72,7 +74,7 @@ class LogTest {
     fun testReceive() {
         // Setup log message listener
         val listener = object : SpringJmsListener(
-                JmsConfiguration.centralLogQueue,
+                JmsEndpoints.central.transient.kryo,
                 Executors.newSingleThreadExecutor()) {
 
         }
