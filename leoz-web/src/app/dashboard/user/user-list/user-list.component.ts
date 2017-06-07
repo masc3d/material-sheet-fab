@@ -9,10 +9,14 @@ import { Observable } from 'rxjs/Observable';
 @Component( {
   selector: 'app-user-list',
   template: `
-    <p-dataTable [value]="users | async | userfilter">
-      <p-column field="firstName" header="{{'firstname' | translate}}" [sortable]="true"></p-column>
-      <p-column field="lastName" header="{{'surname' | translate}}"></p-column>
-      <p-column field="role" header="{{'role' | translate}}"></p-column>
+    <p-dataTable [value]="users | async | userfilter" resizableColumns="true">
+      <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
+      <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
+      <p-column field="role" header="{{'role' | translate}}" [sortable]="true"></p-column>
+      <p-column field="email" header="{{'email' | translate}}" [sortable]="true"></p-column>
+      <p-column field="phone" header="{{'phone' | translate}}"></p-column>
+      <p-column field="active" header="{{'active' | translate}}" [sortable]="true"></p-column>
+      <p-column field="expires_on" header="{{'expires_on' | translate}}" [sortable]="true"></p-column>
       <p-column header="">
         <ng-template let-user="rowData" pTemplate="body">
           <i class="fa fa-pencil fa-fw" aria-hidden="true" (click)="selected(user)"></i>
