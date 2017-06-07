@@ -17,7 +17,7 @@ class Order (
         val appointment: List<Appointment>,
         val carrier: org.deku.leoz.model.Carrier,
         val service: List<Service>,
-        val information: List<Information>? = null,
+        val information: MutableList<Information>? = null,
         val sort: Int
 ) {
 
@@ -100,7 +100,7 @@ class Order (
 
     data class Information (
             val classification: Classification,
-            val additionalInformation: List<AdditionalInformation>
+            val additionalInformation: MutableList<AdditionalInformation>
     ) {
         enum class Classification {
             DELIVERY_INFO, PICKUP_INFO

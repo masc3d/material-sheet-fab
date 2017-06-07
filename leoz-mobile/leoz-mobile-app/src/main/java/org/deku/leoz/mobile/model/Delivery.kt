@@ -4,6 +4,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.Subject
 import org.deku.leoz.model.Carrier
 import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.model.ParcelService
@@ -22,17 +24,24 @@ class Delivery {
     private val deliveryListService: DeliveryListService by Kodein.global.lazy.instance()
     private val orderService: OrderService by Kodein.global.lazy.instance()
 
-//    val pendingStopProperty = ObservableRxProperty<List<Stop>>(mutableListOf())
-//    val pendingStop: List<Stop> by pendingStopProperty
-//
-//    val doneStopProperty = ObservableRxProperty<List<Stop>>(mutableListOf())
-//    val doneStop: List<Stop> by doneStopProperty
-
     val newOrderProperty = ObservableRxProperty<Order?>(null)
     var newOrder: Order? by newOrderProperty
 
     val activeStopProperty = ObservableRxProperty<Stop?>(null)
     val activeStop: Stop? by activeStopProperty
+
+    /**
+     * Receives the acquired information during the service workflow process, to be published to its subscribers.
+     * eg. entered information of ID document
+     */
+    val informationSubject: Subject<ServiceInformation> = PublishSubject.create()
+
+    /**
+     * Receives the result of a service workflow and publishes it to the subscribers.
+     * eg. IMEI Check OK/Failed, CASH (didn't) collected, correct/wrong ID-Document
+     */
+    val serviceCheckEventSubject by lazy { PublishSubject.create<ServiceCheck>() }
+    val serviceCheckEvent by lazy { serviceCheckEventSubject.hide() }
 
     val stopList: MutableList<Stop> = mutableListOf()
     val orderList: MutableList<Order> = mutableListOf()
@@ -62,10 +71,20 @@ class Delivery {
                                 id = "1",
                                 state = Order.State.PENDING,
                                 classification = OrderClassification.DELIVERY,
-                                parcel = listOf(Order.Parcel(
-                                        id = "a",
-                                        labelReference = "10000000001"
-                                )),
+                                parcel = listOf(
+                                        Order.Parcel(
+                                                id = "a",
+                                                labelReference = "10000000001"
+                                        ),
+                                        Order.Parcel(
+                                                id = "b",
+                                                labelReference = "10000000002"
+                                        ),
+                                        Order.Parcel(
+                                                id = "c",
+                                                labelReference = "10000000003"
+                                        )
+                                ),
                                 addresses = mutableListOf(addr),
                                 appointment = listOf(appointment),
                                 carrier = Carrier.DER_KURIER,
@@ -107,11 +126,24 @@ class Delivery {
                 sort = 0,
                 state = Stop.State.PENDING
         ))
+
+    }
+
+    data class ServiceCheck(val type: CheckType, val success: Boolean) {
+        enum class CheckType {
+            IMEI_CHECKED, CASH_COLLECTED
+        }
+    }
+
+    data class ServiceInformation(val type: Order.Information.Classification, val value: Order.Information.AdditionalInformation)
+
+    fun addInformation(serviceInformation: ServiceInformation) {
+        informationSubject.onNext(serviceInformation)
     }
 
     /**
      * Clean the existing Delivery.stopList
-     * Merge existing orders in Delivery.orderList into the cleaned Delivery.stopList
+     * Merge existing orders in Delivery.orderList into the blank Delivery.stopList
      */
     fun initializeStopList() {
         stopList.clear()
@@ -218,7 +250,7 @@ class Delivery {
                                     service = it.pickupService.services ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
                             )
                     ),
-                    information = listOf(
+                    information = mutableListOf(
                             Order.Information(
                                     classification = Order.Information.Classification.DELIVERY_INFO,
                                     additionalInformation = it.deliveryInformation!!.AdditionalInformation!!.map {
@@ -226,7 +258,7 @@ class Delivery {
                                                 type = it.AdditionalInformationType!!,
                                                 value = it.information ?: ""
                                         )
-                                    }
+                                    }.toMutableList()
                             ),
                             Order.Information(
                                     classification = Order.Information.Classification.PICKUP_INFO,
@@ -235,7 +267,7 @@ class Delivery {
                                                 type = it.AdditionalInformationType!!,
                                                 value = it.information ?: ""
                                         )
-                                    }
+                                    }.toMutableList()
                             )
                     ),
                     sort = 0
