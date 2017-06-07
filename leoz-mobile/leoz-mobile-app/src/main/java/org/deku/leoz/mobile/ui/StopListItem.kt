@@ -65,6 +65,8 @@ class StopListItem(val context: Context, val stop: Stop, val rootViewGroup: View
         holder.parcelcount.text = parcelCount.toString()
 
         this.isEnabled = true
+        this.isDraggable = true
+        this.isSwipeable = true
     }
 
     class ViewHolder(val view: View, val adapter: FlexibleAdapter<out IFlexible<*>>) : FlexibleViewHolder(view, adapter) {
