@@ -347,7 +347,8 @@ a:hover, a:focus {
 
 .ui-datatable th.ui-state-active {
   background-color: $color-sortable-th !important;
-  color: #000000;
+  //color: #000000;
+  color: #ffffff;
 }
 
 .ui-state-default a {
