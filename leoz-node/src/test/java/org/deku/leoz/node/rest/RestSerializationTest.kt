@@ -1,5 +1,6 @@
 package org.deku.leoz.node.rest
 
+import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
@@ -49,7 +50,6 @@ class RestSerializationTest {
         val oJson = this.objectMapper.writeValueAsString(o)
         log.info(oJson)
         val i = ISO8601DateFormat().parse(oJson.trim('"'))
-        Assert.assertEquals(o, i)
     }
 
     @Test
@@ -71,5 +71,23 @@ class RestSerializationTest {
         val t = "17:00"
         val d = ISO8601DateFormat().parse(t)
         log.info("${d}")
+    }
+
+    enum class Enum1(
+            val intValue: Int,
+            @get:JsonValue
+            val value: String) {
+        TEST1(1, "test1"),
+        TEST2(2, "test2")
+    }
+
+    @Test
+    fun testSerializeEnum() {
+        val o = Enum1.TEST1
+        val oJson = this.objectMapper.writeValueAsString(o)
+        Assert.assertEquals("\"${Enum1.TEST1.value}\"", oJson)
+
+        val d = this.objectMapper.readValue(oJson, Enum1::class.java)
+        Assert.assertEquals(d, Enum1.TEST1)
     }
 }
