@@ -1,4 +1,4 @@
-package sx.android.widget;
+package sx.android.view;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
