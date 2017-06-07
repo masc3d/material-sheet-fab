@@ -16,6 +16,7 @@ import sx.concurrent.Service
 import sx.rs.proxy.FeignClientProxy
 import sx.time.Duration
 import sx.time.seconds
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileFilter
 import java.io.FileOutputStream
@@ -145,16 +146,18 @@ class UpdateService(
                 // For binary response stream, need to build target manually, so we can inject a decoder implementation
                 val feignClientProxy: FeignClientProxy = Kodein.global.instance()
 
-                val bundleService: BundleServiceV2 = feignClientProxy.target(
-                        apiType = BundleServiceV2::class.java,
-                        output = FileOutputStream(downloadFile),
-                        progressCallback = { p: Float, bytesCopied: Long ->
-                            log.debug("Progress ${"%.2f".format(p)}% ${bytesCopied}")
-                        })
+                FileOutputStream(downloadFile).use { stream ->
+                    val bundleService: BundleServiceV2 = feignClientProxy.target(
+                            apiType = BundleServiceV2::class.java,
+                            output = stream,
+                            progressCallback = { p: Float, bytesCopied: Long ->
+                                log.debug("Progress ${"%.2f".format(p)}% ${bytesCopied}")
+                            })
 
-                bundleService.download(
-                        bundleName = updateInfo.bundleName,
-                        version = updateInfo.latestDesignatedVersion!!)
+                    bundleService.download(
+                            bundleName = updateInfo.bundleName,
+                            version = updateInfo.latestDesignatedVersion!!)
+                }
 
                 // Verify downloaded apk
                 log.info("Verifying [${downloadFile}]")
