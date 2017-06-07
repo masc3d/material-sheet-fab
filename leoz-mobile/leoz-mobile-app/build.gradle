@@ -196,9 +196,9 @@ dependencies {
             "com.tbruyelle.rxpermissions2:rxpermissions:0.9.4@aar",
 
             // REST
-            "com.netflix.feign:feign-core:$v_feign",
-            "com.netflix.feign:feign-jackson:$v_feign",
-            "com.netflix.feign:feign-jaxrs:$v_feign",
+            "io.github.openfeign:feign-core:$v_feign",
+            "io.github.openfeign:feign-jackson:$v_feign",
+            "io.github.openfeign:feign-jaxrs:$v_feign",
 
             // Requery
             "io.requery:requery:$v_requery",

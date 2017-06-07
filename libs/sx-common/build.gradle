@@ -3,7 +3,7 @@ version = '0.1'
 
 buildscript {
     ext {
-        v_feign = '8.18.0'
+        v_feign = '9.5.0'
         v_jackson = '2.8.7'
         v_jersey = '2.25'
         v_jgit = '4.6.1.201703071140-r'
@@ -62,8 +62,8 @@ dependencies {
             // RESTeasy client
             "org.jboss.resteasy:resteasy-client:$v_resteasy",
             // Feign REST
-            "com.netflix.feign:feign-jackson:$v_feign",
-            "com.netflix.feign:feign-jaxrs:$v_feign",
+            "io.github.openfeign:feign-jackson:$v_feign",
+            "io.github.openfeign:feign-jaxrs:$v_feign",
             // YAML
             "org.yaml:snakeyaml:1.18",
             // Jackson

@@ -63,8 +63,8 @@ dependencies {
             "javax.ws.rs:javax.ws.rs-api:2.0.1",
 
             // REST
-            "com.netflix.feign:feign-core:$v_feign",
-            "com.netflix.feign:feign-jaxrs:$v_feign",
+            "io.github.openfeign:feign-core:$v_feign",
+            "io.github.openfeign:feign-jaxrs:$v_feign",
 
             // YAML
             "org.yaml:snakeyaml:$v_snakeyaml",
@@ -84,9 +84,9 @@ dependencies {
             "ch.qos.logback:logback-classic:$v_logback",
 
             // REST
-            "com.netflix.feign:feign-core:$v_feign",
-            "com.netflix.feign:feign-jackson:$v_feign",
-            "com.netflix.feign:feign-jaxrs:$v_feign",
+            "io.github.openfeign:feign-core:$v_feign",
+            "io.github.openfeign:feign-jackson:$v_feign",
+            "io.github.openfeign:feign-jaxrs:$v_feign",
 
             // Jackson
             "com.fasterxml.jackson.core:jackson-databind:$v_jackson",
