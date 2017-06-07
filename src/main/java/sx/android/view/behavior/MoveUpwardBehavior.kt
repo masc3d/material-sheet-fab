@@ -1,10 +1,6 @@
-package sx.android.widget.behavior
+package sx.android.view.behavior
 
-import android.R.attr.translationY
-import android.opengl.ETC1.getHeight
-import android.R.attr.translationY
 import android.content.Context
-import android.opengl.ETC1.getHeight
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.view.ViewCompat
