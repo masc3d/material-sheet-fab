@@ -41,6 +41,8 @@ export const LANG_EN_TRANS = {
   'Customer': 'Customer',
   'EmailFormat': 'Invalid format of email address',
   'duplicate email': 'Email address already exists.',
-  'expires_on': 'Expires on'
+  'expires_on': 'Expires on',
+  'user account deactivated': 'Your account is deactivated',
+  'could not get geolocation points': 'Could not get geolocation points'
 };
 // lang-en.ts

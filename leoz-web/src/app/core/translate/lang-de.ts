@@ -42,6 +42,8 @@ export const LANG_DE_TRANS = {
   'Customer': 'Kunde',
   'EmailFormat': 'Kein korrektes Format der E-Mailadresse',
   'duplicate email': 'Die E-Mailadresse existiert bereits.',
-  'expires_on': 'Gültig bis'
+  'expires_on': 'Gültig bis',
+  'user account deactivated': 'Ihr Konto ist deaktiviert',
+  'could not get geolocation points': 'Keine Geokoordinaten gefunden'
 };
 
