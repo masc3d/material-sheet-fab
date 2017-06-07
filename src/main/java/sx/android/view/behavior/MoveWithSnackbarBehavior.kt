@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
  * Behavior for views nested within CoordinatorLayout, requiring upward move depending on SnackBar
  * @author masc
  */
-class MoveUpwardBehavior : CoordinatorLayout.Behavior<View> {
+class MoveWithSnackbarBehavior : CoordinatorLayout.Behavior<View> {
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     constructor() : super() {}
@@ -23,16 +23,19 @@ class MoveUpwardBehavior : CoordinatorLayout.Behavior<View> {
     }
 
     override fun onDependentViewChanged(parent: CoordinatorLayout, child: View, dependency: View): Boolean {
-        val translationY = Math.min(0F,
-                ViewCompat.getTranslationY(dependency) - dependency.getHeight())
+        val y = Math.min(
+                0F,
+                ViewCompat.getTranslationY(dependency) - dependency.height)
 
-        ViewCompat.setTranslationY(child, translationY)
+        ViewCompat.setTranslationY(child, y)
 
         return true
     }
 
     override fun onDependentViewRemoved(parent: CoordinatorLayout, child: View, dependency: View) {
-        if (dependency.visibility == View.GONE)
-            ViewCompat.animate(child).translationY(0F).start()
+        ViewCompat
+                .animate(child)
+                .translationY(0F)
+                .start()
     }
 }
