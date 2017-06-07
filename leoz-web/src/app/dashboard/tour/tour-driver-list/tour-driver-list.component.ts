@@ -1,45 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { Driver } from '../driver.model';
-import { Subscription } from 'rxjs/Subscription';
 import { TourService } from '../tour.service';
 import { DriverService } from '../driver.service';
-import { RoleGuard } from '../../../core/auth/role.guard';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'app-tour-driver-list',
   template: `
-    <p-dataTable [value]="drivers">
+    <p-dataTable [value]="drivers | async | driverfilter">
       <p-column field="firstName" header="{{'firstname' | translate}}" [sortable]="true"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}"></p-column>
       <p-column field="email" header="{{'email' | translate}}"></p-column>
       <p-column header="">
-        <ng-template let-user="rowData" pTemplate="body">
+        <ng-template let-driver="rowData" pTemplate="body">
           <i class="fa fa-crosshairs fa-fw" aria-hidden="true" (click)="showPosition(driver)"></i>
+          <i class="fa fa-road fa-fw" aria-hidden="true" (click)="showPosition(driver)"></i>
         </ng-template>
       </p-column>
     </p-dataTable>
   `
 } )
 export class TourDriverListComponent implements OnInit {
-  drivers: Driver[];
-  private subscription: Subscription;
+  drivers: Observable<Driver[]>;
 
   constructor(private driverService: DriverService,
-              private tourService: TourService,
-              private roleGuard: RoleGuard) {
+              private tourService: TourService) {
   }
 
   ngOnInit() {
-     this.subscription = this.driverService.drivers.subscribe((drivers: Driver[]) => {
-
-       if (this.roleGuard.userRole === Driver.RoleEnum.DRIVER) {
-         // this.drivers = drivers.filter( item => item.email === currUserEmail );
-         this.drivers = drivers.filter( (driver: Driver) => driver.email === 'driver@deku.org' );
-       } else {
-         this.drivers = drivers.filter( (driver: Driver) => driver.role === Driver.RoleEnum.DRIVER );
-       }
-
-       });
+    this.drivers = this.driverService.drivers;
     this.driverService.getDrivers();
   }
 

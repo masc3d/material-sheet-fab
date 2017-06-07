@@ -18,7 +18,9 @@ export class DriverFilterPipe implements PipeTransform {
       // return drivers.filter( ( driver: Driver ) => driver.email === currUserEmail );
       return drivers.filter( ( driver: Driver ) => driver.email === 'driver@deku.org' );
     } else {
-      return drivers.filter( ( driver: Driver ) => driver.role === Driver.RoleEnum.DRIVER );
+      return drivers
+        .filter( ( driver: Driver ) => driver.role === Driver.RoleEnum.DRIVER )
+        .filter( ( driver: Driver ) => driver.active );
     }
   }
 }

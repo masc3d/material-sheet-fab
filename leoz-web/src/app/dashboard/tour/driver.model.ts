@@ -3,6 +3,7 @@ export interface Driver {
   lastName: string;
   role: Driver.RoleEnum;
   email: string;
+  active: boolean;
 }
 
 export namespace Driver {

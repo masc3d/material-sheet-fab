@@ -47,7 +47,7 @@ export class TourService {
           if (driverLocations && driverLocations.length > 0) {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
-              this.activeMarkerSubject.next( positions[ 0 ] );
+              this.activeMarkerSubject.next( positions[ positions.length - 1 ] );
               this.displayMarkerSubject.next(true);
               this.msgService.clear();
             } else {
