@@ -116,12 +116,17 @@ interface AuthorizationService {
             @get:ApiModelProperty(example = "Bar", required = false, value = "Last name")
             var lastName: String? = null,
 
+            @get:ApiModelProperty(example = "true", required = false, value = "Active user")
+            var active: Boolean? = null,
+
 
             @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
             var expiresOn: java.sql.Date? = null
 
 
     )
+    val User.isActive: Int
+        get() = if (this.active == null || this.active == false) 0 else -1
 
 
 

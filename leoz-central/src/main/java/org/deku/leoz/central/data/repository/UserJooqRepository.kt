@@ -178,6 +178,7 @@ fun MstUserRecord.toAuthorizationServiceUser(): AuthorizationService.User {
             this.role,
             this.firstname,
             this.lastname,
+            this.isActive,
             this.expiresOn
     )
     return user
