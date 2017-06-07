@@ -41,6 +41,7 @@ export const LANG_DE_TRANS = {
   'Driver': 'Fahrer',
   'Customer': 'Kunde',
   'EmailFormat': 'Kein korrektes Format der E-Mailadresse',
-  'duplicate email': 'Die E-Mailadresse existiert bereits.'
+  'duplicate email': 'Die E-Mailadresse existiert bereits.',
+  'expires_on': 'Gültig bis'
 };
 

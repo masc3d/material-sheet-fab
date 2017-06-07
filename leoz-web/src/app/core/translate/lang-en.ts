@@ -40,6 +40,7 @@ export const LANG_EN_TRANS = {
   'Driver': 'Driver',
   'Customer': 'Customer',
   'EmailFormat': 'Invalid format of email address',
-  'duplicate email': 'Email address already exists.'
+  'duplicate email': 'Email address already exists.',
+  'expires_on': 'Expires on'
 };
 // lang-en.ts
