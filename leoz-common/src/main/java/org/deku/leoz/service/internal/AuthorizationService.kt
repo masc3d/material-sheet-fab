@@ -88,7 +88,7 @@ interface AuthorizationService {
      */
     data class WebResponse(
             var key: String = "",
-            var user: User?=null
+            var user: User? = null
     )
 
     /**
@@ -102,13 +102,11 @@ interface AuthorizationService {
             @get:ApiModelProperty(example = "12345678", required = false, value = "Allocation of User to debitor")
             var debitorId: Int? = null,
 
-
             @get:ApiModelProperty(example = "foo.bar", required = false, value = "Alias of the user")
             var alias: String? = null,
 
             @get:ApiModelProperty(example = "User", required = true, value = "Role of the user", allowableValues = "Admin, PowerUser, User, Driver, Customer")
             var role: String? = null,
-
 
             @get:ApiModelProperty(example = "Foo", required = false, value = "First name")
             var firstName: String? = null,
@@ -119,16 +117,9 @@ interface AuthorizationService {
             @get:ApiModelProperty(example = "true", required = false, value = "Active user")
             var active: Boolean? = null,
 
-
             @get:ApiModelProperty(example = "2017-03-16T17:00:00.000Z", required = false, value = "Date this account is supposed to expire")
             var expiresOn: java.sql.Date? = null
-
-
     )
-    val User.isActive: Int
-        get() = if (this.active == null || this.active == false) 0 else -1
-
-
 
     /**
      * Request authorization
@@ -147,4 +138,10 @@ interface AuthorizationService {
     @Path("/web")
     @ApiOperation(value = "Request web authorization")
     fun authorizeWeb(request: Credentials): WebResponse
+
+    companion object {
+        // TODO: extension methods on interface level will break feign. also this looks like it rather belongs to mst_user/leoz-central
+        val User.isActive: Int
+            get() = if (this.active == null || this.active == false) 0 else -1
+    }
 }
