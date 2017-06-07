@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { RoleGuard } from './role.guard';
 import { ApiKeyHeaderFactory } from '../api-key-header.factory';
 import 'rxjs/add/operator/map';
+import { MsgService } from '../../shared/msg/msg.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -15,7 +16,8 @@ export class AuthenticationService {
 
   constructor( private router: Router,
                private http: Http,
-               private roleGuard: RoleGuard ) {
+               private roleGuard: RoleGuard,
+               private msgService: MsgService ) {
   }
 
   logout() {
@@ -36,8 +38,12 @@ export class AuthenticationService {
     return this.http.patch( this.authUrl, body, options ).map( ( response: Response ) => {
         if (response.status === 200) {
           const userJson = response.json();
-          this.roleGuard.userRole = userJson.userRole;
-          localStorage.setItem( 'currentUser', JSON.stringify( userJson ) );
+          this.roleGuard.userRole = userJson.user.role;
+           if (userJson.user.active){
+            localStorage.setItem( 'currentUser', JSON.stringify( userJson ) );
+           } else {
+             this.msgService.error( 'user account deactivated' );
+           }
         }
         return response;
       } );

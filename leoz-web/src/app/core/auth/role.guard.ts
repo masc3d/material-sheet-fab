@@ -20,7 +20,7 @@ export class RoleGuard implements CanActivate {
 
   constructor( private router: Router ) {
     if (localStorage.getItem( 'currentUser' )) {
-      this.userRole = JSON.parse( localStorage.getItem( 'currentUser' ) ).userRole;
+      this.userRole = JSON.parse( localStorage.getItem( 'currentUser' ) ).user.role;
     }
   }
 
