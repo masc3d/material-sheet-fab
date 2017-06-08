@@ -1,23 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn } from '@angular/forms';
 import { Response } from '@angular/http';
 import { Subscription } from 'rxjs/Subscription';
 
-import { SelectItem } from "primeng/primeng";
+import { SelectItem } from 'primeng/primeng';
 
 import { User } from '../user.model';
 import { UserService } from '../user.service';
 import { RoleGuard } from '../../../core/auth/role.guard';
 import { Msg } from '../../../shared/msg/msg.model';
 import { MsgService } from '../../../shared/msg/msg.service';
-import { TranslateService } from "app/core/translate/translate.service";
-import { AbstractTranslateComponent } from "app/core/translate/abstract-translate.component";
+import { TranslateService } from 'app/core/translate/translate.service';
+import { AbstractTranslateComponent } from 'app/core/translate/abstract-translate.component';
 
 @Component( {
   selector: 'app-user-form',
   templateUrl: './user-form.component.html'
 } )
-export class UserFormComponent extends AbstractTranslateComponent {
+export class UserFormComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
 
   roleOptions: SelectItem[];
   stateOptions: SelectItem[];
@@ -58,7 +58,9 @@ export class UserFormComponent extends AbstractTranslateComponent {
       phone: [ null, [ Validators.required ] ],
       alias: [ null, [ Validators.required, Validators.maxLength( 30 ) ] ],
       role: [ null, [ Validators.required ] ],
-      active: [ null, [ Validators.required ] ]
+      active: [ null, [ Validators.required ] ],
+      expiresOn: [ null ]
+      // "expiresOn": "2017-03-16T17:00:00.000Z"
     } );
 
     this.subscriptionActiveUser = this.userService.activeUser.subscribe( ( activeUser: User ) => {
@@ -73,6 +75,7 @@ export class UserFormComponent extends AbstractTranslateComponent {
       }
       passwordControl.clearValidators();
       passwordControl.setValidators( validators );
+      console.log('activeUser.expiresOn', activeUser.expiresOn);
       this.userForm.patchValue( {
         emailOrigin: activeUser.email,
         firstName: activeUser.firstName,
@@ -83,6 +86,7 @@ export class UserFormComponent extends AbstractTranslateComponent {
         alias: activeUser.alias,
         role: activeUser.role,
         active: activeUser.active,
+        expiresOn: activeUser.expiresOn
       } );
     } );
   }

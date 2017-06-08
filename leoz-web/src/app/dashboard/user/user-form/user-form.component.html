@@ -59,9 +59,13 @@
         <div>{{'role' | translate}}:</div>
         <p-dropdown [options]="roleOptions" formControlName="role" placeholder="&nbsp;"></p-dropdown>
       </div>
-      <div class="ui-g-12 ui-md-6">
+      <div class="ui-g-12 ui-md-3">
         <div>{{'active' | translate}}:</div>
         <p-dropdown [options]="stateOptions" formControlName="active" placeholder="&nbsp;"></p-dropdown>
+      </div>
+      <div class="ui-g-12 ui-md-3">
+        <div>{{'expires_on' | translate}}:</div>
+        <p-calendar [showIcon]="true" [readonlyInput]="true" dateFormat="yy-mm-dd" formControlName="expiresOn"></p-calendar>
       </div>
     </div>
 

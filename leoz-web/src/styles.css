@@ -25,6 +25,7 @@ body {
   background: transparent;
   font-family: "Roboto", "Trebuchet MS", Arial, Helvetica, sans-serif;
   font-size: 1em;
+  overflow-y: scroll;
 }
 
 h2 {
