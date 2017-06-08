@@ -33,9 +33,10 @@ class MoveWithSnackbarBehavior : CoordinatorLayout.Behavior<View> {
     }
 
     override fun onDependentViewRemoved(parent: CoordinatorLayout, child: View, dependency: View) {
-        ViewCompat
-                .animate(child)
-                .translationY(0F)
-                .start()
+        if (dependency.visibility == View.GONE)
+            ViewCompat
+                    .animate(child)
+                    .translationY(0F)
+                    .start()
     }
 }
