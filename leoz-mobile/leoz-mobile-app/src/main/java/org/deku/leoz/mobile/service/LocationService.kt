@@ -109,10 +109,9 @@ class LocationService(
 
                 log.info("Location changed. Provider [${location.provider}] Position [$currentPosition]")
 
-                /**
-                 * TODO: Store location data in database and send it as an set of multiple positions once.
-                 */
+                // TODO: Store location data in database and send it as an set of multiple positions once.
 
+                // TODO: A list is not a good type for a message. Declasre a dedicated class (eg. PositionMessage) {@link LogMessage}
                 mqttChannels.central.transient.channel().send(listOf(currentPosition))
             }
 
