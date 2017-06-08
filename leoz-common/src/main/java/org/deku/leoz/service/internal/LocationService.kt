@@ -20,8 +20,9 @@ interface LocationService {
         const val EMAIL = "email"
         const val DEBITOR_ID = "debitor-id"
         //const val HEADERPARAM_APIKEY = "x-api-key"
-        const val FROM="from"
-        const val TO="to"
+        const val FROM = "from"
+        const val TO = "to"
+        const val DURATION = "duration"
     }
 
     /**
@@ -52,7 +53,7 @@ interface LocationService {
     )
 
     /**
-     * Get user
+     * Get location
      * @param email User email
      */
     @GET
@@ -61,8 +62,22 @@ interface LocationService {
     fun get(
             @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
             @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
-            @QueryParam(FROM) @ApiParam(value = "from", example = "05/31/2017 00:30:00 +0100" ) from: Date? = null,
+            @QueryParam(FROM) @ApiParam(value = "from", example = "05/31/2017 00:30:00 +0100") from: Date? = null,
             @QueryParam(TO) @ApiParam(value = "to") to: Date? = null,
+            @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
+    ): List<GpsData>
+
+    /**
+     * Get recent location
+     * @param email User email
+     */
+    @GET
+    @Path("/recent/")
+    @ApiOperation(value = "Get recent location data")
+    fun getRecent(
+            @QueryParam(EMAIL) @ApiParam(value = "User email address") email: String? = null,
+            @QueryParam(DEBITOR_ID) @ApiParam(value = "Debitor id") debitorId: Int? = null,
+            @QueryParam(DURATION) @ApiParam(value = "Duration") duration: Int? = null,
             @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
     ): List<GpsData>
 

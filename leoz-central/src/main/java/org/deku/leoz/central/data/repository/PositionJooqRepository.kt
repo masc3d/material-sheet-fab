@@ -27,6 +27,18 @@ class PositionJooqRepository {
                 .from(Tables.TRN_NODE_GEOPOSITION)
                 .where(Tables.TRN_NODE_GEOPOSITION.USER_ID.eq(id))
                 .and(Tables.TRN_NODE_GEOPOSITION.POSITION_DATETIME.between(from.toTimestamp(), to.toTimestamp()))
+                .orderBy((Tables.TRN_NODE_GEOPOSITION.POSITION_DATETIME))
+                .fetchInto(TrnNodeGeopositionRecord::class.java)
+    }
+    fun findRecentByUserId(id: Int): List<TrnNodeGeopositionRecord>? {
+
+        return dslContext
+                .select()
+                .from(Tables.TRN_NODE_GEOPOSITION)
+                .where(Tables.TRN_NODE_GEOPOSITION.USER_ID.eq(id))
+                //.and(Tables.TRN_NODE_GEOPOSITION.POSITION_DATETIME.between(from.toTimestamp(), to.toTimestamp()))
+                .orderBy((Tables.TRN_NODE_GEOPOSITION.POSITION_DATETIME.desc()))
+                .limit(1)
                 .fetchInto(TrnNodeGeopositionRecord::class.java)
     }
 
