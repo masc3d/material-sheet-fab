@@ -6,8 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
-import com.github.salomonbrys.kodein.erased.instance
-import com.github.salomonbrys.kodein.genericInstance
+import com.github.salomonbrys.kodein.erased.*
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.tinsuke.icekick.extension.serialState
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
@@ -101,7 +100,7 @@ class StartupActivity : RxAppCompatActivity() {
                     }
 
             // Acquire AidcReader
-            val ovAidcReader = Kodein.global.genericInstance<Observable<out AidcReader>>()
+            val ovAidcReader = Kodein.global.instance<Observable<out AidcReader>>()
                     .timeout(5, TimeUnit.SECONDS)
                     .onErrorReturn {
                         throw IllegalStateException("AidcReader initialization timed out", it)
@@ -151,13 +150,5 @@ class StartupActivity : RxAppCompatActivity() {
 
         // Save state
         this.app.freezeInstanceState(this)
-    }
-
-    /**
-     * Activity destroy
-     */
-    override fun onDestroy() {
-        super.onDestroy()
-        log.trace("ONDESTROY")
     }
 }

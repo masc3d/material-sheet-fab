@@ -2,7 +2,7 @@ package org.deku.leoz.mobile.config
 
 import android.hardware.Camera
 import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.*
+import com.github.salomonbrys.kodein.erased.*
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import sx.android.Device
@@ -24,8 +24,8 @@ class AidcConfiguration {
             /**
              * Camera aidc reader
              */
-            bind<CameraAidcReader>() with erasedSingleton {
-                CameraAidcReader(context = erasedInstance())
+            bind<CameraAidcReader>() with singleton {
+                CameraAidcReader(context = instance())
             }
 
             /**
@@ -52,7 +52,7 @@ class AidcConfiguration {
             /**
              * Global aidc reader. This is usually a ${link CompositeAidcReader}
              */
-            bind<AidcReader>() with erasedSingleton {
+            bind<AidcReader>() with singleton {
                 val ovAidcReader: Observable<out AidcReader> = instance()
 
                 // Wait for all aidc readers to become available
