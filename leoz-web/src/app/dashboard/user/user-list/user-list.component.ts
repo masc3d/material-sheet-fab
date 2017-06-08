@@ -16,7 +16,7 @@ import { Observable } from 'rxjs/Observable';
       <p-column field="email" header="{{'email' | translate}}" [sortable]="true"></p-column>
       <p-column field="phone" header="{{'phone' | translate}}"></p-column>
       <p-column field="active" header="{{'active' | translate}}" [sortable]="true"></p-column>
-      <p-column field="expires_on" header="{{'expires_on' | translate}}" [sortable]="true"></p-column>
+      <p-column field="expiresOn" header="{{'expires_on' | translate}}" [sortable]="true"></p-column>
       <p-column header="">
         <ng-template let-user="rowData" pTemplate="body">
           <i class="fa fa-pencil fa-fw" aria-hidden="true" (click)="selected(user)"></i>
