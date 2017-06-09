@@ -5,7 +5,7 @@ buildscript {
     ext {
         v_activemq = '5.14.5'
         v_artemis = '1.5.4'
-        v_kodein = '3.3.0'
+        v_kodein = '4.0.0'
         v_kotlin = '1.1.2-3'
         v_protostuff = '1.5.3'
         v_spring = '4.3.8.RELEASE'
