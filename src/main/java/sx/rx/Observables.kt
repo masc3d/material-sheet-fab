@@ -6,6 +6,7 @@ import io.reactivex.observables.ConnectableObservable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import sx.time.Duration
+import java.lang.IllegalArgumentException
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
@@ -154,9 +155,13 @@ fun Completable.retryWithExponentialBackoff(
     return this.retryWith(
             count = count,
             action = { retry: Long, error: Throwable ->
-                var delay = initialDelay.times(Math.pow(
-                        exponentialBackoff,
-                        retry.toDouble()).toLong())
+
+                var delay = try {
+                    initialDelay * Math.pow(exponentialBackoff, retry.toDouble()).toLong()
+                } catch(e: IllegalArgumentException) {
+                    // Overflow: revert to maximum delay
+                    maximumDelay
+                }
 
                 if (delay > maximumDelay) {
                     delay = maximumDelay
