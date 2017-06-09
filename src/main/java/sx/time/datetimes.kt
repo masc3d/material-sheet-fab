@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
 
-val utcTimezone =  TimeZone.getTimeZone("UTC")
+val utcTimezone = TimeZone.getTimeZone("UTC")
 
 /**
  * Date/time conversion functions
@@ -88,4 +88,11 @@ fun Date.toCalendar(timezone: TimeZone = TimeZone.getDefault()): Calendar {
     cal.clear()
     cal.time = this
     return cal
+}
+
+/**
+ * Minus minutes
+ */
+fun Date.minusMinutes(amount:Int,timezone: TimeZone= TimeZone.getDefault()): Date {
+    return this.add(Calendar.MINUTE,Math.abs(amount)*-1, timezone = timezone)
 }
