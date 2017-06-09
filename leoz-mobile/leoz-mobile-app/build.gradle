@@ -4,14 +4,13 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
-        maven {
-            url '../../leoz-build/repo'
-        }
+        maven { url '../../leoz-build/repo' }
+        maven { url 'https://maven.google.com' }
     }
 
     dependencies {
         classpath(
-                'com.android.tools.build:gradle:2.3.3',
+                'com.android.tools.build:gradle:3.0.0-alpha3',
                 "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin",
                 "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.4",
                 "com.trello:victor:0.3.0",
@@ -152,7 +151,7 @@ repositories {
 }
 
 dependencies {
-    compile(
+    implementation(
             project(':leoz-mobile-data'),
             project(':leoz-common'),
             project(':sx-common'),
@@ -265,19 +264,19 @@ dependencies {
             "com.github.Raizlabs.DBFlow:dbflow-rx2-kotlinextensions:$v_dbflow"
     )
 
-    debugCompile(
+    debugImplementation(
             // Stetho
             "com.facebook.stetho:stetho:$v_stetho",
             "com.facebook.stetho:stetho-okhttp:$v_stetho",
     )
 
-    testCompile(
+    testImplementation(
             "junit:junit:$v_junit",
             "org.robolectric:robolectric:$v_roboelectric",
             "org.robolectric:shadows-multidex:$v_roboelectric",
     )
 
-    androidTestCompile(
+    androidTestImplementation(
             project(path: ':sx-common', configuration: 'testArtifacts'),
             project(path: ':sx-serialization', configuration: 'testArtifacts'),
             "junit:junit:$v_junit",
@@ -289,10 +288,10 @@ dependencies {
 //            }
     )
 
-    kapt(
-            "org.parceler:parceler:$v_parceler",
-            "com.github.Raizlabs.DBFlow:dbflow-processor:$v_dbflow"
-    )
+//    kapt(
+//            "org.parceler:parceler:$v_parceler",
+//            "com.github.Raizlabs.DBFlow:dbflow-processor:$v_dbflow"
+//    )
 }
 
 victor {
@@ -300,7 +299,7 @@ victor {
     svgDpi = 72
 
     // Do not generate these densities for SVG assets
-    excludeDensities = [ 'ldpi' ]
+    excludeDensities = ['ldpi']
 
     // WARNING: EXPERIMENTAL
     // Generates Android drawables instead of PNGs.
