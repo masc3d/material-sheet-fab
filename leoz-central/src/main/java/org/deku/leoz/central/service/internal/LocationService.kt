@@ -18,7 +18,9 @@ import org.deku.leoz.service.internal.LocationService
 import org.deku.leoz.model.UserRole
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import sx.time.minusMinutes
 import sx.time.plusDays
+import sx.time.toTimestamp
 import javax.ws.rs.core.Response
 
 
@@ -40,8 +42,8 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
     override fun get(email: String?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationService.GpsData> {
         var debitor_id = debitorId
         //var user_id: Int?
-        val pos_from = from ?: Date()
-        val pos_to = to ?: pos_from.plusDays(1)
+        val pos_from = from ?: Date(Date().year,Date().month,Date().date)
+        val pos_to = to ?: Date()//.plusDays(1) //pos_from.plusDays(1)
 
         val dtNow = Date()
         //val gpsdata = GpsData(49.9, 9.06, 25.3, dtNow.toTimestamp())
@@ -183,7 +185,15 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
                             || ((authorizedUserRecord.debitorId == it.debitorId)
                             && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(it.role).value))) {
 
-                        val posList = posRepository.findRecentByUserId(it.id)
+                        val posList:List<TrnNodeGeopositionRecord>?
+                        if (duration!=null){
+                            val pos_to = Date()
+                            val pos_from = Date().minusMinutes(duration)
+                            posList = posRepository.findByUserId(it.id, pos_from, pos_to)
+                        }
+                        else {
+                            posList = posRepository.findRecentByUserId(it.id)
+                        }
                         //gpsList.clear()
                         var gpsListTmp = mutableListOf<LocationService.GpsDataPoint>()
                         if (posList != null) {
@@ -210,7 +220,16 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
                         || ((authorizedUserRecord.debitorId == userRecord.debitorId)
                         && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(userRecord.role).value))) {
 
-                    val posList = posRepository.findRecentByUserId(userRecord.id)
+                    val posList:List<TrnNodeGeopositionRecord>?
+                    if (duration!=null){
+                        val pos_to = Date()
+                        val pos_from = Date().minusMinutes(duration)
+                        posList = posRepository.findByUserId(userRecord.id, pos_from, pos_to)
+                    }
+                    else {
+                        posList = posRepository.findRecentByUserId(userRecord.id)
+                    }
+
                     if (posList != null) {
                         gpsList = geoFilter(posList)
                         /*
