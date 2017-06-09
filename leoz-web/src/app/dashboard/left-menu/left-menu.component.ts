@@ -69,7 +69,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent {
         items: [
           {
             label: this.translate.instant( 'users' ),
-            icon: 'fa-wheelchair',
+            icon: 'fa-smile-o',
             routerLink: 'user',
             command: closeMenu
           }
