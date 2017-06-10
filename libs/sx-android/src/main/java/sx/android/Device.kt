@@ -45,12 +45,12 @@ open class Device(private val context: Context) {
 
     val imei: String by lazy {
         val telephonyManager = this.context.getTelephonyManager()
-        telephonyManager.deviceId
+        telephonyManager.deviceId ?: ""
     }
 
     val phone: String by lazy {
         val telephonyManager = this.context.getTelephonyManager()
-        telephonyManager.line1Number
+        telephonyManager.line1Number ?: ""
     }
 
     val androidId: String by lazy {
