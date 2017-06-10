@@ -65,7 +65,7 @@ class Database(
                     }
                     .doOnError {
                         result = it
-                        log.error(it.message)
+                        log.error(it.message, it)
                     }
                     .toHotReplay()
         }
