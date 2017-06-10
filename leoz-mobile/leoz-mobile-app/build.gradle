@@ -59,7 +59,6 @@ android {
 
     defaultConfig {
         applicationId "org.deku.leoz.mobile"
-        minSdkVersion 16
         targetSdkVersion 26
         versionCode 1
         versionName "0.11-SNAPSHOT"
@@ -333,14 +332,11 @@ afterEvaluate {
     // generated resources/drawables in build folder
     GENERATED_DIR.mkdirs()
 
-    if (tasks.findByPath('rasterizeSvgsForDebug') != null) {
-        tasks.rasterizeSvgsForDebug {
-            outputDir GENERATED_SVG_DIR
-        }
-    }
-
-    if (tasks.findByPath('rasterizeSvgsForRelease') != null) {
-        tasks.rasterizeSvgsForRelease {
+    // Apply changes to all rasterize tasks
+    tasks.findAll {
+        it.name.startsWith("rasterize")
+    }.each {
+        project.task "${it.name}" {
             outputDir GENERATED_SVG_DIR
         }
     }
