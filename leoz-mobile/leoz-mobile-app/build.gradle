@@ -73,6 +73,19 @@ android {
         }
     }
 
+    productFlavors {
+        dev {
+            // Enable pre-dexing to produce an APK that can be tested on
+            // Android 5.0+ without the time-consuming DEX build processes.
+            minSdkVersion 21
+        }
+
+        prod {
+            // The actual minSdkVersion for the production version.
+            minSdkVersion 16
+        }
+    }
+
     signingConfigs {
         release {
             keyAlias 'leoz-mobile'
