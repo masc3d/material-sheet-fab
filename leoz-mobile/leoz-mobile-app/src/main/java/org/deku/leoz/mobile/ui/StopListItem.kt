@@ -12,6 +12,7 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.viewholders.FlexibleViewHolder
+import kotlinx.android.synthetic.main.item_stop_overview.view.*
 import org.deku.leoz.mobile.model.Stop
 import java.text.SimpleDateFormat
 
@@ -70,13 +71,13 @@ class StopListItem(val context: Context, val stop: Stop, val rootViewGroup: View
     }
 
     class ViewHolder(val view: View, val adapter: FlexibleAdapter<out IFlexible<*>>) : FlexibleViewHolder(view, adapter) {
-        val street = (view.findViewById(R.id.uxStreet) as TextView)
-        val streetNo = (view.findViewById(R.id.uxStreetNo) as TextView)
-        val zip = (view.findViewById(R.id.uxZip) as TextView)
-        val city = (view.findViewById(R.id.uxCity) as TextView)
-        val receipient = (view.findViewById(R.id.uxReceipient) as TextView)
-        val appointment = (view.findViewById(R.id.uxAppointment) as TextView)
-        val ordercount = (view.findViewById(R.id.uxOrderCount) as TextView)
-        val parcelcount = (view.findViewById(R.id.uxParcelCount) as TextView)
+        val street = view.uxStreet
+        val streetNo = view.uxStreetNo
+        val zip = view.uxZip
+        val city = view.uxCity
+        val receipient = view.uxReceipient
+        val appointment = view.uxAppointment
+        val ordercount = view.uxOrderCount
+        val parcelcount = view.uxParcelCount
     }
 }

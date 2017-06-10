@@ -4,7 +4,7 @@ buildscript {
     }
     ext {
         v_kotlin = '1.1.2-3'
-        v_android_buildtools = '25.0.2'
+        v_android_buildtools = '26.0.0'
         v_android_support = '25.3.1'
         v_rxlifecycle = '2.1.0'
     }
@@ -17,8 +17,8 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
 repositories {
     mavenCentral()
@@ -26,11 +26,11 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion v_android_buildtools
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

@@ -20,8 +20,9 @@ buildscript {
     }
 
     ext {
-        v_android_buildtools = '25.0.2'
+        v_android_buildtools = '26.0.0'
         v_android_support = '25.3.1'
+        v_anko = '0.10.1'
         v_dbflow = '4.0.2'
         v_parceler = '1.1.8'
         v_roboelectric = '3.3.2'
@@ -53,13 +54,13 @@ def GENERATED_SVG_DIR = new File(GENERATED_DIR,
         'svg')
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion v_android_buildtools
 
     defaultConfig {
         applicationId "org.deku.leoz.mobile"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "0.11-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

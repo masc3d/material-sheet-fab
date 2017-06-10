@@ -8,7 +8,9 @@ import org.deku.leoz.mobile.model.Stop
 import android.view.LayoutInflater
 import android.widget.TextView
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
+import kotlinx.android.synthetic.main.row_tour_overview.view.*
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.R.id.uxZip
 import sx.time.toLocalDate
 import sx.time.toTimestamp
 import java.text.DateFormat
@@ -31,14 +33,14 @@ class StopListAdapter(val context: Context, val data: List<Stop>, val rootViewGr
             parcelCount += it.parcel.size
         }
 
-        (vi.findViewById(R.id.uxStreet) as TextView).text = data[position].address.street
-        (vi.findViewById(R.id.uxStreetNo) as TextView).text = data[position].address.streetNo
-        (vi.findViewById(R.id.uxZip) as TextView).text = data[position].address.zipCode
-        (vi.findViewById(R.id.uxCity) as TextView).text = data[position].address.city
-        (vi.findViewById(R.id.uxReceipient) as TextView).text = data[position].address.addressLine1
-        (vi.findViewById(R.id.uxAppointment) as TextView).text = "${simpleDateFormat.format(data[position].appointment.dateFrom)} - ${simpleDateFormat.format(data[position].appointment.dateTo)}"
-        (vi.findViewById(R.id.uxOrderCount) as TextView).text = data[position].order.size.toString()
-        (vi.findViewById(R.id.uxParcelCount) as TextView).text = parcelCount.toString()
+        vi.uxStreet.text = data[position].address.street
+        vi.uxStreetNo.text = data[position].address.streetNo
+        vi.uxZip.text = data[position].address.zipCode
+        vi.uxCity.text = data[position].address.city
+        vi.uxReceipient.text = data[position].address.addressLine1
+        vi.uxAppointment.text = "${simpleDateFormat.format(data[position].appointment.dateFrom)} - ${simpleDateFormat.format(data[position].appointment.dateTo)}"
+        vi.uxOrderCount.text = data[position].order.size.toString()
+        vi.uxOrderCount.text = parcelCount.toString()
 
         return vi
     }
