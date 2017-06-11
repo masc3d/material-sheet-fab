@@ -11,7 +11,9 @@ import org.deku.leoz.mobile.R
 import android.view.Gravity
 import android.support.v7.view.ContextThemeWrapper
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
+import com.gordonwong.materialsheetfab.DimOverlayFrameLayout
 import com.gordonwong.materialsheetfab.MaterialSheetFab
 import kotlinx.android.synthetic.main.view_actionoverlay.view.*
 import kotlinx.android.synthetic.main.view_actionoverlay_sheet.view.*
@@ -22,6 +24,8 @@ import sx.android.view.setBackgroundTint
 
 
 /**
+ * An overlay with support for dynamically configuring actions and menus
+ * which are displayed as floating action buttons and sheet fabs accordingly
  * Created by masc on 08.06.17.
  */
 class ActionOverlayView : RelativeLayout {
@@ -86,8 +90,7 @@ class ActionOverlayView : RelativeLayout {
 
     private fun init() {
         inflate(this.context, R.layout.view_actionoverlay, this)
-        this.overlayView = this.actionoverlay_dim
-    }
+   }
 
     /**
      * Setup floating action button parameters for action layout
@@ -158,9 +161,20 @@ class ActionOverlayView : RelativeLayout {
 
                     val fab = this.createAnimatedFab()
 
+                    fab.id = item.id
+
+                    if (item.colorRes != null)
+                        fab.setBackgroundTint(item.colorRes)
+
+                    if (item.iconRes != null)
+                        fab.setImageDrawable(this.context.getDrawable(item.iconRes))
+
                     val sheetLayout = this.context.layoutInflater.inflate(
                             R.layout.view_actionoverlay_sheet,
-                            this.actionoverlay_sheet_container)
+                            this.actionoverlay_sheet_container,
+                            false)
+
+                    this.actionoverlay_sheet_container.addView(sheetLayout)
 
                     // Create sheet items
                     item.menu.itemsSequence().forEach { menuItem ->
@@ -175,16 +189,23 @@ class ActionOverlayView : RelativeLayout {
                         sheetLayout.actionoverlay_sheet_item_container.addView(sheetItem)
                     }
 
+                    val dimOverlay = DimOverlayFrameLayout(this.context)
+
+                    dimOverlay.layoutParams = FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT)
+
+                    this.actionoverlay_dim_container.addView(dimOverlay)
+
                     val sheetColor = resources.getColor(android.R.color.white)
+                    // TODO: don't reference app resources
                     val fabColor = resources.getColor(item.colorRes ?: R.color.colorAccent)
                     val msf = MaterialSheetFab<AnimatedFloatingActionButton>(
                             fab,
                             sheetLayout.actionoverlay_sheet,
-                            this.overlayView,
+                            dimOverlay, //this.overlayView,
                             sheetColor,
-                            // TODO: don't reference app theme
                             fabColor)
-
 
                     // Material sheet fabs are not directly added to view hierarchy,
                     // but used for controlling behavior. Storing internally.

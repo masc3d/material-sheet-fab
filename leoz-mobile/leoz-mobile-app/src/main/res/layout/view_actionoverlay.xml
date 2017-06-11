@@ -4,12 +4,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <!-- Default action overlay view -->
-    <com.gordonwong.materialsheetfab.DimOverlayFrameLayout
-        android:id="@+id/actionoverlay_dim"
+    <!-- Container for dim overlays. -->
+    <!-- Each material sheet requires a dedicated one for sheet click events to work properly -->
+    <RelativeLayout
+        android:id="@+id/actionoverlay_dim_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"/>
+        />
 
     <!-- Container for floating action buttons -->
     <LinearLayout
@@ -17,16 +18,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="end"
-        android:orientation="horizontal">
-
-    </LinearLayout>
+        android:orientation="horizontal"
+        />
 
     <!--Container for material sheet fab's reveal layouts -->
     <RelativeLayout
         android:id="@+id/actionoverlay_sheet_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </RelativeLayout>
+        android:layout_height="match_parent"
+        />
 
 </RelativeLayout>
