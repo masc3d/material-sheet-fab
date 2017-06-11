@@ -22,6 +22,21 @@ import org.jetbrains.anko.itemsSequence
 import org.jetbrains.anko.layoutInflater
 import sx.android.view.setBackgroundTint
 
+/**
+ * Action overlay item/floating button
+ * @property id Action id of this item
+ * @property colorRes Item color (fab background color eg.)
+ * @property iconRes Icon
+ * @property iconTintRes Color resource for tinting the icon
+ * @property menu Menu reflecting subitems
+ */
+data class ActionItem(
+        val id: Int,
+        val colorRes: Int? = null,
+        val iconRes: Int? = null,
+        val iconTintRes: Int? = null,
+        val menu: Menu? = null
+)
 
 /**
  * An overlay with support for dynamically configuring actions and menus
@@ -29,22 +44,6 @@ import sx.android.view.setBackgroundTint
  * Created by masc on 08.06.17.
  */
 class ActionOverlayView : RelativeLayout {
-
-    /**
-     * Action overlay item/floating button
-     * @property id Action id of this item
-     * @property colorRes Item color (fab background color eg.)
-     * @property iconRes Icon
-     * @property iconTintRes Color resource for tinting the icon
-     * @property menu Menu reflecting subitems
-     */
-    data class Item(
-            val id: Int,
-            val colorRes: Int? = null,
-            val iconRes: Int? = null,
-            val iconTintRes: Int? = null,
-            val menu: Menu? = null
-    )
 
     interface Listener {
         fun onActionItem(id: Int)
@@ -77,7 +76,7 @@ class ActionOverlayView : RelativeLayout {
     /**
      * Action items
      */
-    var items: List<Item> = listOf()
+    var items: List<ActionItem> = listOf()
         set(value) {
             field = value
             this.update()
@@ -135,7 +134,7 @@ class ActionOverlayView : RelativeLayout {
 
         this.materialSheetFabs.clear()
 
-        this.items.forEach { item ->
+        this.items.reversed().forEach { item ->
 
             when {
                 item.menu == null -> {

@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.view_actionoverlay.*
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.User
 import org.deku.leoz.mobile.SharedPreference
+import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
 import org.jetbrains.anko.contentView
 
@@ -69,13 +70,13 @@ class MainActivity : Activity() {
         this.menuInflater.inflate(R.menu.menu_help, helpMenu)
 
         this.actionItems = listOf(
-                ActionOverlayView.Item(
+                ActionItem(
                         id = R.id.action_help,
                         colorRes = R.color.colorPrimary,
                         iconRes = android.R.drawable.ic_menu_help,
                         menu = helpMenu
                 ),
-                ActionOverlayView.Item(
+                ActionItem(
                         id = R.id.action_help,
                         colorRes = R.color.colorPrimary,
                         iconRes = android.R.drawable.ic_menu_help,

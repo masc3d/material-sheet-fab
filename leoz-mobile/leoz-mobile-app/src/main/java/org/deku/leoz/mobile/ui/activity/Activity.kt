@@ -41,6 +41,7 @@ import kotlinx.android.synthetic.main.view_actionoverlay.*
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
+import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
 import org.deku.leoz.mobile.ui.view.AnimatedFloatingActionButton
 import org.jetbrains.anko.contentView
@@ -67,7 +68,7 @@ open class Activity : RxAppCompatActivity(),
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     /** Action items */
-    val actionItemsProperty = ObservableRxProperty<List<ActionOverlayView.Item>>(listOf())
+    val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
     var actionItems by actionItemsProperty
 
     private val actionEventSubject = PublishSubject.create<Int>()
@@ -261,7 +262,7 @@ open class Activity : RxAppCompatActivity(),
                 .subscribe {
             val items = mutableListOf(*it.value.toTypedArray())
             items.add(
-                    ActionOverlayView.Item(
+                    ActionItem(
                             id = R.id.action_aidc_camera,
                             colorRes = R.color.colorAccent,
                             iconRes = R.drawable.ic_barcode
