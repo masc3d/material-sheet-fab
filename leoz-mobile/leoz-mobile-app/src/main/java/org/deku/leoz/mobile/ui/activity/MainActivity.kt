@@ -19,14 +19,21 @@ import org.slf4j.LoggerFactory
 import sx.android.fragment.util.withTransaction
 import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.support.v7.view.menu.MenuBuilder
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
+import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.main_content.*
+import kotlinx.android.synthetic.main.view_actionoverlay.*
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.User
 import org.deku.leoz.mobile.SharedPreference
+import org.deku.leoz.mobile.ui.view.ActionOverlayView
+import org.jetbrains.anko.contentView
 
 
 class MainActivity : Activity() {
@@ -58,17 +65,23 @@ class MainActivity : Activity() {
             it.replace(R.id.uxContainer, MainFragment())
         }
 
-        // Setup fab button
-        this.uxHelpFab.setOnClickListener { view ->
-            Snackbar.make(view, "Call Supervisor for assistance?", Snackbar.LENGTH_LONG).setAction("Action", {
-                this@MainActivity.showAlert(
-                        title = "Call assistance?",
-                        text = "Are you sure you want to call a supervisor?",
-                        positiveButton = AlertButton(text = android.R.string.yes, handler = {
-                        }),
-                        negativeButton = AlertButton(text = android.R.string.cancel))
-            }).show()
-        }
+        val helpMenu = MenuBuilder(this.applicationContext)
+        this.menuInflater.inflate(R.menu.menu_help, helpMenu)
+
+        this.actionItems = listOf(
+                ActionOverlayView.Item(
+                        id = R.id.action_help,
+                        colorRes = R.color.colorPrimary,
+                        iconRes = android.R.drawable.ic_menu_help,
+                        menu = helpMenu
+                ),
+                ActionOverlayView.Item(
+                        id = R.id.action_help,
+                        colorRes = R.color.colorPrimary,
+                        iconRes = android.R.drawable.ic_menu_help,
+                        menu = helpMenu
+                )
+        )
     }
 
     override fun onBackPressed() {
@@ -106,6 +119,19 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
 
+        this.actionEvent
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .subscribe {
+                    Snackbar.make(this.uxContainer, "Call Supervisor for assistance?", Snackbar.LENGTH_LONG).setAction("Action", {
+                        this@MainActivity.showAlert(
+                                title = "Call assistance?",
+                                text = "Are you sure you want to call a supervisor?",
+                                positiveButton = AlertButton(text = android.R.string.yes, handler = {
+                                }),
+                                negativeButton = AlertButton(text = android.R.string.cancel))
+                    }).show()
+                }
+
         login.authenticatedUserProperty
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -119,10 +145,6 @@ class MainActivity : Activity() {
     }
 
     fun processLogin() {
-//        this.supportFragmentManager.withTransaction {
-//            it.replace(R.id.uxContainer, MenuFragment())
-//        }
-
         this.startActivity(
                 Intent(applicationContext, DeliveryActivity::class.java))
     }

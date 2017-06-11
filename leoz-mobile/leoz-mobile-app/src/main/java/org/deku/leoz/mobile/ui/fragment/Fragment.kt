@@ -2,7 +2,10 @@ package org.deku.leoz.mobile.ui.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import com.trello.rxlifecycle2.components.support.RxAppCompatDialogFragment
+import org.deku.leoz.mobile.ui.activity.Activity
 import org.slf4j.LoggerFactory
 
 /**
@@ -16,6 +19,9 @@ open class Fragment(var fragmentTitle: String = "") : RxAppCompatDialogFragment(
             fragmentTitle = javaClass.simpleName
         }
     }
+
+    val activity: Activity
+        get() = super.getActivity() as Activity
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)

@@ -53,8 +53,6 @@ class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
 
         activity?.supportActionBar?.hide()
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        activity?.uxAidcCameraFab?.visibility = android.view.View.GONE
-        activity?.uxHelpFab?.visibility = android.view.View.GONE
         activity?.uxHead?.visibility = android.view.View.GONE
     }
 
@@ -65,8 +63,6 @@ class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
 
         activity?.supportActionBar?.show()
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        activity?.uxAidcCameraFab?.visibility = android.view.View.VISIBLE
-        activity?.uxHelpFab?.visibility = android.view.View.VISIBLE
         activity?.uxHead?.visibility = android.view.View.VISIBLE
     }
 

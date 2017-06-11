@@ -3,10 +3,12 @@ package org.deku.leoz.mobile.ui.activity
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.view.menu.MenuBuilder
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -16,6 +18,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
+import com.gordonwong.materialsheetfab.MaterialSheetFab
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
@@ -33,19 +36,26 @@ import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.view_actionoverlay.*
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
+import org.deku.leoz.mobile.ui.view.ActionOverlayView
+import org.deku.leoz.mobile.ui.view.AnimatedFloatingActionButton
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
 import sx.android.view.setColors
+import sx.rx.ObservableRxProperty
 
 /**
  * Leoz activity base class
  * Created by n3 on 23/02/2017.
  */
-open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+open class Activity : RxAppCompatActivity(),
+        NavigationView.OnNavigationItemSelectedListener,
+        ActionOverlayView.Listener {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -54,6 +64,13 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
     private val updateService: UpdateService by Kodein.global.lazy.instance()
     private val login: Login by Kodein.global.lazy.instance()
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
+
+    /** Action items */
+    val actionItemsProperty = ObservableRxProperty<List<ActionOverlayView.Item>>(listOf())
+    var actionItems by actionItemsProperty
+
+    private val actionEventSubject = PublishSubject.create<Int>()
+    val actionEvent = this.actionEventSubject.hide()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,11 +93,21 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
         toggle.syncState()
         //endregion
 
-        //region Camera control
-        this.cameraAidcFragmentVisible = false
+        //region Action overlay
+        this.uxActionOverlay.fabStyle = R.style.AppTheme_Fab
+        this.uxActionOverlay.listener = this
+        this.uxActionOverlay.overlayView = this.ux_dim_overlay
 
-        this.uxAidcCameraFab.setOnClickListener { view ->
-            this.cameraAidcFragmentVisible = !this.cameraAidcFragmentVisible
+        this.actionItemsProperty.subscribe {
+            val items = mutableListOf(*it.value.toTypedArray())
+            items.add(
+                    ActionOverlayView.Item(
+                            id = R.id.action_aidc_camera,
+                            colorRes = R.color.colorAccent,
+                            iconRes = R.drawable.ic_barcode
+                    )
+            )
+            this.uxActionOverlay.items = items
         }
         //endregion
 
@@ -109,6 +136,8 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                             navItem?.text = "1+"
                         })
         //endregion
+
+        this.cameraAidcFragmentVisible = false
     }
 
     override fun onBackPressed() {
@@ -149,6 +178,18 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
                 return super.onOptionsItemSelected(item)
             }
         }
+    }
+
+    override fun onActionItem(id: Int) {
+        // Global action handler
+        when (id) {
+            R.id.action_aidc_camera -> {
+                this.cameraAidcFragmentVisible = !this.cameraAidcFragmentVisible
+            }
+        }
+
+        // Emit action event
+        this.actionEventSubject.onNext(id)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -212,14 +253,18 @@ open class Activity : RxAppCompatActivity(), NavigationView.OnNavigationItemSele
             return fragment != null
         }
         set(value) {
-            when (value) {
-                true -> {
-                    this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorDarkGrey, iconTint = R.color.colorAccent)
-                    this.uxAidcCameraFab.alpha = 0.6F
-                }
-                false -> {
-                    this.uxAidcCameraFab.setColors(backgroundTint = R.color.colorAccent, iconTint = android.R.color.black)
-                    this.uxAidcCameraFab.alpha = 0.85F
+            // Lookup dynamically created fab with action overlay for applying translucency effect
+            val aidcFab = this.uxActionOverlay.findViewById<FloatingActionButton>(R.id.action_aidc_camera)
+            if (aidcFab != null) {
+                when (value) {
+                    true -> {
+                        aidcFab.setColors(backgroundTint = R.color.colorDarkGrey, iconTint = R.color.colorAccent)
+                        aidcFab.alpha = 0.6F
+                    }
+                    false -> {
+                        aidcFab.setColors(backgroundTint = R.color.colorAccent, iconTint = android.R.color.black)
+                        aidcFab.alpha = 0.85F
+                    }
                 }
             }
 

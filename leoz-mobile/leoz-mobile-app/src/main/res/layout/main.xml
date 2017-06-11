@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!-- Main application layout, reusable across all activities -->
 <android.support.v4.widget.DrawerLayout
     android:id="@+id/drawer_layout"

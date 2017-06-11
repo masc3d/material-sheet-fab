@@ -47,8 +47,9 @@ class ProtoSsoFragment : Fragment(), ProtoSsoMenuFragment.OnFragmentInteractionL
 
     override fun onButtonClicked(buttonID: Int) {
         log.debug("onButtonClicked")
-        if (activity.findViewById<View>(buttonID) != null) {
-            if (activity.findViewById<View>(buttonID) is Button || activity.findViewById<View>(buttonID) is ImageButton) {
+        val buttonView = this.view?.findViewById<View>(buttonID)
+        if (buttonView != null) {
+            if (buttonView is Button || buttonView is ImageButton) {
                 when (buttonID) {
                     R.id.uxBagDifference -> {
 
@@ -71,8 +72,8 @@ class ProtoSsoFragment : Fragment(), ProtoSsoMenuFragment.OnFragmentInteractionL
 
                     }
                     else -> {
-                        log.debug("OnClick Event unhandled [${activity.findViewById<View>(buttonID).rootView}]")
-                        Snackbar.make(activity.findViewById<View>(buttonID).rootView, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
+                        log.debug("OnClick Event unhandled [${buttonView.rootView}]")
+                        Snackbar.make(buttonView.rootView, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }
