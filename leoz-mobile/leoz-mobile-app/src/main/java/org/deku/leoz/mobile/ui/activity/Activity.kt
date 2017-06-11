@@ -35,6 +35,7 @@ import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.view_actionoverlay.*
@@ -271,7 +272,7 @@ open class Activity : RxAppCompatActivity(),
             this.uxActionOverlay.items = items
         }
 
-        updateService.availableUpdateEvent
+        this.updateService.availableUpdateEvent
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
@@ -284,12 +285,6 @@ open class Activity : RxAppCompatActivity(),
                                 event.apk.install(this@Activity)
                             })
                             sb.show()
-
-                            val navItem: TextView? = findViewById(R.id.nav_check_updates) as TextView
-                            navItem?.gravity = Gravity.CENTER_VERTICAL
-                            navItem?.setTypeface(null, Typeface.BOLD)
-                            navItem?.setTextColor(resources.getColor(R.color.colorAccent))
-                            navItem?.text = "1+"
                         })
 
 
