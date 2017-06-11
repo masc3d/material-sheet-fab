@@ -43,6 +43,7 @@ import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
 import org.deku.leoz.mobile.ui.view.AnimatedFloatingActionButton
+import org.jetbrains.anko.contentView
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
@@ -93,49 +94,8 @@ open class Activity : RxAppCompatActivity(),
         toggle.syncState()
         //endregion
 
-        //region Action overlay
         this.uxActionOverlay.fabStyle = R.style.AppTheme_Fab
         this.uxActionOverlay.listener = this
-        this.uxActionOverlay.overlayView = this.ux_dim_overlay
-
-        this.actionItemsProperty.subscribe {
-            val items = mutableListOf(*it.value.toTypedArray())
-            items.add(
-                    ActionOverlayView.Item(
-                            id = R.id.action_aidc_camera,
-                            colorRes = R.color.colorAccent,
-                            iconRes = R.drawable.ic_barcode
-                    )
-            )
-            this.uxActionOverlay.items = items
-        }
-        //endregion
-
-        //region Update service UI feedback
-        val updateService: UpdateService = Kodein.global.instance()
-
-        updateService.availableUpdateEvent
-                .bindToLifecycle(this)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onNext = { event ->
-                            val sb = Snackbar.make(
-                                    this@Activity.uxContainer,
-                                    this@Activity.getString(org.deku.leoz.mobile.R.string.version_available, event.version),
-                                    Snackbar.LENGTH_INDEFINITE)
-                            sb.setAction(org.deku.leoz.mobile.R.string.update, {
-                                sb.dismiss()
-                                event.apk.install(this@Activity)
-                            })
-                            sb.show()
-
-                            val navItem: TextView? = findViewById(R.id.nav_check_updates) as TextView
-                            navItem?.gravity = Gravity.CENTER_VERTICAL
-                            navItem?.setTypeface(null, Typeface.BOLD)
-                            navItem?.setTextColor(resources.getColor(R.color.colorAccent))
-                            navItem?.text = "1+"
-                        })
-        //endregion
 
         this.cameraAidcFragmentVisible = false
     }
@@ -295,6 +255,42 @@ open class Activity : RxAppCompatActivity(),
             this.nav_view.menu.findItem(R.id.nav_dev_login).setVisible(true)
             this.nav_view.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
         }
+
+        this.actionItemsProperty
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .subscribe {
+            val items = mutableListOf(*it.value.toTypedArray())
+            items.add(
+                    ActionOverlayView.Item(
+                            id = R.id.action_aidc_camera,
+                            colorRes = R.color.colorAccent,
+                            iconRes = R.drawable.ic_barcode
+                    )
+            )
+            this.uxActionOverlay.items = items
+        }
+
+        updateService.availableUpdateEvent
+                .bindUntilEvent(this, ActivityEvent.PAUSE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onNext = { event ->
+                            val sb = Snackbar.make(
+                                    this@Activity.uxContainer,
+                                    this@Activity.getString(org.deku.leoz.mobile.R.string.version_available, event.version),
+                                    Snackbar.LENGTH_INDEFINITE)
+                            sb.setAction(org.deku.leoz.mobile.R.string.update, {
+                                event.apk.install(this@Activity)
+                            })
+                            sb.show()
+
+                            val navItem: TextView? = findViewById(R.id.nav_check_updates) as TextView
+                            navItem?.gravity = Gravity.CENTER_VERTICAL
+                            navItem?.setTypeface(null, Typeface.BOLD)
+                            navItem?.setTextColor(resources.getColor(R.color.colorAccent))
+                            navItem?.text = "1+"
+                        })
+
 
         // Authentication changes
 
