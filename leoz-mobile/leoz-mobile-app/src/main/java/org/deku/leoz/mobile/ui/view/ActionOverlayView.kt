@@ -169,26 +169,14 @@ class ActionOverlayView : RelativeLayout {
                     if (item.iconRes != null)
                         fab.setImageDrawable(this.context.getDrawable(item.iconRes))
 
-                    val sheetLayout = this.context.layoutInflater.inflate(
+                    val sheet = this.context.layoutInflater.inflate(
                             R.layout.view_actionoverlay_sheet,
                             this.actionoverlay_sheet_container,
                             false)
 
-                    this.actionoverlay_sheet_container.addView(sheetLayout)
+                    this.actionoverlay_sheet_container.addView(sheet)
 
-                    // Create sheet items
-                    item.menu.itemsSequence().forEach { menuItem ->
-                        val sheetItem = this.context.layoutInflater.inflate(
-                                R.layout.view_actionoverlay_sheet_item,
-                                sheetLayout.actionoverlay_sheet_item_container,
-                                false)
-
-                        sheetItem.actionoverlay_sheet_item_icon.setImageDrawable(menuItem.icon)
-                        sheetItem.actionoverlay_sheet_item_title.setText(menuItem.title)
-
-                        sheetLayout.actionoverlay_sheet_item_container.addView(sheetItem)
-                    }
-
+                    // Create dedicated dim overlay for this sheet
                     val dimOverlay = DimOverlayFrameLayout(this.context)
 
                     dimOverlay.layoutParams = FrameLayout.LayoutParams(
@@ -197,19 +185,46 @@ class ActionOverlayView : RelativeLayout {
 
                     this.actionoverlay_dim_container.addView(dimOverlay)
 
-                    val sheetColor = resources.getColor(android.R.color.white)
-                    // TODO: don't reference app resources
-                    val fabColor = resources.getColor(item.colorRes ?: R.color.colorAccent)
+                    // Create matieral sheet fab
+                    val sheetBackgroundColor = resources.getColor(android.R.color.background_light)
+                    val fabColor =
+                            if (item.colorRes != null)
+                                resources.getColor(item.colorRes)
+                            else
+                                // Default to fab color
+                                fab.backgroundTintList!!.defaultColor
+
                     val msf = MaterialSheetFab<AnimatedFloatingActionButton>(
                             fab,
-                            sheetLayout.actionoverlay_sheet,
-                            dimOverlay, //this.overlayView,
-                            sheetColor,
+                            sheet.actionoverlay_sheet,
+                            dimOverlay,
+                            sheetBackgroundColor,
                             fabColor)
 
                     // Material sheet fabs are not directly added to view hierarchy,
                     // but used for controlling behavior. Storing internally.
                     this.materialSheetFabs.put(item.id, msf)
+
+                    // Set sheet color
+                    sheet.actionoverlay_sheet_bar.setBackgroundColor(fabColor)
+
+                    // Create sheet items
+                    item.menu.itemsSequence().forEach { menuItem ->
+                        val sheetItem = this.context.layoutInflater.inflate(
+                                R.layout.view_actionoverlay_sheet_item,
+                                sheet.actionoverlay_sheet_item_container,
+                                false)
+
+                        sheetItem.actionoverlay_sheet_item_icon.setImageDrawable(menuItem.icon)
+                        sheetItem.actionoverlay_sheet_item_title.setText(menuItem.title)
+
+                        sheetItem.setOnClickListener {
+                            msf.hideSheet()
+                            this.listener?.onActionItem(menuItem.itemId)
+                        }
+
+                        sheet.actionoverlay_sheet_item_container.addView(sheetItem)
+                    }
 
                     this.actionoverlay_container.addView(fab)
                 }

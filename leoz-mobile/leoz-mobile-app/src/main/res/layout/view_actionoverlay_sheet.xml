@@ -14,14 +14,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:layout_marginEnd="12dp">
+        android:layout_marginEnd="12dp"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="8dp"
+        >
 
-        <!-- Sheet item container -->
         <LinearLayout
-            android:id="@+id/actionoverlay_sheet_item_container"
-            android:layout_width="140dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <!-- Sheet item container -->
+            <LinearLayout
+                android:id="@+id/actionoverlay_sheet_item_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                />
+
+            <FrameLayout
+                android:id="@+id/actionoverlay_sheet_bar"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:background="@color/dark_gray"
+                />
 
         </LinearLayout>
 
