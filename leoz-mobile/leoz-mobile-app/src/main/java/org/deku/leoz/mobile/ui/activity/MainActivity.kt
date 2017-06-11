@@ -122,14 +122,18 @@ class MainActivity : Activity() {
         this.actionEvent
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
-                    Snackbar.make(this.uxContainer, "Call Supervisor for assistance?", Snackbar.LENGTH_LONG).setAction("Action", {
-                        this@MainActivity.showAlert(
-                                title = "Call assistance?",
-                                text = "Are you sure you want to call a supervisor?",
-                                positiveButton = AlertButton(text = android.R.string.yes, handler = {
-                                }),
-                                negativeButton = AlertButton(text = android.R.string.cancel))
-                    }).show()
+                    when (it) {
+                        R.id.action_help -> {
+                            Snackbar.make(this.uxContainer, "Call Supervisor for assistance?", Snackbar.LENGTH_LONG).setAction("Action", {
+                                this@MainActivity.showAlert(
+                                        title = "Call assistance?",
+                                        text = "Are you sure you want to call a supervisor?",
+                                        positiveButton = AlertButton(text = android.R.string.yes, handler = {
+                                        }),
+                                        negativeButton = AlertButton(text = android.R.string.cancel))
+                            }).show()
+                        }
+                    }
                 }
 
         login.authenticatedUserProperty
