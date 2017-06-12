@@ -1,11 +1,10 @@
-package org.deku.leoz.mobile.ui.fragment
+package org.deku.leoz.mobile.ui.screen
 
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -13,14 +12,13 @@ import com.github.salomonbrys.kodein.lazy
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_delivery_process.*
-import kotlinx.android.synthetic.main.main_app_bar.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
+import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ParcelListAdapter
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader

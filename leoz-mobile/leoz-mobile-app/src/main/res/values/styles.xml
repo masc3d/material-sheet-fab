@@ -37,6 +37,13 @@
         <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
     </style>
 
+    <style name="AppTheme.CardView">
+        <item name="cardCornerRadius">5dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardMaxElevation">0dp</item>
+        <item name="cardUseCompatPadding">true</item>
+    </style>
+
     <!-- Common floating action button style -->
     <style name="AppTheme.Fab" parent="">
         <item name="android:layout_margin">@dimen/fab_margin</item>

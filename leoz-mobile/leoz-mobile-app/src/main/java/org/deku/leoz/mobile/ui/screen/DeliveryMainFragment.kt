@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui.fragment
+package org.deku.leoz.mobile.ui.screen
 
 
 import android.content.Context
@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.row_delivery_menu_entry.view.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.ui.Fragment
 import org.slf4j.LoggerFactory
 import sx.android.getLayoutInflater
 
@@ -90,7 +91,7 @@ class DeliveryMainFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.uxMenuList.adapter = MenuListAdapter(
+       this.uxMenuList.adapter = MenuListAdapter(
                 context = context,
                 entries = mutableListOf(
                         MenuEntry(
@@ -122,8 +123,8 @@ class DeliveryMainFragment : Fragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is DeliveryMainFragment.Listener) {
-            listener = context as DeliveryMainFragment.Listener?
+        if (context is Listener) {
+            listener = context as Listener?
         } else {
             throw RuntimeException(context!!.toString() + " must implement Listener")
         }

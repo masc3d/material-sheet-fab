@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui.fragment
+package org.deku.leoz.mobile.ui.screen
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_main.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.fragment.LoginFragment
 
 /**
  * Created by n3 on 26/02/2017.

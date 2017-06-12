@@ -3,13 +3,10 @@ package org.deku.leoz.mobile.prototype.activities.smallsort
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -18,7 +15,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.properties.Bag
-import org.deku.leoz.mobile.ui.fragment.Fragment
+import org.deku.leoz.mobile.ui.Fragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.proto_fragment_sso_outgoing.*

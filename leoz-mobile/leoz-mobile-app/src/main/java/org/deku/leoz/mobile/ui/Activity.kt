@@ -1,37 +1,26 @@
-package org.deku.leoz.mobile.ui.activity
+package org.deku.leoz.mobile.ui
 
 import android.content.Intent
-import android.graphics.Typeface
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
-import android.support.v4.app.FragmentTransaction
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.view.menu.MenuBuilder
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import android.widget.TextView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
-import com.gordonwong.materialsheetfab.MaterialSheetFab
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.main.*
-import kotlinx.android.synthetic.main.main.view.*
 import kotlinx.android.synthetic.main.main_app_bar.*
-import kotlinx.android.synthetic.main.main_content.*
-import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.BuildConfig
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Tone
@@ -39,18 +28,18 @@ import org.deku.leoz.mobile.service.UpdateService
 import org.deku.leoz.mobile.ui.fragment.AidcCameraFragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.view_actionoverlay.*
+import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.main.view.*
+import kotlinx.android.synthetic.main.main_nav_header.*
+import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
-import org.deku.leoz.mobile.ui.fragment.Fragment
+import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
-import org.deku.leoz.mobile.ui.view.AnimatedFloatingActionButton
-import org.jetbrains.anko.contentView
 import sx.android.aidc.AidcReader
 import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
@@ -83,12 +72,12 @@ open class Activity : RxAppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.setContentView(org.deku.leoz.mobile.R.layout.main)
+        this.setContentView(R.layout.main)
 
         this.nav_view.setNavigationItemSelectedListener(this)
 
         //region Action bar
-        setSupportActionBar(this.toolbar)
+        this.setSupportActionBar(this.toolbar)
 
         val toggle = ActionBarDrawerToggle(
                 this,
@@ -293,10 +282,10 @@ open class Activity : RxAppCompatActivity(),
                 .subscribeBy(
                         onNext = { event ->
                             val sb = Snackbar.make(
-                                    this@Activity.uxContainer,
-                                    this@Activity.getString(org.deku.leoz.mobile.R.string.version_available, event.version),
+                                    this.uxContainer,
+                                    this@Activity.getString(R.string.version_available, event.version),
                                     Snackbar.LENGTH_INDEFINITE)
-                            sb.setAction(org.deku.leoz.mobile.R.string.update, {
+                            sb.setAction(R.string.update, {
                                 event.apk.install(this@Activity)
                             })
                             sb.show()

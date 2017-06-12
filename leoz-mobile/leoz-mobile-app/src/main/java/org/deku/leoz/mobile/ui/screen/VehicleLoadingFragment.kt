@@ -1,31 +1,26 @@
-package org.deku.leoz.mobile.ui.fragment
+package org.deku.leoz.mobile.ui.screen
 
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.fragment_vehicle_loading.*
-
 import org.deku.leoz.mobile.R
-import sx.android.aidc.AidcReader
+
+import org.deku.leoz.mobile.ui.Fragment
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class VehicleLoadingFragment : Fragment() {
+class VehicleLoadingFragment : org.deku.leoz.mobile.ui.Fragment() {
 
-    private val aidcReader: AidcReader by Kodein.global.lazy.instance()
+    private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: android.view.LayoutInflater?, container: android.view.ViewGroup?,
+                              savedInstanceState: android.os.Bundle?): android.view.View? {
         // Inflate the layout for this fragment
         return inflater!!.inflate(R.layout.fragment_vehicle_loading, container, false)
     }

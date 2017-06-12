@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui.fragment
+package org.deku.leoz.mobile.ui.screen
 
 
 import android.content.Context
@@ -8,12 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.gcacace.signaturepad.views.SignaturePad
-import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.fragment_signature.*
-import kotlinx.android.synthetic.main.main_app_bar.*
 
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.ui.activity.Activity
+import org.deku.leoz.mobile.ui.Activity
+import org.deku.leoz.mobile.ui.Fragment
 import org.slf4j.LoggerFactory
 
 
@@ -49,21 +48,19 @@ class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
-        val activity : Activity? = activity as org.deku.leoz.mobile.ui.activity.Activity
+        val activity : Activity? = activity as Activity
 
         activity?.supportActionBar?.hide()
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        activity?.uxHead?.visibility = android.view.View.GONE
     }
 
     override fun onDetach() {
         super.onDetach()
 
-        val activity : Activity? = activity as org.deku.leoz.mobile.ui.activity.Activity
+        val activity : Activity? = activity as Activity
 
         activity?.supportActionBar?.show()
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        activity?.uxHead?.visibility = android.view.View.VISIBLE
     }
 
     // SignaturePad listeners

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_menu.*
 
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 
 

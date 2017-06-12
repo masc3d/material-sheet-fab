@@ -8,16 +8,4 @@
         android:title="Help"
         />
 
-    <item
-        android:id="@+id/action_help"
-        android:icon="@android:drawable/ic_menu_help"
-        android:title="Help"
-        />
-
-    <item
-        android:id="@+id/action_help"
-        android:icon="@android:drawable/ic_menu_help"
-        android:title="Help"
-        />
-
 </menu>

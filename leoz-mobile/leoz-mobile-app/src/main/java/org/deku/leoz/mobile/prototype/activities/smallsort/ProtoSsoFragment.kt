@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.prototype.activities.smallsort
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -11,9 +10,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import kotlinx.android.synthetic.main.proto_fragment_sso.*
-import kotlinx.android.synthetic.main.proto_fragment_main.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.ui.fragment.Fragment
+import org.deku.leoz.mobile.ui.Fragment
 import org.slf4j.LoggerFactory
 
 /**

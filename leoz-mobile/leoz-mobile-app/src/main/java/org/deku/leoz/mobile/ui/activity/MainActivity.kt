@@ -7,12 +7,11 @@ import android.support.design.widget.Snackbar
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
-import kotlinx.android.synthetic.main.main_app_bar.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.app
 import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.ui.AlertButton
-import org.deku.leoz.mobile.ui.fragment.MainFragment
+import org.deku.leoz.mobile.ui.screen.MainFragment
 import org.deku.leoz.mobile.ui.showAlert
 import org.deku.leoz.mobile.ui.showErrorAlert
 import org.slf4j.LoggerFactory
@@ -21,20 +20,16 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.support.v7.view.menu.MenuBuilder
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.ActivityEvent
-import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.main_content.*
-import kotlinx.android.synthetic.main.view_actionoverlay.*
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.User
 import org.deku.leoz.mobile.SharedPreference
+import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.view.ActionItem
-import org.deku.leoz.mobile.ui.view.ActionOverlayView
-import org.jetbrains.anko.contentView
 
 
 class MainActivity : Activity() {

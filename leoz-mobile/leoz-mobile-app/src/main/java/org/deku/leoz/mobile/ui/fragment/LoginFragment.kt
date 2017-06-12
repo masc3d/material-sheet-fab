@@ -15,14 +15,13 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.ui.Fragment
 import org.slf4j.LoggerFactory
 import sx.android.aidc.*
-import sx.rx.toSingletonObservable
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
 

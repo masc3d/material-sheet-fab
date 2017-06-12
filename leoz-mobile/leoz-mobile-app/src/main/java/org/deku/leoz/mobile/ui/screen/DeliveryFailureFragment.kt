@@ -1,4 +1,4 @@
-package org.deku.leoz.mobile.ui.fragment
+package org.deku.leoz.mobile.ui.screen
 
 
 import android.os.Bundle
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import org.deku.leoz.mobile.R
+import org.deku.leoz.mobile.ui.Fragment
 
 
 class DeliveryFailureFragment : Fragment() {

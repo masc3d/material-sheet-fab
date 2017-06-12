@@ -8,10 +8,11 @@ import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
-import org.deku.leoz.mobile.ui.fragment.DeliveryMainFragment
-import org.deku.leoz.mobile.ui.fragment.StopOverviewFragment
-import org.deku.leoz.mobile.ui.fragment.VehicleLoadingFragment
+import org.deku.leoz.mobile.ui.screen.DeliveryMainFragment
+import org.deku.leoz.mobile.ui.screen.StopOverviewFragment
+import org.deku.leoz.mobile.ui.screen.VehicleLoadingFragment
 import org.slf4j.LoggerFactory
 import sx.android.fragment.CameraFragment
 import sx.android.fragment.util.withTransaction
@@ -19,7 +20,7 @@ import sx.android.fragment.util.withTransaction
 /**
  * Created by 27694066 on 09.05.2017.
  */
-class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragment.Listener /* TODO: To be removed / use RX instead */, VehicleLoadingDialog.OnDialogResultListener /* TODO: To be removed / use RX instead */ {
+class DeliveryActivity : Activity(), CameraFragment.Listener, DeliveryMainFragment.Listener /* TODO: To be removed / use RX instead */, VehicleLoadingDialog.OnDialogResultListener /* TODO: To be removed / use RX instead */ {
     private val log = LoggerFactory.getLogger(this.javaClass)
     val delivery: Delivery by Kodein.global.lazy.instance()
 
@@ -34,7 +35,7 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragmen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             supportFragmentManager.withTransaction {
                 it.replace(this.uxContainer.id, DeliveryMainFragment())
             }
@@ -48,19 +49,19 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragmen
      */
 
     override fun onDeliveryMenuChoosed(entryType: DeliveryMainFragment.MenuEntry.Entry) {
-        log.debug("ONDELIVERYMENUCHOOSED")
-        when(entryType){
-            DeliveryMainFragment.MenuEntry.Entry.ORDERLIST -> {
-                supportFragmentManager.withTransaction {
-                    it.replace(this.uxContainer.id, StopOverviewFragment())
-                }
-            }
+        when (entryType) {
             DeliveryMainFragment.MenuEntry.Entry.LOADING -> {
                 /**
                  * Start "vehicle loading" process
                  */
                 val dialog: VehicleLoadingDialog = VehicleLoadingDialog(this)
                 dialog.show(supportFragmentManager, "LOADINGDIALOG")
+            }
+
+            DeliveryMainFragment.MenuEntry.Entry.ORDERLIST -> {
+                supportFragmentManager.withTransaction {
+                    it.replace(this.uxContainer.id, StopOverviewFragment())
+                }
             }
         }
     }

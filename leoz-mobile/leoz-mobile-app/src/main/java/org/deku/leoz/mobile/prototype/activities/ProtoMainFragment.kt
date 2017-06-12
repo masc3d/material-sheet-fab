@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.proto_fragment_main.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.smallsort.ProtoSsoActivity
-import org.deku.leoz.mobile.ui.fragment.Fragment
+import org.deku.leoz.mobile.ui.Fragment
 
 /**
  * Created by n3 on 06/03/2017.
