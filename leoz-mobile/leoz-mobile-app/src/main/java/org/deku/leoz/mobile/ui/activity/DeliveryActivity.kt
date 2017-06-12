@@ -44,6 +44,14 @@ class DeliveryActivity : Activity(), CameraFragment.Listener, DeliveryMainFragme
         }
     }
 
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            // Exit only allowed via logout
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     /**
      * Fragment listener
      */

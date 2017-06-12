@@ -37,6 +37,7 @@ import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
+import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
@@ -128,6 +129,13 @@ open class Activity : RxAppCompatActivity(),
             }
             R.id.action_logout -> {
                 login.logout()
+
+                this.startActivity(
+                        Intent(applicationContext, MainActivity::class.java)
+                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                        Intent.FLAG_ACTIVITY_NEW_TASK))
+                finish()
+
                 return true
             }
             else -> {
@@ -182,6 +190,11 @@ open class Activity : RxAppCompatActivity(),
                     )
                             .subscribeBy(
                                     onNext = {
+                                        this.startActivity(
+                                                Intent(applicationContext, DeliveryActivity::class.java)
+                                                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                                                Intent.FLAG_ACTIVITY_NEW_TASK))
+                                        finish()
 
                                     },
                                     onError = {
@@ -194,6 +207,11 @@ open class Activity : RxAppCompatActivity(),
             R.id.nav_logout -> {
                 this.nav_view.postDelayed({
                     login.logout()
+                    this.startActivity(
+                            Intent(applicationContext, MainActivity::class.java)
+                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                            Intent.FLAG_ACTIVITY_NEW_TASK))
+                    finish()
                 }, 20)
             }
         }
@@ -334,15 +352,6 @@ open class Activity : RxAppCompatActivity(),
 
                             // Hide navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.GONE
-
-                            // Anywhere else but in main, actively logout
-                            if (this.javaClass != MainActivity::class.java) {
-                                this.startActivity(
-                                        Intent(applicationContext, MainActivity::class.java)
-                                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                                        Intent.FLAG_ACTIVITY_NEW_TASK)
-                                )
-                            }
                         }
                     }
                 }

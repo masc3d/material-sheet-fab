@@ -131,22 +131,13 @@ class MainActivity : Activity() {
                         }
                     }
                 }
-
-        login.authenticatedUserProperty
-                .bindUntilEvent(this, ActivityEvent.PAUSE)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    val user: User? = it.value
-                    if (user != null) {
-                        this.queryChangelogDisplay()
-                        this.processLogin()
-                    }
-                }
     }
 
     fun processLogin() {
         this.startActivity(
-                Intent(applicationContext, DeliveryActivity::class.java))
+                Intent(applicationContext, DeliveryActivity::class.java)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     private fun showChangelogDialog() {
