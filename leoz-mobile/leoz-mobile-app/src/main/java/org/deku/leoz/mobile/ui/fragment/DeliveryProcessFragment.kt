@@ -10,10 +10,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_delivery_process.*
+import kotlinx.android.synthetic.main.main_app_bar.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Order
@@ -50,6 +53,10 @@ class DeliveryProcessFragment(val stop: Stop) : Fragment() {
         this.uxReceipient.text = stop.address.addressLine1
         this.uxAppointment.text = "${simpleDateFormat.format(stop.appointment.dateFrom)} - ${simpleDateFormat.format(stop.appointment.dateTo)}"
 
+        RxTextView.textChanges(this.uxLabelNo).subscribe {
+            this.uxLabelNo.error = null
+        }
+
         //region TODO To be replaced by a custom adapter
         val parcelList = mutableListOf<Order.Parcel>()
 
@@ -77,6 +84,10 @@ class DeliveryProcessFragment(val stop: Stop) : Fragment() {
                     log.info("Barcode scanned ${it.data}")
                     processLabelRef(ref = it.data)
                 }
+
+        /**
+         * TODO: Action trigger on uxLabelNo TextView
+         */
     }
 
     private fun processLabelRef(ref: String) {

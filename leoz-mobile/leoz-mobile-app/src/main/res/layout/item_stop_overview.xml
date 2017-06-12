@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="1dp">
@@ -136,6 +137,33 @@
             android:layout_toRightOf="@+id/uxStreet"
             android:text="4"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_below="@+id/uxReceipient"
+            android:layout_toEndOf="@+id/uxReceipient"
+            app:srcCompat="@drawable/ic_information_outline" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignTop="@+id/imageView"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_toEndOf="@+id/imageView"
+            app:srcCompat="@drawable/ic_clock_alert" />
+
+        <ImageView
+            android:id="@+id/imageView10"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignTop="@+id/imageView2"
+            android:layout_toEndOf="@+id/imageView2"
+            android:layout_toRightOf="@+id/imageView2"
+            app:srcCompat="@drawable/ic_alert_outline" />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>
