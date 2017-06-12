@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory
 import sx.android.fragment.util.withTransaction
 import android.support.annotation.CallSuper
 import kotlinx.android.synthetic.main.fragment_stop_overview.*
-import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.ui.Fragment
 
 
@@ -58,11 +57,12 @@ class StopOverviewFragment : Fragment(), FlexibleAdapter.OnItemMoveListener {
         return true
     }
 
-    private val onItemClickListener = FlexibleAdapter.OnItemClickListener {
+    private val onItemClickListener = FlexibleAdapter.OnItemClickListener { item ->
         log.debug("ONITEMCLICK")
-        val p0 = it
+
         activity.supportFragmentManager.withTransaction {
-            it.replace(this.activity.uxContainer.id, DeliveryProcessFragment((flexibleAdapter.getItem(p0) as StopListItem).stop))
+            it.addToBackStack(null)
+            it.replace(R.id.uxContainer, DeliveryProcessFragment.create((flexibleAdapter.getItem(item) as StopListItem).stop))
         }
         true
     }

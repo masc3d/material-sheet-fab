@@ -68,6 +68,7 @@ class DeliveryActivity : Activity(), CameraFragment.Listener, DeliveryMainFragme
 
             DeliveryMainFragment.MenuEntry.Entry.ORDERLIST -> {
                 supportFragmentManager.withTransaction {
+                    it.addToBackStack(null)
                     it.replace(this.uxContainer.id, StopOverviewFragment())
                 }
             }

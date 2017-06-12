@@ -34,7 +34,7 @@ class StopListDialog(val selectedStop: Stop): Dialog() {
                         //Open
                         2 -> {
                             activity.supportFragmentManager.withTransaction {
-                                it.replace(activity.uxContainer.id, DeliveryProcessFragment(selectedStop))
+                                it.replace(activity.uxContainer.id, DeliveryProcessFragment.create(selectedStop))
                             }
                         }
                     }

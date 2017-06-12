@@ -25,13 +25,29 @@ import sx.android.aidc.AidcReader
 import java.text.SimpleDateFormat
 
 
-class DeliveryProcessFragment(val stop: Stop) : Fragment() {
+class DeliveryProcessFragment() : Fragment() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
 
     private var lastRef: String? = null
     private var resultCount: Int = 0
+
+    private lateinit var stop: Stop
+
+    companion object {
+        fun create(stop: Stop): DeliveryProcessFragment {
+            val f = DeliveryProcessFragment()
+            f.stop = stop
+            return f
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        this.retainInstance = true
+    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
