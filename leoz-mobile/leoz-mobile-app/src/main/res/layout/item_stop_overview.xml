@@ -112,19 +112,6 @@
             android:textSize="24sp"
             android:textStyle="bold"/>
 
-        <View
-            android:id="@+id/uxDivider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/uxCity"
-            android:layout_margin="5dp"
-            android:background="@color/colorPrimaryDark"
-            android:visibility="invisible"/>
-
         <TextView
             android:id="@+id/uxStreetNo"
             android:layout_width="wrap_content"
