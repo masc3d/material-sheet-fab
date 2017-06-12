@@ -24,19 +24,19 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <FrameLayout
+                android:id="@+id/actionoverlay_sheet_bar"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:background="@color/dark_gray"
+                />
+
             <!-- Sheet item container -->
             <LinearLayout
                 android:id="@+id/actionoverlay_sheet_item_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                />
-
-            <FrameLayout
-                android:id="@+id/actionoverlay_sheet_bar"
-                android:layout_width="match_parent"
-                android:layout_height="16dp"
-                android:background="@color/dark_gray"
                 />
 
         </LinearLayout>

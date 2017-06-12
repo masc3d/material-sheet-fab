@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_aidc_camera"
     android:layout_width="match_parent"
-    android:layout_height="280dp"
+    android:layout_height="300dp"
     tools:context="org.deku.leoz.mobile.ui.fragment.AidcCameraFragment">
 
     <FrameLayout
@@ -13,6 +13,12 @@
         android:layout_height="match_parent">
 
     </FrameLayout>
+
+    <FrameLayout
+        android:background="@color/colorAccent"
+        android:alpha="0.7"
+        android:layout_width="match_parent"
+        android:layout_height="4dp" />
 
     <android.support.design.widget.FloatingActionButton
         style="@style/AppTheme.Fab"

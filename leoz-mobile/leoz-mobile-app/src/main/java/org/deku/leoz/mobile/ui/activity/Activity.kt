@@ -6,13 +6,17 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
+import android.support.v4.app.FragmentTransaction
 import android.support.v4.view.GravityCompat
+import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.view.menu.MenuBuilder
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
@@ -42,6 +46,7 @@ import kotlinx.android.synthetic.main.view_actionoverlay.*
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
+import org.deku.leoz.mobile.ui.fragment.Fragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
 import org.deku.leoz.mobile.ui.view.AnimatedFloatingActionButton
@@ -233,13 +238,23 @@ open class Activity : RxAppCompatActivity(),
             if (value == this.cameraAidcFragmentVisible)
                 return
 
-            val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
             if (!value) {
-                this.supportFragmentManager.withTransaction {
-                    it.remove(fragment)
+                val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
+                if (fragment != null) {
+                    // Fragment removal cannot be animated, thus doing it manually
+                    ViewCompat.animate(fragment.view)
+                            .translationY(fragment.view!!.height.toFloat())
+                            .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
+                            .withEndAction {
+                                this@Activity.supportFragmentManager.withTransaction {
+                                    it.remove(fragment)
+                                }
+                            }
+                            .start()
                 }
             } else {
                 this.supportFragmentManager.withTransaction {
+                    it.setCustomAnimations(R.anim.slide_in_bottom, R.anim.slide_out_bottom)
                     it.replace(R.id.uxScannerContainer, AidcCameraFragment(), AidcCameraFragment::class.java.canonicalName)
                 }
             }
@@ -261,16 +276,16 @@ open class Activity : RxAppCompatActivity(),
         this.actionItemsProperty
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
                 .subscribe {
-            val items = mutableListOf(*it.value.toTypedArray())
-            items.add(
-                    ActionItem(
-                            id = R.id.action_aidc_camera,
-                            colorRes = R.color.colorAccent,
-                            iconRes = R.drawable.ic_barcode
+                    val items = mutableListOf(*it.value.toTypedArray())
+                    items.add(
+                            ActionItem(
+                                    id = R.id.action_aidc_camera,
+                                    colorRes = R.color.colorAccent,
+                                    iconRes = R.drawable.ic_barcode
+                            )
                     )
-            )
-            this.uxActionOverlay.items = items
-        }
+                    this.uxActionOverlay.items = items
+                }
 
         this.updateService.availableUpdateEvent
                 .bindUntilEvent(this, ActivityEvent.PAUSE)
