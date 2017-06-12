@@ -1,11 +1,8 @@
 package org.deku.leoz.central.service.internal
 
 import org.apache.commons.lang3.RandomStringUtils
-import org.deku.leoz.central.data.repository.KeyJooqRepository
-import org.deku.leoz.central.data.repository.NodeJooqRepository
-import org.deku.leoz.central.data.repository.UserJooqRepository
+import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.verifyPassword
-import org.deku.leoz.central.data.repository.toAuthorizationServiceUser
 import org.deku.leoz.identity.Identity
 import org.deku.leoz.identity.MobileIdentityFactory
 import org.deku.leoz.node.rest.DefaultProblem
@@ -69,7 +66,6 @@ class AuthorizationService
 
         // TODO: handle mobile info as required
 
-        // TODO: when response is unified, we could simply delegate to `authorizeWeb` from here (and make it generic)
 
         val user = request.user
 
@@ -104,6 +100,17 @@ class AuthorizationService
             throw DefaultProblem(
                     title = "Invalid user role",
                     status = Response.Status.UNAUTHORIZED)
+
+        if (!userRecord.isActive){
+            throw DefaultProblem(
+                    title = "user deactivated",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+        if(Date()>userRecord.expiresOn){
+            throw DefaultProblem(
+                    title = "user account expired",
+                    status = Response.Status.UNAUTHORIZED)
+        }
 
         var keyRecord = this.keyRepository.findByID(userRecord.keyId)
 

@@ -2,10 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.tables.records.TrnNodeGeopositionRecord
-import org.deku.leoz.central.data.repository.PositionJooqRepository
-import org.deku.leoz.central.data.repository.UserJooqRepository
-import org.deku.leoz.central.data.repository.toGpsData
-import org.deku.leoz.central.data.repository.toLocationServiceUser
+import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.node.rest.DefaultProblem
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
@@ -42,7 +39,7 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
     override fun get(email: String?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationService.GpsData> {
         var debitor_id = debitorId
         //var user_id: Int?
-        val pos_from = from ?: Date(Date().year,Date().month,Date().date)
+        val pos_from = from ?: Date(Date().year, Date().month, Date().date)
         val pos_to = to ?: Date()//.plusDays(1) //pos_from.plusDays(1)
 
         val dtNow = Date()
@@ -67,6 +64,17 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
         val authorizedUserRecord = userRepository.findByKey(apiKey)
         authorizedUserRecord ?:
                 throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+
+        if (!authorizedUserRecord.isActive) {
+            throw DefaultProblem(
+                    title = "login user deactivated",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+        if (Date() > authorizedUserRecord.expiresOn) {
+            throw DefaultProblem(
+                    title = "login user account expired",
+                    status = Response.Status.UNAUTHORIZED)
+        }
 
         if (debitor_id == null && email == null) {
             debitor_id = authorizedUserRecord.debitorId
@@ -163,6 +171,17 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
         authorizedUserRecord ?:
                 throw DefaultProblem(status = Response.Status.BAD_REQUEST)
 
+        if (!authorizedUserRecord.isActive) {
+            throw DefaultProblem(
+                    title = "login user deactivated",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+        if (Date() > authorizedUserRecord.expiresOn) {
+            throw DefaultProblem(
+                    title = "login user account expired",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+
         if (debitor_id == null && email == null) {
             debitor_id = authorizedUserRecord.debitorId
         }
@@ -185,13 +204,12 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
                             || ((authorizedUserRecord.debitorId == it.debitorId)
                             && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(it.role).value))) {
 
-                        val posList:List<TrnNodeGeopositionRecord>?
-                        if (duration!=null){
+                        val posList: List<TrnNodeGeopositionRecord>?
+                        if (duration != null) {
                             val pos_to = Date()
                             val pos_from = Date().minusMinutes(duration)
                             posList = posRepository.findByUserId(it.id, pos_from, pos_to)
-                        }
-                        else {
+                        } else {
                             posList = posRepository.findRecentByUserId(it.id)
                         }
                         //gpsList.clear()
@@ -220,13 +238,12 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
                         || ((authorizedUserRecord.debitorId == userRecord.debitorId)
                         && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(userRecord.role).value))) {
 
-                    val posList:List<TrnNodeGeopositionRecord>?
-                    if (duration!=null){
+                    val posList: List<TrnNodeGeopositionRecord>?
+                    if (duration != null) {
                         val pos_to = Date()
                         val pos_from = Date().minusMinutes(duration)
                         posList = posRepository.findByUserId(userRecord.id, pos_from, pos_to)
-                    }
-                    else {
+                    } else {
                         posList = posRepository.findRecentByUserId(userRecord.id)
                     }
 
