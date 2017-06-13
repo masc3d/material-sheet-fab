@@ -228,7 +228,7 @@ class Delivery {
                                     city =              it.deliveryAddress.city,
                                     latitude =          it.deliveryAddress.geoLocation?.latitude ?: 0.0,
                                     longitude =         it.deliveryAddress.geoLocation?.longitude ?: 0.0,
-                                    phone =             it.deliveryAddress.telefonNumber ?: ""
+                                    phone =             it.deliveryAddress.phoneNumber ?: ""
                             ),
                             Order.Address(
                                     classification =    Order.Address.Classification.PICKUP,
@@ -241,7 +241,7 @@ class Delivery {
                                     city =              it.pickupAddress.city,
                                     latitude =          it.pickupAddress.geoLocation?.latitude ?: 0.0,
                                     longitude =         it.pickupAddress.geoLocation?.longitude ?: 0.0,
-                                    phone =             it.pickupAddress.telefonNumber ?: ""
+                                    phone =             it.pickupAddress.phoneNumber ?: ""
                             )
                     ),
                     appointment = listOf(),
@@ -259,18 +259,18 @@ class Delivery {
                     information = mutableListOf(
                             Order.Information(
                                     classification = Order.Information.Classification.DELIVERY_INFO,
-                                    additionalInformation = it.deliveryInformation!!.AdditionalInformation!!.map {
+                                    additionalInformation = it.deliveryInformation!!.additionalInformation!!.map {
                                         Order.Information.AdditionalInformation(
-                                                type = it.AdditionalInformationType!!,
+                                                type = it.additionalInformationType!!,
                                                 value = it.information ?: ""
                                         )
                                     }.toMutableList()
                             ),
                             Order.Information(
                                     classification = Order.Information.Classification.PICKUP_INFO,
-                                    additionalInformation = it.pickupInformation!!.AdditionalInformation!!.map {
+                                    additionalInformation = it.pickupInformation!!.additionalInformation!!.map {
                                         Order.Information.AdditionalInformation(
-                                                type = it.AdditionalInformationType!!,
+                                                type = it.additionalInformationType!!,
                                                 value = it.information ?: ""
                                         )
                                     }.toMutableList()
