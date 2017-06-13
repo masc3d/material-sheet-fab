@@ -54,10 +54,12 @@ class Delivery {
                 classification = Order.Address.Classification.DELIVERY,
                 addressLine1 = "Prangenberg",
                 addressLine2 = "DEK KURIER",
+                addressLine3 = "3. Addresszeile",
                 street = "Dörrwiese",
                 streetNo = "2",
                 zipCode = "36286",
-                city = "Neuenstein"
+                city = "Neuenstein",
+                phone = "+49 6677 9582"
         )
         val appointment = Order.Appointment(
                 classification = Order.Appointment.Classification.DELIVERY,
@@ -219,23 +221,27 @@ class Delivery {
                                     Order.Address.Classification.DELIVERY,
                                     it.deliveryAddress.addressLine1,
                                     it.deliveryAddress.addressLine2 ?: "",
+                                    it.deliveryAddress.addressLine3 ?: "",
                                     it.deliveryAddress.street,
                                     it.deliveryAddress.streetNo ?: "",
                                     it.deliveryAddress.zipCode,
                                     it.deliveryAddress.city,
                                     it.deliveryAddress.geoLocation?.latitude ?: 0.0,
-                                    it.deliveryAddress.geoLocation?.longitude ?: 0.0
+                                    it.deliveryAddress.geoLocation?.longitude ?: 0.0,
+                                    it.deliveryAddress.telefonNumber ?: ""
                             ),
                             Order.Address(
                                     Order.Address.Classification.PICKUP,
                                     it.pickupAddress.addressLine1,
                                     it.pickupAddress.addressLine2 ?: "",
+                                    it.pickupAddress.addressLine3 ?: "",
                                     it.pickupAddress.street,
                                     it.pickupAddress.streetNo ?: "",
                                     it.pickupAddress.zipCode,
                                     it.pickupAddress.city,
                                     it.pickupAddress.geoLocation?.latitude ?: 0.0,
-                                    it.pickupAddress.geoLocation?.longitude ?: 0.0
+                                    it.pickupAddress.geoLocation?.longitude ?: 0.0,
+                                    it.deliveryAddress.telefonNumber ?: ""
                             )
                     ),
                     appointment = listOf(),
