@@ -1,34 +1,38 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { TourService } from '../tour.service';
 import { Position } from '../position.model';
 import { Subscription } from 'rxjs/Subscription';
+import { MapComponent } from '@yaga/leaflet-ng2';
 
 @Component( {
   selector: 'app-tour-map',
   template: `
-    <yaga-map [lat]="latitude" [lng]="longitude" [zoom]="11">
+    <yaga-map #yagaMap [lat]="50.8645" [lng]="9.6917" [zoom]="11">
       <yaga-zoom-control></yaga-zoom-control>
       <yaga-scale-control [metric]="true" [imperial]="false"></yaga-scale-control>
       <yaga-attribution-control></yaga-attribution-control>
       <!--<yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"-->
       <yaga-tile-layer [url]="'http://192.168.161.202:8080/styles/osm-bright/rendered/{z}/{x}/{y}.png'"
                        [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>
-      <yaga-marker [lat]="latitude" [lng]="longitude" [display]="displayMarker">
+      <yaga-marker [lat]="markerLat" [lng]="markerLng" [display]="displayMarker">
         <yaga-popup>
           <p>
-            Latitude: {{latitude}}<br/>
-            Longitude: {{longitude}}
+            Latitude: {{markerLat}}<br/>
+            Longitude: {{markerLng}}
           </p>
         </yaga-popup>
       </yaga-marker>
     </yaga-map>`
 } )
 export class TourMapComponent implements OnInit, OnDestroy {
-  latitude: number;
 
-  longitude: number;
+  markerLat: number;
+  markerLng: number;
   displayMarker: boolean;
   name: string;
+
+  @ViewChild( 'yagaMap' )
+  yagaMap: MapComponent;
 
   private subscriptionDisplay: Subscription;
   private subscriptionMarker: Subscription;
@@ -37,14 +41,16 @@ export class TourMapComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.latitude = 50.8645;
-    this.longitude = 9.6917;
+    console.log( 'yagaMap', this.yagaMap );
 
-    this.subscriptionDisplay = this.tourService.displayMarker.subscribe( ( displayMarker: boolean ) => this.displayMarker = displayMarker );
+    this.subscriptionDisplay = this.tourService.displayMarker.subscribe( ( displayMarker: boolean ) => {
+      this.displayMarker = displayMarker;
+    } );
 
     this.subscriptionMarker = this.tourService.activeMarker.subscribe( ( activeMarker: Position ) => {
-      this.latitude = activeMarker.latitude;
-      this.longitude = activeMarker.longitude;
+      this.markerLat = activeMarker.latitude;
+      this.markerLng = activeMarker.longitude;
+      this.yagaMap.flyTo( L.latLng( activeMarker.latitude, activeMarker.longitude ) );
     } );
   }
 

@@ -38,16 +38,14 @@ export class TourService {
   }
 
   changeActiveMarker( selectedDriver ) {
-    // hide actual marker
-    this.displayMarkerSubject.next(false);
     this.subscription = this.getLocation( selectedDriver.email )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
-              this.activeMarkerSubject.next( positions[ 0 ] );
               this.displayMarkerSubject.next(true);
+              this.activeMarkerSubject.next( positions[ 0 ] );
               this.msgService.clear();
             } else {
               this.locationError();
@@ -60,6 +58,8 @@ export class TourService {
   }
 
   locationError(): void {
+    // hide actual marker
+    this.displayMarkerSubject.next(false);
     // display error msg: could not get geolocation points
     this.msgService.error( 'could not get geolocation points' );
   }
