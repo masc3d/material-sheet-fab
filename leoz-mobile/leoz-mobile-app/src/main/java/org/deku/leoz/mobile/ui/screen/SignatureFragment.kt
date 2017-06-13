@@ -48,7 +48,7 @@ class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
-        val activity : Activity? = activity as Activity
+        val activity : Activity? = activity
 
         activity?.supportActionBar?.hide()
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -57,7 +57,7 @@ class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
     override fun onDetach() {
         super.onDetach()
 
-        val activity : Activity? = activity as Activity
+        val activity : Activity? = activity
 
         activity?.supportActionBar?.show()
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
