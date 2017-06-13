@@ -3,7 +3,8 @@ package org.deku.leoz.node.rest.v1
 import org.deku.leoz.node.rest.ServiceException
 import org.deku.leoz.node.config.DataTestConfiguration
 import org.deku.leoz.service.entity.ShortDate
-import org.deku.leoz.service.pub.RoutingService
+import org.deku.leoz.service.pub.RoutingService.Request
+import org.deku.leoz.node.service.pub.RoutingService
 import org.deku.leoz.service.entity.ServiceErrorCode
 import org.junit.Assert
 import org.junit.Test
@@ -30,7 +31,7 @@ class RoutingLogicTest {
     @Test
     fun testRouting01() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             val r = this.routingService.request(request)
         } catch (e: ServiceException) {
             Assert.assertEquals(ServiceErrorCode.MISSING_PARAMETER, e.errorCode)
@@ -82,7 +83,7 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting02() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
             val r = this.routingService.request(request)
         } catch (e: ServiceException) {
@@ -94,9 +95,9 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting03() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingService.Request.Participant()
+            val rp = Request.Participant()
             rp.zip = "64850"
             request.sender = rp
             val r = this.routingService.request(request)
@@ -108,9 +109,9 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting04() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingService.Request.Participant()
+            val rp = Request.Participant()
             rp.country = "DE"
             request.sender = rp
             val r = this.routingService.request(request)
@@ -122,9 +123,9 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting05() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingService.Request.Participant()
+            val rp = Request.Participant()
             rp.country = "D"
             rp.zip = "64850"
             request.sender = rp
@@ -138,9 +139,9 @@ Rergionaler FT heilige drei könige ->
             //ohne unvollständiger participant
     fun testRouting06() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingService.Request.Participant()
+            val rp = Request.Participant()
             rp.country = "DE"
             rp.zip = "6485"
             request.sender = rp
@@ -153,9 +154,9 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting07() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingService.Request.Participant()
+            val rp = Request.Participant()
             rp.country = "DE"
             rp.zip = "A4850"
             request.sender = rp
@@ -168,9 +169,9 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting08() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingService.Request.Participant()
+            val rp = Request.Participant()
             rp.country = "AT"
             request.consignee = rp
             val r = this.routingService.request(request)
@@ -182,9 +183,9 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting09() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rp = RoutingService.Request.Participant()
+            val rp = Request.Participant()
             rp.country = "PL"
             rp.zip = "10010"
             request.sender = rp
@@ -219,13 +220,13 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting11() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rps = RoutingService.Request.Participant()
+            val rps = Request.Participant()
             rps.country = "DE"
             rps.zip = "80331"
             request.sender = rps
-            val rpc = RoutingService.Request.Participant()
+            val rpc = Request.Participant()
             rpc.country = "DE"
             rpc.zip = "64850"
             request.consignee = rpc
@@ -244,13 +245,13 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting12() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rps = RoutingService.Request.Participant()
+            val rps = Request.Participant()
             rps.country = "DE"
             rps.zip = "80331"
             request.sender = rps
-            val rpc = RoutingService.Request.Participant()
+            val rpc = Request.Participant()
             rpc.country = "DE"
             rpc.zip = "65850"
             request.consignee = rpc
@@ -269,13 +270,13 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting13() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rps = RoutingService.Request.Participant()
+            val rps = Request.Participant()
             rps.country = "DE"
             rps.zip = "01067"
             request.sender = rps
-            val rpc = RoutingService.Request.Participant()
+            val rpc = Request.Participant()
             rpc.country = "DE"
             rpc.zip = "01108"
             request.consignee = rpc
@@ -294,13 +295,13 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting14() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rps = RoutingService.Request.Participant()
+            val rps = Request.Participant()
             rps.country = "DE"
             rps.zip = "20095"
             request.sender = rps
-            val rpc = RoutingService.Request.Participant()
+            val rpc = Request.Participant()
             rpc.country = "DE"
             rpc.zip = "20148"
             request.consignee = rpc
@@ -319,13 +320,13 @@ Rergionaler FT heilige drei könige ->
     @Test
     fun testRouting15() {
         try {
-            val request = RoutingService.Request()
+            val request = Request()
             request.sendDate = ShortDate("2015-08-01")
-            val rps = RoutingService.Request.Participant()
+            val rps = Request.Participant()
             rps.country = "DE"
             rps.zip = "20095"
             request.sender = rps
-            val rpc = RoutingService.Request.Participant()
+            val rpc = Request.Participant()
             rpc.country = "DE"
             rpc.zip = "44623"
             request.consignee = rpc
@@ -346,9 +347,9 @@ Rergionaler FT heilige drei könige ->
      */
     @Test
     fun testRegionalHoliday01() {
-        val request = RoutingService.Request(
+        val request = Request(
                 sendDate = ShortDate("2016-10-28"),
-                consignee = RoutingService.Request.Participant(
+                consignee = Request.Participant(
                         country = "DE",
                         zip = "99084"))
 
@@ -361,9 +362,9 @@ Rergionaler FT heilige drei könige ->
      */
     @Test
     fun testRegionalHoliday02() {
-        val request = RoutingService.Request(
+        val request = Request(
                 sendDate = ShortDate("2016-10-31"),
-                consignee = RoutingService.Request.Participant(
+                consignee = Request.Participant(
                         country = "DE",
                         zip = "40822"))
 
@@ -376,9 +377,9 @@ Rergionaler FT heilige drei könige ->
      */
     @Test
     fun testRegionalHoliday03() {
-        val request = RoutingService.Request(
+        val request = Request(
                 sendDate = ShortDate("2016-10-28"),
-                consignee = RoutingService.Request.Participant(
+                consignee = Request.Participant(
                         country = "DE",
                         zip = "36286"))
 
@@ -388,9 +389,9 @@ Rergionaler FT heilige drei könige ->
 
     @Test
     fun testFebruaryWithoutLeapYear() {
-        val request = RoutingService.Request(
+        val request = Request(
                 sendDate = ShortDate("2017-02-28"),
-                consignee = RoutingService.Request.Participant(
+                consignee = Request.Participant(
                         country = "DE",
                         zip = "36286"))
 
@@ -400,9 +401,9 @@ Rergionaler FT heilige drei könige ->
 
     @Test
     fun testFebruaryWithoutLeapYear2() {
-        val request = RoutingService.Request(
+        val request = Request(
                 sendDate = ShortDate("2017-02-29"),
-                consignee = RoutingService.Request.Participant(
+                consignee = Request.Participant(
                         country = "DE",
                         zip = "36286"))
 
@@ -416,9 +417,9 @@ Rergionaler FT heilige drei könige ->
 
     @Test
     fun testFebruaryWithinLeapYear() {
-        val request = RoutingService.Request(
+        val request = Request(
                 sendDate = ShortDate("2016-02-28"),
-                consignee = RoutingService.Request.Participant(
+                consignee = Request.Participant(
                         country = "DE",
                         zip = "36286"))
 
@@ -428,9 +429,9 @@ Rergionaler FT heilige drei könige ->
 
     @Test
     fun testFebruaryWithinLeapYear2() {
-        val request = RoutingService.Request(
+        val request = Request(
                 sendDate = ShortDate("2016-02-29"),
-                consignee = RoutingService.Request.Participant(
+                consignee = Request.Participant(
                         country = "DE",
                         zip = "36286"))
 
