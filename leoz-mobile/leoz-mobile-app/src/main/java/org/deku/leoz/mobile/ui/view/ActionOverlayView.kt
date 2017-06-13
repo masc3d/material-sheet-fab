@@ -225,6 +225,14 @@ class ActionOverlayView : RelativeLayout {
                         sheet.actionoverlay_sheet_item_container.addView(sheetItem)
                     }
 
+                    fab.setOnClickListener {
+                        this.materialSheetFabs.values
+                                .filter { it != msf && it.isSheetVisible }
+                                .forEach { it.hideSheet() }
+
+                        msf.showSheet()
+                    }
+
                     this.actionoverlay_container.addView(fab)
                 }
             }
