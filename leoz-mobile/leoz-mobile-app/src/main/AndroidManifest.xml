@@ -49,6 +49,7 @@
             android:name=".ui.activity.DeliveryActivity"
             android:label="@string/title_activity_delivery"
             android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
         <!-- Services -->

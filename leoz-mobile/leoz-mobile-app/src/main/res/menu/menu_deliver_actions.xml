@@ -2,13 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
     <item
-        android:id="@+id/ux_action_cancel"
+        android:id="@+id/ux_action_navigate"
+        android:icon="@android:drawable/ic_menu_mylocation"
         android:orderInCategory="100"
-        android:title="Cancel process"
+        android:title="Navigate"
         app:showAsAction="never" />
     <item
-        android:id="@+id/ux_action_fail"
+        android:id="@+id/ux_action_contact"
+        android:icon="@drawable/ic_phone"
         android:orderInCategory="500"
-        android:title="Delivery failed"
+        android:title="Contact"
         app:showAsAction="never" />
 </menu>

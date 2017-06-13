@@ -17,7 +17,7 @@ export class TourService {
   private activeMarkerSubject = new BehaviorSubject<Position>( <Position> {latitude: 50.8645, longitude: 9.6917} );
   public activeMarker = this.activeMarkerSubject.asObservable().distinctUntilChanged();
 
-  private locationUrl = `${environment.apiUrl}/internal/v1/location`;
+  private locationUrl = `${environment.apiUrl}/internal/v1/location/recent`;
   private subscription: Subscription;
 
   constructor( private http: Http, private msgService: MsgService ) {
@@ -28,7 +28,6 @@ export class TourService {
 
     const queryParameters = new URLSearchParams();
     queryParameters.set( 'email', email );
-    queryParameters.set( 'from', '05/31/2017' );
 
     const options = new RequestOptions( {
       headers: ApiKeyHeaderFactory.headers( currUser.key ),
@@ -39,16 +38,14 @@ export class TourService {
   }
 
   changeActiveMarker( selectedDriver ) {
-    // hide actual marker
-    this.displayMarkerSubject.next(false);
     this.subscription = this.getLocation( selectedDriver.email )
       .subscribe( ( response: Response ) => {
           const driverLocations = response.json();
           if (driverLocations && driverLocations.length > 0) {
             const positions = <Position[]> driverLocations[ 0 ][ 'gpsDataPoints' ];
             if (positions && positions.length > 0) {
-              this.activeMarkerSubject.next( positions[ positions.length - 1 ] );
               this.displayMarkerSubject.next(true);
+              this.activeMarkerSubject.next( positions[ 0 ] );
               this.msgService.clear();
             } else {
               this.locationError();
@@ -61,6 +58,8 @@ export class TourService {
   }
 
   locationError(): void {
+    // hide actual marker
+    this.displayMarkerSubject.next(false);
     // display error msg: could not get geolocation points
     this.msgService.error( 'could not get geolocation points' );
   }
