@@ -1,6 +1,7 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.jooq.tables.records.TrnNodeGeopositionRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.node.rest.DefaultProblem
@@ -19,6 +20,9 @@ import sx.time.minusMinutes
 import sx.time.plusDays
 import sx.time.toTimestamp
 import javax.ws.rs.core.Response
+import org.slf4j.LoggerFactory
+import sx.logging.slf4j.info
+
 
 
 /**
@@ -28,6 +32,9 @@ import javax.ws.rs.core.Response
 @ApiKey(true)
 @Path("internal/v1/location")
 class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint> {
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
@@ -278,8 +285,36 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
 
     }
 
+    //?? from which device are gpsData coming? Add node-id to LocationService.GpsData?
+    // override fun onMessage(message: LocationService.GpsData, replyChannel: MqChannel?) {
     override fun onMessage(message: LocationService.GpsDataPoint, replyChannel: MqChannel?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        try{
+            val geoPos=message
+            //log.info(message)
+            val geoposRec = dslContext.newRecord(Tables.TRN_NODE_GEOPOSITION)
+            if(geoPos.latitude!=null)
+                geoposRec.latitude=geoPos.latitude
+            if(geoPos.longitude!=null)
+                geoposRec.longitude=geoPos.longitude
+            /**
+            if(geoPos.time!=null)
+                geoposRec.positionDatetime=Date(geoPos.time)
+            if(geoPos.speed!=null)
+                geoposRec.speed=geoPos.speed.toDouble()
+            if(geoPos.bearing!=null)
+                geoposRec.bearing=geoPos.bearing
+            if(geoPos.altitude!=null)
+                geoposRec.altitude=geoPos.altitude
+            if(geoPos.accuracy!=null)
+                geoposRec.accuracy=geoPos.accuracy
+                */
+            posRepository.save(geoposRec)
+
+        }catch (e: Exception) {
+            log.error(e.message, e)
+        }
+
     }
 
     fun geoFilter(posList: List<TrnNodeGeopositionRecord>): MutableList<LocationService.GpsDataPoint> {
