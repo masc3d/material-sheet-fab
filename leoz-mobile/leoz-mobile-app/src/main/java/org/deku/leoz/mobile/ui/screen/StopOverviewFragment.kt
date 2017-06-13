@@ -60,10 +60,10 @@ class StopOverviewFragment : Fragment(), FlexibleAdapter.OnItemMoveListener {
     private val onItemClickListener = FlexibleAdapter.OnItemClickListener { item ->
         log.debug("ONITEMCLICK")
 
-        activity.supportFragmentManager.withTransaction {
-            it.addToBackStack(null)
-            it.replace(R.id.uxContainer, DeliveryProcessFragment.create((flexibleAdapter.getItem(item) as StopListItem).stop))
-        }
+        activity.showScreen(
+                DeliveryProcessFragment.create((flexibleAdapter.getItem(item) as StopListItem).stop)
+        )
+
         true
     }
     //endregion

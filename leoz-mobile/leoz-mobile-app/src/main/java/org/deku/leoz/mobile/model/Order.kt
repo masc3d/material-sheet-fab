@@ -35,12 +35,14 @@ class Order (
             val classification: Classification,
             val addressLine1: String,
             val addressLine2: String = "",
+            val addressLine3: String = "",
             val street: String,
             val streetNo: String = "",
             val zipCode: String,
             val city: String,
             val latitude: Double = 0.0,
-            val longitude: Double = 0.0
+            val longitude: Double = 0.0,
+            val phone: String = ""
     ) {
         enum class Classification {
             PICKUP, DELIVERY, EXCHANGE_DELIVERY, EXCHANGE_PICKUP

@@ -14,8 +14,6 @@ class ProtoSsoActivity : Activity() {
         log.trace("ONCREATE")
         super.onCreate(savedInstanceState)
 
-        this.supportFragmentManager.withTransaction {
-            it.replace(R.id.uxContainer, ProtoSsoFragment())
-        }
+        this.showScreen(ProtoSsoFragment(), addToBackStack = false)
     }
 }

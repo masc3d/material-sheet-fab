@@ -57,9 +57,10 @@ class MainActivity : Activity() {
 
         this.supportActionBar?.title = getText(R.string.login)
 
-        this.supportFragmentManager.withTransaction {
-            it.replace(R.id.uxContainer, MainFragment())
-        }
+        this.showScreen(
+                MainFragment(),
+                addToBackStack = false
+        )
 
         val helpMenu = MenuBuilder(this.applicationContext)
         this.menuInflater.inflate(R.menu.menu_help, helpMenu)

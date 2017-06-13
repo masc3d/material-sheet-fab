@@ -33,7 +33,7 @@ class MainFragment : Fragment() {
         this.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
 
         val ft = this.childFragmentManager.beginTransaction()
-        ft.replace(R.id.uxContainer, LoginFragment())
+        ft.replace(this.uxContainer.id, LoginFragment())
         ft.commit()
     }
 }

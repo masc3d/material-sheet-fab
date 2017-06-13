@@ -12,8 +12,6 @@ class ProtoMainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.supportFragmentManager.withTransaction {
-            it.replace(R.id.uxContainer, ProtoMainFragment())
-        }
+        this.showScreen(ProtoMainFragment())
     }
 }
