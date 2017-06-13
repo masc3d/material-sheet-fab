@@ -374,10 +374,10 @@ open class Activity : RxAppCompatActivity(),
                 }
     }
 
-    fun showScreen(fragment: Fragment, addToBackStack: Boolean = true) {
-        supportFragmentManager.withTransaction {
+    fun showScreen(fragment: Fragment, addToBackStack: Boolean = true): Int {
+        return supportFragmentManager.withTransaction {
             if (addToBackStack)
-                it.addToBackStack(null)
+                it.addToBackStack(fragment.javaClass.canonicalName)
 
             it.replace(this.uxContainer.id, fragment)
         }
