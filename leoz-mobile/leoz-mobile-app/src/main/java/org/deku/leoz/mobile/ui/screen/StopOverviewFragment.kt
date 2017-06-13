@@ -23,6 +23,7 @@ import sx.android.fragment.util.withTransaction
 import android.support.annotation.CallSuper
 import kotlinx.android.synthetic.main.fragment_stop_overview.*
 import org.deku.leoz.mobile.ui.Fragment
+import sx.LazyInstance
 
 
 /**
@@ -33,9 +34,10 @@ class StopOverviewFragment : Fragment(), FlexibleAdapter.OnItemMoveListener {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val delivery: Delivery by Kodein.global.lazy.instance()
 
-    protected val flexibleAdapter: FlexibleAdapter<IFlexible<*>> by lazy {
+    private val flexibleAdapterInstance = LazyInstance<FlexibleAdapter<IFlexible<*>>>( {
         FlexibleAdapter(getItemList(delivery.stopList.filter { it.state == Stop.State.PENDING }), this)
-    }
+    })
+    private val flexibleAdapter get() = flexibleAdapterInstance.get()
 
     //region Listener interface implementation
     /**
@@ -68,10 +70,10 @@ class StopOverviewFragment : Fragment(), FlexibleAdapter.OnItemMoveListener {
     }
     //endregion
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_stop_overview, container, false)
+        return inflater.inflate(R.layout.fragment_stop_overview, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -88,6 +90,10 @@ class StopOverviewFragment : Fragment(), FlexibleAdapter.OnItemMoveListener {
 //        flexibleAdapter.setAnimationOnScrolling(true)
 
         //val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager(context).orientation)
+
+
+        // Flexible adapter needs to be re-created with views
+        flexibleAdapterInstance.reset()
 
         this.uxStopList.adapter = flexibleAdapter
         this.uxStopList.layoutManager = LinearLayoutManager(context)
