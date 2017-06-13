@@ -125,9 +125,9 @@ class DeliveryActivity : Activity(), CameraFragment.Listener, DeliveryMainFragme
 
     fun showDeliverFabButtons() {
         this.actionItems = listOf(
-                ActionItem(2, R.color.colorGreen, R.drawable.ic_check_circle, null, deliverOkMenu),
-                ActionItem(1, R.color.colorAccent, R.drawable.ic_information_outline, null, deliverActionMenu),
-                ActionItem(0, R.color.colorRed, R.drawable.ic_cancel_black, null, deliverFailMenu)
+                ActionItem(R.id.action_deliver_ok, R.color.colorGreen, R.drawable.ic_check_circle, null, deliverOkMenu),
+                ActionItem(R.id.action_deliver_fail, R.color.colorAccent, R.drawable.ic_information_outline, null, deliverActionMenu),
+                ActionItem(R.id.action_deliver_cancel, R.color.colorRed, R.drawable.ic_cancel_black, null, deliverFailMenu)
         )
     }
 
