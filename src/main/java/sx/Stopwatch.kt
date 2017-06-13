@@ -180,6 +180,16 @@ class Stopwatch {
         return this
     }
 
+    /**
+     * Restart stopwatch
+     * @return this `Stopwatch`instance
+     */
+    fun restart(): Stopwatch {
+        this.reset()
+        this.start()
+        return this
+    }
+
     private fun elapsedNanos(): Long {
         return if (isRunning) ticker.read() - startTick + elapsedNanos else elapsedNanos
     }
