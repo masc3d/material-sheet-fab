@@ -11,8 +11,7 @@ import { Subscription } from 'rxjs/Subscription';
       <yaga-scale-control [metric]="true" [imperial]="false"></yaga-scale-control>
       <yaga-attribution-control></yaga-attribution-control>
       <!--<yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"-->
-      <!--<yaga-tile-layer [url]="'http://192.168.161.202:8080/styles/osm-bright/rendered/{z}/{x}/{y}.png'"-->
-      <yaga-tile-layer [url]="'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'"
+      <yaga-tile-layer [url]="'http://192.168.161.202:8080/styles/osm-bright/rendered/{z}/{x}/{y}.png'"
                        [attribution]="'© OpenStreetMap-Mitwirkende'"></yaga-tile-layer>
       <yaga-marker [lat]="latitude" [lng]="longitude" [display]="displayMarker">
         <yaga-popup>
