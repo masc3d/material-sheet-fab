@@ -36,9 +36,7 @@ class DeliveryActivity : Activity(), CameraFragment.Listener, DeliveryMainFragme
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
-            supportFragmentManager.withTransaction {
-                it.replace(this.uxContainer.id, DeliveryMainFragment())
-            }
+            this.showScreen(DeliveryMainFragment(), addToBackStack = false)
 
             this.supportActionBar?.setTitle(R.string.delivery)
         }
@@ -67,10 +65,7 @@ class DeliveryActivity : Activity(), CameraFragment.Listener, DeliveryMainFragme
             }
 
             DeliveryMainFragment.MenuEntry.Entry.ORDERLIST -> {
-                supportFragmentManager.withTransaction {
-                    it.addToBackStack(null)
-                    it.replace(this.uxContainer.id, StopOverviewFragment())
-                }
+                this.showScreen(StopOverviewFragment())
             }
         }
     }
@@ -99,9 +94,7 @@ class DeliveryActivity : Activity(), CameraFragment.Listener, DeliveryMainFragme
     }
 
     override fun onDeliveryListSkipped() {
-        supportFragmentManager.withTransaction {
-            it.replace(this.uxContainer.id, VehicleLoadingFragment())
-        }
+        this.showScreen(VehicleLoadingFragment())
     }
 
     override fun onCanceled() {

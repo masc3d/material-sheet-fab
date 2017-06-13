@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.main.view.*
+import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.main_nav_header.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.DebugSettings
@@ -39,6 +39,7 @@ import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.activity.MainActivity
+import org.deku.leoz.mobile.ui.screen.StopOverviewFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
 import sx.android.aidc.AidcReader
@@ -95,6 +96,12 @@ open class Activity : RxAppCompatActivity(),
         this.uxActionOverlay.listener = this
 
         this.cameraAidcFragmentVisible = false
+    }
+
+    override fun onDestroy() {
+        this.cameraAidcFragmentVisible = false
+
+        super.onDestroy()
     }
 
     override fun onBackPressed() {
@@ -365,5 +372,14 @@ open class Activity : RxAppCompatActivity(),
                     this.tone.beep()
                     this.cameraAidcFragmentVisible = false
                 }
+    }
+
+    fun showScreen(fragment: Fragment, addToBackStack: Boolean = true) {
+        supportFragmentManager.withTransaction {
+            if (addToBackStack)
+                it.addToBackStack(null)
+
+            it.replace(this.uxContainer.id, fragment)
+        }
     }
 }
