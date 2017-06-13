@@ -22,13 +22,16 @@ import org.eclipse.jgit.util.FS
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.experimental.categories.Category
 import org.slf4j.LoggerFactory
+import sx.junit.StandardTest
 
 import java.io.File
 
 /**
  * Created by masc on 13-Sep-15.
  */
+@Category(StandardTest::class)
 class JgitTest {
 
     val vcsPath by lazy {

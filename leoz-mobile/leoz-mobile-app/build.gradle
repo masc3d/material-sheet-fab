@@ -397,4 +397,9 @@ tasks.preBuild.dependsOn(tasks.flywaySyncMigrations)
 packager {
     title = 'Leoz Mobile'
     bundleName = 'leoz-mobile'
+
+    android {
+        buildType 'release'
+        productFlavor 'prod'
+    }
 }
