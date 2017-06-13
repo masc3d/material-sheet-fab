@@ -1,5 +1,7 @@
 package org.deku.leoz.mobile.ui.activity
 
+import android.app.FragmentManager
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.support.v7.view.menu.MenuBuilder
 import android.view.View
@@ -12,10 +14,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
-import org.deku.leoz.mobile.ui.screen.DeliveryMainFragment
-import org.deku.leoz.mobile.ui.screen.SignatureFragment
-import org.deku.leoz.mobile.ui.screen.StopOverviewFragment
-import org.deku.leoz.mobile.ui.screen.VehicleLoadingFragment
+import org.deku.leoz.mobile.ui.screen.*
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
 import sx.android.fragment.CameraFragment
@@ -24,7 +23,12 @@ import sx.android.fragment.util.withTransaction
 /**
  * Created by 27694066 on 09.05.2017.
  */
-class DeliveryActivity : Activity(), CameraFragment.Listener, DeliveryMainFragment.Listener /* TODO: To be removed / use RX instead */, VehicleLoadingDialog.OnDialogResultListener /* TODO: To be removed / use RX instead */ {
+class DeliveryActivity : Activity(),
+        CameraFragment.Listener,
+        DeliveryMainFragment.Listener,
+        SignatureFragment.Listener,
+        VehicleLoadingDialog.OnDialogResultListener {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
     val delivery: Delivery by Kodein.global.lazy.instance()
 
@@ -107,6 +111,15 @@ class DeliveryActivity : Activity(), CameraFragment.Listener, DeliveryMainFragme
         log.debug("ONCAMERAFRAGMENTDISCARDED")
     }
 
+    override fun onSignatureCancelled() {
+    }
+
+    override fun onSignatureSubmitted() {
+        this@DeliveryActivity.supportFragmentManager.popBackStack(DeliveryProcessFragment::class.java.canonicalName, 0)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        this.supportActionBar?.show()
+    }
+
     /**
      * Dialog listener
      * TODO: To be removed / use RX instead
@@ -132,8 +145,12 @@ class DeliveryActivity : Activity(), CameraFragment.Listener, DeliveryMainFragme
     }
 
     fun showSignaturePad() {
-        this.showScreen(SignatureFragment())
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        this.supportActionBar?.hide()
 
         this.actionItems = listOf()
+
+        val signatureFragment = SignatureFragment()
+        this.showScreen(signatureFragment)
     }
 }

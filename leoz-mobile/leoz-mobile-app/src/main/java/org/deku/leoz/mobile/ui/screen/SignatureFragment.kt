@@ -1,26 +1,27 @@
 package org.deku.leoz.mobile.ui.screen
 
-
-import android.content.Context
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.gcacace.signaturepad.views.SignaturePad
 import kotlinx.android.synthetic.main.fragment_signature.*
-
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.Fragment
 import org.slf4j.LoggerFactory
-
 
 /**
  * A simple [Fragment] subclass.
  */
 class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    interface Listener {
+        fun onSignatureCancelled()
+        fun onSignatureSubmitted()
+    }
+
+    private val listener by lazy { this.activity as? Listener }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -32,6 +33,7 @@ class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
         super.onViewCreated(view, savedInstanceState)
 
         this.uxSubmit.setOnClickListener {
+            this.listener?.onSignatureSubmitted()
         }
 
         this.uxCancel.setOnClickListener {
@@ -43,24 +45,6 @@ class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
         }
 
         this.uxSignaturePad.setOnSignedListener(this)
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-
-        val activity : Activity? = activity
-
-        activity?.supportActionBar?.hide()
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-
-        val activity : Activity? = activity
-
-        activity?.supportActionBar?.show()
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
     // SignaturePad listeners
