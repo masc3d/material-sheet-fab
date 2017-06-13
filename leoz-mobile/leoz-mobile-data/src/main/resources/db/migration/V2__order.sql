@@ -5,7 +5,7 @@ CREATE TABLE address
 	order_ref VARCHAR NULL,
 	address1 VARCHAR NULL,
 	address2 VARCHAR NULL,
-	address3 VARCHAR NULL
+	address3 VARCHAR NULL,
 	street VARCHAR NULL,
 	street_no VARCHAR NULL,
 	zip_code VARCHAR NULL,
