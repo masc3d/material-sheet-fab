@@ -7,9 +7,13 @@ import java.io.File
 import java.io.IOException
 
 import com.google.common.io.BaseEncoding
+import org.junit.experimental.categories.Category
+import sx.junit.StandardTest
+
 /**
  * Prototype gradle plugin unit test (example)
  */
+@Category(StandardTest::class)
 class GradlePluginTest {
     private val testProjectDir = File("").absoluteFile.resolve("test/project")
 
