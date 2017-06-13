@@ -36,6 +36,7 @@ class ServiceConfiguration {
             bind<UpdateService>() with singleton {
                 @ConfigurationMapPath("update")
                 class Settings(map: ConfigurationMap) {
+                    val enabled: Boolean by map.value(true)
                     val bundleName: String by map.value("")
                     val versionAlias: String by map.value("")
                     val force: Boolean by map.value(false)
@@ -49,8 +50,12 @@ class ServiceConfiguration {
                         bundleName = settings.bundleName,
                         versionAlias = settings.versionAlias,
                         period = settings.period.seconds)
+
                 service.force = settings.force
-                service.start()
+
+                if (settings.enabled)
+                    service.start()
+
                 service
             }
         }
