@@ -1,7 +1,10 @@
 package org.deku.leoz.mobile.ui.screen
 
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.support.v7.view.menu.MenuBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +23,8 @@ import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ParcelListAdapter
+import org.deku.leoz.mobile.ui.activity.DeliveryActivity
+import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import java.text.SimpleDateFormat
@@ -86,10 +91,46 @@ class DeliveryProcessFragment() : Fragment() {
 
         this.uxParcelList.adapter = ParcelListAdapter(context, parcelList)
         //endregion
+
+        (this.activity as DeliveryActivity).showDeliverFabButtons()
+
+
     }
 
     override fun onResume() {
         super.onResume()
+
+        this.activity.actionEvent
+                .bindUntilEvent(this, FragmentEvent.PAUSE)
+                .subscribe {
+                    when (it) {
+                        R.id.ux_action_navigate -> {
+                            val intent: Intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("google.navigation:q=${stop.address.street}+${stop.address.streetNo}+${stop.address.city}+${stop.address.zipCode}&mode=d")
+                            )
+                            startActivity(intent)
+                        }
+                        R.id.ux_action_contact -> {
+
+                        }
+                        R.id.ux_action_cancel -> {
+
+                        }
+                        R.id.ux_action_fail -> {
+
+                        }
+                        R.id.ux_action_deliver_neighbour -> {
+
+                        }
+                        R.id.ux_action_deliver_postbox -> {
+
+                        }
+                        R.id.ux_action_deliver_receipient -> {
+                            (this.activity as DeliveryActivity).showSignaturePad()
+                        }
+                    }
+                }
 
         aidcReader.readEvent
                 .bindUntilEvent(this, FragmentEvent.PAUSE)
