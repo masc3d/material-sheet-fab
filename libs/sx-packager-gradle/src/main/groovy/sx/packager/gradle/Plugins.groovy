@@ -14,6 +14,15 @@ import java.nio.file.Paths
  * Plugin extension class, used for extension within build.gradle
  */
 class PackagerPluginExtension {
+    static class Android {
+        /** Android build type */
+        String buildType
+        /** Android product flavor */
+        String productFlavor
+    }
+
+    def Android androidExtension
+
     def String title
 
     /** Packager base directory */
@@ -66,16 +75,22 @@ class PackagerPluginExtension {
 
 abstract class PackagerPlugin implements Plugin<Project> {
     protected PackagerPluginExtension packagerExtension
+    protected PackagerPluginExtension.Android packagerAndroidExtension
 
     void apply(Project project) {
+
         // Add extension extensino
-        packagerExtension = new PackagerPluginExtension()
+        packagerExtension = project.extensions.create('packager', PackagerPluginExtension)
         packagerExtension.packagerBaseDir = new File(project.buildDir, 'packager')
         packagerExtension.releaseBasePath = Paths.get(packagerExtension.packagerBaseDir.toURI())
                 .resolve('release')
                 .toFile()
 
-        project.extensions.packager = packagerExtension
+        packagerAndroidExtension = project.extensions.packager.extensions.create('android', PackagerPluginExtension.Android)
+        packagerAndroidExtension.buildType = 'release'
+        packagerAndroidExtension.productFlavor = ''
+
+        packagerExtension.androidExtension = packagerAndroidExtension
 
         project.gradle.projectsEvaluated {
             // Initialize rsync
@@ -200,9 +215,11 @@ class AndroidPackagerPlugin extends PackagerPlugin {
                 this.packagerExtension.version = project.android.defaultConfig.versionName
         }
 
+        def assembleTaskName = "assemble${this.packagerAndroidExtension.productFlavor.capitalize()}${this.packagerAndroidExtension.buildType.capitalize()}"
+
         project.tasks.whenTaskAdded {
-            if (it.name == 'assembleRelease') {
-                project.tasks.buildNativeBundle.dependsOn(project.tasks.assembleRelease)
+            if (it.name == assembleTaskName) {
+                project.tasks.buildNativeBundle.dependsOn(it)
             }
         }
     }
