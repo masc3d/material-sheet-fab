@@ -41,6 +41,10 @@ class PositionJooqRepository {
                 .limit(1)
                 .fetchInto(TrnNodeGeopositionRecord::class.java)
     }
+    fun save(geopositionRecord: TrnNodeGeopositionRecord): Boolean {
+        geopositionRecord ?: return false
+        return (geopositionRecord.store() > 0)
+    }
 
 }
 
