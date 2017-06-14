@@ -12,6 +12,6 @@ class ProtoMainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this.showScreen(ProtoMainFragment())
+        this.showScreen(ProtoMainFragment(), false)
     }
 }

@@ -97,7 +97,7 @@ open class Activity : RxAppCompatActivity(),
 
         //region Backstack listener
         this.supportFragmentManager.addOnBackStackChangedListener {
-            val fragments = this.supportFragmentManager.fragments
+            val fragments = this.supportFragmentManager.fragments ?: listOf<Fragment>()
                     .filterNotNull()
                     .map { it.javaClass.simpleName }
                     .joinToString(", ")
