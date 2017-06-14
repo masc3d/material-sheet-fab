@@ -12,12 +12,18 @@ import android.widget.ImageButton
 import kotlinx.android.synthetic.main.proto_fragment_sso.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 
 /**
  * Created by n3 on 06/03/2017.
  */
-class ProtoSsoFragment : Fragment(), ProtoSsoMenuFragment.OnFragmentInteractionListener, ProtoSsoOutgoingFragment.OnFragmentInteractionListener  {
+class ProtoSsoFragment
+    :
+        ScreenFragment(),
+        ProtoSsoMenuFragment.OnFragmentInteractionListener,
+        ProtoSsoOutgoingFragment.OnFragmentInteractionListener  {
+
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

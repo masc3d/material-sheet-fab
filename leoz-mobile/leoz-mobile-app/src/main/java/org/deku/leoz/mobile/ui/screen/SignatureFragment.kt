@@ -8,12 +8,17 @@ import com.github.gcacace.signaturepad.views.SignaturePad
 import kotlinx.android.synthetic.main.fragment_signature.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 
 /**
  * A simple [Fragment] subclass.
  */
-class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
+class SignatureFragment
+    :
+        ScreenFragment(),
+        SignaturePad.OnSignedListener {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     interface Listener {
@@ -45,12 +50,6 @@ class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
         }
 
         this.uxSignaturePad.setOnSignedListener(this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        this.activity.actionItems = listOf()
     }
 
     // SignaturePad listeners

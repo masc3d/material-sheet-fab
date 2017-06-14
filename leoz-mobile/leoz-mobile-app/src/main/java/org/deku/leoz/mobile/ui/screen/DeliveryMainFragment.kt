@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.row_delivery_menu_entry.view.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 import sx.android.getLayoutInflater
 
@@ -27,7 +28,7 @@ import sx.android.getLayoutInflater
  *
  * Presents the main entry point within the delivery process.
  */
-class DeliveryMainFragment : Fragment() {
+class DeliveryMainFragment : ScreenFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val delivery: Delivery by Kodein.global.lazy.instance()

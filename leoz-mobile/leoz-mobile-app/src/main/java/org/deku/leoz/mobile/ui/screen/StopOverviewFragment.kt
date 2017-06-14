@@ -23,13 +23,14 @@ import sx.android.fragment.util.withTransaction
 import android.support.annotation.CallSuper
 import kotlinx.android.synthetic.main.fragment_stop_overview.*
 import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.ScreenFragment
 import sx.LazyInstance
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class StopOverviewFragment : Fragment(), FlexibleAdapter.OnItemMoveListener {
+class StopOverviewFragment : ScreenFragment(), FlexibleAdapter.OnItemMoveListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val delivery: Delivery by Kodein.global.lazy.instance()

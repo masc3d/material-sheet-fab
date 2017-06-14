@@ -10,12 +10,13 @@ import kotlinx.android.synthetic.main.fragment_vehicle_loading.*
 import org.deku.leoz.mobile.R
 
 import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.ScreenFragment
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class VehicleLoadingFragment : org.deku.leoz.mobile.ui.Fragment() {
+class VehicleLoadingFragment : ScreenFragment() {
 
     private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
 

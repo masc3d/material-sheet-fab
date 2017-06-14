@@ -47,6 +47,7 @@ import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
 import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
+import android.support.v4.app.FragmentManager
 
 /**
  * Leoz activity base class
@@ -54,7 +55,9 @@ import sx.rx.ObservableRxProperty
  */
 open class Activity : RxAppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener,
+        ScreenFragment.Listener,
         ActionOverlayView.Listener {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -65,8 +68,8 @@ open class Activity : RxAppCompatActivity(),
     private val debugSettings: DebugSettings by Kodein.global.lazy.instance()
 
     /** Action items */
-    val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
-    var actionItems by actionItemsProperty
+    private val actionItemsProperty = ObservableRxProperty<List<ActionItem>>(listOf())
+    private var actionItems by actionItemsProperty
 
     private val actionEventSubject = PublishSubject.create<Int>()
     val actionEvent = this.actionEventSubject.hide()
@@ -90,6 +93,17 @@ open class Activity : RxAppCompatActivity(),
 
         this.drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+        //endregion
+
+        //region Backstack listener
+        this.supportFragmentManager.addOnBackStackChangedListener {
+            val fragments = this.supportFragmentManager.fragments
+                    .filterNotNull()
+                    .map { it.javaClass.simpleName }
+                    .joinToString(", ")
+
+            log.info("BACKSTACK [${fragments}]")
+        }
         //endregion
 
         this.uxActionOverlay.fabStyle = R.style.AppTheme_Fab
@@ -375,12 +389,23 @@ open class Activity : RxAppCompatActivity(),
                 }
     }
 
-    fun showScreen(fragment: Fragment, addToBackStack: Boolean = true): Int {
+    /**
+     * Shows a screen fragment
+     * @param fragment Screen fragment to show
+     * @param addToBackStack If the fragment should be added to the backstack
+     */
+    fun showScreen(fragment: ScreenFragment, addToBackStack: Boolean = true): Int {
+        log.trace("SHOW SCREEN [${fragment.javaClass.simpleName}]")
         return supportFragmentManager.withTransaction {
             if (addToBackStack)
                 it.addToBackStack(fragment.javaClass.canonicalName)
 
             it.replace(this.uxContainer.id, fragment)
         }
+    }
+
+    override fun onScreenFragmentResume(fragment: ScreenFragment) {
+        // Take over action items from screen fragment when it resumes
+        this.actionItems = fragment.actionItems
     }
 }

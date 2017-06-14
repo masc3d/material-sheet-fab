@@ -32,25 +32,6 @@ class DeliveryActivity : Activity(),
     private val log = LoggerFactory.getLogger(this.javaClass)
     val delivery: Delivery by Kodein.global.lazy.instance()
 
-    val deliverFailMenu by lazy {
-        val menu = MenuBuilder(this.applicationContext)
-        this.menuInflater.inflate(R.menu.menu_deliver_fail, menu)
-        menu
-    }
-
-
-    val deliverOkMenu by lazy {
-        val menu = MenuBuilder(this.applicationContext)
-        this.menuInflater.inflate(R.menu.menu_deliver_options, menu)
-        menu
-    }
-
-    val deliverActionMenu by lazy {
-        val menu = MenuBuilder(this.applicationContext)
-        this.menuInflater.inflate(R.menu.menu_deliver_actions, menu)
-        menu
-    }
-
     companion object {
         const val FRAGMENT_TAG_CAMERA = "fragmentCamera"
         const val FRAGMENT_TAG_SIGNATURE = "fragmentSignature"
@@ -137,11 +118,6 @@ class DeliveryActivity : Activity(),
     }
 
     fun showDeliverFabButtons() {
-        this.actionItems = listOf(
-                ActionItem(R.id.action_deliver_ok, R.color.colorGreen, R.drawable.ic_check_circle, null, deliverOkMenu),
-                ActionItem(R.id.action_deliver_fail, R.color.colorAccent, R.drawable.ic_information_outline, null, deliverActionMenu),
-                ActionItem(R.id.action_deliver_cancel, R.color.colorRed, R.drawable.ic_cancel_black, null, deliverFailMenu)
-        )
     }
 
     fun showSignaturePad() {

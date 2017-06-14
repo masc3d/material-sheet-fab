@@ -23,6 +23,7 @@ import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ParcelListAdapter
+import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
@@ -30,7 +31,7 @@ import sx.android.aidc.AidcReader
 import java.text.SimpleDateFormat
 
 
-class DeliveryProcessFragment() : Fragment() {
+class DeliveryProcessFragment() : ScreenFragment() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -46,6 +47,24 @@ class DeliveryProcessFragment() : Fragment() {
             f.stop = stop
             return f
         }
+    }
+
+    val deliverFailMenu by lazy {
+        val menu = MenuBuilder(this.context)
+        this.activity.menuInflater.inflate(R.menu.menu_deliver_fail, menu)
+        menu
+    }
+
+    val deliverOkMenu by lazy {
+        val menu = MenuBuilder(this.context)
+        this.activity.menuInflater.inflate(R.menu.menu_deliver_options, menu)
+        menu
+    }
+
+    val deliverActionMenu by lazy {
+        val menu = MenuBuilder(this.context)
+        this.activity.menuInflater.inflate(R.menu.menu_deliver_actions, menu)
+        menu
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,9 +111,11 @@ class DeliveryProcessFragment() : Fragment() {
         this.uxParcelList.adapter = ParcelListAdapter(context, parcelList)
         //endregion
 
-        (this.activity as DeliveryActivity).showDeliverFabButtons()
-
-
+        this.actionItems = listOf(
+                ActionItem(R.id.action_deliver_ok, R.color.colorGreen, R.drawable.ic_check_circle, null, deliverOkMenu),
+                ActionItem(R.id.action_deliver_fail, R.color.colorAccent, R.drawable.ic_information_outline, null, deliverActionMenu),
+                ActionItem(R.id.action_deliver_cancel, R.color.colorRed, R.drawable.ic_cancel_black, null, deliverFailMenu)
+        )
     }
 
     override fun onResume() {

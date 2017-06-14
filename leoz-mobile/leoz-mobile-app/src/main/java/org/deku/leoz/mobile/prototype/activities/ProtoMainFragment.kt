@@ -10,11 +10,12 @@ import kotlinx.android.synthetic.main.proto_fragment_main.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.activities.smallsort.ProtoSsoActivity
 import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.ScreenFragment
 
 /**
  * Created by n3 on 06/03/2017.
  */
-class ProtoMainFragment : Fragment() {
+class ProtoMainFragment : ScreenFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.proto_fragment_main, container, false)
         return rootView

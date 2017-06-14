@@ -66,24 +66,6 @@ class MainActivity
                 MainFragment(),
                 addToBackStack = false
         )
-
-        val helpMenu = MenuBuilder(this.applicationContext)
-        this.menuInflater.inflate(R.menu.menu_help, helpMenu)
-
-        this.actionItems = listOf(
-                ActionItem(
-                        id = R.id.action_help,
-                        colorRes = R.color.colorPrimary,
-                        iconRes = android.R.drawable.ic_menu_help,
-                        menu = helpMenu
-                ),
-                ActionItem(
-                        id = R.id.action_help,
-                        colorRes = R.color.colorPrimary,
-                        iconRes = android.R.drawable.ic_menu_help,
-                        menu = helpMenu
-                )
-        )
     }
 
     override fun onBackPressed() {
