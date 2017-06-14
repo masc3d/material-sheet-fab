@@ -34,14 +34,12 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.main.view.*
 import kotlinx.android.synthetic.main.main_content.*
-import kotlinx.android.synthetic.main.main_nav_header.*
 import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.activity.MainActivity
-import org.deku.leoz.mobile.ui.screen.StopOverviewFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
 import sx.android.aidc.AidcReader
@@ -49,12 +47,8 @@ import sx.android.aidc.CameraAidcReader
 import sx.android.fragment.util.withTransaction
 import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
-import android.support.v4.app.FragmentManager
-import android.transition.ChangeBounds
-import org.jetbrains.anko.inputManager
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-import org.jetbrains.anko.contentView
 
 
 /**
@@ -67,6 +61,8 @@ open class Activity : RxAppCompatActivity(),
         ActionOverlayView.Listener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+
+    private var isPaused = false
 
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
     private val cameraReader: CameraAidcReader by Kodein.global.lazy.instance()
@@ -113,6 +109,8 @@ open class Activity : RxAppCompatActivity(),
             log.info("BACKSTACK [${fragments}]")
         }
         //endregion
+
+        //region Keyboard visibility event
         KeyboardVisibilityEvent.setEventListener(
                 this,
                 object : KeyboardVisibilityEventListener {
@@ -125,7 +123,7 @@ open class Activity : RxAppCompatActivity(),
                         this@Activity.uxActionOverlay.visibility = when (isOpen) { true -> View.GONE; else -> View.VISIBLE }
                     }
                 })
-
+        //endregion
 
         this.uxActionOverlay.fabStyle = R.style.AppTheme_Fab
         this.uxActionOverlay.listener = this
@@ -133,11 +131,14 @@ open class Activity : RxAppCompatActivity(),
         this.cameraAidcFragmentVisible = false
     }
 
-    override fun onDestroy() {
+    override fun onPause() {
+        this.isPaused = true
         this.cameraAidcFragmentVisible = false
 
-        super.onDestroy()
+        super.onPause()
     }
+
+
 
     override fun onBackPressed() {
         if (this.drawer_layout.isDrawerOpen(GravityCompat.START)) {
@@ -289,17 +290,29 @@ open class Activity : RxAppCompatActivity(),
 
             if (!value) {
                 val fragment = this.supportFragmentManager.findFragmentByTag(AidcCameraFragment::class.java.canonicalName)
+
                 if (fragment != null) {
-                    // Fragment removal cannot be animated, thus doing it manually
-                    ViewCompat.animate(fragment.view)
-                            .translationY(fragment.view!!.height.toFloat())
-                            .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
-                            .withEndAction {
-                                this@Activity.supportFragmentManager.withTransaction {
-                                    it.remove(fragment)
-                                }
-                            }
-                            .start()
+                    if (isPaused) {
+                        // If activitiy is about to pause, avoid animation as they will fail/throw in case activity is detroyed afterwards
+                        this@Activity.supportFragmentManager.withTransaction {
+                            it.remove(fragment)
+                        }
+                    } else {
+                        val view = fragment.view
+                        if (view != null) {
+                            // Fragment removal cannot be animated, thus doing it manually
+                            ViewCompat.animate(view)
+                                    .translationY(view.height.toFloat())
+                                    .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
+                                    .withEndAction {
+                                        this@Activity.supportFragmentManager.withTransaction {
+                                            it.remove(fragment)
+                                        }
+                                    }
+                                    .start()
+                        }
+
+                    }
                 }
             } else {
                 this.supportFragmentManager.withTransaction {
@@ -311,6 +324,8 @@ open class Activity : RxAppCompatActivity(),
 
     override fun onResume() {
         super.onResume()
+
+        this.isPaused = false
 
         // Customize navigation drawer
 
