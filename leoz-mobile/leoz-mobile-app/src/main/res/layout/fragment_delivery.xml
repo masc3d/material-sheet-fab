@@ -15,9 +15,10 @@
         android:orientation="vertical">
 
         <FrameLayout
-            android:background="@drawable/backdrop_backgronud"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content">
+            android:background="@drawable/backdrop_backgronud">
+
             <ImageView
                 android:id="@+id/uxTitleImage"
                 android:layout_width="match_parent"
@@ -50,7 +51,7 @@
     </FrameLayout>
 
     <LinearLayout
-        style="@style/AppTheme.Layout.Content"
+        style="@style/AppTheme.Layout.Screen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"

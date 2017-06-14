@@ -250,7 +250,7 @@ dependencies {
 
             // UI
             "eu.davidea:flexible-adapter:5.0.0-rc1",
-
+            'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0',
 
             //
             // FOR TESTING

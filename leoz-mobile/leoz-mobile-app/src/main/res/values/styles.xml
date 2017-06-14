@@ -30,11 +30,18 @@
     <!-- Layout styles -->
     <style name="AppTheme.Layout" />
     <!-- Use this style for all content areas which require default margins -->
-    <style name="AppTheme.Layout.Content">
+    <style name="AppTheme.Layout.Screen">
         <item name="android:layout_marginBottom">@dimen/activity_vertical_margin</item>
         <item name="android:layout_marginLeft">@dimen/activity_horizontal_margin</item>
         <item name="android:layout_marginRight">@dimen/activity_horizontal_margin</item>
         <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
+    </style>
+
+    <style name="AppTheme.Layout.Content">
+        <item name="android:layout_marginBottom">@dimen/small_margin</item>
+        <item name="android:layout_marginLeft">@dimen/margin</item>
+        <item name="android:layout_marginRight">@dimen/margin</item>
+        <item name="android:layout_marginTop">@dimen/small_margin</item>
     </style>
 
     <style name="AppTheme.CardView">

@@ -48,6 +48,11 @@ import sx.android.fragment.util.withTransaction
 import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import android.support.v4.app.FragmentManager
+import org.jetbrains.anko.inputManager
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+
+
 
 /**
  * Leoz activity base class
@@ -105,6 +110,14 @@ open class Activity : RxAppCompatActivity(),
             log.info("BACKSTACK [${fragments}]")
         }
         //endregion
+        KeyboardVisibilityEvent.setEventListener(
+                this,
+                object : KeyboardVisibilityEventListener {
+                    override fun onVisibilityChanged(isOpen: Boolean) {
+                        this@Activity.uxActionOverlay.visibility = when (isOpen) { true -> View.GONE; else -> View.VISIBLE }
+                    }
+                })
+
 
         this.uxActionOverlay.fabStyle = R.style.AppTheme_Fab
         this.uxActionOverlay.listener = this
