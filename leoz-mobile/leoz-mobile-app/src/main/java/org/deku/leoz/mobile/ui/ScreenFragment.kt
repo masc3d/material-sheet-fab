@@ -11,7 +11,8 @@ open class ScreenFragment : Fragment() {
     var actionItems by actionItemsProperty
 
     interface Listener {
-        fun onScreenFragmentResume(fragment: ScreenFragment)
+        fun onScreenFragmentResume(fragment: ScreenFragment) {}
+        fun onScreenFragmentPause(fragment: ScreenFragment) {}
     }
 
     private val listener get() = this.activity
@@ -19,5 +20,10 @@ open class ScreenFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         this.listener.onScreenFragmentResume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        this.listener.onScreenFragmentPause(this)
     }
 }

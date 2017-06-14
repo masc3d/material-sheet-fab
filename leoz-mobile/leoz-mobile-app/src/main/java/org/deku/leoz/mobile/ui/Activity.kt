@@ -397,8 +397,15 @@ open class Activity : RxAppCompatActivity(),
     fun showScreen(fragment: ScreenFragment, addToBackStack: Boolean = true): Int {
         log.trace("SHOW SCREEN [${fragment.javaClass.simpleName}]")
         return supportFragmentManager.withTransaction {
-            if (addToBackStack)
+            if (addToBackStack) {
+                it.setCustomAnimations(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left,
+                        android.R.anim.slide_in_left,
+                        android.R.anim.slide_out_right)
+
                 it.addToBackStack(fragment.javaClass.canonicalName)
+            }
 
             it.replace(this.uxContainer.id, fragment)
         }
@@ -407,5 +414,9 @@ open class Activity : RxAppCompatActivity(),
     override fun onScreenFragmentResume(fragment: ScreenFragment) {
         // Take over action items from screen fragment when it resumes
         this.actionItems = fragment.actionItems
+    }
+
+    override fun onScreenFragmentPause(fragment: ScreenFragment) {
+        this.cameraAidcFragmentVisible = false
     }
 }
