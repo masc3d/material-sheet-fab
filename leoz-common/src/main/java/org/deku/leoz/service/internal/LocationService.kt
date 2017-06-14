@@ -45,6 +45,7 @@ interface LocationService {
      */
 
     @ApiModel(description = "GpsData Model")
+    @Serializable(0x730a673f58f04d)
     data class GpsData(
             @get:ApiModelProperty(example = "foo@bar.com", required = true, value = "User identifier")
             var userEmail: String? = null,

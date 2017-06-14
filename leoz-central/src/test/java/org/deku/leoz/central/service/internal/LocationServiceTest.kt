@@ -7,8 +7,10 @@ import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import sx.junit.StandardTest
+import sx.time.toTimestamp
 import java.util.*
 import javax.inject.Inject
+
 //import org.deku.leoz.service.internal.LocationService
 
 /**
@@ -31,16 +33,16 @@ class LocationServiceTest {
         val currentPosition = org.deku.leoz.service.internal.LocationService.GpsDataPoint(
                 latitude = 8.0,
                 longitude = 55.0,
-                time = Date(),
-                speed = 55.toFloat(),
+                time = Date().toTimestamp(),
+                speed = 57.toFloat(),
                 bearing = 0.toFloat(),
                 altitude = 0.0,
                 accuracy = 0.toFloat()
         )
 
-        val gpsData = org.deku.leoz.service.internal.LocationService.GpsData(userEmail = "user@deku.org",gpsDataPoints= listOf(currentPosition))
+        val gpsData = org.deku.leoz.service.internal.LocationService.GpsData(userEmail = "user@deku.org", gpsDataPoints = listOf(currentPosition))
 
-        //locationService.onMessage(gpsData, null)
-        locationService.onMessage(currentPosition, null)
+        locationService.onMessage(gpsData, null)
+        //locationService.onMessage(currentPosition, null)
     }
 }
