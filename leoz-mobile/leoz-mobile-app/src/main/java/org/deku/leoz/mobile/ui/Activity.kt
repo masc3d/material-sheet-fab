@@ -292,6 +292,7 @@ open class Activity : RxAppCompatActivity(),
                 .subscribe {
                     val items = mutableListOf(*it.value.toTypedArray())
                     items.add(
+                            0,
                             ActionItem(
                                     id = R.id.action_aidc_camera,
                                     colorRes = R.color.colorAccent,

@@ -20,6 +20,7 @@ import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.slf4j.LoggerFactory
 import sx.android.aidc.*
 import javax.mail.internet.AddressException
@@ -123,6 +124,7 @@ class LoginFragment : Fragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     log.info("Login successful $it")
+                    (this.activity as MainActivity).processLogin()
                 }
     }
 
