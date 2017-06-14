@@ -172,6 +172,7 @@ dependencies {
             project(':sx-android'),
             project(':sx-android-honeywell'),
             project(':sx-serialization'),
+            project(':material-sheet-fab'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             // Android
@@ -248,7 +249,6 @@ dependencies {
             },
 
             // UI
-            "com.gordonwong:material-sheet-fab:1.2.1",
             "eu.davidea:flexible-adapter:5.0.0-rc1",
 
 
