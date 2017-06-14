@@ -47,6 +47,12 @@ class SignatureFragment : Fragment(), SignaturePad.OnSignedListener {
         this.uxSignaturePad.setOnSignedListener(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        this.activity.actionItems = listOf()
+    }
+
     // SignaturePad listeners
     override fun onStartSigning() {
         log.debug("ONSTARTSIGNING")

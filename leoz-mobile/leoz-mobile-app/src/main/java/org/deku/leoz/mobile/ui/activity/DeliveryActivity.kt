@@ -148,8 +148,6 @@ class DeliveryActivity : Activity(),
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         this.supportActionBar?.hide()
 
-        this.actionItems = listOf()
-
         val signatureFragment = SignatureFragment()
         this.showScreen(signatureFragment)
     }
