@@ -179,7 +179,11 @@ public class MaterialSheetFab<FAB extends View & AnimatedFab> {
 
 				// Hide sheet after it is shown
 				if (hideSheetAfterSheetIsShown) {
-					hideSheet();
+					try {
+						hideSheet();
+					} catch(IllegalStateException e) {
+						// This is expected  when the view is detached in the course of animation
+					}
 					hideSheetAfterSheetIsShown = false;
 				}
 			}
