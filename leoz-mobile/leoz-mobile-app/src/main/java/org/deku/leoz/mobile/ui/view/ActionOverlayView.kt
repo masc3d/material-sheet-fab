@@ -124,6 +124,16 @@ class ActionOverlayView : RelativeLayout {
             val value: MaterialSheetFab<AnimatedFloatingActionButton>
     ) {
         val event: Observable<SheetState> = value.createEventSubject()
+        /** Last sheet state */
+        var state: SheetState = SheetState.HIDDEN
+
+        init {
+            // Subscribe to maintain internal state
+            this.event.subscribe {
+                log.trace("Sheet [${value}] changed to [${it}]")
+                this.state = it
+            }
+        }
     }
 
     /**
@@ -250,6 +260,7 @@ class ActionOverlayView : RelativeLayout {
                         // Material sheet fabs are not directly added to view hierarchy,
                         // but used for controlling behavior. Storing internally.
                         this.materialSheetFabs.put(item.id, sheetFab)
+                        log.info("FU ${materialSheetFabs.count()}")
 
                         // Set sheet color
                         sheet.actionoverlay_sheet_bar.setBackgroundColor(fabColor)
@@ -287,13 +298,20 @@ class ActionOverlayView : RelativeLayout {
         }
 
         // Prevent clearing out views which have animations in-flight
+        // TODO: as soon as properly fixed in material-sheet-fab, coordination may become obsolete
 
         // Check for visible sheet fabs
         val visibleSheetFabs = this.materialSheetFabs.values
-                .filter { it.value.isSheetVisible }
+                .filter {
+                    when (it.state) {
+                        SheetState.SHOWN, SheetState.SHOWING, SheetState.HIDING -> true
+                        else -> false
+                    }
+                }
                 .toList()
 
         if (visibleSheetFabs.count() == 0) {
+            log.info("No visible sheets")
             // No sheets visible, update immediately
             updateImpl.invoke()
         } else {
@@ -306,17 +324,17 @@ class ActionOverlayView : RelativeLayout {
             Observable.zip(
                     // Create observable from event subject, completing on next HIDDEN event
                     visibleSheetFabs.map {
-                        it.event
-                                .filter { it == SheetState.HIDDEN }
-                                .take(1)
+                        it.event.filter { it == SheetState.HIDDEN }
                     },
-                    // Zip all event hnadlers to a single hidden event
+                    // Zip all event handlers
                     {
-                        SheetState.HIDDEN
+                        true
                     }
             )
+                    .take(1)
                     .subscribeBy(
                             onComplete = {
+                                log.info("All sheets in hidden state")
                                 // Update when all sheets went into HIDDEN state
                                 updateImpl.invoke()
                             })
