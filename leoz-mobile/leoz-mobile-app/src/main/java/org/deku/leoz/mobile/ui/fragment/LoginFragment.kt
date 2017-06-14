@@ -39,6 +39,12 @@ class LoginFragment : Fragment() {
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")
     private val login: Login by Kodein.global.lazy.instance()
 
+    interface Listener {
+        fun onLoginSuccessful()
+    }
+
+    private val listener get() = this.activity as? Listener
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
         return rootView
@@ -124,7 +130,7 @@ class LoginFragment : Fragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     log.info("Login successful $it")
-                    (this.activity as MainActivity).processLogin()
+                    this.listener?.onLoginSuccessful()
                 }
     }
 

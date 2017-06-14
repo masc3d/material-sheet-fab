@@ -29,10 +29,15 @@ import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.model.User
 import org.deku.leoz.mobile.SharedPreference
 import org.deku.leoz.mobile.ui.Activity
+import org.deku.leoz.mobile.ui.fragment.LoginFragment
 import org.deku.leoz.mobile.ui.view.ActionItem
 
 
-class MainActivity : Activity() {
+class MainActivity
+    :
+        Activity(),
+        LoginFragment.Listener {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val login: Login by Kodein.global.lazy.instance()
     private val sharedPreferences: SharedPreferences by Kodein.global.lazy.instance()
@@ -134,13 +139,6 @@ class MainActivity : Activity() {
                 }
     }
 
-    fun processLogin() {
-        this.startActivity(
-                Intent(applicationContext, DeliveryActivity::class.java)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                Intent.FLAG_ACTIVITY_NEW_TASK))
-    }
-
     private fun showChangelogDialog() {
         val inflater = LayoutInflater.from(this)
         val view = inflater.inflate(R.layout.dialog_whatsnew, null)
@@ -161,5 +159,12 @@ class MainActivity : Activity() {
                 .setNegativeButton("No", null)
 
         builder.create().show()
+    }
+
+    override fun onLoginSuccessful() {
+        this.startActivity(
+                Intent(applicationContext, DeliveryActivity::class.java)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 }
