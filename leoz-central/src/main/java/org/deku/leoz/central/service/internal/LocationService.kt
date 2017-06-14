@@ -2,6 +2,7 @@ package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.tables.records.MstUserRecord
 import org.deku.leoz.central.data.jooq.tables.records.TrnNodeGeopositionRecord
 import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.node.rest.DefaultProblem
@@ -24,14 +25,14 @@ import org.slf4j.LoggerFactory
 import sx.logging.slf4j.info
 
 
-
 /**
  * Created by helke on 24.05.17.
  */
 @Named
 @ApiKey(true)
 @Path("internal/v1/location")
-class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint> {
+//class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint> {
+class LocationService : LocationService, MqHandler<LocationService.GpsData> {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -285,33 +286,51 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
 
     }
 
-    //?? from which device are gpsData coming? Add node-id to LocationService.GpsData?
-    // override fun onMessage(message: LocationService.GpsData, replyChannel: MqChannel?) {
-    override fun onMessage(message: LocationService.GpsDataPoint, replyChannel: MqChannel?) {
+    //?? from which device are gpsData coming? Add node-id oder user-id to LocationService.GpsData?
+    override fun onMessage(message: LocationService.GpsData, replyChannel: MqChannel?) {
+        //override fun onMessage(message: LocationService.GpsDataPoint, replyChannel: MqChannel?) {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        try{
-            val geoPos=message
+        try {
             //log.info(message)
-            val geoposRec = dslContext.newRecord(Tables.TRN_NODE_GEOPOSITION)
-            if(geoPos.latitude!=null)
-                geoposRec.latitude=geoPos.latitude
-            if(geoPos.longitude!=null)
-                geoposRec.longitude=geoPos.longitude
-            /**
-            if(geoPos.time!=null)
-                geoposRec.positionDatetime=Date(geoPos.time)
-            if(geoPos.speed!=null)
-                geoposRec.speed=geoPos.speed.toDouble()
-            if(geoPos.bearing!=null)
-                geoposRec.bearing=geoPos.bearing
-            if(geoPos.altitude!=null)
-                geoposRec.altitude=geoPos.altitude
-            if(geoPos.accuracy!=null)
-                geoposRec.accuracy=geoPos.accuracy
-                */
-            posRepository.save(geoposRec)
 
-        }catch (e: Exception) {
+            val geoList = message.gpsDataPoints
+            val userRecord: MstUserRecord?
+            val email = message.userEmail
+            var userId: Int? = null
+            if (email != null) {
+                userRecord = userRepository.findByMail(email)
+                userId = userRecord?.id
+            }
+
+            //val geoPos = message
+            geoList?.forEach {
+                val geoPos = it
+                val geoposRec = dslContext.newRecord(Tables.TRN_NODE_GEOPOSITION)
+                if (geoPos.latitude != null)
+                    geoposRec.latitude = geoPos.latitude
+                if (geoPos.longitude != null)
+                    geoposRec.longitude = geoPos.longitude
+
+                if (geoPos.time != null)
+                    geoposRec.positionDatetime = geoPos.time?.toTimestamp()
+                if (geoPos.speed != null)
+                    geoposRec.speed = geoPos.speed?.toDouble()
+                if (geoPos.bearing != null)
+                    geoposRec.bearing = geoPos.bearing?.toDouble()
+                if (geoPos.altitude != null)
+                    geoposRec.altitude = geoPos.altitude
+                if (geoPos.accuracy != null)
+                    geoposRec.accuracy = geoPos.accuracy?.toDouble()
+
+                if (userId != null) {
+                    geoposRec.userId = userId
+                }
+
+                posRepository.save(geoposRec)
+            }
+
+
+        } catch (e: Exception) {
             log.error(e.message, e)
         }
 
