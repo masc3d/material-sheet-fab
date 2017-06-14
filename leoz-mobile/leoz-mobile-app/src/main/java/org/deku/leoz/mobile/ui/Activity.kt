@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
+import android.support.transition.Fade
+import android.support.transition.TransitionManager
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -48,10 +50,11 @@ import sx.android.fragment.util.withTransaction
 import sx.android.view.setColors
 import sx.rx.ObservableRxProperty
 import android.support.v4.app.FragmentManager
+import android.transition.ChangeBounds
 import org.jetbrains.anko.inputManager
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
-
+import org.jetbrains.anko.contentView
 
 
 /**
@@ -114,6 +117,11 @@ open class Activity : RxAppCompatActivity(),
                 this,
                 object : KeyboardVisibilityEventListener {
                     override fun onVisibilityChanged(isOpen: Boolean) {
+                        if (!isOpen) {
+                            val transition = Fade(Fade.IN)
+                            transition.addTarget(uxActionOverlay)
+                            TransitionManager.beginDelayedTransition(uxActionOverlay, transition)
+                        }
                         this@Activity.uxActionOverlay.visibility = when (isOpen) { true -> View.GONE; else -> View.VISIBLE }
                     }
                 })

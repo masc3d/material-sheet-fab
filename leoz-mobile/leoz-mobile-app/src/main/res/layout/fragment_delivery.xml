@@ -3,9 +3,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:divider="@drawable/divider_vertical"
-              android:orientation="vertical"
-              android:showDividers="middle">
+              android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/uxHead"
@@ -51,10 +49,9 @@
     </FrameLayout>
 
     <LinearLayout
-        style="@style/AppTheme.Layout.Screen"
+        style="@style/AppTheme.Layout.Content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
         android:orientation="vertical">
 
         <ListView
