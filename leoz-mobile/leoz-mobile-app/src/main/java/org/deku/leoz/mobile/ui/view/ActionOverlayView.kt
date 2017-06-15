@@ -1,6 +1,9 @@
 package org.deku.leoz.mobile.ui.view
 
 import android.content.Context
+import android.support.annotation.ColorRes
+import android.support.annotation.DrawableRes
+import android.support.annotation.IdRes
 import android.support.design.widget.FloatingActionButton
 import android.util.AttributeSet
 import android.view.Menu
@@ -24,6 +27,7 @@ import org.jetbrains.anko.itemsSequence
 import org.jetbrains.anko.layoutInflater
 import org.slf4j.LoggerFactory
 import sx.android.view.setBackgroundTint
+import sx.android.view.setIconTint
 
 /**
  * Action overlay item/floating button
@@ -34,10 +38,10 @@ import sx.android.view.setBackgroundTint
  * @property menu Menu reflecting subitems
  */
 data class ActionItem(
-        val id: Int,
-        val colorRes: Int? = null,
-        val iconRes: Int? = null,
-        val iconTintRes: Int? = null,
+        @IdRes val id: Int,
+        @ColorRes val colorRes: Int? = null,
+        @DrawableRes val iconRes: Int? = null,
+        @ColorRes val iconTintRes: Int? = null,
         val menu: Menu? = null
 )
 
@@ -204,6 +208,9 @@ class ActionOverlayView : RelativeLayout {
                         if (item.iconRes != null)
                             fab.setImageDrawable(this.context.getDrawable(item.iconRes))
 
+                        if (item.iconTintRes != null)
+                            fab.setIconTint(item.iconTintRes)
+
                         fab.setOnClickListener {
                             this.listener?.onActionItem(item.id)
                         }
@@ -222,6 +229,9 @@ class ActionOverlayView : RelativeLayout {
 
                         if (item.iconRes != null)
                             fab.setImageDrawable(this.context.getDrawable(item.iconRes))
+
+                        if (item.iconTintRes != null)
+                            fab.setIconTint(item.iconTintRes)
 
                         val sheet = this.context.layoutInflater.inflate(
                                 R.layout.view_actionoverlay_sheet,
