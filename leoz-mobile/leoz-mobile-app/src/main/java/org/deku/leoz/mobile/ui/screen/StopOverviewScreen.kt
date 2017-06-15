@@ -19,7 +19,6 @@ import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.StopListItem
 import org.slf4j.LoggerFactory
-import sx.android.fragment.util.withTransaction
 import android.support.annotation.CallSuper
 import kotlinx.android.synthetic.main.fragment_stop_overview.*
 import org.deku.leoz.mobile.ui.Fragment
@@ -30,7 +29,7 @@ import sx.LazyInstance
 /**
  * A simple [Fragment] subclass.
  */
-class StopOverviewFragment : ScreenFragment(), FlexibleAdapter.OnItemMoveListener {
+class StopOverviewScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListener {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val delivery: Delivery by Kodein.global.lazy.instance()
@@ -64,7 +63,7 @@ class StopOverviewFragment : ScreenFragment(), FlexibleAdapter.OnItemMoveListene
         log.debug("ONITEMCLICK")
 
         activity.showScreen(
-                DeliveryProcessFragment.create((flexibleAdapter.getItem(item) as StopListItem).stop)
+                DeliveryProcessScreen.create((flexibleAdapter.getItem(item) as StopListItem).stop)
         )
 
         true

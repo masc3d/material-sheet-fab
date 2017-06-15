@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 /**
  * A simple [Fragment] subclass.
  */
-class SignatureFragment
+class SignatureScreen
     :
         ScreenFragment(),
         SignaturePad.OnSignedListener {

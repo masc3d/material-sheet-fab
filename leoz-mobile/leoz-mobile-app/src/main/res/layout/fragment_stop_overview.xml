@@ -3,7 +3,7 @@
              style="@style/AppTheme.Layout.Content"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="org.deku.leoz.mobile.ui.screen.StopOverviewFragment">
+             tools:context="org.deku.leoz.mobile.ui.screen.StopOverviewScreen">
 
     <!-- TODO: Update blank fragment layout -->
 

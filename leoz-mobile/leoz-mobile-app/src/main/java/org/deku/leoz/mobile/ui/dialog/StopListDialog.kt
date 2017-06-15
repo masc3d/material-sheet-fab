@@ -5,11 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
-import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.model.Stop
 import org.deku.leoz.mobile.ui.Activity
-import org.deku.leoz.mobile.ui.screen.DeliveryProcessFragment
-import sx.android.fragment.util.withTransaction
+import org.deku.leoz.mobile.ui.screen.DeliveryProcessScreen
 
 /**
  * Created by phpr on 29.05.2017.
@@ -35,7 +33,7 @@ class StopListDialog(val selectedStop: Stop): Dialog() {
                         //Open
                         2 -> {
                             val activity = this.activity as Activity
-                            activity.showScreen(DeliveryProcessFragment.create(selectedStop))
+                            activity.showScreen(DeliveryProcessScreen.create(selectedStop))
                         }
                     }
 

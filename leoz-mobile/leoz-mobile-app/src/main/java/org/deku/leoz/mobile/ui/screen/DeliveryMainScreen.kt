@@ -28,7 +28,7 @@ import sx.android.getLayoutInflater
  *
  * Presents the main entry point within the delivery process.
  */
-class DeliveryMainFragment : ScreenFragment() {
+class DeliveryMainScreen : ScreenFragment() {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     private val delivery: Delivery by Kodein.global.lazy.instance()

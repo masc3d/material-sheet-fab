@@ -13,13 +13,13 @@ import org.deku.leoz.mobile.R
 /**
  * A simple [Fragment] subclass.
  */
-class CashFragment : android.support.v4.app.Fragment() {
+class IMEICheckScreen : android.support.v4.app.Fragment() {
 
 
     override fun onCreateView(inflater: android.view.LayoutInflater?, container: android.view.ViewGroup?,
                               savedInstanceState: android.os.Bundle?): android.view.View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(org.deku.leoz.mobile.R.layout.fragment_cash, container, false)
+        return inflater!!.inflate(R.layout.fragment_imeicheck, container, false)
     }
 
 }

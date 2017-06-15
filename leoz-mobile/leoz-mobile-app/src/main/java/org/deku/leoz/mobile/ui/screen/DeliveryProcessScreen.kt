@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.item_stop_overview.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Order
 import org.deku.leoz.mobile.model.Stop
-import org.deku.leoz.mobile.ui.Fragment
 import org.deku.leoz.mobile.ui.ParcelListAdapter
 import org.deku.leoz.mobile.ui.ScreenFragment
 import org.deku.leoz.mobile.ui.activity.DeliveryActivity
@@ -32,7 +31,7 @@ import sx.android.aidc.AidcReader
 import java.text.SimpleDateFormat
 
 
-class DeliveryProcessFragment() : ScreenFragment() {
+class DeliveryProcessScreen() : ScreenFragment() {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val aidcReader: AidcReader by Kodein.global.lazy.instance()
@@ -43,8 +42,8 @@ class DeliveryProcessFragment() : ScreenFragment() {
     private lateinit var stop: Stop
 
     companion object {
-        fun create(stop: Stop): DeliveryProcessFragment {
-            val f = DeliveryProcessFragment()
+        fun create(stop: Stop): DeliveryProcessScreen {
+            val f = DeliveryProcessScreen()
             f.stop = stop
             return f
         }

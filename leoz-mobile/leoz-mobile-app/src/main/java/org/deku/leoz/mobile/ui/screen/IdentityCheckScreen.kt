@@ -13,7 +13,7 @@ import org.deku.leoz.mobile.R
 /**
  * A simple [Fragment] subclass.
  */
-class IdentityCheckFragment : android.support.v4.app.Fragment() {
+class IdentityCheckScreen : android.support.v4.app.Fragment() {
 
 
     override fun onCreateView(inflater: android.view.LayoutInflater?, container: android.view.ViewGroup?,

@@ -16,7 +16,7 @@ import org.deku.leoz.mobile.ui.ScreenFragment
 /**
  * A simple [Fragment] subclass.
  */
-class VehicleLoadingFragment : ScreenFragment() {
+class VehicleLoadingScreen : ScreenFragment() {
 
     private val aidcReader: sx.android.aidc.AidcReader by com.github.salomonbrys.kodein.Kodein.global.lazy.instance()
 

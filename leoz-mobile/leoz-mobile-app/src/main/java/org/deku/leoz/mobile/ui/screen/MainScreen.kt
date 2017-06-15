@@ -16,7 +16,7 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 /**
  * Created by n3 on 26/02/2017.
  */
-class MainFragment : ScreenFragment() {
+class MainScreen : ScreenFragment() {
 
     /**
      * Create view
