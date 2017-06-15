@@ -1,6 +1,5 @@
 package org.deku.leoz.mobile.prototype.activities.smallsort
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -11,15 +10,20 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import kotlinx.android.synthetic.main.proto_fragment_sso.*
-import kotlinx.android.synthetic.main.proto_fragment_main.*
 import org.deku.leoz.mobile.R
-import org.deku.leoz.mobile.ui.fragment.Fragment
+import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.ScreenFragment
 import org.slf4j.LoggerFactory
 
 /**
  * Created by n3 on 06/03/2017.
  */
-class ProtoSsoFragment : Fragment(), ProtoSsoMenuFragment.OnFragmentInteractionListener, ProtoSsoOutgoingFragment.OnFragmentInteractionListener  {
+class ProtoSsoFragment
+    :
+        ScreenFragment(),
+        ProtoSsoMenuFragment.OnFragmentInteractionListener,
+        ProtoSsoOutgoingFragment.OnFragmentInteractionListener  {
+
     private val log by lazy { LoggerFactory.getLogger(this.javaClass) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -47,8 +51,9 @@ class ProtoSsoFragment : Fragment(), ProtoSsoMenuFragment.OnFragmentInteractionL
 
     override fun onButtonClicked(buttonID: Int) {
         log.debug("onButtonClicked")
-        if (activity.findViewById(buttonID) != null) {
-            if (activity.findViewById(buttonID) is Button || activity.findViewById(buttonID) is ImageButton) {
+        val buttonView = this.view?.findViewById<View>(buttonID)
+        if (buttonView != null) {
+            if (buttonView is Button || buttonView is ImageButton) {
                 when (buttonID) {
                     R.id.uxBagDifference -> {
 
@@ -71,8 +76,8 @@ class ProtoSsoFragment : Fragment(), ProtoSsoMenuFragment.OnFragmentInteractionL
 
                     }
                     else -> {
-                        log.debug("OnClick Event unhandled [${activity.findViewById(buttonID).rootView}]")
-                        Snackbar.make(activity.findViewById(buttonID).rootView, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
+                        log.debug("OnClick Event unhandled [${buttonView.rootView}]")
+                        Snackbar.make(buttonView.rootView, getString(R.string.hint_not_available), Snackbar.LENGTH_SHORT).show()
                     }
                 }
             }

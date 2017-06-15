@@ -63,8 +63,8 @@ interface OrderService {
             @get:ApiModelProperty(example = "DERKURIER", position = 20, required = true, value = "Carrier")
             var carrier: Carrier = Carrier.UNKNOWN,
 
-            @get:ApiModelProperty(example = "12345678901", position = 30, required = false, value = "referencIDToExchangeOrderID")
-            var referencIDToExchangeOrderID: Int = 0,
+            @get:ApiModelProperty(example = "12345678901", position = 30, required = false, value = "referenceIDToExchangeOrderID")
+            var referenceIDToExchangeOrderID: Int = 0,
 
             @get:ApiModelProperty(example = "DELIVERY", position = 40, required = true, value = "OrderClassification")
             var orderClassification: OrderClassification = OrderClassification.DELIVERY,
@@ -105,7 +105,7 @@ interface OrderService {
                 @get:ApiModelProperty(dataType = "string", example = "Bitte bei S klingeln", position = 30, required = false, value = "addressLine3")
                 val addressLine3: String? = null,
                 @get:ApiModelProperty(dataType = "string", example = "0123456789", position = 50, required = false, value = "Telefon Numbner")
-                val telefonNumber: String? = null,
+                val phoneNumber: String? = null,
                 @get:ApiModelProperty(dataType = "string", example = "DE", position = 60, required = true, value = "Countr Code")
                 val countryCode: String = "",
                 @get:ApiModelProperty(dataType = "string", example = "648450", position = 70, required = true, value = "Zip")
@@ -137,7 +137,7 @@ interface OrderService {
         @ApiModel(value = "Information", description = "Information")
         data class Information(
                 @get:ApiModelProperty(example = "AdditionalInformation", position = 50, required = false, value = "AdditionalInformation")
-                var AdditionalInformation: List<AdditionalInformation>? = null
+                var additionalInformation: List<AdditionalInformation>? = null
         )
 
 
@@ -155,7 +155,7 @@ interface OrderService {
         data class AdditionalInformation(
 
                 @get:ApiModelProperty(example = "cash", position = 110, required = true, value = "AdditionalInformationType")
-                val AdditionalInformationType: AdditionalInformationType? = null,
+                val additionalInformationType: AdditionalInformationType? = null,
 
                 @get:ApiModelProperty(example = "take cash in currency €", position = 120, required = false, value = "information")
                 val information: String? = null,

@@ -4,6 +4,7 @@ import org.deku.leoz.central.config.PersistenceConfiguration
 import org.deku.leoz.central.data.jooq.Tables
 import org.deku.leoz.central.data.repository.UserJooqRepository
 import org.deku.leoz.central.data.repository.UserJooqRepository.Companion.setHashedPassword
+import org.deku.leoz.central.data.repository.isActive
 import org.deku.leoz.central.data.repository.toUser
 import org.deku.leoz.node.rest.DefaultProblem
 import org.deku.leoz.service.internal.UserService.User
@@ -15,6 +16,7 @@ import javax.inject.Named
 import javax.ws.rs.Path
 import org.deku.leoz.service.internal.UserService
 import org.deku.leoz.model.UserRole
+import java.util.*
 import javax.ws.rs.core.Response
 
 /**
@@ -41,6 +43,18 @@ class UserService : UserService {
         val authorizedUserRecord = userRepository.findByKey(apiKey)
         authorizedUserRecord ?:
                 throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+
+
+        if (!authorizedUserRecord.isActive) {
+            throw DefaultProblem(
+                    title = "user deactivated",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+        if (Date() > authorizedUserRecord.expiresOn) {
+            throw DefaultProblem(
+                    title = "user account expired",
+                    status = Response.Status.UNAUTHORIZED)
+        }
 
         if (debitor_id == null && email == null) {
             debitor_id = authorizedUserRecord.debitorId
@@ -125,6 +139,16 @@ class UserService : UserService {
                 status = Response.Status.BAD_REQUEST,
                 title = "login user not found")
 
+        if (!authorizedUserRecord.isActive) {
+            throw DefaultProblem(
+                    title = "login user deactivated",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+        if (Date() > authorizedUserRecord.expiresOn) {
+            throw DefaultProblem(
+                    title = "login user account expired",
+                    status = Response.Status.UNAUTHORIZED)
+        }
 
         var debitor = user.debitorId
 

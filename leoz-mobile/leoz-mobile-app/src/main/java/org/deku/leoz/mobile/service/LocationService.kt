@@ -22,8 +22,7 @@ class LocationService(
         val minDistance: Int,
         val allowMockLocation: Boolean,
         val enabled: Boolean
-) : Service()
-{
+) : Service() {
     private val log = LoggerFactory.getLogger(this.javaClass)
     var locationManager: LocationManager? = null
 
@@ -72,58 +71,56 @@ class LocationService(
     }
 
 
+    val INTERVAL = period.toMillis() // In milliseconds
+    val DISTANCE = minDistance.toFloat() // In meters
 
+    val locationListeners = arrayOf(
+            LTRLocationListener(LocationManager.GPS_PROVIDER),
+            LTRLocationListener(LocationManager.NETWORK_PROVIDER)
+    )
 
-        val INTERVAL = period.toMillis() // In milliseconds
-        val DISTANCE = minDistance.toFloat() // In meters
+    class LTRLocationListener(provider: String) : android.location.LocationListener {
+        private val log = LoggerFactory.getLogger(this.javaClass)
+        val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
+        val lastLocation = Location(provider)
 
-        val locationListeners = arrayOf(
-                LTRLocationListener(LocationManager.GPS_PROVIDER),
-                LTRLocationListener(LocationManager.NETWORK_PROVIDER)
-        )
+        override fun onLocationChanged(location: Location?) {
 
-        class LTRLocationListener(provider: String) : android.location.LocationListener {
-            private val log = LoggerFactory.getLogger(this.javaClass)
-            val mqttChannels: MqttEndpoints by Kodein.global.lazy.instance()
-            val lastLocation = Location(provider)
+            log.debug("ONLOCATIONCHANGED")
 
-            override fun onLocationChanged(location: Location?) {
-
-                log.debug("ONLOCATIONCHANGED")
-
-                if (location == null) {
-                    log.warn("Location object is null.")
-                    return
-                }
-
-                val currentPosition = LocationService.GpsDataPoint(
-                        latitude = location.latitude,
-                        longitude = location.longitude,
-                        time = Date(location.time),
-                        speed = location.speed,
-                        bearing = location.bearing,
-                        altitude = location.altitude,
-                        accuracy = location.accuracy
-                )
-                lastLocation.set(location)
-
-                log.info("Location changed. Provider [${location.provider}] Position [$currentPosition]")
-
-                // TODO: Store location data in database and send it as an set of multiple positions once.
-
-                // TODO: A list is not a good type for a message. Declasre a dedicated class (eg. PositionMessage) {@link LogMessage}
-                mqttChannels.central.transient.channel().send(listOf(currentPosition))
+            if (location == null) {
+                log.warn("Location object is null.")
+                return
             }
 
-            override fun onProviderDisabled(provider: String?) {
-            }
+            val currentPosition = LocationService.GpsDataPoint(
+                    latitude = location.latitude,
+                    longitude = location.longitude,
+                    time = Date(location.time),
+                    speed = location.speed,
+                    bearing = location.bearing,
+                    altitude = location.altitude,
+                    accuracy = location.accuracy
+            )
+            lastLocation.set(location)
 
-            override fun onProviderEnabled(provider: String?) {
-            }
+            log.info("Location changed. Provider [${location.provider}] Position [$currentPosition]")
 
-            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            }
+            // TODO: Store location data in database and send it as an set of multiple positions once.
 
+            // TODO: A list is not a good type for a message. Declasre a dedicated class (eg. PositionMessage) {@link LogMessage}
+            mqttChannels.central.transient.channel().send(listOf(currentPosition))
         }
+
+        override fun onProviderDisabled(provider: String?) {
+        }
+
+        override fun onProviderEnabled(provider: String?) {
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+        }
+
+    }
 
 }

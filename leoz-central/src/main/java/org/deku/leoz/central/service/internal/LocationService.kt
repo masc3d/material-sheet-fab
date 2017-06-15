@@ -1,11 +1,10 @@
 package org.deku.leoz.central.service.internal
 
 import org.deku.leoz.central.config.PersistenceConfiguration
+import org.deku.leoz.central.data.jooq.Tables
+import org.deku.leoz.central.data.jooq.tables.records.MstUserRecord
 import org.deku.leoz.central.data.jooq.tables.records.TrnNodeGeopositionRecord
-import org.deku.leoz.central.data.repository.PositionJooqRepository
-import org.deku.leoz.central.data.repository.UserJooqRepository
-import org.deku.leoz.central.data.repository.toGpsData
-import org.deku.leoz.central.data.repository.toLocationServiceUser
+import org.deku.leoz.central.data.repository.*
 import org.deku.leoz.node.rest.DefaultProblem
 import org.jooq.DSLContext
 import org.springframework.beans.factory.annotation.Qualifier
@@ -18,8 +17,12 @@ import org.deku.leoz.service.internal.LocationService
 import org.deku.leoz.model.UserRole
 import sx.mq.MqChannel
 import sx.mq.MqHandler
+import sx.time.minusMinutes
 import sx.time.plusDays
+import sx.time.toTimestamp
 import javax.ws.rs.core.Response
+import org.slf4j.LoggerFactory
+import sx.logging.slf4j.info
 
 
 /**
@@ -28,7 +31,11 @@ import javax.ws.rs.core.Response
 @Named
 @ApiKey(true)
 @Path("internal/v1/location")
-class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint> {
+//class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint> {
+class LocationService : LocationService, MqHandler<LocationService.GpsData> {
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     @Inject
     @Qualifier(PersistenceConfiguration.QUALIFIER)
     private lateinit var dslContext: DSLContext
@@ -40,8 +47,8 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
     override fun get(email: String?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationService.GpsData> {
         var debitor_id = debitorId
         //var user_id: Int?
-        val pos_from = from ?: Date()
-        val pos_to = to ?: pos_from.plusDays(1)
+        val pos_from = from ?: Date(Date().year, Date().month, Date().date)
+        val pos_to = to ?: Date()//.plusDays(1) //pos_from.plusDays(1)
 
         val dtNow = Date()
         //val gpsdata = GpsData(49.9, 9.06, 25.3, dtNow.toTimestamp())
@@ -65,6 +72,17 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
         val authorizedUserRecord = userRepository.findByKey(apiKey)
         authorizedUserRecord ?:
                 throw DefaultProblem(status = Response.Status.BAD_REQUEST)
+
+        if (!authorizedUserRecord.isActive) {
+            throw DefaultProblem(
+                    title = "login user deactivated",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+        if (Date() > authorizedUserRecord.expiresOn) {
+            throw DefaultProblem(
+                    title = "login user account expired",
+                    status = Response.Status.UNAUTHORIZED)
+        }
 
         if (debitor_id == null && email == null) {
             debitor_id = authorizedUserRecord.debitorId
@@ -161,6 +179,17 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
         authorizedUserRecord ?:
                 throw DefaultProblem(status = Response.Status.BAD_REQUEST)
 
+        if (!authorizedUserRecord.isActive) {
+            throw DefaultProblem(
+                    title = "login user deactivated",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+        if (Date() > authorizedUserRecord.expiresOn) {
+            throw DefaultProblem(
+                    title = "login user account expired",
+                    status = Response.Status.UNAUTHORIZED)
+        }
+
         if (debitor_id == null && email == null) {
             debitor_id = authorizedUserRecord.debitorId
         }
@@ -183,7 +212,14 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
                             || ((authorizedUserRecord.debitorId == it.debitorId)
                             && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(it.role).value))) {
 
-                        val posList = posRepository.findRecentByUserId(it.id)
+                        val posList: List<TrnNodeGeopositionRecord>?
+                        if (duration != null) {
+                            val pos_to = Date()
+                            val pos_from = Date().minusMinutes(duration)
+                            posList = posRepository.findByUserId(it.id, pos_from, pos_to)
+                        } else {
+                            posList = posRepository.findRecentByUserId(it.id)
+                        }
                         //gpsList.clear()
                         var gpsListTmp = mutableListOf<LocationService.GpsDataPoint>()
                         if (posList != null) {
@@ -210,7 +246,15 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
                         || ((authorizedUserRecord.debitorId == userRecord.debitorId)
                         && (UserRole.valueOf(authorizedUserRecord.role).value >= UserRole.valueOf(userRecord.role).value))) {
 
-                    val posList = posRepository.findRecentByUserId(userRecord.id)
+                    val posList: List<TrnNodeGeopositionRecord>?
+                    if (duration != null) {
+                        val pos_to = Date()
+                        val pos_from = Date().minusMinutes(duration)
+                        posList = posRepository.findByUserId(userRecord.id, pos_from, pos_to)
+                    } else {
+                        posList = posRepository.findRecentByUserId(userRecord.id)
+                    }
+
                     if (posList != null) {
                         gpsList = geoFilter(posList)
                         /*
@@ -242,8 +286,54 @@ class LocationService : LocationService, MqHandler<LocationService.GpsDataPoint>
 
     }
 
-    override fun onMessage(message: LocationService.GpsDataPoint, replyChannel: MqChannel?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    //?? from which device are gpsData coming? Add node-id oder user-id to LocationService.GpsData?
+    override fun onMessage(message: LocationService.GpsData, replyChannel: MqChannel?) {
+        //override fun onMessage(message: LocationService.GpsDataPoint, replyChannel: MqChannel?) {
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        try {
+            //log.info(message)
+
+            val geoList = message.gpsDataPoints
+            val userRecord: MstUserRecord?
+            val email = message.userEmail
+            var userId: Int? = null
+            if (email != null) {
+                userRecord = userRepository.findByMail(email)
+                userId = userRecord?.id
+            }
+
+            //val geoPos = message
+            geoList?.forEach {
+                val geoPos = it
+                val geoposRec = dslContext.newRecord(Tables.TRN_NODE_GEOPOSITION)
+                if (geoPos.latitude != null)
+                    geoposRec.latitude = geoPos.latitude
+                if (geoPos.longitude != null)
+                    geoposRec.longitude = geoPos.longitude
+
+                if (geoPos.time != null)
+                    geoposRec.positionDatetime = geoPos.time?.toTimestamp()
+                if (geoPos.speed != null)
+                    geoposRec.speed = geoPos.speed?.toDouble()
+                if (geoPos.bearing != null)
+                    geoposRec.bearing = geoPos.bearing?.toDouble()
+                if (geoPos.altitude != null)
+                    geoposRec.altitude = geoPos.altitude
+                if (geoPos.accuracy != null)
+                    geoposRec.accuracy = geoPos.accuracy?.toDouble()
+
+                if (userId != null) {
+                    geoposRec.userId = userId
+                }
+
+                posRepository.save(geoposRec)
+            }
+
+
+        } catch (e: Exception) {
+            log.error(e.message, e)
+        }
+
     }
 
     fun geoFilter(posList: List<TrnNodeGeopositionRecord>): MutableList<LocationService.GpsDataPoint> {

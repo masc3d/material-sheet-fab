@@ -7,7 +7,8 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.model.Stop
-import org.deku.leoz.mobile.ui.fragment.DeliveryProcessFragment
+import org.deku.leoz.mobile.ui.Activity
+import org.deku.leoz.mobile.ui.screen.DeliveryProcessFragment
 import sx.android.fragment.util.withTransaction
 
 /**
@@ -33,9 +34,8 @@ class StopListDialog(val selectedStop: Stop): Dialog() {
                         }
                         //Open
                         2 -> {
-                            activity.supportFragmentManager.withTransaction {
-                                it.replace(activity.uxContainer.id, DeliveryProcessFragment(selectedStop))
-                            }
+                            val activity = this.activity as Activity
+                            activity.showScreen(DeliveryProcessFragment.create(selectedStop))
                         }
                     }
 

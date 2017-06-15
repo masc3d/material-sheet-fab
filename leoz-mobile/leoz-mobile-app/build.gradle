@@ -19,8 +19,9 @@ buildscript {
     }
 
     ext {
-        v_android_buildtools = '25.0.2'
+        v_android_buildtools = '26.0.0'
         v_android_support = '25.3.1'
+        v_anko = '0.10.1'
         v_dbflow = '4.0.2'
         v_parceler = '1.1.8'
         v_roboelectric = '3.3.2'
@@ -52,15 +53,14 @@ def GENERATED_SVG_DIR = new File(GENERATED_DIR,
         'svg')
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion v_android_buildtools
 
     defaultConfig {
         applicationId "org.deku.leoz.mobile"
-        minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
-        versionName "0.11-SNAPSHOT"
+        versionName "0.13-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -68,6 +68,19 @@ android {
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_7
             targetCompatibility JavaVersion.VERSION_1_7
+        }
+    }
+
+    productFlavors {
+        dev {
+            // Enable pre-dexing to produce an APK that can be tested on
+            // Android 5.0+ without the time-consuming DEX build processes.
+            minSdkVersion 21
+        }
+
+        prod {
+            // The actual minSdkVersion for the production version.
+            minSdkVersion 16
         }
     }
 
@@ -158,6 +171,7 @@ dependencies {
             project(':sx-android'),
             project(':sx-android-honeywell'),
             project(':sx-serialization'),
+            project(':material-sheet-fab'),
             fileTree(dir: 'libs', include: ['*.jar']),
 
             // Android
@@ -234,10 +248,12 @@ dependencies {
             },
 
             // UI
-            "com.gordonwong:material-sheet-fab:1.2.1",
             "eu.davidea:flexible-adapter:5.0.0-rc1",
+            'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0',
 
+            //
             // FOR TESTING
+            //
 
             //RX Location
             //"com.patloew.rxlocation:rxlocation:1.0.3",
@@ -261,7 +277,45 @@ dependencies {
             "com.github.Raizlabs.DBFlow:dbflow-rx2:$v_dbflow",
 
             // RXJava 2 Kotlin Extensions Support
-            "com.github.Raizlabs.DBFlow:dbflow-rx2-kotlinextensions:$v_dbflow"
+            "com.github.Raizlabs.DBFlow:dbflow-rx2-kotlinextensions:$v_dbflow",
+
+            // Anko
+            "org.jetbrains.anko:anko-commons:$v_anko",
+
+            // Anko Layouts
+            "org.jetbrains.anko:anko-sdk25:$v_anko", // sdk15, sdk19, sdk21, sdk23 are also available
+            "org.jetbrains.anko:anko-appcompat-v7:$v_anko",
+
+            // Coroutine listeners for Anko Layouts
+            "org.jetbrains.anko:anko-sdk25-coroutines:$v_anko",
+            "org.jetbrains.anko:anko-appcompat-v7-coroutines:$v_anko",
+
+            // Appcompat-v7 (only Anko Commons)
+            "org.jetbrains.anko:anko-appcompat-v7-commons:$v_anko",
+
+            // Appcompat-v7 (Anko Layouts)
+            "org.jetbrains.anko:anko-appcompat-v7:$v_anko",
+            "org.jetbrains.anko:anko-coroutines:$v_anko",
+
+            // CardView-v7
+            "org.jetbrains.anko:anko-cardview-v7:$v_anko",
+
+            // Design
+            "org.jetbrains.anko:anko-design:$v_anko",
+            "org.jetbrains.anko:anko-design-coroutines:$v_anko",
+
+            // GridLayout-v7
+            "org.jetbrains.anko:anko-gridlayout-v7:$v_anko",
+
+            // RecyclerView-v7
+            "org.jetbrains.anko:anko-recyclerview-v7:$v_anko",
+            "org.jetbrains.anko:anko-recyclerview-v7-coroutines:$v_anko",
+
+            // Support-v4 (only Anko Commons)
+            "org.jetbrains.anko:anko-support-v4-commons:$v_anko",
+
+            // Support-v4 (Anko Layouts)
+            "org.jetbrains.anko:anko-support-v4:$v_anko",
     )
 
     debugImplementation(
@@ -318,14 +372,11 @@ afterEvaluate {
     // generated resources/drawables in build folder
     GENERATED_DIR.mkdirs()
 
-    if (tasks.findByPath('rasterizeSvgsForDebug') != null) {
-        tasks.rasterizeSvgsForDebug {
-            outputDir GENERATED_SVG_DIR
-        }
-    }
-
-    if (tasks.findByPath('rasterizeSvgsForRelease') != null) {
-        tasks.rasterizeSvgsForRelease {
+    // Apply changes to all rasterize tasks
+    tasks.findAll {
+        it.name.startsWith("rasterize")
+    }.each {
+        project.task "${it.name}" {
             outputDir GENERATED_SVG_DIR
         }
     }
@@ -345,4 +396,9 @@ tasks.preBuild.dependsOn(tasks.flywaySyncMigrations)
 packager {
     title = 'Leoz Mobile'
     bundleName = 'leoz-mobile'
+
+    android {
+        buildType 'release'
+        productFlavor 'prod'
+    }
 }

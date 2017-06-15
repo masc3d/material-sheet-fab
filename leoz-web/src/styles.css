@@ -267,7 +267,7 @@ a {
 }
 
 .yaga-map {
-  min-height: 260px;
+  height: 600px;
 }
 .leaflet-container {
   margin-top: 10px;
@@ -353,13 +353,16 @@ a:hover, a:focus {
 }
 
 .ui-state-default a {
-  color: #184b7d !important;
+  /*color: #184b7d !important;*/
+  color: #000000 !important;
   font-weight: normal;
 }
 .ui-panelmenu .ui-panelmenu-header.ui-state-active a {
-   color: #184b7d !important;
+   /*color: #184b7d !important;*/
+   color: #000000 !important;
 }
 
 .ui-panelmenu .ui-panelmenu-content .ui-menuitem-link {
-  color: #184b7d !important;
+   /*color: #184b7d !important;*/
+   color: #000000 !important;
 }

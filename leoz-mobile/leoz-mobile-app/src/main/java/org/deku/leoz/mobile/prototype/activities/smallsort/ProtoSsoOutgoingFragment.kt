@@ -3,13 +3,10 @@ package org.deku.leoz.mobile.prototype.activities.smallsort
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.FragmentTransaction
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
@@ -18,9 +15,10 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.prototype.properties.Bag
-import org.deku.leoz.mobile.ui.fragment.Fragment
+import org.deku.leoz.mobile.ui.Fragment
 import org.slf4j.LoggerFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.proto_fragment_sso_outgoing.*
 import sx.android.aidc.*
 import java.util.*
 
@@ -115,31 +113,32 @@ class ProtoSsoOutgoingFragment : Fragment() {
     private fun processBarcodeData(content: String) {
         // update UI to reflect the data
         val barcodeText = content
-        (activity.findViewById(R.id.uxSSOOutStatus) as TextView).text = ""
+
+        activity.uxSSOOutStatus.text = ""
         clearStatusImage()
         //((TextView) findViewById(R.id.txtBagPkst)).setText(barcodeText);
         if (barcodeText.startsWith("10071")) {
             //Order-no
-            (activity.findViewById(R.id.uxSSOOutOrderIDText) as TextView).setText(barcodeText)
+            activity.uxSSOOutOrderIDText.setText(barcodeText)
             scanMap.put(Bag.BAG_ORDERNO_HUB2STATION, barcodeText)
         }
         if (barcodeText.startsWith("10072")) {
             //Order-no
             setNOk()
-            (activity.findViewById(R.id.uxSSOOutStatus) as TextView).text = getString(R.string.hint_scan_label_upper_bc)
-            (activity.findViewById(R.id.uxSSOOutOrderIDText) as TextView).text = ""
+            activity.uxSSOOutStatus.text = getString(R.string.hint_scan_label_upper_bc)
+            activity.uxSSOOutOrderIDText.setText("")
             scanMap.remove(Bag.BAG_ORDERNO_HUB2STATION)
         }
         if (barcodeText.startsWith("9001")) {
             //White lead seal
             scanMap.put(Bag.LEADSEAL_WHITE, barcodeText)
-            (activity.findViewById(R.id.uxSSOOutSealText) as TextView).setText(barcodeText)
+            activity.uxSSOOutSealText.setText(barcodeText)
         }
         if (barcodeText.startsWith("9002")) {
             //Yellow lead seal
             scanMap.put(Bag.LEADSEAL_YELLOW, barcodeText)
             setNOk()
-            (activity.findViewById(R.id.uxSSOOutStatus) as TextView).text = getString(R.string.hint_leadseal_white_not_yellow)
+            activity.uxSSOOutStatus.text = getString(R.string.hint_leadseal_white_not_yellow)
         }
         if (scanMap.containsKey(Bag.LEADSEAL_WHITE) && scanMap.containsKey(Bag.BAG_ORDERNO_HUB2STATION))
             closeBag(java.lang.Long.parseLong(scanMap[Bag.BAG_ORDERNO_HUB2STATION]), java.lang.Long.parseLong(scanMap[Bag.LEADSEAL_WHITE]))
@@ -173,37 +172,37 @@ class ProtoSsoOutgoingFragment : Fragment() {
     }
 
     private fun setOk() {
-        val image = activity.findViewById(R.id.uxSSOOutStatusImage) as ImageView
+        val image = activity.uxSSOOutStatusImage
         image.visibility = View.VISIBLE
         image.setImageDrawable(ContextCompat.getDrawable(activity.applicationContext, R.drawable.green))
     }
 
     private fun setWOk() {
-        val image = activity.findViewById(R.id.uxSSOOutStatusImage) as ImageView
+        val image = activity.uxSSOOutStatusImage
         image.visibility = View.VISIBLE
         image.setImageDrawable(ContextCompat.getDrawable(activity.applicationContext, R.drawable.red))
     }
 
     private fun setNOk() {
-        val image = activity.findViewById(R.id.uxSSOOutStatusImage) as ImageView
+        val image = activity.uxSSOOutStatusImage
         image.visibility = View.VISIBLE
         image.setImageDrawable(ContextCompat.getDrawable(activity.applicationContext, R.drawable.red))
     }
 
     private fun clearVariables() {
-        (activity.findViewById(R.id.uxSSOOutOrderIDText) as TextView).text = ""
-        (activity.findViewById(R.id.uxSSOOutSealText) as TextView).text = ""
+        activity.uxSSOOutOrderIDText.setText("")
+        activity.uxSSOOutSealText.setText("")
         scanMap.clear()
     }
 
     private fun clearAll() {
-        (activity.findViewById(R.id.uxSSOOutOrderIDText) as TextView).text = ""
-        (activity.findViewById(R.id.uxSSOOutSealText) as TextView).text = ""
-        (activity.findViewById(R.id.uxSSOOutStatusImage) as ImageView).visibility = View.INVISIBLE
+        activity.uxSSOOutOrderIDText.setText("")
+        activity.uxSSOOutSealText.setText("")
+        activity.uxSSOOutStatusImage.visibility = View.INVISIBLE
         scanMap.clear()
     }
 
     private fun clearStatusImage() {
-        (activity.findViewById(R.id.uxSSOOutStatusImage) as ImageView).visibility = View.INVISIBLE
+        activity.uxSSOOutStatusImage.visibility = View.INVISIBLE
     }
 }

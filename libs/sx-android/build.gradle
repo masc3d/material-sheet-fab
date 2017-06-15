@@ -1,16 +1,14 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url 'https://maven.google.com' }
     }
-
     ext {
-        v_android_buildtools = '25.0.2'
+        v_android_buildtools = '26.0.0'
         v_android_support = '25.3.1'
-        v_anko = '0.10.0'
+        v_anko = '0.10.1'
         v_javamail = '1.5.5'
         v_junit = '4.12'
-        v_kotlin = '1.1.2-4'
+        v_kotlin = '1.1.2-5'
         v_ormlite = '5.0'
         v_paho = '1.1.1'
         v_roboelectric = '3.3.2'
@@ -18,7 +16,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha3'
+        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
@@ -35,11 +33,11 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion v_android_buildtools
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -66,19 +64,15 @@ android {
 }
 
 dependencies {
-    implementation(
+    compile(
             project(":sx-common"),
 
             fileTree(dir: 'libs', include: ['*.jar']),
 
             "org.jetbrains.kotlin:kotlin-stdlib:$v_kotlin",
-            dependencies.create("org.jetbrains.anko:anko:$v_anko") { details ->
-                // masc20170516. too early for those
-                exclude group: 'org.jetbrains.anko', module: 'anko-sdk25'
-                exclude group: 'org.jetbrains.anko', module: 'anko-coroutines'
-                exclude group: 'org.jetbrains.anko', module: 'anko-sdk25-coroutines'
-                exclude group: 'org.jetbrains.anko', module: 'anko-appcompat-v7-coroutines'
-            },
+
+            // Anko
+            "org.jetbrains.anko:anko-sqlite:$v_anko",
 
             // Android support libs
             "com.android.support:support-annotations:$v_android_support",
@@ -102,7 +96,7 @@ dependencies {
             "com.sun.mail:android-activation:$v_javamail",
     )
 
-    compileOnly(
+    provided(
             project(':sx-mq'),
 
             'com.journeyapps:zxing-android-embedded:3.5.0',
@@ -115,13 +109,13 @@ dependencies {
             'com.github.pwittchen:reactivenetwork-rx2:0.9.1'
     )
 
-    testImplementation(
+    testCompile(
             "junit:junit:$v_junit",
             "org.robolectric:robolectric:$v_roboelectric",
             "org.robolectric:shadows-multidex:$v_roboelectric"
     )
 
-    androidTestImplementation(
+    androidTestCompile(
             "junit:junit:$v_junit",
 
             "com.android.support:support-annotations:$v_android_support",

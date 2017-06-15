@@ -4,17 +4,17 @@ import { TourService } from '../tour.service';
 import { DriverService } from '../driver.service';
 import { Observable } from 'rxjs/Observable';
 
-@Component({
+@Component( {
   selector: 'app-tour-driver-list',
   template: `
-    <p-dataTable [value]="drivers | async | driverfilter">
-      <p-column field="firstName" header="{{'firstname' | translate}}" [sortable]="true"></p-column>
-      <p-column field="lastName" header="{{'surname' | translate}}"></p-column>
-      <p-column field="email" header="{{'email' | translate}}"></p-column>
+    <p-dataTable [value]="drivers | async | driverfilter" resizableColumns="true">
+      <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
+      <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
+      <p-column field="email" header="{{'email' | translate}}" [sortable]="true"></p-column>
       <p-column header="">
         <ng-template let-driver="rowData" pTemplate="body">
           <i class="fa fa-crosshairs fa-fw" aria-hidden="true" (click)="showPosition(driver)"></i>
-          <i class="fa fa-road fa-fw" aria-hidden="true" (click)="showPosition(driver)"></i>
+          <i class="fa fa-road fa-fw" aria-hidden="true" (click)="showRoute(driver)"></i>
         </ng-template>
       </p-column>
     </p-dataTable>
@@ -23,8 +23,8 @@ import { Observable } from 'rxjs/Observable';
 export class TourDriverListComponent implements OnInit {
   drivers: Observable<Driver[]>;
 
-  constructor(private driverService: DriverService,
-              private tourService: TourService) {
+  constructor( private driverService: DriverService,
+               private tourService: TourService ) {
   }
 
   ngOnInit() {
@@ -32,7 +32,11 @@ export class TourDriverListComponent implements OnInit {
     this.driverService.getDrivers();
   }
 
-  showPosition(driver: Driver) {
-    this.tourService.changeActiveMarker(driver);
+  showPosition( driver: Driver ) {
+    this.tourService.changeActiveMarker( driver );
+  }
+
+  showRoute( driver: Driver ) {
+    this.tourService.changeActiveRoute( driver );
   }
 }

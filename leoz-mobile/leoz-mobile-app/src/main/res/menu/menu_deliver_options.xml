@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
     <item
-        android:id="@+id/action_deliver_neighbour"
+        android:id="@+id/ux_action_deliver_neighbour"
         android:orderInCategory="100"
         android:title="To neighbour"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_deliver_postbox"
+        android:id="@+id/ux_action_deliver_postbox"
         android:orderInCategory="500"
         android:title="To postbox"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_deliver_normal"
+        android:id="@+id/ux_action_deliver_receipient"
         android:orderInCategory="1000"
         android:title="To receipient"
         app:showAsAction="never" />

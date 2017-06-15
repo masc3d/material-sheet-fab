@@ -8,7 +8,7 @@ buildscript {
         v_jersey = '2.25'
         v_jgit = '4.6.1.201703071140-r'
         v_jsch = '0.0.9'
-        v_kotlin = '1.1.2-4'
+        v_kotlin = '1.1.2-5'
         v_resteasy = '3.1.2.Final'
         v_slf4j = '1.7.25'
     }

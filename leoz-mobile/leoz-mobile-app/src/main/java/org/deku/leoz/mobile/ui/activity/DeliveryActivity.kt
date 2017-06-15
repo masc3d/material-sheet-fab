@@ -1,6 +1,10 @@
 package org.deku.leoz.mobile.ui.activity
 
+import android.app.FragmentManager
+import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.support.v7.view.menu.MenuBuilder
+import android.view.View
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
@@ -8,10 +12,10 @@ import com.github.salomonbrys.kodein.lazy
 import kotlinx.android.synthetic.main.main_content.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
+import org.deku.leoz.mobile.ui.Activity
 import org.deku.leoz.mobile.ui.dialog.VehicleLoadingDialog
-import org.deku.leoz.mobile.ui.fragment.DeliveryMainFragment
-import org.deku.leoz.mobile.ui.fragment.StopOverviewFragment
-import org.deku.leoz.mobile.ui.fragment.VehicleLoadingFragment
+import org.deku.leoz.mobile.ui.screen.*
+import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
 import sx.android.fragment.CameraFragment
 import sx.android.fragment.util.withTransaction
@@ -19,7 +23,12 @@ import sx.android.fragment.util.withTransaction
 /**
  * Created by 27694066 on 09.05.2017.
  */
-class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragment.Listener /* TODO: To be removed / use RX instead */, VehicleLoadingDialog.OnDialogResultListener /* TODO: To be removed / use RX instead */ {
+class DeliveryActivity : Activity(),
+        CameraFragment.Listener,
+        DeliveryMainFragment.Listener,
+        SignatureFragment.Listener,
+        VehicleLoadingDialog.OnDialogResultListener {
+
     private val log = LoggerFactory.getLogger(this.javaClass)
     val delivery: Delivery by Kodein.global.lazy.instance()
 
@@ -34,12 +43,18 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragmen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(savedInstanceState == null) {
-            supportFragmentManager.withTransaction {
-                it.replace(this.uxContainer.id, DeliveryMainFragment())
-            }
+        if (savedInstanceState == null) {
+            this.showScreen(DeliveryMainFragment(), addToBackStack = false)
 
             this.supportActionBar?.setTitle(R.string.delivery)
+        }
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            // Exit only allowed via logout
+        } else {
+            super.onBackPressed()
         }
     }
 
@@ -48,19 +63,17 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragmen
      */
 
     override fun onDeliveryMenuChoosed(entryType: DeliveryMainFragment.MenuEntry.Entry) {
-        log.debug("ONDELIVERYMENUCHOOSED")
-        when(entryType){
-            DeliveryMainFragment.MenuEntry.Entry.ORDERLIST -> {
-                supportFragmentManager.withTransaction {
-                    it.replace(this.uxContainer.id, StopOverviewFragment())
-                }
-            }
+        when (entryType) {
             DeliveryMainFragment.MenuEntry.Entry.LOADING -> {
                 /**
                  * Start "vehicle loading" process
                  */
                 val dialog: VehicleLoadingDialog = VehicleLoadingDialog(this)
                 dialog.show(supportFragmentManager, "LOADINGDIALOG")
+            }
+
+            DeliveryMainFragment.MenuEntry.Entry.ORDERLIST -> {
+                this.showScreen(StopOverviewFragment())
             }
         }
     }
@@ -79,6 +92,15 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragmen
         log.debug("ONCAMERAFRAGMENTDISCARDED")
     }
 
+    override fun onSignatureCancelled() {
+    }
+
+    override fun onSignatureSubmitted() {
+        this@DeliveryActivity.supportFragmentManager.popBackStack(DeliveryProcessFragment::class.java.canonicalName, 0)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        this.supportActionBar?.show()
+    }
+
     /**
      * Dialog listener
      * TODO: To be removed / use RX instead
@@ -89,11 +111,20 @@ class DeliveryActivity: Activity(), CameraFragment.Listener, DeliveryMainFragmen
     }
 
     override fun onDeliveryListSkipped() {
-        supportFragmentManager.withTransaction {
-            it.replace(this.uxContainer.id, VehicleLoadingFragment())
-        }
+        this.showScreen(VehicleLoadingFragment())
     }
 
     override fun onCanceled() {
+    }
+
+    fun showDeliverFabButtons() {
+    }
+
+    fun showSignaturePad() {
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        this.supportActionBar?.hide()
+
+        val signatureFragment = SignatureFragment()
+        this.showScreen(signatureFragment)
     }
 }

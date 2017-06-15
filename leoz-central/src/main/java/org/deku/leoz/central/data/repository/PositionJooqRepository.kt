@@ -30,6 +30,7 @@ class PositionJooqRepository {
                 .orderBy((Tables.TRN_NODE_GEOPOSITION.POSITION_DATETIME))
                 .fetchInto(TrnNodeGeopositionRecord::class.java)
     }
+
     fun findRecentByUserId(id: Int): List<TrnNodeGeopositionRecord>? {
 
         return dslContext
@@ -40,6 +41,11 @@ class PositionJooqRepository {
                 .orderBy((Tables.TRN_NODE_GEOPOSITION.POSITION_DATETIME.desc()))
                 .limit(1)
                 .fetchInto(TrnNodeGeopositionRecord::class.java)
+    }
+
+    fun save(geopositionRecord: TrnNodeGeopositionRecord): Boolean {
+        geopositionRecord ?: return false
+        return (geopositionRecord.store() > 0)
     }
 
 }

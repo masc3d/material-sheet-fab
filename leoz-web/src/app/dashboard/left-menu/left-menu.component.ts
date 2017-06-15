@@ -4,8 +4,8 @@ import { DOCUMENT } from '@angular/platform-browser';
 import { MenuItem } from 'primeng/primeng';
 
 import { RoleGuard } from '../../core/auth/role.guard';
-import { TranslateService } from "app/core/translate/translate.service";
-import { AbstractTranslateComponent } from "app/core/translate/abstract-translate.component";
+import { TranslateService } from 'app/core/translate/translate.service';
+import { AbstractTranslateComponent } from 'app/core/translate/abstract-translate.component';
 
 @Component( {
   selector: 'app-left-menu',
@@ -24,7 +24,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent {
                @Inject( DOCUMENT ) private document: any,
                private roleGuard: RoleGuard,
                protected translate: TranslateService ) {
-    super(translate, () => this.items = this.createItems());
+    super( translate, () => this.items = this.createItems() );
   }
 
   ngOnInit() {
@@ -69,7 +69,7 @@ export class LeftMenuComponent extends AbstractTranslateComponent {
         items: [
           {
             label: this.translate.instant( 'users' ),
-            icon: 'fa-wheelchair',
+            icon: 'fa-smile-o',
             routerLink: 'user',
             command: closeMenu
           }
@@ -83,6 +83,13 @@ export class LeftMenuComponent extends AbstractTranslateComponent {
       routerLink: '/logout',
       command: closeMenu
     } );
+
+    // items.push( {
+    //   label: this.translate.instant( 'test for bagscan' ),
+    //   icon: '',
+    //   routerLink: '/dashboard/stationloading',
+    //   command: closeMenu
+    // } );
 
     return items;
   }

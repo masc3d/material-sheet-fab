@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="org.deku.leoz.mobile.ui.fragment.DeliveryFailureFragment">
+    tools:context="org.deku.leoz.mobile.ui.screen.DeliveryFailureFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

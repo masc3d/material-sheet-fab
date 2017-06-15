@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.zalando.problem.ProblemModule
-import java.text.SimpleDateFormat
 
 import javax.inject.Named
 import javax.ws.rs.ext.ContextResolver

@@ -300,10 +300,10 @@ task gitRemoveRootTags {
  */
 def subtrees = [
         [
-                name: 'CentralSchema',
-                path: 'leoz-central-schema',
-                repo: 'ssh://git@git.derkurier.de:13020/leoz/leoz-central-schema.git',
-                ref : 'master',
+                name : 'CentralSchema',
+                path : 'leoz-central-schema',
+                repo : 'ssh://git@git.derkurier.de:13020/leoz/leoz-central-schema.git',
+                ref  : 'master',
                 group: 'git'
         ],
         [
@@ -372,6 +372,12 @@ def subtrees = [
                 repo: 'ssh://git@git.derkurier.de:13020/leoz/sx-ssh.git',
                 ref : 'master'
         ],
+        [
+                name: 'MaterialSheetFab',
+                path: 'leoz-mobile/libs/material-sheet-fab',
+                repo: 'ssh://git@github.com/masc3d/material-sheet-fab.git',
+                ref : 'master'
+        ]
 ]
 
 /**

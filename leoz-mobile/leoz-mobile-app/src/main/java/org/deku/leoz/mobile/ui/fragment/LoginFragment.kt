@@ -15,14 +15,14 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.Login
+import org.deku.leoz.mobile.ui.Fragment
+import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.slf4j.LoggerFactory
 import sx.android.aidc.*
-import sx.rx.toSingletonObservable
 import javax.mail.internet.AddressException
 import javax.mail.internet.InternetAddress
 
@@ -38,6 +38,12 @@ class LoginFragment : Fragment() {
 
     private val internalLoginRegex: Regex = Regex(pattern = "^276[0-9]{5}$")
     private val login: Login by Kodein.global.lazy.instance()
+
+    interface Listener {
+        fun onLoginSuccessful()
+    }
+
+    private val listener get() = this.activity as? Listener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_login, container, false)
@@ -124,6 +130,7 @@ class LoginFragment : Fragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     log.info("Login successful $it")
+                    this.listener?.onLoginSuccessful()
                 }
     }
 
