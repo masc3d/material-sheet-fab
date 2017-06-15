@@ -1,7 +1,9 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
+
     ext {
         v_android_buildtools = '26.0.0'
         v_android_support = '25.3.1'
@@ -16,7 +18,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
@@ -57,14 +59,30 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+
+        debug {
+            minifyEnabled false
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
+        }
     }
 
+    flavorDimensions "default"
+
     productFlavors {
+        dev {
+            dimension "default"
+        }
+
+        prod {
+            dimension "default"
+        }
     }
 }
 
 dependencies {
-    compile(
+    implementation(
             project(":sx-common"),
 
             fileTree(dir: 'libs', include: ['*.jar']),
@@ -96,7 +114,7 @@ dependencies {
             "com.sun.mail:android-activation:$v_javamail",
     )
 
-    provided(
+    compileOnly(
             project(':sx-mq'),
 
             'com.journeyapps:zxing-android-embedded:3.5.0',
@@ -109,13 +127,13 @@ dependencies {
             'com.github.pwittchen:reactivenetwork-rx2:0.9.1'
     )
 
-    testCompile(
+    testImplementation(
             "junit:junit:$v_junit",
             "org.robolectric:robolectric:$v_roboelectric",
             "org.robolectric:shadows-multidex:$v_roboelectric"
     )
 
-    androidTestCompile(
+    androidTestImplementation(
             "junit:junit:$v_junit",
 
             "com.android.support:support-annotations:$v_android_support",
