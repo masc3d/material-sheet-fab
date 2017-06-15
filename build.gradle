@@ -1,7 +1,9 @@
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
+
     ext {
         v_kotlin = '1.1.2-5'
         v_android_buildtools = '26.0.0'
@@ -10,7 +12,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$v_kotlin"
     }
 }
@@ -45,14 +47,29 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            minifyEnabled false
+            debuggable true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-rules-debug.pro'
+        }
     }
 
+    flavorDimensions "default"
+
     productFlavors {
+        dev {
+            dimension "default"
+        }
+
+        prod {
+            dimension "default"
+        }
     }
 }
 
 dependencies {
-    compile(
+    implementation(
             project(":sx-android"),
 
             fileTree(dir: 'libs', include: ['*.jar']),
@@ -75,7 +92,7 @@ dependencies {
             "com.trello.rxlifecycle2:rxlifecycle-components:$v_rxlifecycle"
     )
 
-    androidTestCompile(
+    androidTestImplementation(
             "junit:junit:4.12",
             "com.android.support:support-annotations:$v_android_support",
             "com.android.support.test:runner:0.5",
