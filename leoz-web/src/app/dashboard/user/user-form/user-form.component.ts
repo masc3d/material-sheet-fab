@@ -18,11 +18,13 @@ import { AbstractTranslateComponent } from 'app/core/translate/abstract-translat
   templateUrl: './user-form.component.html'
 } )
 export class UserFormComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
+  dateFormatPrimeng: string;
 
+  locale: any;
   roleOptions: SelectItem[];
   stateOptions: SelectItem[];
-
   activeUser: User;
+
   userForm: FormGroup;
   private subscriptionCRUD: Subscription;
   private subscriptionMsg: Subscription;
@@ -38,6 +40,8 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
     super( translate, () => {
       this.roleOptions = this.createRoleOptions();
       this.stateOptions = this.createStateOptions();
+      const expiresOnControl = this.userForm.get( 'expiresOn' );
+      setTimeout(() => expiresOnControl.setValue(expiresOnControl.value), 20);
     } );
   }
 
@@ -75,7 +79,6 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
       }
       passwordControl.clearValidators();
       passwordControl.setValidators( validators );
-      console.log('activeUser.expiresOn', activeUser.expiresOn);
       this.userForm.patchValue( {
         emailOrigin: activeUser.email,
         firstName: activeUser.firstName,
@@ -86,7 +89,7 @@ export class UserFormComponent extends AbstractTranslateComponent implements OnI
         alias: activeUser.alias,
         role: activeUser.role,
         active: activeUser.active,
-        expiresOn: activeUser.expiresOn
+        expiresOn: activeUser.expiresOn ? new Date(activeUser.expiresOn) : activeUser.expiresOn
       } );
     } );
   }

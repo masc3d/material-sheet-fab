@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { Response } from '@angular/http';
 import { MsgService } from '../../../shared/msg/msg.service';
 import { Observable } from 'rxjs/Observable';
+import { TranslateService } from '../../../core/translate/translate.service';
+import { AbstractTranslateComponent } from '../../../core/translate/abstract-translate.component';
 
 @Component( {
   selector: 'app-user-list',
@@ -16,7 +18,11 @@ import { Observable } from 'rxjs/Observable';
       <p-column field="email" header="{{'email' | translate}}" [sortable]="true"></p-column>
       <p-column field="phone" header="{{'phone' | translate}}"></p-column>
       <p-column field="active" header="{{'active' | translate}}" [sortable]="true"></p-column>
-      <p-column field="expiresOn" header="{{'expires_on' | translate}}" [sortable]="true"></p-column>
+      <p-column header="{{'expires_on' | translate}}">
+        <ng-template let-user="rowData" pTemplate="body">
+          {{user.expiresOn | date:dateFormat}}
+        </ng-template>
+      </p-column>
       <p-column header="">
         <ng-template let-user="rowData" pTemplate="body">
           <i class="fa fa-pencil fa-fw" aria-hidden="true" (click)="selected(user)"></i>
@@ -26,18 +32,22 @@ import { Observable } from 'rxjs/Observable';
     </p-dataTable>
   `
 } )
-export class UserListComponent implements OnInit, OnDestroy {
+export class UserListComponent extends AbstractTranslateComponent implements OnInit, OnDestroy {
 
   users: Observable<User[]>;
+  dateFormat: string;
 
   private subscriptionCRUD: Subscription;
 
   constructor( private userService: UserService,
-               private msgService: MsgService ) {
+               private msgService: MsgService,
+               protected translate: TranslateService ) {
+    super( translate );
   }
 
   ngOnInit() {
-    console.log( '-------------- UserListComponent ngOnInit' );
+    super.ngOnInit();
+
     this.deactivate( <User> {} );
     this.selected( <User> {} );
     this.users = this.userService.users;
@@ -45,6 +55,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    super.ngOnDestroy();
     if (this.subscriptionCRUD) {
       this.subscriptionCRUD.unsubscribe();
     }
@@ -59,7 +70,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   protected deactivateUser( originEmail: string ) {
-    if(originEmail && originEmail.length > 0) {
+    if (originEmail && originEmail.length > 0) {
       this.subscriptionCRUD = this.userService.update( { active: false }, originEmail )
         .subscribe(
           ( resp: Response ) => {
