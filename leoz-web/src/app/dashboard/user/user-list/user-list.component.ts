@@ -18,7 +18,7 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
       <p-column field="email" header="{{'email' | translate}}" [sortable]="true"></p-column>
       <p-column field="phone" header="{{'phone' | translate}}"></p-column>
       <p-column field="active" header="{{'active' | translate}}" [sortable]="true"></p-column>
-      <p-column header="{{'expires_on' | translate}}" [sortable]="true">
+      <p-column header="{{'expires_on' | translate}}">
         <ng-template let-user="rowData" pTemplate="body">
           {{user.expiresOn | date:dateFormat}}
         </ng-template>
