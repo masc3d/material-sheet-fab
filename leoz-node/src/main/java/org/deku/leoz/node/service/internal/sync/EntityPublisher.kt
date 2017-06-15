@@ -62,7 +62,7 @@ class EntityPublisher(
             if (replyChannel == null || !(replyChannel is JmsChannel))
                 throw IllegalArgumentException("IMS reply client required")
 
-            (replyChannel as? JmsChannel)?.statistics?.enabled = true
+            replyChannel.statistics.enabled = true
 
             // Send entity update message
             val euMessage = EntityUpdateMessage(count)

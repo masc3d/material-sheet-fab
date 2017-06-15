@@ -42,7 +42,6 @@ class FormSkin(fxForm: FXForm<Any>) : FXFormSkin(fxForm) {
     protected var row = 0
     private val categoryNode = HashMap<String, Node>()
 
-
     @Throws(NodeCreationException::class)
     override fun createRootNode(): Node {
         val titleBox = VBox()
@@ -79,16 +78,16 @@ class FormSkin(fxForm: FXForm<Any>) : FXFormSkin(fxForm) {
     }
 
     override fun addCategory(category: String?) {
-        if (categoryMap.keys.size > 1) {
-            val node = createCategoryNode(category!!)
+        if (categoryMap.keys.size > 1 && category != null) {
+            val node = createCategoryNode()
             categoryNode.put(category, node)
             GridPane.setColumnSpan(node, 2)
-            gridPane!!.add(node, 0, row++)
+            gridPane?.add(node, 0, row++)
             row++
         }
     }
 
-    protected fun createCategoryNode(category: String): Node {
+    protected fun createCategoryNode(): Node {
         return Separator()
     }
 

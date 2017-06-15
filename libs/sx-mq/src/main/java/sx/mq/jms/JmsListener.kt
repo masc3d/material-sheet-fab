@@ -48,7 +48,7 @@ abstract class JmsListener(
      */
     @Throws(JMSException::class)
     protected open fun onMessage(message: Message, session: Session) {
-        var messageObject: Any? = null
+        val messageObject: Any?
 
         // Deserialize if there's a converter and determine handler
         val converter = this.endpoint.converter

@@ -60,14 +60,14 @@ class Problem(
         this.details = details
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (o == null || javaClass != o.javaClass) {
+        if (other == null || javaClass != other.javaClass) {
             return false
         }
-        val problem = o as org.deku.leoz.service.zalando.entity.Problem?
+        val problem = other as org.deku.leoz.service.zalando.entity.Problem?
         return type == problem!!.type &&
                 instance == problem.instance &&
                 title == problem.title &&
