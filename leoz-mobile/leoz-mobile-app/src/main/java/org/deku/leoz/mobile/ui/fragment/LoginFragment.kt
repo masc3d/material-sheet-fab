@@ -15,12 +15,12 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.device.Tone
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.ui.Fragment
-import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.slf4j.LoggerFactory
 import sx.android.aidc.*
 import javax.mail.internet.AddressException
@@ -99,7 +99,8 @@ class LoginFragment : Fragment() {
                                 .map { Unit },
                         RxTextView.editorActions(this.uxPassword)
                                 .map { Unit }
-                                .replay(1).refCount()
+                                .replay(1).refCount(),
+                        this.syntheticLoginSubject
                 ))
 
         rxLoginTrigger
@@ -171,5 +172,19 @@ class LoginFragment : Fragment() {
                 true
             }
         }
+    }
+
+    private val syntheticLoginSubject = PublishSubject.create<Unit>()
+
+    /**
+     * Synthesizes login by adding a user/password into the referring field
+     * and triggering the login process
+     * @param email User mail address
+     * @param password Password
+     */
+    fun synthesizeLogin(email: String, password: String) {
+        this.uxMailaddress.setText(email)
+        this.uxPassword.setText(password)
+        this.syntheticLoginSubject.onNext(Unit)
     }
 }

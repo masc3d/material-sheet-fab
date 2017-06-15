@@ -4,7 +4,7 @@
 <resources>
     <item name="action_aidc_camera" type="id"/>
     <item name="action_help" type="id"/>
-    <item name="action_test" type="id"/>
+    <item name="action_dev" type="id"/>
     <item name="action_deliver_ok" type="id"/>
     <item name="action_deliver_fail" type="id"/>
     <item name="action_deliver_cancel" type="id"/>

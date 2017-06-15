@@ -224,29 +224,6 @@ open class Activity : RxAppCompatActivity(),
             R.id.nav_send -> {
             }
 
-            R.id.nav_dev_login -> {
-                this.nav_view.postDelayed({
-                    login.authenticate(
-                            email = Login.DEV_EMAIL,
-                            password = Login.DEV_PASSWORD
-
-                    )
-                            .subscribeBy(
-                                    onNext = {
-                                        this.startActivity(
-                                                Intent(applicationContext, DeliveryActivity::class.java)
-                                                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                                                Intent.FLAG_ACTIVITY_NEW_TASK))
-                                        finish()
-
-                                    },
-                                    onError = {
-                                        tone.errorBeep()
-                                    }
-                            )
-                }, 20)
-            }
-
             R.id.nav_logout -> {
                 this.nav_view.postDelayed({
                     login.logout()
@@ -333,7 +310,6 @@ open class Activity : RxAppCompatActivity(),
         navHeaderView.uxVersion.text = "v${BuildConfig.VERSION_NAME}"
 
         if (this.debugSettings.enabled) {
-            this.nav_view.menu.findItem(R.id.nav_dev_login).setVisible(true)
             this.nav_view.menu.findItem(R.id.nav_dev_prototype).setVisible(true)
         }
 
@@ -386,10 +362,6 @@ open class Activity : RxAppCompatActivity(),
                                     .findItem(R.id.nav_dev_prototype)
                                     .setVisible(this.debugSettings.enabled)
 
-                            this.nav_view.menu
-                                    .findItem(R.id.nav_dev_login)
-                                    .setVisible(false)
-
                             // Update navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.VISIBLE
                             navHeaderView.uxActiveUser.text = user.email
@@ -403,10 +375,6 @@ open class Activity : RxAppCompatActivity(),
                             this.nav_view.menu
                                     .findItem(R.id.nav_dev_prototype)
                                     .setVisible(false)
-
-                            this.nav_view.menu
-                                    .findItem(R.id.nav_dev_login)
-                                    .setVisible(this.debugSettings.enabled)
 
                             // Hide navigation header
                             navHeaderView.uxUserAreaLayout.visibility = View.GONE

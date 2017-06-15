@@ -32,11 +32,6 @@
             android:icon="@drawable/ic_bug"
             android:title="@string/report_bug"/>
         <item
-            android:id="@+id/nav_dev_login"
-            android:icon="@drawable/ic_wand"
-            android:title="@string/dev_login"
-            android:visible="false"/>
-        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"
             android:title="@string/logout"
