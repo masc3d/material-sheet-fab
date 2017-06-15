@@ -84,12 +84,12 @@ export class LeftMenuComponent extends AbstractTranslateComponent {
       command: closeMenu
     } );
 
-    items.push( {
-      label: this.translate.instant( 'test for bagscan' ),
-      icon: '',
-      routerLink: '/dashboard/stationloading',
-      command: closeMenu
-    } );
+    // items.push( {
+    //   label: this.translate.instant( 'test for bagscan' ),
+    //   icon: '',
+    //   routerLink: '/dashboard/stationloading',
+    //   command: closeMenu
+    // } );
 
     return items;
   }
