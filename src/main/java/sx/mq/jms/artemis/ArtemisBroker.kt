@@ -11,7 +11,6 @@ import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ
 import org.apache.activemq.artemis.core.settings.impl.AddressSettings
 import org.apache.activemq.artemis.jms.server.config.impl.JMSConfigurationImpl
 import org.apache.activemq.artemis.jms.server.embedded.EmbeddedJMS
-import org.apache.activemq.artemis.spi.core.security.ActiveMQSecurityManagerImpl
 import sx.mq.MqBroker
 
 /**
@@ -45,7 +44,8 @@ class ArtemisBroker : MqBroker(NATIVE_TCP_PORT) {
 
         // ActiveMQSecurityManagerImpl is deprecated but works fine for our needs for now.
         // TODO: Make this work with ActiveMQJAASSecurityManager (requires a `SecurityConfiguration` and some kind of JAAS `LoginModule`, eg `PropertiesLoginModule`
-        val securityManager = ActiveMQSecurityManagerImpl()
+        @Suppress("DEPRECATION")
+        val securityManager = org.apache.activemq.artemis.spi.core.security.ActiveMQSecurityManagerImpl()
 
         val brokerUser = this.user!!
         securityManager.configuration.addUser(brokerUser.userName, brokerUser.password)
