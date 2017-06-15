@@ -4,10 +4,7 @@
                                     xmlns:card_view="http://schemas.android.com/tools"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    app:cardCornerRadius="5dp"
-                                    app:cardElevation="4dp"
-                                    app:cardMaxElevation="0dp"
-                                    app:cardUseCompatPadding="true"
+                                    style="@style/AppTheme.CardView.List"
     >
 
     <RelativeLayout
@@ -18,7 +15,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="@dimen/large_margin"
             android:orientation="horizontal">
 
             <TextView

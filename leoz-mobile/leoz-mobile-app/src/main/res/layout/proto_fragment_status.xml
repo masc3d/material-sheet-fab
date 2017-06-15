@@ -46,6 +46,7 @@
         </LinearLayout>
 
         <ListView
+            style="@style/AppTheme.ListView"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:scrollbars="none"

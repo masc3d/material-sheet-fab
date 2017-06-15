@@ -4,10 +4,10 @@
     android:id="@+id/activity_proto_sso__menue_f"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/large_margin"
+    android:paddingLeft="@dimen/large_margin"
+    android:paddingRight="@dimen/large_margin"
+    android:paddingTop="@dimen/large_margin"
     tools:context="org.deku.leoz.mobile.prototype.activities.smallsort.ProtoSsoActivity"
     android:background="@drawable/deku_background_selector">
 

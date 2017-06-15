@@ -49,17 +49,16 @@
     </FrameLayout>
 
     <LinearLayout
-        style="@style/AppTheme.Layout.Content"
+        style="@style/AppTheme.Layout.Screen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <ListView
+            style="@style/AppTheme.ListView"
             android:id="@+id/uxMenuList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="0dp"/>
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 </LinearLayout>

@@ -1,6 +1,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
-             style="@style/AppTheme.Layout.Content"
+             style="@style/AppTheme.Layout.Screen"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context="org.deku.leoz.mobile.ui.screen.StopOverviewScreen">
