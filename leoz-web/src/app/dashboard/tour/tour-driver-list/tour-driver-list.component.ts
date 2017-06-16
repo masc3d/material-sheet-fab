@@ -7,7 +7,7 @@ import { Observable } from 'rxjs/Observable';
 @Component( {
   selector: 'app-tour-driver-list',
   template: `
-    <p-dataTable [value]="drivers | async | driverfilter" resizableColumns="true">
+    <p-dataTable [value]="drivers | async | driverfilter" resizableColumns="true" [responsive]="true">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
       <p-column field="email" header="{{'email' | translate}}" [sortable]="true"></p-column>

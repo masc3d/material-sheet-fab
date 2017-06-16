@@ -11,7 +11,7 @@ import { AbstractTranslateComponent } from '../../../core/translate/abstract-tra
 @Component( {
   selector: 'app-user-list',
   template: `
-    <p-dataTable [value]="users | async | userfilter" resizableColumns="true">
+    <p-dataTable [value]="users | async | userfilter" resizableColumns="true" [responsive]="true">
       <p-column field="firstName" header="{{'firstname' | translate}}"></p-column>
       <p-column field="lastName" header="{{'surname' | translate}}" [sortable]="true"></p-column>
       <p-column field="role" header="{{'role' | translate}}" [sortable]="true"></p-column>
