@@ -88,10 +88,6 @@ class AuthorizationService
             throw DefaultProblem(
                     title = "User authentication failed",
                     status = Response.Status.UNAUTHORIZED)
-        val debitorNo = this.userRepository.findDebitorNoById(id = userRecord.debitorId)
-                ?: throw DefaultProblem(
-                title = "Missing sdebitor",
-                status = Response.Status.UNAUTHORIZED)
 
         val df = DecimalFormat("#")
         df.maximumFractionDigits = 0

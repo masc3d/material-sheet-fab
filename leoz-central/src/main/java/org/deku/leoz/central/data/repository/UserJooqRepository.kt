@@ -132,7 +132,6 @@ open class UserJooqRepository {
     }
 
     fun save(userRecord: MstUserRecord): Boolean {
-        userRecord ?: return false
         return (userRecord.store() > 0)
     }
 

@@ -23,6 +23,9 @@ import sx.time.toTimestamp
 import javax.ws.rs.core.Response
 import org.slf4j.LoggerFactory
 import sx.logging.slf4j.info
+import sx.time.toLocalDate
+import java.text.SimpleDateFormat
+import java.time.ZoneId
 
 
 /**
@@ -47,10 +50,10 @@ class LocationService : LocationService, MqHandler<LocationService.GpsData> {
     override fun get(email: String?, debitorId: Int?, from: Date?, to: Date?, apiKey: String?): List<LocationService.GpsData> {
         var debitor_id = debitorId
         //var user_id: Int?
-        val pos_from = from ?: Date(Date().year, Date().month, Date().date)
+        val pos_from = from ?: SimpleDateFormat("yyyy-MM-dd").parse(Date().toLocalDate().toString())//SimpleDateFormat("yyyy-MM-dd").parse(Date().toString()) //Date.from(java.time.LocalDate().atStartOfDay(ZoneId.systemDefault().toInstant())) //Date(Date().year, Date().month, Date().date)
         val pos_to = to ?: Date()//.plusDays(1) //pos_from.plusDays(1)
 
-        val dtNow = Date()
+        //val dtNow = Date()
         //val gpsdata = GpsData(49.9, 9.06, 25.3, dtNow.toTimestamp())
         /*
         val pos = LocationService.GpsDataPoint(
@@ -99,7 +102,7 @@ class LocationService : LocationService, MqHandler<LocationService.GpsData> {
                     throw DefaultProblem(
                             status = Response.Status.NOT_FOUND,
                             title = "no user found by debitor-id")
-                val user = mutableListOf<LocationService.User>()
+                //val user = mutableListOf<LocationService.User>()
                 userRecList.forEach {
 
                     if ((UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN)
@@ -205,7 +208,7 @@ class LocationService : LocationService, MqHandler<LocationService.GpsData> {
                     throw DefaultProblem(
                             status = Response.Status.NOT_FOUND,
                             title = "no user found by debitor-id")
-                val user = mutableListOf<LocationService.User>()
+                //val user = mutableListOf<LocationService.User>()
                 userRecList.forEach {
 
                     if ((UserRole.valueOf(authorizedUserRecord.role) == UserRole.ADMIN)

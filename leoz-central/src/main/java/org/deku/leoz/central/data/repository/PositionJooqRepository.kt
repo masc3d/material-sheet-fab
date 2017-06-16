@@ -44,7 +44,6 @@ class PositionJooqRepository {
     }
 
     fun save(geopositionRecord: TrnNodeGeopositionRecord): Boolean {
-        geopositionRecord ?: return false
         return (geopositionRecord.store() > 0)
     }
 

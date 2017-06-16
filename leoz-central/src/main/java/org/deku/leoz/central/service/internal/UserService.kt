@@ -164,7 +164,8 @@ class UserService : UserService {
         if (rec == null) {
             isNew = true
             rec = dslContext.newRecord(Tables.MST_USER)
-            if (user.email == null || user.email.equals("@"))
+            //if (user.email == null || user.email.equals("@"))
+            if (user.email.equals("@"))
                 user.email = email
             if (!user.email.equals(email)) {
                 throw  DefaultProblem(
@@ -188,15 +189,15 @@ class UserService : UserService {
                         title = "login user can not create/change user - no permission")
             }
 
-            if (user.email != null) {
-                if (!rec.email.equals(user.email)) {
-                    if (userRepository.mailExists(user.email)) {
-                        throw  DefaultProblem(
-                                status = Response.Status.BAD_REQUEST,
-                                title = "duplicate email")
-                    }
+            //if (user.email != null) {
+            if (!rec.email.equals(user.email)) {
+                if (userRepository.mailExists(user.email)) {
+                    throw  DefaultProblem(
+                            status = Response.Status.BAD_REQUEST,
+                            title = "duplicate email")
                 }
             }
+            //}
 
             val testAlias: String
             if (alias != null) {
@@ -300,7 +301,8 @@ class UserService : UserService {
                 status = Response.Status.BAD_REQUEST,
                 title = "not found")
 
-        if ((user.email != null) && (user.email != "@"))
+        //if ((user.email != null) && (user.email != "@"))
+        if (user.email != "@")
             rec.email = user.email
         if (debitor != null)
             rec.debitorId = debitor
