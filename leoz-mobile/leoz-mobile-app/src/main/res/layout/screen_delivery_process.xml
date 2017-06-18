@@ -7,14 +7,10 @@
               android:layout_height="match_parent"
               android:orientation="vertical" >
 
-    <!-- TODO: Update blank fragment layout -->
-
-    <include layout="@layout/item_stop_overview" />
-
     <LinearLayout
         android:id="@+id/uxContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"></LinearLayout>
+        android:orientation="vertical" />>
 
 </LinearLayout>

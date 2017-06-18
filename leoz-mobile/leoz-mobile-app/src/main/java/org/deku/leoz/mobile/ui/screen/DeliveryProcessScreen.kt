@@ -26,8 +26,6 @@ import org.deku.leoz.mobile.ui.view.ActionItem
 import org.slf4j.LoggerFactory
 import sx.android.aidc.AidcReader
 import sx.android.fragment.util.withTransaction
-import java.text.SimpleDateFormat
-
 
 class DeliveryProcessScreen : ScreenFragment() {
 
@@ -37,6 +35,9 @@ class DeliveryProcessScreen : ScreenFragment() {
     private lateinit var stop: Stop
 
     companion object {
+        /**
+         * Create instance with parameters. This creation method requires `retainInstance` to be set! in `onCreate`!
+         */
         fun create(stop: Stop): DeliveryProcessScreen {
             val f = DeliveryProcessScreen()
             f.stop = stop
@@ -59,17 +60,7 @@ class DeliveryProcessScreen : ScreenFragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("HH:mm")
-
-        this.uxStreet.text = stop.address.street
-        this.uxStreetNo.text = stop.address.streetNo
-        this.uxZip.text = stop.address.zipCode
-        this.uxCity.text = stop.address.city
-        this.uxReceipient.text = stop.address.addressLine1
-        this.uxAppointment.text = "${simpleDateFormat.format(stop.appointment.dateFrom)} - ${simpleDateFormat.format(stop.appointment.dateTo)}"
-
         //val arrayAdapter: ArrayAdapter<String> = ArrayAdapter(context, android.R.layout.simple_list_item_1, parcelRefList)
-
 
         //endregion
 
@@ -141,6 +132,4 @@ class DeliveryProcessScreen : ScreenFragment() {
          * TODO: Action trigger on uxLabelNo TextView
          */
     }
-
-
 }
