@@ -14,7 +14,6 @@ import com.github.salomonbrys.kodein.lazy
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.screen_delivery_process.*
-import kotlinx.android.synthetic.main.item_stop_overview.*
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Stop
@@ -36,7 +35,7 @@ class DeliveryProcessScreen : ScreenFragment() {
 
     companion object {
         /**
-         * Create instance with parameters. This creation method requires `retainInstance` to be set! in `onCreate`!
+         * Create instance with parameters. This pattern requires `retainInstance` to be set in `onCreate`!
          */
         fun create(stop: Stop): DeliveryProcessScreen {
             val f = DeliveryProcessScreen()
@@ -86,9 +85,8 @@ class DeliveryProcessScreen : ScreenFragment() {
         )
         (this.activity as DeliveryActivity).showDeliverFabButtons()
 
-
         childFragmentManager.withTransaction {
-            it.replace(this.uxContainer.id, StopProcessFragment())
+            it.replace(this.uxContainer.id, StopProcessFragment.create(this.stop))
         }
         //this.uxServiceList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, arrayOf("Nachnahme", "Tel. Empfangsbestätigung", "Security Return", "X-Change"))
     }

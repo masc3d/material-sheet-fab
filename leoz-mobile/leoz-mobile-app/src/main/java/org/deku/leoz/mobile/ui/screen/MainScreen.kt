@@ -13,6 +13,7 @@ import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.kotlin.bindUntilEvent
 import kotlinx.android.synthetic.main.fragment_main.*
 import org.deku.leoz.mobile.BuildConfig
+import org.deku.leoz.mobile.Database
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Login

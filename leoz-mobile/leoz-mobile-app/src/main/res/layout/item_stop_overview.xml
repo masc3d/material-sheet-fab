@@ -1,165 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/AppTheme.CardView"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:foreground="?attr/selectableItemBackground"
     >
 
-    <android.support.v7.widget.CardView
-        style="@style/AppTheme.CardView.List"
+    <FrameLayout
+        style="@style/AppTheme.Layout.List"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:foreground="?attr/selectableItemBackground"
-        >
+        android:layout_height="match_parent">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="@dimen/margin"
-                        android:background="@drawable/rounded_background_white"
-                        android:orientation="vertical"
-            >
-
-            <TextView
-                android:id="@+id/uxStreet"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/uxZip"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:text="Lärchenweg"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/uxZip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/uxCity"
-                android:layout_alignBottom="@+id/uxCity"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:text="36251"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/uxCity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/uxAppointment"
-                android:layout_alignBottom="@+id/uxAppointment"
-                android:layout_marginLeft="5dp"
-                android:layout_toEndOf="@+id/uxZip"
-                android:layout_toRightOf="@+id/uxZip"
-                android:text="Bad Hersfeld"
-                android:textStyle="bold"/>
+        <!-- Address layout -->
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/uxReceipient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
                 android:text="Philipp Prangenberg"
-                android:textStyle="bold"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                />
 
             <TextView
-                android:id="@+id/uxOrderCount"
+                android:id="@+id/uxStreet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:text="1"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/uxOrder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="5dp"
-                android:layout_toLeftOf="@+id/uxOrderCount"
-                android:layout_toStartOf="@+id/uxOrderCount"
-                android:text="Aufträge:"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/uxParcelCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/uxOrderCount"
-                android:text="2"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/uxParcel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/uxOrder"
-                android:layout_alignStart="@+id/uxOrder"
-                android:layout_below="@+id/uxOrder"
-                android:layout_toLeftOf="@+id/uxParcelCount"
-                android:layout_toStartOf="@+id/uxParcelCount"
-                android:text="Pakete:"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/uxAppointment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/uxParcelCount"
-                android:gravity="bottom|right"
-                android:text="08.00 - 12.00"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
+                android:layout_below="@id/uxReceipient"
+                android:text="Lärchenweg"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                />
 
             <TextView
                 android:id="@+id/uxStreetNo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/uxCity"
-                android:layout_alignEnd="@+id/uxCity"
-                android:layout_alignRight="@+id/uxCity"
-                android:layout_marginLeft="10dp"
+                android:layout_alignBaseline="@id/uxStreet"
+                android:layout_marginStart="@dimen/margin"
                 android:layout_toEndOf="@+id/uxStreet"
-                android:layout_toRightOf="@+id/uxStreet"
                 android:text="4"
-                android:textStyle="bold"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom">
+
+            <TextView
+                android:id="@+id/uxZip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:textAlignment="center"
+                android:text="36251"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                />
+
+            <TextView
+                android:id="@+id/uxCity"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="@dimen/small_margin"
+                android:text="Bad Hersfeld"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                />
+
+            <!-- Appointment layout -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                >
+
+                <sx.android.view.ClockView
+                    android:id="@+id/uxAppointmentClock"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="@dimen/margin"
+                    />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/uxAppointmentFrom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="08.00"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+                    <TextView
+                        android:id="@+id/uxAppointmentTo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="08.00"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+        <!-- Counters -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:divider="@drawable/divider_vertical_small"
+            android:showDividers="middle"
+            android:layout_gravity="top|end"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:src="@drawable/ic_file_document"/>
+
+                <TextView
+                    android:id="@+id/uxOrderCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:orientation="horizontal"
+                >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:src="@drawable/ic_package_closed"/>
+
+                <TextView
+                    android:id="@+id/uxParcelCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="2"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Status icons -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/uxReceipient"
-                android:layout_toEndOf="@+id/uxReceipient"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 app:srcCompat="@drawable/ic_information_outline"/>
 
             <ImageView
                 android:id="@+id/imageView2"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignTop="@+id/imageView"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_toEndOf="@+id/imageView"
                 app:srcCompat="@drawable/ic_clock_alert"/>
 
             <ImageView
                 android:id="@+id/imageView10"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignTop="@+id/imageView2"
-                android:layout_toEndOf="@+id/imageView2"
-                android:layout_toRightOf="@+id/imageView2"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 app:srcCompat="@drawable/ic_alert_outline"/>
 
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+        </LinearLayout>
 
-</FrameLayout>
+    </FrameLayout>
+
+</android.support.v7.widget.CardView>

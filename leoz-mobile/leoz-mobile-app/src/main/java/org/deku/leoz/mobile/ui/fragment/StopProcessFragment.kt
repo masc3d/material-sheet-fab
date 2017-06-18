@@ -37,11 +37,20 @@ class StopProcessFragment : Fragment() {
     private var resultCount: Int = 0
 
     companion object {
+        /**
+         * Create instance with parameters. This pattern requires `retainInstance` to be set in `onCreate`!
+         */
         fun create(stop: Stop): StopProcessFragment {
             val f = StopProcessFragment()
             f.stop = stop
             return f
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        this.retainInstance = true
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,

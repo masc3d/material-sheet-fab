@@ -4,7 +4,6 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:divider="@drawable/divider_vertical"
               android:orientation="vertical"
               android:showDividers="middle">
 
@@ -17,9 +16,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@drawable/divider_horizontal"
-            android:orientation="horizontal"
-            android:showDividers="middle">
+            >
 
             <ImageView
                 android:id="@+id/uxSerialnumberImage"
@@ -27,6 +24,7 @@
                 android:layout_height="@dimen/icon_size"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_marginBottom="6dp"
+                android:layout_marginEnd="@dimen/margin"
                 app:srcCompat="@drawable/ic_email_black"/>
 
             <android.support.design.widget.TextInputLayout
@@ -40,11 +38,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:completionThreshold="1"
                     android:gravity="center_vertical"
                     android:hint="@string/hint_field_mail"
-                    android:inputType="textEmailAddress"
                     android:imeOptions="actionNext"
-                    android:completionThreshold="1"
+                    android:inputType="textEmailAddress"
                     android:nextFocusRight="@+id/uxPassword"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     />
@@ -56,9 +54,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@drawable/divider_horizontal"
-            android:orientation="horizontal"
-            android:showDividers="middle">
+            >
 
             <ImageView
                 android:id="@+id/uxPasswordImage"

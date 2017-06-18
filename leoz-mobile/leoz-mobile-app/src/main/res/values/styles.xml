@@ -68,6 +68,10 @@
 
     <!-- Card view used in continues lists -->
     <style name="AppTheme.CardView.List" parent="AppTheme.CardView">
+        <item name="android:layout_marginBottom">@dimen/small_margin</item>
+        <item name="android:layout_marginLeft">@dimen/margin</item>
+        <item name="android:layout_marginRight">@dimen/margin</item>
+        <item name="android:layout_marginTop">@dimen/small_margin</item>
         <item name="cardElevation">0.3dp</item>
     </style>
 
