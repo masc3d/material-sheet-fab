@@ -4,7 +4,9 @@ import android.content.Context
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.annotation.IdRes
+import android.support.annotation.StyleRes
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.AttributeSet
 import android.view.Menu
 import android.view.View
@@ -82,6 +84,22 @@ class ActionOverlayView : RelativeLayout {
 
     /** Resource id of style to use for dynamically created fabs */
     var fabStyle: Int = 0
+        @StyleRes
+        set(value) {
+            field = value
+        }
+
+    var defaultIcon: Int = 0
+        @DrawableRes
+        set(value) {
+            field = value
+        }
+
+    var defaultIconTint: Int = 0
+        @DrawableRes
+        set(value) {
+            field = value
+        }
 
     /** The overlay view to use when dimming */
     lateinit var overlayView: View
@@ -282,7 +300,11 @@ class ActionOverlayView : RelativeLayout {
                                     sheet.actionoverlay_sheet_item_container,
                                     false)
 
-                            sheetItem.actionoverlay_sheet_item_icon.setImageDrawable(menuItem.icon)
+                            sheetItem.actionoverlay_sheet_item_icon.setImageDrawable(
+                                    menuItem.icon
+                                            // Set default icon if applicable
+                                            ?: (if (this.defaultIcon != 0) context.getDrawable(this.defaultIcon) else null))
+
                             sheetItem.actionoverlay_sheet_item_title.setText(menuItem.title)
 
                             sheetItem.setOnClickListener {

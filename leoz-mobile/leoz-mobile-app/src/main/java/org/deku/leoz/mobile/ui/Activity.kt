@@ -126,6 +126,8 @@ open class Activity : RxAppCompatActivity(),
         //endregion
 
         this.uxActionOverlay.fabStyle = R.style.AppTheme_Fab
+        this.uxActionOverlay.defaultIcon = R.drawable.ic_chevron_right
+        this.uxActionOverlay.defaultIcon = R.drawable.ic_chevron_right
         this.uxActionOverlay.listener = this
 
         this.cameraAidcFragmentVisible = false
