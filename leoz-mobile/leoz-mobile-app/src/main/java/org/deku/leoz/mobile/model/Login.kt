@@ -22,6 +22,7 @@ import sx.android.Device
 import sx.rx.ObservableRxProperty
 import sx.rx.toHotReplay
 import sx.text.parseHex
+import java.net.SocketTimeoutException
 import java.util.*
 
 /**
@@ -63,17 +64,13 @@ class Login {
      */
     fun authenticate(email: String, password: String): Observable<User> {
         val task = Observable.fromCallable {
-            val user: User
-
             val hashedPassword = hashUserPassword(
                     salt = SALT,
                     email = email,
                     password = password
             )
 
-            // Debug/dev supoort for development login
-
-            if (connectivity.network.state == NetworkInfo.State.CONNECTED) {
+            fun authorizeOnline(): User {
                 log.info("Authorizing user [${email}] online")
 
                 val request = AuthorizationService.MobileRequest(
@@ -90,11 +87,6 @@ class Login {
 
                 val authResponse = authService.authorizeMobile(request)
 
-                user = User(
-                        email = email,
-                        apiKey = authResponse.key
-                )
-
                 // Store user in database
                 val rUser = UserEntity()
                 rUser.email = email
@@ -102,7 +94,13 @@ class Login {
                 rUser.apiKey = authResponse.key
                 db.store.upsert(rUser).blockingGet()
 
-            } else {
+                return User(
+                        email = email,
+                        apiKey = authResponse.key
+                )
+            }
+
+            fun authorizeOffline(): User {
                 log.info("Authorizing user [${email}] offline")
 
                 val rUser = db.store.select(UserEntity::class)
@@ -113,10 +111,26 @@ class Login {
                 if (rUser == null)
                     throw NoSuchElementException("User [${email}] not found, offline login not applicable")
 
-                user = User(email = rUser.email, apiKey = rUser.apiKey)
+                return User(email = rUser.email, apiKey = rUser.apiKey)
             }
 
-            user
+            if (connectivity.network.state == NetworkInfo.State.CONNECTED) {
+                try {
+                    authorizeOnline()
+                } catch(e: Throwable) {
+                    // Falling back to offline login on specific conditions, like network timeouts
+                    // There should not be a generic fallback, as the exception may also indicate
+                    // a user cannot authorize due to being disabled or non-existent.
+                    when (e.cause) {
+                        is SocketTimeoutException -> {
+                            authorizeOffline()
+                        }
+                        else -> throw e
+                    }
+                }
+            } else {
+                authorizeOffline()
+            }
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -125,7 +139,7 @@ class Login {
                     this.authenticatedUser = it
                 }
                 .doOnError {
-                    log.error(it.message)
+                    log.error(it.message, it)
                 }
                 .toHotReplay()
 
