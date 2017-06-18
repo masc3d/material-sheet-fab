@@ -54,7 +54,7 @@ interface DeliveryListService {
     @ApiModel(description = "Delivery List")
     data class DeliveryList(
             @ApiModelProperty(position = 10, required = true, value = "DeliveryListInfo")
-            val id: DeliveryListInfo,
+            val info: DeliveryListInfo,
             @ApiModelProperty(position = 30, required = true, value = "Orders")
             val orders: List<OrderService.Order>
     )

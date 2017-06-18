@@ -4,7 +4,6 @@ package org.deku.leoz.mobile.ui.screen
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.view.menu.MenuBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -81,7 +80,7 @@ class DeliveryProcessScreen() : ScreenFragment() {
         //region TODO To be replaced by a custom adapter
         val parcelList = mutableListOf<Order.Parcel>()
 
-        stop.order.forEach {
+        stop.orders.forEach {
             parcelList.addAll(it.parcel)
         }
 
@@ -165,7 +164,7 @@ class DeliveryProcessScreen() : ScreenFragment() {
     }
 
     private fun processLabelRef(ref: String) {
-        val order: Order? = stop.order.firstOrNull {
+        val order: Order? = stop.orders.firstOrNull {
             it.parcel.firstOrNull {
                 it.labelReference == ref
             } != null

@@ -50,6 +50,15 @@ class Delivery {
      * When initiating, check for existing orders stored in the local DB and (re)load them into the variables.
      */
     init {
+        this.load()
+    }
+
+    /**
+     * Load stop data from database
+     */
+    fun load() {
+        // TODO: move mock data to `MockDeliveryListService`, load data from db
+
         val addr = Order.Address(
                 classification = Order.Address.Classification.DELIVERY,
                 addressLine1 = "Prangenberg",
@@ -68,7 +77,7 @@ class Delivery {
         )
 
         stopList.add(Stop(
-                order = mutableListOf(
+                orders = mutableListOf(
                         Order(
                                 id = "1",
                                 state = Order.State.PENDING,
@@ -90,7 +99,7 @@ class Delivery {
                                 addresses = mutableListOf(addr),
                                 appointment = listOf(appointment),
                                 carrier = Carrier.DER_KURIER,
-                                service = listOf(Order.Service(
+                                services = listOf(Order.Service(
                                         classification = Order.Service.Classification.DELIVERY_SERVICE,
                                         service = listOf(ParcelService.NO_ADDITIONAL_SERVICE))
                                 ),
@@ -99,12 +108,11 @@ class Delivery {
                 ),
                 address = addr,
                 appointment = appointment,
-                sort = 0,
                 state = Stop.State.PENDING
         ))
 
         stopList.add(Stop(
-                order = mutableListOf(
+                orders = mutableListOf(
                         Order(
                                 id = "2",
                                 state = Order.State.PENDING,
@@ -116,7 +124,7 @@ class Delivery {
                                 addresses = mutableListOf(addr),
                                 appointment = listOf(appointment),
                                 carrier = Carrier.DER_KURIER,
-                                service = listOf(Order.Service(
+                                services = listOf(Order.Service(
                                         classification = Order.Service.Classification.DELIVERY_SERVICE,
                                         service = listOf(ParcelService.NO_ADDITIONAL_SERVICE))
                                 ),
@@ -125,10 +133,8 @@ class Delivery {
                 ),
                 address = addr,
                 appointment = appointment,
-                sort = 0,
                 state = Stop.State.PENDING
         ))
-
     }
 
     data class ServiceCheck(val type: CheckType, val success: Boolean) {
@@ -166,7 +172,7 @@ class Delivery {
                 return listOf()
             }
 
-            val mobileOrder = mapServiceOrder(deliveryList.orders)
+            val mobileOrder = deliveryList.orders.map { it.toOrder() }
 
             orderList.addAll(mobileOrder)
 
@@ -181,16 +187,18 @@ class Delivery {
         try {
             val order: List<OrderService.Order> = orderService.get(labelRef = ref)
 
+            val orders = order.map { it.toOrder() }
+
             when (order.size) {
                 0 -> {
                     return listOf()
                 }
                 1 -> {
-                    orderList.addAll(mapServiceOrder(order))
-                    return mapServiceOrder(order)
+                    orderList.addAll(orders)
+                    return orders
                 }
                 else -> {
-                    return mapServiceOrder(order)
+                    return orders
                 }
             }
         } catch (e: Exception) {
@@ -199,87 +207,6 @@ class Delivery {
         }
     }
 
-    fun mapServiceOrder(orderList: List<OrderService.Order>): List<Order> {
-        return orderList.map {
-            Order(
-                    id = it.orderID.toString(),
-                    state = Order.State.PENDING,
-                    classification = it.orderClassification,
-                    parcel = it.Parcels.map {
-                        Order.Parcel(
-                                id = it.parcelID.toString(),
-                                labelReference = it.parcelScanNumber,
-                                status = null,
-                                length = it.dimension?.length?.toFloat() ?: 0.0F,
-                                height = it.dimension?.height?.toFloat() ?: 0.0F,
-                                width = it.dimension?.width?.toFloat() ?: 0.0F,
-                                weight = it.dimension?.weight?.toFloat() ?: 0.0F
-                        )
-                    },
-                    addresses = mutableListOf(
-                            Order.Address(
-                                    classification =    Order.Address.Classification.DELIVERY,
-                                    addressLine1 =      it.deliveryAddress.addressLine1,
-                                    addressLine2 =      it.deliveryAddress.addressLine2 ?: "",
-                                    addressLine3 =      it.deliveryAddress.addressLine3 ?: "",
-                                    street =            it.deliveryAddress.street,
-                                    streetNo =          it.deliveryAddress.streetNo ?: "",
-                                    zipCode =           it.deliveryAddress.zipCode,
-                                    city =              it.deliveryAddress.city,
-                                    latitude =          it.deliveryAddress.geoLocation?.latitude ?: 0.0,
-                                    longitude =         it.deliveryAddress.geoLocation?.longitude ?: 0.0,
-                                    phone =             it.deliveryAddress.phoneNumber ?: ""
-                            ),
-                            Order.Address(
-                                    classification =    Order.Address.Classification.PICKUP,
-                                    addressLine1 =      it.pickupAddress.addressLine1,
-                                    addressLine2 =      it.pickupAddress.addressLine2 ?: "",
-                                    addressLine3 =      it.pickupAddress.addressLine3 ?: "",
-                                    street =            it.pickupAddress.street,
-                                    streetNo =          it.pickupAddress.streetNo ?: "",
-                                    zipCode =           it.pickupAddress.zipCode,
-                                    city =              it.pickupAddress.city,
-                                    latitude =          it.pickupAddress.geoLocation?.latitude ?: 0.0,
-                                    longitude =         it.pickupAddress.geoLocation?.longitude ?: 0.0,
-                                    phone =             it.pickupAddress.phoneNumber ?: ""
-                            )
-                    ),
-                    appointment = listOf(),
-                    carrier = it.carrier,
-                    service = listOf(
-                            Order.Service(
-                                    classification = Order.Service.Classification.DELIVERY_SERVICE,
-                                    service = it.deliveryService.services ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
-                            ),
-                            Order.Service(
-                                    classification = Order.Service.Classification.PICKUP_SERVICE,
-                                    service = it.pickupService.services ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
-                            )
-                    ),
-                    information = mutableListOf(
-                            Order.Information(
-                                    classification = Order.Information.Classification.DELIVERY_INFO,
-                                    additionalInformation = it.deliveryInformation!!.additionalInformation!!.map {
-                                        Order.Information.AdditionalInformation(
-                                                type = it.additionalInformationType!!,
-                                                value = it.information ?: ""
-                                        )
-                                    }.toMutableList()
-                            ),
-                            Order.Information(
-                                    classification = Order.Information.Classification.PICKUP_INFO,
-                                    additionalInformation = it.pickupInformation!!.additionalInformation!!.map {
-                                        Order.Information.AdditionalInformation(
-                                                type = it.additionalInformationType!!,
-                                                value = it.information ?: ""
-                                        )
-                                    }.toMutableList()
-                            )
-                    ),
-                    sort = 0
-            )
-        }
-    }
 
     /**
      * Should be called from the receiver of the order.
@@ -303,7 +230,8 @@ class Delivery {
         }
 
         if (existingStopIndex > -1) {
-            stopList[existingStopIndex].order.add(order)
+            val stop = stopList[existingStopIndex]
+            stop.orders.add(order)
             TODO("To be fixed before use")
             /* TODO
             stopList[existingStopIndex].appointment = minOf(order.appointment[order.classification]!!, stopList[existingStopIndex].appointment, Comparator<Order.Appointment> { o1, o2 ->
@@ -312,16 +240,15 @@ class Delivery {
                     else -> 2
                 }
             }) */
-            return stopList[existingStopIndex]
+            return stop
         } else {
             stopList.add(
                     Stop(
-                            order = mutableListOf(order),
+                            orders = mutableListOf(order),
                             address = order.getAddressOfInterest(),
                             appointment = order.appointment.first {
                                 (it.classification == Order.Appointment.Classification.DELIVERY && order.classification == OrderClassification.DELIVERY) || (it.classification == Order.Appointment.Classification.PICKUP && order.classification == OrderClassification.PICKUP)
-                            },
-                            sort = stopList.last().sort + 1
+                            }
                     )
             )
             return stopList.last()
@@ -330,7 +257,7 @@ class Delivery {
 
     fun findStopByLabelReference(labelReference: String): List<Stop> {
         return stopList.filter {
-            it.order.filter {
+            it.orders.filter {
                 it.parcel.filter {
                     it.labelReference == labelReference
                 }.isNotEmpty()

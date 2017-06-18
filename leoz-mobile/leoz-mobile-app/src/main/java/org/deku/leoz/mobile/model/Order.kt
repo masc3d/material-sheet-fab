@@ -3,6 +3,7 @@ package org.deku.leoz.mobile.model
 import org.deku.leoz.model.AdditionalInformationType
 import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.model.ParcelService
+import org.deku.leoz.service.internal.OrderService
 import java.util.*
 
 /**
@@ -16,7 +17,7 @@ class Order (
         val addresses: MutableList<Address>,
         val appointment: List<Appointment>,
         val carrier: org.deku.leoz.model.Carrier,
-        val service: List<Service>,
+        val services: List<Service>,
         val information: MutableList<Information>? = null,
         val sort: Int
 ) {
@@ -173,3 +174,88 @@ class Order (
     }
     //data class Dimension (val length: Double, val height: Double, val width: Double, val weight: Double)
 }
+
+/**
+ * Transofrm order service entity to mobile model
+ * Created by masc on 18.06.17.
+ */
+fun OrderService.Order.toOrder(): Order {
+    return Order(
+            id = this.id.toString(),
+            state = Order.State.PENDING,
+            classification = this.orderClassification,
+            parcel = this.parcels.map {
+                Order.Parcel(
+                        id = it.id.toString(),
+                        labelReference = it.number,
+                        status = null,
+                        length = it.dimension?.length?.toFloat() ?: 0.0F,
+                        height = it.dimension?.height?.toFloat() ?: 0.0F,
+                        width = it.dimension?.width?.toFloat() ?: 0.0F,
+                        weight = it.dimension?.weight?.toFloat() ?: 0.0F
+                )
+            },
+            addresses = mutableListOf(
+                    Order.Address(
+                            classification = Order.Address.Classification.DELIVERY,
+                            addressLine1 = this.deliveryAddress.addressLine1,
+                            addressLine2 = this.deliveryAddress.addressLine2 ?: "",
+                            addressLine3 = this.deliveryAddress.addressLine3 ?: "",
+                            street = this.deliveryAddress.street,
+                            streetNo = this.deliveryAddress.streetNo ?: "",
+                            zipCode = this.deliveryAddress.zipCode,
+                            city = this.deliveryAddress.city,
+                            latitude = this.deliveryAddress.geoLocation?.latitude ?: 0.0,
+                            longitude = this.deliveryAddress.geoLocation?.longitude ?: 0.0,
+                            phone = this.deliveryAddress.phoneNumber ?: ""
+                    ),
+                    Order.Address(
+                            classification = Order.Address.Classification.PICKUP,
+                            addressLine1 = this.pickupAddress.addressLine1,
+                            addressLine2 = this.pickupAddress.addressLine2 ?: "",
+                            addressLine3 = this.pickupAddress.addressLine3 ?: "",
+                            street = this.pickupAddress.street,
+                            streetNo = this.pickupAddress.streetNo ?: "",
+                            zipCode = this.pickupAddress.zipCode,
+                            city = this.pickupAddress.city,
+                            latitude = this.pickupAddress.geoLocation?.latitude ?: 0.0,
+                            longitude = this.pickupAddress.geoLocation?.longitude ?: 0.0,
+                            phone = this.pickupAddress.phoneNumber ?: ""
+                    )
+            ),
+            appointment = listOf(),
+            carrier = this.carrier,
+            services = listOf(
+                    Order.Service(
+                            classification = Order.Service.Classification.DELIVERY_SERVICE,
+                            service = this.deliveryService.services ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
+                    ),
+                    Order.Service(
+                            classification = Order.Service.Classification.PICKUP_SERVICE,
+                            service = this.pickupService.services ?: listOf(ParcelService.NO_ADDITIONAL_SERVICE)
+                    )
+            ),
+            information = mutableListOf(
+                    Order.Information(
+                            classification = Order.Information.Classification.DELIVERY_INFO,
+                            additionalInformation = this.deliveryInformation!!.additionalInformation!!.map {
+                                Order.Information.AdditionalInformation(
+                                        type = it.additionalInformationType!!,
+                                        value = it.information ?: ""
+                                )
+                            }.toMutableList()
+                    ),
+                    Order.Information(
+                            classification = Order.Information.Classification.PICKUP_INFO,
+                            additionalInformation = this.pickupInformation!!.additionalInformation!!.map {
+                                Order.Information.AdditionalInformation(
+                                        type = it.additionalInformationType!!,
+                                        value = it.information ?: ""
+                                )
+                            }.toMutableList()
+                    )
+            ),
+            sort = 0
+    )
+}
+

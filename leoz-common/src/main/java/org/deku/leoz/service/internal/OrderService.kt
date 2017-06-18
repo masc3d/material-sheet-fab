@@ -5,7 +5,7 @@ import org.deku.leoz.model.AdditionalInformationType
 import org.deku.leoz.model.Carrier
 import org.deku.leoz.model.OrderClassification
 import org.deku.leoz.model.ParcelService
-import java.sql.Date
+import java.util.Date
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -58,7 +58,7 @@ interface OrderService {
 
             //pickups haben evtl keine parcels und benötigen daher eine id
             @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "OrderID")
-            var orderID: Int = 0,
+            var id: Int = 0,
 
             @get:ApiModelProperty(example = "DERKURIER", position = 20, required = true, value = "Carrier")
             var carrier: Carrier = Carrier.UNKNOWN,
@@ -88,7 +88,7 @@ interface OrderService {
             var deliveryInformation: Information? = null,
 
             @get:ApiModelProperty(position = 140, required = false, value = "Parcels")
-            var Parcels: List<Parcel>
+            var parcels: List<Parcel>
 
 
     ) {
@@ -167,12 +167,10 @@ interface OrderService {
 
         @ApiModel(value = "Parcel", description = "Parcel within Order")
         data class Parcel(
-                @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "parcelScanNumber")
-                var parcelScanNumber: String = "",
-
                 @get:ApiModelProperty(example = "12345678901", position = 20, required = true, value = "parcelID")
-                var parcelID: Int = 0,
-
+                var id: Int = 0,
+                @get:ApiModelProperty(example = "12345678901", position = 10, required = true, value = "parcelScanNumber")
+                var number: String = "",
                 @get:ApiModelProperty(position = 40, required = true, value = "ParcelDimension")
                 var dimension: ParcelDimension? = null
         ) {

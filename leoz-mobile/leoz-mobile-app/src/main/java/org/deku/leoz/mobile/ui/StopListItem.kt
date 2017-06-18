@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 
 import org.deku.leoz.mobile.R
 
@@ -26,7 +25,7 @@ class StopListItem(val context: Context, val stop: Stop, val rootViewGroup: View
     val simpleDateFormat: SimpleDateFormat = SimpleDateFormat("HH:mm")
 
     init {
-        stop.order.forEach {
+        stop.orders.forEach {
             it.parcel.forEach {
                 parcelCount++
             }
@@ -62,7 +61,7 @@ class StopListItem(val context: Context, val stop: Stop, val rootViewGroup: View
         holder.city.text = stop.address.city
         holder.receipient.text = stop.address.addressLine1
         holder.appointment.text = "${simpleDateFormat.format(stop.appointment.dateFrom)} - ${simpleDateFormat.format(stop.appointment.dateTo)}"
-        holder.ordercount.text = stop.order.size.toString()
+        holder.ordercount.text = stop.orders.size.toString()
         holder.parcelcount.text = parcelCount.toString()
 
         this.isEnabled = true
