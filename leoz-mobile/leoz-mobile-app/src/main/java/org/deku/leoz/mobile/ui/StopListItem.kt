@@ -11,9 +11,12 @@ import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem
 import eu.davidea.flexibleadapter.items.IFlexible
 import eu.davidea.viewholders.FlexibleViewHolder
+import kotlinx.android.synthetic.main.item_stop_overview.*
 import kotlinx.android.synthetic.main.item_stop_overview.view.*
 import org.deku.leoz.mobile.model.Stop
+import sx.time.toCalendar
 import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Created by phpr on 06.06.2017.
@@ -50,7 +53,7 @@ class StopListItem(val context: Context, val stop: Stop, val rootViewGroup: View
     }
 
     override fun createViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, inflater: LayoutInflater?, parent: ViewGroup?): ViewHolder {
-        return ViewHolder(inflater!!.inflate(R.layout.item_stop_overview, rootViewGroup), adapter!!)
+        return ViewHolder(inflater!!.inflate(R.layout.item_stop_overview, parent, false), adapter!!)
     }
 
     override fun bindViewHolder(adapter: FlexibleAdapter<*>?, holder: ViewHolder?, position: Int,
@@ -60,7 +63,12 @@ class StopListItem(val context: Context, val stop: Stop, val rootViewGroup: View
         holder.zip.text = stop.address.zipCode
         holder.city.text = stop.address.city
         holder.receipient.text = stop.address.addressLine1
-        holder.appointment.text = "${simpleDateFormat.format(stop.appointment.dateFrom)} - ${simpleDateFormat.format(stop.appointment.dateTo)}"
+        holder.appointmentFrom.text = simpleDateFormat.format(stop.appointment.dateFrom)
+        holder.appointmentTo.text = simpleDateFormat.format(stop.appointment.dateTo)
+
+        holder.appointmentClock.hour = stop.appointment.dateFrom.toCalendar().get(Calendar.HOUR)
+        holder.appointmentClock.minute = stop.appointment.dateFrom.toCalendar().get(Calendar.MINUTE)
+
         holder.ordercount.text = stop.orders.size.toString()
         holder.parcelcount.text = parcelCount.toString()
 
@@ -75,7 +83,9 @@ class StopListItem(val context: Context, val stop: Stop, val rootViewGroup: View
         val zip = view.uxZip
         val city = view.uxCity
         val receipient = view.uxReceipient
-        val appointment = view.uxAppointment
+        val appointmentFrom = view.uxAppointmentFrom
+        val appointmentTo = view.uxAppointmentTo
+        val appointmentClock = view.uxAppointmentClock
         val ordercount = view.uxOrderCount
         val parcelcount = view.uxParcelCount
     }
