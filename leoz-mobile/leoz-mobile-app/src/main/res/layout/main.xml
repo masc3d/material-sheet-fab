@@ -23,7 +23,8 @@
             android:id="@+id/uxContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"/>
+            app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"
+            />
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/uxAppBarLayout"
@@ -31,13 +32,14 @@
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
 
+            <!-- Collapsing toolbar layout. The scroll flags are updated during runtime -->
             <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/uxCollapsingToolbarLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
                 app:contentScrim="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|snap">
+                app:layout_scrollFlags="scroll|snap"
+                >
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"

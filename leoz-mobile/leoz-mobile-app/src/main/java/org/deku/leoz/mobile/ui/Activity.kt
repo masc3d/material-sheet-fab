@@ -2,6 +2,7 @@ package org.deku.leoz.mobile.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.AppBarLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
@@ -36,7 +37,6 @@ import kotlinx.android.synthetic.main.main_nav_header.view.*
 import org.deku.leoz.mobile.DebugSettings
 import org.deku.leoz.mobile.model.Login
 import org.deku.leoz.mobile.prototype.activities.ProtoMainActivity
-import org.deku.leoz.mobile.ui.activity.DeliveryActivity
 import org.deku.leoz.mobile.ui.activity.MainActivity
 import org.deku.leoz.mobile.ui.view.ActionItem
 import org.deku.leoz.mobile.ui.view.ActionOverlayView
@@ -121,7 +121,8 @@ open class Activity : RxAppCompatActivity(),
                             transition.addTarget(uxActionOverlay)
                             TransitionManager.beginDelayedTransition(uxActionOverlay, transition)
                         }
-                        this@Activity.uxActionOverlay.visibility = when (isOpen) { true -> View.GONE; else -> View.VISIBLE }
+                        this@Activity.uxActionOverlay.visibility = when (isOpen) { true -> View.GONE; else -> View.VISIBLE
+                        }
                     }
                 })
         //endregion
@@ -140,7 +141,6 @@ open class Activity : RxAppCompatActivity(),
 
         super.onPause()
     }
-
 
 
     override fun onBackPressed() {
@@ -426,6 +426,16 @@ open class Activity : RxAppCompatActivity(),
         // otherwise transitioning from a scrolling to a static content screen
         // may leave the app bar hidden.
         this.uxAppBarLayout.setExpanded(true)
+
+        // Set collapsing toolbar scrolling flags dependent on screen fragment setting
+        val layoutParams = this.uxCollapsingToolbarLayout.layoutParams as AppBarLayout.LayoutParams
+
+        layoutParams.scrollFlags =
+                if (fragment.scrollWithCollapsingToolbarEnabled)
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP
+                else
+                    0
+
     }
 
     override fun onScreenFragmentPause(fragment: ScreenFragment) {

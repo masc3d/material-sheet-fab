@@ -12,7 +12,6 @@ import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.erased.instance
 import com.github.salomonbrys.kodein.lazy
 import eu.davidea.flexibleadapter.FlexibleAdapter
-import eu.davidea.flexibleadapter.items.IFlexible
 
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
@@ -45,11 +44,13 @@ class DeliveryStopListScreen : ScreenFragment(), FlexibleAdapter.OnItemMoveListe
     })
     private val flexibleAdapter get() = flexibleAdapterInstance.get()
 
-    //region Listener interface implementation
-    /**
-     * @see FlexibleAdapter.OnItemMoveListener
-     */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
+        this.scrollWithCollapsingToolbarEnabled = true
+    }
+
+    //region Listener interface implementation
     override fun onActionStateChanged(p0: RecyclerView.ViewHolder?, p1: Int) {
         log.debug("ONACTIONSTATECHANGED")
         log.debug("ViewHolder [${p0.toString()}] Value [$p1]")
