@@ -6,6 +6,8 @@ import android.support.annotation.DrawableRes
 import android.support.annotation.IdRes
 import android.support.annotation.StyleRes
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.AttributeSet
 import android.view.Menu
 import android.view.View
@@ -223,7 +225,7 @@ class ActionOverlayView : RelativeLayout {
                             fab.setBackgroundTint(item.colorRes)
 
                         if (item.iconRes != null)
-                            fab.setImageDrawable(this.context.getDrawable(item.iconRes))
+                            fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
 
                         if (item.iconTintRes != null)
                             fab.setIconTint(item.iconTintRes)
@@ -245,7 +247,7 @@ class ActionOverlayView : RelativeLayout {
                             fab.setBackgroundTint(item.colorRes)
 
                         if (item.iconRes != null)
-                            fab.setImageDrawable(this.context.getDrawable(item.iconRes))
+                            fab.setImageDrawable(ContextCompat.getDrawable(this.context, item.iconRes))
 
                         if (item.iconTintRes != null)
                             fab.setIconTint(item.iconTintRes)
@@ -302,7 +304,8 @@ class ActionOverlayView : RelativeLayout {
                             sheetItem.uxActionOverlaySheetItemIcon.setImageDrawable(
                                     menuItem.icon
                                             // Set default icon if applicable
-                                            ?: (if (this.defaultIcon != 0) context.getDrawable(this.defaultIcon) else null))
+                                            ?: (if (this.defaultIcon != 0) ContextCompat.getDrawable(context, this.defaultIcon) else null)
+                            )
 
                             sheetItem.uxActionOverlaySheetItemTitle.setText(menuItem.title)
 
