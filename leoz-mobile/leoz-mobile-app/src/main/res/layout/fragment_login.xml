@@ -62,6 +62,7 @@
                 android:layout_height="@dimen/icon_size"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_marginBottom="6dp"
+                android:layout_marginEnd="@dimen/margin"
                 app:srcCompat="@drawable/ic_lock"/>
 
             <android.support.design.widget.TextInputLayout
