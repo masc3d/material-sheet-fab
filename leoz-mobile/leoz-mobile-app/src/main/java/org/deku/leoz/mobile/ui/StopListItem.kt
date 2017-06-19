@@ -56,13 +56,15 @@ class StopListItem(
         return R.layout.item_stop
     }
 
-    override fun createViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, inflater: LayoutInflater?, parent: ViewGroup?): ViewHolder {
+    override fun createViewHolder(adapter: FlexibleAdapter<out IFlexible<*>>?, inflater: LayoutInflater?, parent: ViewGroup?): StopListItem.ViewHolder {
         return ViewHolder(inflater!!.inflate(R.layout.item_stop, parent, false), adapter!!)
     }
 
-    override fun bindViewHolder(adapter: FlexibleAdapter<*>?, holder: ViewHolder?, position: Int,
+    override fun bindViewHolder(adapter: FlexibleAdapter<*>?,
+                                holder: ViewHolder,
+                                position: Int,
                                 payloads: List<*>?) {
-        holder!!.street.text = stop.address.street
+        holder.street.text = stop.address.street
         holder.streetNo.text = stop.address.streetNo
         holder.zip.text = stop.address.zipCode
         holder.city.text = stop.address.city
