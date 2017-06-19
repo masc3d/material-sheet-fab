@@ -7,7 +7,6 @@ import org.deku.leoz.service.internal.entity.HEADERPARAM_APIKEY
 import sx.io.serialization.Serializable
 import java.util.*
 
-
 /**
  * Created by helke on 24.05.17.
  */
@@ -43,7 +42,6 @@ interface LocationService {
      *
      * Created by helke on 24.05.17.
      */
-
     @ApiModel(description = "GpsData Model")
     @Serializable(0x730a673f58f04d)
     data class GpsData(
@@ -81,26 +79,4 @@ interface LocationService {
             @QueryParam(DURATION) @ApiParam(value = "Duration") duration: Int? = null,
             @HeaderParam(HEADERPARAM_APIKEY) @ApiParam(hidden = true) apiKey: String?
     ): List<GpsData>
-
-
-    /**
-     * Created by 27694066 on 25.04.2017.
-     */
-    @ApiModel(description = "User Model")
-    data class User(
-            @get:ApiModelProperty(example = "foo@bar.com", required = true, value = "User identifier")
-            var email: String = "@",
-
-            @get:ApiModelProperty(example = "12345678", required = false, value = "Allocation of User to debitor")
-            var debitorId: Int? = null,
-
-
-            @get:ApiModelProperty(example = "foo.bar", required = false, value = "Alias of the user")
-            var alias: String? = null,
-
-            @get:ApiModelProperty(example = "User", required = true, value = "Role of the user", allowableValues = "Admin, PowerUser, User, Driver, Customer")
-            var role: String? = null
-
-    )
-
 }

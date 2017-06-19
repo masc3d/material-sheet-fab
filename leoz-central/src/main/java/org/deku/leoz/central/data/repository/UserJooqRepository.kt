@@ -139,46 +139,24 @@ open class UserJooqRepository {
 
 fun MstUserRecord.toUser(): UserService.User {
 
-    val user = UserService.User(this.email,
-            this.debitorId,
-            this.alias,
-            this.role,
-            this.password,
-            this.firstname,
-            this.lastname,
-            this.isActive,
-            this.isExternalUser,
-            this.phone,
-            this.expiresOn
+    val user = UserService.User(
+            id = this.id,
+            email = this.email,
+            debitorId = this.debitorId,
+            alias = this.alias,
+            role = this.role,
+            firstName = this.firstname,
+            lastName = this.lastname,
+            active = this.isActive,
+            externalUser = this.isExternalUser,
+            phone = this.phone,
+            expiresOn = this.expiresOn
     )
     return user
 }
 
 val MstUserRecord.isActive: Boolean
     get() = (this.active ?: 0) != 0
+
 val MstUserRecord.isExternalUser: Boolean
     get() = (this.externalUser ?: 0) != 0
-
-fun MstUserRecord.toLocationServiceUser(): LocationService.User {
-
-    val user = LocationService.User(this.email,
-            this.debitorId,
-            this.alias,
-            this.role
-    )
-    return user
-}
-
-fun MstUserRecord.toAuthorizationServiceUser(): AuthorizationService.User {
-
-    val user = AuthorizationService.User(this.email,
-            this.debitorId,
-            this.alias,
-            this.role,
-            this.firstname,
-            this.lastname,
-            this.isActive,
-            this.expiresOn
-    )
-    return user
-}

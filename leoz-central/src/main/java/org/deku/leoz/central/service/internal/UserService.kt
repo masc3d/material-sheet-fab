@@ -124,12 +124,9 @@ class UserService : UserService {
         }
 
         update(user.email, user, apiKey)
-
     }
 
     override fun update(email: String, user: User, apiKey: String?) {
-
-
         apiKey ?:
                 throw DefaultProblem(
                         status = Response.Status.BAD_REQUEST,
@@ -219,8 +216,6 @@ class UserService : UserService {
             }
         }
 
-
-
         if (isNew) {
             alias ?: throw  DefaultProblem(
                     status = Response.Status.BAD_REQUEST,
@@ -262,8 +257,6 @@ class UserService : UserService {
                         title = "duplicate alias/debitor")
         }
 
-
-
         if (!UserRole.values().any { it.name == authorizedUserRecord.role })
             throw  DefaultProblem(
                     status = Response.Status.BAD_REQUEST,
@@ -292,10 +285,6 @@ class UserService : UserService {
                         title = "login user can not create/change user - no permission")
             }
         }
-
-
-
-
 
         rec ?: throw  DefaultProblem(
                 status = Response.Status.BAD_REQUEST,

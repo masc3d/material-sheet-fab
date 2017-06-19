@@ -70,9 +70,9 @@ class AuthorizationService
         val user = request.user
 
         user ?:
-            throw DefaultProblem(title = "User is required")
+                throw DefaultProblem(title = "User is required")
 
-        return authorizeWeb(AuthorizationService.Credentials(user.email,user.password))
+        return authorizeWeb(AuthorizationService.Credentials(user.email, user.password))
     }
 
     override fun authorizeWeb(request: AuthorizationService.Credentials): AuthorizationService.WebResponse {
@@ -81,7 +81,7 @@ class AuthorizationService
         val userRecord = this.userRepository.findByMail(email = user.email)
 
         userRecord ?:
-            throw DefaultProblem(title = "User does not exist")
+                throw DefaultProblem(title = "User does not exist")
 
         // Verify credentials
         if (!userRecord.verifyPassword(user.password))
@@ -97,12 +97,12 @@ class AuthorizationService
                     title = "Invalid user role",
                     status = Response.Status.UNAUTHORIZED)
 
-        if (!userRecord.isActive){
+        if (!userRecord.isActive) {
             throw DefaultProblem(
                     title = "user deactivated",
                     status = Response.Status.UNAUTHORIZED)
         }
-        if(Date()>userRecord.expiresOn){
+        if (Date() > userRecord.expiresOn) {
             throw DefaultProblem(
                     title = "user account expired",
                     status = Response.Status.UNAUTHORIZED)
@@ -127,7 +127,7 @@ class AuthorizationService
 
         return AuthorizationService.WebResponse(
                 key = keyRecord.key,
-                user=userRecord.toAuthorizationServiceUser())
+                user = userRecord.toUser())
     }
 
     /**
