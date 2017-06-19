@@ -1,5 +1,6 @@
 package org.deku.leoz.mobile.ui.screen
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +28,13 @@ class SignatureScreen
     }
 
     private val listener by lazy { this.activity as? Listener }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        this.orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        this.hideActionBar = true
+    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {

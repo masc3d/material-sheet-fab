@@ -6,6 +6,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.conf.global
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.lazy
+import kotlinx.android.synthetic.main.main.*
 import org.deku.leoz.mobile.R
 import org.deku.leoz.mobile.model.Delivery
 import org.deku.leoz.mobile.ui.Activity
@@ -91,8 +92,6 @@ class DeliveryActivity : Activity(),
 
     override fun onSignatureSubmitted() {
         this@DeliveryActivity.supportFragmentManager.popBackStack(DeliveryProcessScreen::class.java.canonicalName, 0)
-        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        this.supportActionBar?.show()
     }
 
     /**
@@ -115,10 +114,6 @@ class DeliveryActivity : Activity(),
     }
 
     fun showSignaturePad() {
-        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        this.supportActionBar?.hide()
-
-        val signatureFragment = SignatureScreen()
-        this.showScreen(signatureFragment)
+        this.showScreen(SignatureScreen())
     }
 }
